@@ -1,0 +1,7 @@
+$ python -c 'import os, subprocess; raise SystemExit(subprocess.run(["env", "-i", "PATH="+os.environ["PATH"], "HOME="+os.environ["HOME"], "node", "-p", "JSON.stringify({node:process.version,heapMiB:require(\"node:v8\").getHeapStatistics().heap_size_limit/1024/1024,execArgv:process.execArgv,nodeOptions:process.env.NODE_OPTIONS??null})"]).returncode)'
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=1536", "pages_node_cap": true}
+{"node":"v22.23.5","heapMiB":1584,"execArgv":["--max-old-space-size=1536","-p","JSON.stringify({node:process.version,heapMiB:require(\"node:v8\").getHeapStatistics().heap_size_limit/1024/1024,execArgv:process.execArgv,nodeOptions:process.env.NODE_OPTIONS??null})"],"nodeOptions":null}
+
+EXIT_CODE=0
+SECONDS=0.059

@@ -8,6 +8,24 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
+**Pages completion source update — 2026-11-18.** The runtime candidate was initially published as
+[draft PR #238](https://github.com/djshellshoxxx/GhostPay/pull/238) at
+`9bad95e5cc0ee73f5adb8d2c587161074b21e080`, with exactly the source tree of local integration
+`e8c77e7e8699dd16b86b7a1ff90b834594d07105`. It includes the reviewed recovery, privacy, dependency, hosting and
+key-lifetime changes. Remote `main` remained `dfc75ef2087fa6463ae59e0818abec01796c578d` at the independent
+15:32:34 UTC check. Final candidate qualification is incomplete; no main merge, deployment or release is claimed.
+The [current completion report](docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records source identities,
+actual local/hosted execution, independent reviews and remaining gates. The
+[TM1–TM15 ledger](docs/threat-model/TM_IMPLEMENTATION_20261118.md) distinguishes implementation from unqualified
+Tor/browser behavior and residual privacy limits. Documentation/evidence descendants preserve the runtime inputs.
+The PR body records the final published documentation head, incremental commit mapping, tree verification and
+subsequent CI observations.
+
+### Historical Pages qualification — November 14, 2026
+
+The next two paragraphs preserve their original source revisions and results. Their descriptions of the latest
+candidate and PR state apply to that historical snapshot, not to the current integration or remote repository.
+
 **Newer owner-controlled Pages draft is not yet fully CI-qualified (November 14, 2026):** [#150](https://github.com/djshellshoxxx/GhostPay/pull/150) at exact `36bcdb7470caf7e563b4f72cadc209504137fd6f` proposes GP-PAGES-02 backup-file verification, GP-PAGES-04 sleep-aware idle locking, and key/reconciliation IndexedDB recovery. Its [application CI 43559443897](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443897) **failed** one stale `apps/web/src/views/Settings.test.tsx:39` wording assertion (2,554 other tests passed; 1 skipped) after the new text explicitly included **unverified downloads**. [Pages/Anvil 43559443937](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443937) passed 2 applicable jobs (3 publication checks skipped), while [beta 43559443884](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443884) and [hosting 43559443850](https://github.com/djshellshoxxx/GhostPay/actions/runs/43559443850) also passed. These checks do **not** override the failed application gate. A test-only diagnostic was posted to the owner PR; no owner code was edited or correction verified. **#145 remains the most recent fully qualified staged candidate**. Neither draft is merged, hosted or released.
 
 **Latest CI-qualified staged Pages-only candidate (2026-11-14 UTC; CI only, not an independent audit):** [draft PR #145](https://github.com/djshellshoxxx/GhostPay/pull/145) at exact `c8d4c42bee724bacd244bc90b0259c961d27e84f`, preserving the corrected IndexedDB source `06743ad8187d72849b35f3074818e771245e1a3f`. Its [application CI 43553330056](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553330056) **24/24 passed**, [Pages/Anvil 43553330007](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553330007) **2 applicable passed / 3 release, deployment and live-smoke jobs skipped**, [beta 43553329978](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553329978) and [hosting 43553329955](https://github.com/djshellshoxxx/GhostPay/actions/runs/43553329955) passed. These results cover an **unmerged local-chain browser build**, not a public Pages deployment, external testnet or funds-safe release. The owner [Pages baseline #137](https://github.com/djshellshoxxx/GhostPay/pull/137) still reserves GP-PAGES-02 backup verification and GP-PAGES-04 sleep-aware locking. SonarCloud Security Rating A, ADR-0029, dedicated origin, approved signed testnet manifests, external-wallet acceptance, independent review and explicit release authorization remain open. [i18n draft #147](https://github.com/djshellshoxxx/GhostPay/pull/147) at `c6a9033` separately passed [application CI 43558537015](https://github.com/djshellshoxxx/GhostPay/actions/runs/43558537015) after restoring English for unreviewed scan-privacy disclosures, but **native translation review is pending**; it is not merged into #145. Non-Pages versions are preserved with development paused. See [release-gate traceability](docs/wiki/Verification-and-Release-Gates.md).
@@ -83,7 +101,7 @@ The older test counts below are historical snapshots only.
 |---|---|
 | Is it audited? | **No.** Only self-run and AI-assisted reviews exist ([`docs/audits/`](docs/audits/)). There is no independent third-party audit. |
 | Are public-chain deployments qualified? | **No.** Local test deployments exist only as fixtures; [`deployments/`](deployments/) holds no qualified public deployment. Without an accepted manifest the web app disables ordinary payment. |
-| Which chains are enabled in code? | Seven testnets are enabled in [`chains.ts`](packages/chain-adapters/src/config/chains.ts): Ethereum, Base, OP and Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet and Avalanche Fuji. Mainnets remain disabled. |
+| Which chains are enabled in code? | Seven testnets are enabled in [`chains.ts`](packages/chain-adapters/src/config/chains.ts): Ethereum Sepolia, Base Sepolia, OP Sepolia and Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet and Avalanche Fuji. Mainnets remain disabled. |
 | What execution evidence exists? | Unit tests, local Anvil integrations and hosted Chromium journeys are recorded in the handoffs. They do not qualify real wallets, funded public-chain operations, Safari or physical devices. |
 | Is production hosting qualified? | **No.** A Pages prototype is documented, but no qualified production host is recorded. See [Hosting](#hosting). |
 | Can I use it with real money? | **No.** Do not. Contracts are immutable once deployed and the audit round has open findings. |
@@ -128,9 +146,16 @@ Captured from the Vite dev server (`npm run dev --workspace @ghostpay/web`) on a
 - Privacy options (testnet PoC): `amount-blur`, `hops`, `hygiene`, `metadata-hardening`, `payer-sponsor`, `payer-hiding-contracts`, `privacy-pipeline`, `privacy-profiles`, `confidential-amounts`, `confidential-contracts`, `external-pools*`, `pool-*` (shielded pool; the circuits use an INSECURE DEV CEREMONY; `pool-prover` and `pool-circuits` are GPL-3.0 toolchain packages, licence is an open owner decision), `net-transport`, `net-harness`, `pir-two-server`, `scan-source`.
 - Usability logic (pure, no UI): the `ux-*` packages.
 
-Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages named below.
+Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`.
 
-Workspace wiring is checked by `@ghostpay/*` imports. The web app uses `chain-adapters`, `core-crypto`, `invoice-schema`, `btc-silent-payments`, `secret-box`, `tx-review`, and `address-safety`; the relayer uses `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
+At the source snapshot above, production imports under `apps/web/src` reference `address-safety`,
+`btc-silent-payments`, `chain-adapters`, `core-crypto`, `hygiene`, `invoice-schema`, `metadata-hardening`,
+`net-transport`, `payment-uri`, `policy-scheme`, `qr-exchange`, `scan-source`, `secret-box`, `solana-stealth`,
+`tron-adapter`, `tx-review` and `ux-vault`. These imports span full and lean profiles; they do not mean every
+package's features are available in the Pages beta. `AppLean.tsx` uses the core route list in `AppShell.tsx`:
+Home, Seller keys, Create, Pay, Scan, Sweep, Registry, Settings and About. Bitcoin, Solana, TRON and policy
+routes remain outside that list. Production relayer imports reference `chain-adapters`, `metadata-hardening`
+and `relayer-guard`. Package source and profile guards determine which behavior is actually wired.
 
 Each package has its own README and a `DEVIATIONS.md` listing where the code differs from the specs. Where a README and the code disagree, the code wins and the discrepancy is a bug in the README.
 
@@ -144,7 +169,7 @@ npm run build:libs           # REQUIRED before typecheck/test/build: workspaces 
 npm run typecheck
 npm run lint
 npm test                     # vitest with coverage thresholds in every workspace that has a test script
-npm run build --workspace @ghostpay/web    # also runs the bundle scan (scripts/scan-bundle.mjs)
+npm run build --workspace @ghostpay/web    # also runs the bundle scan (apps/web/scripts/scan-bundle.mjs, as postbuild)
 npm run test:e2e --workspace @ghostpay/web # Playwright; needs a Chromium build (not run by `npm test`)
 npm run ci:scan-secrets      # scripts/scan-secrets.sh
 npm run ci:check-actions     # scripts/check-actions-pinned.sh
@@ -155,12 +180,12 @@ npm run release:repro        # scripts/repro-check.sh
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; docs-only pull requests (only `docs/` or `*.md` changed) skip the heavy ones:
 
 - `ts-typecheck` (`npm run typecheck`), `ts-lint` (`npm run lint`) and `ts-check` (`npm run build`, the build-profile and example guard tests, `node scripts/i18n/check.mjs`, `npm audit --omit=dev --audit-level=high`) run in parallel.
-- `ts-test` (matrix `core-crypto`, `btc-silent-payments`, `web`, `rest`): `npm test` per workspace; `rest` is every other workspace except `apps/relayer`.
+- `ts-test` has seven groups: `core-crypto`, `btc-silent-payments`, `web`, `confidential-contracts`, `rest-0`, `rest-1` and `rest-2`. The three rest groups cover the remaining workspaces except `apps/relayer`.
 - `ts-test-relayer`: `forge build` in `packages/contracts`, then `npm test -w apps/relayer` with `REQUIRE_ANVIL=1` (anvil e2e).
 - `e2e`: `npx playwright install --with-deps chromium`, then `npm run test:e2e --workspace @ghostpay/web`.
 - `contracts-test` (`forge build --sizes`, `forge test`), `contracts-coverage` (`forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info`), `contracts-static` (`forge fmt --check`, `bash scripts/check-natspec.sh`, `forge snapshot --check`), `contracts-slither` (slither 0.11.6, solc 0.8.28, `--fail-medium`).
 - `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`, `scripts/check-tx-origin.sh`.
-- Required-check gates: `typescript` (needs `ts-typecheck`, `ts-lint`, `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
+- Aggregate jobs: `typescript` depends on the TypeScript typecheck, lint, build/check, test groups and relayer test; `contracts` depends on the four contracts jobs above plus `contracts-extra` (the `pool-contracts` and `payer-hiding-contracts` matrix). The full/lean `e2e` job and `lean-candidate` are separate from both aggregate dependency lists. Job names alone do not establish remote branch-protection requirements.
 
 The commands above describe the available gates. Executed checks, source revisions and unavailable
 checks for this assignment are recorded in the [product completion ledger](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md).
@@ -171,7 +196,7 @@ Re-checked 2026-11-11 (Node 22.22.0, sandbox without Foundry or internet): `npm 
 
 Full `npm test` on integration SHA `1ca74abb`, 2026-11-14: 11532 passed, 1 failed, 80 skipped across the workspace totals in that run. `@ghostpay/confidential-contracts` (hardhat) printed no totals there (compiler download blocked). The one failure (`apps/web` `Settings.test.tsx`) was fixed in `1f57b167`. Per-workspace counts: [`docs/remote/STATUS.md`](docs/remote/STATUS.md).
 
-Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer, but `apps/relayer/src/e2e.anvil.test.ts` does not read it yet (only `packages/policy-scheme` does), so that e2e can still skip silently there.
+Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Current source differs from that historical run: `apps/relayer/src/e2e.anvil.test.ts` treats either `REQUIRE_ANVIL=1` or `CI=true` as required. If Anvil or either contract artifact is missing, its prerequisite assertion fails; the unavailable integration body is still skipped, so report both outcomes. CI sets `REQUIRE_ANVIL=1` and builds the artifacts before this suite.
 
 Contracts (from `packages/contracts`):
 

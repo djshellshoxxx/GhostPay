@@ -46,6 +46,15 @@ function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
 }
 
 export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const { session } = useApp();
+  const [owner, setOwner] = useState({ session, generation: 0 });
+  // TM10: plaintext opt-out, passphrases, invoice contents and async work belong to one loaded seller session.
+  // Reset the form before rendering children after replacement, including a reinstall of the same public keys.
+  if (owner.session !== session) setOwner({ session, generation: owner.generation + 1 });
+  return <InvoiceForm key={owner.generation} supportedOnly={supportedOnly} />;
+}
+
+function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -65,7 +74,8 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const [bufferMode, setBufferMode] = useState<BufferMode>('off');
   const [bufferMin, setBufferMin] = useState('');
   const [bufferMax, setBufferMax] = useState('');
-  const [encrypt, setEncrypt] = useState(false);
+  // On by default: line items and memo stay out of the shared link's readable text unless the seller opts out.
+  const [encrypt, setEncrypt] = useState(true);
   const [protectWithPassphrase, setProtectWithPassphrase] = useState(false);
   // The invoice passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);

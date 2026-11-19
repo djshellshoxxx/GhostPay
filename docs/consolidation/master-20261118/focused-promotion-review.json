@@ -1,0 +1,259 @@
+{
+  "reviewed_source": "25fc3a7df33b8a7683cc48d23434eefc6dbce211",
+  "reviewed_tree": "2069f361a2b5e152c5bd75a84ffef7085b1bd984",
+  "documentation_head": "2466ffd112b96b5a0a1b96a548cf7b87f31dedf9",
+  "documentation_tree": "eb8fc38c83a67fe3b1b4889ebd9371f5fddbbd17",
+  "baseline": "5a33a435ffbb4711d0a5fa69ade9d32ad4f8b929",
+  "source_prs": {
+    "237": {
+      "head": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "ancestor": true,
+      "file_checks": [
+        {
+          "path": ".github/workflows/beta-acceptance.yml",
+          "source_blob": "8b343c410018decc4a46ad142e46bcb58dc7f3a7",
+          "candidate_blob": "8b343c410018decc4a46ad142e46bcb58dc7f3a7",
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md",
+          "source_blob": "1d954db79beb6dae7d427fe185e7e5fa3cf71d45",
+          "candidate_blob": "1d954db79beb6dae7d427fe185e7e5fa3cf71d45",
+          "equal": true
+        }
+      ]
+    },
+    "227": {
+      "head": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "ancestor": true,
+      "file_checks": [
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "source_blob": "560e879fbf8e457983b9c682157a9da56b786185",
+          "candidate_blob": "560e879fbf8e457983b9c682157a9da56b786185",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "source_blob": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+          "candidate_blob": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/PAGES_IDLE_CLOCK_INTEGRATION_20261118.md",
+          "source_blob": "106a7cbaeb269d04d508633e211dd3f111b16045",
+          "candidate_blob": "106a7cbaeb269d04d508633e211dd3f111b16045",
+          "equal": true
+        }
+      ]
+    },
+    "234": {
+      "head": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "ancestor": true,
+      "file_checks": [
+        {
+          "path": "docs/handoffs/agents/INVOICE_VALIDATION_20261118.md",
+          "source_blob": "40f73dabbc43d9c7a09a87ccf7effb28705cfe04",
+          "candidate_blob": "40f73dabbc43d9c7a09a87ccf7effb28705cfe04",
+          "equal": true
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "source_blob": "7e31289f847fb54cd8293582c9c07fde54a3a907",
+          "candidate_blob": "7e31289f847fb54cd8293582c9c07fde54a3a907",
+          "equal": true
+        },
+        {
+          "path": "packages/invoice-schema/README.md",
+          "source_blob": "d09d2cd2ebd3dad0b609f6b2ad8976ff95f2e69d",
+          "candidate_blob": "d09d2cd2ebd3dad0b609f6b2ad8976ff95f2e69d",
+          "equal": true
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.ts",
+          "source_blob": "9e6f5d8b80405d634252bf0b65a50d8610325f58",
+          "candidate_blob": "9e6f5d8b80405d634252bf0b65a50d8610325f58",
+          "equal": true
+        },
+        {
+          "path": "packages/invoice-schema/src/errors.ts",
+          "source_blob": "a2fded81b112dc570571566e1c87bb6d78e292d4",
+          "candidate_blob": "a2fded81b112dc570571566e1c87bb6d78e292d4",
+          "equal": true
+        },
+        {
+          "path": "packages/invoice-schema/src/pinnedSigner.test.ts",
+          "source_blob": "6df3d196d0aaccfcd75ac59255279b07a50df9a0",
+          "candidate_blob": "6df3d196d0aaccfcd75ac59255279b07a50df9a0",
+          "equal": true
+        },
+        {
+          "path": "packages/ux-core/src/errors.test.ts",
+          "source_blob": "e3398612a56c743aefabe1b6adda1f29aa4dd602",
+          "candidate_blob": "e3398612a56c743aefabe1b6adda1f29aa4dd602",
+          "equal": true
+        },
+        {
+          "path": "packages/ux-core/src/errors.ts",
+          "source_blob": "8000ccac11046a646a3c9153a0da1cd7070fc8ab",
+          "candidate_blob": "8000ccac11046a646a3c9153a0da1cd7070fc8ab",
+          "equal": true
+        }
+      ]
+    },
+    "235": {
+      "head": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "ancestor": true,
+      "file_checks": [
+        {
+          "path": "apps/web/src/lib/scanCheckpointPrivacy.test.ts",
+          "source_blob": "5a8984f59efedbad9c71eb2aea9e6379d3b55b63",
+          "candidate_blob": "5a8984f59efedbad9c71eb2aea9e6379d3b55b63",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "source_blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+          "candidate_blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "source_blob": "043fb19af6e3ccf88224122185192829eed29c92",
+          "candidate_blob": "043fb19af6e3ccf88224122185192829eed29c92",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "source_blob": "f83c257546972347ae3860d15c53c20388aeb7e6",
+          "candidate_blob": "f83c257546972347ae3860d15c53c20388aeb7e6",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "source_blob": "d33c6f6e4099fb386016289cc8aa560b1380ffa8",
+          "candidate_blob": "d33c6f6e4099fb386016289cc8aa560b1380ffa8",
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+          "source_blob": "671e4041953379c58270388eebb201fcec2dd541",
+          "candidate_blob": "671e4041953379c58270388eebb201fcec2dd541",
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md",
+          "source_blob": "cbb31bbc6f601c5f6fa3dd8b6b3009e33da6d126",
+          "candidate_blob": "cbb31bbc6f601c5f6fa3dd8b6b3009e33da6d126",
+          "equal": true
+        },
+        {
+          "path": "docs/threat-model/PRIVACY_THREAT_MODEL.md",
+          "source_blob": "55f1990fc39756c2b488cd69bbbc9f2abaea0161",
+          "candidate_blob": "55f1990fc39756c2b488cd69bbbc9f2abaea0161",
+          "equal": true
+        },
+        {
+          "path": "docs/threat-model/THREAT_MODEL.md",
+          "source_blob": "53a30bd1b6660b1ef42bca01bb429c14252a0139",
+          "candidate_blob": "53a30bd1b6660b1ef42bca01bb429c14252a0139",
+          "equal": true
+        }
+      ]
+    }
+  },
+  "retained_pr241": {
+    "apps/web/e2e/network-isolation.spec.ts": {
+      "source_blob": "9327d9570232e2809d7564b983f5583ec08da0ab",
+      "candidate_blob": "9327d9570232e2809d7564b983f5583ec08da0ab",
+      "equal": true
+    },
+    "apps/web/src/lib/release.test.ts": {
+      "source_blob": "c815c8cab8e867c9100d6bc45d6518a8dce5a7d8",
+      "candidate_blob": "c815c8cab8e867c9100d6bc45d6518a8dce5a7d8",
+      "equal": true
+    },
+    "apps/web/src/lib/release.ts": {
+      "source_blob": "49ef9237bd75259bb829d0d64cbc404e51ec9533",
+      "candidate_blob": "49ef9237bd75259bb829d0d64cbc404e51ec9533",
+      "equal": true
+    },
+    "docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md": {
+      "source_blob": "96829af20ef06cfcc2eb52c64e73da4325612de4",
+      "candidate_blob": "96829af20ef06cfcc2eb52c64e73da4325612de4",
+      "equal": true
+    },
+    "docs/privacy/browser-network-isolation.md": {
+      "source_blob": "70de6b582a417150fb40f88cc74ff8ac73f4925d",
+      "candidate_blob": "70de6b582a417150fb40f88cc74ff8ac73f4925d",
+      "equal": true
+    },
+    "docs/privacy/evidence/network-isolation-independent-review.json": {
+      "source_blob": "482612fd2250f4336559c357b36ebed5816c576b",
+      "candidate_blob": "482612fd2250f4336559c357b36ebed5816c576b",
+      "equal": true
+    },
+    "docs/privacy/network-egress-inventory.json": {
+      "source_blob": "94a7010b23d3bf92403ae7f5ed2092db1228a3d4",
+      "candidate_blob": "94a7010b23d3bf92403ae7f5ed2092db1228a3d4",
+      "equal": true
+    },
+    "packages/net-transport/src/fetchAdapter.isolation.test.ts": {
+      "source_blob": "7eb5b48dc17d030b6b0e8a2d456ad3ea9bc331a3",
+      "candidate_blob": "7eb5b48dc17d030b6b0e8a2d456ad3ea9bc331a3",
+      "equal": true
+    },
+    "packages/net-transport/src/fetchAdapter.ts": {
+      "source_blob": "977ace28e04bc6dca12fb67d1b3275ae72f9a700",
+      "candidate_blob": "977ace28e04bc6dca12fb67d1b3275ae72f9a700",
+      "equal": true
+    },
+    "packages/net-transport/src/fetchIsolation.test.ts": {
+      "source_blob": "e46041cb959fd6148e557174cb90c719ed00e8e1",
+      "candidate_blob": "e46041cb959fd6148e557174cb90c719ed00e8e1",
+      "equal": true
+    },
+    "packages/net-transport/src/fetchTransport.ts": {
+      "source_blob": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8",
+      "candidate_blob": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8",
+      "equal": true
+    },
+    "packages/solana-stealth/src/rpc.isolation.test.ts": {
+      "source_blob": "5f38bbf24645ed71940ed55b49b285edb07d7657",
+      "candidate_blob": "5f38bbf24645ed71940ed55b49b285edb07d7657",
+      "equal": true
+    },
+    "packages/solana-stealth/src/rpc.ts": {
+      "source_blob": "8cf20d721bfa038c0a4068155cfbbe7d3e9024b1",
+      "candidate_blob": "8cf20d721bfa038c0a4068155cfbbe7d3e9024b1",
+      "equal": true
+    },
+    "packages/tron-adapter/src/rpc.isolation.test.ts": {
+      "source_blob": "61cb45773ebd3ef1cfef9f9b85ef9e22f9b565bd",
+      "candidate_blob": "61cb45773ebd3ef1cfef9f9b85ef9e22f9b565bd",
+      "equal": true
+    },
+    "packages/tron-adapter/src/rpc.ts": {
+      "source_blob": "45983a55998d9ba820c00466f941670231cb445a",
+      "candidate_blob": "45983a55998d9ba820c00466f941670231cb445a",
+      "equal": true
+    },
+    "scripts/tests/network-egress-inventory.test.mjs": {
+      "source_blob": "062277c30f3e1e3e03515337068ae15e2045ca0d",
+      "candidate_blob": "062277c30f3e1e3e03515337068ae15e2045ca0d",
+      "equal": true
+    },
+    "scripts/tests/network-isolation-native.test.mjs": {
+      "source_blob": "bcac353941e5fb9cbafdc5a177de42cb8c6fcd9e",
+      "candidate_blob": "bcac353941e5fb9cbafdc5a177de42cb8c6fcd9e",
+      "equal": true
+    }
+  },
+  "runtime_tree_equal_after_documentation": true,
+  "review_verdict": "No blocking source integration defect found; exact combined-head validation remains required",
+  "tests_executed_by_reviewer": [],
+  "documentation_only_delta": [
+    "docs/consolidation/master-20261118/QUALIFIED_GROUP.md"
+  ],
+  "unexpected_paths": []
+}

@@ -1,0 +1,8 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-network-selection/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  122 passed (122)
+   Start at  23:41:40
+   Duration  1.96s (import 51%, transform 35%, tests 14%)

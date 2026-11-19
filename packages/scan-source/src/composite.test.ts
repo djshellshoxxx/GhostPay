@@ -123,7 +123,7 @@ describe('createScanSource / claims', () => {
     expect(createScanSource({ mode: 'indexer-tor', chainId: 31337, baseUrl: 'https://i.example.org', transport: fakeIndexer(), secondSource: fakeSecond() }).kind).toBe('indexer');
     const s = buildShard();
     const t = pirTransport({ 'a.example.org': s.pir });
-    expect(createScanSource({ mode: 'pir2', chainId: 31337, servers: ['https://a.example.org', 'https://b.example.net'], transport: [t, t], thirdSourceBlockHash: () => Promise.resolve('0x') }).kind).toBe('pir2');
+    expect(createScanSource({ mode: 'pir2', chainId: 31337, servers: ['https://a.example.org', 'https://b.example.net'], transport: [t, t], thirdSourceBlockHash: () => Promise.resolve('0x'), experimental: true }).kind).toBe('pir2');
     expect(createScanSource({ mode: 'light-client', chainId: 31337, lc: lc(), inner: range() }).kind).toBe('light');
   });
   it('refuses mainnet and unknown modes (no fallback)', () => {

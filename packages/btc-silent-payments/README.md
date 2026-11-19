@@ -103,6 +103,10 @@ block consumes); `scanBlocks({ watchOutpoints, onSpend })` then reports spends o
 locally, and `resumeScan` records them in `ScanState` (`match.spent`, cleared again on a reorg rollback), so a wallet
 learns confirmed spends without asking a server per outpoint (mempool spends stay unknown). `crossCheckSample:
 { rate, random }` extends the second-source `crossCheck` to a random sample of blocks without matches.
+`ScanStateMatch.spentCheckedThrough` records continuous complete input coverage for each output. A missing block,
+a source without complete spends, or a legacy checkpoint without this marker leaves that output's negative-spend
+evidence unknown. Old global `spendsFromHeight` metadata is readable but grants no per-output coverage. Reconciliation
+validates discovery, spend and coverage hashes against locally checked headers and clears orphaned evidence.
 `syncHeaderChainFromSources` returns a `SourceAgreement` per source (`behindBy`, `lighter`, `conflicting`) and can fail
 closed with `requireAgreement`; disagreement, not withholding, is what it can show.
 

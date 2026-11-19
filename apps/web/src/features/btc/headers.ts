@@ -459,6 +459,8 @@ export async function syncHeaders(p: {
  * (their spend tweaks wiped by the caller via `dropped`). Returns `undefined` for `scan` when nothing is left.
  * Only heights the chain has checked count: a block above its tip (headers not caught up yet, e.g. after a forget
  * and a capped resync) is "not yet checked", never "reorged"; the caller keeps it but must not let it be spent.
+ * A surviving discovery does not prove spentness on a replacement or extended suffix. Retained results become
+ * unknown until those inputs are scanned again (or an explicitly authorized provider check refreshes them).
  */
 export function invalidateReorged(
   scan: ScanResult,
@@ -467,12 +469,14 @@ export function invalidateReorged(
   const checked = (h: number): boolean => h <= chain.tipHeight;
   const stale = scan.blocks.find((b) => checked(b.height) && chain.hashAt(b.height) !== b.hash);
   const staleFound = scan.found.filter((f) => checked(f.height) && chain.hashAt(f.height) !== f.blockHash);
-  if (stale === undefined && staleFound.length === 0) return { scan, dropped: [] };
+  if (stale === undefined && staleFound.length === 0) {
+    return { scan: scan.spentStatus === 'local' && scan.toHeight !== chain.tipHeight ? { ...scan, spentStatus: 'unknown' } : scan, dropped: [] };
+  }
   const cut = Math.min(stale?.height ?? Infinity, ...staleFound.map((f) => f.height)) - 1;
   const dropped = scan.found.filter((f) => f.height > cut);
   if (cut < scan.fromHeight) return { scan: undefined, dropped: scan.found };
   return {
-    scan: { ...scan, toHeight: cut, blocks: scan.blocks.filter((b) => b.height <= cut), found: scan.found.filter((f) => f.height <= cut) },
+    scan: { ...scan, toHeight: cut, blocks: scan.blocks.filter((b) => b.height <= cut), found: scan.found.filter((f) => f.height <= cut), spentStatus: 'unknown', spentCount: 0 },
     dropped,
   };
 }

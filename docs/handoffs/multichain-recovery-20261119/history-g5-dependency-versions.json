@@ -1,0 +1,42 @@
+{
+  "vitest": {
+    "installed": "5.1.0",
+    "lock": "5.1.0",
+    "matches_version": true
+  },
+  "vite": {
+    "installed": "8.3.8",
+    "lock": "8.3.8",
+    "matches_version": true
+  },
+  "typescript": {
+    "installed": "5.9.3",
+    "lock": "5.9.3",
+    "matches_version": true
+  },
+  "@noble/curves": {
+    "installed": "2.4.0",
+    "lock": "2.4.0",
+    "matches_version": true
+  },
+  "@noble/hashes": {
+    "installed": "2.4.0",
+    "lock": "2.4.0",
+    "matches_version": true
+  },
+  "@scure/base": {
+    "installed": "1.2.6",
+    "lock": "1.2.6",
+    "matches_version": true
+  },
+  "fast-check": {
+    "installed": "4.10.2",
+    "lock": "4.10.2",
+    "matches_version": true
+  },
+  "viem": {
+    "installed": "2.57.19",
+    "lock": "2.57.19",
+    "matches_version": true
+  }
+}

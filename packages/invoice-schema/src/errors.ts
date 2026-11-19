@@ -18,6 +18,8 @@ export type InvoiceErrorCode =
   | 'UNSUPPORTED'
   | 'UNTRUSTED_SIGNER'
   | 'INVALID_SIGNATURE'
+  | 'MISSING_SIGNATURE'
+  | 'VERIFICATION_UNAVAILABLE'
   | 'PASSPHRASE_REQUIRED'
   | 'PASSPHRASE_UNEXPECTED'
   | 'PASSPHRASE_POLICY'
@@ -147,5 +149,19 @@ export class UntrustedSignerError extends InvoiceError {
 export class InvalidSignatureError extends InvoiceError {
   public constructor() {
     super('INVALID_SIGNATURE', 'invoice signature is invalid');
+  }
+}
+
+/** An otherwise recognizable signed container has no signature field. Never an unsigned-invoice success. */
+export class MissingSignatureError extends InvoiceError {
+  public constructor() {
+    super('MISSING_SIGNATURE', 'invoice signature is missing', 'sig');
+  }
+}
+
+/** Required local cryptographic operations are unavailable or were interrupted; no verification result exists. */
+export class VerificationUnavailableError extends InvoiceError {
+  public constructor() {
+    super('VERIFICATION_UNAVAILABLE', 'local invoice verification is unavailable or interrupted');
   }
 }

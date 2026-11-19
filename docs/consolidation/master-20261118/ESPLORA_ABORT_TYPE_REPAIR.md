@@ -1,0 +1,7 @@
+# Preserve abort checks without stale TypeScript narrowing
+
+Source review of combined `0d0f4211f54131448212952da2b413dbb90ae243` found a possible type error introduced while reconciling the BTC request boundary. A bounded compiler reproduction using TypeScript 5.9.3 confirmed TS2367: the direct initial aborted-property comparison narrowed the readonly property to false across the await, so the catch comparison was rejected. The paired minimal source probes and actual diagnostic are retained here.
+
+The request now calls an `assertNotAborted` closure before dispatch and again in the catch. This preserves both live abort observations, the shared bounded request transport, local HTTP status classification, size bounds and sanitized failure behavior. The paired green probe compiled successfully with `tsc --noEmit --skipLibCheck --strict --lib es2022,dom`. This is a control-flow compiler reproduction, not full workspace typecheck. Existing Esplora zero-dispatch, timeout, body bound and HTTP status tests are retained and will be rerun on the committed combined source.
+
+The preceding 16-file source-alias Vitest attempt at the same pin was killed with SIGKILL (subprocess return -9) after119 seconds, before an overall result. It is not recorded as a passed suite. Its metadata and partial log are preserved in the workspace; the same bounded scope is split into separate runner processes for a complete result. No repository test configuration, worker gate, coverage threshold or dependency changes are made.

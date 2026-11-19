@@ -1,0 +1,13 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/btc/BtcView.spentConsent.test.tsx > Bitcoin spent-check consent and unknown results > revokes provider checks while scanning, aborts the pending request, and never resumes later optional checks 3002ms
+ ✓ src/features/btc/BtcView.spentConsent.test.tsx > Bitcoin spent-check consent and unknown results > does not carry mandatory light-mode disclosure into a later full Esplora scan 1712ms
+ ✓ src/features/btc/BtcView.spentConsent.test.tsx > Bitcoin spent-check consent and unknown results > requires new optional consent after changing the selected provider 903ms
+ ✓ src/features/btc/BtcView.spentConsent.test.tsx > Bitcoin spent-check consent and unknown results > does not describe an empty unknown range as proving that no unspent payment exists 910ms
+ ✓ src/features/btc/BtcView.spentConsent.test.tsx > Bitcoin spent-check consent and unknown results > keeps unknown discoveries visible but never describes or selects them as unspent 1729ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:08:49
+   Duration  17.63s (tests 49%, import 21%, environment 17%, transform 13%)

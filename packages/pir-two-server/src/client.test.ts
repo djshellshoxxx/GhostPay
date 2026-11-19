@@ -202,6 +202,44 @@ describe('PirServer', () => {
   });
 });
 
+describe('HTTP base URL normalization', () => {
+  it('removes only terminal separators and preserves the configured path for both endpoints', async () => {
+    const requested: string[] = [];
+    const transport: PirHttpTransport = { request: (r) => {
+      requested.push(r.url);
+      return Promise.resolve({ status: 200, body: new TextEncoder().encode('{}') });
+    } };
+    for (const suffix of ['', '/', '////']) {
+      const link = createHttpLink(`https://pir.example/prefix//replica${suffix}`, 31337, transport);
+      expect(link.origin).toBe('https://pir.example/prefix//replica');
+      await link.getManifest();
+      await link.answer(new Uint8Array([1]));
+    }
+    expect(requested).toEqual(Array.from({ length: 3 }, () => [
+      'https://pir.example/prefix//replica/v1/manifest?chainId=31337',
+      'https://pir.example/prefix//replica/v1/pir',
+    ]).flat());
+  });
+
+  it('does not stall on repeated path separators followed by a non-separator', () => {
+    // A failing suffix match must not try every starting slash. The final slash also catches
+    // an incomplete fix that merely checks endsWith('/') before running a backtracking expression.
+    const base = `https://pir.example/${'/'.repeat(100_000)}replica`;
+    let requests = 0;
+    const transport: PirHttpTransport = { request: () => {
+      requests++;
+      return Promise.resolve({ status: 200, body: new Uint8Array() });
+    } };
+    const start = performance.now();
+    const link = createHttpLink(`${base}/`, 31337, transport);
+    const elapsed = performance.now() - start;
+    // A generous CPU budget for an input that normalizes in milliseconds; no network or startup is timed.
+    expect(elapsed).toBeLessThan(2000);
+    expect(link.origin).toBe(base);
+    expect(requests).toBe(0);
+  });
+});
+
 describe('HTTP wire (loopback only)', () => {
   const transport: PirHttpTransport = {
     async request(r) {

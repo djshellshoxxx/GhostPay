@@ -1,0 +1,12 @@
+✔ apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (47.806406ms)
+✔ apps/relayer workspace dependency closure is the reviewed allowlist (2.863484ms)
+✔ core web flow sources never reach deferred BTC/Solana/TRON/registry code (76.565912ms)
+✔ only the app shell mounts the deferred views (25.972022ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 316.444703

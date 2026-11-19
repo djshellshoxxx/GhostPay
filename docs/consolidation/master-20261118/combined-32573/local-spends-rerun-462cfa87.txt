@@ -1,0 +1,17 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > refuses a committed spend mislabeled as coinbase without querying any output 478ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > sees a spend in a later scanned block without asking the server about any output 279ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > sees a spend in the same block as the payment 291ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > also catches a spend that only some inputs of a multi-input transaction carry 215ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > keeps unspent outputs unspent and asks the server about none of them when every block up to the tip was read 186ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > asks the server when explicitly selected for a scan below the tip, so it can report a spend in an unread block 193ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > asks the server about an output whose block was not read in this scan 118ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > is unknown until every block through the requested height was read after the output was registered 166ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > cannot see the mempool: a spend only the server knows is reported by it at sign time instead (see BtcView) 211ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:12:14
+   Duration  4.73s (tests 49%, import 36%, transform 16%)

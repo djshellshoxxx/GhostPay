@@ -1,0 +1,13 @@
+✔ every nightly job is read-only and receives no secrets (19.129091ms)
+✔ nightly runs every examples/ test file and the webhook self-test (TB-09) (69.10163ms)
+✔ nightly runs the reconciliation IndexedDB check in Chromium (TB-06, TB-09) (24.767725ms)
+✔ nightly runs the anvil suites PR CI skips, with the anvil pinned as in ci.yml (TB-09) (21.043306ms)
+✔ nightly Slither keeps the failing Medium+ gate and adds a non-failing all-detector report (SEC-17) (1.025252ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9344.779982

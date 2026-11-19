@@ -1,0 +1,24 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > atomically saves discovery and resumes it after remount without using legacy plaintext progress 1126ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > keeps the completed checkpoint behind a failed durable write and reports a fixed recoverable failure 233ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > rejects a pending save after replacement with the same seller keys 371ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > does not reuse discovery after changing seller or enabling deep scanning 384ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > invalidates corrupt history and allows an explicit reset followed by safe rediscovery 739ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > invalidates oversized history and allows an explicit reset followed by safe rediscovery 574ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > preserves the old durable journal when a manual rescan has an invalid start block 653ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > cancels a pending durable write when network settings change and uses the newly selected RPC 554ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > pauses before a pending checkpoint commits and retains the last complete position 441ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > cancels noncooperative RPC opening promptly and allows a fresh scan 469ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > cancels noncooperative manifest readback promptly and allows a fresh scan 421ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > retains the saved incomplete-coverage warning after a clean resume 607ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > stops instead of truncating accumulated incomplete-coverage history 508ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > offers reload after a conflicting checkpoint write and safely retries 438ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > does not claim completed coverage for an unchanged checkpoint at block 500 320ms
+ ✓ src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > does not claim completed coverage for an unchanged checkpoint at block 501 216ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  00:09:31
+   Duration  15.72s (tests 53%, import 19%, transform 14%, environment 13%)

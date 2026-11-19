@@ -2,10 +2,18 @@
 
 This package is a **proof of concept** of dual-key ed25519 stealth payments for Solana, covering SOL and SPL tokens. It has **not been audited**. The design and threat model are in [ADR-0017](../../docs/adr/ADR-0017-solana-stealth.md).
 
-**Not interoperable with `@ghostpay/chain-solana`.** That package is a separate Solana stealth format: it uses
-`gpsol:` base58check meta-addresses and `gpst1:` + base64url memos, while this package uses `st:sol:`
-meta-addresses (with a cluster byte) and `gpst1:` + base58 memos. This package is the one imported by the web app
-(`apps/web`); the CLI imports `@ghostpay/chain-solana`. A meta-address or memo from one cannot be used with the other.
+**Shares the ADR-0017 formats with `@ghostpay/chain-solana`.** The web app (`apps/web`) imports this package;
+the CLI imports `@ghostpay/chain-solana`. Both use `st:sol:` meta-addresses with a cluster byte, the same stealth
+payment derivation, and `gpst1:` + base58 memos ([ADR-0017](../../docs/adr/ADR-0017-solana-stealth.md), sections 3
+and 5). The [cross-implementation tests](../chain-solana/src/interop.test.ts) check both packages against the
+[shared vectors](../../test-vectors/meta-address-sol-tron-v1.json) and this package's
+[ADR-0017 vectors](../../test-vectors/solana-stealth.json).
+
+The CLI decoder additionally refuses equal spend and view public keys (`KEY_REUSE`); this decoder accepts them.
+The retired CLI `gpsol:` meta-address and base64url memo forms remain rejected. Package-specific binary
+announcements and signing nonce construction are documented in [chain-solana's deviations](../chain-solana/DEVIATIONS.md).
+Format compatibility does not extend the CLI adapter's scope: it accepts only `sol-devnet` and `sol-testnet`,
+with no RPC client, transaction builder or on-chain program. Both packages remain unaudited proofs of concept.
 
 ## What it does
 

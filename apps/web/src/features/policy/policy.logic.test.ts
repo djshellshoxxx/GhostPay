@@ -18,7 +18,7 @@ import { PINNED_POLICY_DEPLOYMENTS, readAccount, readBalance, readWindow, verify
 import { createPolicyMetaAddress, DELAY_PRESETS } from './create';
 import { POLICY_FLAG, isPolicyFeatureEnabled } from './flag';
 import { fetchAccountEvents, summarizeAccount } from './guard';
-import { preparePolicyPayment } from './pay';
+import { assertPayeeTokenCoverage, preparePolicyPayment } from './pay';
 import { fetchScheme2Announcements, matchScheme2, mergeMatches } from './scan2';
 import { deployCall, planWithdraw, randomNonce, signCancel, signWithdraw } from './withdraw';
 import {
@@ -122,6 +122,24 @@ describe('pay via policy router', () => {
     expect(() => preparePolicyPayment({ ...base, metaAddress: 'st:eth:0x00' })).toThrow(/st:eth:gp2/);
     expect(() => preparePolicyPayment({ ...base, token: 'usdc' })).toThrow(/token/);
     expect(() => preparePolicyPayment({ ...base, gross: 0n })).toThrow(/above zero/);
+  });
+  it('SEC-11: refuses an asset the payee policy can never withdraw when its record is known, else reports coverage unknown', () => {
+    const DAI = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+    const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    const rec1 = parsePolicyRecord(canonical('acct-001')); // limits: native and USDC
+    const rec2 = parsePolicyRecord(canonical('acct-002')); // no limits
+    const base = { metaAddress: a1.metaAddress, deployment: DEPLOYMENT, gross: 5_000n, nowSec: 1n };
+    expect(() => preparePolicyPayment({ ...base, token: DAI, knownRecords: [rec1] })).toThrow(/could never withdraw it\. Nothing was sent\./);
+    expect(preparePolicyPayment({ ...base, token: USDC, knownRecords: [rec1] }).tokenCoverage).toBe('covered');
+    expect(preparePolicyPayment({ ...base, token: 'native', knownRecords: [rec2, rec1] }).tokenCoverage).toBe('covered');
+    // The meta-address carries only the policy hash: without this policy's record the payer cannot know.
+    expect(preparePolicyPayment({ ...base, token: DAI }).tokenCoverage).toBe('unknown');
+    expect(preparePolicyPayment({ ...base, token: DAI, knownRecords: [rec2] }).tokenCoverage).toBe('unknown');
+    // A policy without limits withdraws any asset.
+    expect(preparePolicyPayment({ ...base, metaAddress: a2.metaAddress, token: DAI, knownRecords: [rec1, rec2] }).tokenCoverage).toBe('covered');
+    // The same check is reusable as the send-time guard.
+    expect(() => { assertPayeeTokenCoverage(a1.metaAddress, DAI, [rec1]); }).toThrow(/could never withdraw it/);
+    expect(assertPayeeTokenCoverage(a1.metaAddress, DAI, [])).toBe('unknown');
   });
 });
 

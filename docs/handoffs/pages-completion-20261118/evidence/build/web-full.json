@@ -1,0 +1,25 @@
+{
+  "name": "web-full",
+  "cwd": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "command": [
+    "npm",
+    "run",
+    "build",
+    "--workspace",
+    "@ghostpay/web"
+  ],
+  "started": "2026-11-18T15:11:08.251331+00:00",
+  "node_bin": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin",
+  "npm_bin": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin",
+  "heap_mib": 1536,
+  "pages_node_cap": false,
+  "overrides": {
+    "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+    "GP_COMMIT": "9bad95e5cc0ee73f5adb8d2c587161074b21e080"
+  },
+  "removed_ambient_build_variable_names": [],
+  "exit_code": 0,
+  "seconds": 14.043,
+  "finished": "2026-11-18T15:11:22.294441+00:00",
+  "log": "/workspace/scratch/4fa14be12559/analysis-build/logs/web-full.log"
+}

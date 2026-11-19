@@ -144,17 +144,29 @@ describe('privacy invariants: web app', () => {
     expect(hits).toEqual([]);
   });
 
-  it('issues fetch() only from the three audited call sites (everything else uses the injected fetchFn or RPC client)', () => {
+  // Source review, 2026-11-19 (docs/privacy/network-egress-inventory.json): defaultServices now rejects unscoped fetch;
+  // networkAuthorization owns production dispatch. Relayer's standalone default remains a raw-fetch adapter, while
+  // app callers supply their scoped fetch. Both relayer paths use boundedRequest, which never acquires global fetch.
+  // lib/manifest.ts remains local: the runtime ./deployments loader was removed (SEC-14); manifests are bundled only.
+  it('issues fetch() only from the exact two audited boundaries (everything else uses injected fetchFn or RPC)', () => {
     const files = web.filter((s) => referencesGlobalFetch(s.sf)).map((s) => s.file).sort();
-    expect(files).toEqual(['lib/defaultServices.ts', 'lib/manifest.ts', 'lib/relayerClient.ts']);
+    expect(files).toEqual(['lib/networkAuthorization.ts', 'lib/relayerClient.ts']);
   });
 
-  it('sends relayer requests without cookies or referrer and never follows redirects', () => {
-    const text = web.find((s) => s.file === 'lib/relayerClient.ts')?.text ?? '';
-    expect(text).toMatch(/credentials:\s*'omit'/);
-    expect(text).toMatch(/referrerPolicy:\s*'no-referrer'/);
-    expect(text).toMatch(/redirect:\s*'error'/);
-    expect(text).toMatch(/cache:\s*'no-store'/);
+  it('routes relayer dispatch through the bounded helper and preserves request hygiene at both HTTP boundaries', () => {
+    const relayer = web.find((s) => s.file === 'lib/relayerClient.ts')?.text ?? '';
+    expect(relayer).toMatch(/import \{[^}]*\bboundedRequest\b[^}]*\} from '\.\/boundedRequest'/);
+    expect(relayer).toMatch(/\bawait boundedRequest\(fetchFn, url\.href, \{/);
+    expect(relayer).not.toMatch(/\bfetchFn\s*(?:\?\.)?\(/);
+    // These flags moved from relayerClient into the shared bounded exchange; moving the assertion follows the
+    // audited call graph, rather than permitting a new dispatcher or dropping the original hygiene requirements.
+    for (const file of ['lib/boundedRequest.ts', 'lib/networkAuthorization.ts']) {
+      const text = web.find((s) => s.file === file)?.text ?? '';
+      expect(text, file).toMatch(/credentials:\s*'omit'/);
+      expect(text, file).toMatch(/referrerPolicy:\s*'no-referrer'/);
+      expect(text, file).toMatch(/redirect:\s*'error'/);
+      expect(text, file).toMatch(/cache:\s*'no-store'/);
+    }
   });
 
   it('declares no analytics or telemetry package in package.json', () => {

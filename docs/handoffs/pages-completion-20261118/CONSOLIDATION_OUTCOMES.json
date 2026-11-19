@@ -1,0 +1,315 @@
+{
+  "starting_main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "local_snapshot": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "captured_utc": "2026-11-18 14:37:21 UTC",
+  "local_source_pr_heads_present_by_ancestry": 11,
+  "local_extracted_pr_sources": 8,
+  "remote_main_merges": 0,
+  "pr_closures": 0,
+  "deployments": 0,
+  "release_publications": 0,
+  "branch_deletions": 0,
+  "remote_candidate_publication": "INITIAL_DRAFT_PR_PUBLISHED_TREE_VERIFIED; required candidate checks remain incomplete",
+  "outcomes": [
+    {
+      "pr": 227,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/227",
+      "reviewed_pr_head": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "b45f0eeada982bc93b3ee6872e9ecd09ae9a7bed"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Wall/monotonic expiry and clock rollback; unsaved sole-copy safeguard retained."
+    },
+    {
+      "pr": 235,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/235",
+      "reviewed_pr_head": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "036cf9fa1a99f486681646289edba54ea25dca59"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Private session-bound v4 HKDF slots supersede both v3 formats; cursor content remains plaintext."
+    },
+    {
+      "pr": 231,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/231",
+      "reviewed_pr_head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "f9954310c08be220d6abf87692e3832d23d92ca0"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Explicit per-refresh balance consent and stale-result invalidation."
+    },
+    {
+      "pr": 234,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/234",
+      "reviewed_pr_head": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "f437987be0190bdf1d4de1d69f6ce4b84905e3e8"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Opt-in pinned-signer parser; Pay UI is not globally forced to require pins."
+    },
+    {
+      "pr": 237,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/237",
+      "reviewed_pr_head": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "305ccb0d570c27a47435083059492edc819a0101"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Restricted hidden log retention only; not a browser failure fix."
+    },
+    {
+      "pr": 222,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/222",
+      "reviewed_pr_head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "e194a5c5bafe08e3b6b59f2cec33dfff7ef41f61"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Source integrated with v4 checkpoint and balance-consent resolutions; later cancellation/copy fixes applied. Experimental routes remain outside lean."
+    },
+    {
+      "pr": 228,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/228",
+      "reviewed_pr_head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "base_branch": "privacy/hardening-recommendations",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "f73ce555d5c0d862880713fe51fa0f87f3b0fe93"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Own-node policy enforced at cached-client dispatch and retries."
+    },
+    {
+      "pr": 230,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/230",
+      "reviewed_pr_head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "base_branch": "privacy/hardening-recommendations",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "c17f5778815a85e297fe442f628c4f73a4041dcf"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Session-memory destination ledger, stale-write guard and best-effort legacy cleanup."
+    },
+    {
+      "pr": 233,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/233",
+      "reviewed_pr_head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "base_branch": "privacy/hardening-recommendations",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "b10ce324750a4e1dbd068d3bc53484e9a0a28115"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Browser fixtures preserve encrypted/minimized defaults; upstream hosted acceptance is separate from final combined source."
+    },
+    {
+      "pr": 213,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/213",
+      "reviewed_pr_head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "base_branch": "main",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "fefb7a57ec45c152c9269a553b3f18347e836206"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Spec 18 recovery integrated with independent recovery lane fixes and disclosure."
+    },
+    {
+      "pr": 229,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/229",
+      "reviewed_pr_head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "base_branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "mode": "LOCAL_MERGE_WITH_REVIEWED_RESOLUTION",
+      "local_integration_commits": [
+        "fefb7a57ec45c152c9269a553b3f18347e836206"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": true,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Selected-export import consent and archive metadata disclosure."
+    },
+    {
+      "pr": 209,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/209",
+      "reviewed_pr_head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "base_branch": "main",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "766ce6d8e41feaefb09047ce846d7adad360cf6c",
+        "5510ecdc406154d262373bf44ea4503050baae45",
+        "4a5249b13af5a8119466619822c6977a5e1e0d22",
+        "1ff82f9a0920f391970c245e128eb46f08acfa22",
+        "fd110c68147cad4d3e120c9d90ff042b1fbdc51d",
+        "e88f4bed3ab3538a3269fc0f86f4a78d09a947b8",
+        "16d3e39b5bc6d3b57ed159c3fb14df4c9d9b173a",
+        "bffd60955ce06ccc90eef9c6e2d7559dc352395a",
+        "3e02b8e7fd044333a470080e3fe836a8f411784d",
+        "8af196a2ba8b962f4b84050b8904a14178f04b84",
+        "3d2688a7cfa6949bca849ef5e712dea2b34a61ca",
+        "60f7cc06f08633050cf52eab6134637393ab212e",
+        "63317df07e9071314ebbc86d6c08c512e3bb70a9",
+        "fb68a868b3b525046ae1b1bae83c2385374fa039"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Fourteen selected source/test/doc commits; release-test relaxation, unrelated automation/runtime pins and speculative changes excluded."
+    },
+    {
+      "pr": 210,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/210",
+      "reviewed_pr_head": "4d19655a2e5d93ad9378803cd4163245168aca24",
+      "base_branch": "main",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "5f2162ee3dc6554387d0e1366fcb6b49c145d4ea"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Matching dependency group extracted with #236; source head not merged by ancestry."
+    },
+    {
+      "pr": 236,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/236",
+      "reviewed_pr_head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "base_branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "811276498b589c0576fdc76e58a52296b155c413"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Root viem override/coverage repair extracted with matching #210 dependency and lockfile state."
+    },
+    {
+      "pr": 212,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/212",
+      "reviewed_pr_head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "base_branch": "main",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "bf6c8d1d65139b3785f4146244ec72c06a6baf65",
+        "29784adb573ab3084480464d640efd7f4ab42dfb"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Standalone Mythril utility/historical review plus deployment-validator command only; no contract or gate-policy change."
+    },
+    {
+      "pr": 225,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/225",
+      "reviewed_pr_head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "base_branch": "claude/ghostpay-consolidation-9xhtxg-security",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "bf6c8d1d65139b3785f4146244ec72c06a6baf65"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Fail-closed standalone Mythril utility retained unwired."
+    },
+    {
+      "pr": 224,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/224",
+      "reviewed_pr_head": "1054daabc5cabe958466ec144582d76137b54910",
+      "base_branch": "main",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "f219cc89986eeef36c77e58175d4c417ff0f138d",
+        "b1d31915081048326e23eac5c0c3bbb5327b6f5f",
+        "0b67fa9fbd125b18412ef53a5d377ab5ccd460e2"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Static helper, HTTPS-only pinned downloads, no-install integration execution and bidi escapes only."
+    },
+    {
+      "pr": 226,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/226",
+      "reviewed_pr_head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "base_branch": "nodata/jolly-rubin-u4zd45",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "f219cc89986eeef36c77e58175d4c417ff0f138d"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "Final path/symlink/malformed-request audit-helper repair."
+    },
+    {
+      "pr": 220,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/220",
+      "reviewed_pr_head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "base_branch": "main",
+      "mode": "LOCAL_BOUNDED_EXTRACTION",
+      "local_integration_commits": [
+        "fce8d96d0e18f79a437f20a801a6dd4aa9a8cfc6",
+        "c4a6e0a10230b6c791ac716dd4cc7341e41f7e5d"
+      ],
+      "source_head_is_ancestor_of_local_snapshot": false,
+      "remote_main_merged": false,
+      "pr_closed_by_this_workstream": false,
+      "note": "RPC fetch flags, key-boundary proof and automation/compiler-integrity slices; bypassable D1 guard and contract changes excluded."
+    }
+  ],
+  "documentation_extraction": {
+    "pr": 223,
+    "reviewed_head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+    "local_branch_snapshot": "1e513ea9b5c7edb2afcc97df1381a6dcd6335bcc",
+    "mode": "REFRESHED_DOC_EXTRACTION_STAGED_SEPARATELY",
+    "remote_main_merged": false
+  },
+  "remaining_review": "REMAINING_PR_DELTA_REVIEW_20261118.md",
+  "qualification": "PENDING_FINAL_COMBINED_RESULTS; local merge names do not imply remote or release approval",
+  "updated_utc": "2026-11-18 15:01:41 UTC",
+  "remote_candidate_head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "pull_request_url": "https://github.com/djshellshoxxx/GhostPay/pull/238",
+  "pull_request_draft": true,
+  "pull_request_state": "open",
+  "published_tree": "81341de7972041b5f7ce53da76027846356fab90",
+  "publication_map": "REMOTE_SHA_MAPPING.json",
+  "documentation_packet_commit": "2d83582af7b4611a3cde062a8041bc3dbe423555"
+}

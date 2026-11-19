@@ -1,0 +1,191 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/btc/esplora.test.ts > normalizeEsploraUrl > accepts https and loopback http, trims trailing slashes 17ms
+ ✓ src/features/btc/esplora.test.ts > normalizeEsploraUrl > refuses plain http to remote hosts, credentials, query, fragment, junk 7ms
+ ✓ src/features/btc/esplora.test.ts > network table > has mainnet disabled and every test network enabled 23ms
+ ✓ src/features/btc/esplora.test.ts > network table > rejects a bad seed 5ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > reads tip, hashes, pages and spent state 689ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > broadcasts raw hex and validates the txid answer 2ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > fails closed on transport errors, aborts and malformed data 260ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > rejects malformed transactions 7ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > encodes witnesses of any size (compact size boundaries) 4ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > recomputes txids like an independent implementation and rejects edited transaction content 93ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > requests exactly the pages a block has, also when its last page is full (electrs answers 400 past the end) 18ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > reads blocks of more than 10,000 transactions in full and refuses an impossible transaction count unread 1256ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > does no networking on construction, local revocation or disposal 63ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > requires a known action, category and enabled network 32ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > uses the exact selected endpoint and forces fetch privacy options 122ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > refuses unsupported endpoint wss://rpc.test without dispatch 7ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > refuses unsupported endpoint https://user:pass@rpc.test without dispatch 2ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > refuses unsupported endpoint https://rpc.test/#secret without dispatch 5ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > refuses unsupported endpoint http://remote.test without dispatch 3ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > refuses unsupported endpoint not a URL without dispatch 4ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > preserves segment-bounded base routes without allowing neighboring paths or origins 9ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > rejects unnecessary sensitive headers before contacting the endpoint 17ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > refuses forged or foreign capabilities, chain changes and endpoint changes 22ms
+ ✓ src/lib/networkAuthorization.test.ts > per-action browser authorization > never exposes transport errors, arbitrary abort reasons or foreign error instances 16ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > refuses stale cached contexts after ghostpay.settings.v1 changes before the event 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > refuses stale cached contexts after ghostpay.scanPrivacy.v1 changes before the event 16ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > refuses stale cached contexts after ghostpay.networkProfiles.v1 changes before the event 9ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > refuses stale cached contexts after ghostpay.scanLanes.v1 changes before the event 3ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > refuses permissions deleted while an action is pending 9ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects NEW grants from a stale UI endpoint and accepts only current selected or session-only URLs 21ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings {invalid 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings null 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings [] 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings {"requireProxy":"true"} 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings {"transport":"bogus"} 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings {"endpoints":{"84532":42}} 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed on malformed scan settings {"source":"pir"} 17ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > does not degrade invalid network selection {"rpcMode":"own-node"} to direct authority 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > does not degrade invalid network selection {"rpcProfile":"tor-socks"} to direct authority 5ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > does not degrade invalid network selection {"rpcMode":"bogus"} to direct authority 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > does not degrade invalid network selection {"noticeAcknowledged":"yes"} to direct authority 4ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > does not degrade invalid network selection {"extra":true} to direct authority 3ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects unknown privacy schema keys in ghostpay.scanPrivacy.v1 before a new non-scan action can dispatch 5ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects unknown privacy schema keys in ghostpay.scanLanes.v1 before a new non-scan action can dispatch 3ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects a present null transport instead of defaulting new actions to permissive policy 6ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects a present null requireProxy instead of defaulting new actions to permissive policy 7ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects a present null rpcMode instead of defaulting new actions to permissive policy 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects a present null rpcProfile instead of defaulting new actions to permissive policy 10ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects a present null relayerProfile instead of defaulting new actions to permissive policy 4ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects a present null noticeAcknowledged instead of defaulting new actions to permissive policy 9ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored windowBlocks instead of dropping request shaping 7ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored jitterMinMs instead of dropping request shaping 2ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored jitterMaxMs instead of dropping request shaping 13ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored openLaneBudget instead of dropping request shaping 2ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored padBlocks instead of dropping request shaping 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored bulkEvidence instead of dropping request shaping 28ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored floodPerBlock instead of dropping request shaping 10ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored jitter pairs { jitterMinMs: 500, jitterMaxMs: 100 } instead of resetting them to zero 8ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored jitter pairs { jitterMinMs: 500 } instead of resetting them to zero 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored jitter pairs { jitterMaxMs: 500 } instead of resetting them to zero 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored lane flag privacySetTransfers 10ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects malformed stored lane flag spamScoring 8ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > keeps absent legacy fields compatible and accepts normalized scan setting boundaries 8ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects invalid stored scan endpoints before a sanitizer can drop it and use a fallback 2ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects invalid stored scan indexerUrls before a sanitizer can drop it and use a fallback 15ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects invalid stored scan endpoint/transport combination { transport: 'direct', …(1) } 8ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects invalid stored scan endpoint/transport combination { transport: 'local-proxy', …(1) } 14ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects invalid stored scan endpoint/transport combination { transport: 'local-proxy', …(1) } 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects invalid stored scan endpoint/transport combination { indexerUrls: [Object] } 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > preserves valid normalized scan URLs and RPC queries for each transport 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > fails closed when settings storage becomes unavailable 21ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > revokes pending contexts on app lock or seller-session replacement 17ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > revokes pending contexts on app lock or seller-session replacement 1ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > revokes pending contexts on app lock or seller-session replacement 9ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > revokes on cross-tab events, signals subscribers and removes all subscriptions on disposal 6ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > expires idle contexts and refuses sleep/clock changes without waiting for delayed browser timers 43ms
+ ✓ src/lib/networkAuthorization.test.ts > live settings, session and permissions > rejects already-aborted actions and rapidly cancelled attempts without any dispatch 42ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present empty record 14ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing rpcProfile 4ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing relayerProfile 3ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing rpcMode 2ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present missing noticeAcknowledged 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses EVM dispatch for a present lost own-node field 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present empty record 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing rpcProfile 13ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing relayerProfile 19ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing rpcMode 3ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present missing noticeAcknowledged 5ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses BTC dispatch for a present lost own-node field 4ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present empty record 3ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing rpcProfile 10ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing relayerProfile 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing rpcMode 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present missing noticeAcknowledged 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses Solana dispatch for a present lost own-node field 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present empty record 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing rpcProfile 1ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing relayerProfile 4ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing rpcMode 9ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present missing noticeAcknowledged 4ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > refuses TRON dispatch for a present lost own-node field 2ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > keeps fresh-install absence and complete valid selection usable for EVM 22ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > keeps fresh-install absence and complete valid selection usable for BTC 14ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > keeps fresh-install absence and complete valid selection usable for Solana 17ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > keeps fresh-install absence and complete valid selection usable for TRON 2ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > does not treat a deleted observed selection as a fresh install for EVM 22ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > does not treat a deleted observed selection as a fresh install for BTC 7ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > does not treat a deleted observed selection as a fresh install for Solana 10ms
+ ✓ src/lib/networkAuthorization.test.ts > strict persisted v1 selection at the common dispatch boundary > does not treat a deleted observed selection as a fresh install for TRON 12ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > applies own-node to scan without authorizing remote fallback 11ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > applies own-node to btc-scan without authorizing remote fallback 1ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > applies own-node to solana-scan without authorizing remote fallback 1ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > applies own-node to tron-scan without authorizing remote fallback 1ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > blocks required direct mode and rejects nonloopback endpoints for required local proxy 6ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > permits explicit Sweep exceptions only for that capability and never overrides own-node 25ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > scopes token balance consent to balanceOf for the reviewed owner/token 7ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > keeps relayer quote and submission destinations separate 9ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > allows the selected browser Tor path without pretending to verify routing 5ms
+ ✓ src/lib/networkAuthorization.test.ts > private-path and own-node policy on actual chain categories > allows only same-origin release hashing independently of external policy and storage 6ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects overdue fetch completion when the browser delays its deadline timer 25ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects overdue body chunks before returning data when timers have not run 4ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > remints malformed header failures instead of exposing injected header values 7ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > refuses redirects and changed final destinations, disposing bodies 24ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > settles ignored-abort fetches and disposes late response bodies 15ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects late responses after lock even when transport ignores signals 12ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > settles stalled response reads without waiting for hostile cleanup 10ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > cancels pending reads on revocation and refuses already-aborted request signals 15ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > counts bytes, accepts exact caps and rejects declared oversize before read 35ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > bounds each BTC response independently while allowing paginated block totals of 64 MiB 85ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > passes HTTP statuses to protocol adapters and handles empty bodies 13ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects invalid bounds 0 17ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects invalid bounds -1 1ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects invalid bounds NaN 1ms
+ ✓ src/lib/networkAuthorization.test.ts > bounded guarded responses > rejects invalid bounds 2147483648 1ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > requires an injected transport before creating a worker 473ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > carries the provider spent-check opt-in into the worker and the spent status back out 2097ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > matches direct scanning through cloned messages without sending spend secrets and wipes worker copies 1465ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > awaits each checkpoint commit, resumes from committed state and freshly validates old matches 934ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > cancels while a checkpoint is pending, terminates immediately and never acknowledges it later 247ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > propagates a refused encrypted commit and stops before the next block 225ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > rejects worker startup and message errors without leaving an active session 163ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > captures outpoint consent before worker creation even when the caller options change 189ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects an unexpected matched-transaction hex query outside opted-in light mode 115ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects an unexpected matched-transaction merkle-proof query outside opted-in light mode 147ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a worker outpoint query when the owner did not enable provider checks 172ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a provider-labelled result without consent and wipes its transferred tweak 835ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > does not authorize a provider-labelled result by mutating the caller options after start 645ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested range evidence 654ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested chain evidence 833ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested duplicate evidence 902ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested local-gap evidence 712ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested history-page evidence 930ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched hex request in full mode with provider consent false 262ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched merkle-proof request in full mode with provider consent false 199ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched hex request in full mode with provider consent true 230ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched merkle-proof request in full mode with provider consent true 174ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched hex requests in full mode with provider consent false 182ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched merkle-proof requests in full mode with provider consent false 215ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched hex requests in full mode with provider consent true 283ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched merkle-proof requests in full mode with provider consent true 224ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a consented light worker claiming local status and wipes its tweak 706ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a consented light worker claiming unknown status and wipes its tweak 872ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects light scans with provider consent undefined before worker creation 295ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects light scans with provider consent false before worker creation 143ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects light scans with provider consent true before worker creation 109ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently rejects light start messages with invalid consent false 156ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently rejects light start messages with invalid consent true 171ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > ignores another request and wipes a late result after cancellation 805ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects malformed responses and wipes any valid tweak buffers they carry 283ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rechecks the pinned header checkpoint before making a worker network request 240ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged light-mode start without consent inside the worker before requesting source data 428ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > do not embed public seller identifiers or the chain in a persisted slot 122ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > depend on the viewing private key: other keys never read this position, the same keys restored do 29ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > ignore a legacy public-key slot (fail closed to a rescan) and delete it on the first new-format save 4ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > keep the legacy slot when the new-format write fails, and remove it on clear 7ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > sweep every public-key-named legacy slot, of any chain or key set, as soon as the store exists and without any keys 1ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > sweep best effort: storage without key enumeration, or that throws, never breaks the store 3ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > are HKDF-SHA256 of the viewing key, bound to the chain and key id (format pinned: a change orphans every checkpoint) 2ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > borrow the session viewing key only for its own key id, and wipe the copy afterwards 5ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > refuses and wipes a replacement wallet copy when the second deadline check changes the holder 11ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > returns undefined when the second deadline check suspends the matched holder before borrowing 6ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > lend the session viewing key once per slot while the scan view loads its checkpoint on every render 21ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > wipe the lent copy of the session viewing key when the derivation using it throws 33ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > refuses cached checkpoint reads, writes and clears while a sole copy is suspended 16ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > checks expiry before a cached checkpoint save even without a browser lifecycle event 10ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > wipe the copy, write nothing and keep no name when HKDF throws inside the real store 14ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > derive afresh on every use from a lender that cannot say which keys are loaded 1ms
+ ✓ src/lib/scanCursorSlot.test.ts > SEC-22 scan cursor slot names > isolates two lender contexts sharing storage and rederives after one context locks and restores 2ms

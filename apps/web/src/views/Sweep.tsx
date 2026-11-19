@@ -1,6 +1,6 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
@@ -8,10 +8,10 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
-import { captureSessionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
+import { captureSessionGuard, captureSessionVersionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { browserStorage, loadScanPrivacy, privatePathForbidsDirect } from '../lib/scanPrivacy';
 import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
@@ -40,10 +40,11 @@ export function Sweep(): ReactNode {
   const [destination, setDestination] = useState('');
   const [mode, setMode] = useState<'relayer' | 'direct'>('relayer');
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
-  // R12-2: behind a required local proxy the balance read (a direct Settings RPC request naming this one-time address)
-  // waits for an explicit request; `balanceAsk` records which address it was asked for, and how many times.
-  const [balanceOnRequest] = useState(() => privatePathForbidsDirect(loadScanPrivacy(browserStorage())));
-  const [balanceAsk, setBalanceAsk] = useState<{ readonly key: string; readonly n: number } | undefined>(undefined);
+  // Every balance lookup names this one-time address to the Settings RPC and needs its own click.
+  const privatePathRequired = privatePathForbidsDirect(loadScanPrivacy(browserStorage()));
+  const balanceOperation = useRef(0);
+  const balanceAbort = useRef<AbortController | undefined>(undefined);
+  const actionAbort = useRef<AbortController | undefined>(undefined);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
@@ -83,7 +84,14 @@ export function Sweep(): ReactNode {
     return () => { authEpoch.current += 1; };
   }, [app.session]);
   // Also at every idle lock, which leaves keys without a backup loaded (G2-05).
-  useEffect(() => subscribeAppLock(() => { setVaultPass(''); }), []);
+  useEffect(() => subscribeAppLock(() => {
+    setVaultPass('');
+    balanceOperation.current += 1;
+    setBalance(undefined);
+    setQuote(undefined);
+    balanceAbort.current?.abort();
+    actionAbort.current?.abort();
+  }), []);
 
   const meta = sel?.match.metadata;
   const tokenAddr: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;
@@ -91,26 +99,24 @@ export function Sweep(): ReactNode {
   const decimals = tokenAddr === 'native' ? 18 : (tokenCfg?.decimals ?? 18);
   const symbol = tokenAddr === 'native' ? (chainId === undefined ? '' : (findChain(chainId)?.nativeSymbol ?? '')) : (tokenCfg?.symbol ?? t('sweep.tokenFallback'));
 
-  const balanceKey = sel === undefined ? undefined : `${String(sel.chainId)}:${sel.match.stealthAddress.toLowerCase()}`;
-  const balanceAllowed = !balanceOnRequest || (balanceAsk !== undefined && balanceAsk.key === balanceKey);
+  const balanceRpcUrl = chainId === undefined ? undefined : app.settings.rpcUrls[String(chainId)];
+  const balanceScope = useMemo(() => ({ sel, chainId, tokenAddr, rpcUrl: balanceRpcUrl, getRpc: app.getRpc, session: app.session, revision: app.networkRevision }),
+    [sel, chainId, tokenAddr, balanceRpcUrl, app.getRpc, app.session, app.networkRevision]);
+  const currentBalanceScope = useRef(balanceScope);
+  currentBalanceScope.current = balanceScope;
+  const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));
 
   useEffect(() => {
-    let live = true;
-    if (chainId === undefined || sel === undefined || tokenAddr === undefined || !balanceAllowed) return;
-    void (async () => {
-      try {
-        const rpc = await app.getRpc(chainId);
-        if (rpc === undefined) return;
-        const b = await readBalance(rpc, sel.match.stealthAddress, tokenAddr);
-        if (live) setBalance(b);
-      } catch (e) {
-        if (live) setError(captureUserMessage(e));
-      }
-    })();
-    return () => {
-      live = false;
-    };
-  }, [app, chainId, sel, tokenAddr, balanceAllowed, balanceAsk]);
+    setBalance(undefined);
+    setQuote(undefined);
+    return () => { balanceOperation.current += 1; balanceAbort.current?.abort(); };
+  }, [balanceScope]);
+  useEffect(() => {
+    authEpoch.current += 1;
+    actionAbort.current?.abort();
+    setBusy(false);
+    return () => { authEpoch.current += 1; actionAbort.current?.abort(); };
+  }, [balanceScope, destination, mode, app.settings.relayerUrl]);
 
   if (sel === undefined || chainId === undefined || tokenAddr === undefined) {
     return (
@@ -135,12 +141,43 @@ export function Sweep(): ReactNode {
   const relayerOk = tokenCfg?.permit === true && app.settings.relayerUrl !== '';
   const nowSec = (): number => Math.floor(services.nowMs() / 1000);
 
-  const guard = async (fn: (assertCurrent: () => void) => Promise<boolean | void>): Promise<void> => {
+  const onReadBalance = (): void => {
+    balanceAbort.current?.abort();
+    const controller = new AbortController();
+    balanceAbort.current = controller;
+    const operationId = ++balanceOperation.current;
+    const unchangedSession = captureSessionVersionGuard();
+    const current = (): boolean => {
+      if (controller.signal.aborted || balanceOperation.current !== operationId || currentBalanceScope.current !== balanceScope) return false;
+      try { unchangedSession(); return true; } catch { return false; }
+    };
+    setBalance(undefined);
+    setQuote(undefined);
+    setError(undefined);
+    void (async () => {
+      try {
+        const rpc = await app.getRpc(chainId, { action: 'sweep-balance', signal: controller.signal, allowDirectOnce: true, balance: { owner: sel.match.stealthAddress, token: tokenAddr } });
+        // RPC creation may be asynchronous. A changed selection must not disclose even the old address afterward.
+        if (rpc === undefined || !current()) return;
+        const next = await readBalance(rpc, sel.match.stealthAddress, tokenAddr);
+        if (current()) setBalance(next);
+      } catch (e) {
+        if (current()) setError(captureUserMessage(e));
+      } finally {
+        controller.abort();
+      }
+    })();
+  };
+
+  const guard = async (fn: (assertCurrent: () => void, signal: AbortSignal) => Promise<boolean | void>): Promise<void> => {
+    actionAbort.current?.abort();
+    const controller = new AbortController();
+    actionAbort.current = controller;
     const id = ++operation.current;
     const epoch = authEpoch.current;
     const liveSession = captureSessionGuard();
     const assertCurrent = (): void => {
-      if (authEpoch.current !== epoch) throw new UserFacingError({ key: 'sweep.vaultCancelledKeys' });
+      if (controller.signal.aborted || authEpoch.current !== epoch) throw new UserFacingError({ key: 'sweep.vaultCancelledKeys' });
       liveSession();
     };
     setBusy(true);
@@ -152,12 +189,13 @@ export function Sweep(): ReactNode {
       vaultGuard?.();
       setVaultPhase('action');
       const assertAuthorized = (): void => { assertCurrent(); vaultGuard?.(); };
-      const broadcast = await fn(assertAuthorized);
+      const broadcast = await fn(assertAuthorized, controller.signal);
       // Once the transport accepts a transaction/order, a session lock cannot make it unsent.
       if (broadcast !== true) assertAuthorized();
     } catch (e) {
-      setError(captureUserMessage(e));
+      if (operation.current === id && currentBalanceScope.current === balanceScope) setError(captureUserMessage(e));
     } finally {
+      controller.abort();
       setVaultPass('');
       if (operation.current === id) {
         setBusy(false);
@@ -174,14 +212,15 @@ export function Sweep(): ReactNode {
   };
 
   const onQuote = (): void => {
-    void guard(async (assertCurrent) => {
-      const rpc = await app.getRpc(chainId);
+    void guard(async (assertCurrent, signal) => {
+      const rpc = await app.getRpc(chainId, { action: 'sweep-quote', signal, allowDirectOnce: true });
       assertCurrent();
       await verified(rpc);
       assertCurrent();
       if (loaded === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
-      const nextQuote = await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), loaded.feeRecipient, services.fetchFn);
+      const relayerContext = services.network?.authorize({ action: 'sweep-quote', category: 'relayer', endpoint: `${app.settings.relayerUrl.replace(/\/+$/, '')}/v1/quote`, signal, allowDirectOnce: true });
+      const nextQuote = await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), loaded.feeRecipient, relayerContext?.fetchFn ?? services.fetchFn);
       assertCurrent();
       setQuote(nextQuote);
     });
@@ -189,8 +228,9 @@ export function Sweep(): ReactNode {
 
   const onRelay = (): void => {
     if (signingLocked) return;
-    void guard(async (assertCurrent) => {
-      const rpc = await app.getRpc(chainId);
+    const ledgerUnchanged = captureDestinationLedgerGuard();
+    void guard(async (assertCurrent, signal) => {
+      const rpc = await app.getRpc(chainId, { action: 'sweep-submit', signal, allowDirectOnce: true });
       assertCurrent();
       await verified(rpc);
       assertCurrent();
@@ -205,8 +245,9 @@ export function Sweep(): ReactNode {
         handoff.lock = lock;
       };
       let submitted: string;
+      const relayerContext = services.network?.authorize({ action: 'sweep-submit', category: 'relayer', endpoint: `${app.settings.relayerUrl.replace(/\/+$/, '')}/v1/sweep`, signal, allowDirectOnce: true });
       try {
-        submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: services.fetchFn, onBeforeHandoff });
+        submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: relayerContext?.fetchFn ?? services.fetchFn, onBeforeHandoff });
       } catch (e) {
         // Only an explicit pre-broadcast refusal releases the lock; timeouts, 409 and 5xx stay unresolved until the
         // chain shows the order executed or expired.
@@ -219,6 +260,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       setHash(submitted);
+      recordSweepDestination(browserStorage(), chainId, dest, target.owner, ledgerUnchanged);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
       // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
       // relayer was answering; never overwrite anything but the lock this flow created.
@@ -240,9 +282,10 @@ export function Sweep(): ReactNode {
 
   /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
-    void guard(async (assertCurrent) => {
+    const ledgerUnchanged = captureDestinationLedgerGuard();
+    void guard(async (assertCurrent, signal) => {
       setDryRunSkipped(false);
-      const rpc = await app.getRpc(chainId);
+      const rpc = await app.getRpc(chainId, { action: 'sweep-submit', signal, allowDirectOnce: true });
       assertCurrent();
       await verified(rpc);
       assertCurrent();
@@ -268,6 +311,7 @@ export function Sweep(): ReactNode {
         throw e;
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
+      recordSweepDestination(browserStorage(), chainId, dest, target.owner, ledgerUnchanged);
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
@@ -297,28 +341,36 @@ export function Sweep(): ReactNode {
 
   const onCheckStatus = (): void => {
     if (attempt === undefined) return;
+    actionAbort.current?.abort();
+    const controller = new AbortController();
+    actionAbort.current = controller;
+    const current = (): boolean => !controller.signal.aborted && currentBalanceScope.current === balanceScope;
     setChecking(true);
     setCheckNote(undefined);
     void (async () => {
       try {
-        const rpc = await app.getRpc(attempt.chainId);
+        const rpc = await app.getRpc(attempt.chainId, { action: 'sweep-status', signal: controller.signal, allowDirectOnce: true });
+        if (!current()) return;
         if (rpc === undefined) {
           setCheckNote({ key: 'sweep.note.noRpc' });
           return;
         }
         const next = await reconcileSweepLock(rpc, attempt);
+        if (!current()) return;
         if (next.status === attempt.status) setCheckNote(pendingNote);
         else if (!resolveSweepAttempt(attempt, next)) setCheckNote({ key: 'sweep.note.lockChanged' });
         else if (attempt.status === 'submitted' && next.status === 'unknown-after-handoff') setCheckNote({ key: 'sweep.note.rpcForgot' });
       } catch (e) {
-        setCheckNote(e instanceof UserFacingError ? captureUserMessage(e) : { key: 'sweep.note.checkFailed' });
+        if (current()) setCheckNote(e instanceof UserFacingError ? captureUserMessage(e) : { key: 'sweep.note.checkFailed' });
       } finally {
-        setChecking(false);
+        if (actionAbort.current === controller) setChecking(false);
+        controller.abort();
       }
     })();
   };
 
   const cancelVaultCheck = (): void => {
+    actionAbort.current?.abort();
     authEpoch.current += 1;
     setVaultPass('');
     setError({ key: 'sweep.vaultCancelled' });
@@ -337,13 +389,12 @@ export function Sweep(): ReactNode {
         <dt>{t('sweep.balanceOnChain')}</dt>
         <dd>{balance === undefined ? t('sweep.balanceUnknown') : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
       </dl>
-      {balanceOnRequest && (
-        <Notice kind="warn">
-          {t('sweep.balanceRead.warning')}
-          <br />
-          <button type="button" className="btn" onClick={() => { setBalanceAsk((prev) => ({ key: balanceKey ?? '', n: prev !== undefined && prev.key === balanceKey ? prev.n + 1 : 1 })); }}>{t('sweep.balanceRead.button')}</button>
-        </Notice>
-      )}
+      <Notice kind="warn">
+        {t(privatePathRequired ? 'sweep.balanceRead.warning' : 'sweep.balanceRead.note')}
+        <p dir="ltr">{t('network.operationEndpoint', { endpoint: balanceRpcUrl ?? t('sweep.note.noRpc') })}</p>
+        <br />
+        <button type="button" className="btn" onClick={onReadBalance}>{t('sweep.balanceRead.button')}</button>
+      </Notice>
       <ManifestBanner manifest={manifest} />
       {manifest !== undefined && loaded === undefined && <Notice kind="warn">{t('sweep.noManifest')}</Notice>}
       {tokenAddr !== 'native' && tokenCfg === undefined && <Notice kind="error">{t('sweep.tokenNotAllowed')}</Notice>}
@@ -352,12 +403,14 @@ export function Sweep(): ReactNode {
       </Notice>
 
       <div className="stack">
+        <p dir="ltr">{t('network.operationEndpoint', { endpoint: mode === 'relayer' ? app.settings.relayerUrl : (balanceRpcUrl ?? t('sweep.note.noRpc')) })}</p>
         <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
         {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
           </Field>
         )}
+        {destWarning !== undefined && <Notice kind="warn">{t(destWarning === 'used' ? 'sweep.destination.used' : 'sweep.destination.knownWallet')}</Notice>}
         {vaultState === 'checking' && !vaultStepUp && <p role="status">{t('sweep.vaultChecking')}</p>}
         {vaultState === 'error' && !vaultStepUp && <Notice kind="error">{t('sweep.vaultError')}</Notice>}
         {loaded !== undefined && (
@@ -459,4 +512,6 @@ export function Sweep(): ReactNode {
   );
 }
 
-// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive
+// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceRead.button sweep.balanceRead.note sweep.balanceRead.warning sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive
+
+// i18n-use: sweep.destination.used sweep.destination.knownWallet

@@ -178,6 +178,7 @@ export async function createPagesInvoice(page: Page, baseURL: string, o: PagesIn
   await page.getByLabel('Token amount').fill('0.5');
   await page.getByLabel('Item 1 description').fill(o.description);
   await page.getByLabel('Item 1 unit price').fill('50.00');
+  await expect(page.getByRole('checkbox', { name: 'Encrypt line items and memo with a key included in the link', exact: true })).toBeChecked();
   if (o.expiryHours !== undefined) await page.getByLabel('Invoice valid for (hours)').fill(String(o.expiryHours));
   if (o.register === true) await page.getByRole('checkbox', { name: 'Register this invoice in my encrypted reconciliation vault for automatic local matching' }).check();
   await page.getByRole('button', { name: 'Create invoice link' }).click();

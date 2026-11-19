@@ -1,0 +1,7 @@
+import { createStealthExportApi } from '@ghostpay/ux-vault/portable';
+import { UserFacingError, displayMessage } from './errors';
+export type { StealthPublicRecord, StealthKeypairHeader, StealthMasterHeader, VerifiedStealthPayment, StealthExportScope, StealthExportFormat } from '@ghostpay/ux-vault/portable';
+/** The GUI keeps the same localized diagnostics over the shared, framework-independent spec 18 codec. */
+export const { STEALTH_EXPORT_FILENAMES, STEALTH_EXPORT_LIMITS, buildVerifiedPayment, serializePublicRecord, parsePublicRecord, encryptPaymentKeys, inspectPaymentKeys, decryptPaymentKeys, encryptMasterBackup, inspectMasterBackup, decryptMasterBackup, formatRawPrivateKey, detectStealthExportFormat } = createStealthExportApi(UserFacingError, displayMessage);
+
+// i18n-use: error.stealthExport.conflict error.stealthExport.duplicate error.stealthExport.invalidAnnouncement error.stealthExport.invalidChain error.stealthExport.invalidFile error.stealthExport.invalidRecord error.stealthExport.invalidScryptCost error.stealthExport.invalidTime error.stealthExport.keyDoesNotMatch error.stealthExport.masterKeysDoNotMatch error.stealthExport.mixedChains error.stealthExport.noWebCrypto error.stealthExport.scopeMismatch error.stealthExport.tooLarge error.stealthExport.tooMany error.stealthExport.unsupportedScheme error.stealthExport.unsupportedVersion error.stealthExport.wrongChain error.stealthExport.wrongPassphraseOrModified

@@ -1,0 +1,487 @@
+{
+  "runtime_base": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "published_runtime": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "reviewed_root_commit": "e033855b02736f28d6ac583582b984f1d973d4be",
+  "root_documentation_delta_path_count": 98,
+  "root_non_documentation_delta_paths": [],
+  "working_tree_changes_at_review": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/pages/README.md"
+  ],
+  "http_csp_document_sha256": "e5f9c0ff68be18d6806febf51acb3a2b89f652bdb1f8f163762f8d90d231888e",
+  "http_csp_diff": "diff --git a/docs/pages/README.md b/docs/pages/README.md\nindex b742fe12..d23f9621 100644\n--- a/docs/pages/README.md\n+++ b/docs/pages/README.md\n@@ -50,7 +50,7 @@ Details: [privacy limits](../user/privacy-limits.md), [receive and scan](../user\n ### Settings you must make yourself\n \n - **RPC URL per chain.** No provider is built in and no provider is substituted silently. Only `https://` and `wss://` URLs without a username, password or fragment are accepted. The app checks `eth_chainId` before use. A configured second RPC is used as a cross-check; if it cannot be opened the scan stops instead of continuing with one provider.\n-- **Your own node.** Settings includes an acknowledged own-node profile that restricts RPC dispatch to loopback or valid v3 onion endpoints. The check runs for each request and retry, including clients created before the setting changed. Local-proxy scanning also accepts `http://127.0.0.1`, `http://localhost` or `http://[::1]`. Tor Browser and own-node profiles remain explicitly unverified against their real target networks; local-server tests do not establish Tor routing or anonymity.\n+- **Your own node.** Settings includes an acknowledged own-node profile that restricts RPC dispatch to loopback or valid v3 onion endpoints. The check runs for each request and retry, including clients created before the setting changed. The local-proxy scan URL validator accepts `http://127.0.0.1`, `http://localhost` or `http://[::1]`, but the shipped CSP permits only `'self'`, HTTPS and WSS, and the build-time connection allowlist rejects HTTP. Cross-origin plain-HTTP loopback or onion URLs are therefore blocked by that policy. URL validation does not establish browser reachability. Tor Browser and own-node profiles remain explicitly unverified against their real target networks; local-server tests do not establish Tor routing or anonymity.\n - **Scan privacy.** A \"private path required\" setting (Tor Browser or a local proxy) blocks the scan when that path is not available instead of falling back to a direct connection.\n - **Idle lock.** After the configured idle time the app locks local tags and records, and clears seller keys from memory when they can be loaded again (encrypted storage, imported keys, or a downloaded backup that you verified). Keys that exist only in the tab, or whose only copy is a downloaded file you have not verified yet, are kept loaded and the app tells you to back them up or verify the backup. Wall-clock and monotonic deadlines cover device sleep and clock rollback; visibility and activity checks enforce expiration on return. Leaving with loaded keys and no verified backup requests the browser's navigation confirmation, subject to browser support.\n \n",
+  "objects": {
+    "apps": {
+      "e8c77e7e8699dd16b86b7a1ff90b834594d07105": "7610201b0cfc0096ecabbce57b5c5ece74499aec",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080": "7610201b0cfc0096ecabbce57b5c5ece74499aec",
+      "e033855b02736f28d6ac583582b984f1d973d4be": "7610201b0cfc0096ecabbce57b5c5ece74499aec"
+    },
+    "packages": {
+      "e8c77e7e8699dd16b86b7a1ff90b834594d07105": "39d1d82ef0f690e8d191b772909c91289f0aebc6",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080": "39d1d82ef0f690e8d191b772909c91289f0aebc6",
+      "e033855b02736f28d6ac583582b984f1d973d4be": "39d1d82ef0f690e8d191b772909c91289f0aebc6"
+    },
+    "scripts": {
+      "e8c77e7e8699dd16b86b7a1ff90b834594d07105": "c1b78ac481f8c8a0448818ae2e6171d3be51a815",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080": "c1b78ac481f8c8a0448818ae2e6171d3be51a815",
+      "e033855b02736f28d6ac583582b984f1d973d4be": "c1b78ac481f8c8a0448818ae2e6171d3be51a815"
+    },
+    ".github": {
+      "e8c77e7e8699dd16b86b7a1ff90b834594d07105": "77fcd55b47efc1a65364c0d9cfd9b3a430edd7ee",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080": "77fcd55b47efc1a65364c0d9cfd9b3a430edd7ee",
+      "e033855b02736f28d6ac583582b984f1d973d4be": "77fcd55b47efc1a65364c0d9cfd9b3a430edd7ee"
+    },
+    "package.json": {
+      "e8c77e7e8699dd16b86b7a1ff90b834594d07105": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "e033855b02736f28d6ac583582b984f1d973d4be": "12156705352eb7ddfaaab7b3190e60feefbb9f92"
+    },
+    "package-lock.json": {
+      "e8c77e7e8699dd16b86b7a1ff90b834594d07105": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "9bad95e5cc0ee73f5adb8d2c587161074b21e080": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "e033855b02736f28d6ac583582b984f1d973d4be": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef"
+    }
+  },
+  "npm_evidence": {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "aggregate_exit": 0,
+    "reported_workspaces": 68,
+    "expected_test_bearing_workspaces": 68,
+    "independent_raw_summary_totals": {
+      "passed": 12402,
+      "skipped": 79
+    },
+    "raw_log_sha256": "df758e1fd7d1a95be14c27d74370a5e8af406707db41d8eb95d6dc89f7660e17",
+    "raw_log_bytes": 260844,
+    "scope_note": "Executed test-case counts from one completed npm invocation, including Hardhat 46; not unique security properties or browser acceptance. 79 skipped cases remain skipped."
+  },
+  "build_artifacts": {
+    "pages-project": {
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "build_exit": 0,
+      "loopback_check_exit": 0,
+      "files_hashed_independently": 16,
+      "sha256sums_sha256": "e9d03e75ec6232af625cf1193a0978777a6f56f69927e1169b95493e95b5118f",
+      "declared_origin": "https://djshellshoxxx.github.io",
+      "shared_origin": true,
+      "http_base": "/GhostPay/",
+      "no_headers_file": true,
+      "no_source_maps": true,
+      "payments_enabled_chain_ids": [],
+      "module_chunks": 6,
+      "workers_in_report": 1,
+      "review_scope": "Independent artifact hash/membership/metadata inspection; actual loopback execution evidenced by worker record; no independent runtime/browser/hosted-origin execution."
+    },
+    "pages-dedicated": {
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "build_exit": 0,
+      "loopback_check_exit": 0,
+      "files_hashed_independently": 16,
+      "sha256sums_sha256": "ddcca5eda8cb44ea3f781df0e8483da28e50c9738cd91d472e81fe60ed75ec17",
+      "declared_origin": "https://ghostpay.example",
+      "shared_origin": false,
+      "http_base": "/",
+      "no_headers_file": true,
+      "no_source_maps": true,
+      "payments_enabled_chain_ids": [],
+      "module_chunks": 6,
+      "workers_in_report": 1,
+      "review_scope": "Independent artifact hash/membership/metadata inspection; actual loopback execution evidenced by worker record; no independent runtime/browser/hosted-origin execution."
+    },
+    "web-full": {
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "build_exit": 0,
+      "profile": "full",
+      "artifact_files": 19,
+      "file_hashes": {
+        "help.css": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+        "_headers": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08",
+        "index.html": "0b7385b19258b8c18f50461e3ea42dc2d4eef71226ce90e661f634ba08b4408c",
+        "help.html": "e7f425cb10df85d9508b67017cc63dadf05e006df4f4ca4f022a6ba0bdbc80a1",
+        "privacy.html": "e3259ed2a3146e392d30e03b15d74ff4e2b8cf969f44862379b891d5b933c017",
+        "ghostpay-embed-v1.js": "ad77f44216d452869e856a029d7b17cb31045ba0f28ec4859f5dc400ae3b84cd",
+        "build-info.json": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+        "favicon.svg": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+        "ghostpay-embed-v2.js": "ec302ad63d57348c3b7d6ea6be0975e8eea188364c80dc1cee4be8a8624ed7ab",
+        "assets/ar-BMomRXgm.js": "e55d9ef97c1d673903caedbf85ff0bc718a3e838eeae5ff29ea1572e17e9ed82",
+        "assets/scanner.worker-DKkGvTTt.js": "5649f2a7e434e9133ea7cba51819b2e15bccf2d6d821e62a76901f2a2a9eb345",
+        "assets/style-sbKVpGL7.css": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+        "assets/scan.worker-B3frbBfW.js": "36440893ca0ac6368131bc7ba1595f3734313ef1be2b13285736aea1c14894b6",
+        "assets/ja-BW1i_TO0.js": "0a92052f678e1d684507f2ce1994a1d86fded698e18e2f735cffa4e0fcc8621b",
+        "assets/rolldown-runtime-XKyaHtl9.js": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+        "assets/index-CZ8VftkM.js": "51f9557c55d74067ec0703f6ee7aafd7a2df27cfbadc70e398617a51bf6a17bc",
+        "assets/jsQR-DMfxOdIb.js": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869",
+        "assets/es-CgPPMZqP.js": "b211aad7c0bc33dd5bd4d1b34e9ad192cb16dda0bd308487cf21f36138f2081e",
+        "deployments/README.md": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+      },
+      "duration_seconds": 14.043
+    },
+    "web-lean": {
+      "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "build_exit": 0,
+      "profile": "lean",
+      "artifact_files": 17,
+      "file_hashes": {
+        "help.css": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+        "_headers": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08",
+        "index.html": "ea842978e060155a382c8abee751319d2bd3dba5f6791481839092b955c235a6",
+        "ghostpay-lean-build.json": "8e2933bbf1c0932501e9d5a86eb761b2197a47dabae44d10d681a2ca800a820b",
+        "help.html": "e7f425cb10df85d9508b67017cc63dadf05e006df4f4ca4f022a6ba0bdbc80a1",
+        "privacy.html": "e3259ed2a3146e392d30e03b15d74ff4e2b8cf969f44862379b891d5b933c017",
+        "build-info.json": "2256840b493eab359956613bdf05f587764667c54420bd20021988fc434a2bdd",
+        "favicon.svg": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+        "assets/ar-BMomRXgm.js": "e55d9ef97c1d673903caedbf85ff0bc718a3e838eeae5ff29ea1572e17e9ed82",
+        "assets/index-BewoRMZ0.js": "03c997f2edde997bb07ae6b864f41c4de2a2a2a26e316f4d4ac94b9dc1d84b06",
+        "assets/scanner.worker-DKkGvTTt.js": "5649f2a7e434e9133ea7cba51819b2e15bccf2d6d821e62a76901f2a2a9eb345",
+        "assets/style-sbKVpGL7.css": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+        "assets/ja-BW1i_TO0.js": "0a92052f678e1d684507f2ce1994a1d86fded698e18e2f735cffa4e0fcc8621b",
+        "assets/rolldown-runtime-XKyaHtl9.js": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+        "assets/jsQR-DMfxOdIb.js": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869",
+        "assets/es-CgPPMZqP.js": "b211aad7c0bc33dd5bd4d1b34e9ad192cb16dda0bd308487cf21f36138f2081e",
+        "deployments/README.md": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+      },
+      "duration_seconds": 14.441
+    }
+  },
+  "echidna_summary_inspected": {
+    "calls": [
+      300000,
+      300005,
+      300020
+    ],
+    "ordinary": 13,
+    "ordinary_passing": 13,
+    "canaries": 11,
+    "canaries_falsified": 11,
+    "slither_warnings": 3,
+    "unconfigured_rpc_errors": 10,
+    "log_sha256": "f3b4192d3295747cc0973adaa6df6e70f349e33cd90387c3875c2e0aefb16be7"
+  },
+  "release_artifact": {
+    "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "build_exit": 0,
+    "artifact_check_exit": 0,
+    "source_epoch": 1795012894,
+    "channel": "development",
+    "publication_status": "not-published",
+    "clean_source": true,
+    "tag": null,
+    "sha256": {
+      "ghostpay-web-qualification-9bad95e5.tar.gz": "3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1",
+      "sbom.cdx.json": "e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d",
+      "release-manifest.json": "5a8c345a094e048542b00c1adb0cbb9aae15c4194fb32af6e9162245fbab4213"
+    },
+    "bundle_files": 19,
+    "sbom_components_reported": 139,
+    "scope": "Independent metadata, hashes, membership and safe canonical archive paths; no archive extraction or execution; no independent SBOM dependency-completeness conclusion."
+  },
+  "build_evidence_index": {
+    "entries": 77,
+    "sha256": "0098780040faf3aa0151686113c019d3e4d6e8e7751cd619acbc4afa9620ffb2",
+    "all_hashes_and_sizes_match": true
+  },
+  "release_repro": {
+    "source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "record": "analysis-build/release-repro.json",
+    "exit": 0,
+    "seconds": 206.123,
+    "clean_clones": [
+      {
+        "clone": "/workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc/a-first/ghostpay",
+        "head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+        "tree": "81341de7972041b5f7ce53da76027846356fab90",
+        "source_status": "",
+        "artifact_hashes": {
+          "ghostpay-web-qualification-9bad95e5.tar.gz": "3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1",
+          "sbom.cdx.json": "e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d",
+          "release-manifest.json": "5a8c345a094e048542b00c1adb0cbb9aae15c4194fb32af6e9162245fbab4213",
+          "SHA256SUMS": "8a14d81516a5223c2ac87983272e864509f3c4e36fcedf901cf1c26886fc78fa"
+        }
+      },
+      {
+        "clone": "/workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc/b-second/nested/GhostPay-repro",
+        "head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+        "tree": "81341de7972041b5f7ce53da76027846356fab90",
+        "source_status": "",
+        "artifact_hashes": {
+          "ghostpay-web-qualification-9bad95e5.tar.gz": "3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1",
+          "sbom.cdx.json": "e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d",
+          "release-manifest.json": "5a8c345a094e048542b00c1adb0cbb9aae15c4194fb32af6e9162245fbab4213",
+          "SHA256SUMS": "8a14d81516a5223c2ac87983272e864509f3c4e36fcedf901cf1c26886fc78fa"
+        }
+      }
+    ],
+    "match_standalone": true,
+    "scope": "Two clean checkout paths on the same environment; no cross-platform or release-authorization claim."
+  },
+  "final_root_snapshot": {
+    "commit": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+    "non_documentation_delta_paths": [],
+    "documentation_delta_path_count": 109,
+    "working_tree_status": "",
+    "pages_readme_sha256": "072b0dbbadef61854456a30a5125ded5814980099ba244b75ca17aa7d7450db0"
+  },
+  "hosted_mythril_comparison": {
+    "source_commit": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "source_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44297673763/job/134778851902",
+    "report_hash_verified": true,
+    "reports": 5,
+    "findings": 11,
+    "matched_documented_location_tuples": 10,
+    "new_records": [
+      {
+        "contract": "PolicyAccountFactory",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "swc-id": "113",
+        "address": 999,
+        "severity": "Low",
+        "title": "Multiple Calls in a Single Transaction",
+        "filename": "src/PolicyAccountFactory.sol",
+        "lineno": 117,
+        "sourceMap": "6237:81:26::1",
+        "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+        "historical_location_match": null,
+        "classification": "NEW_RECORD_REQUIRES_EXPLICIT_DISPOSITION"
+      }
+    ],
+    "absent_historical_records": [
+      {
+        "contract": "PolicyAccountFactory",
+        "swc-id": "113",
+        "address": 1781,
+        "severity": "Low",
+        "historical_record": "R8"
+      }
+    ]
+  },
+  "review_completed_utc": "2026-11-18T15:35:26.456267+00:00",
+  "reviewed_final_root_commit": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+  "isolated_lint_final": {
+    "source": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+    "runtime_equivalent_to": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "npm run lint",
+    "node": "22.23.5",
+    "npm": "11.21.2",
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=2048"
+    },
+    "started_utc": "2026-11-18T15:23:36.403747+00:00",
+    "note": "Isolated required-gate retry after npm tests, Echidna and all build/repro processes completed; prior failures retained.",
+    "exitCode": 137,
+    "seconds": 185.58,
+    "log": "lint-isolated-2048.log",
+    "finished_utc": "2026-11-18T15:26:41.986216+00:00",
+    "log_size": 19833,
+    "log_sha256": "5b6bea4d44373e3c21e0044e822e52c4ec198fd82abb124f4a6451aaf7cf2db6",
+    "independent_review": "Result metadata and final raw-log failure inspected. Exit 137 in @ghostpay/web without a source diagnostic; the required lint gate remains blocked. No further retry performed."
+  },
+  "hosted_mythril_trace_counterevidence": {
+    "reviewer": "branch_archaeology",
+    "reviewed_utc": "2026-11-18T15:34:57.464963+00:00",
+    "scope": "Independent read-only raw JSON, ABI-word, runtime-template and source guard comparison; no compiler, EVM replay, analyzer, tests or Git mutation.",
+    "report_source": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "reviewed_local_source": "1656558a78f52a2251a3e84b1ce980741a6d46fc",
+    "raw_report_sha256": "40e9faf6e54b4e5f1e683cb07d6522eea55f5bff50fcf46eeb5395d615c932f7",
+    "cached_reports_verified_against_raw_offsets": true,
+    "constructor_abi_order_verified": true,
+    "factory_records": [
+      {
+        "factory_issue_index": 0,
+        "swc_id": "110",
+        "pc": 30,
+        "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 1,
+        "swc_id": "113",
+        "pc": 999,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 2,
+        "swc_id": "107",
+        "pc": 999,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 3,
+        "swc_id": "107",
+        "pc": 1170,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 4,
+        "swc_id": "113",
+        "pc": 1668,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 5,
+        "swc_id": "107",
+        "pc": 2887,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 6,
+        "swc_id": "107",
+        "pc": 2978,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      },
+      {
+        "factory_issue_index": 7,
+        "swc_id": "104",
+        "pc": 2978,
+        "contract": "PolicyAccountFactory",
+        "constructor_implementation": "0x0000000000000000000000000000000000000001",
+        "constructor_calldata_bytes": 4319,
+        "creation_bytes": 3807,
+        "creation_sha256": "5a6bfffabbad4f62ed3fd56737e65f43535766f8699cc02cc61460758ded3727",
+        "runtime_template_offset": 457,
+        "runtime_exact_occurrences": 1
+      }
+    ],
+    "existing_artifact": {
+      "path": "/workspace/scratch/4fa14be12559/GhostPay/packages/contracts/out/PolicyAccountFactory.sol/PolicyAccountFactory.json",
+      "sha256": "1a679417bb1364873e61ed6dd0049e47339a4f32d5ce30f4b475ebf01e98bfe0",
+      "runtime_template_bytes": 3296,
+      "runtime_template_sha256": "3f3d30fefbb3b607c579c355570273a86997ed3a60d197f6a78c369320ed1ac0",
+      "metadata": {
+        "bytecodeHash": "none",
+        "appendCBOR": false
+      },
+      "immutable_references": {
+        "58010": [
+          {
+            "start": 153,
+            "length": 32
+          },
+          {
+            "start": 716,
+            "length": 32
+          },
+          {
+            "start": 869,
+            "length": 32
+          },
+          {
+            "start": 1213,
+            "length": 32
+          }
+        ],
+        "58013": [
+          {
+            "start": 245,
+            "length": 32
+          },
+          {
+            "start": 1461,
+            "length": 32
+          }
+        ],
+        "58016": [
+          {
+            "start": 331,
+            "length": 32
+          },
+          {
+            "start": 809,
+            "length": 32
+          }
+        ],
+        "58019": [
+          {
+            "start": 389,
+            "length": 32
+          },
+          {
+            "start": 1601,
+            "length": 32
+          },
+          {
+            "start": 1850,
+            "length": 32
+          },
+          {
+            "start": 2060,
+            "length": 32
+          },
+          {
+            "start": 2354,
+            "length": 32
+          }
+        ]
+      },
+      "scope": "Metadata-free runtime template with unresolved immutable slots; not full initcode or a deployed instance comparison."
+    },
+    "new_swc113_pc999": {
+      "selector": "affdf337",
+      "input_bytes": 132,
+      "input_sha256": "e36f9f5077bb06cdb7aa9d8c6f4cbf3fa4f66e821b1014bafa24d3ae6f907d3b",
+      "two_inputs_identical": true,
+      "decoded_inputs": [
+        "0x0000000000000000000000400000000040000000",
+        "0x02ff000001000000000000000000400000000020",
+        3600,
+        "0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "same_target": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+      "same_value": "0x0",
+      "different_origins": [
+        "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "repeat_guard_limit": "After a successful first deployment, identical inputs resolve to the same CREATE2 address and are rejected by AlreadyDeployed before fee/initialize. Identical inputs alone do not show that the first call succeeded. A reverted first transaction preserves no successful clone deployment."
+    },
+    "ci_note_json": "/workspace/scratch/4fa14be12559/analysis-ci/HOSTED_MYTHRIL_REVIEW_20261118.json",
+    "ci_note_json_sha256": "db3af78d3a39870c4ac4ffac2e398853b4cc0c4b16d8d64b886c3e1378709ff1",
+    "agreement": "The decisive byte/input comparisons match the CI worker note.",
+    "classification": "The retained model constructor is rejected by the implementation code-length guard on the ordinary EVM precompile model; this is trace-specific counterevidence, not proof that every valid-constructor execution is safe.",
+    "remaining_conditions": [
+      "Analyzer gate remains failure/exit1 with eleven findings; no disposition approval, suppression or gate change.",
+      "Historical R8 absence is not remediation; new SWC-113 PC999 identity remains separate from R5 SWC-107.",
+      "Fixed fee-token view failure and unexpected successful-transfer deltas retain the real N1 conditional availability risk; owner deployment decisions remain."
+    ]
+  }
+}

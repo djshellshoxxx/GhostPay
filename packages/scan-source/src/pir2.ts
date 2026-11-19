@@ -27,6 +27,11 @@ export interface Pir2SourceOptions {
   /** Testing only: accept two servers of one operator (no privacy). */
   readonly allowSameOperatorNoPrivacy?: boolean;
   readonly schemeId?: bigint;
+  /**
+   * Must be `true` to create this source; defaults to OFF. `@ghostpay/pir-two-server` is a testnet research proof of
+   * concept (in-memory fakes only, no real operators, no UI): this flag is the explicit opt-in that says so.
+   */
+  readonly experimental?: boolean;
 }
 
 /**
@@ -39,10 +44,12 @@ export interface Pir2SourceOptions {
  * a lying server is detected and rejected, not corrected. Pages are public data; scanning stays local.
  * The mapping window -> pages is public (manifest page ranges), so the page SET reveals the window only to a
  * colluding pair. A window needing >= `pagesPerEpoch` pages throws `PIR_FAILED`: raise it or shrink the window.
- * @throws ScanSourceError `TESTNET_ONLY`, `PIR_INTEGRITY`, `PIR_FAILED`, `OUT_OF_RANGE`, `HEAD_MISMATCH`.
+ * Experimental research PoC, OFF unless `experimental: true`; nothing in the app offers it.
+ * @throws ScanSourceError `TESTNET_ONLY`, `INVALID_ARGUMENT` (without `experimental: true`), `PIR_INTEGRITY`, `PIR_FAILED`, `OUT_OF_RANGE`, `HEAD_MISMATCH`.
  */
 export function createPir2Source(o: Pir2SourceOptions): PublicLogSource {
   assertTestnetChainId(o.chainId);
+  requireArg(o.experimental === true, 'pir2 is an experimental research PoC: pass experimental: true to use it');
   const align = o.align ?? 1000;
   const minSpan = o.minSpan ?? 1000;
   const scheme = o.schemeId ?? 1n;

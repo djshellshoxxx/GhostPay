@@ -1,0 +1,59 @@
+{
+  "base_pr": 239,
+  "base_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+  "source_pr": 240,
+  "source_sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+  "method": "Selective runtime and regression port; original feature branches preserved",
+  "changed_source_sha256": {
+    "apps/web/e2e/stealth-export.spec.ts": "79a333bf027b58f2a5d38e626328545cf23f82c773d88ddec9979a75d05178e3",
+    "apps/web/e2e/stealthExportFixtures.ts": "9661d0539ff45183302e5d8f5d96e62a4c00458b2361012742bbd4774ed1d7b2",
+    "apps/web/e2e/sweep.spec.ts": "329d17fde46d81509a628c49e509111eeb6a8e11badec6bce9d52540e647c0a7",
+    "apps/web/src/AppShell.beforeUnload.test.tsx": "487031584d2c06b79c98341377dfbe90833cf2f674c76e82b1a2d7b5337d8004",
+    "apps/web/src/AppShell.tsx": "e36b1417ed2993effde8adeae583d135c151244fc07e84a2b967ef98fc65c02a",
+    "apps/web/src/components/StealthExportRecovery.test.tsx": "44f0967aa0f2c4d2cdd86362e1bd85cc18d259560253a4dee231f2a7e56f41e0",
+    "apps/web/src/components/StealthExportRecovery.tsx": "ec4205232e9962c7c19aa0f4d1bf198a86277c0a7a35c3a6b282c5d99b1cde61",
+    "apps/web/src/components/StealthExportVerification.test.tsx": "e878d889999c6093ea8c8b570016ac9d8ef40a0053ce93403b631c8e29d7e988",
+    "apps/web/src/components/StealthExportVerification.tsx": "b573653b4ccd53602ef56c19e16536df660b7f66c8d7603af7f64653a7d306c3",
+    "apps/web/src/views/SellerKeys.stealthExport.test.tsx": "636002fe853a5bb4574356bb3696d201eb1929b93c517bbbabb6ea75d95c1458"
+  },
+  "preserved_239_files": {
+    "apps/web/src/lib/session.ts": {
+      "matches_baseline": true,
+      "sha256": "354160c69316244de4276ccadfed57d08e4c3ec9560cdadadc69078dd80147c5"
+    },
+    "apps/web/src/lib/session.atomicity.test.ts": {
+      "matches_baseline": true,
+      "sha256": "587ec50765d7d05b675038929cb891b963da1a5d001763b21e28eb6485a0b441"
+    },
+    "apps/web/src/components/StealthExportDownload.test.tsx": {
+      "matches_baseline": true,
+      "sha256": "25dd0c3c6dddf4ce5934432221eae034087cc86cf2bb4a307b63fc77b759c45b"
+    },
+    "scripts/recovery/stealth-export-recover.mjs": {
+      "matches_baseline": true,
+      "sha256": "889c3b2cfb25b997d5304bbf4349a5b8d7444467a6ff12e4db4c872673d8c888"
+    },
+    "scripts/recovery/stealth-export-recover.test.mjs": {
+      "matches_baseline": true,
+      "sha256": "5fbd853079e67b63f5f48eb19d5a9e434c0243b8221555ef333307de9a999214"
+    },
+    "packages/ux-vault/src/stealth-export-portable.ts": {
+      "matches_baseline": true,
+      "sha256": "d0bad95bd056f18c0fc91e26558505fd116754e75d0ac1bb17fb41606622403f"
+    },
+    "apps/web/src/lib/paymentKeyExport.ts": {
+      "matches_baseline": true,
+      "sha256": "8af22a668291f5bfe6cba43b3992b0561d701fdd149070263db8a6fc824c9186"
+    },
+    "apps/web/src/components/StealthExportCommon.tsx": {
+      "matches_baseline": true,
+      "sha256": "2806b9c32c95a2faf127c00368c95307dd3c45ad5c54f12ad8766a3df10cdcd1"
+    }
+  },
+  "validation": {
+    "diff_check": "passed",
+    "native_file_bom_probe": "passed Node v24.22.3; 39 raw bytes became 36 decoded ASCII characters; byte-length guard rejects",
+    "unit_typecheck_lint_browser": "not executed; dependency installation terminated137",
+    "independent_combined_review": "pending"
+  }
+}

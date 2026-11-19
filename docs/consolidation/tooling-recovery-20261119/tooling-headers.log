@@ -1,0 +1,1 @@
+OK: proxy and meta headers match apps/web/public/_headers; embed routes send CORS/CORP; dotfiles are not served

@@ -1,0 +1,262 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/scanClient.test.ts (95 tests | 5 failed | 90 skipped) 1875ms
+   ❯ durable private scan discovery (5)
+     × awaits the atomic discovery journal before reporting a completed page 1182ms
+     × does not report successful progress when the journal transaction fails 286ms
+     × revalidates saved match blocks before advancing and deduplicates overlap 67ms
+     × keeps the old durable position when cancellation interrupts history revalidation 101ms
+     × rejects unbounded or invalid replay plans before dispatching RPC 233ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > awaits the atomic discovery journal before reporting a completed page
+AssertionError: expected "vi.fn()" to be called at least once
+ ❯ src/lib/scanClient.test.ts:109:51
+    107|     const task = scan(s, { onCheckpoint, onProgress: progress });
+    108|     try {
+    109|       await vi.waitFor(() => expect(onCheckpoint).toHaveBeenCalled());
+       |                                                   ^
+    110|       expect(progress).not.toHaveBeenCalled();
+    111|     } finally { release(); await task; }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > does not report successful progress when the journal transaction fails
+AssertionError: promise resolved "{ …(8) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "backlog": 0,
++   "cursor": {
++     "last": {
++       "hash": "0x00000000000000000000000000000000000000000000000000000000000009c4",
++       "number": 2500n,
++     },
++     "nextBlock": 2501n,
++   },
++   "discrepancies": [],
++   "limitReached": false,
++   "matches": [
++     {
++       "announcement": {
++         "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000078",
++         "blockNumber": 120n,
++         "caller": "0x1111111111111111111111111111111111111111",
++         "ephemeralPublicKey": "0x03243dd0e04d30c220663be7a7dd7e38650cf16c7ce853aeabfc2fd2ccadd4134f",
++         "id": "0x0000000000000000000000000000000000000000000000000000000000000078:100",
++         "logIndex": 100,
++         "metadata": "0xbca9059cbb036cbd53842c5426634e7929541ec2318f3dcf7e00000000000000000000000000000000000000000000000000000000000f4240",
++         "schemeId": 1n,
++         "stealthAddress": "0x7cEb52863CA218C546e11cf25fe96E0F02dECd58",
++         "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000078000",
++       },
++       "chainId": 84532,
++       "metadata": {
++         "kind": "erc20",
++         "netAmount": 1000000n,
++         "token": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
++         "viewTag": 188,
++       },
++       "receipt": "verified",
++       "stealthAddress": "0x7cEb52863CA218C546e11cf25fe96E0F02dECd58",
++       "tagMatches": true,
++       "viaRouter": true,
++     },
++     {
++       "announcement": {
++         "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000834",
++         "blockNumber": 2100n,
++         "caller": "0x9999999999999999999999999999999999999999",
++         "ephemeralPublicKey": "0x02426f820927a00c923ef84506613c4d9f8d9ba01c7ecc4d9917c3741f12fea9b3",
++         "id": "0x0000000000000000000000000000000000000000000000000000000000000834:103",
++         "logIndex": 103,
++         "metadata": "0x63a9059cbb036cbd53842c5426634e7929541ec2318f3dcf7e00000000000000000000000000000000000000000000000000000000000f4240",
++         "schemeId": 1n,
++         "stealthAddress": "0xaA8A51a3F936F101D0d20589C1578bB60175C60b",
++         "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000834003",
++       },
++       "chainId": 84532,
++       "metadata": {
++         "kind": "erc20",
++         "netAmount": 1000000n,
++         "token": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
++         "viewTag": 99,
++       },
++       "receipt": "claimed",
++       "stealthAddress": "0xaA8A51a3F936F101D0d20589C1578bB60175C60b",
++       "tagMatches": true,
++       "viaRouter": false,
++     },
++   ],
++   "routerOnlyBlocks": [],
++   "scanned": 3,
++   "telemetry": {
++     "anonymity": {
++       "count30d": 2,
++       "count7d": 2,
++       "level": "low",
++       "partial": false,
++     },
++     "open": 1,
++     "suspected": 0,
++     "trusted": 2,
++   },
+  }
+
+ ❯ src/lib/scanClient.test.ts:119:23
+    117|     const onProgress = vi.fn();
+    118|     const task = scan(s, { onProgress, onCheckpoint: () => Promise.rej…
+    119|     await expect(task).rejects.toThrow('durable-write-refused');
+       |                       ^
+    120|     expect(onProgress).not.toHaveBeenCalled();
+    121|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > revalidates saved match blocks before advancing and deduplicates overlap
+AssertionError: expected [ Array(1) ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
+-   "0xa60bAC7aE8d5263fF4dCc7d567a9Dc6C8595B3B2",
+    "0x87C40b88668Fc54fC1cA051CF8CC9d9475a6e5bB",
+  ]
+
+ ❯ src/lib/scanClient.test.ts:132:57
+    130|       onCheckpoint: async (cursor: ScanCursor, matches: readonly unkno…
+    131|     });
+    132|     expect(result.matches.map((m) => m.stealthAddress)).toEqual([s.min…
+       |                                                         ^
+    133|     expect(result.matches[0]?.receipt).toBe('verified');
+    134|     expect(new Set(result.matches.map((m) => m.announcement.id)).size)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > keeps the old durable position when cancellation interrupts history revalidation
+AssertionError: expected 2501n to be 2000n // Object.is equality
+
+- Expected
++ Received
+
+- 2000n
++ 2501n
+
+ ❯ src/lib/scanClient.test.ts:152:37
+    150|       onMatch: () => { ctl.abort(); },
+    151|     });
+    152|     expect(result.cursor.nextBlock).toBe(2000n);
+       |                                     ^
+    153|     expect(onCheckpoint).not.toHaveBeenCalled();
+    154|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/lib/scanClient.test.ts > durable private scan discovery > rejects unbounded or invalid replay plans before dispatching RPC
+AssertionError: promise resolved "{ …(8) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "backlog": 0,
++   "cursor": {
++     "last": {
++       "hash": "0x00000000000000000000000000000000000000000000000000000000000009c4",
++       "number": 2500n,
++     },
++     "nextBlock": 2501n,
++   },
++   "discrepancies": [],
++   "limitReached": false,
++   "matches": [
++     {
++       "announcement": {
++         "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000078",
++         "blockNumber": 120n,
++         "caller": "0x1111111111111111111111111111111111111111",
++         "ephemeralPublicKey": "0x02e04848a9c4bbc331f42c3afaf5983960be53e7ffdd7a46bbe3198cba7744890a",
++         "id": "0x0000000000000000000000000000000000000000000000000000000000000078:100",
++         "logIndex": 100,
++         "metadata": "0xd3a9059cbb036cbd53842c5426634e7929541ec2318f3dcf7e00000000000000000000000000000000000000000000000000000000000f4240",
++         "schemeId": 1n,
++         "stealthAddress": "0x6dFf6aa79F1763d24BDF1A34754De37b48A333E7",
++         "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000078000",
++       },
++       "chainId": 84532,
++       "metadata": {
++         "kind": "erc20",
++         "netAmount": 1000000n,
++         "token": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
++         "viewTag": 211,
++       },
++       "receipt": "verified",
++       "stealthAddress": "0x6dFf6aa79F1763d24BDF1A34754De37b48A333E7",
++       "tagMatches": true,
++       "viaRouter": true,
++     },
++     {
++       "announcement": {
++         "blockHash": "0x0000000000000000000000000000000000000000000000000000000000000834",
++         "blockNumber": 2100n,
++         "caller": "0x9999999999999999999999999999999999999999",
++         "ephemeralPublicKey": "0x02c2cb59ca095001c89e44cb37d680cdcd2edc1092da7c7c3d4b88a7aad30f86eb",
++         "id": "0x0000000000000000000000000000000000000000000000000000000000000834:103",
++         "logIndex": 103,
++         "metadata": "0x14a9059cbb036cbd53842c5426634e7929541ec2318f3dcf7e00000000000000000000000000000000000000000000000000000000000f4240",
++         "schemeId": 1n,
++         "stealthAddress": "0xfCd072310b3C77C53251490810F3190d2DA0bD56",
++         "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000834003",
++       },
++       "chainId": 84532,
++       "metadata": {
++         "kind": "erc20",
++         "netAmount": 1000000n,
++         "token": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
++         "viewTag": 20,
++       },
++       "receipt": "claimed",
++       "stealthAddress": "0xfCd072310b3C77C53251490810F3190d2DA0bD56",
++       "tagMatches": true,
++       "viaRouter": false,
++     },
++   ],
++   "routerOnlyBlocks": [],
++   "scanned": 3,
++   "telemetry": {
++     "anonymity": {
++       "count30d": 2,
++       "count7d": 2,
++       "level": "low",
++       "partial": false,
++     },
++     "open": 1,
++     "suspected": 0,
++     "trusted": 2,
++   },
+  }
+
+ ❯ src/lib/scanClient.test.ts:160:54
+    158|     for (const replayBlocks of [[-1n], [10_000_000_001n], Array<bigint…
+    159|       const client = chainWith(2500, s.logs);
+    160|       await expect(scan(s, { client, replayBlocks })).rejects.toThrow(…
+       |                                                      ^
+    161|       expect(client.calls).toEqual([]);
+    162|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 90 skipped (95)
+   Start at  21:57:48
+   Duration  9.81s (transform 50%, import 28%, tests 21%)

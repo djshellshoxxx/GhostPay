@@ -1,0 +1,4 @@
+Command: NODE_OPTIONS=--max-old-space-size=256 node --test --test-concurrency=1 scripts/tests/workflows.test.mjs scripts/tests/contract-analysis-workflow.test.mjs scripts/tests/workflow-files.test.mjs
+Working directory: /workspace/scratch/9b4050d15a9b/GhostPay-tooling-recovery
+Outcome: subprocess.TimeoutExpired after160seconds; process terminated; no terminal suite verdict. The orchestration script exited1.
+The exception child stdout was not saved by the initial harness. No test-count or product-failure inference is made from this timeout.

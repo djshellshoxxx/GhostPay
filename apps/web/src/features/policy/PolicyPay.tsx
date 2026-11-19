@@ -1,13 +1,13 @@
-import { useState, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { WalletAttempts } from '../../components/WalletAttempts';
 import { PostBroadcastError } from '../../lib/payExec';
-import { userMessage } from '../../lib/errors';
+import { UserFacingError, userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { useServices } from '../../lib/services';
 import { captureSessionVersionGuard } from '../../lib/session';
-import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
+import { assertPayeeTokenCoverage, preparePolicyPayment, type PreparedPolicyPayment } from './pay';
 import { PolicyAlreadyPaidError, reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
 import type { Hex } from '@ghostpay/policy-scheme';
 import type { PolicyCtx } from './PolicyView';
@@ -39,6 +39,11 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   const [broadcast, setBroadcast] = useState<readonly Hex[]>([]);
   // Terminal state after a broadcast whose checks failed (as Pay's 'submitted'): never offered again (M1).
   const [locked, setLocked] = useState(false);
+  // Policy records loaded in this tab, read again immediately before every wallet request (SEC-11): a record of the
+  // payee's policy imported after the review can still show that the asset could never be withdrawn.
+  const records = useRef(props.ctx.records);
+  // Publish committed authority before a pending wallet reply resumes; speculative renders must not change it.
+  useLayoutEffect(() => { records.current = props.ctx.records; }, [props.ctx.records]);
 
   const review = (): void => {
     setMsg(undefined);
@@ -50,10 +55,11 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
       const assertDeploymentCurrent = props.ctx.assertDeploymentCurrent;
       const assertCurrent = (): void => { assertSessionCurrent(); assertDeploymentCurrent(); };
       assertCurrent();
-      const p = preparePolicyPayment({ metaAddress: meta, deployment, token, gross: BigInt(amount.trim()), nowSec: BigInt(Math.floor(services.nowMs() / 1000)) });
-      setReviewed({ prepared: p, guard: { assertCurrent, deployment, reviewed: reviewPolicyPayment(p, deployment) } });
+      const p = preparePolicyPayment({ metaAddress: meta, deployment, token, gross: BigInt(amount.trim()), nowSec: BigInt(Math.floor(services.nowMs() / 1000)), knownRecords: records.current });
+      const assertReviewCurrent = (): void => { assertCurrent(); assertPayeeTokenCoverage(p.metaAddress, p.token, records.current); };
+      setReviewed({ prepared: p, guard: { assertCurrent: assertReviewCurrent, deployment, reviewed: reviewPolicyPayment(p, deployment) } });
     } catch (e) {
-      setMsg({ kind: 'error', text: e instanceof Error && e.message === 'amount' ? t('policy.pay.amountInvalid') : userMessage(e) });
+      setMsg({ kind: 'error', text: e instanceof Error && e.message === 'amount' ? t('policy.pay.amountInvalid') : userMessage(e, t) });
     }
   };
 
@@ -63,7 +69,8 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
     setMsg(undefined);
     setStatus(undefined);
     try {
-      const rpc = await app.getRpc(props.ctx.chain.chainId);
+      props.ctx.assertDeploymentCurrent();
+      const rpc = await app.getRpc(props.ctx.chain.chainId, { action: 'policy', ...(props.ctx.networkSignal === undefined ? {} : { signal: props.ctx.networkSignal }) });
       const res = await sendPolicyPayment(
         wallet,
         reviewed.prepared,
@@ -80,7 +87,9 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
         setReviewed(undefined);
         setLocked(true);
       }
-      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid', { hash: e.hash }) : userMessage(e) });
+      // The send-time coverage check refused before any wallet request: this review can never be sent.
+      if (e instanceof UserFacingError && e.translation?.key === 'policy.pay.tokenNotWithdrawable') setReviewed(undefined);
+      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid', { hash: e.hash }) : userMessage(e, t) });
     } finally {
       setBusy(false);
     }
@@ -112,6 +121,9 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
                 <dt>{t('policy.pay.payeeReceives')}</dt><dd>{prepared.built.net.toString()}</dd>
                 {prepared.approval !== undefined && (<><dt>{t('policy.pay.approvalFirst')}</dt><dd>{t('policy.pay.approveFor', { amount: amount.trim() })}</dd></>)}
               </dl>
+              {prepared.tokenCoverage === 'covered'
+                ? <Notice kind="info">{t('policy.pay.coverageChecked')}</Notice>
+                : <Notice kind="warn" title={t('policy.pay.coverageUnknownTitle')}>{t('policy.pay.coverageUnknown')}</Notice>}
               {wallet === undefined ? <Notice kind="info">{t('policy.pay.connectToSend')}</Notice> : (
                 <button type="button" disabled={busy} onClick={() => { void send(); }}>{t('policy.pay.send')}</button>
               )}

@@ -1,4 +1,4 @@
-import { decodeFunctionData } from 'viem/utils';
+import { decodeFunctionData, encodeFunctionData } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import {
   MAX_POLICY_ROUTER_GROSS,
@@ -103,5 +103,56 @@ describe('policy router calldata', () => {
     expect(code(() => decodePolicyPaymentCalldata(tampered, dep))).toBe('INVALID_INPUT');
     // FEE_BPS() is in the router ABI but is not a payment method.
     expect(code(() => decodePolicyPaymentCalldata('0xbf333f2c', dep))).toBe('INVALID_INPUT');
+  });
+});
+
+// Repro from the PR #218 dropped-fix triage (T-b85e0b59-3): checks of b85e0b59 lost in merge 84c2c185.
+describe('decodePolicyPaymentCalldata checks encoding, ephemeral key and metadata', () => {
+  const good = buildPolicyPaymentTx(base);
+  const args = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: good.tx.data }).args as unknown as unknown[];
+  // payERC20: [token, stealth, {owner, policyHash}, gross, minNet, deadline, eph, metadata]
+  const rebuild = (patch: Record<number, unknown>): `0x${string}` =>
+    encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: args.map((v, i) => (i in patch ? patch[i] : v)) as never });
+  const tag = good.metadata.slice(2, 4);
+  const mk = (token: string, net: bigint): string => `0x${tag}a9059cbb${token.slice(2).toLowerCase()}${net.toString(16).padStart(64, '0')}`;
+  const OTHER: Address = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+  it('accepts the calldata buildPolicyPaymentTx builds', () => {
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({}), dep))).toBe('no error');
+    expect(code(() => decodePolicyPaymentCalldata(good.tx.data.toUpperCase().replace('0X', '0x') as `0x${string}`, dep))).toBe('no error');
+    const permit = buildPolicyPaymentTx({ ...base, permitSignature: `0x${'11'.repeat(32)}${'22'.repeat(32)}1b` });
+    expect(decodePolicyPaymentCalldata(permit.tx.data, dep).metadata).toBe(permit.metadata);
+  });
+
+  it('rejects metadata that is not router metadata for this call', () => {
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: `0x${'ff'.repeat(57)}` }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: '0x00' }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk(OTHER, good.net) }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: mk(USDC, good.net + 1n) }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 7: `0x${tag}eeeeeeee${'ee'.repeat(20)}${good.net.toString(16).padStart(64, '0')}` }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 3: 0n, 7: mk(USDC, 1n) }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 3: MAX_POLICY_ROUTER_GROSS + 1n }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 4: good.net + 1n }), dep))).toBe('INVALID_INPUT');
+  });
+
+  it('rejects an ephemeral key that is not a compressed point', () => {
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x04${'11'.repeat(32)}` }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(rebuild({ 6: `0x02${'00'.repeat(32)}` }), dep))).toBe('INVALID_INPUT');
+  });
+
+  it('rejects trailing or non-canonical calldata', () => {
+    expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}00`, dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(`${good.tx.data}${'00'.repeat(32)}`, dep))).toBe('INVALID_INPUT');
+  });
+
+  it('native calldata: metadata must be native and not below minNet', () => {
+    const n = buildPolicyPaymentTx({ ...base, token: 'native', minNet: 1n });
+    const nArgs = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: n.tx.data }).args as unknown as unknown[];
+    // payNative: [stealth, {owner, policyHash}, minNet, deadline, eph, metadata]
+    const nRebuild = (patch: Record<number, unknown>): `0x${string}` =>
+      encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: nArgs.map((v, i) => (i in patch ? patch[i] : v)) as never });
+    expect(code(() => decodePolicyPaymentCalldata(nRebuild({}), dep))).toBe('no error');
+    expect(code(() => decodePolicyPaymentCalldata(nRebuild({ 5: mk(USDC, n.net) }), dep))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(nRebuild({ 2: n.net + 1n }), dep))).toBe('INVALID_INPUT');
   });
 });

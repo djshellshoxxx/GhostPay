@@ -1,0 +1,236 @@
+{
+  "candidate": "435c6e6bca463f83b6c55a2063f8c18c546c3c22",
+  "reviewed_blob_comparisons": [
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/config.ts",
+      "expected": "6800de3a2eca21495fea8d56ffdba9ef1ee34b5c",
+      "actual": "6800de3a2eca21495fea8d56ffdba9ef1ee34b5c",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/hardening.test.ts",
+      "expected": "fe8e316ad7684ebd84f4c199f8c75ff5c30cea49",
+      "actual": "fe8e316ad7684ebd84f4c199f8c75ff5c30cea49",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/lane.ts",
+      "expected": "ec73822ae52d7ea459db0ff07b609605e5cceebe",
+      "actual": "ec73822ae52d7ea459db0ff07b609605e5cceebe",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/log.ts",
+      "expected": "aebf834a9a76e1727515e17084a6dc533e173c44",
+      "actual": "aebf834a9a76e1727515e17084a6dc533e173c44",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/main.ts",
+      "expected": "817e8c27c8d197e681bbd5aed1471f2af543d9d7",
+      "actual": "817e8c27c8d197e681bbd5aed1471f2af543d9d7",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/server.ts",
+      "expected": "c99e9b66f88bc99b9b082c968c3023dbd7454a68",
+      "actual": "c99e9b66f88bc99b9b082c968c3023dbd7454a68",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/service.ts",
+      "expected": "a7b3dfb5fc01b7cf7b8e7f9bc9dc58c7bd17b3ef",
+      "actual": "a7b3dfb5fc01b7cf7b8e7f9bc9dc58c7bd17b3ef",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/relayer/src/validate.ts",
+      "expected": "5192ff6783dcfa91638cbdd928860abc1d3ba888",
+      "actual": "5192ff6783dcfa91638cbdd928860abc1d3ba888",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "expected": "005edbbed22ccd6a6fa11f490480c02ed77408a6",
+      "actual": "005edbbed22ccd6a6fa11f490480c02ed77408a6",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "packages/relayer-guard/src/limiter.abuse.test.ts",
+      "expected": "944162cb2dcea4f92ebadcba38956aacf1a17a0b",
+      "actual": "944162cb2dcea4f92ebadcba38956aacf1a17a0b",
+      "matches": true
+    },
+    {
+      "report": "runtime-independent-source-review.md",
+      "path": "packages/relayer-guard/src/limiter.ts",
+      "expected": "79cf96b346911d45bad68ca0ce0930043ba260ff",
+      "actual": "79cf96b346911d45bad68ca0ce0930043ba260ff",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "apps/web/src/features/policy/pay.selfcheck.test.ts",
+      "expected": "a719bc51a3a4cb227e20ddcdf7ccd0e650f8ab9d",
+      "actual": "a719bc51a3a4cb227e20ddcdf7ccd0e650f8ab9d",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "apps/web/src/features/policy/pay.ts",
+      "expected": "1da6869e3d9322004d29ede85ac20923f31d1777",
+      "actual": "1da6869e3d9322004d29ede85ac20923f31d1777",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "apps/web/src/features/policy/send.test.ts",
+      "expected": "aa1b08c198e72dc55854551183670d37061984b0",
+      "actual": "aa1b08c198e72dc55854551183670d37061984b0",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "apps/web/src/features/policy/send.ts",
+      "expected": "04ac08be009c2942b394f35975171325738ce12a",
+      "actual": "04ac08be009c2942b394f35975171325738ce12a",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/README.md",
+      "expected": "ac0576535fc4c0fec527d4b0d944761a5e4c5560",
+      "actual": "ac0576535fc4c0fec527d4b0d944761a5e4c5560",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/src/derive.ts",
+      "expected": "ce4be42c09dec5e77b34f185c2af717687143330",
+      "actual": "ce4be42c09dec5e77b34f185c2af717687143330",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/src/eip712.ts",
+      "expected": "2f7679ede1e91ad43690fbe3f6fbfc4ab65910d7",
+      "actual": "2f7679ede1e91ad43690fbe3f6fbfc4ab65910d7",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/src/limits.ts",
+      "expected": "2836251024e902ab3bbfd203b90f6ebacd42a9db",
+      "actual": "2836251024e902ab3bbfd203b90f6ebacd42a9db",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/src/negative.test.ts",
+      "expected": "2c165a79511ed3cec13f5aeb8d4c403aea64f14d",
+      "actual": "2c165a79511ed3cec13f5aeb8d4c403aea64f14d",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/src/router.test.ts",
+      "expected": "1dac985854f331b2d0c1887e7d87d874b9d47c3f",
+      "actual": "1dac985854f331b2d0c1887e7d87d874b9d47c3f",
+      "matches": true
+    },
+    {
+      "report": "policy-independent-source-review.md",
+      "path": "packages/policy-scheme/src/router.ts",
+      "expected": "35f20d3f07e02f42fac244552f4b50bce292402f",
+      "actual": "35f20d3f07e02f42fac244552f4b50bce292402f",
+      "matches": true
+    },
+    {
+      "report": "deployment-and-history-source-review.md",
+      "path": "packages/contracts/script/DeployPolicy.s.sol",
+      "expected": "c20b4f85726f3634d91be71372cdcafda778ce4b",
+      "actual": "c20b4f85726f3634d91be71372cdcafda778ce4b",
+      "matches": true
+    },
+    {
+      "report": "deployment-and-history-source-review.md",
+      "path": "packages/contracts/scripts/pre-deploy-check.sh",
+      "expected": "ab298293d420a1075e11908649108db18cf75ccb",
+      "actual": "ab298293d420a1075e11908649108db18cf75ccb",
+      "matches": true
+    },
+    {
+      "report": "deployment-and-history-source-review.md",
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "expected": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+      "actual": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+      "matches": true
+    },
+    {
+      "report": "deployment-and-history-source-review.md",
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "expected": "2d631ed4a13c2794805ddf7162de75264bb5918c",
+      "actual": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "matches": false
+    },
+    {
+      "report": "deployment-and-history-source-review.md",
+      "path": "packages/tron-adapter/src/rpc.ts",
+      "expected": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "actual": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "matches": true
+    },
+    {
+      "report": "recovery-independent-source-review.md",
+      "path": "apps/web/src/AppShell.tsx",
+      "expected": "e813f712cc6e13e8a3f39fdbcf24e80fd27e4a03",
+      "actual": "e813f712cc6e13e8a3f39fdbcf24e80fd27e4a03",
+      "matches": true
+    },
+    {
+      "report": "recovery-independent-source-review.md",
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "expected": "fda705e782c147702ebcbac125ddb30ffee94910",
+      "actual": "fda705e782c147702ebcbac125ddb30ffee94910",
+      "matches": true
+    },
+    {
+      "report": "recovery-independent-source-review.md",
+      "path": "apps/web/src/components/StealthExportVerification.tsx",
+      "expected": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8",
+      "actual": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8",
+      "matches": true
+    },
+    {
+      "report": "CodeQL implementation",
+      "path": "packages/pir-two-server/src/client.ts",
+      "expected": "3f465628e6a5d08d746d187ab9e26bae737d77e0",
+      "actual": "3f465628e6a5d08d746d187ab9e26bae737d77e0",
+      "matches": true
+    },
+    {
+      "report": "CodeQL implementation",
+      "path": "packages/pir-two-server/src/client.test.ts",
+      "expected": "b36e5714e7c5172d47d9522d7a2f030b9f715108",
+      "actual": "b36e5714e7c5172d47d9522d7a2f030b9f715108",
+      "matches": true
+    },
+    {
+      "report": "CodeQL implementation",
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "expected": "a517d7727e109a822a8c004ad589392b106086c6",
+      "actual": "a517d7727e109a822a8c004ad589392b106086c6",
+      "matches": true
+    }
+  ]
+}

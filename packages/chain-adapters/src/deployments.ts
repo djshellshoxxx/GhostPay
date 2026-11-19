@@ -69,7 +69,14 @@ function b32(v: unknown, path: string): Hex {
 }
 
 function isRealDate(s: string): boolean {
-  return RFC3339.test(s) && !Number.isNaN(Date.parse(s));
+  if (!RFC3339.test(s) || Number.isNaN(Date.parse(s))) return false;
+  // Date.parse rolls impossible days over (2026-02-30 -> 2026-03-02): require a real calendar day.
+  const y = Number(s.slice(0, 4));
+  const mo = Number(s.slice(5, 7));
+  const d = Number(s.slice(8, 10));
+  const probe = new Date(Date.UTC(2000, mo - 1, d));
+  probe.setUTCFullYear(y);
+  return probe.getUTCFullYear() === y && probe.getUTCMonth() === mo - 1 && probe.getUTCDate() === d;
 }
 
 /**

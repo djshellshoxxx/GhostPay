@@ -1,0 +1,413 @@
+﻿2026-11-18T23:52:11.6279070Z Current runner version: '2.338.2'
+2026-11-18T23:52:11.6300520Z ##[group]Runner Image Provisioner
+2026-11-18T23:52:11.6301217Z Hosted Compute Agent
+2026-11-18T23:52:11.6301776Z Version: 20261103.629
+2026-11-18T23:52:11.6302305Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-18T23:52:11.6303125Z Build Date: 2026-11-03T17:26:59Z
+2026-11-18T23:52:11.6303822Z Worker ID: {9da29b9d-16b4-4ab5-9f03-454a39555763}
+2026-11-18T23:52:11.6304391Z Region: westus3
+2026-11-18T23:52:11.6304874Z Cloud: Azure
+2026-11-18T23:52:11.6305320Z ##[endgroup]
+2026-11-18T23:52:11.6306703Z ##[group]Operating System
+2026-11-18T23:52:11.6307307Z Ubuntu
+2026-11-18T23:52:11.6307743Z 26.04.1
+2026-11-18T23:52:11.6308195Z LTS
+2026-11-18T23:52:11.6308633Z ##[endgroup]
+2026-11-18T23:52:11.6309120Z ##[group]Runner Image
+2026-11-18T23:52:11.6309723Z Image: ubuntu-26.04
+2026-11-18T23:52:11.6310192Z Version: 20261111.196.1
+2026-11-18T23:52:11.6311252Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261111.196/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-18T23:52:11.6312461Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261111.196
+2026-11-18T23:52:11.6313441Z ##[endgroup]
+2026-11-18T23:52:11.6314337Z ##[group]GITHUB_TOKEN Permissions
+2026-11-18T23:52:11.6315934Z Contents: read
+2026-11-18T23:52:11.6316414Z Metadata: read
+2026-11-18T23:52:11.6316957Z ##[endgroup]
+2026-11-18T23:52:11.6318776Z Secret source: Actions
+2026-11-18T23:52:11.6319602Z Cache mode: write
+2026-11-18T23:52:11.6320176Z Prepare workflow directory
+2026-11-18T23:52:11.6602381Z Prepare all required actions
+2026-11-18T23:52:11.6642095Z Getting action download info
+2026-11-18T23:52:11.9765358Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-18T23:52:12.1487977Z Download action repository 'foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf' (SHA:dba66c27052e63476d886f22216e119ba7e615bf)
+2026-11-18T23:52:13.4655457Z Complete job name: ts-test (core-crypto)
+2026-11-18T23:52:13.5514847Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-11-18T23:52:13.5516394Z with:
+2026-11-18T23:52:13.5517146Z   persist-credentials: false
+2026-11-18T23:52:13.5518071Z   repository: djshellshoxxx/GhostPay
+2026-11-18T23:52:13.5526435Z   token: ***
+2026-11-18T23:52:13.5527191Z   ssh-strict: true
+2026-11-18T23:52:13.5527977Z   ssh-user: git
+2026-11-18T23:52:13.5528714Z   clean: true
+2026-11-18T23:52:13.5529499Z   sparse-checkout-cone-mode: true
+2026-11-18T23:52:13.5530425Z   fetch-depth: 1
+2026-11-18T23:52:13.5531210Z   fetch-tags: false
+2026-11-18T23:52:13.5531993Z   show-progress: true
+2026-11-18T23:52:13.5532883Z   lfs: false
+2026-11-18T23:52:13.5533626Z   submodules: false
+2026-11-18T23:52:13.5534428Z   set-safe-directory: true
+2026-11-18T23:52:13.5535331Z   allow-unsafe-pr-checkout: false
+2026-11-18T23:52:13.5536549Z ##[endgroup]
+2026-11-18T23:52:13.8947574Z Syncing repository: djshellshoxxx/GhostPay
+2026-11-18T23:52:13.8950881Z ##[group]Getting Git version info
+2026-11-18T23:52:13.8952475Z Working directory is '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:52:13.8955022Z [command]/usr/bin/git version
+2026-11-18T23:52:13.8960910Z git version 2.56.1
+2026-11-18T23:52:13.8978848Z ##[endgroup]
+2026-11-18T23:52:13.8990164Z Temporarily overriding HOME='/home/runner/work/_temp/3c55b220-eeef-493f-94e0-f4b16fda21e0' before making global git config changes
+2026-11-18T23:52:13.8993319Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:52:13.8995880Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:52:13.9094102Z Deleting the contents of '/home/runner/work/GhostPay/GhostPay'
+2026-11-18T23:52:13.9096741Z ##[group]Determining repository object format
+2026-11-18T23:52:13.9098859Z ##[endgroup]
+2026-11-18T23:52:13.9100349Z ##[group]Initializing the repository
+2026-11-18T23:52:13.9101825Z [command]/usr/bin/git init /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:52:13.9650423Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-18T23:52:13.9653075Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-18T23:52:13.9655145Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-18T23:52:13.9656989Z hint: call:
+2026-11-18T23:52:13.9657956Z hint:
+2026-11-18T23:52:13.9659069Z hint: 	git config --global init.defaultBranch <name>
+2026-11-18T23:52:13.9660352Z hint:
+2026-11-18T23:52:13.9661881Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-18T23:52:13.9664291Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-18T23:52:13.9665592Z hint:
+2026-11-18T23:52:13.9666345Z hint: 	git branch -m <name>
+2026-11-18T23:52:13.9667180Z hint:
+2026-11-18T23:52:13.9668552Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-18T23:52:13.9670656Z Initialized empty Git repository in /home/runner/work/GhostPay/GhostPay/.git/
+2026-11-18T23:52:13.9674082Z [command]/usr/bin/git remote add origin https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:52:13.9898957Z ##[endgroup]
+2026-11-18T23:52:13.9900598Z ##[group]Disabling automatic garbage collection
+2026-11-18T23:52:13.9901810Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-18T23:52:13.9933311Z ##[endgroup]
+2026-11-18T23:52:13.9934881Z ##[group]Setting up auth
+2026-11-18T23:52:13.9935910Z Removing SSH command configuration
+2026-11-18T23:52:13.9937596Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:52:13.9964948Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:52:14.1006181Z Removing HTTP extra header
+2026-11-18T23:52:14.1010811Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:52:14.1041014Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:52:14.1275134Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:52:14.1279353Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:52:14.1308028Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:52:14.1538694Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-18T23:52:14.1578006Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path /home/runner/work/_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:14.1608125Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:14.1640279Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:14.1667648Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:14.1694547Z ##[endgroup]
+2026-11-18T23:52:14.1696820Z ##[group]Fetching the repository
+2026-11-18T23:52:14.1699618Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +24bc65f525ec9f19a670e6e5600b071c03edbd56:refs/remotes/pull/239/merge
+2026-11-18T23:52:15.1885795Z From https://github.com/djshellshoxxx/GhostPay
+2026-11-18T23:52:15.1887966Z  * [new ref]         24bc65f525ec9f19a670e6e5600b071c03edbd56 -> pull/239/merge
+2026-11-18T23:52:15.1890775Z ##[endgroup]
+2026-11-18T23:52:15.1891325Z ##[group]Determining the checkout info
+2026-11-18T23:52:15.1891951Z ##[endgroup]
+2026-11-18T23:52:15.1893720Z [command]/usr/bin/git sparse-checkout disable
+2026-11-18T23:52:15.1952215Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-18T23:52:15.1982152Z ##[group]Checking out the ref
+2026-11-18T23:52:15.1985268Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/239/merge
+2026-11-18T23:52:15.4466607Z Note: switching to 'refs/remotes/pull/239/merge'.
+2026-11-18T23:52:15.4467047Z 
+2026-11-18T23:52:15.4467520Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-18T23:52:15.4468359Z changes and commit them, and you can discard any commits you make in this
+2026-11-18T23:52:15.4469096Z state without impacting any branches by switching back to a branch.
+2026-11-18T23:52:15.4469491Z 
+2026-11-18T23:52:15.4469747Z If you want to create a new branch to retain commits you create, you may
+2026-11-18T23:52:15.4470248Z do so (now or later) by using -c with the switch command. Example:
+2026-11-18T23:52:15.4470551Z 
+2026-11-18T23:52:15.4470753Z   git switch -c <new-branch-name>
+2026-11-18T23:52:15.4470973Z 
+2026-11-18T23:52:15.4471168Z Or undo this operation with:
+2026-11-18T23:52:15.4471345Z 
+2026-11-18T23:52:15.4471539Z   git switch -
+2026-11-18T23:52:15.4471774Z 
+2026-11-18T23:52:15.4472019Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-18T23:52:15.4472349Z 
+2026-11-18T23:52:15.4472975Z HEAD is now at 24bc65f Merge 07a7497d1a0cb39fb6904e5c50f8a52db2285820 into 198aa5baff22272453733a0f3dcfcac0e0994eec
+2026-11-18T23:52:15.4486628Z ##[endgroup]
+2026-11-18T23:52:15.4533361Z [command]/usr/bin/git log -1 --format=%H
+2026-11-18T23:52:15.4557430Z 24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:15.4564757Z ##[group]Removing auth
+2026-11-18T23:52:15.4565566Z Removing SSH command configuration
+2026-11-18T23:52:15.4567419Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:52:15.4594844Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:52:15.4832820Z Removing HTTP extra header
+2026-11-18T23:52:15.4835164Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:52:15.4862781Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:52:15.5114749Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:52:15.5117766Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:52:15.5142315Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:52:15.5143369Z includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:52:15.5144455Z includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:52:15.5145006Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:52:15.5151246Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path
+2026-11-18T23:52:15.5172353Z /home/runner/work/_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:15.5183365Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-2d5e18a9\-0890\-4400\-959e\-9ea58ad9b9e7\.config
+2026-11-18T23:52:15.5217148Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path
+2026-11-18T23:52:15.5237636Z /home/runner/work/_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:15.5249321Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/GhostPay/GhostPay/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-2d5e18a9\-0890\-4400\-959e\-9ea58ad9b9e7\.config
+2026-11-18T23:52:15.5278811Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-18T23:52:15.5298584Z /github/runner_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:15.5304993Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-2d5e18a9\-0890\-4400\-959e\-9ea58ad9b9e7\.config
+2026-11-18T23:52:15.5335915Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-18T23:52:15.5356472Z /github/runner_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config
+2026-11-18T23:52:15.5364084Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-2d5e18a9\-0890\-4400\-959e\-9ea58ad9b9e7\.config
+2026-11-18T23:52:15.5395056Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:52:15.5630148Z Removing credentials config '/home/runner/work/_temp/git-credentials-2d5e18a9-0890-4400-959e-9ea58ad9b9e7.config'
+2026-11-18T23:52:15.5638538Z ##[endgroup]
+2026-11-18T23:52:15.5940432Z Prepare all required actions
+2026-11-18T23:52:15.5941113Z Getting action download info
+2026-11-18T23:52:15.7345423Z Download action repository 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1' (SHA:949feb2413d6458794dcd2491c4babbbce0c15c1)
+2026-11-18T23:52:15.8159944Z Download action repository 'actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-11-18T23:52:15.9465892Z ##[group]Run ./.github/actions/setup-node-libs
+2026-11-18T23:52:15.9466141Z with:
+2026-11-18T23:52:15.9466302Z   save-cache: true
+2026-11-18T23:52:15.9466474Z ##[endgroup]
+2026-11-18T23:52:15.9513368Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__self.__actions_setup-node]
+2026-11-18T23:52:15.9584663Z ##[group]Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+2026-11-18T23:52:15.9584961Z with:
+2026-11-18T23:52:15.9585130Z   node-version: 22
+2026-11-18T23:52:15.9585302Z   cache: npm
+2026-11-18T23:52:15.9585536Z   package-manager-cache: true
+2026-11-18T23:52:15.9585739Z   check-latest: false
+2026-11-18T23:52:15.9587766Z   token: ***
+2026-11-18T23:52:15.9587933Z ##[endgroup]
+2026-11-18T23:52:16.2757327Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-18T23:52:16.4066687Z ##[group]Environment details
+2026-11-18T23:52:16.9975259Z node: v22.23.4
+2026-11-18T23:52:16.9975559Z npm: 10.9.9
+2026-11-18T23:52:16.9975782Z yarn: 1.22.22
+2026-11-18T23:52:16.9976296Z ##[endgroup]
+2026-11-18T23:52:16.9989958Z [command]/opt/hostedtoolcache/node/22.23.4/x64/bin/npm config get cache
+2026-11-18T23:52:17.1242691Z /home/runner/.npm
+2026-11-18T23:52:17.3401828Z Cache hit for: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:52:18.5729774Z Received 50331648 of 247554651 (20.3%), 48.0 MBs/sec
+2026-11-18T23:52:19.5744122Z Received 226583131 of 247554651 (91.5%), 108.0 MBs/sec
+2026-11-18T23:52:19.7456217Z Received 247554651 of 247554651 (100.0%), 108.6 MBs/sec
+2026-11-18T23:52:19.7456669Z Cache Size: ~236 MB (247554651 B)
+2026-11-18T23:52:19.7553998Z [command]/usr/bin/tar -xf /home/runner/work/_temp/50687cba-e596-4b0b-a795-235f864a4b0e/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:52:20.1579298Z Cache restored successfully
+2026-11-18T23:52:20.1688362Z Cache restored from key: node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c
+2026-11-18T23:52:20.1836927Z ##[end-action id=__self.__actions_setup-node;outcome=success;conclusion=success;duration_ms=4232]
+2026-11-18T23:52:20.1839810Z ##[start-action display=Run npm ci --ignore-scripts;id=__self.__run]
+2026-11-18T23:52:20.2671022Z ##[group]Run npm ci --ignore-scripts
+2026-11-18T23:52:20.2671459Z [36;1mnpm ci --ignore-scripts[0m
+2026-11-18T23:52:20.2790341Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-18T23:52:20.2790662Z ##[endgroup]
+2026-11-18T23:52:24.8801882Z npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+2026-11-18T23:52:27.4791079Z npm warn deprecated @zama-fhe/relayer-sdk@0.4.1: This package is deprecated, use @zama-fhe/sdk instead
+2026-11-18T23:52:30.8603812Z 
+2026-11-18T23:52:30.8604602Z added 721 packages, and audited 790 packages in 10s
+2026-11-18T23:52:30.8604871Z 
+2026-11-18T23:52:30.8605020Z 157 packages are looking for funding
+2026-11-18T23:52:30.8794892Z   run `npm fund` for details
+2026-11-18T23:52:30.8795170Z 
+2026-11-18T23:52:30.8795443Z 17 low severity vulnerabilities
+2026-11-18T23:52:30.8795759Z 
+2026-11-18T23:52:30.8795946Z To address issues that do not require attention, run:
+2026-11-18T23:52:30.8796232Z   npm audit fix
+2026-11-18T23:52:30.8796353Z 
+2026-11-18T23:52:30.8796577Z To address all issues possible (including breaking changes), run:
+2026-11-18T23:52:30.8796892Z   npm audit fix --force
+2026-11-18T23:52:30.8797035Z 
+2026-11-18T23:52:30.8797192Z Some issues need review, and may require choosing
+2026-11-18T23:52:30.8797978Z a different dependency.
+2026-11-18T23:52:30.8798100Z 
+2026-11-18T23:52:30.8798207Z Run `npm audit` for details.
+2026-11-18T23:52:30.9852021Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=10801]
+2026-11-18T23:52:30.9854720Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs]
+2026-11-18T23:52:31.6038234Z ##[group]Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+2026-11-18T23:52:31.6038579Z with:
+2026-11-18T23:52:31.6038761Z   path: packages/*/dist
+2026-11-18T23:52:31.6039125Z   key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:52:31.6039510Z   enableCrossOsArchive: false
+2026-11-18T23:52:31.6039728Z   fail-on-cache-miss: false
+2026-11-18T23:52:31.6039927Z   lookup-only: false
+2026-11-18T23:52:31.6040117Z   save-always: false
+2026-11-18T23:52:31.6040296Z ##[endgroup]
+2026-11-18T23:52:31.9205122Z Cache hit for: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:52:32.8616449Z Received 2029151 of 2029151 (100.0%), 2.7 MBs/sec
+2026-11-18T23:52:32.8616921Z Cache Size: ~2 MB (2029151 B)
+2026-11-18T23:52:32.8635778Z [command]/usr/bin/tar -xf /home/runner/work/_temp/66e9aeff-9441-45fb-97bf-7ae8e31240d2/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:52:32.9271681Z Cache restored successfully
+2026-11-18T23:52:32.9394981Z Cache restored from key: libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2
+2026-11-18T23:52:32.9475672Z ##[end-action id=__self.libs;outcome=success;conclusion=success;duration_ms=1962]
+2026-11-18T23:52:32.9480333Z ##[start-action display=Run actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__self.libs-restore]
+2026-11-18T23:52:32.9488741Z ##[end-action id=__self.libs-restore;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:52:32.9490417Z ##[start-action display=Run npm run build:libs;id=__self.__run_2]
+2026-11-18T23:52:32.9495626Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-18T23:52:32.9543953Z ##[group]Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
+2026-11-18T23:52:32.9544298Z with:
+2026-11-18T23:52:32.9544485Z   version: v1.8.5
+2026-11-18T23:52:32.9544672Z   network: ethereum
+2026-11-18T23:52:32.9544849Z   cache: true
+2026-11-18T23:52:32.9545091Z   cache-key: ts-test-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:32.9545546Z   cache-restore-keys: ts-test-
+2026-11-18T23:52:32.9545763Z ##[endgroup]
+2026-11-18T23:52:33.0590675Z Installing Foundry (version: v1.8.5)
+2026-11-18T23:52:33.0594373Z Downloading foundryup installer from foundry-rs/foundryup@a27902ef04dcb43061fabf343365cb5afc95fc48...
+2026-11-18T23:52:33.1184402Z Running foundryup installer...
+2026-11-18T23:52:33.9779969Z Running: foundryup --install 1.8.5
+2026-11-18T23:52:36.6126702Z Added /home/runner/.foundry/bin to PATH
+2026-11-18T23:52:36.6128752Z Primary key: linux-foundry-chain-fork-ts-test-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:36.6133828Z Restore keys: linux-foundry-chain-fork-ts-test-
+2026-11-18T23:52:36.8135417Z Cache hit for restore-key: linux-foundry-chain-fork-ts-test-relayer-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:37.2640829Z Received 26213 of 26213 (100.0%), 0.1 MBs/sec
+2026-11-18T23:52:37.2641324Z Cache Size: ~0 MB (26213 B)
+2026-11-18T23:52:37.2663377Z [command]/usr/bin/tar -xf /home/runner/work/_temp/a0ac2ad6-579f-461b-8d75-8f387d702387/cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --use-compress-program unzstd
+2026-11-18T23:52:37.2712972Z Cache restored successfully
+2026-11-18T23:52:37.2716226Z Cache restored from key: linux-foundry-chain-fork-ts-test-relayer-24bc65f525ec9f19a670e6e5600b071c03edbd56
+2026-11-18T23:52:37.2716932Z Running: forge --version
+2026-11-18T23:52:37.2775366Z forge Version: 1.8.5
+2026-11-18T23:52:37.2775857Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:37.2776470Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:37.2776960Z Build Profile: dist
+2026-11-18T23:52:37.2781483Z Running: cast --version
+2026-11-18T23:52:37.2868104Z cast Version: 1.8.5
+2026-11-18T23:52:37.2868556Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:37.2869029Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:37.2869334Z Build Profile: dist
+2026-11-18T23:52:37.2875599Z Running: anvil --version
+2026-11-18T23:52:37.2910557Z anvil Version: 1.8.5
+2026-11-18T23:52:37.2911021Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:37.2911508Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:37.2911824Z Build Profile: dist
+2026-11-18T23:52:37.2913926Z Running: chisel --version
+2026-11-18T23:52:37.2947805Z chisel Version: 1.8.5
+2026-11-18T23:52:37.2948282Z Commit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f
+2026-11-18T23:52:37.2948784Z Build Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)
+2026-11-18T23:52:37.2949095Z Build Profile: dist
+2026-11-18T23:52:37.3518806Z ##[group]Run set -euo pipefail
+2026-11-18T23:52:37.3519260Z [36;1mset -euo pipefail[0m
+2026-11-18T23:52:37.3519588Z [36;1mcase "$GROUP" in[0m
+2026-11-18T23:52:37.3519995Z [36;1m  core-crypto) npm test -w packages/core-crypto ;;[0m
+2026-11-18T23:52:37.3520603Z [36;1m  btc-silent-payments) npm test -w packages/btc-silent-payments ;;[0m
+2026-11-18T23:52:37.3521124Z [36;1m  web)[0m
+2026-11-18T23:52:37.3521423Z [36;1m    anvil_bin="$(command -v anvil)"[0m
+2026-11-18T23:52:37.3521836Z [36;1m    solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"[0m
+2026-11-18T23:52:37.3522218Z [36;1m    test -x "$anvil_bin"[0m
+2026-11-18T23:52:37.3522694Z [36;1m    test -x "$solc_bin"[0m
+2026-11-18T23:52:37.3523211Z [36;1m    ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test -w apps/web[0m
+2026-11-18T23:52:37.3523747Z [36;1m    ;;[0m
+2026-11-18T23:52:37.3524022Z [36;1m  confidential-contracts)[0m
+2026-11-18T23:52:37.3524397Z [36;1m    anvil_bin="$(command -v anvil)"[0m
+2026-11-18T23:52:37.3524811Z [36;1m    test -x "$anvil_bin"[0m
+2026-11-18T23:52:37.3525275Z [36;1m    ANVIL_BIN="$anvil_bin" npm test -w packages/confidential-contracts[0m
+2026-11-18T23:52:37.3525751Z [36;1m    ;;[0m
+2026-11-18T23:52:37.3526010Z [36;1m  rest-*)[0m
+2026-11-18T23:52:37.3526302Z [36;1m    shard="${GROUP#rest-}"[0m
+2026-11-18T23:52:37.3526632Z [36;1m    args=()[0m
+2026-11-18T23:52:37.3527185Z [36;1m    while IFS= read -r w; do args+=(-w "$w"); done < <([0m
+2026-11-18T23:52:37.3527692Z [36;1m      npm query '.workspace' | jq -r '.[].location' | sort \[0m
+2026-11-18T23:52:37.3528560Z [36;1m        | grep -vxE 'packages/core-crypto|packages/btc-silent-payments|packages/confidential-contracts|apps/web|apps/relayer' \[0m
+2026-11-18T23:52:37.3529304Z [36;1m        | awk -v shard="$shard" '(NR - 1) % 3 == shard'[0m
+2026-11-18T23:52:37.3529640Z [36;1m    )[0m
+2026-11-18T23:52:37.3529886Z [36;1m    echo "$GROUP: ${args[*]}"[0m
+2026-11-18T23:52:37.3530185Z [36;1m    anvil_args=()[0m
+2026-11-18T23:52:37.3530453Z [36;1m    other_args=()[0m
+2026-11-18T23:52:37.3530734Z [36;1m    needs_contract_artifacts=false[0m
+2026-11-18T23:52:37.3531080Z [36;1m    for ((i = 0; i < ${#args[@]}; i += 2)); do[0m
+2026-11-18T23:52:37.3531422Z [36;1m      workspace="${args[$((i + 1))]}"[0m
+2026-11-18T23:52:37.3531960Z [36;1m      if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" ]]; then[0m
+2026-11-18T23:52:37.3532704Z [36;1m        needs_contract_artifacts=true[0m
+2026-11-18T23:52:37.3533092Z [36;1m        anvil_args+=(-w "$workspace")[0m
+2026-11-18T23:52:37.3533469Z [36;1m      else[0m
+2026-11-18T23:52:37.3533769Z [36;1m        other_args+=(-w "$workspace")[0m
+2026-11-18T23:52:37.3534122Z [36;1m      fi[0m
+2026-11-18T23:52:37.3534374Z [36;1m    done[0m
+2026-11-18T23:52:37.3534712Z [36;1m    if [[ "$needs_contract_artifacts" == true ]]; then[0m
+2026-11-18T23:52:37.3535171Z [36;1m      (cd packages/contracts && forge build)[0m
+2026-11-18T23:52:37.3535687Z [36;1m      anvil_bin="$(command -v anvil)"[0m
+2026-11-18T23:52:37.3536133Z [36;1m      solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"[0m
+2026-11-18T23:52:37.3536517Z [36;1m      test -x "$anvil_bin"[0m
+2026-11-18T23:52:37.3536858Z [36;1m      test -x "$solc_bin"[0m
+2026-11-18T23:52:37.3537449Z [36;1m      ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test "${anvil_args[@]}" --if-present[0m
+2026-11-18T23:52:37.3538060Z [36;1m    fi[0m
+2026-11-18T23:52:37.3538485Z [36;1m    if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi[0m
+2026-11-18T23:52:37.3538996Z [36;1m    if [ "$shard" = 0 ]; then[0m
+2026-11-18T23:52:37.3539782Z [36;1m      node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs scripts/recovery/*.test.mjs[0m
+2026-11-18T23:52:37.3540654Z [36;1m    fi[0m
+2026-11-18T23:52:37.3540918Z [36;1m    ;;[0m
+2026-11-18T23:52:37.3541166Z [36;1mesac[0m
+2026-11-18T23:52:37.3588230Z shell: /usr/bin/bash -e {0}
+2026-11-18T23:52:37.3588458Z env:
+2026-11-18T23:52:37.3588633Z   GROUP: core-crypto
+2026-11-18T23:52:37.3588854Z ##[endgroup]
+2026-11-18T23:52:37.5851070Z 
+2026-11-18T23:52:37.5851682Z > @ghostpay/core-crypto@0.1.0 test
+2026-11-18T23:52:37.5852055Z > vitest run --coverage
+2026-11-18T23:52:37.5852196Z 
+2026-11-18T23:52:37.9019513Z 
+2026-11-18T23:52:37.9023112Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/GhostPay/GhostPay/packages/core-crypto[39m
+2026-11-18T23:52:37.9024046Z       [2mCoverage enabled with [22m[33mv8[39m
+2026-11-18T23:52:37.9024333Z 
+2026-11-18T23:52:38.4945033Z  [32m✓[39m src/hash-edge.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 141[2mms[22m[39m
+2026-11-18T23:52:38.5174351Z  [32m✓[39m src/negative.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 162[2mms[22m[39m
+2026-11-18T23:52:38.9443640Z  [32m✓[39m src/secrets.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+2026-11-18T23:52:39.3014718Z  [32m✓[39m src/metadata.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+2026-11-18T23:52:43.3353207Z  [32m✓[39m src/properties.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 3699[2mms[22m[39m
+2026-11-18T23:52:43.3354322Z    [32m✓[39m properties [2m(4)[22m
+2026-11-18T23:52:43.3355635Z      [33m[2m✓[22m[39m sender-derived address == recipient-derived address, and the derived secret maps to it[33m 2605[2mms[22m[39m
+2026-11-18T23:52:43.3357347Z      [33m[2m✓[22m[39m a wrong view tag never matches and derive-secret refuses it[33m 825[2mms[22m[39m
+2026-11-18T23:52:43.8877962Z  [32m✓[39m src/vectors.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 242[2mms[22m[39m
+2026-11-18T23:52:44.2974632Z  [32m✓[39m src/secret.builtinHex.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 83[2mms[22m[39m
+2026-11-18T23:52:44.6414780Z  [32m✓[39m src/viewing-key-boundary.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 85[2mms[22m[39m
+2026-11-18T23:52:55.9913529Z  [32m✓[39m src/independent.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 17543[2mms[22m[39m
+2026-11-18T23:52:55.9914394Z    [32m✓[39m differential: package vs bigint reference on 150 random key sets [2m(1)[22m
+2026-11-18T23:52:55.9915077Z      [33m[2m✓[22m[39m sender derivation, recipient check and stealth key agree byte for byte[33m 13661[2mms[22m[39m
+2026-11-18T23:52:55.9915763Z    [32m✓[39m point decoding: package acceptance == SEC1 reference acceptance [2m(2)[22m
+2026-11-18T23:52:55.9916371Z      [33m[2m✓[22m[39m 2000 random 33-byte strings with 02/03 prefix[33m 519[2mms[22m[39m
+2026-11-18T23:52:55.9916850Z    [32m✓[39m spec negatives (EIP-5564 scheme 1) [2m(5)[22m
+2026-11-18T23:52:55.9917672Z      [33m[2m✓[22m[39m every one of the 255 wrong view tags is rejected early; ignoreViewTag still finds it with tagMatches=false[33m 2738[2mms[22m[39m
+2026-11-18T23:53:17.3608251Z  [32m✓[39m src/differential.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 37948[2mms[22m[39m
+2026-11-18T23:53:17.3609006Z    [32m✓[39m differential: @scopelift/stealth-address-sdk 1.0.0-beta.5 and pure-noble reference [2m(1)[22m
+2026-11-18T23:53:17.3609771Z      [33m[2m✓[22m[39m matches on 500 random key sets x 2 payments (address, tag, check, stealth key)[33m 37946[2mms[22m[39m
+2026-11-18T23:53:17.4104197Z 
+2026-11-18T23:53:17.4108184Z [2m Test Files [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+2026-11-18T23:53:17.4108995Z [2m      Tests [22m [1m[32m76 passed[39m[22m[90m (76)[39m
+2026-11-18T23:53:17.4109569Z [2m   Start at [22m 23:52:37
+2026-11-18T23:53:17.4112962Z [2m   Duration [22m 39.50s[2m (tests 95%, import 4%, transform 1%)[22m
+2026-11-18T23:53:17.4121178Z 
+2026-11-18T23:53:17.4136263Z [34m % [39m[2mCoverage report from [22m[33mv8[39m
+2026-11-18T23:53:17.4152736Z -------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:53:17.4153466Z File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+2026-11-18T23:53:17.4154116Z -------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:53:17.4157342Z All files    |    98.5 |    98.16 |     100 |   98.21 |                   
+2026-11-18T23:53:17.4158714Z  errors.ts   |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:53:17.4159255Z  hex.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:53:17.4159968Z  keys.ts     |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:53:17.4161141Z  metadata.ts |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:53:17.4161739Z  rng.ts      |     100 |      100 |     100 |     100 |                   
+2026-11-18T23:53:17.4162792Z  secret.ts   |   97.14 |      100 |     100 |   96.77 | 36                
+2026-11-18T23:53:17.4163859Z  stealth.ts  |   97.22 |    94.73 |     100 |   96.61 | 169,185           
+2026-11-18T23:53:17.4164512Z -------------|---------|----------|---------|---------|-------------------
+2026-11-18T23:53:17.4564982Z Post job cleanup.
+2026-11-18T23:53:17.5753171Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/GhostPay/GhostPay --files-from manifest.txt --use-compress-program zstdmt
+2026-11-18T23:53:17.7750388Z Failed to save: Unable to reserve cache with key linux-foundry-chain-fork-ts-test-24bc65f525ec9f19a670e6e5600b071c03edbd56, another job may be creating this cache.
+2026-11-18T23:53:17.7874046Z Post job cleanup.
+2026-11-18T23:53:17.7877532Z ##[start-action display=Run actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae;id=__65be6a39-a646-4d9d-af77-9dcdfe1bd990.libs]
+2026-11-18T23:53:18.3979405Z Post job cleanup.
+2026-11-18T23:53:18.5017693Z Cache hit occurred on the primary key libs-Linux-node22-50aefb07baf9055e028d9c44c92f85cfbd2f6ea9b7000ff464807148fe7701e2, not saving cache.
+2026-11-18T23:53:18.5079898Z ##[end-action id=__65be6a39-a646-4d9d-af77-9dcdfe1bd990.libs;outcome=success;conclusion=success;duration_ms=720]
+2026-11-18T23:53:18.5083686Z ##[start-action display=Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1;id=__65be6a39-a646-4d9d-af77-9dcdfe1bd990.__actions_setup-node]
+2026-11-18T23:53:18.5139076Z Post job cleanup.
+2026-11-18T23:53:18.6041939Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-507c7413db376a0b7cea2f27a36ee0e5c0e5ac46d46bb42dad9117da2dcbf56c, not saving cache.
+2026-11-18T23:53:18.6102355Z ##[end-action id=__65be6a39-a646-4d9d-af77-9dcdfe1bd990.__actions_setup-node;outcome=success;conclusion=success;duration_ms=101]
+2026-11-18T23:53:18.6161104Z Post job cleanup.
+2026-11-18T23:53:18.6863367Z [command]/usr/bin/git version
+2026-11-18T23:53:18.6904486Z git version 2.56.1
+2026-11-18T23:53:18.6938935Z Temporarily overriding HOME='/home/runner/work/_temp/0f24ffdf-59a8-4959-a85f-c147ca8c6b4e' before making global git config changes
+2026-11-18T23:53:18.6940381Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-18T23:53:18.6943050Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/GhostPay/GhostPay
+2026-11-18T23:53:18.6974952Z Removing SSH command configuration
+2026-11-18T23:53:18.6980408Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-18T23:53:18.7015743Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-18T23:53:18.7278202Z Removing HTTP extra header
+2026-11-18T23:53:18.7283368Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-18T23:53:18.7318868Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-18T23:53:18.7577746Z Removing includeIf entries pointing to credentials config files
+2026-11-18T23:53:18.7583070Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-18T23:53:18.7612226Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-18T23:53:18.7994931Z Cleaning up orphan processes

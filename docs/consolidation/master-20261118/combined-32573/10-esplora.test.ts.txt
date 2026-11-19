@@ -1,0 +1,47 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/btc/esplora.test.ts > normalizeEsploraUrl > accepts https and loopback http, trims trailing slashes 12ms
+ ✓ src/features/btc/esplora.test.ts > normalizeEsploraUrl > refuses plain http to remote hosts, credentials, query, fragment, junk 2ms
+ ✓ src/features/btc/esplora.test.ts > network table > has mainnet disabled and every test network enabled 11ms
+ ✓ src/features/btc/esplora.test.ts > network table > rejects a bad seed 1ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > reads tip, hashes, pages and spent state 744ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > broadcasts raw hex and validates the txid answer 2ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > fails closed on transport errors, aborts and malformed data 274ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > rejects malformed transactions 14ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > encodes witnesses of any size (compact size boundaries) 4ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > recomputes txids like an independent implementation and rejects edited transaction content 57ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > requests exactly the pages a block has, also when its last page is full (electrs answers 400 past the end) 17ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > reads blocks of more than 10,000 transactions in full and refuses an impossible transaction count unread 1171ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > stops reading a block as soon as its transactions weigh more than a valid block can (4,000,000 weight units) 326ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > weighs witness bytes at a quarter (BIP-141), so a block heavy with witness data is read 746ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > counts the header and the transaction count in the block weight: exactly 4,000,000 is read, more is refused 1013ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > refuses a spent output script longer than a valid block can spend (10,000 bytes, consensus MAX_SCRIPT_SIZE) 5ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > reads at most 64 MiB of pages for one block: light transactions padded through their spent outputs are refused 2357ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > shares the 64 MiB between all pages of a block, whatever their bytes hold: exactly that is read, a byte more is not 1312ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > refuses a block summary or pages that disagree with the transaction count 14ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > sends no credentials, referrer or cached answer, refuses redirects and always sets a deadline 3ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > gives up at the deadline, also on a stalled body, and reports a user cancel as cancelled 47ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > caps the response size while the body streams 330ms
+ ✓ src/features/btc/esplora.test.ts > EsploraClient > checks the genesis hash and always refuses mainnet 152ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > derives tweaks locally, skips coinbase, and caches per block 154ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > retries a block after a failed fetch and bounds its cache 338ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > skips transactions whose inputs cannot yield a tweak 153ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > refuses witness data the coinbase does not commit to (BIP-141), even when every txid still matches 571ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > finds the payment, reports spent outputs, and finds nothing for another wallet 892ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > binds scanned data to a proof-of-work header: omitted, injected, edited or unlinked blocks are refused 1575ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > scans a block whose transaction count is a multiple of 25 313ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > says exactly what links the scanned blocks: an unanchored first block with an invented payment is accepted 770ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > validates the range 118ms
+ ✓ src/features/btc/esplora.test.ts > EsploraTweakSource and scanning > stops quietly when aborted 124ms
+ ✓ src/features/btc/esplora.test.ts > local spend data and broadcast rejections > retains committed spends from a valid input that is ineligible for a BIP-352 tweak 97ms
+ ✓ src/features/btc/esplora.test.ts > local spend data and broadcast rejections > rejects an uncommitted coinbase flag that would hide a real spending transaction 148ms
+ ✓ src/features/btc/esplora.test.ts > local spend data and broadcast rejections > does not dispatch an outpoint query when its consent session was already aborted 132ms
+ ✓ src/features/btc/esplora.test.ts > local spend data and broadcast rejections > rejects output indices outside the committed uint32 range before disclosing an outpoint 136ms
+ ✓ src/features/btc/esplora.test.ts > local spend data and broadcast rejections > reports the spends of a block from the transactions it already downloaded, coinbase excluded, with no extra request 145ms
+ ✓ src/features/btc/esplora.test.ts > local spend data and broadcast rejections > a broadcast refused by the server (HTTP 4xx) carries its status, while other failures stay plain transport failures 133ms
+
+ Test Files  1 passed (1)
+      Tests  39 passed (39)
+   Start at  00:08:03
+   Duration  17.07s (tests 86%, import 9%, transform 5%)

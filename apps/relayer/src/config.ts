@@ -23,6 +23,8 @@ import { ConfigError, type Env } from './secrets.js';
 export const DEV_CHAIN_ID = 31337;
 /** Spec ceiling for the sweep deadline window. */
 export const MAX_DEADLINE_WINDOW_SECONDS = 1800;
+/** Server-wide concurrent connection cap (`server.maxConnections`); also the upper bound of `server.maxConnectionsPerIp`. */
+export const MAX_CONNECTIONS = 1024;
 
 /** Resolved per-chain settings. */
 export interface ChainRuntimeConfig {
@@ -45,6 +47,27 @@ export interface ChainRuntimeConfig {
   readonly manifest?: DeploymentManifest;
 }
 
+/**
+ * How clients reach the listener.
+ * - `direct`: clients connect to the listener; `trustedProxies` must be empty.
+ * - `trusted-proxy`: a reverse proxy in `trustedProxies` sets `X-Forwarded-For`.
+ * - `onion`: a local Tor onion service forwards to a loopback listener. Every client then arrives from loopback, so
+ *   `X-Forwarded-For` (which a Tor client can set freely) is never honoured and the per-IP limits act as one shared
+ *   onion budget. Not tested against a real Tor in this repository (deploy/TOR.md).
+ */
+export type IngressMode = 'direct' | 'trusted-proxy' | 'onion';
+/** Default `optional`: unpadded and padded bodies are accepted; `required` refuses unpadded ones (after the transition). */
+export type BodyPaddingMode = 'optional' | 'required';
+
+/** Resolved `privacy` block. */
+export interface RelayerPrivacyConfig {
+  /** Drop per-request log lines and request ids (default false). IPs and destinations are never logged either way. */
+  readonly zeroLog: boolean;
+  readonly ingress: IngressMode;
+  /** MH-REL-3 `pad` member handling (default `optional`, the documented transition). */
+  readonly bodyPadding: BodyPaddingMode;
+}
+
 /** Resolved relayer configuration. */
 export interface RelayerConfig {
   readonly host: string;
@@ -53,6 +76,11 @@ export interface RelayerConfig {
   readonly allowInsecureLocalhostRpc: boolean;
   /** Addresses or CIDR blocks of reverse proxies whose `X-Forwarded-For` is honoured (empty: ignore the header). */
   readonly trustedProxies: readonly string[];
+  /**
+   * Privacy switches (`privacy` in the file; apps/relayer/PRIVACY.md). Optional here so programmatic configs keep
+   * working; {@link parseConfig} always sets it. Absent means the defaults below.
+   */
+  readonly privacy?: RelayerPrivacyConfig;
   readonly allowFeeToHotKey: boolean;
   /** `griefReserveBps`: spec 04 griefing margin added to the gas term of the sponsor fee (default 0, operator-tuned). */
   readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number; readonly griefReserveBps?: number };
@@ -101,7 +129,16 @@ export interface RelayerConfig {
   readonly alertWebhookAllowedHosts?: readonly string[];
   /** HMAC secret for signed alert payloads. */
   readonly alertWebhookSecret?: string;
-  readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
+  /**
+   * TCP front end. `maxConnectionsPerIp` caps the concurrent connections of one peer (IPv4 address, IPv6 /64) under the
+   * server-wide {@link MAX_CONNECTIONS}; peers in `trustedProxies` are exempt (S3-18).
+   */
+  readonly server: { readonly maxConnectionsPerIp: number };
+  /**
+   * `maxPending`: sweeps queued or in flight per chain. `maxPerClient`: of those (plus the ones still in admission), how
+   * many one client network bucket may hold at once (RL-02, `429 client_queue_full`).
+   */
+  readonly queue: { readonly maxPending: number; readonly maxPerClient: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   /**
    * Absolute path of the restart-safe state journal (`state.file`); `undefined` for `state.ephemeral`, where a restart
@@ -120,6 +157,14 @@ export interface ConfigContext {
   readonly readManifest: (chainId: number) => string | undefined;
   /** Compressed secp256k1 release public keys; manifests fail closed without a matching key. */
   readonly releaseKeys?: readonly string[] | undefined;
+}
+
+/**
+ * Default `queue.maxPerClient`: a quarter of the queue, at least 2 (an honest client may retry while one sweep is in
+ * flight), never above the queue itself.
+ */
+export function defaultMaxPerClient(maxPending: number): number {
+  return Math.min(maxPending, Math.max(2, Math.ceil(maxPending / 4)));
 }
 
 function bad(path: string, why: string): never {
@@ -280,6 +325,10 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   if (feeTo === ctx.hotKeyAddress && !allowFeeToHotKey) return bad(`${path}.feeTo`, 'must differ from the hot key unless allowFeeToHotKey is enabled');
   const feeToNumber = BigInt(feeTo);
   if (feeToNumber === 0n || (feeToNumber >= 1n && feeToNumber <= 10n)) return bad(`${path}.feeTo`, 'must not be the zero or a precompile address');
+  // R07-2: the web client refuses every quote whose feeTo is not the signed manifest's fee recipient, so a relayer with
+  // another feeTo would start cleanly and serve nothing. Refuse at load instead.
+  if (manifest !== undefined && manifest.feeRecipient.toLowerCase() !== feeTo.toLowerCase())
+    return bad(`${path}.feeTo`, 'differs from the deployment manifest feeRecipient (clients refuse such quotes)');
 
   if ((c['rpcUrl'] === undefined) === (c['rpcUrlEnv'] === undefined)) return bad(path, 'set exactly one of rpcUrl and rpcUrlEnv');
   const envName = c['rpcUrlEnv'];
@@ -436,7 +485,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     raw,
     '$',
     ['allowedOrigins', 'chains'],
-    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
+    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'server', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state', 'privacy'],
   );
   const stateFile = parseState(o['state'], ctx);
   const listen = sub(o, 'listen', '$', ['host', 'port']);
@@ -450,7 +499,9 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
   const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
-  const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
+  const sv = sub(o, 'server', '$', ['maxConnectionsPerIp']);
+  const q = sub(o, 'queue', '$', ['maxPending', 'maxPerClient', 'receiptTimeoutSeconds']);
+  const maxPending = numberOr(q, 'maxPending', 'queue', 16, 1, 1024);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
   const allowFeeToHotKey = boolOr(o, 'allowFeeToHotKey', '$', false);
@@ -461,12 +512,15 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   if (new Set(chains.map((c) => c.chainId)).size !== chains.length) return bad('chains', 'duplicate chainId');
 
   const windowSize = numberOr(br, 'windowSize', 'breaker', 20, 2, 1000);
+  const trustedProxies = parseTrustedProxies(o['trustedProxies']);
+  const privacy = parsePrivacy(o, host, trustedProxies);
   return {
     host,
     port: numberOr(listen, 'port', 'listen', 8787, 0, 65535),
     allowedOrigins: parseOrigins(o['allowedOrigins']),
     allowInsecureLocalhostRpc,
-    trustedProxies: parseTrustedProxies(o['trustedProxies']),
+    trustedProxies,
+    privacy,
     allowFeeToHotKey,
     gas: {
       coverPercent: numberOr(ga, 'coverPercent', 'gas', 100, 1, 300),
@@ -504,14 +558,41 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       maxKeys: numberOr(lb, 'maxKeys', 'lossBudget', 10_000, 16, 1_000_000),
     },
     ...optionalSecrets(o, ctx),
+    server: { maxConnectionsPerIp: numberOr(sv, 'maxConnectionsPerIp', 'server', 64, 1, MAX_CONNECTIONS) },
     queue: {
-      maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
+      maxPending,
+      maxPerClient: numberOr(q, 'maxPerClient', 'queue', defaultMaxPerClient(maxPending), 1, maxPending),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
     },
     shutdownGraceSeconds: numberOr(o, 'shutdownGraceSeconds', '$', 15, 1, 300),
     ...(stateFile === undefined ? {} : { stateFile }),
     chains,
   };
+}
+
+const LOOPBACK_HOSTS: ReadonlySet<string> = new Set(['127.0.0.1', '::1', 'localhost']);
+
+/**
+ * `privacy`: `{ zeroLog?, ingress?, bodyPadding? }`. The ingress default follows `trustedProxies` so existing
+ * configs keep their meaning; an explicit mode must agree with it.
+ */
+function parsePrivacy(o: JsonObject, host: string, trustedProxies: readonly string[]): RelayerPrivacyConfig {
+  const p = sub(o, 'privacy', '$', ['zeroLog', 'ingress', 'bodyPadding']);
+  const zeroLog = boolOr(p, 'zeroLog', 'privacy', false);
+  const rawIngress = p['ingress'] === undefined ? (trustedProxies.length > 0 ? 'trusted-proxy' : 'direct') : p['ingress'];
+  if (rawIngress !== 'direct' && rawIngress !== 'trusted-proxy' && rawIngress !== 'onion') {
+    return bad('privacy.ingress', 'must be direct, trusted-proxy or onion');
+  }
+  if (rawIngress === 'direct' && trustedProxies.length > 0) return bad('privacy.ingress', 'direct needs an empty trustedProxies');
+  if (rawIngress === 'trusted-proxy' && trustedProxies.length === 0) return bad('privacy.ingress', 'trusted-proxy needs trustedProxies');
+  if (rawIngress === 'onion') {
+    // A Tor client controls every header it sends; honouring X-Forwarded-For from the local tor would let it mint buckets.
+    if (trustedProxies.length > 0) return bad('privacy.ingress', 'onion needs an empty trustedProxies');
+    if (!LOOPBACK_HOSTS.has(host)) return bad('privacy.ingress', 'onion needs listen.host on loopback');
+  }
+  const bodyPadding = p['bodyPadding'] === undefined ? 'optional' : p['bodyPadding'];
+  if (bodyPadding !== 'optional' && bodyPadding !== 'required') return bad('privacy.bodyPadding', 'must be optional or required');
+  return { zeroLog, ingress: rawIngress, bodyPadding };
 }
 
 /**

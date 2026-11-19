@@ -1,0 +1,8 @@
+0faf9221406c6bf2621d815f22b0764f5317f60d	docs(ai): claim Pages security-tooling extraction lane
+f219cc89986eeef36c77e58175d4c417ff0f138d	fix(audit): contain static helper paths and malformed requests
+bf6c8d1d65139b3785f4146244ec72c06a6baf65	fix(security): retain fail-closed standalone Mythril checker
+fce8d96d0e18f79a437f20a801a6dd4aa9a8cfc6	fix(ci): constrain agent inputs and verify cached compiler integrity
+c4a6e0a10230b6c791ac716dd4cc7341e41f7e5d	fix(privacy): omit RPC metadata and explain recovery key boundaries
+29784adb573ab3084480464d640efd7f4ab42dfb	fix(web): expose documented deployment validation command
+b1d31915081048326e23eac5c0c3bbb5327b6f5f	fix(build): restrict pinned downloads and disable implicit package installs
+0b67fa9fbd125b18412ef53a5d377ab5ccd460e2	chore(source): make bidirectional control characters visible

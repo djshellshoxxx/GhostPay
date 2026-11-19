@@ -1,0 +1,14 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/views/Scan.privacy.test.tsx > Scan privacy (spec 10) > Cancel stops padded primary windows after an in-flight response settles 1267ms
+ ✓ src/views/Scan.privacy.test.tsx > Scan privacy (spec 10) > Cancel stops padded secondary windows after an in-flight response settles 841ms
+ ✓ src/views/Scan.privacy.test.tsx > Scan privacy (spec 10) > queries announcements only in whole aligned windows by default and shows what each party learns 251ms
+ ✓ src/views/Scan.privacy.test.tsx > Scan privacy (spec 10) > queries the second RPC in the same aligned windows, never from the exact checkpoint (L3-F5) 237ms
+ ✓ src/views/Scan.privacy.test.tsx > Scan privacy (spec 10) > blocks instead of scanning directly when the private path is required but the transport is Direct 170ms
+ ✓ src/views/Scan.privacy.test.tsx > Scan privacy (spec 10) > never falls back to the Settings RPCs when the local proxy endpoint is down 643ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:09:21
+   Duration  9.90s (tests 36%, transform 25%, import 22%, environment 17%)

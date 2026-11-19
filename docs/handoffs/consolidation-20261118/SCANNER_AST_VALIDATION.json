@@ -1,0 +1,36 @@
+{
+  "base": "435c6e6bca463f83b6c55a2063f8c18c546c3c22",
+  "source_pr247": "20207a930336da95e78ad1d6f4987b3c74fc535a",
+  "source_implementation": "81614e56150af1787c79eb70026e778758918f23",
+  "historical": "016fa2521f7cd7c1cfbe763aaf658e32f6e27be6",
+  "ast_doc_and_function_sha256": "88fbf47240b9d08b0c3c26a028c71c71850a156812d223508d31a0814cac671a",
+  "non_source_scan_script_identical_to_master": true,
+  "scanBundle_fourth_options_parameter_and_declaration_preserved": true,
+  "existing_tests_byte_identical": true,
+  "ten_new_regressions_exactly_match_pr247": true,
+  "runtime": "v24.22.3",
+  "red": {
+    "exit": 1,
+    "failed": 10,
+    "passed": 87,
+    "files_failed": 1,
+    "files_passed": 1,
+    "log": "history-scanner-red.log"
+  },
+  "green": {
+    "exit": 0,
+    "passed": 97,
+    "failed": 0,
+    "skipped": 0,
+    "files_passed": 2,
+    "log": "history-scanner-green.log"
+  },
+  "dependency_source": "Symlink to master node_modules; Vitest5.1.0,Vite8.3.8,TypeScript5.9.3. No new install and no compiled GhostPay package imports in these two tests. Separate minimal config uses Node environment, one worker, coverage off. No full gate/build qualification.",
+  "reconciled_source_commit": "3a76ca27406a875a6cab00987624c31b4c79cb92",
+  "production_source_scan": {
+    "files": 184,
+    "findings": 0
+  },
+  "syntax_check": "node --check apps/web/scripts/scan-bundle.mjs exited0",
+  "diff_check": "git diff --check exited0"
+}

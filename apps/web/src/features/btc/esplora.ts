@@ -10,11 +10,14 @@ import {
   type ParsedTransaction,
   type BlockOutput,
   type BlockOutputs,
+  type BlockSpend,
+  type BlockSpends,
   type BlockTweaks,
   type TweakSource,
   type TxInput,
 } from '@ghostpay/btc-silent-payments';
 import { MAINNET_GENESIS, type BtcNetworkInfo } from './network';
+import { boundedRequest, BoundedRequestError } from '../../lib/boundedRequest';
 
 /** Subset of `fetch` used here (the app's injected `Services.fetchFn`). */
 export type EsploraFetch = (url: string, init: RequestInit) => Promise<Response>;
@@ -47,6 +50,17 @@ const HEX64 = /^[0-9a-f]{64}$/;
 
 function bad(): never {
   throw new SilentPaymentError('INVALID_RESPONSE');
+}
+
+/**
+ * The server answered with an HTTP error: a `TRANSPORT_FAILURE` that also says which status, so a caller can tell a
+ * refusal (4xx: the request was understood and rejected, for example a broadcast whose input is already spent) from an
+ * unreachable or failing server. It never carries the response body (it could echo what was sent).
+ */
+export class EsploraHttpError extends SilentPaymentError {
+  public constructor(public readonly status: number) {
+    super('TRANSPORT_FAILURE');
+  }
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -160,18 +174,22 @@ function parseTx(v: unknown): EsploraTx {
   const { hex, weight } = serializeTx(v, vin, vout);
   const raw = parseRawTransaction(hex);
   if (raw.txid !== txid) return bad();
+  // The JSON flag is not committed by txid/wtxid. Trust only the serialized null prevout;
+  // otherwise a provider could label a real spending transaction as coinbase and hide its spends.
+  for (const input of vin) {
+    if (!isRecord(input) || (input['is_coinbase'] !== undefined && input['is_coinbase'] !== raw.isCoinbase)) return bad();
+  }
   const outputs = vout.map((o: unknown) => {
     if (!isRecord(o)) return bad();
     return { scriptPubKey: hexToBytes(hexStr(o['scriptpubkey'])), valueSats: BigInt(uint(o['value'])) };
   });
-  return { txid, inputs: parseInputs(vin), outputs, raw, weight };
+  return { txid, inputs: raw.isCoinbase ? null : parseInputs(vin), outputs, raw, weight };
 }
 
-function parseInputs(vin: readonly unknown[]): readonly TxInput[] | null {
+function parseInputs(vin: readonly unknown[]): readonly TxInput[] {
   const out: TxInput[] = [];
   for (const i of vin) {
     if (!isRecord(i)) return bad();
-    if (i['is_coinbase'] === true) return null;
     const prevout = i['prevout'];
     if (!isRecord(prevout)) return bad();
     // The spent script is not part of the transaction, so no weight bounds it: a valid block spends none longer.
@@ -205,52 +223,6 @@ function encodeWitness(items: readonly unknown[]): string {
     const h = hexStr(w);
     return compact(h.length / 2) + h;
   }).join('');
-}
-
-/**
- * Reads the body as UTF-8 text through a byte cap, so a hostile server cannot make the tab buffer an unbounded body:
- * a declared `Content-Length` above it is refused unread, and the download is cancelled as soon as the streamed bytes
- * pass it. An abort of `signal` cancels the download too, even when the fetch implementation does not.
- * @returns The text and the number of bytes read.
- * @throws {SilentPaymentError} `INVALID_RESPONSE` past the cap; stream errors and the abort reason propagate as thrown.
- */
-async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<{ readonly text: string; readonly bytes: number }> {
-  if (Number(res.headers.get('content-length')) > max) {
-    await res.body?.cancel().catch(() => undefined);
-    return bad();
-  }
-  if (res.body === null) return { text: '', bytes: 0 };
-  const reader = res.body.getReader();
-  const stop = (): void => {
-    reader.cancel().catch(() => undefined);
-  };
-  signal.addEventListener('abort', stop, { once: true });
-  // Already aborted (a fetch implementation that ignored the signal): no event will come, so stop now.
-  if (signal.aborted) stop();
-  try {
-    const chunks: Uint8Array[] = [];
-    let total = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      signal.throwIfAborted();
-      if (done) break;
-      total += value.byteLength;
-      if (total > max) {
-        await reader.cancel().catch(() => undefined);
-        return bad();
-      }
-      chunks.push(value);
-    }
-    const all = new Uint8Array(total);
-    let off = 0;
-    for (const c of chunks) {
-      all.set(c, off);
-      off += c.byteLength;
-    }
-    return { text: new TextDecoder().decode(all), bytes: total };
-  } finally {
-    signal.removeEventListener('abort', stop);
-  }
 }
 
 function parseJson(text: string): unknown {
@@ -288,32 +260,27 @@ export class EsploraClient {
     this.baseUrl = normalizeEsploraUrl(options.baseUrl);
     this.fetchFn = options.fetchFn;
     this.timeoutMs = options.timeoutMs ?? TIMEOUT_MS;
+    if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 2_147_483_647) {
+      throw new SilentPaymentError('INVALID_INPUT');
+    }
   }
 
   /** Requests `path` and reads the body through `max` bytes; returns the text and the bytes read. */
   private async request(path: string, init: RequestInit, signal: AbortSignal | undefined, max: number): Promise<{ readonly text: string; readonly bytes: number }> {
-    const timeout = AbortSignal.timeout(this.timeoutMs);
-    const combined = signal === undefined ? timeout : AbortSignal.any([signal, timeout]);
-    const failure = (): SilentPaymentError => new SilentPaymentError(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
-    let res: Response;
+    // Revocation is checked before even an injected transport can dispatch.
+    const assertNotAborted = (): void => {
+      if (signal?.aborted === true) throw new SilentPaymentError('ABORTED');
+    };
+    assertNotAborted();
     try {
-      res = await this.fetchFn(`${this.baseUrl}${path}`, {
-        ...init,
-        credentials: 'omit',
-        referrerPolicy: 'no-referrer',
-        redirect: 'error',
-        cache: 'no-store',
-        signal: combined,
-      });
-    } catch {
-      throw failure();
-    }
-    if (!res.ok) throw new SilentPaymentError('TRANSPORT_FAILURE');
-    try {
-      return await readCapped(res, max, combined);
+      const response = await boundedRequest(this.fetchFn, `${this.baseUrl}${path}`, init, { timeoutMs: this.timeoutMs, maxBytes: max, signal });
+      if (!response.ok) throw new EsploraHttpError(response.status);
+      return { text: new TextDecoder().decode(response.body), bytes: response.body.byteLength };
     } catch (e) {
-      if (e instanceof SilentPaymentError) throw e;
-      throw failure();
+      assertNotAborted();
+      if (e instanceof EsploraHttpError) throw e;
+      if (e instanceof BoundedRequestError && e.code === 'TOO_LARGE') throw new SilentPaymentError('INVALID_RESPONSE');
+      throw new SilentPaymentError('TRANSPORT_FAILURE');
     }
   }
 
@@ -432,7 +399,7 @@ export class EsploraClient {
 
   /** True when the outpoint is unspent according to the server (mempool included). */
   public async isUnspent(txid: string, vout: number, signal?: AbortSignal): Promise<boolean> {
-    if (!HEX64.test(txid) || !Number.isInteger(vout) || vout < 0) throw new SilentPaymentError('INVALID_INPUT');
+    if (!HEX64.test(txid) || !Number.isSafeInteger(vout) || vout < 0 || vout > 0xffff_ffff) throw new SilentPaymentError('INVALID_INPUT');
     const body = await this.json(`/tx/${txid}/outspend/${String(vout)}`, signal);
     if (!isRecord(body) || typeof body['spent'] !== 'boolean') return bad();
     return !body['spent'];
@@ -447,9 +414,9 @@ export class EsploraClient {
   }
 
   /** Broadcasts a raw transaction (hex). Returns the txid the server reports. */
-  public async broadcast(rawHex: string): Promise<string> {
+  public async broadcast(rawHex: string, signal?: AbortSignal): Promise<string> {
     if (!/^[0-9a-f]+$/.test(rawHex) || rawHex.length % 2 !== 0) throw new SilentPaymentError('INVALID_INPUT');
-    const t = (await this.text('/tx', { method: 'POST', body: rawHex, headers: { 'content-type': 'text/plain' } })).trim().toLowerCase();
+    const t = (await this.text('/tx', { method: 'POST', body: rawHex, headers: { 'content-type': 'text/plain' } }, signal)).trim().toLowerCase();
     return HEX64.test(t) ? t : bad();
   }
 
@@ -467,7 +434,23 @@ interface Parsed {
   readonly blockHash: string;
   readonly tweaks: BlockTweaks['tweaks'];
   readonly outputs: readonly BlockOutput[];
+  /** Every outpoint the block's transactions consume (coinbase excluded), from the same download. */
+  readonly spends: readonly BlockSpend[];
 }
+
+/** Verdict of {@link EsploraTweakSource.spendStatus}. `unknown` means the scanned blocks cannot answer. */
+export type LocalSpendStatus = 'spent' | 'unspent' | 'unknown';
+
+interface Watched {
+  readonly height: number;
+  /** Value of `watchSeq` right after this output was registered: a block read at or after it was checked against it. */
+  readonly seq: number;
+  /** Retained blocks that were checked when the output was registered (they were read before it). */
+  readonly early: Set<number>;
+}
+
+/** Blocks whose spent outpoints stay in memory so an output found in one of them is checked against them. */
+const RECENT_SPENDS = 8;
 
 /**
  * {@link TweakSource} built on plain Esplora data: tweaks are computed locally from each block's
@@ -480,13 +463,24 @@ interface Parsed {
  * genesis). This source alone is NOT best-chain validation: it applies no retarget, chain work or fork
  * choice (the package's `HeaderChain` does, given a pinned checkpoint), and test-network proof of work is
  * cheap, so a dishonest server can still serve a low-work fork. Prevout scripts are not bound to any
- * header, and spent state (`isUnspent`) remains the server's word.
+ * header. `getSpends` lists the outpoints a block's (header-bound) transactions consume, so a wallet can learn
+ * locally that an output was spent without asking the server about it; the per-outpoint `isUnspent` query
+ * remains the server's word and reveals the outpoint.
  */
 export class EsploraTweakSource implements TweakSource {
   private readonly cache = new Map<number, Promise<Parsed>>();
   /** Recently verified height -> hash, for header linkage across this source's lifetime. */
   private readonly linked = new Map<number, string>();
   private readonly prevOf = new Map<number, string>();
+  /** Outputs to look for among the inputs of the blocks this source reads. */
+  private readonly watched = new Map<string, Watched>();
+  private watchSeq = 0;
+  /** Confirmed spends of watched outputs: outpoint to the height of the spending block. */
+  private readonly spentAt = new Map<string, number>();
+  /** Height to `watchSeq` when that block's inputs were last checked against the watched outputs. */
+  private readonly checkedAt = new Map<number, number>();
+  /** Outpoints spent by the most recently read blocks (txids are bound to the header Merkle root, so are these). */
+  private readonly recentSpends = new Map<number, ReadonlySet<string>>();
 
   public constructor(private readonly client: EsploraClient, private readonly net: BtcNetworkInfo) {
     this.linked.set(0, net.genesisHash);
@@ -517,7 +511,8 @@ export class EsploraTweakSource implements TweakSource {
     // Genesis is pinned by checkNetwork; its only transaction is an unspendable coinbase.
     if (height === 0) {
       if (blockHash !== this.net.genesisHash) throw new SilentPaymentError('NETWORK_MISMATCH');
-      return { blockHash, tweaks: [], outputs: [] };
+      this.noteSpends(height, new Set());
+      return { blockHash, tweaks: [], outputs: [], spends: [] };
     }
     const [headerHex, txs] = await Promise.all([this.client.blockHeader(blockHash, signal), this.client.blockTxs(blockHash, signal)]);
     const header = verifyBlockData({ headerHex, expectedHash: blockHash, txids: txs.map((t) => t.txid), network: this.net.id });
@@ -537,8 +532,12 @@ export class EsploraTweakSource implements TweakSource {
     }
     const tweaks: BlockTweaks['tweaks'][number][] = [];
     const outputs: BlockOutput[] = [];
+    const spends: BlockSpend[] = [];
     for (const tx of txs) {
-      if (tx.inputs === null) continue; // coinbase
+      // These exact prevouts were reserialized and committed by the checked transaction id.
+      // Spend evidence is independent of whether the inputs are eligible to produce a BIP-352 tweak.
+      if (!tx.raw.isCoinbase) for (const i of tx.raw.inputs) spends.push({ txid: i.txid, vout: i.vout, spentBy: tx.txid });
+      if (tx.inputs === null) continue;
       let tweak;
       try {
         tweak = computeTransactionTweak(tx.inputs);
@@ -554,7 +553,57 @@ export class EsploraTweakSource implements TweakSource {
         }
       });
     }
-    return { blockHash, tweaks, outputs };
+    this.noteSpends(height, new Set(spends.map((s) => `${s.txid}:${String(s.vout)}`)));
+    return { blockHash, tweaks, outputs, spends };
+  }
+
+  private noteSpends(height: number, spends: ReadonlySet<string>): void {
+    this.recentSpends.set(height, spends);
+    while (this.recentSpends.size > RECENT_SPENDS) {
+      const oldest = this.recentSpends.keys().next().value;
+      if (oldest === undefined) break;
+      this.recentSpends.delete(oldest);
+    }
+    for (const id of spends) {
+      const w = this.watched.get(id);
+      if (w !== undefined && height >= w.height && !this.spentAt.has(id)) this.spentAt.set(id, height);
+    }
+    this.checkedAt.set(height, this.watchSeq);
+  }
+
+  /**
+   * Registers a detected output (found at `height`) so spends of it are noticed locally. Call it as soon as the output is
+   * detected: the already-read blocks at and above `height` that are still retained are checked now, every block read
+   * from here on is checked as it is read.
+   */
+  public watchOutput(txid: string, vout: number, height: number): void {
+    const id = `${txid}:${String(vout)}`;
+    if (this.watched.has(id)) return;
+    const early = new Set<number>();
+    this.watched.set(id, { height, seq: ++this.watchSeq, early });
+    for (const [h, spends] of this.recentSpends) {
+      if (h < height) continue;
+      early.add(h);
+      if (spends.has(id) && !this.spentAt.has(id)) this.spentAt.set(id, h);
+    }
+  }
+
+  /**
+   * What the blocks this source has read say about a watched output. `spent` is certain (a confirmed spend whose txid is
+   * bound to a header). `unspent` only when every block from the output's block through `throughHeight` was read and
+   * checked, which covers confirmed spends up to there, never the mempool and never blocks above `throughHeight`.
+   * Anything else is `unknown`: the caller must ask elsewhere.
+   */
+  public spendStatus(txid: string, vout: number, throughHeight: number): LocalSpendStatus {
+    const id = `${txid}:${String(vout)}`;
+    if (this.spentAt.has(id)) return 'spent';
+    const w = this.watched.get(id);
+    if (w === undefined) return 'unknown';
+    for (let h = w.height; h <= throughHeight; h++) {
+      const at = this.checkedAt.get(h);
+      if (!w.early.has(h) && (at === undefined || at < w.seq)) return 'unknown';
+    }
+    return 'unspent';
   }
 
   public async getTweaks(height: number, signal?: AbortSignal): Promise<BlockTweaks> {
@@ -565,5 +614,11 @@ export class EsploraTweakSource implements TweakSource {
   public async getOutputs(height: number, signal?: AbortSignal): Promise<BlockOutputs> {
     const p = await this.load(height, signal);
     return { height, blockHash: p.blockHash, outputs: p.outputs };
+  }
+
+  /** The outpoints spent by the block's transactions (coinbase excluded), from the block already downloaded for its tweaks. */
+  public async getSpends(height: number, signal?: AbortSignal): Promise<BlockSpends> {
+    const p = await this.load(height, signal);
+    return { height, blockHash: p.blockHash, spends: p.spends };
   }
 }

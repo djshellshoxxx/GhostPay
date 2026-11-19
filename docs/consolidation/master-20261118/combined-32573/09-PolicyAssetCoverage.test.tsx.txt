@@ -1,0 +1,13 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/policy/PolicyAssetCoverage.test.tsx > SEC-11: assets a scheme-2 policy can withdraw > seller side: each record states exactly which assets its policy can withdraw 1262ms
+ ✓ src/features/policy/PolicyAssetCoverage.test.tsx > SEC-11: assets a scheme-2 policy can withdraw > payer side without the payee record: the review states the risk the payer cannot check 783ms
+ ✓ src/features/policy/PolicyAssetCoverage.test.tsx > SEC-11: assets a scheme-2 policy can withdraw > payer side with the payee record loaded: an asset without a limit is refused, a covered one is confirmed 1950ms
+ ✓ src/features/policy/PolicyAssetCoverage.test.tsx > SEC-11: assets a scheme-2 policy can withdraw > a record loaded after the review that shows the asset is not covered blocks the send before the wallet is asked 884ms
+ ✓ src/features/policy/PolicyAssetCoverage.test.tsx > SEC-12 / OD-11: withdrawal delay on rollups (owner-gated, no unverified numbers) > notes the unverified L2 bound next to the delay and keeps every factory-accepted preset 250ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:07:46
+   Duration  15.72s (tests 34%, transform 26%, import 25%, environment 15%)

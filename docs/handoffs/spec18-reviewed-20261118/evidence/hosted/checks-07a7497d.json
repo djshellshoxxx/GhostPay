@@ -1,0 +1,269 @@
+{
+  "captured_at_utc": "2026-11-19 00:05:34 UTC",
+  "repository": "djshellshoxxx/GhostPay",
+  "source": "07a7497d1a0cb39fb6904e5c50f8a52db2285820",
+  "local_source": "8461dbdfeab16648a78e3c1cd2f4dbb3c0fa5187",
+  "hosted_checkout": "24bc65f525ec9f19a670e6e5600b071c03edbd56",
+  "verified_equal_tree": "6febc03ffd521fe9ac00ac10275f9ff625db509c",
+  "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "main": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "note": "Final implementation/test candidate. The following documentation/evidence commit does not change code, tests, dependencies or workflow gates. Overall CI remains failed on the inherited checks documented in COMPLETION_REPORT.md.",
+  "workflows": [
+    {
+      "name": "CI",
+      "id": 44423317037,
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "id": 135221638981,
+          "name": "secrets-and-egress",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221639383,
+          "name": "changes",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221700874,
+          "name": "ts-typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221700941,
+          "name": "e2e (full)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135221700967,
+          "name": "ts-test-relayer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701031,
+          "name": "ts-lint",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135221701050,
+          "name": "contracts-slither",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701087,
+          "name": "lean-candidate",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701099,
+          "name": "contracts-coverage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701135,
+          "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701143,
+          "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701147,
+          "name": "ts-check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701169,
+          "name": "e2e (lean)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135221701206,
+          "name": "ts-test (rest-1)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701208,
+          "name": "ts-test (core-crypto)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701233,
+          "name": "contracts-static",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701253,
+          "name": "ts-test (web)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701262,
+          "name": "contracts-test",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701273,
+          "name": "ts-test (rest-2)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701274,
+          "name": "ts-test (btc-silent-payments)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221701284,
+          "name": "ts-test (rest-0)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135221701293,
+          "name": "ts-test (confidential-contracts)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135226818900,
+          "name": "contracts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135230361401,
+          "name": "typescript",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "name": "Pages",
+      "id": 44423317214,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 135221639687,
+          "name": "Build and verify the Pages site",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221640221,
+          "name": "Pages artifact on anvil (browser)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221642514,
+          "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 135223443821,
+          "name": "Attest the Pages artifact checksums",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 135223445215,
+          "name": "Deploy to GitHub Pages",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 135223445813,
+          "name": "Post-deployment smoke test",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "Beta acceptance",
+      "id": 44423317133,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 135221639293,
+          "name": "beta acceptance (lib + cli + browser on anvil)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "CLI operator qualification",
+      "id": 44423317411,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 135221640338,
+          "name": "CLI (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221640839,
+          "name": "CLI (windows-latest)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221640914,
+          "name": "CLI (macos-latest)",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "Hosting kit",
+      "id": 44423317156,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 135221639382,
+          "name": "kit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135221639499,
+          "name": "qualify-ghostpay-web",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

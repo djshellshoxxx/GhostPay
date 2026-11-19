@@ -51,12 +51,27 @@ export function suggest(word: string, candidates: readonly string[]): string | u
   return best;
 }
 
+export type GlobalSwitch = 'json' | 'help' | 'version';
+
+/** Global switches and the tokens that spell them. They are honoured only in a flag position. */
+export const GLOBAL_SWITCHES: ReadonlyMap<string, GlobalSwitch> = new Map([
+  ['--json', 'json'],
+  ['--help', 'help'],
+  ['-h', 'help'],
+  ['--version', 'version'],
+]);
+
 /**
  * Parses `--name value`, `--name=value`, flags and repeatable options against a spec.
  *
+ * With `globals`, a global switch token in a flag position is recorded there instead of in the result.
+ * In a value position (directly after an option that takes a value) no token is a global switch: a
+ * `--`-prefixed token there is a missing value, as for every other option name, and `-h` is that option's
+ * value. `--name=--help` passes the text literally. Nothing after a `--` terminator is a global switch.
+ *
  * @security Refuses option names that suggest an inline secret and never echoes option values in errors.
  */
-export function parseArgs(argv: readonly string[], spec: OptSpec): Parsed {
+export function parseArgs(argv: readonly string[], spec: OptSpec, globals?: Set<GlobalSwitch>): Parsed {
   const values = new Map<string, string>();
   const multi = new Map<string, string[]>();
   const flags = new Set<string>();
@@ -67,6 +82,11 @@ export function parseArgs(argv: readonly string[], spec: OptSpec): Parsed {
     if (arg === '--') {
       positionals.push(...argv.slice(i + 1));
       break;
+    }
+    const global = globals === undefined ? undefined : GLOBAL_SWITCHES.get(arg);
+    if (global !== undefined && globals !== undefined) {
+      globals.add(global);
+      continue;
     }
     if (!arg.startsWith('--')) {
       positionals.push(arg);

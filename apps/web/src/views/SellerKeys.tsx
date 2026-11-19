@@ -3,9 +3,11 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEven
 import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
+import { StealthExportMaster } from '../components/StealthExportMaster';
+import { StealthExportRecovery } from '../components/StealthExportRecovery';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblemMessage, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, verifyDownloadedBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, verifyDownloadedBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { multipartIfNeeded } from '../lib/qrMultipart';
@@ -53,6 +55,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   translator.current = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const t: Translator['t'] = (key, values) => translator.current(key, values);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
+  const suspended = useSyncExternalStore(subscribeSession, isSessionSuspended);
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: DisplayMessage } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [spend, setSpend] = useState('');
@@ -544,6 +547,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         </>
       ) : (
         <>
+          {!suspended && <>
           <h3>{t('sellerKeys.metaHeading')}</h3>
           <BackupGate paymentsOnly>
             <p>{t('sellerKeys.metaShare')}</p>
@@ -555,6 +559,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <h3>{t('sellerKeys.signingKeyHeading')}</h3>
           <p><Mono>{s.signerPublicKey}</Mono></p>
           <p className="hint">{t('sellerKeys.payersSee')}</p>
+          </>}
 
           <h3 id="keystore-backup-h" tabIndex={-1}>{t('sellerKeys.backupHeading')}</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
@@ -598,6 +603,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             </form>
           </section>
 
+          {!suspended && <StealthExportMaster announce={app.announce} />}
+
           <section className="panel" aria-labelledby="vault-save-h">
             <h3 id="vault-save-h">{t('sellerKeys.vaultOptionalHeading')}</h3>
             <p>
@@ -639,11 +646,15 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         </>
       )}
 
-      {props.archive}
+      {!suspended && <StealthExportRecovery announce={app.announce} />}
 
+      {!suspended && props.archive}
+
+      {!suspended && <>
       <h3>{t('sellerKeys.registryHeading')}</h3>
       <p className="hint">{t('sellerKeys.registryHint')}</p>
       <p><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>{t('sellerKeys.openRegistry')}</button></p>
+      </>}
     </section>
   );
 }

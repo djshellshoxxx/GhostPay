@@ -41,7 +41,7 @@ describe('validateManifest', () => {
     for (const version of ['1.0', '01.0.0', '1.0.0+build', 'v1.0.0', '1.0.0-']) {
       expect(path(() => validateManifest(manifest({ version })))).toBe('MANIFEST:version');
     }
-    for (const name of ['', ' lead', 'evil‮exe', 'a\u0000b', 'x'.repeat(65), 'zero​width']) {
+    for (const name of ['', ' lead', 'evil\u202eexe', 'a\u0000b', 'x'.repeat(65), 'zero​width']) {
       expect(path(() => validateManifest(manifest({ name })))).toBe('MANIFEST:name');
     }
     expect(path(() => validateManifest(manifest({ apiVersion: 2 as 1 })))).toBe('MANIFEST:apiVersion');

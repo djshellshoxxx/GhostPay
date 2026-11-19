@@ -1,0 +1,8 @@
+(node:40) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> ghostpay@0.1.0 ci:check-actions
+> bash scripts/check-actions-pinned.sh
+
+OK: 113 'uses:' reference(s) checked, all pinned to full SHAs with version comments.

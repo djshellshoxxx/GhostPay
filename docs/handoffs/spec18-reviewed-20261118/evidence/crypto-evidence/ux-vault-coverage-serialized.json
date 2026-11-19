@@ -1,0 +1,16 @@
+{
+  "command": [
+    "npm",
+    "test",
+    "-w",
+    "packages/ux-vault",
+    "--",
+    "--maxWorkers=1"
+  ],
+  "started_utc": "2026-11-18T23:04:33.744950+00:00",
+  "seconds": 170.85122142000182,
+  "exit_code": 0,
+  "max_rss_kib": 455032,
+  "runtime": "Node22.23.5; heap512; one worker; serialized after root and lifecycle heavy jobs stopped",
+  "note": "max_rss is resource.RUSAGE_CHILDREN peak, not aggregate simultaneous process-tree memory"
+}

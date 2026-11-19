@@ -4,6 +4,11 @@ Two-server XOR private information retrieval (PIR) for reading pages of the publ
 without telling either server which page. Testnet-only research PoC. Spec: `docs/remote/privacy-specs/network-privacy.md`
 section 4.8 (`scanMode = pir2`), `metadata-hardening.md` MH-SCAN-3. Default: OFF (the default scan mode is `range`).
 
+> **Research proof of concept.** It has only ever run against in-memory fakes and loopback servers, never against real,
+> independent operators. No UI offers it. `@ghostpay/scan-source` creates a `pir2` source only when the caller passes
+> `experimental: true`; without it `createPir2Source`/`createScanSource({ mode: 'pir2' })` throw `INVALID_ARGUMENT`. Its privacy
+> holds only if the two servers are run by different operators who do not collude; see the claims below.
+
 ## What it does
 
 - `packPages(anns, shard, pageBytes)` packs public announcements into fixed-size pages (default 4096 bytes,

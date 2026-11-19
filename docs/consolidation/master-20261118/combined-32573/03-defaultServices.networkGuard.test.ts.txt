@@ -1,0 +1,14 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/lib/defaultServices.networkGuard.test.ts > TM14: a saved own-node policy guards already-created clients > refuses cached request before dispatch when own-node replaces direct mode 24ms
+ ✓ src/lib/defaultServices.networkGuard.test.ts > TM14: a saved own-node policy guards already-created clients > refuses cached blockNumber before dispatch when own-node replaces direct mode 2ms
+ ✓ src/lib/defaultServices.networkGuard.test.ts > TM14: a saved own-node policy guards already-created clients > refuses cached getBlock before dispatch when own-node replaces direct mode 1ms
+ ✓ src/lib/defaultServices.networkGuard.test.ts > TM14: a saved own-node policy guards already-created clients > refuses cached getLogs before dispatch when own-node replaces direct mode 9ms
+ ✓ src/lib/defaultServices.networkGuard.test.ts > TM14: a saved own-node policy guards already-created clients > rechecks the policy after a retryable error and before reconnect traffic 2ms
+ ✓ src/lib/defaultServices.networkGuard.test.ts > TM14: a saved own-node policy guards already-created clients > keeps a cached loopback client usable after acknowledged own-node mode is selected 1ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:06:51
+   Duration  8.15s (import 53%, transform 43%, worker 3%, tests 1%)

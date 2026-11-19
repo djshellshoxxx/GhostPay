@@ -1,0 +1,23 @@
+[
+  {
+    "source": "/workspace/scratch/4fa14be12559/analysis-build/source",
+    "timestamp": "2026-11-18T15:22:54.639628+00:00",
+    "head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "tree": "81341de7972041b5f7ce53da76027846356fab90",
+    "source_status": ""
+  },
+  {
+    "source": "/workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc/a-first/ghostpay",
+    "timestamp": "2026-11-18T15:22:54.672419+00:00",
+    "head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "tree": "81341de7972041b5f7ce53da76027846356fab90",
+    "source_status": ""
+  },
+  {
+    "source": "/workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc/b-second/nested/GhostPay-repro",
+    "timestamp": "2026-11-18T15:22:55.281304+00:00",
+    "head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "tree": "81341de7972041b5f7ce53da76027846356fab90",
+    "source_status": ""
+  }
+]
