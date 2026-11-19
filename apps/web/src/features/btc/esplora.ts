@@ -469,6 +469,20 @@ interface Parsed {
   readonly outputs: readonly BlockOutput[];
 }
 
+/** Verdict of {@link EsploraTweakSource.spendStatus}. `unknown` means the scanned blocks cannot answer. */
+export type LocalSpendStatus = 'spent' | 'unspent' | 'unknown';
+
+interface Watched {
+  readonly height: number;
+  /** Value of `watchSeq` right after this output was registered: a block read at or after it was checked against it. */
+  readonly seq: number;
+  /** Retained blocks that were checked when the output was registered (they were read before it). */
+  readonly early: Set<number>;
+}
+
+/** Blocks whose spent outpoints stay in memory so an output found in one of them is checked against them. */
+const RECENT_SPENDS = 8;
+
 /**
  * {@link TweakSource} built on plain Esplora data: tweaks are computed locally from each block's
  * transactions (BIP-352 `input_hash * A`), so any Esplora server works. Heavy (downloads whole
@@ -487,6 +501,15 @@ export class EsploraTweakSource implements TweakSource {
   /** Recently verified height -> hash, for header linkage across this source's lifetime. */
   private readonly linked = new Map<number, string>();
   private readonly prevOf = new Map<number, string>();
+  /** Outputs to look for among the inputs of the blocks this source reads. */
+  private readonly watched = new Map<string, Watched>();
+  private watchSeq = 0;
+  /** Confirmed spends of watched outputs: outpoint to the height of the spending block. */
+  private readonly spentAt = new Map<string, number>();
+  /** Height to `watchSeq` when that block's inputs were last checked against the watched outputs. */
+  private readonly checkedAt = new Map<number, number>();
+  /** Outpoints spent by the most recently read blocks (txids are bound to the header Merkle root, so are these). */
+  private readonly recentSpends = new Map<number, ReadonlySet<string>>();
 
   public constructor(private readonly client: EsploraClient, private readonly net: BtcNetworkInfo) {
     this.linked.set(0, net.genesisHash);
@@ -517,6 +540,7 @@ export class EsploraTweakSource implements TweakSource {
     // Genesis is pinned by checkNetwork; its only transaction is an unspendable coinbase.
     if (height === 0) {
       if (blockHash !== this.net.genesisHash) throw new SilentPaymentError('NETWORK_MISMATCH');
+      this.noteSpends(height, new Set());
       return { blockHash, tweaks: [], outputs: [] };
     }
     const [headerHex, txs] = await Promise.all([this.client.blockHeader(blockHash, signal), this.client.blockTxs(blockHash, signal)]);
@@ -537,8 +561,10 @@ export class EsploraTweakSource implements TweakSource {
     }
     const tweaks: BlockTweaks['tweaks'][number][] = [];
     const outputs: BlockOutput[] = [];
+    const spends = new Set<string>();
     for (const tx of txs) {
       if (tx.inputs === null) continue; // coinbase
+      for (const i of tx.inputs) spends.add(`${i.txid}:${String(i.vout)}`);
       let tweak;
       try {
         tweak = computeTransactionTweak(tx.inputs);
@@ -554,7 +580,57 @@ export class EsploraTweakSource implements TweakSource {
         }
       });
     }
+    this.noteSpends(height, spends);
     return { blockHash, tweaks, outputs };
+  }
+
+  private noteSpends(height: number, spends: ReadonlySet<string>): void {
+    this.recentSpends.set(height, spends);
+    while (this.recentSpends.size > RECENT_SPENDS) {
+      const oldest = this.recentSpends.keys().next().value;
+      if (oldest === undefined) break;
+      this.recentSpends.delete(oldest);
+    }
+    for (const id of spends) {
+      const w = this.watched.get(id);
+      if (w !== undefined && height >= w.height && !this.spentAt.has(id)) this.spentAt.set(id, height);
+    }
+    this.checkedAt.set(height, this.watchSeq);
+  }
+
+  /**
+   * Registers a detected output (found at `height`) so spends of it are noticed locally. Call it as soon as the output is
+   * detected: the already-read blocks at and above `height` that are still retained are checked now, every block read
+   * from here on is checked as it is read.
+   */
+  public watchOutput(txid: string, vout: number, height: number): void {
+    const id = `${txid}:${String(vout)}`;
+    if (this.watched.has(id)) return;
+    const early = new Set<number>();
+    this.watched.set(id, { height, seq: ++this.watchSeq, early });
+    for (const [h, spends] of this.recentSpends) {
+      if (h < height) continue;
+      early.add(h);
+      if (spends.has(id) && !this.spentAt.has(id)) this.spentAt.set(id, h);
+    }
+  }
+
+  /**
+   * What the blocks this source has read say about a watched output. `spent` is certain (a confirmed spend whose txid is
+   * bound to a header). `unspent` only when every block from the output's block through `throughHeight` was read and
+   * checked, which covers confirmed spends up to there, never the mempool and never blocks above `throughHeight`.
+   * Anything else is `unknown`: the caller must ask elsewhere.
+   */
+  public spendStatus(txid: string, vout: number, throughHeight: number): LocalSpendStatus {
+    const id = `${txid}:${String(vout)}`;
+    if (this.spentAt.has(id)) return 'spent';
+    const w = this.watched.get(id);
+    if (w === undefined) return 'unknown';
+    for (let h = w.height; h <= throughHeight; h++) {
+      const at = this.checkedAt.get(h);
+      if (!w.early.has(h) && (at === undefined || at < w.seq)) return 'unknown';
+    }
+    return 'unspent';
   }
 
   public async getTweaks(height: number, signal?: AbortSignal): Promise<BlockTweaks> {

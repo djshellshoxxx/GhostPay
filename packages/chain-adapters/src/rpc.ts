@@ -106,6 +106,9 @@ export const fetchTransport: RpcTransport = {
         body,
         signal: ctl.signal,
         redirect: 'error',
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer',
+        cache: 'no-store',
       });
       if (!res.ok) throw new RpcHttpError(res.status);
       if (res.body === null) return fail('RPC_FAILURE', 'empty body');

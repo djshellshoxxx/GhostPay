@@ -6,8 +6,12 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { checkpointKeyId, localCheckpointStore as secretKeyedStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+
+/** TM8: checkpoint slots are named under a secret; these tests hold a fixed one in place of the loaded viewing key. */
+const localCheckpointStore = (storage: Parameters<typeof secretKeyedStore>[0]) => secretKeyedStore(storage, () => new Uint8Array(32).fill(7));
 import { ReconciliationVault } from './reconciliationVault';
+import { clearSession, generateSession } from './session';
 import type { ToWorker } from './scannerCore';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
@@ -954,6 +958,112 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
   });
 });
 
+describe('TM8: checkpoint slots are named under the viewing key, not the public meta-address', () => {
+  const mem = () => {
+    const map = new Map<string, string>();
+    return { map, getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v), removeItem: (k: string) => void map.delete(k) };
+  };
+  const secretA = () => new Uint8Array(32).fill(1);
+  const secretB = () => new Uint8Array(32).fill(2);
+  const v2 = (chainId: number) => `ghostpay.scan.checkpoint.v2.${String(chainId)}.${KEY}`;
+  const cursor: ScanCursor = { nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } };
+
+  it('stores under a slot that neither names the key id nor the chain, and another secret cannot find it', () => {
+    const st = mem();
+    secretKeyedStore(st, secretA).save(84532, KEY, cursor);
+    const [slot] = [...st.map.keys()];
+    expect(st.map.size).toBe(1);
+    expect(slot).toMatch(/^ghostpay\.scan\.checkpoint\.v3\.[0-9a-f]{64}$/);
+    expect(slot).not.toContain(KEY);
+    expect(slot).not.toContain('84532');
+    expect(secretKeyedStore(st, secretA).load(84532, KEY)).toEqual(cursor);
+    expect(secretKeyedStore(st, secretB).load(84532, KEY)).toBeUndefined();
+    expect(secretKeyedStore(st, secretA).load(1, KEY)).toBeUndefined();
+  });
+
+  it('migrates a v2 checkpoint to v3 on the first load with the keys, keeping the exact position', () => {
+    const st = mem();
+    st.setItem(v2(84532), JSON.stringify({ nextBlock: '77', last: { number: '76', hash: `0x${'a'.repeat(64)}` } }));
+    const cp = secretKeyedStore(st, secretA);
+    expect(cp.load(84532, KEY)).toEqual(cursor);
+    expect(st.map.has(v2(84532))).toBe(false);
+    expect([...st.map.keys()].every((k) => k.startsWith('ghostpay.scan.checkpoint.v3.'))).toBe(true);
+    expect(cp.load(84532, KEY)).toEqual(cursor);
+    // A newer v3 checkpoint wins over a stale v2 copy, which is then removed.
+    st.setItem(v2(84532), JSON.stringify({ nextBlock: '5' }));
+    expect(cp.load(84532, KEY)).toEqual(cursor);
+    expect(st.map.has(v2(84532))).toBe(false);
+    // Saving also removes any v2 copy.
+    st.setItem(v2(1), JSON.stringify({ nextBlock: '5' }));
+    cp.save(1, KEY, { nextBlock: 9n });
+    expect(st.map.has(v2(1))).toBe(false);
+    expect(cp.load(1, KEY)).toEqual({ nextBlock: 9n });
+  });
+
+  it('never loses a v2 position: without the keys, or when the v3 write fails, the v2 slot stays', () => {
+    const st = mem();
+    st.setItem(v2(84532), JSON.stringify({ nextBlock: '77' }));
+    const locked = secretKeyedStore(st, () => undefined);
+    expect(locked.load(84532, KEY)).toBeUndefined();
+    locked.save(84532, KEY, { nextBlock: 1n });
+    expect([...st.map.keys()]).toEqual([v2(84532)]);
+    const readOnly = { ...st, setItem: () => { throw new Error('quota'); } };
+    expect(secretKeyedStore(readOnly, secretA).load(84532, KEY)).toEqual({ nextBlock: 77n });
+    expect(st.map.get(v2(84532))).toBe(JSON.stringify({ nextBlock: '77' }));
+    const dropping = { ...st, setItem: () => undefined };
+    expect(secretKeyedStore(dropping, secretA).load(84532, KEY)).toEqual({ nextBlock: 77n });
+    expect(st.map.has(v2(84532))).toBe(true);
+    expect(secretKeyedStore(st, secretA).load(84532, KEY)).toEqual({ nextBlock: 77n });
+    expect(st.map.has(v2(84532))).toBe(false);
+    // A corrupt v2 entry is dropped, not migrated.
+    st.setItem(v2(2), 'not json');
+    st.setItem(v2(3), JSON.stringify({ nextBlock: 'x' }));
+    expect(secretKeyedStore(st, secretA).load(3, KEY)).toBeUndefined();
+    expect(st.map.has(v2(3))).toBe(false);
+  });
+
+  it('clears both the v3 and the v2 slot, the v2 one even without the keys', () => {
+    const st = mem();
+    const cp = secretKeyedStore(st, secretA);
+    cp.save(84532, KEY, cursor);
+    st.setItem(v2(84532), JSON.stringify({ nextBlock: '5' }));
+    cp.clear(84532, KEY);
+    expect(st.map.size).toBe(0);
+    st.setItem(v2(84532), JSON.stringify({ nextBlock: '5' }));
+    secretKeyedStore(st, () => undefined).clear(84532, KEY);
+    expect(st.map.size).toBe(0);
+  });
+
+  it('wipes each secret copy after use and tolerates a throwing secret source', () => {
+    const copies: Uint8Array[] = [];
+    const cp = secretKeyedStore(mem(), () => { const c = new Uint8Array(32).fill(9); copies.push(c); return c; });
+    cp.save(84532, KEY, cursor);
+    expect(cp.load(84532, KEY)).toEqual(cursor);
+    expect(copies.length).toBeGreaterThan(0);
+    expect(copies.every((c) => c.every((b) => b === 0))).toBe(true);
+    const broken = secretKeyedStore(mem(), () => { throw new Error('locked'); });
+    expect(broken.load(84532, KEY)).toBeUndefined();
+    expect(() => broken.save(84532, KEY, cursor)).not.toThrow();
+    expect(secretKeyedStore(mem(), () => new Uint8Array(0)).load(84532, KEY)).toBeUndefined();
+  });
+
+  it('defaults to the loaded viewing key: nothing is stored without keys, and other keys cannot read it', () => {
+    clearSession(false);
+    const st = mem();
+    const cp = secretKeyedStore(st);
+    cp.save(84532, KEY, cursor);
+    expect(st.map.size).toBe(0);
+    generateSession();
+    cp.save(84532, KEY, cursor);
+    expect(cp.load(84532, KEY)).toEqual(cursor);
+    expect(st.map.size).toBe(1);
+    generateSession();
+    expect(cp.load(84532, KEY)).toBeUndefined();
+    clearSession(false);
+    expect(cp.load(84532, KEY)).toBeUndefined();
+  });
+});
+
 describe('localCheckpointStore', () => {
   interface MemStorage {
     map: Map<string, string>;
@@ -1709,5 +1819,68 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect(invalidated).toHaveBeenCalledOnce();
     expect((await vault.read())[0]?.evidenceStatus).toBe('verified-at-scan');
     vault.lock();
+  });
+});
+
+describe('TM12: opt-in bulk router evidence', () => {
+  const receiptsOf = (client: ReturnType<typeof chainWith>) => client.calls.filter((c) => c.method === 'eth_getTransactionReceipt').map((c) => String(c.params[0]).toLowerCase());
+  const scan = (s: ReturnType<typeof setup>, client: ReturnType<typeof chainWith>, extra: Partial<Parameters<typeof runScan>[0]> = {}) => runScan({
+    chain, manifest, client, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+    viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal, ...extra,
+  });
+
+  it('is off by default: only the matched router transaction is read, and no cost is reported', async () => {
+    const s = setup();
+    const client = chainWith(2500, s.logs);
+    const res = await scan(s, client);
+    expect(receiptsOf(client)).toEqual([s.mine.log.transactionHash!.toLowerCase()]);
+    expect(res.evidenceRequests).toBeUndefined();
+  });
+
+  it('reads every router transaction of the page, verifies the match from that batch and reports the extra requests', async () => {
+    const s = setup();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const more = [140, 150, 150].map((block, k) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block, index: 5 + k, caller: FAKE_ROUTER }).log);
+    const client = chainWith(2500, [...s.logs, ...more]);
+    const baseline = chainWith(2500, [...s.logs, ...more]);
+    const plain = await scan(s, baseline);
+    const res = await scan(s, client, { bulkEvidence: 50 });
+    const router = [s.mine.log, s.other.log, ...more].map((l) => l.transactionHash!.toLowerCase());
+    expect(receiptsOf(client).sort()).toEqual([...router].sort());
+    expect(res.matches.map((m) => [m.stealthAddress, m.receipt])).toEqual(plain.matches.map((m) => [m.stealthAddress, m.receipt]));
+    expect(res.matches[0]?.receipt).toBe('verified');
+    // 1 head + 2 x 4 distinct blocks + 2 x 5 transactions, replacing the 1 + 2 + 2 per-match reads.
+    expect(res.evidenceRequests).toBe(1 + 2 * 4 + 2 * 5);
+    expect(client.calls.length - baseline.calls.length).toBe(res.evidenceRequests! - (1 + 2 + 2));
+  });
+
+  it('caps the batch per page, always including the matched transaction, and reads pages without a match too', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 120, index: 0, caller: FAKE_ROUTER });
+    const others = Array.from({ length: 6 }, (_, k) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 121 + k, index: 1, caller: FAKE_ROUTER }).log);
+    const s = { ...setup(), keys };
+    const res = await scan(s, chainWith(2500, [mine.log, ...others]), { bulkEvidence: 3 });
+    expect(res.matches.map((m) => m.receipt)).toEqual(['verified']);
+    const capped = chainWith(2500, [mine.log, ...others]);
+    await scan(s, capped, { bulkEvidence: 3 });
+    expect(receiptsOf(capped)).toHaveLength(3);
+    expect(receiptsOf(capped)).toContain(mine.log.transactionHash!.toLowerCase());
+    // No match at all: the page's router transactions are still read, so a batch does not mark a page as matched.
+    const nobody = { ...setup(), keys: generateKeySet() };
+    const empty = chainWith(2500, others);
+    const none = await scan(nobody, empty, { bulkEvidence: 3 });
+    expect(none.matches).toEqual([]);
+    expect(receiptsOf(empty)).toHaveLength(3);
+    expect(none.evidenceRequests).toBeGreaterThan(0);
+  });
+
+  it('reads the second provider in bulk as well', async () => {
+    const s = setup();
+    const primary = chainWith(2500, s.logs);
+    const secondary = chainWith(2500, s.logs);
+    const res = await scan(s, primary, { bulkEvidence: 10, secondaryClient: secondary });
+    expect(res.matches[0]?.receipt).toBe('verified');
+    expect(receiptsOf(secondary).sort()).toEqual([s.mine.log, s.other.log].map((l) => l.transactionHash!.toLowerCase()).sort());
   });
 });

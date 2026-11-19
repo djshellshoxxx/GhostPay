@@ -8,6 +8,7 @@ import { canonicalManifestJson, loadDeployment, manifestDigest, validateManifest
 import { keccak256, toBytes } from 'viem/utils';
 import { ESLint, Linter } from 'eslint';
 import { afterEach, describe, expect, it } from 'vitest';
+import { applyCspToDist, checkCspDist } from '../scripts/apply-csp.mjs';
 import { BROAD, applyConnectSrc, connectSrc, parseOrigins } from '../scripts/csp.mjs';
 import { emitEmbedSri } from '../scripts/embed-sri.mjs';
 import { parseReleaseKeys, validateDeployments } from '../scripts/validate-deployments.mjs';
@@ -130,6 +131,51 @@ describe('connect-src tightening (S3-11)', () => {
     for (const bad of ['http://a.test', 'https://a.test/path', 'https://u:p@a.test', 'https://a.test/?q=1', 'ftp://a.test', 'nope', 'https://a.test/#x']) {
       expect(() => parseOrigins(bad)).toThrow(/GHOSTPAY_CONNECT_ORIGINS/);
     }
+  });
+});
+
+describe('apply-csp postbuild (tight connect-src)', () => {
+  const csp = (c: string): string => `default-src 'self'; ${c}; worker-src 'self'`;
+  const dist = (): string => {
+    const d = tmp();
+    writeFileSync(join(d, '_headers'), `/*\n  Content-Security-Policy: ${csp(BROAD)}\n`);
+    writeFileSync(join(d, 'index.html'), `<meta content="${csp(BROAD)}">`);
+    return d;
+  };
+  it('rewrites _headers and the meta CSP, and the check passes', () => {
+    const d = dist();
+    const o = parseOrigins('https://rpc.example.org,wss://ws.example.org');
+    expect(applyCspToDist(d, o).sort()).toEqual(['_headers', 'index.html']);
+    expect(readFileSync(join(d, '_headers'), 'utf8')).toContain("connect-src 'self' https://rpc.example.org wss://ws.example.org;");
+    expect(checkCspDist(d, o)).toEqual([]);
+  });
+  it('detects a leftover broad connect-src and a stale origin list', () => {
+    const d = dist();
+    const o = parseOrigins('https://rpc.example.org');
+    expect(checkCspDist(d, o).join()).toMatch(/still has the broad connect-src/);
+    applyCspToDist(d, o);
+    expect(checkCspDist(d, parseOrigins('https://other.example.org')).join()).toMatch(/expected/);
+  });
+  it('leaves the default alone with no origins, but fails when tight is required', () => {
+    const d = dist();
+    expect(applyCspToDist(d, [])).toEqual([]);
+    expect(checkCspDist(d, [])).toEqual([]);
+    expect(checkCspDist(d, [], { requireTight: true }).join()).toMatch(/tight connect-src is required/);
+  });
+  it('the shipped public/_headers and index.html carry the broad default this step rewrites', () => {
+    const web = fileURLToPath(new URL('..', import.meta.url));
+    for (const f of ['public/_headers', 'index.html']) expect(readFileSync(join(web, f), 'utf8'), f).toContain(BROAD);
+  });
+});
+
+describe('apply-csp ignores comment lines that mention connect-src', () => {
+  it('passes a tightened _headers whose comment still describes the broad default', () => {
+    const d = mkdtempSync(join(tmpdir(), 'gp-csp-comment-'));
+    const o = parseOrigins('https://rpc.example.org');
+    writeFileSync(join(d, '_headers'), "# connect-src is broad (https: wss:) because ...\n/*\n  Content-Security-Policy: default-src 'self'; connect-src 'self' https://rpc.example.org; worker-src 'self'\n");
+    writeFileSync(join(d, 'index.html'), '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; connect-src \'self\' https://rpc.example.org; worker-src \'self\'">');
+    expect(checkCspDist(d, o)).toEqual([]);
+    rmSync(d, { recursive: true, force: true });
   });
 });
 

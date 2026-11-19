@@ -135,6 +135,168 @@ export interface VerifyClaimInput {
   readonly observeBalance?: boolean;
   /** Per-scan set of already credited transfer IDs. Updated only when verification succeeds. */
   readonly consumedTransfers?: Set<string>;
+  /**
+   * TM12: evidence already read in bulk from `client` by {@link fetchRouterEvidence}. When given, verification sends no
+   * request of its own for this claim, so the provider cannot tell which of the batch's transactions matched. A claim
+   * whose transaction is missing from the batch degrades to `unverified-claim` instead of being read alone.
+   */
+  readonly evidence?: RouterEvidenceBatch;
+  /** The same batch read from `secondaryClient`. */
+  readonly secondaryEvidence?: RouterEvidenceBatch;
+}
+
+/** One router transaction to read in a bulk evidence batch. */
+export interface RouterEvidenceTarget {
+  readonly transactionHash: Hex;
+  readonly blockNumber: bigint;
+}
+
+/**
+ * Receipts, transactions and block hashes read in one bulk pass ({@link fetchRouterEvidence}). Entries that failed to
+ * load are absent; verification treats an absent entry as "could not confirm".
+ */
+export interface RouterEvidenceBatch {
+  readonly chainId: number;
+  readonly head: bigint | undefined;
+  /** Block hash (lower case) read before the receipts, `null` when the provider has no such block. */
+  readonly blocksBefore: ReadonlyMap<bigint, string | null>;
+  /** The same blocks read again after the receipts, to catch a reorg during the batch. */
+  readonly blocksAfter: ReadonlyMap<bigint, string | null>;
+  /** Lower-case transaction hash to its receipt and transaction. */
+  readonly transactions: ReadonlyMap<string, { readonly receipt: unknown; readonly tx: unknown }>;
+  /** JSON-RPC requests the batch sent. */
+  readonly requests: number;
+}
+
+function cryptoRandom(): number {
+  const b = new Uint32Array(1);
+  crypto.getRandomValues(b);
+  return (b[0] as number) / 2 ** 32;
+}
+
+/**
+ * TM12: picks the router transactions whose receipts are read for one scanned page. Every router transaction of
+ * `include` (the matched claims) is kept; the rest of the page's router transactions fill the batch up to
+ * `maxTransactions`, chosen at random, and the result is shuffled. When the page has no more router transactions than
+ * the cap, all of them are read and the provider learns nothing about which matched.
+ *
+ * @param i Page announcements, router, matched announcements and the per-page cap (1 to 1000).
+ * @returns Distinct targets in random order.
+ */
+export function selectEvidenceTargets(i: {
+  readonly announcements: readonly ScannedAnnouncement[];
+  readonly router: Address;
+  readonly include: readonly ScannedAnnouncement[];
+  readonly maxTransactions: number;
+  readonly random?: () => number;
+}): readonly RouterEvidenceTarget[] {
+  const random = i.random ?? cryptoRandom;
+  const cap = Math.max(1, Math.min(1000, Number.isSafeInteger(i.maxTransactions) ? i.maxTransactions : 1));
+  const router = i.router.toLowerCase();
+  const eligible = (a: ScannedAnnouncement): a is ScannedAnnouncement & { transactionHash: Hex } =>
+    a.caller.toLowerCase() === router && a.transactionHash !== undefined && HASH32.test(a.transactionHash) && a.blockNumber >= 0n;
+  const chosen = new Map<string, RouterEvidenceTarget>();
+  for (const a of i.include) if (eligible(a)) chosen.set(a.transactionHash.toLowerCase(), { transactionHash: a.transactionHash.toLowerCase() as Hex, blockNumber: a.blockNumber });
+  const others = new Map<string, RouterEvidenceTarget>();
+  for (const a of i.announcements) {
+    if (!eligible(a)) continue;
+    const key = a.transactionHash.toLowerCase();
+    if (!chosen.has(key)) others.set(key, { transactionHash: key as Hex, blockNumber: a.blockNumber });
+  }
+  const pool = shuffle([...others.values()], random);
+  for (const t of pool) {
+    if (chosen.size >= cap) break;
+    chosen.set(t.transactionHash, t);
+  }
+  return shuffle([...chosen.values()], random);
+}
+
+function shuffle<T>(items: T[], random: () => number): T[] {
+  for (let k = items.length - 1; k > 0; k--) {
+    const j = Math.min(k, Math.floor(random() * (k + 1)));
+    const tmp = items[k] as T;
+    items[k] = items[j] as T;
+    items[j] = tmp;
+  }
+  return items;
+}
+
+/**
+ * TM12: reads, from one provider, the head, every target block's hash, each target's receipt and transaction, and the
+ * block hashes again. Requests go out in the targets' (random) order, `concurrency` at a time. Never throws: a failed
+ * read leaves its entry out. Cost: `1 + 2 * blocks + 2 * targets` requests.
+ *
+ * @param client Provider to read from.
+ * @param targets From {@link selectEvidenceTargets}.
+ * @param concurrency Parallel requests (1 to 16, default 4).
+ */
+export async function fetchRouterEvidence(client: RpcClient, targets: readonly RouterEvidenceTarget[], concurrency = 4): Promise<RouterEvidenceBatch> {
+  const limit = Math.max(1, Math.min(16, Number.isSafeInteger(concurrency) ? concurrency : 4));
+  let requests = 0;
+  const pooled = async <T>(items: readonly T[], run: (item: T) => Promise<void>): Promise<void> => {
+    for (let k = 0; k < items.length; k += limit) await Promise.all(items.slice(k, k + limit).map(run));
+  };
+  const blockNumbers = [...new Set(targets.map((t) => t.blockNumber))];
+  const readBlocks = async (into: Map<bigint, string | null>): Promise<void> => pooled(blockNumbers, async (n) => {
+    requests++;
+    try {
+      const b = await client.getBlock(n);
+      into.set(n, b === null ? null : b.hash.toLowerCase());
+    } catch { /* absent: could not confirm */ }
+  });
+  let head: bigint | undefined;
+  requests++;
+  try { head = await client.blockNumber(); } catch { head = undefined; }
+  const blocksBefore = new Map<bigint, string | null>();
+  const blocksAfter = new Map<bigint, string | null>();
+  const transactions = new Map<string, { readonly receipt: unknown; readonly tx: unknown }>();
+  await readBlocks(blocksBefore);
+  await pooled(targets, async (t) => {
+    requests += 2;
+    try {
+      const [receipt, tx] = await Promise.all([
+        client.request('eth_getTransactionReceipt', [t.transactionHash]),
+        client.request('eth_getTransactionByHash', [t.transactionHash]),
+      ]);
+      transactions.set(t.transactionHash.toLowerCase(), { receipt, tx });
+    } catch { /* absent: could not confirm */ }
+  });
+  await readBlocks(blocksAfter);
+  return { chainId: client.chainId, head, blocksBefore, blocksAfter, transactions, requests };
+}
+
+/** Where verification reads from: the live provider, or a bulk batch read from it beforehand. */
+interface EvidenceReads {
+  head(): Promise<bigint>;
+  blockHash(n: bigint, again: boolean): Promise<string | null>;
+  receiptAndTx(hash: Hex): Promise<readonly [unknown, unknown]>;
+}
+
+function liveReads(client: RpcClient): EvidenceReads {
+  return {
+    head: () => client.blockNumber(),
+    blockHash: async (n) => (await client.getBlock(n))?.hash.toLowerCase() ?? null,
+    receiptAndTx: (hash) => Promise.all([
+      client.request('eth_getTransactionReceipt', [hash]),
+      client.request('eth_getTransactionByHash', [hash]),
+    ]),
+  };
+}
+
+const MISSING = 'evidence missing from the bulk batch';
+
+function batchReads(batch: RouterEvidenceBatch): EvidenceReads {
+  return {
+    head: () => (batch.head === undefined ? Promise.reject(new Error(MISSING)) : Promise.resolve(batch.head)),
+    blockHash: (n, again) => {
+      const map = again ? batch.blocksAfter : batch.blocksBefore;
+      return map.has(n) ? Promise.resolve(map.get(n) ?? null) : Promise.reject(new Error(MISSING));
+    },
+    receiptAndTx: (hash) => {
+      const hit = batch.transactions.get(hash.toLowerCase());
+      return hit === undefined ? Promise.reject(new Error(MISSING)) : Promise.resolve([hit.receipt, hit.tx] as const);
+    },
+  };
 }
 
 /**
@@ -153,10 +315,10 @@ export interface VerifyClaimInput {
  * @returns Verification result with confirmation depth against `chain.finalityDepth`.
  */
 export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<PaymentVerification> {
-  const primary = await verifyClaimedPaymentOnClient(i);
+  const primary = await verifyClaimedPaymentOnClient(i, i.evidence);
   if (primary.status !== 'received') return primary;
   if (i.secondaryClient !== undefined) {
-    const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
+    const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim }, i.secondaryEvidence);
     if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.evidenceBinding !== primary.evidenceBinding || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
       return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.');
     }
@@ -179,8 +341,9 @@ function withoutEvidenceId(result: PaymentVerification, reason: string): Payment
   };
 }
 
-async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<PaymentVerification> {
+async function verifyClaimedPaymentOnClient(i: VerifyClaimInput, batch: RouterEvidenceBatch | undefined): Promise<PaymentVerification> {
   const { claim, client, chain } = i;
+  const reads = batch === undefined ? liveReads(client) : batchReads(batch);
   const a = claim.announcement;
   const evidence: Evidence[] = [];
   let evidenceId: string | undefined;
@@ -204,7 +367,7 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
     const observed = client.chainId === chain.chainId && readable && asset !== undefined ? await readBalanceOf(client, claim.stealthAddress, asset) : undefined;
     return done('unverified-announcement', 'Not posted by the GhostPay router. Anyone can post an announcement with any token and amount.', observed);
   }
-  if (client.chainId !== chain.chainId || claim.announcement.caller.toLowerCase() !== i.router.toLowerCase()) {
+  if (client.chainId !== chain.chainId || (batch !== undefined && batch.chainId !== chain.chainId) || claim.announcement.caller.toLowerCase() !== i.router.toLowerCase()) {
     return done('unverified-claim', 'The RPC chain or announcing caller does not match the verified deployment.', undefined);
   }
   const observed = readable && asset !== undefined ? await readBalanceOf(client, claim.stealthAddress, asset) : undefined;
@@ -212,14 +375,14 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
   if (meta === undefined || asset === undefined) return done('unverified-claim', 'The announcement metadata is not in the router layout.', observed);
   if (a.blockNumber < 0n || meta.netAmount <= 0n || (meta.kind === 'erc20' && findToken(chain.chainId, meta.token) === undefined)) return done('unverified-claim', 'The announcement position or metadata is invalid or names an unsupported asset.', observed);
   try {
-    const head = await client.blockNumber();
+    const head = await reads.head();
     confirmations = head >= a.blockNumber ? head - a.blockNumber + 1n : 0n;
-    const block = await client.getBlock(a.blockNumber);
-    if (block === null || block.hash.toLowerCase() !== a.blockHash.toLowerCase()) {
+    const block = await reads.blockHash(a.blockNumber, false);
+    if (block === null || block !== a.blockHash.toLowerCase()) {
       return done('unverified-claim', 'The announcement’s block hash is not the canonical hash of that block on your RPC.', observed);
     }
     evidence.push('block-hash');
-    const direct = await directRouterEvidence(client, chain.chainId, i.router, i.announcer, claim);
+    const direct = await directRouterEvidence(reads, chain.chainId, i.router, i.announcer, claim);
     if (direct === undefined) return done('unverified-claim', 'A successful direct router transaction bound to this exact announcement and calldata was not found. Indirect smart-wallet calls remain unverified.', observed);
     evidence.push('receipt');
     let supportingId: string | undefined;
@@ -235,8 +398,8 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
       supportingId = `native:${a.blockNumber.toString()}:${a.transactionHash!.toLowerCase()}:${a.blockHash.toLowerCase()}`;
     }
     // A reorg may happen while the receipt and transaction were being read. Never release stale evidence.
-    const confirmedBlock = await client.getBlock(a.blockNumber);
-    if (confirmedBlock === null || confirmedBlock.hash.toLowerCase() !== a.blockHash.toLowerCase()) {
+    const confirmedBlock = await reads.blockHash(a.blockNumber, true);
+    if (confirmedBlock === null || confirmedBlock !== a.blockHash.toLowerCase()) {
       return done('unverified-claim', 'The payment block changed while its evidence was being checked. Rescan before relying on it.', observed);
     }
     evidenceId = supportingId;
@@ -281,15 +444,12 @@ function transferEvidenceId(token: Address, block: bigint, l: RpcLog): string | 
 }
 
 /** The bounded canonical receipt of a directly submitted router call; indirect calls need a separate proof. */
-async function directRouterEvidence(client: RpcClient, chainId: number, router: Address, announcer: Address, claim: ClaimedPayment): Promise<{ readonly logs: readonly RpcLog[]; readonly payer: Address; readonly binding: Hex } | undefined> {
+async function directRouterEvidence(reads: EvidenceReads, chainId: number, router: Address, announcer: Address, claim: ClaimedPayment): Promise<{ readonly logs: readonly RpcLog[]; readonly payer: Address; readonly binding: Hex } | undefined> {
   const a = claim.announcement;
   if (a.transactionHash === undefined || !HASH32.test(a.transactionHash) || !HASH32.test(a.blockHash) ||
       !Number.isSafeInteger(a.logIndex) || a.logIndex < 0 || a.logIndex > 0xffffff ||
       claim.stealthAddress.toLowerCase() !== a.stealthAddress.toLowerCase()) return undefined;
-  const [rc, tx] = await Promise.all([
-    client.request('eth_getTransactionReceipt', [a.transactionHash]),
-    client.request('eth_getTransactionByHash', [a.transactionHash]),
-  ]);
+  const [rc, tx] = await reads.receiptAndTx(a.transactionHash);
   if (typeof rc !== 'object' || rc === null || typeof tx !== 'object' || tx === null) return undefined;
   const r = rc as Record<string, unknown>;
   const t = tx as Record<string, unknown>;

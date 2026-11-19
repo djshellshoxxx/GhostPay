@@ -69,16 +69,22 @@ describe('Sweep balance read and scan privacy', () => {
     expect(m.calls).toHaveLength(1);
   });
 
-  it('with the default configuration, still reads the balance automatically', async () => {
+  it('with the default configuration, reads nothing until the user clicks, says the RPC learns the address, then reads exactly the balance', async () => {
     const m = mount();
+    await settle();
+    expect(m.calls).toEqual([]);
+    expect(m.getRpcCalls()).toBe(0);
+    expect(screen.getByText(/read only when you click the button below/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
     await waitFor(() => { expect(m.calls).toEqual([{ method: 'eth_getBalance', params: [STEALTH, 'latest'] }]); });
-    expect(screen.queryByRole('button', { name: 'Read balance from the Settings RPC' })).toBeNull();
   });
 
-  it('with a local proxy that is not required, still reads the balance automatically', async () => {
+  it('with a local proxy that is not required, also waits for the click', async () => {
     store({ ...PRIVATE, requireProxy: false });
     const m = mount();
+    await settle();
+    expect(m.calls).toEqual([]);
+    fireEvent.click(screen.getByRole('button', { name: 'Read balance from the Settings RPC' }));
     await waitFor(() => { expect(m.calls.map((c) => c.method)).toEqual(['eth_getBalance']); });
-    expect(screen.queryByRole('button', { name: 'Read balance from the Settings RPC' })).toBeNull();
   });
 });

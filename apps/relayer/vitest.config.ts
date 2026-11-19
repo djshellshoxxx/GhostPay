@@ -10,6 +10,7 @@ export default defineConfig({
       '@ghostpay/relayer-guard/secrets': here('../../packages/relayer-guard/src/secrets.ts'),
       '@ghostpay/relayer-guard': here('../../packages/relayer-guard/src/index.ts'),
       '@ghostpay/core-crypto': here('../../packages/core-crypto/src/index.ts'),
+      '@ghostpay/metadata-hardening': here('../../packages/metadata-hardening/src/index.ts'),
       '@ghostpay/invoice-schema': here('../../packages/invoice-schema/src/index.ts'),
     },
   },

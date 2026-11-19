@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, SETTINGS_KEY, checkDelayRange, checkRelayerUrl, checkRpcUrl, loadSettings, sanitizeSettings, saveSettings } from './settings';
+import { DEFAULT_SETTINGS, clearRpcSessionOnly, rpcUrlLooksSecret, setRpcSessionOnly, SETTINGS_KEY, checkDelayRange, checkRelayerUrl, checkRpcUrl, loadSettings, sanitizeSettings, saveSettings } from './settings';
 
 describe('settings validation', () => {
   it('accepts https/wss RPC URLs and rejects the rest', () => {
@@ -88,5 +88,46 @@ describe('persistence', () => {
     const settingsWithHook = { ...DEFAULT_SETTINGS, toJSON: () => ({ privateKey: 'accidental-secret' }) };
     expect(saveSettings(settingsWithHook, { setItem: (key, value) => { store.set(key, value); } })).toBe(true);
     expect(JSON.parse(store.get(SETTINGS_KEY)!)).toEqual(DEFAULT_SETTINGS);
+  });
+});
+
+describe('RPC URL secrets (TM4)', () => {
+  it('flags key-like paths and query parameters', () => {
+    for (const u of [
+      'https://eth-mainnet.g.alchemy.com/v2/AbCdEf0123456789AbCdEf0123456789',
+      'https://rpc.example/?apikey=abc', 'https://rpc.example/?key=1', 'https://rpc.example/?token=x',
+      'https://rpc.example/' + 'a1'.repeat(20), 'https://rpc.example/v3/abc123def456',
+      'https://rpc.example/?x=' + 'Zz9'.repeat(8), 'wss://rpc.example/ws/v2/abc123def456',
+    ]) expect(rpcUrlLooksSecret(u), u).toBe(true);
+  });
+  it('does not flag ordinary endpoints', () => {
+    for (const u of ['https://rpc.example', 'https://rpc.example/', 'https://sepolia.example.org/rpc', 'https://rpc.example/ethereum-sepolia', 'https://rpc.example/?chain=sepolia', 'nope'])
+      expect(rpcUrlLooksSecret(u), u).toBe(false);
+  });
+  it('keeps session-only endpoints out of storage but not other endpoints', () => {
+    const secret = 'https://rpc.example/v2/AbCdEf0123456789AbCdEf0123456789';
+    const other = 'https://rpc.example/ok';
+    let written = '';
+    const storage = { setItem: (_k: string, v: string): void => { written = v; } };
+    const s = { ...DEFAULT_SETTINGS, rpcUrls: { '1': secret, '10': other }, rpcUrlsSecondary: { '1': secret } };
+    try {
+      setRpcSessionOnly('primary', '1', secret);
+      expect(saveSettings(s, storage)).toBe(true);
+      expect(JSON.stringify((JSON.parse(written) as { rpcUrls: unknown }).rpcUrls)).not.toContain('AbCdEf');
+      const back = JSON.parse(written) as { rpcUrls: Record<string, string>; rpcUrlsSecondary: Record<string, string> };
+      expect(back.rpcUrls).toEqual({ '10': other });
+      expect(back.rpcUrlsSecondary).toEqual({ '1': secret }); // secondary slot not marked
+      setRpcSessionOnly('primary', '1', undefined);
+      saveSettings(s, storage);
+      expect((JSON.parse(written) as { rpcUrls: Record<string, string> }).rpcUrls['1']).toBe(secret);
+    } finally {
+      clearRpcSessionOnly();
+    }
+  });
+  it('flags but never drops a persisted secret-looking URL on load', () => {
+    const secret = 'https://rpc.example/?apikey=abc';
+    const loaded = loadSettings({ getItem: () => JSON.stringify({ rpcUrls: { '1': secret } }) });
+    expect(loaded.rpcUrls['1']).toBe(secret);
+    expect(rpcUrlLooksSecret(loaded.rpcUrls['1']!)).toBe(true);
   });
 });
