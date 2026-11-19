@@ -628,3 +628,18 @@ Base: `dfc75ef2087fa6463ae59e0818abec01796c578d`.
 Owned paths: root/workspace package manifests, package-lock.json, dependency tooling regressions if a defect is reproduced, and a source-pinned dependency handoff. No application source, workflows, coverage configuration, contracts or deployment changes.
 Acceptance: integrate the exact paired #210 and #236 dependency revisions; clean installation; library and web builds; relevant original coverage-enabled suites, typechecks and lints; full and production dependency audits; preserve pending browser and hosted qualification honestly. No forced peers, casts, blanket overrides or weakened gates.
 Source candidates: #210 `4d19655a2e5d93ad9378803cd4163245168aca24`; #236 `defdaa308a2d05ab407af7e42f8dc457cf52d103`.
+# Recovery reconciliation — 2026-11-18
+
+Worker: independent feature/custody reviewer for the master consolidation. Branch:
+`integration/ghostpay-recovery-reconciled-20261118`; base PR #239
+`4a1b181c89e02ee564b5568d4b4b8d689f5e42c5`.
+
+Owned paths: `apps/web/src/AppShell.tsx`, its beforeunload regression; the recovery and saved-export verification
+components and their tests; `apps/web/e2e/stealth-export.spec.ts`, `stealthExportFixtures.ts`, `sweep.spec.ts`;
+the focused SellerKeys recovery consent test; this claim and `docs/consolidation/RECOVERY_RECONCILIATION_2026-11-18.md`.
+
+Acceptance: retain every PR #239 protection and selectively preserve PR #240's exact-file byte checks, current
+external-copy unload guard, fresh replacement consent and keyboard recovery regressions. No changes to the codec,
+custody model, contracts, dependencies, e2e helpers, remote source branches or security gates. Record actual test
+results separately from static review. The master coordinator owns integration and publication.
+
