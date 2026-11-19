@@ -1499,3 +1499,29 @@ dependency upgrade, mainnet request, deployment or remote write.
 - Finding: the exported `canonicalize` array code uses `Array.map` (which skips holes); a sparse array can silently canonicalize to a different array or invalid JSON. Reject unsupported sparse/extra-property array input rather than returning unrepresentative signed/serialized bytes.
 - Acceptance: failing regression against baseline for holes and non-index/symbol own properties; minimal dense-array-preserving validation; regressions green, existing tests and TypeScript/lint when feasible; exact-head hosted CI, independent reviewer and lock-aware integration required before any merge.
 - Conflicts/dependencies: PR #262/#264 touch `receipts.ts` but not the two owned `json*.ts` files at inspected heads; those large candidates remain active. PR #258/#261 CI is pending. Integration lock ref is released at observed `3ae60de55add2763aa7d7a44033d11b96df13adb`; no shared integration authorized by this task.
+
+## Policy Anvil fixture reconciliation — 2026-11-19
+
+Worker: ChatGPT strict_json_review, delegated by the main consolidation coordinator.
+Branch: `repair/ghostpay-270-policy-fixture-20261119`.
+Base: `73545f63112910d46002718354ab5e99f8652e1f` (current PR #270).
+Original source input `fefcd57fb2397685a361dcbb9b9cf705efbfc17b` is its
+verified direct parent; the policy fixture blob is unchanged across that refresh.
+Owned paths: `packages/policy-scheme/src/anvil.test.ts`, this additive claim and
+`docs/handoffs/agents/POLICY_ANVIL_FIXTURE_20261119.md`.
+Acceptance: recover only the eight-line historical fixture hunk from
+`cd4539d2b7f3f14c63227c74d88c032e1e1f360d`, whose parent is
+`95d2480a6e2bacf16fe3c142c38a2538758bd102`; retain strict builder and encoder
+leaf/token binding and the intentionally malformed order's on-chain revert.
+Do not copy the historical whole file or its earlier salt-only ABI changes.
+Run bounded existing policy tests, typecheck and lint with source/dependency
+provenance; require real Anvil and contract artifacts for an Anvil pass.
+Obtain independent review, publish only this owned draft and preserve the parent.
+
+Fresh overlap check before edits: private-scan lint branch
+`1b010ec910d04df105fd662cc360629cb0a2f5dd` and export-authorization branch
+`b0abb726c138ad1df2f03b7b102c9bd9de318887` own the remaining observed web lint
+work; both retain the same unrepaired policy fixture blob as this base. This
+worker makes no web/runtime/lint-site, dependency, threshold, workflow, contract,
+main, lease, #264/#270/#272 or other-owner branch changes. The root coordinator
+owns later integration and qualification.
