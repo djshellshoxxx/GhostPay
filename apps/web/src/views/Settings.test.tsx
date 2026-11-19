@@ -284,7 +284,7 @@ describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
     expect(section.textContent).toMatch(/costs RPC calls/);
     expect(section.textContent).not.toMatch(/anonym|unlinkab|untraceab/i);
     await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
-    expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
+    expect(await within(section).findByText(/Network privacy settings saved/)).toBeTruthy();
     expect(lanes()).toEqual({ floodPerBlock: 5, spamScoring: false, privacySetTransfers: true });
     expect(JSON.stringify(lanes())).not.toMatch(/secret|private|seed/i);
   });
@@ -316,7 +316,7 @@ describe('Settings scan padding (TM15)', () => {
     await user.clear(input);
     await user.type(input, '250');
     await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
-    expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
+    expect(await within(section).findByText(/Network privacy settings saved/)).toBeTruthy();
     expect(stored()['padBlocks']).toBe(250);
   });
 });
@@ -357,17 +357,21 @@ describe('Settings network profiles (TM14)', () => {
     await save(user);
     // Stored, but not acknowledged: RPC is blocked rather than silently falling back to Direct.
     expect(() => loadNetworkSelection()).toThrow(/acknowledge|notice/i);
-    expect(within(section()).getByText(/unacknowledged saved profile are blocked/)).toBeTruthy();
+    expect(JSON.parse(window.localStorage.getItem(NET_KEY) ?? 'null') as unknown).toMatchObject({ rpcProfile: 'tor-browser', noticeAcknowledged: false });
+    expect(within(section()).getByText(/Network actions are blocked until you acknowledge/)).toBeTruthy();
     expect(section().textContent).not.toMatch(/In effect now:/);
     await user.click(within(section()).getByLabelText(/I have read this notice/));
     await save(user);
     expect(loadNetworkSelection()).toMatchObject({ rpcProfile: 'tor-browser', relayerProfile: 'direct', rpcMode: 'single', noticeAcknowledged: true });
-    expect(within(section()).queryByText(/unacknowledged saved profile are blocked/)).toBeNull();
+    expect(within(section()).queryByText(/Network actions are blocked until you acknowledge/)).toBeNull();
+    expect(section().textContent).toMatch(/In effect now: RPC reads Tor Browser/);
     // Any further change clears the acknowledgement again.
     await user.selectOptions(within(section()).getByLabelText('RPC mode'), 'own-node');
     expect(within(section()).getByLabelText<HTMLInputElement>(/I have read this notice/).checked).toBe(false);
     await save(user);
     expect(() => loadNetworkSelection()).toThrow(/acknowledge|notice/i);
+    expect(within(section()).getByText(/Network actions are blocked until you acknowledge/)).toBeTruthy();
+    expect(within(section()).queryByText(/In effect now:/)).toBeNull();
   });
 
   it('own node refuses a third-party RPC with its own message and contacts nothing', async () => {
@@ -424,5 +428,9 @@ describe('Settings network profiles (TM14)', () => {
     expect(within(section()).queryByText(/In effect now:/)).toBeNull();
     expect(within(section()).getByLabelText<HTMLSelectElement>(/Profile for RPC reads/).value).toBe('tor-browser');
     expect(() => loadNetworkSelection()).toThrow(/invalid or unavailable/);
+    await user.click(within(section()).getByRole('button', { name: 'Save network profiles' }));
+    expect(window.localStorage.getItem(NET_KEY)).toBe('{broken');
+    expect(within(section()).getByText(/Network access is not authorized for this action or the settings changed/)).toBeTruthy();
+    expect(within(section()).getByLabelText<HTMLSelectElement>(/Profile for RPC reads/).value).toBe('direct');
   });
 });

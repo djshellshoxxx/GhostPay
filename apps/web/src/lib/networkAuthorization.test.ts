@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
+import { DEFAULT_WEB_NETWORK_SELECTION, WEB_NETWORK_SELECTION_KEY } from '@ghostpay/net-transport/browser';
 import { notifyAppLock } from './appLock';
 import { DEFAULT_SCAN_PRIVACY } from './scanPrivacy';
 import { DEFAULT_SCAN_LANES } from './scanSpam';
@@ -92,7 +92,7 @@ describe('live settings, session and permissions', () => {
     await expect(text(grant)).rejects.toThrow(); expect(h.fetcher).not.toHaveBeenCalled(); expect(grant.signal.aborted).toBe(true);
   });
   it('refuses permissions deleted while an action is pending', async () => {
-    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', noticeAcknowledged: true }));
+    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ ...DEFAULT_WEB_NETWORK_SELECTION, rpcMode: 'own-node', noticeAcknowledged: true }));
     const grant = h.authorize({ endpoint: 'http://localhost:8545' }); h.values.delete(WEB_NETWORK_SELECTION_KEY);
     await expect(text(grant, 'http://localhost:8545', jsonRpc())).rejects.toThrow(); expect(h.fetcher).not.toHaveBeenCalled();
     h.authority.invalidate(); expect(() => h.authorize()).toThrow();
@@ -232,7 +232,7 @@ describe('private-path and own-node policy on actual chain categories', () => {
     ['scan', evm], ['btc-scan', { kind: 'btc', network: 'regtest' }], ['solana-scan', { kind: 'solana', network: 'devnet' }], ['tron-scan', { kind: 'tron', network: 'nile' }],
   ];
   it.each(refs)('applies own-node to %s without authorizing remote fallback', (action, network) => {
-    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', noticeAcknowledged: true }));
+    const h = harness(); h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ ...DEFAULT_WEB_NETWORK_SELECTION, rpcMode: 'own-node', noticeAcknowledged: true }));
     expect(() => h.authorize({ action, network })).toThrow(); h.authorize({ action, network, endpoint: 'https://127.0.0.1:8545' }).assertCurrent(); expect(h.fetcher).not.toHaveBeenCalled();
   });
   it('blocks required direct mode and rejects nonloopback endpoints for required local proxy', () => {
@@ -247,7 +247,7 @@ describe('private-path and own-node policy on actual chain categories', () => {
     expect(await text(grant, rpc, jsonRpc('eth_getBalance', [owner, 'latest']))).toBe('ok');
     await expect(text(grant, rpc, jsonRpc('eth_sendRawTransaction', ['0x01']))).rejects.toThrow(); await expect(text(grant, rpc, jsonRpc('eth_getBalance', [token, 'latest']))).rejects.toThrow();
     grant.dispose(); await expect(text(grant, rpc, jsonRpc('eth_getBalance', [owner, 'latest']))).rejects.toThrow(); expect(() => h.authorize()).toThrow();
-    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ rpcMode: 'own-node', noticeAcknowledged: true }));
+    h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify({ ...DEFAULT_WEB_NETWORK_SELECTION, rpcMode: 'own-node', noticeAcknowledged: true }));
     expect(() => h.authorize({ action: 'sweep-balance', allowDirectOnce: true, balance: { owner, token: 'native' } })).toThrow(); expect(h.fetcher).toHaveBeenCalledTimes(1);
   });
   it('scopes token balance consent to balanceOf for the reviewed owner/token', async () => {
