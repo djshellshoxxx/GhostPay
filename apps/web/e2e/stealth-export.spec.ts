@@ -482,7 +482,7 @@ test('the idle lock while the export is still deriving and encrypting discards t
   await keysView(page).getByRole('button', { name: 'Decrypt and load', exact: true }).click();
   await expect(keysView(page).getByText('Keystore decrypted; keys are in memory.', { exact: true })).toBeVisible({ timeout: 60_000 });
   await expect(keysView(page).locator('code', { hasText: /^st:eth:0x/ })).toHaveText(meta);
-  const restored = await openDetails(await scanOnePayment(page, mine.stealthAddress));
+  const restored = await openDetails(await scanOnePayment(page, mine.stealthAddress, { fromStart: true }));
   await restored.getByRole('radio', { name: 'Use my keystore backup file' }).check();
   await expect(restored.getByLabel('Passphrase of the keystore backup file')).toHaveValue('');
   await expect(restored.getByLabel('New passphrase for the export file (at least 14 characters)')).toHaveValue('');
