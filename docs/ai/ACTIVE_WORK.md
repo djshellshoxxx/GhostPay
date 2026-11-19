@@ -1,3 +1,18 @@
+# Historical security promotion — 2026-11-19
+
+Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
+Base/main: `e454de6abfefda70d82784fafc1d8949b277c334`.
+Owned integration: exact PR245 `baa032547a16196005dccc30a247acd55d4f62c6` and
+PR247 `20207a930336da95e78ad1d6f4987b3c74fc535a`, preserving both source parents,
+all ownership claims and their existing evidence. Resolve registry append collisions only;
+the focused main does not contain the broader master scanner changes.
+Optional source-only guard: the two net-harness source/test hunks from PR253
+`303ba1114fd78426162c4728f1778f66d64088f4`, excluding its major dependency train.
+Acceptance: merged pool helpers/witness fixtures and AST source scanner equal reviewed
+candidate source; untouched main content remains intact; bounded affected checks and
+exact dependency provenance recorded. No circuit, contract, protocol, release or gate change,
+no active source-branch overwrite, no remote mutation. Coordinator owns final publication/CI.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
