@@ -134,10 +134,13 @@ export function AppShell(props: AppShellProps): ReactNode {
     const minutes = settings.lockTimeoutMin;
     const timeoutMs = minutes * 60_000;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    // Wall-clock deadline (GP-PAGES-04): a sleeping device pauses timers, so the lock also checks `Date.now()` against the
-    // last activity when the page becomes visible or focused, on an interval, and before activity re-arms it; `locked`
-    // makes one idle period lock once.
-    let lastActivity = Date.now();
+    // Both clocks enforce the deadline (GP-PAGES-04): wall time advances across device sleep on platforms that pause
+    // performance.now(), while monotonic time prevents a wall-clock adjustment from extending the idle period.
+    // Any rollback since the last observation locks immediately, including when both timers and monotonic time paused.
+    let lastActivityWall = Date.now();
+    let lastActivityMonotonic = performance.now();
+    let lastObservedWall = lastActivityWall;
+    let lastObservedMonotonic = lastActivityMonotonic;
     let locked = false;
     const lock = (): void => {
       if (locked) return;
@@ -164,12 +167,23 @@ export function AppShell(props: AppShellProps): ReactNode {
         setLive({ key: 'app.idle.wiped' });
       });
     };
-    const overdue = (): boolean => Date.now() - lastActivity >= timeoutMs;
+    const overdue = (): boolean => {
+      const wall = Date.now();
+      const monotonic = performance.now();
+      const rolledBack = wall < lastObservedWall || monotonic < lastObservedMonotonic;
+      lastObservedWall = wall;
+      lastObservedMonotonic = monotonic;
+      return rolledBack || !Number.isFinite(wall) || !Number.isFinite(monotonic) ||
+        wall - lastActivityWall >= timeoutMs || monotonic - lastActivityMonotonic >= timeoutMs;
+    };
     const check = (): void => { if (overdue()) lock(); };
     const arm = (): void => {
       // Activity after a sleep that passed the deadline locks first; the activity then starts the next idle period.
       check();
-      lastActivity = Date.now();
+      lastActivityWall = Date.now();
+      lastActivityMonotonic = performance.now();
+      lastObservedWall = lastActivityWall;
+      lastObservedMonotonic = lastActivityMonotonic;
       locked = false;
       if (timer !== undefined) clearTimeout(timer);
       timer = setTimeout(lock, timeoutMs);

@@ -21,6 +21,33 @@ checkExpiry(parsed.invoice, Math.floor(Date.now() / 1000));
 if (isTrustedSeller(parsed)) { /* only now may the UI say the seller key is pinned */ }
 ```
 
+### Requiring a known seller
+
+A valid signature proves that the embedded key signed these invoice bytes. It does not identify the seller:
+someone else can sign a different invoice naming their own payment address. Obtain a seller key through a
+trusted channel before pinning it. A caller that requires an already known seller can opt into rejection:
+
+```ts
+const parsed = await parseFragment(location.hash, {
+  pinnedSigners: [merchantSignerKey],
+  requirePinnedSigner: true,
+});
+// Every returned invoice has trust === 'trusted-seller'. Still check expiry and payment policy.
+```
+
+This option applies to both `parseFragment` and `openFragment`, for plaintext, encrypted and passphrase
+links. It throws `InvalidSignatureError` (`INVALID_SIGNATURE`) if the signature does not verify, before
+checking the pins. A valid signature from a key outside the pin set throws `UntrustedSignerError`
+(`UNTRUSTED_SIGNER`). Missing or empty pins trust nobody. Pins compare case-insensitively as compressed
+66-character hex keys, without a `0x` prefix. Only an absent option or explicit `false` disables the guard;
+other values from untyped callers enforce it. Earlier format, schema and decryption errors retain their types.
+
+Without a passphrase, `openFragment` can return `needsPassphrase` before the policy is checked. Its header
+is unauthenticated; it is not a trusted invoice. Reuse the same required-pinning policy when opening the
+decrypted invoice. The default parser still returns signature/trust information for review; callers must
+block `invalid-signature` results. The current browser Pay flow uses that default, blocks invalid signatures,
+and labels unpinned keys. Adding this shared option does not make Pay require pinned sellers.
+
 ### Passphrase-protected links (ADR-0020)
 
 ```ts
