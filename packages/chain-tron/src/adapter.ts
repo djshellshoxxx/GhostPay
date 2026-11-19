@@ -1,6 +1,7 @@
-import { decodeMetaAddress, encodeMetaAddress, type CompressedPoint, type RandomSource, type SecretScalar } from '@ghostpay/core-crypto';
+import type { CompressedPoint, RandomSource, SecretScalar } from '@ghostpay/core-crypto';
 import { parseTronAddress, type TronAddress } from './address.js';
 import { fail } from './errors.js';
+import { decodeTronMetaAddress, encodeTronMetaAddress } from './meta.js';
 import {
   checkTronAnnouncement,
   deriveTronStealthPayment,
@@ -120,16 +121,16 @@ export function createTronAdapter(chainId: string, source: TronAnnouncementSourc
     chainId,
     fees: TRON_FEES,
     parseRecipient(input) {
-      const keys = decodeMetaAddress(input);
+      const keys = decodeTronMetaAddress(input);
       return {
         family: 'tron',
-        canonical: encodeMetaAddress(keys),
+        canonical: encodeTronMetaAddress(keys),
         spendingPublicKey: keys.spendingPublicKey,
         viewingPublicKey: keys.viewingPublicKey,
       };
     },
     buildPaymentRequest(input) {
-      decodeMetaAddress(input.metaAddress);
+      decodeTronMetaAddress(input.metaAddress);
       const owner = parseTronAddress(input.owner);
       const token = parseTronAddress(input.tokenContract);
       return {
