@@ -1,37 +1,25 @@
 # Release blocker queue
 
-Verdict at candidate `73124433c08c8ef6835f11d03709060c6eea7a3f`: **BLOCKED for demonstration and testnet beta.**
+Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
-Fixable engineering gaps and external release dependencies are listed separately by action, without changing mandatory gates. Source presence is not deployment readiness.
+**Both public milestones remain BLOCKED.** Completed native fee review, QR input integrity and six lint repairs are no longer missing-feature items. Their full integrated qualification remains required.
 
-| Priority | Blocker | Milestone | Exact next action / owner |
-| --- | --- | --- | --- |
-| 1 | Direct native sweep lacks qualified explicit gas/fee preview | Testnet | Implement review bound to the actual fee/transaction assumptions; reproduce stale/changed fee behavior and verify refusal or renewed consent before signing |
-| 2 | Strict Mythril findings and current security clearance incomplete | Required security/merge gates | Run exact-source configured analyzers, retain complete outputs and investigate the 11 historical records. No exception or suppression is authorized |
-| 3 | CodeQL High reconciliation and external review incomplete | Required security/release gates | Obtain current hosted analysis and finding-level evidence; arrange independent external review of exact release source |
-| 4 | Resolved: two transaction-fixture type errors | Historical build failure | Test-only runtime EIP-1559 envelope validation is integrated; full application typecheck/build and focused 19-case helper file now pass |
-| 5 | Complete final-source tests, coverage, lint and build matrix not yet passed | Both | Execute unchanged required matrix after final source edits; inspect failures individually |
-| 6 | Browser environment fails before startup assertions | Both | Use a supported environment for Chromium/Firefox/WebKit, /GhostPay/ local-chain journey, mobile/keyboard/accessibility and negative cases; no skipped gate counted as passed |
-| 7 | New artifact verifier and policy-fixture work arrived during qualification | Both/full workspace | PR #276 is independently reviewed and integrated (101 Pages tooling tests pass); use it on the final artifact. Inspect #275 where full policy tests apply; preserve deferred runtime scope |
-| 8 | Exact release artifact and independent reproducibility evidence incomplete | Both; signed release additional | Produce clean source-pinned site, exact file inventory, hashes, module report and provenance; independent-machine reproduction per release policy |
-| 9 | Fresh hosted candidate CI not complete | Both/main promotion | Publish isolated reviewed branch through approved workflow, await actual required jobs, inspect logs, then qualify resulting main |
-| 10 | Another worker holds the integration lease | Main promotion | Re-read lease/ACTIVE_WORK and coordinate normal handoff; do not steal lease, force-push or merge coordination history |
-| 11 | ADR-0029 owner acceptance outstanding | Public demonstration and beta | Owner records acceptance/rejection in reviewed ADR; resolve ADR-0015 hosting decisions before deploy:true |
-| 12 | GP-PAGES-01 origin isolation undecided | Public demonstration and beta | Owner chooses dedicated custom domain or isolated Pages account; configure DNS/HTTPS and exact GHOSTPAY_PAGES_ORIGIN |
-| 13 | Pages environment and publication approval unavailable | Public demonstration | Set Actions source and main-only environment, confirm candidate/approved artifact, authorize exact deployment, then verify live smoke |
-| 14 | Approved release key, fingerprint and signed testnet manifest unavailable | Testnet | Owner provides public verification key configuration, offline signing authority and reviewed testnet manifest; never place secrets in repo |
-| 15 | Authorized testnet contract deployment and bytecode proof unavailable | Testnet | Authorized deployer executes chosen testnet procedure; record addresses, code hashes, immutables and deployment identifiers |
-| 16 | Real wallet/testnet acceptance not performed | Testnet | Payment, confirmation, scanning, native sweep, independent recovery and failure/recovery on the deployed site; retain actual transaction evidence |
-| 17 | Release tag/assets not approved or qualified | 1.0.0-beta.1 | After required conditions pass, verify tag absence, create reviewed release assets/provenance and publish without replacing an existing tag |
+| Priority | Requirement | Exact next action |
+| --- | --- | --- |
+| 1 | Strict security-analysis clearance | Complete unchanged analyzer campaigns and reproduce/dispose historical findings with evidence. First Echidna campaign failed after Router and Policy exit 137; Sweep completed its original budget. The pinned binary rejects the attempted heap cap. Obtain a suitable execution environment without changing workers, call budgets or properties. Mythril's 11 records remain unresolved |
+| 2 | Current CodeQL/Sonar and independent external review | Obtain exact-candidate hosted/finding-level results and required external review. A passing main analysis or agent review is insufficient |
+| 3 | Complete original candidate test matrix | Run combined workspace type/lint, complete coverage and nocov, unit/integration/property/fuzz/contract gates. Repair demonstrated failures without changing assertions or thresholds |
+| 4 | Real browser execution environment | Provide working Chromium/Firefox/WebKit for actual `/GhostPay/` local-chain, backup/restart/revocation, desktop/mobile/keyboard/accessibility and failure cases |
+| 5 | Exact static artifact and reproducibility | Build clean source, verify every served byte and module boundary, compare two builds and perform subpath HTTP/browser checks. Independent-machine reproduction remains a release-policy gate |
+| 6 | Hosted CI availability | Required Actions must actually execute and succeed on the exact final source. Current queue has no established candidate pass; its underlying cause is unknown |
+| 7 | ADR-0029 decision | Owner records acceptance/rejection and the actual deployment scope. ADR-0015 remains binding; a Proposed ADR is not approval |
+| 8 | GP-PAGES-01 dedicated origin | Owner selects a dedicated custom domain or isolated account, verifies DNS/HTTPS and exact GHOSTPAY_PAGES_ORIGIN. No shared-origin exception is silently accepted |
+| 9 | Pages environment and exact publication approval | Actions source, main-only deployment environment and reviewed artifact/commit, followed by live commit/assets/routes/browser smoke |
+| 10 | Testnet deployment authority | Authorized deployment, code/address/immutable verification, actual identifiers and chosen fee-recipient decisions |
+| 11 | Testnet signing authority | Approved public key/fingerprint and offline signing process; authenticated testnet manifest included in the verified build. No secrets in chat, source or artifacts |
+| 12 | Real wallet/testnet acceptance | Payment, confirmation, scan, receipt, native sweep, backup/recovery and failure/recovery with actual transaction evidence |
+| 13 | Final tag and release assets | Only after required approval/security/CI/integrity/deployment conditions, check tag absence and publish the approved version without replacing an existing tag |
 
-The demonstrated sweep-authority, balance-consent, stale-callback, entry-session, clock and jitter defects were corrected with regression evidence. Their closure is scoped to those implementations, not to the entire release.
+The separate integration lease was released; it is not presently listed as a held-lock blocker. Re-read live ownership and main before promotion. Main's observed unprotected setting does not authorize bypassing checks.
 
-## Owner decisions prepared for review
-
-[DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md) contains the proposed dedicated-origin settings and deployment sequence. Required inputs are the owner-selected hostname/account, documented ADR decision, Pages environment configuration, signing public-key/fingerprint decision, authorized testnet deployer/fee-recipient choices and external reviewer. No private key should be supplied through documentation or chat.
-
-An external dependency blocking publication does not prevent safe source work. Continue the queue through remaining engineering and reproducible evidence before requesting final approval of the exact deployment. Preserve all completed work if local resources stop execution.
-
-## Publication provenance
-
-Implementation commit identities above refer to preserved local development history. The GitHub connector preserves each tree and ordered parent history while normalizing commit metadata. `PUBLICATION_MAP.json` maps implementation commits to their published identities. Fresh publication, artifact and hosted-check records will be appended after final qualification.
+Owner choices are prepared in [DEPLOYMENT_READINESS.md](DEPLOYMENT_READINESS.md). These external dependencies do not excuse unfinished safe local engineering. Continue the independent work and preserve exact evidence until genuine resource, service or authority limits prevent further progress.

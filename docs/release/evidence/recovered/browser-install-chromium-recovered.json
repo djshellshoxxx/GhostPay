@@ -1,0 +1,30 @@
+{
+  "command": [
+    "node",
+    "node_modules/playwright/cli.js",
+    "install",
+    "chromium"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T13:02:22.681899+00:00",
+  "source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "source_tree": "b0bfa31a8dea6872dbc6a16aa39150458e5a9616",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=256",
+    "PLAYWRIGHT_BROWSERS_PATH": "/tmp/ghostpay-browsers-246ff268d20d"
+  },
+  "status": "completed",
+  "exit_code": 1,
+  "duration_seconds": 28.05793523788452,
+  "finished_utc": "2026-11-19T13:02:50.739826+00:00",
+  "final_source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "final_status": "",
+  "log": "browser-install-chromium-recovered.log.gz",
+  "uncompressed_bytes": 5864,
+  "uncompressed_sha256": "6cf7344bf12d0acde07a15ba15a4589e8919c66640526345cb25887ddcfe2e62",
+  "stored_bytes": 689,
+  "stored_sha256": "cd9a871f80becec883a66972fa08c02e292737e08ac89a7943bccbd7e8dc0df5"
+}

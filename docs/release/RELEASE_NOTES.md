@@ -1,53 +1,42 @@
 # GhostPay 1.0.0-beta.1 — prepared release notes
 
-**Unpublished draft.** This document does not create a tag, GitHub Release or readiness verdict. Candidate: `73124433c08c8ef6835f11d03709060c6eea7a3f`. Main at preparation: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
+
+**Unpublished draft; not a release announcement.** Root and web application metadata are 1.0.0-beta.1. The proposed tag follows the existing `v1.0.0-beta.1` convention; no tag or Release has been created.
 
 ## Intended first milestone
 
-A static, lean EVM demonstration with payment execution disabled. It supports browser-local seller keys, authenticated key exports, encrypted backup, exact-file backup verification, restore, signed invoice creation/viewing and help. No GhostPay-operated backend, account, database or relayer service is required.
+A static, lean EVM demonstration with payments disabled. It provides browser-local seller keys, authenticated exports, encrypted backup, exact downloaded-file verification, restore, signed invoice creation/viewing and public help. No GhostPay-operated backend, account, database or relayer service is required. Testnet payment activation is a separate gated milestone; Pages mainnet stays disabled.
 
-A later testnet milestone may activate only the test networks covered by an approved, authenticated deployment manifest and completed acceptance. Pages mainnet functionality remains disabled.
+## Consolidated changes
 
-## Changes consolidated
+- Retain reviewed recovery, sleep-aware sessions, private checkpoints and current authorization behavior from the #262/#270 lineage.
+- Recover #269's fresh export-specific permission after authentication, original endpoint binding and scan/checkpoint cancellation corrections.
+- Integrate #272's balance/quote lifecycle without losing network grants, destination history limits or uncertain-transaction recovery.
+- Revoke obsolete review authority before key derivation, signing and transport; require explicit consent to the exact fresh native balance.
+- Add native fee preparation and a separate one-use confirmation, with exact destination, gas/fee/reserve/net display, bounded expiry, replacement identity and fresh final transaction checks.
+- Guard native manifest requests against review expiry, including errors returned after expiry.
+- Reject invalid/rolled-back network-authority clocks and retain #274's monotonic invoice expiry.
+- Preserve #276/#277 artifact verification with checked-byte, file-identity and invalid-UTF-8 protections.
+- Strengthen strict analyzer completeness/evidence handling without accepting or suppressing findings.
+- Preserve #275's actual-Anvil negative fixture and #279's rejection of lossy malformed-Unicode multipart QR input.
+- Correct six complete-lint diagnostics without removing assertions, rules or coverage thresholds; update the sweep guide to match implemented review behavior.
 
-- Retained the current recovery, sleep-aware session, private-checkpoint and authorization work from the qualified source lineage, preserving older branch history.
-- Recovered #269's payment-key export flow. A secret export obtains fresh, narrowly scoped network permission after authentication and uses the original verified endpoint; it does not revive an expired scan grant. Public records remain exportable without that network check.
-- Integrated #272's explicit balance and quote lifecycle into the newer privacy implementation. Destination, balance, endpoint, network settings and review changes invalidate pending work.
-- Added helper checks before key derivation, signatures and handoff so a valid session cannot preserve an obsolete review.
-- Required a newly read native balance to equal the balance the user reviewed before a direct sweep can sign. A changed balance requires a fresh explicit review.
-- Repaired session expiry at authorization entry and prevented cancelled reviews from publishing stale errors.
-- Made network grants fail closed on invalid or decreasing clock samples; retained non-renewal semantics for mere authority checks.
-- Incorporated #274's monotonic invoice wait-expiry floor and retained #270's canonical-array/scanner hardening.
-- Added reproducible regression evidence and independent agent source checks. Complete release qualification remains separate.
+## Security and privacy limitations
 
-See [BRANCH_CONSOLIDATION.md](BRANCH_CONSOLIDATION.md) for exact provenance and [TEST_RESULTS.md](TEST_RESULTS.md) for executed counts, failures, omissions and source pins.
+A backup is recoverable only after its actual bytes are verified; initiating a download is insufficient. Preserve the formats needed for keys, separate invoice-signing identity and history. JavaScript cannot guarantee erasure of every secret copy. Stealth addresses reduce routine address reuse but do not provide complete anonymity: RPC requests, public chain activity, destination reuse, gas funding and timing remain observable.
 
-## User-facing boundaries
+The demonstration cannot move funds. Testnet payments use test assets only after signed-manifest and acceptance gates. Native sweeping is the primary acceptance target; ERC-20 requires native gas and separate qualification. Optional relayer-client code does not imply a provided or mandatory GhostPay service. Tor reachability and final browser/platform acceptance are not established.
 
-A backup download is not evidence of recoverability until its actual bytes have been verified. Keep independent recovery material outside the original browser and follow the [recovery guide](../user/recover-stealth-payment-keys.md). Importing one key format does not implicitly restore unrelated signing identities or every application-history record.
+## Release record
 
-Stealth addresses reduce address reuse; they do not provide complete anonymity. RPC providers observe requests, public chains expose payment relationships and timing, and destination reuse or gas funding can create visible links. Read [privacy limits](../user/privacy-limits.md).
-
-The demonstration cannot move funds. Testnet payments, when separately qualified, use test assets only. Native sweeping is the end-to-end acceptance target; ERC-20 sweeping needs native gas at the one-time address and separate qualification. Optional relayer client code requires a user-selected service; no GhostPay relayer is provided or mandatory. Tor/private-path reachability is not yet qualified.
-
-## Known release blockers
-
-Dedicated-origin hosting and ADR-0029 approval, fresh full-source CI and browser acceptance, native gas/fee preview, exact artifact/reproducibility verification, unresolved security-analysis gates, independent external review and testnet signing/deployment/real-wallet evidence remain open. See [RELEASE_BLOCKERS.md](RELEASE_BLOCKERS.md).
-
-## Release asset record
-
-| Asset/identity | State |
+| Item | State |
 | --- | --- |
-| Tag 1.0.0-beta.1 | Not created; check for existing published tag before any creation |
-| Source archive / source commit | Candidate above; final approved commit must replace it |
-| Pages site archive | Not yet qualified or published |
-| SHA256SUMS and exact inventory | To be produced from final artifact, not inferred from source |
-| pages-evidence.json / lean module report | Required for final artifact |
-| Build provenance / independent reproduction | Required before release |
-| Test and security qualification records | These documents plus source-pinned receipts; unresolved gates explicit |
+| Source | Candidate history and PUBLICATION_MAP identify exact implementation/publication trees |
+| Pages archive / inventory | Pending final candidate build, integrity and reproducibility record |
+| Test qualification | Fresh scoped results and failed/unexecuted checks in TEST_RESULTS; not full acceptance |
+| Security findings | Historical analyzer/hosted/external gates remain open; see SECURITY_AUDIT |
+| Live deployment | None performed by this lane |
+| Tag/GitHub Release | Not created; all required conditions must pass first |
 
-Use the established [Pages build guide](../pages/README.md) and [developer guide](../developer/README.md). Do not distribute this draft as a verified payments-enabled beta.
-
-## Publication provenance
-
-Implementation commit identities above refer to preserved local development history. The GitHub connector preserves each tree and ordered parent history while normalizing commit metadata. `PUBLICATION_MAP.json` maps implementation commits to their published identities. Fresh publication, artifact and hosted-check records will be appended after final qualification.
+See [blockers](RELEASE_BLOCKERS.md), [deployment decisions](DEPLOYMENT_READINESS.md), [user guide](../user/README.md), [recovery](../user/recover-stealth-payment-keys.md) and [developer guide](../developer/README.md). Do not distribute this draft as a verified payments-enabled beta.

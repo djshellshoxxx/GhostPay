@@ -1,0 +1,9 @@
+{
+  "base": "75cc6149e2fd560f26725e806b24f859f999d647",
+  "reviewed_commit": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+  "source_diff_sha256": "a4033dea14ac7d5227aaa8323c876b1a43629d5ec1775ed33a6349e4244ea107",
+  "reviewer": "integration coordinator, independent of implementation worker",
+  "finding": "Six diagnosed lint issues addressed by five fixture-only changes and removal of a dead bigint initializer; both existing transaction branches assign the reserve before use. Every existing assertion, lint configuration and threshold retained.",
+  "verdict": "APPROVED_SCOPED_SOURCE_REVIEW_PENDING_EXECUTION",
+  "fresh_tests_executed_by_reviewer": false
+}

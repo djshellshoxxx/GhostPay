@@ -1,0 +1,13 @@
+{
+  "reviewer": "independent security_review agent",
+  "scope": "Read-only user sweep and Pages guide comparison against native implementation at c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a",
+  "result": "Documentation refinements applied by coordinator; no runtime blocker identified in this scoped review",
+  "corrections": [
+    "Use actual displayed expiry; fee calculation consumes part of 60-second lifetime, which starts after vault authentication, RPC creation and initial manifest readback.",
+    "Scope settings revocation to relevant network or privacy settings.",
+    "Scope same-nonce replacement to native coin.",
+    "Restore compromised-host/same-origin limitation on on-screen review.",
+    "Explain additional L1/operator reserve estimate and distinguish unavailable simulation from success."
+  ],
+  "external_audit": false
+}

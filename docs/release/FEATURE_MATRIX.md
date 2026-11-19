@@ -1,43 +1,34 @@
 # GhostPay 1.0 Beta feature matrix
 
-Checkpoint: 2026-11-19. Candidate branch: `release/ghostpay-beta-qualification-20261119`. Candidate: `73124433c08c8ef6835f11d03709060c6eea7a3f`. Product checkpoint: `35978ab796b7c476eb35dd9ed634ca4ff86ff9b9`; the candidate also includes the current main audit record, a test-only serialized-transaction typing correction, the independently reviewed Pages artifact verifier, and documentation updates; current `main` is `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
-**Both release milestones are BLOCKED.** Source availability, focused regression results, complete candidate qualification and published acceptance are separate columns of evidence. This document does not certify an unexecuted workflow.
+**Demonstration: BLOCKED. Testnet beta: BLOCKED.** Implementation, scoped tests, full qualification and published acceptance are distinct.
 
-## Lean EVM scope
+## Lean release scope
 
-The product remains a static, non-custodial browser application. Users choose network endpoints and authorize network, secret-export, signing and broadcast operations. The demonstration must have no authenticated deployment manifests and must disable payments, scanning and sweeping. Mainnet remains forbidden for Pages. Bitcoin, Solana, TRON, policy accounts, confidential pools and server/relayer services remain preserved development work outside this release. Existing optional user-configured relayer client code is not a required GhostPay service.
+GhostPay remains a static, non-custodial EVM application. Keys and signing stay client-side; no GhostPay-operated account, database, backend or relayer is required. A demonstration without authenticated deployment manifests disables payment execution, scanning and sweeping on every chain. Pages mainnet remains prohibited. Bitcoin, Solana, TRON, policy accounts, confidential pools and server implementations remain preserved outside this release.
 
-| Workflow | Source and consolidation state | Evidence available | Remaining acceptance |
-| --- | --- | --- | --- |
-| Seller keys and encrypted backup | Existing key generation, authenticated export, import, encrypted backup and exact downloaded-file verification retained | Recovery implementations from the #238/#240 consolidation; current source references below | Exact-candidate browser generation, wrong password/file/account, interruption, refresh and restart |
-| Independent master/payment-key recovery | Spec 18 formats and standalone decoder retained; #269 recovered with fresh export-specific network authorization | Export/scanning selection: 300 passing cases on recorded worker source; includes independent codec recovery, credentials and scope failures | Reproduce from exported bytes outside the original browser; verify signing-identity backup separately |
-| Session lifecycle | Sleep-aware expiry, rollback checks, revocation and recovery-aware locking retained | Existing authority suites plus new network clock file: 106 passing cases; entry-session regression reproduced and repaired | Real suspension/restart/cross-tab acceptance on the final candidate |
-| Invoice creation and review | Existing signed canonical invoices, links and QR flow retained; #270 array validation and #274 monotonic wait expiry included | Jitter: original 13-case suite passed; independent 34-case probe retained | Browser create/open/expiry, malformed invoices, signer trust and QR interaction |
-| Buyer payment | Existing explicit wallet/network review, transaction checks and pending-state handling retained | Historical source evidence only for the complete buyer journey | Final-source local-chain browser payment, duplicate prevention, failed/uncertain/reload paths; real testnet later |
-| Private scanning and reconciliation | Private checkpoints and encrypted discovery retained; #269 checkpoint selection/cancellation fixes; #270 rejects unsupported scanner schemes | Affected 300-case selection includes scan client, lifecycle and checkpoint tests; final fixture rerun: 20 passed | Bounded resume, reorg/evidence failures, independent receipt association and browser restart acceptance |
-| Receipts | Seller-signed receipt flow and privacy defaults retained | Existing source and user guides | Finalized transaction association and browser receipt verification |
-| Direct native sweep | #272 semantically merged with existing endpoint grants and destination ledger; helper review/session guards and exact native balance consent added | Component 71 passed after entry fix; helper/destination selection 131 passed; independent focused reruns | Explicit gas/fee review remains a product gap; final-chain browser journey and failure recovery |
-| ERC-20 sweeping | Source retained; one-time address requires native gas | No full release acceptance claimed | Separate funded-gas acceptance; do not advertise as qualified native-sweep equivalent |
-| Static Pages and help | Lean build, manifest refusal, banner, CSP/artifact checks and guides retained | Existing tooling; current build and exact artifact qualification tracked in TEST_RESULTS | Complete /GhostPay/ build, inventory/hashes, browser/accessibility and deployment smoke |
-| Origin and release authority | ADR-0029 remains Proposed; dedicated-origin decision remains open | Source gate and hosting policy inspected | Owner decision, exact-source CI, signing/hosting configuration and external review |
+| Family | Implemented behavior and recovered work | Evidence and remaining acceptance |
+| --- | --- | --- |
+| Seller keys and backups | Generation/import, authenticated private export, encrypted backups, exact-file verification and overwrite protection retained | Spec 18 source and tests retained. Wrong password/file/account, download interruption and browser restart still need final browser acceptance |
+| Independent recovery | Portable master/payment-key formats and standalone decoder; fresh export-specific RPC authority after authentication | Fresh 23-case recovery suite passed, including a fresh directory outside the repository and a recovered-key spend on local Anvil. This does not restore every separate signing identity/history format automatically |
+| Session authority | Sleep/idle expiry, rollback refusal, revocation, cross-tab handling and recovery-aware locking retained | Existing authority tests plus reproduced entry-lock and invalid/decreasing-clock repairs. Actual browser suspension/restart remains unverified |
+| Invoice and buyer flow | Signed canonical invoices, expiry, links/QR, explicit wallet/network confirmation, pending/uncertain handling retained | #270/#274 preserved. #279 malformed multipart Unicode repair passed 17 web QR tests and 233 package tests with the original coverage gate. Complete buyer browser journey remains required |
+| Private discovery and receipts | Private checkpoints, encrypted discoveries, bounded scanning, cancellation and receipt association retained | #269 source and 300-case historical scoped selection retained. Fresh full application coverage and reorg/restart/browser acceptance remain required |
+| Direct native sweep | Separate read-only preparation and one-use confirmation; exact destination, balance, nonce, fee caps/reserves and net amount; wall/monotonic expiry; fresh final checks and persistent uncertain-attempt handling | Recovered source passed 384 tests in ten files. Subsequent behavior-preserving lint repair passed 367 affected tests, full web typecheck and complete web lint. Final combined/browser/testnet qualification remains required |
+| ERC-20 sweep | Existing direct path retained; one-time address requires native gas | Separate gas-funding and token acceptance required. Native tests do not qualify ERC-20 support |
+| Static site and help | Lean profile, no-manifest payment refusal, mainnet exclusion, CSP and bundle guards, relative routing and public guides | Full web build passed. Final Pages artifact, reproducibility, subpath HTTP and browser checks remain separate |
+| Release integrity | Independent artifact verifier, byte/file-identity checks, strict analyzer completeness and evidence capture | #276/#277 preserved; static selection 151 passed. Analyzer tooling 54 passed; complete native analyzer and hosted release gates remain distinct |
 
-A downloaded backup is not a verified backup. Verification must decrypt the actual file and compare its keys without replacing loaded keys. A master stealth-key export or per-payment export also does not automatically preserve every invoice-signing identity or application-history record; follow the distinct formats and restore procedures.
+A downloaded backup is not a verified backup. Verify its actual bytes by decrypting and matching the intended keys. Preserve invoice-signing identity and application history using their own documented formats where needed. Secret-buffer disposal is best effort in JavaScript, not a guarantee that every runtime copy is erased.
 
-## What the numbers mean
+## Evidence-based progress
 
-Ten user-facing families above have existing source, and the ERC-20 row states a separate unqualified boundary. That inventory is not a feature-completion percentage. No full final-source browser acceptance run has completed in this environment: **0 of the 12 required end-to-end scenarios are verified here (0%)**. Chromium failed during process startup before assertions; this says nothing about whether those flows would pass in a supported browser environment.
+All nine rows have source; that is an inventory, not proof of complete product behavior. **0/12 mandatory final-candidate real-browser scenarios are verified here (0%).** The local Anvil recovery test is not a browser or public-testnet result. **Qualified public milestones: demonstration 0/1 (0%), testnet beta 0/1 (0%).** An overall implementation-completion estimate is withheld until the full matrix can establish it. These counts never override the BLOCKED verdict.
 
-For both demonstration and testnet beta, an overall readiness percentage is withheld because mandatory gates remain unsatisfied. The governing verdict is **BLOCKED**; see [RELEASE_BLOCKERS.md](RELEASE_BLOCKERS.md).
-
-## User and developer guides
+## Guides
 
 - [User guide](../user/README.md), [seller setup](../user/set-up-stealth-meta-address.md), [session security](../user/session-security.md).
-- [Backup and independent payment-key recovery](../user/recover-stealth-payment-keys.md), [Spec 18](../specs/18-stealth-keypair-export.md), [portable formats](../specs/18-stealth-keypair-export-formats.md), [standalone recovery decoder](../../scripts/recovery/stealth-export-recover.mjs).
-- [Buyer review and payment](../user/review-and-pay-an-invoice.md), [receive and scan](../user/receive-and-scan.md), [sweep and gas privacy](../user/sweep-and-gas-privacy.md).
-- [Privacy limits](../user/privacy-limits.md), [seller privacy](../user/seller-privacy.md), [invoice signer pins](../user/invoice-signer-pins.md).
-- [Developer guide](../developer/README.md), [security model](../developer/security-model.md), [Pages build/deployment guide](../pages/README.md).
-
-## Publication provenance
-
-Implementation commit identities above refer to preserved local development history. The GitHub connector preserves each tree and ordered parent history while normalizing commit metadata. `PUBLICATION_MAP.json` maps implementation commits to their published identities. Fresh publication, artifact and hosted-check records will be appended after final qualification.
+- [Independent recovery](../user/recover-stealth-payment-keys.md), [Spec 18](../specs/18-stealth-keypair-export.md), [portable formats](../specs/18-stealth-keypair-export-formats.md), [standalone decoder](../../scripts/recovery/stealth-export-recover.mjs).
+- [Buyer workflow](../user/review-and-pay-an-invoice.md), [scanning](../user/receive-and-scan.md), [native sweep review and gas privacy](../user/sweep-and-gas-privacy.md).
+- [Privacy limits](../user/privacy-limits.md), [seller privacy](../user/seller-privacy.md), [signer pins](../user/invoice-signer-pins.md), [developer guide](../developer/README.md), [Pages guide](../pages/README.md).

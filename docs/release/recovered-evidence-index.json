@@ -1,0 +1,228 @@
+{
+  "format": "ghostpay-qualification-evidence/1",
+  "note": "Completed and explicitly interrupted receipts are distinct; inspect each status/source. Compressed logs preserve exact original bytes.",
+  "files": [
+    {
+      "path": "evidence/recovered/analyzer-integrated-recovered.json",
+      "bytes": 1264,
+      "sha256": "3240dc42e988c0cb02623543ebf9c065d856b4cec1f9d9f23132760b1c9f25f1"
+    },
+    {
+      "path": "evidence/recovered/analyzer-integrated-recovered.log.gz",
+      "bytes": 2538,
+      "sha256": "0d59ebd537710bf096033dcf8b3c7e4fca7a23a050f3061534667bdfe338318f",
+      "uncompressed_bytes": 14079,
+      "uncompressed_sha256": "0733ebc23c4b456efd2dcdd8672a8a72f152ff85928b74461e7631258068dac2"
+    },
+    {
+      "path": "evidence/recovered/browser-install-chromium-recovered.json",
+      "bytes": 1164,
+      "sha256": "a8a7be4b79c32f1241b8af92ab8ec8b545a6717ca8a619146e6e2424ebc85e80"
+    },
+    {
+      "path": "evidence/recovered/browser-install-chromium-recovered.log.gz",
+      "bytes": 689,
+      "sha256": "cd9a871f80becec883a66972fa08c02e292737e08ac89a7943bccbd7e8dc0df5",
+      "uncompressed_bytes": 5864,
+      "uncompressed_sha256": "6cf7344bf12d0acde07a15ba15a4589e8919c66640526345cb25887ddcfe2e62"
+    },
+    {
+      "path": "evidence/recovered/browser-preflight-recovered.json",
+      "bytes": 1881,
+      "sha256": "1deeb1a01cc1335545a44e6115add4d26f4325cb9e56bf2ea883d811e22db405"
+    },
+    {
+      "path": "evidence/recovered/browser-preflight-recovered.log.gz",
+      "bytes": 304,
+      "sha256": "a494793585b1186510edb1fefbaec589038acb8094c56e994961114247f44c66",
+      "uncompressed_bytes": 592,
+      "uncompressed_sha256": "db5f85a47d63772cb83a4343713c3b145af5b98916cf60bdb52d717dabf9a7b9"
+    },
+    {
+      "path": "evidence/recovered/build-libraries-recovered.json",
+      "bytes": 1088,
+      "sha256": "07b32fdde64f6bdbb2f73f5cbedc9f1b4b9e80a8ecca873e6060277856c6e71f"
+    },
+    {
+      "path": "evidence/recovered/build-libraries-recovered.log.gz",
+      "bytes": 1322,
+      "sha256": "c978e31c71308ef557589540d46ec16c22c07c69ef4ce6d7fd2895ecbae0b7e6",
+      "uncompressed_bytes": 27144,
+      "uncompressed_sha256": "ff39e895981106073ac533a90ea2feddbe0799eafaf3f90bc620dceb2acdcb86"
+    },
+    {
+      "path": "evidence/recovered/clean-install-recovered.json",
+      "bytes": 738,
+      "sha256": "c972925970567884a561baa64b2d935269c23b231867a456aed42b880883027a"
+    },
+    {
+      "path": "evidence/recovered/completed-download-cache-cleanup.json",
+      "bytes": 614,
+      "sha256": "ebea2b7557595901c17326a5d9931c1ef31f9c5e6e8fd65163c19b0ef0c12ad5"
+    },
+    {
+      "path": "evidence/recovered/dependency-audit-full-recovered.json",
+      "bytes": 1116,
+      "sha256": "fadb14e9bb2ebbad27cf3deec5ee8162b0fb9dcde3923930ab0505684b3dd000"
+    },
+    {
+      "path": "evidence/recovered/dependency-audit-full-recovered.log.gz",
+      "bytes": 1534,
+      "sha256": "c574a9d87d2b874de8958568f74d19530d6baf523ed8410bafe9079cb2069e66",
+      "uncompressed_bytes": 9581,
+      "uncompressed_sha256": "7a159a300a20d1f52d21508f7488ed7896b4bc5f65c72d7c85730dd92dae4209"
+    },
+    {
+      "path": "evidence/recovered/dependency-audit-production-recovered.json",
+      "bytes": 1138,
+      "sha256": "d28d34ec575f651ec6e1aec829e4021599813aa6b438541154265f48402046fb"
+    },
+    {
+      "path": "evidence/recovered/dependency-audit-production-recovered.log.gz",
+      "bytes": 372,
+      "sha256": "bbda1702bb251fd8b2ef57e538d10a69aa6b519d9a6a70c1d698a183dd318158",
+      "uncompressed_bytes": 640,
+      "uncompressed_sha256": "e3c3652191e79bd8ad4f42f05dc1090deb23cfb57ffccf01bf2ac000675e2101"
+    },
+    {
+      "path": "evidence/recovered/dependency-graph-recovered.json",
+      "bytes": 1206,
+      "sha256": "b535b7ca0465128ae96e47719ee3b902157709084330a114faae00e9d24b9247"
+    },
+    {
+      "path": "evidence/recovered/dependency-graph-recovered.log.gz",
+      "bytes": 81560,
+      "sha256": "98365a191071385183966098100d940bba4af9259cb2c7cbc34510ac445547a3",
+      "uncompressed_bytes": 689733,
+      "uncompressed_sha256": "396c506862fbf99c9a039b7aea9df9901b7f62b0bb481b7b2c749aa003a5f66a"
+    },
+    {
+      "path": "evidence/recovered/duplicate-install-cleanup.json",
+      "bytes": 552,
+      "sha256": "b38e811e0f964cd445dbc5cf1d73cb5917c66ae248c215912b27e702d807bd86"
+    },
+    {
+      "path": "evidence/recovered/foundry-full-recovered.json",
+      "bytes": 1330,
+      "sha256": "886ab0fc208ab244b3a598b9aabd99e80131b1db2ca966c4ac2f869171b23c47"
+    },
+    {
+      "path": "evidence/recovered/foundry-full-recovered.log.gz",
+      "bytes": 11040,
+      "sha256": "adcdf6cc56792fa644ccdc7c58f756f38c1645eb04b574678c40ff66549a2e0e",
+      "uncompressed_bytes": 45122,
+      "uncompressed_sha256": "60ae74af963bf0c4b83d4285ccf3dbf0b09ac34ced3819703377416aad6eaa84"
+    },
+    {
+      "path": "evidence/recovered/full-web-build-recovered.json",
+      "bytes": 1080,
+      "sha256": "b1d990e37792fcff15323ce2c1af899b49accdd2251f539cf8b79eacc946f7cd"
+    },
+    {
+      "path": "evidence/recovered/full-web-build-recovered.log.gz",
+      "bytes": 1428,
+      "sha256": "f43a6f46a8e8d741197cd9b25182560a74592726d537240aa1ef005a98d03845",
+      "uncompressed_bytes": 3317,
+      "uncompressed_sha256": "d05e7ed215836a38ae4535bf36fee0e2ac22de95b27c9da5a2ae90aa59fd8a5f"
+    },
+    {
+      "path": "evidence/recovered/independent-recovery-recovered.json",
+      "bytes": 1290,
+      "sha256": "36a9912ca03397c0627c6b656b7a956958bfec5c2e9d1a9e13ea98c7f1e2291f"
+    },
+    {
+      "path": "evidence/recovered/independent-recovery-recovered.log.gz",
+      "bytes": 1658,
+      "sha256": "4e5c6309670c765d8756b11a8806b10e6cb544ea67b3d4758ada5a7d838c0dd8",
+      "uncompressed_bytes": 6195,
+      "uncompressed_sha256": "3acb9b2e8ffc852d6c48de9c0d8da81f41f7aed8f1f538d4e35cb086257dd1e4"
+    },
+    {
+      "path": "evidence/recovered/interrupted-workspace-typecheck-started.json",
+      "bytes": 19191,
+      "sha256": "9fe3bd36f6e2e6989e23110226d205b3cf4ac55f57ffbbe21f1b55f915e7defe"
+    },
+    {
+      "path": "evidence/recovered/interrupted-workspace-typecheck.json",
+      "bytes": 908,
+      "sha256": "c1373f233b7c9ade4eef71a4ec2562952877c399e3c137a945ae1fb8a5981f7f"
+    },
+    {
+      "path": "evidence/recovered/interrupted-workspace-typecheck.log.gz",
+      "bytes": 439,
+      "sha256": "2f1aea168cde60c5ccc68bb57fcc5d2ca32b5192459e7ee2d2b7804c03fccb5c",
+      "uncompressed_bytes": 1681,
+      "uncompressed_sha256": "6ea9b846053b1066634b0ee2916d3a6427d8cbfda0c5752ad0693775243ed9c8"
+    },
+    {
+      "path": "evidence/recovered/lint-source-independent-review.json",
+      "bytes": 660,
+      "sha256": "2294ebd5bfa74a2d2b115cce78829339c48cc20c032744f41377e33cf3862d11"
+    },
+    {
+      "path": "evidence/recovered/pages-security-recovered.json",
+      "bytes": 1193,
+      "sha256": "d5ea4fcd0b07f5b05749ce8dcc8d8b48a315b757c0b40376f2bb934fcbfed201"
+    },
+    {
+      "path": "evidence/recovered/pages-security-recovered.log.gz",
+      "bytes": 6514,
+      "sha256": "6ddba67518eb44d7c76f3e577897aa582c3af1d785a93c47aa98a4d8e313355e",
+      "uncompressed_bytes": 33330,
+      "uncompressed_sha256": "9bddf4ac0a150ecc293572714499448295e49e308c0c10e189f1c0e7a61569b3"
+    },
+    {
+      "path": "evidence/recovered/qualified-clean-install.json",
+      "bytes": 1214,
+      "sha256": "2f1e4e0affe3526072335699c0b68e5709e47ab1d9dd1c99c53f85fab1a479af"
+    },
+    {
+      "path": "evidence/recovered/qualified-clean-install.log.gz",
+      "bytes": 291,
+      "sha256": "bb72edfe6f72e36875f176bf8c40fab6809150a63b62c3ab54c4db295c50eea2",
+      "uncompressed_bytes": 427,
+      "uncompressed_sha256": "070b0e9cfc5675cefdcea803308780d632162f47b71b226e5e32bb8d7df25295"
+    },
+    {
+      "path": "evidence/recovered/qualified-dependency-graph.json",
+      "bytes": 1159,
+      "sha256": "fab76579e808836c6b13a088a48cc9a072fcb3cf08cc51dfa52b658669a8f903"
+    },
+    {
+      "path": "evidence/recovered/qualified-dependency-graph.log.gz",
+      "bytes": 4013,
+      "sha256": "68cee9f7b4ae8e81762523e50c9ed94e83ed04fcca016ac813f1704bffac5965",
+      "uncompressed_bytes": 34862,
+      "uncompressed_sha256": "05f87282633371b83495260743153bb222bc87f6b43d45017c5e55d26811edd6"
+    },
+    {
+      "path": "evidence/recovered/qualified-library-builds.json",
+      "bytes": 1067,
+      "sha256": "7d699951cc42b8efd58e6cb072f8fd98b10b85b9e33fae65370c569ccbefb015"
+    },
+    {
+      "path": "evidence/recovered/qualified-library-builds.log.gz",
+      "bytes": 1322,
+      "sha256": "c978e31c71308ef557589540d46ec16c22c07c69ef4ce6d7fd2895ecbae0b7e6",
+      "uncompressed_bytes": 27144,
+      "uncompressed_sha256": "ff39e895981106073ac533a90ea2feddbe0799eafaf3f90bc620dceb2acdcb86"
+    },
+    {
+      "path": "evidence/recovered/sweep-guide-independent-review.json",
+      "bytes": 841,
+      "sha256": "e5401999884d49b8cfbc974f3569855a438790073ff66fbd98b9df9e757938a9"
+    },
+    {
+      "path": "evidence/recovered/system-chromium-preflight-recovered.json",
+      "bytes": 1720,
+      "sha256": "2fdd2a3cc028965d49075536ff9b88a10e36719d0be656382519ccd6beaa4a0e"
+    },
+    {
+      "path": "evidence/recovered/system-chromium-preflight-recovered.log.gz",
+      "bytes": 1555,
+      "sha256": "5bcb343465f62af53593c090dcdd01d2e7a47e892adc94e394b8c321f5d86464",
+      "uncompressed_bytes": 5209,
+      "uncompressed_sha256": "be608e6737465e08f89234bb34c79b968766906c858ede3d0465bac3160e0df7"
+    }
+  ]
+}

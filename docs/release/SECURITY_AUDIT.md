@@ -1,54 +1,47 @@
 # Security audit and finding dispositions
 
-Scope: lean EVM Pages candidate `73124433c08c8ef6835f11d03709060c6eea7a3f`, reviewed product checkpoint `35978ab796b7c476eb35dd9ed634ca4ff86ff9b9`. This is an AI-assisted engineering review with independent agent reproduction. It is **not the external independent audit required by release policy**.
+Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
-## Reproduced and corrected in this candidate
+This is an AI-assisted engineering review with separately assigned source reviewers and regression reproduction. It is **not the independent external audit required by release policy**. No zero-vulnerability or complete anonymity claim is made.
 
-Severity below is a provisional engineering assessment of the demonstrated behavior, not a claim of a deployed exploit.
+## Reproduced and corrected
 
-| Finding | Severity | Root cause and correction | Evidence |
-| --- | --- | --- | --- |
-| Obsolete Sweep review retained local signing authority | Low | The reproduced helper defect retained local key derivation/signing after review revocation; the handoff guard prevented the tested external broadcast. Session validity alone did not establish the current destination/quote/balance review. Compose caller review with the existing session guard before derivation, asynchronous continuations, signatures and handoff | Original helper: 11 failed/3 controls; corrected: 14 passed; independent replay 14 passed. `1d8445b6...`, component `04ded6b5...` |
-| Fresh native balance silently changed authorized sweep amount | Medium | Native helper ignored reviewed `amount` and signed from a new whole balance. Require exact equality before fee work/signing/journal; reject increases and decreases | Original: 4 failed/1 control; final helper/destination selection 131 passed. Independent native selection 5 passed/14 deselected. `3f6fcb84...` |
-| Stale quote/balance callbacks and errors | Medium | Pending operations could outlive scope changes. Preserve endpoint grants and add operation generations, review scope and guarded error publication | #272 semantic merge; 70-case baseline 25 failed/45 controls; corrected component 71 passed after added entry test |
-| Session locked before component authorization escaped error handling | Low | Session guard capture occurred outside existing try/finally. Move it inside without weakening authority | Actual suspension: 1 failing test and unhandled rejection reproduced; final component passed 71. Independent selected test passed. `89ec593b...` |
-| Invalid/decreasing authority clock could leave a grant usable | Low | Nonfinite values bypassed comparisons; rollback behind latest observation was incompletely checked. Validate every sample and permanently revoke invalid grants | Original: 9 failed/4 controls, 93 deselected; complete authority file 106 passed. `676093a3...` |
-| Invoice wait expiry could move backward with wall clock | Low | Wall clock rollback could extend wait-state expiry. Retain a monotonic elapsed-time floor | #274 original suite 13 passed; independent 34-case before/after and nonfinite probes. Final Pay validation retained |
+| Finding | Provisional severity | Correction and evidence |
+| --- | --- | --- |
+| Obsolete sweep review retained local signing authority | Low | Compose current review with session authority before derivation, async continuations, signing and handoff. Earlier 11 failing regressions/3 controls became 14 passing cases; current native suites retain the guards |
+| Fresh native balance silently changed reviewed amount | Medium | Require exact reviewed-balance equality before fees/signing/journal. Earlier 4 failures/1 control reproduced it; current native confirmation also compares exact unsigned transaction assumptions |
+| Stale quote/balance callbacks and errors | Medium | Preserve scope generations, exact endpoints, cancellation and guarded state updates; #272 semantically reconciled with newer privacy controls |
+| Locked session escaped component error handling | Low | Session capture moved inside try/finally, with original authority checks retained. Actual suspended-entry failure reproduced and repaired |
+| Invalid/decreasing network-authority clocks | Low | Validate all clock samples and permanently revoke invalid grants; original 9 failures/4 controls followed by 106 passing authority cases |
+| Wall-clock rollback extended invoice wait | Low | #274 retains a monotonic elapsed-time floor; original suite and independent before/after probes recorded |
+| Native fees/net were not separately reviewed | Authorization gap | Preparation is read-only; display exact transaction/fee assumptions; one-use confirmation repeats checks and refuses repricing. New native tests cover this contract rather than being counted as separate vulnerabilities |
+| Expired native review continued manifest reads | Low | Guard every manifest request before/after await and preserve stale-review error precedence. Final restored source includes the independently reproduced correction |
+| Analyzer clean-looking output hid incomplete execution | Medium, tooling | Reject duplicate JSON, missing telemetry, hidden exceptions, internal timeout and incomplete serialization. 9 failing regressions/2 controls; 54 fresh passing tooling tests after integration |
+| Malformed UTF-16 changed multipart QR content | Low, data integrity | Reject lone surrogates before TextEncoder replacement; valid pairs unchanged. Exact upstream regression: 1 failure/4 controls, followed by 17 passing web QR cases |
 
-The fixes keep original session checks, network grants, quote checks, secret wiping, destination-reuse checks and accepted/uncertain transport outcomes. A UI change after transport begins must not erase a submitted or uncertain transaction. Secret exports use a fresh exact-endpoint, chain, address and method grant after authentication; they do not revive cancelled scan authority. Public-record export remains local.
+The final lint repair changes no fee formula or authority branch. Native and ERC-20 branches both assign their fee reserve before use. Test assertions remain; the RPC fixture now validates its request body as a string before JSON parsing.
 
-Evidence: [payment-export qualification](../handoffs/final-payment-export-20261119/QUALIFICATION.md), [payment-export receipts](../handoffs/final-payment-export-20261119/RESULTS.json), [helper audit and scope](../handoffs/sweep-review-authority-20261119/README.md), [helper receipts](../handoffs/sweep-review-authority-20261119/receipt.json), [independent source review](combined-source-review.json).
+## Boundaries verified in source
 
-## Findings and gates still open
+Secret exports require fresh authentication and a new exact-endpoint/chain/address/method grant; an ended scan grant is not reused. Native preparation does not sign or create a broadcast attempt. Confirmation consumes the capability before awaiting, checks live session/context/replacement state, compares exact serialized unsigned bytes and reserves, and retains submitted/uncertain journal outcomes after handoff. Temporary derived-key buffers are disposed where possible.
 
-| Item | Open status and required evidence |
+The native fee-clock callback wraps later manifest/fee requests. SDK RPC initialization retains its own action/session/network guards and is checked before/after creation; it is not internally wrapped by that fee-clock callback. Do not claim every initialization packet has the latter guard. User-selected RPC endpoints are not silently replaced.
+
+## Security checks and open gates
+
+| Area | Current disposition |
 | --- | --- |
-| Native fee consent | Direct UI still needs explicit gas/fee preview and binding/reconfirmation behavior qualified before testnet acceptance. Balance equality does not complete fee review |
-| GP-PAGES-01 | Shared origin permits other same-origin project sites to reach GhostPay browser boundaries. Dedicated domain/account and owner hosting decision required; a URL subpath is not isolation |
-| Historical Mythril findings | Preserve 11 reported records: 3 Medium and 8 Low. Current exact-source strict analysis/disposition remains unqualified. No scanner suppression or owner exception was introduced |
-| CodeQL High reports | Two historical High reports have source repairs and bounded review, but complete current-head hosted clearance has not been obtained. Do not translate repair presence into zero open High alerts |
-| Dependency audit | Current production audit: zero reported vulnerabilities. Full development graph: 17 Low advisory entries, zero Moderate/High/Critical; these are dependency entries, not 17 independently demonstrated product exploits |
-| Browser/storage/privacy | Complete final-source malicious-input, corrupt-storage, cross-tab, suspension, camera/clipboard, accessibility and no-unwanted-network acceptance remains unexecuted |
-| External independent review | Unavailable; agent review does not satisfy this release gate |
+| Slither | Fresh established Medium/High gate passed: 34 contracts, 64 detectors, zero reported results, exit 0. All 36 compiler inputs match exact source; existing low/informational exclusions and original flags retained. This is not zero findings at every severity |
+| Foundry | Fresh 490 tests/34 suites passed with 10,000 fuzz runs and 256 invariant runs/depth 50 retained |
+| Echidna | Configured campaign ended with strict runner exit 1. Router was killed with exit 137 at last observed 133,127/300,000 calls; Policy was killed with exit 137 at 245,970/300,000. Sweep completed 300,048 calls: all four safety properties passed and both required canaries falsified. Missing Router/Policy totals make the whole campaign failed. SIGKILL cause is undetermined; memory pressure is an inference. The official pinned binary rejects the attempted heap cap, and its documented CLI/configuration exposes no supported cap. A complete unchanged rerun requires a suitable execution environment |
+| Mythril | Eleven historical records remain an unresolved strict gate: 3 Medium, 8 Low. They are not eleven proven exploits. Runner/evidence fixes do not clear them. No native complete candidate pass or approved finding exception is claimed |
+| CodeQL | Main's three analysis jobs completed, but current candidate results and finding-level clearance of two historical High reports remain unestablished |
+| Sonar | Last current API attempt was denied with HTTP 403; current ratings/alert counts are unknown. Older ratings cannot establish today's state |
+| Dependencies | Fresh production audit: zero findings. Full graph: 17 Low entries, zero Moderate/High/Critical. Entries are not 17 independent product exploits. No dependency constraints were relaxed |
+| Browser security | Chromium fails before assertions with socket permission denial; managed download returned an invalid archive. XSS/storage/cross-tab/clipboard/camera/mobile/keyboard acceptance remains unqualified |
+| GP-PAGES-01 | Shared github.io origin is not isolation. Dedicated origin/account and owner approval remain mandatory |
+| External review | Outstanding; agent reviews do not satisfy it |
 
-Read the retained [PR255 strict-gate source review](../consolidation/master-20261118/PR255_GATE_SOURCE_REVIEW.md), [preserved Mythril evidence](../consolidation/master-20261118/preserved-mythril-findings.json), [Mythril re-evaluation limits](../audits/mythril-reevaluation-20261118.md), and [bounded CodeQL reconciliation](../consolidation/CODEQL_RECONCILIATION_2026-11-19.md). Findings remain open until source-pinned evidence and required approvals resolve them.
+Scoped reviewers found no remaining introduced Critical or High defect in their reviewed changes. Repository-wide counts remain unknown while hosted findings and external review are incomplete. Preserve every unresolved analyzer record and all failed/incomplete executions; no assertion, threshold, detector policy or finding was suppressed.
 
-## Security-tool evidence and limits
-
-The coordinator executed Foundry: 490 tests passed, zero failed/skipped, including the configured fuzz/invariant suites. The inspected secret scan, pinned-Action check and no-`tx.origin` check passed. A current production audit found no advisories. These passes neither close symbolic-analysis findings nor certify the whole application.
-
-Current Slither and subsequent analyzer receipts belong in [TEST_RESULTS.md](TEST_RESULTS.md) with exact source/compiler/configuration and exit status. A partial compile, timeout, missing target, excluded detector or stale output cannot be recorded as a complete analyzer pass. No security gate or coverage threshold was weakened in this work.
-
-## Privacy and custody limits
-
-Stealth addresses reduce routine address reuse; they do not provide complete anonymity. The blockchain reveals transaction amounts/timing and relationships, RPC operators observe queries and submitted transactions, receipt validation can identify matched payment addresses, and sweeping to a familiar wallet links addresses. ERC-20 gas funding adds a visible funding link. Tor Browser reachability and real private-network routing are unqualified.
-
-JavaScript cannot promise complete removal of all engine-managed copies of secrets. Relevant byte buffers are disposed where possible; vault/session revocation must enforce authority even when garbage collection is outside application control. Never log decrypted backups, raw keys or private signing material as test evidence. Existing sanitized RED receipts retain numeric crypto call counts and public synthetic transaction data.
-
-### Fresh configured Slither result
-
-Slither 0.11.6 passed against 34 contracts with 64 detectors and zero reported results under the unchanged repository Medium/High gate. Compiler: solc 0.8.28, optimizer 200, Cancun. All 36 compiler input files matched committed candidate bytes. The missing-AST and dynamic-test-helper collection failures are retained separately. This configured gate excludes Low/Informational results and retains existing source suppressions; it does not establish absence of all vulnerabilities or close the strict Mythril gate.
-
-## Publication provenance
-
-Implementation commit identities above refer to preserved local development history. The GitHub connector preserves each tree and ordered parent history while normalizing commit metadata. `PUBLICATION_MAP.json` maps implementation commits to their published identities. Fresh publication, artifact and hosted-check records will be appended after final qualification.
+See [native review](../handoffs/recovered-native-authority-review-20261119/README.md), [analyzer backport](../handoffs/recovered-mythril-evidence-20261119/README.md), [fresh analyzer evidence](../handoffs/recovered-contract-analyzers-20261119/README.md), and [test record](TEST_RESULTS.md).

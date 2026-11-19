@@ -1,76 +1,48 @@
 # Test results and qualification limits
 
-Checkpoint: 2026-11-19 11:34:36 UTC. Local candidate `73124433c08c8ef6835f11d03709060c6eea7a3f` includes product checkpoint `35978ab796b7c476eb35dd9ed634ca4ff86ff9b9` and a documentation-only main refresh. Results below retain their actual execution source; identical blobs do not convert an earlier run into a fresh full-candidate run.
+Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
-## Executed scoped product checks
+Each result identifies its execution source. Identical component inputs can demonstrate applicability to later integration, but do not turn an earlier run into a fresh whole-candidate run. Counts overlap; no combined grand total is claimed.
 
-| Check | Actual result | Source/evidence |
+## Fresh results after executor replacement
+
+| Check | Actual result | Source / qualification boundary |
 | --- | --- | --- |
-| Payment export/scanning/authority selection | 8 files; 300 passed, zero skipped | `676093a3...`; [RESULTS.json](../handoffs/final-payment-export-20261119/RESULTS.json) |
-| Network clock reproduction | 9 failed, 4 controls passed, 93 deselected | Original clock runtime; same receipt |
-| Complete authority suite after clock repair | 106 passed, zero skipped | Included in the 300-case selection; do not add twice |
-| Final checkpoint fixture | 20 passed, zero skipped | `ecc30132...`; receiver preserved, no assertion changed |
-| Export/scan type-aware lint | 12 changed paths passed | `ecc30132...`; earlier one unbound-method diagnostic retained |
-| Network-egress inventory | 6 passed, zero skipped | Final worker source `2006f211...` |
-| Sweep lifecycle before semantic merge | 25 failed, 45 passed | Source overlay `6c8e7de5...`; coordinator reproduction receipt |
-| Sweep component after entry repair | 71 passed | `89ec593b...`; earlier 69/70 stale-error failure and entry rejection reproduced and repaired |
-| Helper review-authority reproduction | 11 failed, 3 controls passed | Regression source `5fedb1be...`, unchanged helper |
-| Corrected helper authority | 14 passed, zero skipped | `1d8445b6...`; independently rerun 14 passed |
-| Native consent reproduction | 4 failed, 1 control passed; 14 deselected | `0004bc9d...`, unchanged native helper |
-| Final helper, existing sweep and destination suites | 131 passed, zero skipped | `3f6fcb84...`; [receipt](../handoffs/sweep-review-authority-20261119/receipt.json) |
-| Native independent replay | 5 passed, 14 deliberately deselected | Exact `3f6fcb84...` implementation |
-| Session-entry independent replay | 1 passed, 70 deliberately deselected | Source `acdebc5a...` retains exact `89ec593b...` component |
-| Jitter original suite | 13 passed, zero skipped | `c60f7cc3...` retaining #274 |
-| Independent jitter probes | 34 assertions passed | Two original failures, two corrected checks, 30 malformed-clock/expiry refusals |
+| Clean installation | 721 packages, exit 0; then independent normal checkout npm 10.9.8 clean install, exit 0 | Published `d7e66ff4...` normal checkout; unchanged lock inputs. Installation is not product validation |
+| Production dependency graph | Complete npm 10.9.8 graph exit 0 in normal checkout | Initial development symlink-layout graph failure retained; no overrides/ranges removed |
+| Workspace library compilation | All 65 builds passed twice after clean installs | Normal checkout `d7e66ff4...`; library inputs unchanged by later web-only repairs |
+| Full web TypeScript/build/CSP/bundle | Exit 0; 19-file bundle scan passed | `4ce683bc...`, published equivalent `5a103dab...`; later combined QR/lint build remains separately required |
+| Native sweep focused matrix | 384 passed, 0 failed/skipped, ten files | `ed95c560...` / published `3da1f551...`; 374 cases plus ten disjoint destination-privacy cases. Historical 342 count is not reused |
+| Lint repair affected tests | 367 passed, 0 failed/skipped, ten files | `e8e2edec...` / published `c835d202...`; preserves original assertions |
+| Lint repair complete web type/lint | Both exit 0 | Same immutable repair source; original six-error complete lint retained as RED. Final combined QR+lint matrix remains separate |
+| Multipart/single QR helpers | 17 passed | `98786e75...`; prior exact regression 1 failed/4 controls |
+| QR exchange package | 233 passed; original coverage/type/build/lint passed | 97.57% statements, 95.17% branches, 100% functions, 99.08% lines; thresholds unchanged at 95/90/95/95 |
+| Independent recovery | 23 passed, zero skipped | `6aeb0f8a...`; actual Anvil/cast binaries required, including fresh-directory offline recovery and spending recovered keys |
+| Pages/build-profile/egress tooling | 151 passed, zero skipped | `f7802f89...`; final native inventory rerun remains required |
+| Strict analyzer tooling | 54 passed after integration, zero skipped | `6aeb0f8a...`; synthetic analyzer fixtures, not a native Mythril pass |
+| Foundry | 490 passed, 34 suites, zero failures/skips | Original compiler/config/fuzz/invariant settings; contract-package inputs unchanged during the web-only integration |
+| Slither | 34 contracts/64 detectors, exit 0; existing Medium/High gate passed | `e8680e13...`; exact 36 compiler inputs and original settings recorded |
+| Dependency audit | Production 0; full 17 Low, 0 Moderate/High/Critical | Dated fresh reports retained, including full-report exit 1 |
 
-Scoped diagnosis uses the original Vitest configuration with coverage disabled only for the selected run. This does not satisfy project coverage and does not change existing thresholds. Counts overlap; no aggregate total is claimed.
+Fresh coordinator commands, source/working-state pins, exit codes and compressed/uncompressed hashes are in [evidence/recovered](evidence/recovered/). Worker evidence is committed with its [native](../handoffs/native-sweep-fee-review-20261119/README.md), [lint](../handoffs/final-web-lint-repair-20261119/QUALIFICATION.md), [QR](../handoffs/qr-surrogate-review-20261119/QUALIFICATION.md), [analyzer](../handoffs/recovered-mythril-evidence-20261119/README.md) and [Slither](../handoffs/recovered-contract-analyzers-20261119/README.md) handoffs.
 
-## Coordinator checks at this checkpoint
+## Required checks not yet complete
 
-| Required area | Observed result | Limit or next action |
-| --- | --- | --- |
-| Clean dependencies | PASS: 721 packages installed by clean npm ci | Earlier offline ENOTCACHED attempt was blocked; worker cached-dependency runs remain labeled as such |
-| Dependency graph | npm 10.9.8 graph validation passed | npm 11.9.0 reported override/link false-invalid entries; comparison retained. Do not remove overrides to make that version green |
-| Workspace libraries | PASS: all 65 workspace library builds completed again from the successful clean installation | `build-libraries-clean.log`, exit 0; no library source changed during this run |
-| Full application build/typecheck | PASS on `a17b300a003ff62eb66dd9e3aa40895e21180393`: full web typecheck, full Vite build and 19-file bundle scan | The earlier TS2322 failure is retained; `2844c97d...` adds an EIP-1559 runtime envelope assertion before existing sender-recovery checks. No application behavior or assertion was removed |
-| Lean Pages build and artifact | Pending exact candidate | Requires /GhostPay/, integrity and exclusion checks |
-| Full workspace typecheck/ESLint | Not yet complete | Scoped lint passes above are not full-workspace passes |
-| Full unit/integration/coverage | Not yet complete | Preserve configured coverage thresholds and nocov suites |
-| Foundry contracts | PASS: 490 tests, 34 suites, zero failed/skipped | Current local run; pin compiler/config and source receipt. Does not replace Mythril or real-testnet acceptance |
-| Production dependency audit | PASS: zero reported vulnerabilities | Audit is a dated dependency snapshot |
-| Development dependency audit | 17 Low; zero Moderate/High/Critical | Keep detailed advisory disposition; not production findings |
-| Source secret scan | PASS | Separate release-artifact secret inspection still required |
-| Pinned GitHub Actions / tx.origin | PASS: 113 pinned uses; no tx.origin in 40 Solidity source files | Source policy checks only |
-| Static security selection | PASS: 111 tests, zero skipped | Full Pages tooling plus lean boundary/egress selection; the six new verifier tests are included, not additional |
-| Slither | PASS: 34 contracts, 64 detectors, zero results, exit 0 | Original Medium/High gate flags retained; all 36 compiler source inputs match the candidate. This does not close Mythril findings |
-| Mythril/Echidna | No fresh complete candidate pass recorded | Historical finding evidence remains open |
-| Browser startup | BLOCKED: Chromium socket() EPERM, SIGABRT before tests | Loopback listener itself succeeded; no scenario assertions ran |
-| Firefox, WebKit, mobile, keyboard, accessibility | No final-source pass | Must execute in a supported browser environment |
-| Reproducibility | Not yet complete | Build twice and compare exact inventory; separate-machine release requirement remains |
-| Hosted CI | BLOCKED/unqualified | Queue and cancellation are not passes |
+- Final integrated full workspace typecheck and lint (68 typecheck scripts; 67 lint scripts; the original confidential-contracts workspace has no lint script). The first 4eb69699 attempt was interrupted by executor replacement before an exit result; workspace lint had not started. Its original STARTED receipt and partial log are retained. A fresh normal installation and rerun are in progress.
+- Complete original web coverage with unchanged 90/85/90/90 thresholds, plus the separate original nocov pass. The earlier interrupted attempt had 1,319 passing case lines but no aggregate/coverage verdict. No partial run is a pass.
+- Remaining original workspace unit/integration groups, contract coverage and applicable security scripts on the final candidate.
+- Final full/lean Pages artifact, independent inventory verification, two-build byte comparison and `/GhostPay/` HTTP validation.
+- Complete native Echidna campaign and strict Mythril qualification/disposition. Echidna's Router and Policy attempts exited 137 before their required totals; Sweep completed 300,048 calls with four safety properties passing and two required canaries falsified. The complete campaign returned exit 1, not a partial pass.
+- Exact-source hosted required workflows and current finding-level security clearance.
 
-Coordinator logs were generated under `/tmp/ghostpay-evidence-246ff268d20d`. The coordinator must preserve source identities, commands, exit codes and hashes in the final evidence package; uncommitted scratch paths are not release provenance.
+## Browser and testnet acceptance
 
-## Required real-browser scenarios
+**0/12 mandatory real-browser scenarios verified (0%).** These are generation/backup, actual-file verification, invoice creation, buyer review, local-chain buyer payment, seller detection, confirmation, receipt creation, native sweep, browser close/reopen, keys/history restore and rejection of expired/revoked permissions. Startup failed before any scenario assertion. Fresh system Chromium 156.0.8078.79 reports socket EPERM/SIGABRT; installed browser binaries were absent, and the pinned managed Chromium download was not a valid archive. Firefox/WebKit/mobile/keyboard/accessibility remain unqualified. No kernel-policy bypass was attempted.
 
-All twelve remain **unverified on the final candidate in this environment**: seller generates/backs up keys; verifies downloaded backup; creates invoice; buyer reviews it; buyer pays on a local chain; seller detects; seller confirms; seller creates receipt; seller sweeps native coin; browser closes/reopens; seller restores keys/history; expired/revoked permissions remain invalid. Completion here is **0/12 (0%)**, because browser launch stopped before assertions. Real local-chain success, mocked browser success and public-testnet success must remain distinct.
+Local Anvil, mocked RPC/browser fixtures and real public-testnet acceptance are different evidence. No actual public-testnet deployment, wallet payment, sweep or transaction hash is claimed.
 
-## Fresh upstream CI snapshot
+## Hosted evidence
 
-See [exact-head-check-runs-final.json](exact-head-check-runs-final.json), captured 11:34:36 UTC.
+The [census observation](../handoffs/branch-census-delta-20261119/REMOTE_OBSERVATIONS.json) pins its times and source. At published `d7e66ff4...`: nine runs were pending/queued, thirteen checks queued and one publishing-only check skipped. No candidate Actions pass. Snyk alone produced the legacy combined success status. Main's CodeQL jobs passed on main, not the candidate. New source publications require new exact-head checks.
 
-| Source | Checks observed | Qualification |
-| --- | --- | --- |
-| Main `c977b5d6...` | 3 queued | Not passed |
-| #262 `40b64e8f...` | 14 queued, 1 skipped | Not passed |
-| #270 `73545f63...` | 8 queued, 1 skipped | Not passed |
-| #272 `63ff40d5...` | 11 queued, 1 skipped, 3 cancelled CLI jobs | Not passed |
-| #275 `dc821780...` | 10 queued, 1 skipped | Not passed |
-| #276 `f39a9dd3...` | 5 queued, 1 skipped | Not passed |
-| Local candidate | No published exact-head run | Not passed |
-
-Historical PR #257 had 36 successful checks and 3 publishing-only skips on its own source. It establishes no pass for the new integrated candidate. The cancelled #272 CLI jobs are linked under [run 44510549048](https://github.com/djshellshoxxx/GhostPay/actions/runs/44510549048); preserve their cancellation status rather than treating them as product failures or successes.
-
-## Publication provenance
-
-Implementation commit identities above refer to preserved local development history. The GitHub connector preserves each tree and ordered parent history while normalizing commit metadata. `PUBLICATION_MAP.json` maps implementation commits to their published identities. Fresh publication, artifact and hosted-check records will be appended after final qualification.
+Historical passing source remains useful provenance, never a substitute for a current required run. Skips, cancellations, CLI errors, SIGKILL/OOM and incomplete reports are retained and labeled.

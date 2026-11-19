@@ -1,0 +1,28 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "node --test scripts/pages/*.test.mjs apps/web/scripts/localBuildProfile.test.mjs scripts/tests/network-egress-inventory.test.mjs"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay",
+  "started_utc": "2026-11-19T12:54:37.814869+00:00",
+  "source_commit": "f7802f895edbc2845b294446d0ca574ab56965a7",
+  "source_tree": "24510353b9f511870482c0b03273041b800a2a56",
+  "initial_status": "?? node_modules",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 3.7912747859954834,
+  "finished_utc": "2026-11-19T12:54:41.606138+00:00",
+  "final_source_commit": "f7802f895edbc2845b294446d0ca574ab56965a7",
+  "final_status": "?? node_modules",
+  "log": "pages-security-recovered.log.gz",
+  "uncompressed_bytes": 33330,
+  "uncompressed_sha256": "9bddf4ac0a150ecc293572714499448295e49e308c0c10e189f1c0e7a61569b3",
+  "stored_bytes": 6514,
+  "stored_sha256": "6ddba67518eb44d7c76f3e577897aa582c3af1d785a93c47aa98a4d8e313355e"
+}

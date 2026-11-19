@@ -1,75 +1,66 @@
-# Deployment readiness and prepared owner decisions
+# Deployment readiness and proposed owner decisions
 
-**Verdict: BLOCKED.** No deployment, public smoke pass or `1.0.0-beta.1` release has been completed by this lane. Candidate `73124433c08c8ef6835f11d03709060c6eea7a3f` is local engineering source, not a qualified published artifact.
+Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
-## Milestone A — payments-disabled demonstration
+**Verdict: BLOCKED.** No public demonstration, testnet beta, main promotion, tag or GitHub Release has been completed by this lane. A builder's `release: true` field describes its clean build mode, not an approval or readiness verdict.
 
-Required demonstration capabilities are seller key generation, public/authenticated private export, encrypted backup, downloaded-file verification, restore, invoice creation/viewing and help. Without an authenticated deployment manifest the demonstration must refuse payment execution, scanning and sweeping on every chain.
+## First milestone: payments-disabled demonstration
 
-| Gate | Current evidence |
+Required public functions are generation, public/authenticated private export, encrypted backup, exact-file verification, restore, invoice creation/viewing and help. With no authenticated deployment manifest, every payment, scan and sweep path must remain disabled. Mainnet is prohibited.
+
+| Gate | Current state |
 | --- | --- |
-| Lean static implementation | Present; final artifact qualification pending |
-| Mainnet disabled / invalid manifest refusal | Existing source and tooling; fresh artifact/runtime acceptance required |
-| Full exact-source checks and browser workflow | Incomplete; browser startup blocked |
-| Exact assets and reproducibility | Not yet qualified |
-| ADR-0029 approval | Proposed, owner acceptance missing |
-| Dedicated origin | Owner choice/configuration missing |
-| Merge and deployment workflow | Fresh CI and integration lease handoff required |
-| Published commit/assets/routes/smoke | Not executed |
+| Lean source and hardening | Implemented; full application build and scoped guards passed |
+| Full candidate checks and real browser acceptance | Incomplete; browser startup denied before assertions |
+| Final Pages inventory/integrity/reproducibility | Pending current source qualification |
+| ADR-0029 and dedicated origin | Owner decision/configuration missing |
+| Exact hosted CI and approved merge | Not satisfied |
+| Live commit/assets/routing/browser smoke | Not executed |
 
-No readiness percentage substitutes for these gates. Mandatory final-source browser evidence is 0/12 scenarios in the current environment; the demonstration has not been published.
+Qualified demonstration completion is 0/1 (0%); an implementation percentage cannot make it ready.
 
-### Proposed hosting decision
+## Reviewable hosting proposal
 
-Accept only the lean, payments-disabled demonstration after its checks pass. Use a dedicated custom domain, or an isolated Pages account/organization with no other same-origin sites. The repository path `/GhostPay/` does not isolate browser storage or script authority from other sites on the same `github.io` origin.
+Use a dedicated custom domain or an isolated Pages account/organization with no other same-origin sites. `/GhostPay/` is routing, not browser-origin isolation. The current shared account origin is not accepted for sensitive-key hosting by this work.
 
-The owner must record the actual decision in [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md). Proposed acceptance wording, to be completed by the approving owner in a reviewed change:
+Proposed ADR decision, for an actual approving owner to complete in a reviewed change:
 
-> Accepted for the lean payments-disabled demonstration on the approved dedicated origin. Mainnet remains prohibited. Testnet activation requires its additional signing, deployment, acceptance and independent-review gates. Date, approver and origin are recorded with the decision.
+> Accept the lean payments-disabled demonstration on the specifically approved dedicated HTTPS origin. Mainnet remains prohibited. Testnet activation requires its additional signing, deployment, real-wallet and independent-review gates. Record approver, date and exact origin.
 
-This is a proposal, not an approval record. ADR-0029 remains Proposed until that review occurs. The existing ADR-0015 hosting gate still applies.
+This is a proposal, not an approval record. [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md) remains Proposed; ADR-0015 applies.
 
-### Exact configuration to prepare
-
-| Setting | Demonstration value/action |
+| Setting | Prepared requirement |
 | --- | --- |
 | Pages source | GitHub Actions |
-| Custom domain / dedicated account | Owner-selected isolated host; DNS ownership verified and HTTPS enforced |
-| Repository variable GHOSTPAY_PAGES_ORIGIN | Exact `https://<approved-host>`, no path/trailing slash |
-| GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN | Unset |
-| Bundled deployment manifests | None; verify paymentsEnabledChainIds is empty |
-| GHOSTPAY_RELEASE_PUBKEYS | No payment activation without separately approved signed manifests |
-| github-pages environment | Selected deployment branch: main; preserve repository protections/review rules |
-| Historical gh-pages branch | Preserve; do not delete |
-| Pages workflow dispatch | main, deploy:true only after accepted ADR, required checks and explicit publication authorization |
+| Hosting identity | Owner-selected dedicated host/account, verified DNS, enforced HTTPS |
+| GHOSTPAY_PAGES_ORIGIN | Exact approved HTTPS origin, without path or trailing slash |
+| GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN | Unset; no exception approved here |
+| Demonstration deployment manifests | None; paymentsEnabledChainIds must be empty |
+| Release verification keys | No payment activation without separately approved keys and signed manifests |
+| github-pages environment | Main-only deployment policy; retain required reviews/protections |
+| Existing gh-pages/history | Preserve; no branch deletion |
+| Deployment dispatch | main/deploy:true only after actual required approvals and checks |
 
-Build source libraries from a clean installation. Use the repository's existing Pages build rather than a new deployment path:
+A local inspection build can record the existing shared origin and warn about it; such an artifact is not approval to publish there. Choosing a different approved origin requires rebuilding and re-verifying the exact artifact.
+
+## Build and verification procedure
+
+Use Node 22 and the pinned lockfile. A resource-only Node wrapper may limit V8 heap; it must not bypass the original typecheck, builder, CSP, bundle or verification commands. Record actual Node/npm versions and wrapper hashes. The existing builder clears inherited application switches and derives its timestamp from HEAD.
 
 ```sh
 npm ci --ignore-scripts
 npm run build:libs
 bash scripts/pages/build-pages.sh /absolute/new/output-directory
+node scripts/pages/verify-pages-artifact.mjs /absolute/new/output-directory/site /absolute/new/output-directory/evidence/SHA256SUMS --expect-commit FULL_SOURCE_SHA
 node scripts/pages/serve-pages.mjs /absolute/new/output-directory/site --port 4180 --base /GhostPay/
 ```
 
-The release build requires a clean relevant source tree and `GP_COMMIT`, if supplied, equal to HEAD. The output must not already exist. Do not set the development-build switch when preparing a publishable release. Follow [the Pages guide](../pages/README.md) for the exact browser acceptance and smoke commands.
+The output directory must not already exist. Use a clean relevant source tree and GP_COMMIT equal to HEAD; never use GHOSTPAY_PAGES_DEV for release evidence. Build twice at the same source/config/toolchain and compare the complete served inventory and bytes. Trust the expected checksum inventory through an independently reviewed source. Neither verifier authenticates an untrusted checksum file or guarantees an arbitrarily mutating filesystem.
 
-After qualification and approved main promotion, the manual Pages workflow builds, checks and attests the inventory, deploys and performs smoke verification. Verify live `build-info.json`, commit, every served checksum, subpath navigation and browser flows independently. A locally built artifact does not complete this milestone.
+After approved main promotion and deployment, independently check live build-info.json, every checksum, subpath navigation and actual browser workflows. A local build is not a published milestone.
 
-## Milestone B — EVM testnet beta
+## Second milestone: EVM testnet beta
 
-Additional gates remain open:
+Choose a supported testnet, such as Base Sepolia or Ethereum Sepolia, and obtain authorized deployment/fee-recipient decisions. Verify deployed bytecode, addresses and immutables. Approve the offline release signing identity and public fingerprint; configure public verification keys only. Sign and include the reviewed deployment manifest, then repeat exact-source artifact/security/CI qualification on the dedicated origin.
 
-1. Choose a supported testnet, Base Sepolia (84532) or Ethereum Sepolia (11155111), and authorize deployment using the established procedure.
-2. Verify contract source, deployed runtime bytecode, addresses and immutables; record actual identifiers.
-3. Approve the offline release signing key and publish its fingerprint. Configure only compressed public verification keys in `GHOSTPAY_RELEASE_PUBKEYS`.
-4. Produce and review the authenticated testnet manifest in both deployment and web bundle locations. The build must reject unknown signatures and mainnet.
-5. Complete explicit native fee review, exact-source checks and independent release review.
-6. Deploy the approved artifact to the dedicated origin. Run a real wallet payment, confirmation, seller scan, receipt, native sweep, independent recovery and a failure/recovery scenario.
-7. Preserve actual transaction hashes, manifest hash, wallet version, RPC provider and deployment evidence appropriately. Local anvil and mocks are separate evidence.
-
-Nothing here authorizes wallet signing or broadcasting. No testnet transaction or release-key identity is invented. ERC-20 direct sweeping requires funded gas and separate acceptance; Bitcoin/Solana/TRON/policy/pool services remain outside the release.
-
-## Publication provenance
-
-Implementation commit identities above refer to preserved local development history. The GitHub connector preserves each tree and ordered parent history while normalizing commit metadata. `PUBLICATION_MAP.json` maps implementation commits to their published identities. Fresh publication, artifact and hosted-check records will be appended after final qualification.
+Perform real-wallet invoice/payment/confirmation/scan/receipt/native-sweep/independent-recovery and failure/recovery acceptance, preserving actual transaction evidence. No such results or hashes are invented here. ERC-20 gas-funded flows require separate acceptance. The external security review remains mandatory where required by policy.
