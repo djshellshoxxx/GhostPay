@@ -1,0 +1,54 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > preserves protocol payloads, enforces request hygiene and accepts an exact UTF-8 cap 23ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > returns bounded HTTP errors for protocol-specific refusal classification 3ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > supports an empty native response body 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid deadline 0 before dispatch 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid deadline -1 before dispatch 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid deadline NaN before dispatch 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid deadline Infinity before dispatch 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid deadline 0.5 before dispatch 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid deadline 2147483648 before dispatch 2ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid cap 0 before dispatch 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid cap -1 before dispatch 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid cap NaN before dispatch 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid cap Infinity before dispatch 9ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid cap 0.5 before dispatch 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects invalid cap 9007199254740992 before dispatch 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unsupported destination not a URL 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unsupported destination http://remote.test 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unsupported destination https://user:pass@node.test 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unsupported destination https://node.test/#fragment 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unsupported destination wss://node.test 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > permits explicit loopback http://localhost:3000/ 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > permits explicit loopback http://127.0.0.1:3000/ 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > permits explicit loopback http://[::1]:3000/ 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses either already-cancelled signal before fetching 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > settles on cancellation even if fetch ignores the signal 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > independently enforces a deadline when fetch ignores abort 11ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > discards a late response without starting its reader 6ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > rejects a response queued after sleep before its deadline timer runs 2ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > fails closed when the wall clock moves backwards during the request 2ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > bounds a stalled reader despite hostile cleanup 10ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses over-limit bytes without awaiting cancel (declared: true) 2ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses over-limit bytes without awaiting cancel (declared: false) 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > counts streamed bytes with content length not a length 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > counts streamed bytes with content length -4 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > counts streamed bytes with content length 8 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"redirected":true} 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"url":"https://other.test/"} 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"url":"https://node.test/changed"} 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"status":0} 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"status":600} 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"status":200.5} 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > refuses unexpected redirect/status metadata {"status":400,"ok":true} 0ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > remints a foreign error even when it uses the exported class 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > sanitizes errors from the stream 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > does not leak errors from a throwing response body accessor during cleanup 1ms
+ ✓ src/lib/boundedRequest.test.ts > bounded HTTP exchange > does not let synchronous cleanup errors replace a cap refusal 0ms
+
+ Test Files  1 passed (1)
+      Tests  46 passed (46)
+   Start at  00:07:05
+   Duration  520ms (tests 45%, transform 38%, import 13%, worker 4%)

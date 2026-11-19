@@ -1,0 +1,18 @@
+✔ apps/web workspace dependency closure is REVIEWED plus the named PENDING_OWNER_REVIEW list (141.592603ms)
+✔ apps/relayer workspace dependency closure is the reviewed allowlist (11.758165ms)
+✔ core web flow sources never reach deferred BTC/Solana/TRON/registry code (253.483175ms)
+✔ only the app shell mounts the deferred views (57.790356ms)
+✔ network inventory has unique complete records and references existing sources and tests (108.173675ms)
+✔ every explicit production web network reference is represented in the inventory (2033.011314ms)
+✔ shipped SDK and transport boundaries are represented, with library-only adapters distinguished (2.451671ms)
+✔ inventory detector recognizes calls and aliases without flagging type declarations or comments (8.71772ms)
+✔ reference counts detect new dispatchers inside known modules as well as new files (3.312787ms)
+✔ inventoried authorization actions exist and local/external operations gain no implicit grant (16.179214ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6199.616505

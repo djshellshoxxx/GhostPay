@@ -1,0 +1,25 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > keeps one holder snapshot when a deadline check replaces the wallet before an async result 732ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > does not let a throwing observer prevent later cancellation observers from receiving suspension 11ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > finishes a recoverable lock and notifies remaining observers when another observer throws during the final clear 7ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > rejects a pending operation at its next guard check after sleep even without a browser event 355ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > retains a sole copy but invalidates old guards and refuses new private-key operations immediately 69ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > revokes operations while a vault recoverability read is still pending 78ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > retains and protects a vault-only copy when storage fails, without calling it an unverified download 44ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > wipes active asynchronous borrows on idle and rejects their late result 43ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > also wipes asynchronous borrows immediately when keys are explicitly cleared 5ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > does not let a decryption started in an empty session install keys after idle 285ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > rejects an encrypted backup started before idle instead of returning its stale result 140ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > keeps encrypted backup and verification available without resuming ordinary access 514ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > permits a retained copy to be saved in the encrypted vault and resumed only by normal unlock 913ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > does not grant raw or payment-key export authority to a retained copy even with a valid credential 317ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > does not grant spending or raw-key access to a retained copy even with a valid vault credential 290ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > invalidates a pending encrypted-vault save before it can persist after idle 35ms
+ ✓ src/lib/session.idleLock.test.ts > idle lock revokes session authority before retaining or disposing keys > invalidates a pending vault unlock even when no seller keys were loaded at expiry 155ms
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  00:07:06
+   Duration  23.02s (transform 51%, tests 18%, import 18%, environment 13%)

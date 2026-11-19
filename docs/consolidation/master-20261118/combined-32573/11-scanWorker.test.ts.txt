@@ -1,0 +1,45 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > requires an injected transport before creating a worker 293ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > carries the provider spent-check opt-in into the worker and the spent status back out 1426ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > matches direct scanning through cloned messages without sending spend secrets and wipes worker copies 880ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > awaits each checkpoint commit, resumes from committed state and freshly validates old matches 584ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > cancels while a checkpoint is pending, terminates immediately and never acknowledges it later 204ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > propagates a refused encrypted commit and stops before the next block 186ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC dedicated worker message integration > rejects worker startup and message errors without leaving an active session 318ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > captures outpoint consent before worker creation even when the caller options change 194ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects an unexpected matched-transaction hex query outside opted-in light mode 126ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects an unexpected matched-transaction merkle-proof query outside opted-in light mode 140ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a worker outpoint query when the owner did not enable provider checks 157ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a provider-labelled result without consent and wipes its transferred tweak 481ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > does not authorize a provider-labelled result by mutating the caller options after start 399ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested range evidence 529ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested chain evidence 692ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested duplicate evidence 467ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested local-gap evidence 413ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > binds a same-session worker result to the requested history-page evidence 497ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched hex request in full mode with provider consent false 119ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched merkle-proof request in full mode with provider consent false 154ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched hex request in full mode with provider consent true 367ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged matched merkle-proof request in full mode with provider consent true 158ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched hex requests in full mode with provider consent false 113ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched merkle-proof requests in full mode with provider consent false 122ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched hex requests in full mode with provider consent true 164ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently refuses matched merkle-proof requests in full mode with provider consent true 141ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a consented light worker claiming local status and wipes its tweak 575ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a consented light worker claiming unknown status and wipes its tweak 524ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects light scans with provider consent undefined before worker creation 154ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects light scans with provider consent false before worker creation 375ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects light scans with provider consent true before worker creation 189ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently rejects light start messages with invalid consent false 176ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > the worker independently rejects light start messages with invalid consent true 145ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > ignores another request and wipes a late result after cancellation 515ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects malformed responses and wipes any valid tweak buffers they carry 175ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rechecks the pinned header checkpoint before making a worker network request 186ms
+ ✓ src/features/btc/scanWorker.test.ts > BTC worker stale and untrusted boundary > rejects a forged light-mode start without consent inside the worker before requesting source data 170ms
+
+ Test Files  1 passed (1)
+      Tests  37 passed (37)
+   Start at  00:08:20
+   Duration  15.27s (tests 85%, import 9%, transform 6%)

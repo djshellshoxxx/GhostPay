@@ -1,0 +1,39 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > refuses a committed spend mislabeled as coinbase without querying any output 1009ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > sees a spend in a later scanned block without asking the server about any output 455ms
+ × src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > detects a committed spend even when Esplora labels its input as coinbase 482ms
+   → tweak source returned an invalid response
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > sees a spend in the same block as the payment 269ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > also catches a spend that only some inputs of a multi-input transaction carry 631ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > keeps unspent outputs unspent and asks the server about none of them when every block up to the tip was read 916ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > asks the server when explicitly selected for a scan below the tip, so it can report a spend in an unread block 1227ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > asks the server about an output whose block was not read in this scan 469ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > is unknown until every block through the requested height was read after the output was registered 376ms
+ ✓ src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > cannot see the mempool: a spend only the server knows is reported by it at sign time instead (see BtcView) 234ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/features/btc/scan.localSpends.test.ts > BTC spend detection from the scanned blocks (TM13) > detects a committed spend even when Esplora labels its input as coinbase
+SilentPaymentError: tweak source returned an invalid response
+ ❯ bad src/features/btc/esplora.ts:52:9
+     50|
+     51| function bad(): never {
+     52|   throw new SilentPaymentError('INVALID_RESPONSE');
+       |         ^
+     53| }
+     54|
+ ❯ parseTx src/features/btc/esplora.ts:180:117
+ ❯ EsploraClient.blockTxs src/features/btc/esplora.ts:353:20
+ ❯ EsploraTweakSource.fetchBlock src/features/btc/esplora.ts:517:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'INVALID_RESPONSE' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  00:08:37
+   Duration  10.18s (tests 63%, import 22%, transform 14%)

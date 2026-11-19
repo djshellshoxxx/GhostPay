@@ -1,0 +1,68 @@
+{
+  "reviewer": "/root/history_census/btc_source_review",
+  "reviewKind": "bounded read-only source review",
+  "pins": {
+    "combinedBtc": "bd77aa273a5cd3846457edbd6bbeddaf9c52b84c",
+    "g5Combined": "0d0f4211f54131448212952da2b413dbb90ae243",
+    "tailVerified": "32573edb3f3a940180b5fb5a5e747c227e28608c",
+    "abortTypeRepair": "b90ab48909b5ce3121bea33b56fba71bfbf3c54a",
+    "btcCandidate": "5a6dbd05d83eeec7838134f3d1bd3787dc5f4d7d"
+  },
+  "result": "No remaining confirmed runtime or type blocker in reviewed caller scope; narrow Esplora type issue confirmed and repaired by root.",
+  "runtimePaths": [
+    "apps/web/src/features/btc/BtcView.tsx",
+    "apps/web/src/features/btc/esplora.ts",
+    "apps/web/src/features/btc/scanWorkerClient.ts",
+    "apps/web/src/features/solana/SolanaView.tsx",
+    "apps/web/src/features/tron/TronView.tsx",
+    "apps/web/src/lib/networkOperation.ts",
+    "apps/web/src/lib/networkAuthorization.ts",
+    "apps/web/src/lib/defaultServices.ts",
+    "apps/web/src/lib/boundedRequest.ts"
+  ],
+  "confirmedResolvedFinding": {
+    "id": "ESPLORA-ABORT-NARROWING",
+    "severity": "build-blocking TypeScript diagnostic",
+    "diagnostic": "TS2367",
+    "confirmedBy": "Root minimal TypeScript 5.9.3 RED/GREEN probe; artifacts inspected by reviewer",
+    "repair": "Call assertNotAborted closure before dispatch and first in catch, preserving both checks and status/size error mappings",
+    "evidenceDirectory": "docs/consolidation/master-20261118",
+    "fullWebTypecheckQualified": false
+  },
+  "preservedInvariants": [
+    "BTC explicit revocable provider spent-check consent captured before worker factory and reused for dispatch and result validation",
+    "Per-output scan coverage; no legacy-global trust migration; unknown is not silently unspent",
+    "TM13 local positive spend detection and fresh disclosed selected-output provider recheck before signing",
+    "Raw committed inputs supply spend evidence before tweak-eligibility skip",
+    "BTC/SOL/TRON action, endpoint, network and signal scopes; network/session revision revocation",
+    "Production raw fetch denied; injected test fallback does not change default production construction",
+    "Existing secret zeroization and mainnet refusal paths preserved"
+  ],
+  "g5": {
+    "webSourceDelta": [],
+    "webImports": [
+      "@ghostpay/solana-stealth",
+      "@ghostpay/tron-adapter"
+    ],
+    "cliCodecAlignment": [
+      "st:sol with cluster binding",
+      "gpst1 base58 memo",
+      "st:trx and existing TRON announcement format"
+    ],
+    "interopOracleLoading": "Computed repository-relative source URLs; no new bare sibling package imports in interop tests",
+    "coreCryptoEdge": "Already declared in chain-tron dependencies; dependency-first build order retained",
+    "testFilesExcludedFromBuild": true,
+    "documentationFinding": "packages/solana-stealth/README.md still states not interoperable after CLI alignment",
+    "generator": "Documented explicit prerequisite builds core-crypto, solana-stealth and tron-adapter before the generator imports their dist files; no missing build prerequisite found",
+    "packageMap": "Committed map accurately lists chain-solana->no internal runtime edges, chain-tron->core-crypto, solana-stealth->web and tron-adapter->core-crypto/web; dynamic source oracles are not bare package edges",
+    "proposedDocumentationPatch": "audit-data/history-solana-compatibility-docs.patch"
+  },
+  "validation": {
+    "followupTestsRunByReviewer": 0,
+    "followupInstallsOrBuilds": 0,
+    "remoteMutations": 0,
+    "sourceEdits": 0,
+    "rootCombinedTests": "Owned and reported separately by root; no overall pass assumed here",
+    "earlierBtcCandidateTests": "367 distinct focused passes under recorded source pins and borrowed dependency/source-alias harness; not a full integration qualification"
+  }
+}

@@ -1,0 +1,13 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/lib/networkOperation.test.ts > finite Bitcoin operation destinations > dispatches only to the explicitly granted origin and path boundary 38ms
+ ✓ src/lib/networkOperation.test.ts > finite Bitcoin operation destinations > selects the most specific prefix and never borrows an overlapping grant after cancellation 3ms
+ ✓ src/lib/networkOperation.test.ts > finite Bitcoin operation destinations > does not expand an exact-URL grant into a prefix 6ms
+ ✓ src/lib/networkOperation.test.ts > finite Bitcoin operation destinations > disposes earlier grants when a later endpoint refuses construction 2ms
+ ✓ src/lib/networkOperation.test.ts > finite Bitcoin operation destinations > preserves the explicitly injected test-service seam when no browser authority exists 0ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:07:00
+   Duration  2.97s (transform 51%, import 46%, tests 2%, worker 1%)

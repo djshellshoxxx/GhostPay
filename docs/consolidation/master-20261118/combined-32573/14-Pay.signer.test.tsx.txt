@@ -1,0 +1,19 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > discards a verification that completes after locking a payer session without seller keys 668ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > removes a completed trust result on app lock even when no seller keys are loaded 511ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > invalidates a completed invoice when the seller session changes 897ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > compares only the selected seller even when both distinct seller keys are saved 309ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > shows local verification while the payment manifest is still unavailable 111ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > drops trust immediately when another tab removes the selected pin and does not downgrade the selection 217ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > cannot publish an old matching result after a pin is removed during verification 165ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > cannot reuse invoice A’s verification when rapidly opening invoice B 101ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > keeps another tab’s corrupt pin state visibly unavailable without trusting an old saved key 167ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > discards a prepared payment when the selected pin changes during preparation 435ms
+ ✓ src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > rechecks persisted signer authority before wallet dispatch even before a cross-tab event arrives 439ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  00:09:07
+   Duration  12.44s (transform 35%, tests 33%, import 24%, environment 8%)

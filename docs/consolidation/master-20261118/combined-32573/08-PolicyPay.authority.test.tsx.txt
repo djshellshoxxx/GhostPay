@@ -1,0 +1,10 @@
+
+ RUN  v5.1.0 /workspace/scratch/9b4050d15a9b/GhostPay-master/apps/web
+
+ ✓ src/features/policy/PolicyPay.authority.test.tsx > PolicyPay record authority while a wallet reply is pending > refuses an asset excluded by the newly … 1489ms
+ ✓ src/features/policy/PolicyPay.authority.test.tsx > PolicyPay record authority while a wallet reply is pending > allows an asset covered by the newly co… 283ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  00:07:34
+   Duration  10.02s (environment 43%, import 21%, tests 18%, transform 18%)
