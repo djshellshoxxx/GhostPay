@@ -12,6 +12,8 @@ import {
   SchemaError,
   SigningError,
   UnsupportedError,
+  InvalidSignatureError,
+  UntrustedSignerError,
   Utf8Error,
 } from './errors.js';
 import { canonicalize, parseStrictJson } from './json.js';
@@ -127,8 +129,19 @@ export interface EncodeOptions {
 }
 
 export interface ParseOptions {
-  /** Lowercase 66-hex compressed signer keys the caller trusts. */
+  /** Compressed signer keys (66 hex chars, no `0x`) trusted out of band; compared case-insensitively. */
   readonly pinnedSigners?: readonly string[];
+  /**
+   * Opt-in policy for callers requiring an already trusted seller. Returns only `trusted-seller` invoices:
+   * an invalid signature throws {@link InvalidSignatureError}; a valid but unpinned signer throws
+   * {@link UntrustedSignerError}. An empty or missing pin set trusts nobody. Pins are only as trustworthy
+   * as the channel they came from; a valid self-signature alone does not authenticate the seller.
+   *
+   * Unset or `false` preserves the default review result, including `invalid-signature`. Other values from
+   * untyped callers enforce the policy. Earlier format/schema/decryption/passphrase failures keep their
+   * own errors. `openFragment` may still return `needsPassphrase`; its header is not a trusted invoice.
+   */
+  readonly requirePinnedSigner?: boolean;
   /** Passphrase for an `A256GCM-PW` link. Supplying one for any other link is refused. */
   readonly passphrase?: string;
 }
@@ -403,6 +416,11 @@ function finish(
     : signerPinned
       ? 'trusted-seller'
       : 'valid-signature';
+  // Only an absent or explicitly false option disables the requested policy, including for untyped callers.
+  if (options.requirePinnedSigner !== undefined && options.requirePinnedSigner !== false) {
+    if (!signatureValid) throw new InvalidSignatureError();
+    if (!signerPinned) throw new UntrustedSignerError();
+  }
   return {
     invoice,
     signature,
@@ -441,12 +459,14 @@ async function parseRoot(
  * encoded length, strict canonical base64url, 16384-byte decoded limit, fatal
  * UTF-8, strict JSON (no duplicate or prototype keys, integers only, depth <= 8),
  * canonical-form equality, schema validation, optional AES-GCM decryption, then
- * signature verification. An invalid signature does not throw: it yields
+ * signature verification. By default an invalid signature does not throw: it yields
  * `signatureValid: false` and `trust: 'invalid-signature'`, which callers must
  * treat as a hard stop. `signerPinned` is true only when the signature is valid
  * and the signer key is in `options.pinnedSigners`. Strings in the result are
  * inert data; never render them as HTML. This function does not fetch URLs or
  * check expiry (use {@link checkExpiry}).
+ * With `options.requirePinnedSigner`, only a `trusted-seller` result is returned; an invalid signature
+ * throws {@link InvalidSignatureError} before an unpinned valid signer throws {@link UntrustedSignerError}.
  *
  * Passphrase links (`alg: "A256GCM-PW"`, ADR-0020): the KDF parameters are checked against the
  * allow-list before any derivation; without `options.passphrase` this throws
@@ -455,9 +475,9 @@ async function parseRoot(
  * a non-passphrase link throws {@link PassphraseUnexpectedError}.
  *
  * @param fragment Bounded `#gpi=v1.<base64url>` input (e.g. `location.hash`).
- * @param options Optional pinned signer keys and passphrase.
+ * @param options Optional pinned signer keys, required-pinning policy and passphrase.
  * @returns Validated invoice plus verification result.
- * @throws {InvoiceError} Subclass per failure class: format, size, base64url, UTF-8, JSON, schema, canonical, decryption.
+ * @throws {InvoiceError} Subclass per format, size, base64url, UTF-8, JSON, schema, canonical, decryption or requested signer-policy failure.
  * @security Do not log the fragment or returned private fields. It is a bearer secret readable by any script on the page.
  * @testVector invoice-v1-sample
  */
@@ -473,9 +493,10 @@ export async function parseFragment(fragment: string, options: ParseOptions = {}
  * when no passphrase is supplied, so a UI can prompt. No KDF work happens in that case.
  *
  * @param fragment Bounded `#gpi=v1.<base64url>` input.
- * @param options Pinned signers and optional passphrase.
+ * @param options Pinned signers, optional required-pinning policy and passphrase.
  * @returns Discriminated result.
  * @throws {InvoiceError} Same classes as {@link parseFragment}, plus {@link WrongPassphraseError}.
+ * Required-pinning policy is enforced after decryption, never on a `needsPassphrase` result.
  * @security `header` is unauthenticated (anyone can edit it); show it only as "claimed" until decrypted.
  * @testVector invoice-v1-sample
  */

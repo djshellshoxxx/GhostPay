@@ -6,8 +6,16 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { checkpointKeyId, localCheckpointStore as secretKeyedStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+
+/** These scanner fixtures use a fixed private key instead of the loaded seller session. */
+const localCheckpointStore = (storage: Parameters<typeof secretKeyedStore>[0]) => secretKeyedStore(storage, (_keyId, use) => {
+  const key = new Uint8Array(32).fill(7);
+  try { return use(key); } finally { key.fill(0); }
+});
 import { ReconciliationVault } from './reconciliationVault';
+import { clearSession, generateSession, importSession, subscribeSession } from './session';
+import { checkpointSlot } from './scanCursorSlot';
 import type { ToWorker } from './scannerCore';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
@@ -979,9 +987,9 @@ describe('localCheckpointStore', () => {
   });
   it('ignores corrupt data and tolerates missing or failing storage', () => {
     const st = mem();
-    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, 'not json');
-    st.setItem(`ghostpay.scan.checkpoint.v2.2.${KEY}`, JSON.stringify({ nextBlock: 'abc' }));
-    st.setItem(`ghostpay.scan.checkpoint.v2.3.${KEY}`, JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 1, KEY), 'not json');
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 2, KEY), JSON.stringify({ nextBlock: 'abc' }));
+    st.setItem(checkpointSlot(new Uint8Array(32).fill(7), 3, KEY), JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
     const cp = localCheckpointStore(st);
     expect(cp.load(1, KEY)).toBeUndefined();
     expect(cp.load(2, KEY)).toBeUndefined();
@@ -1670,6 +1678,45 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     await vi.waitFor(() => expect(waiting).toBe(true)); ctl.abort();
     expect(key.every((b) => b === 0)).toBe(true); release(); await task;
     expect(cp.saves).toEqual([]);
+  });
+
+  it.each(['silent lock', 'different seller', 'same seller restored'] as const)('cannot persist an old scan after %s while corroboration is pending', async (change) => {
+    const s = setup();
+    const keys = {
+      spendingKeyHex: hexOf(unsafeRevealSecret(s.keys.spendingSecret)),
+      viewingKeyHex: hexOf(unsafeRevealSecret(s.keys.viewingSecret)),
+      signingKeyHex: '33'.repeat(32),
+    };
+    const pub = importSession(keys);
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const map = new Map<string, string>();
+    const cp = secretKeyedStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => { map.set(k, v); }, removeItem: (k) => { map.delete(k); } });
+    const secondary = chainWith(2500, [s.mine.log]);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    const ctl = new AbortController();
+    // Scan.tsx aborts on session emissions, even if a clear-and-restore installs identical public keys.
+    const unsubscribe = change === 'same seller restored' ? subscribeSession(() => { ctl.abort(); }) : () => undefined;
+    const task = scan(s, keyId, {
+      client: chainWith(2500, [s.mine.log]), checkpoints: cp, signal: ctl.signal,
+      secondaryClient: { ...secondary, getBlock: async (n) => { if (n === TAIL) { waiting = true; await gate; } return secondary.getBlock(n); } },
+    });
+    try {
+      await vi.waitFor(() => expect(waiting).toBe(true));
+      if (change === 'silent lock') clearSession(false);
+      else if (change === 'different seller') generateSession();
+      else { clearSession(false); importSession(keys); }
+      expect(ctl.signal.aborted).toBe(change === 'same seller restored');
+      // The first two cases have no AbortSignal shortcut: the store must reject the no-longer-loaded identity.
+      release();
+      await task;
+      expect(map.size).toBe(0);
+      expect(cp.load(chain.chainId, keyId)).toBeUndefined();
+    } finally {
+      release();
+      await task;
+      unsubscribe();
+      clearSession(false);
+    }
   });
 
   it('after a genuine two-provider reorg invalidates only records whose block both providers replaced (L3-F1, L1-03)', async () => {
