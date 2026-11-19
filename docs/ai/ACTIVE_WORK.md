@@ -1191,4 +1191,3 @@ records before the runtime correction, then prove zero dispatch after it with on
 dependencies. Preserve same-origin release hashing, scan legacy-field compatibility, current action/session/
 endpoint checks, all gates and dependency versions. No deployment, remote mutation, scanner suppression or
 policy exception. The implementation needs independent review from the integration coordinator.
-

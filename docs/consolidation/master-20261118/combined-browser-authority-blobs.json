@@ -1,0 +1,121 @@
+{
+  "candidate": "521194c0f2238358061525c2cddf14ee7cc366ea",
+  "tree": "c4ad05d28decccbdad1c4969bffe17221916387d",
+  "later_docs_only_commit": "47a7e29a0249b311e6333fc2100cbd7aefff1ee2",
+  "recorded_utc": "2026-11-19T07:46:13.497330+00:00",
+  "scope": "Independent incremental review of actual combined browser authority, signer, idle custody, durable scan and service/transport integration. The two authored repairs require coordinator review.",
+  "snapshots": [
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0"
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.ts",
+      "blob": "000be25182a877bbab96cc3b6a0e5ac9038790ca"
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.ts",
+      "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "blob": "f6acfb9b4890a8a689bd74d3adba05128f2a1491"
+    },
+    {
+      "path": "apps/web/src/lib/networkSelection.ts",
+      "blob": "cd5803357898b84863f7885c9fb827b28ff2693a"
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.ts",
+      "blob": "e0cae13f36927b031b74ab2d98c1233f015a95db"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb"
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.ts",
+      "blob": "1867f9ad6b8913a135489ab715812851b7258f79"
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "blob": "419e5624c35dde3b5b1c4e94d2a1d09638d7b31f"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.ts",
+      "blob": "7d0651782bdd49927bf40630035fa8e717ea6afd"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.ts",
+      "blob": "4a8b9e954c6f11be7438b0d6b7a14519e4ff3c63"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.ts",
+      "blob": "4dae49b9eb15d99fb5ecb34e84b76f6ac0a95c59"
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.ts",
+      "blob": "f272f747894e66dc9251fac3ebbfa2e6d5f92a75"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "ff362cf4f740373a3575465ef1349040d62d9421"
+    },
+    {
+      "path": "apps/web/src/views/Settings.tsx",
+      "blob": "b4a1368bf7df2a7148f57b215edd2291cf24a619"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "e1e547d907f5c028065d2c55342125131d006e51"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.tsx",
+      "blob": "18af8fbd66ba4257139ad4b7a55823cce6df6423"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyPay.tsx",
+      "blob": "2c29b545732754997b4ac0c3fb93096f125ee511"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+      "blob": "642364b7da1d9a086655aef8d4f04ec055563dce"
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+      "blob": "9cb9a8af0d806cb3ac7c33d396113d4e8ecd787a"
+    },
+    {
+      "path": "packages/invoice-schema/src/envelope.ts",
+      "blob": "cc6b9dd6fc20fb93ecb22b00e8391338bfd6a0e4"
+    },
+    {
+      "path": "packages/invoice-schema/src/pinnedSigner.test.ts",
+      "blob": "30fb5bc7b563a6522c0a9aa23579100407eeef61"
+    }
+  ],
+  "blocking_findings": [
+    {
+      "id": "combined-selection-truncation",
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "status": "behaviorally confirmed; isolated repair55fc93a2 ready for independent coordinator acceptance",
+      "red": "24 malformed saved-record dispatch failures;8 positive/deletion controls passed",
+      "green": "full networkAuthorization122/122 passed"
+    }
+  ],
+  "separate_authored_asset_followup": {
+    "head": "6762b6f41e9e40f96d667346f0c07dd8286e0201",
+    "not_in_candidate": true,
+    "result": "PolicyPay stale record baseline failed1/2; final layout-effect correction passed2/2; coordinator source acceptance pending"
+  },
+  "no_changes_from_af935_in_gate_paths": true,
+  "tests": "No new combined run by reviewer; authored focused repairs have separate source/log receipts. Hosted exact-head qualification remains necessary."
+}
