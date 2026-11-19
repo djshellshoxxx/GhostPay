@@ -685,3 +685,16 @@ Acceptance: retain every PR #239 protection and selectively preserve PR #240's e
 external-copy unload guard, fresh replacement consent and keyboard recovery regressions. No changes to the codec,
 custody model, contracts, dependencies, e2e helpers, remote source branches or security gates. Record actual test
 results separately from static review. The master coordinator owns integration and publication.
+
+# Existing runtime correctness recovery — 2026-11-18
+
+Worker: feature/custody reviewer continuing the authorized all-repository consolidation.
+Branch: `integration/ghostpay-runtime-recovery-20261118`; base
+`c5f9b190935251c5274a434341f40db3c9175ef1`.
+Owned paths: `packages/cli/**`, `apps/relayer/**`, `packages/relayer-guard/**`,
+`apps/web/src/lib/relayerClient.ts` and its focused test; this claim and the scoped runtime recovery handoff.
+Acceptance: recover useful CLI input/redaction and relayer admission/fee/logging/limiter fixes from PR #218
+`b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e`, preserving PR #222 request padding and privacy controls.
+Do not reapply invoice-schema #234, alter contract/policy/multichain behavior, change dependencies or weaken checks.
+Inspect #211 for remaining unique work and report excluded architectural scope. Original branches are read-only;
+coordinator owns integration/publication and exact combined-source validation.
