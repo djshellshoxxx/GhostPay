@@ -16,6 +16,18 @@ The initial attempt stopped on missing protobuf; the subsequent complete build s
 restoring the exact locked dependencies. The invoice-schema package was rebuilt after its codec
 implementation commit.
 
+The transitive web-test dependency `@ghostpay/relayer-guard` was also built from this source after
+the first whole-web typecheck reported its missing output. The corrected whole-web typecheck
+passed at both the lock repair and final catalog checkpoints. Typed lint for every changed feature
+TypeScript file and the full invoice-schema suite/coverage also passed.
+
+Two ordinary npm web builds exited 137 before Vite emitted a result. Serial direct execution of
+the unchanged typecheck, Vite build and original post-build bundle scanner subsequently passed
+for full and lean profiles. The successful typecheck used a 1,280 MiB Node heap; Vite/scanner used
+1,024 MiB and `RAYON_NUM_THREADS=2`. Resource scheduling was bounded without changing any source,
+build-profile guard, scanner or acceptance threshold. Detailed actual commands and artifact
+inventories are recorded in `evidence/` and summarized in `QUALIFICATION.md`.
+
 ## Browser execution limit
 
 Chromium `156.0.8078.79` exists at `/usr/bin/chromium`. A minimal Playwright launch failed before

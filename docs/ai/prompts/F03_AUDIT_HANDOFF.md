@@ -1,5 +1,9 @@
 # F03 fresh-worker audit handoff
 
+This is the preserved initial audit brief. Completed reports, repairs, published source mappings
+and the successor task are recorded in `docs/future/modules/F03-private-payment-links/HANDOFF.md`
+and `QUALIFICATION.md`. The original checkpoint and evidence limits below remain historical.
+
 Implementation checkpoint: `f472030a1d9a993db1ba7a1a33f9a208c28ebf13`.
 Tree: `387690ae4248ed35da78b359e84ba09c9b7a25b4`.
 Baseline: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.

@@ -14,6 +14,29 @@ local explicit import preserves signature, signer, chain, expiry and payment rev
 cannot replace current intent; affected-package gates, browser checks and fresh audits pass.
 Existing invoice, QR and privacy work is preserved. No main merge or deployment is authorized.
 
+Fresh audit generation: `f03_audit_standards`, `f03_audit_spec`, `f03_audit_privacy`.
+Reviewed implementation: `f472030a1d9a993db1ba7a1a33f9a208c28ebf13`.
+Owned audit paths: respectively `docs/future/modules/F03-private-payment-links/audits/`
+`STANDARDS.md`, `SPEC.md`, and `PRIVACY_SECURITY.md`. Production source is read-only
+for all three auditors. Acceptance: full selected-feature source review, actual evidence limits,
+concrete findings and independent follow-up on coordinator repairs. Root owns serial broad gates.
+Audit repair: `f03_audit_spec` additionally owns focused app-lock regression additions in
+`apps/web/src/views/Pay.requestFile.test.tsx`; root owns the minimal production repair.
+Existing implementation is frozen until the new regression demonstrates the reported omission.
+Catalog qualification repair: `f03_audit_standards` additionally owns additive `requestFile.*`
+entries in `apps/web/locales/{ar,es,ja}.json`, using the existing unreviewed-English fallback
+convention, and its report follow-up. The 45 missing-key failures are recorded before edits.
+No existing translation or reviewed-security digest may change. Root owns final catalog check;
+the separate specification/privacy workers independently review this bounded repair.
+Status: selected implementation and fresh audits complete. The shared medium app-lock finding
+is repaired with four independently RED/GREEN regressions; combined focused suite 114/114 and
+full invoice-schema 813/813 with original coverage thresholds pass. Final product checkpoint
+`e543d25fc7f3b65460518f4b3df4c513d34a1215` is published as exact-tree equivalent
+`bd128598f1b4c5291dad5c003a4775ad47bbb888` in draft PR #310. Catalog, typed lint, typecheck,
+full/lean static builds and original bundle scans pass. Actual Chromium execution remains
+blocked locally and hosted checks remain pending. See the source map, audit reports, evidence
+and successor prompt in `docs/future/modules/F03-private-payment-links/{QUALIFICATION,HANDOFF}.md`.
+
 # Focused hosting main reconciliation — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.

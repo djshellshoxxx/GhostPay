@@ -1,0 +1,8 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 test
+> vitest run --coverage --maxWorkers=2
+
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay/packages/invoice-schema
+      Coverage enabled with v8
