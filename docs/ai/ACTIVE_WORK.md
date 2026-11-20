@@ -1,3 +1,76 @@
+# Main unique-code consolidation — 2026-11-19 (Pacific)
+
+Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
+Branch: `integration/ghostpay-main-unique-code-20261120`; base main: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+User authorization: consolidate branches with unique code into GhostPay main.
+Owned paths: additive branch provenance under `docs/consolidation/main-unique-code-20261120/`, this additive registry, and exact reviewed source/test contributions from PRs #279, #280, #281, #282 and #285. Preserve every existing registry section and donor parent. PR #267 was separately merged after exact-head checks passed.
+Acceptance: compare donor source blobs and ancestry; retain all current main files except the five reviewed independent fixes; validate the combined candidate with existing CI; merge only qualified changes. Preserve blocked broad donors, runtime/payment safeguards, deployment triggers, dependency versions and security gates. No branch deletion or force update.
+Execution: local executor unavailable; use connected GitHub source/CI tools. No local test execution is claimed.
+Status: ownership recorded before source integration; integration lease generation 7.
+
+---
+
+# Pages multipart QR malformed Unicode guard — 2026-11-19
+
+- Cycle/worker: `20261119T124337Z` / single ChatGPT coordinator with sequential bug, audit and documentation phases; no parallel or independent verifier available.
+- Branch: `automation/20261119T124337Z/bug/qr-utf8-surrogate-guard`; base `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrMultipart.ts`, `apps/web/src/lib/qrMultipart.test.ts`, this isolated claim and `docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md`.
+- Discovery: single QR `makeQr` rejects unpaired UTF-16 surrogates, but multipart `TextEncoder` silently replaces them with UTF-8 U+FFFD. Node 22 reproduction: `\uD800` encodes as `EF BF BD` while valid astral pairs round-trip unchanged.
+- Acceptance: test-first rejection of isolated high/low surrogates and mixed strings by `toMultipart` and `multipartIfNeeded`; valid paired Unicode text still encodes and decodes; no QR/format/protocol change for valid payloads; no dependencies added; exact-head CI and separate review before merge.
+- Coordination: inspected changed-file inventories of active PRs #238, #240, #243, #244, #246, #249–#252, #254–#256, #258, #260–#262, #264–#265, #267–#278; neither owned QR file appeared (bounded sample, not an exhaustive review of all open PRs). Broad #278 and recovery integration remain externally owned. Metadata lock generation 3 observed released at `6408563f55081ee941c2036086c025ebf63d2c96`; no shared lock acquired, no merge planned.
+
+---
+
+# 2026-11-19 · Fail-closed runtime build profile guard (isolated)
+
+Coordinator and implementer: one ChatGPT assistant, sequential phases; no independent verifier spawned.
+Cycle: `20261119-c977`; isolated branch: `automation/20261119-c977/bug/build-profile-failclosed`.
+Base observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: `apps/web/src/lib/buildProfile.ts`, `apps/web/src/lib/buildProfile.test.ts`, this append-only claim, and isolated `docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md`.
+Dependency/ownership: active consolidation PRs #246/#262/#264/#278 and QR #279 checked; none changes the two source/test paths as of branch creation. Existing metadata integration lock is released generation 3. The external GhostPay automation has a concurrently in-progress run; no integration or shared-ledger writes authorized for this branch.
+Finding: `resolveProfile` narrows when exactly `lean`, but unexpected runtime values (outside the TypeScript union) are treated as `full` when all other values are `full`. This differs from the fail-closed `profileFromDefine` logic. No real-world exploit established.
+Acceptance: test first; invalid explicit/shell/build values must resolve to lean, normal 3-source truth table unchanged; no feature widening, dependencies, workflows or build setting changes; record actual test execution and CI constraints; independent verification needed before merge.
+
+---
+
+# Run 20261119T1640Z — privacy-set 30-day coverage correctness
+
+Worker: one ChatGPT coordinator, with sequential implementation and audit phases; no independent subagent.
+Base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; isolated branch: `automation/20261119T1640Z/bug/scan-privacy-partial-30d`.
+Owned paths: `apps/web/src/lib/scanSpam.ts`, new `apps/web/src/lib/scanSpam.partial.test.ts`, and `docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md`. The claim is recorded here before source edits.
+Finding: `anonymitySet()` reports 7-day and 30-day public announcement counts but calculates `partial` from only the 7-day lower bound. If a scan began ten days ago, the 30-day displayed count is incomplete yet the warning is absent.
+Acceptance: a test that fails on baseline for incomplete 30-day coverage; 7-day/30-day counts remain unchanged; the `partial` flag marks incomplete 30-day history and gaps to head, but does not spuriously mark full available genesis history incomplete. Run available focused checks and report exact limits; avoid changing privacy policy, protocol, network access or real funds.
+Dependencies/ownership: checked active #278/#264/#246/#238/#244/#251/#248/#249/#222/#219/#250/#269/#270/#279/#280 changed-file inventories; none owns `scanSpam.ts` or new focused test. Recheck before PR. The metadata integration lock was last observed released generation 3; no protected integration requested.
+Status: claimed; implementation pending.
+
+---
+
+# Merchant key-pin strict JSON hardening — 2026-11-19 cycle 20261119T183817Z
+
+- Worker: one ChatGPT operator (sequential source, test, and audit phases; no independent subordinate).
+- Task branch: `automation/20261119T183817Z/bug/merchant-pin-duplicate-json`.
+- Base `main` SHA: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned files: `apps/web/src/lib/merchantIdentity.ts`, `apps/web/src/lib/merchantIdentity.test.ts` and an isolated handoff `docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md`.
+- Finding: ambiguous persisted signer-pin JSON (duplicate `v` or `signer` members) is accepted by `JSON.parse` as its final key value, despite the trusted-pin fail-closed contract. This is defensive local-storage validation; no remote compromise or fund-loss exploit claimed.
+- Acceptance: reject duplicate-key and forbidden-key pin records as `unavailable`, never silently treat them as `absent`; valid persisted pins continue to be read, saved and removed; regression committed before source repair.
+- Dependencies: reuse existing exported `parseStrictJson` (invoice-schema), no protocol/schema changes.
+- Ownership check: open PRs including #238, #246, #262, #264, #278 and all current work listed through #281 inspected for these two files; none claimed them. Recheck heads before integration.
+- Integration metadata ref remains outside this branch. No shared ledger or protected-branch update authorized from this worker.
+
+---
+
+# QR kind handling fail-closed — 2026-11-19 cycle 20261119T204728Z
+
+- Worker: one ChatGPT coordinator, sequential implementation and read-only audit phases (no independent subagent; not independently approved).
+- Task branch: `automation/20261119T204728Z/bug/qr-kind-failclosed`; exact base main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrKinds.ts`, `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_KIND_FAILCLOSED_20261119.md`, and this additive ownership claim only.
+- Evidence: `kindForPayload` looks up a runtime key in a regular JavaScript object; for unknown keys it can return `undefined` or inherited properties such as `constructor`, while `unverified: true` can classify an unknown payload as caution. `qrKindClass` constructs arbitrary classes for unknown kinds.
+- Acceptance: reject unrecognized runtime payload types and frame kinds before returning handling policies or CSS; preserve all valid QR kind/rule behaviors and print policy; commit a failing regression first, then fix; execute bounded Node proof and report exact CI and independent review gaps.
+- Ownership: core active PRs #238/#243/#246/#251/#252/#255/#258/#261/#262/#264/#265/#268/#270/#274/#278/#279/#280/#281/#282 were inspected for these files; no direct overlap observed. Recheck at merge. No other branch or shared integration updates.
+- Status: claimed; no merge, deployment, release, or production change authorized from this isolated worker.
+
+---
+
 # Focused hosting main reconciliation — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
@@ -661,3 +734,23 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Dependencies/other owners: PR #309 documentation-only evidence; PR #278 recovery integration, PR #293 privacy and ongoing integration PRs #306/#307 are separate, active branches. Do not edit those branches or shared ledgers.
 - Acceptance: deterministic held-operation regressions for both action orders and late settlement; correct controls after cancellation; no stale status; normal operation and explicit cancellation unchanged; source review, focused tests and hosted qualification on exact candidate. No production deployment or main merge.
 - State: ownership registered before product or regression changes; code/test execution and independent review not yet claimed.
+
+## QA-01 operation ownership completion — 2026-11-20
+
+- Worker: `/root` implementation, with independent component-test, browser-test and source-review workers.
+- Task branch: `fix/ghostpay-309-operation-ownership-20261120`; continuation of PR #314 at `740efcf061c1ca97a562b85be742dd59f3ad0911`, based on main `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Owned paths: `apps/web/src/views/SellerKeys.tsx`, `apps/web/src/views/SellerKeys.operation.test.tsx`, `apps/web/e2e/backup-ownership.spec.ts`, this additive claim and the existing SellerKeys supersession handoff.
+- Scope: complete QA-01 from #309, preserving #314's export/verification repair and covering superseded unlocks. Tie cancellable busy state to the active controller, keep durable save/delete ownership independent, and prevent stale completions from changing a newer operation.
+- Acceptance: both export/verification orders with delayed success and rejection; unlock supersession; explicit cancel, idle/session changes and unmount; pending durable writes retain their busy state; existing own-import/unlock completion remains valid; targeted component suites, TypeScript, lint, static Pages build and a delayed-operation browser journey pass.
+- Other active recovery/privacy/integration PRs remain separately owned. Inspect live heads before publication; any continuation of #314 must be a verified fast-forward. No deployment, release or broader consolidation is part of this repair.
+- State: ownership recorded before edits. PR #314's existing hosted checks passed, but independent source review found unlock ownership incomplete. New verification results will be recorded after execution.
+
+## QA-02 payment URI builder length — 2026-11-20 UTC (automation cycle)
+
+- Worker: sequential ChatGPT bug-repair coordinator; no subordinate or independent worker claimed.
+- Isolated branch: `automation/20261120T0641Z/bug/payment-uri-aggregate-length`; exact base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Finding: QA-02 / CORE-QA-01, source-pinned read-only QA at PR #309 (source `c977b5d6723f6822c3b5d86cd6b231712c53c395`), applies unchanged to base.
+- Owned paths: `packages/payment-uri/src/query.ts`, `bitcoin.ts`, `solana.ts`, `tron.ts`, new `builder-length.test.ts`, and `docs/handoffs/PAYMENT_URI_LENGTH_20261120.md`. This ownership registry entry is additive.
+- Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
+- Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
+- Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
