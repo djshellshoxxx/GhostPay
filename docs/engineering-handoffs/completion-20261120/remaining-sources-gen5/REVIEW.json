@@ -1,0 +1,52 @@
+{
+  "schema": "ghostpay-remaining-sources-gen5-review/1",
+  "candidate": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "reviewer": "/root/remaining_sources_gen5",
+  "independent_comparison_worker": "/root/remaining_sources_gen5/early_source_compare",
+  "runtime_tests_executed": false,
+  "builds_executed": false,
+  "remote_writes": false,
+  "required_missing_runtime_behavior_established": false,
+  "dispositions": [
+    {
+      "pr": 151,
+      "head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "classification": "SUPERSEDED_OR_EQUIVALENT",
+      "scope": "All eight original proposals and all 16 affected path names including the workflow rename tombstone.",
+      "code_replay_needed": false,
+      "remaining_limits": [
+        "Named PENDING_OWNER_REVIEW dependencies have not been approved by this review.",
+        "Source gate comparison does not prove built artifact exclusion.",
+        "The workflow is compared against its original proposal; no fresh whole-workflow audit claimed."
+      ]
+    },
+    {
+      "pr": 40,
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "classification": "EQUIVALENT_RELOCATED_WITH_SUPERSEDED_INHERITED_FIXES",
+      "scope": "All 15 common-base delta paths; only three paths are the unique actual stacked PR proposal.",
+      "code_replay_needed": false,
+      "remaining_limits": [
+        "Descriptor loader and D3 service behavior are Node/server source outside active Pages runtime.",
+        "Source/test inspection only."
+      ]
+    },
+    {
+      "pr": 259,
+      "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "classification": "DOCS_ONLY_WITH_DISTINCT_HISTORICAL_ARTIFACTS_AND_UNKNOWN_TEXT_OVERLAP",
+      "scope": "All 20 actual PR delta paths are docs; all-best-base union is 72. Seven archive/provenance paths and one status page absent; no exact equivalent artifact blobs elsewhere. Eight existing docs equal actual base; four differ from source and base.",
+      "code_replay_needed": false,
+      "remaining_limits": [
+        "Full 158-section provenance/hash and candidate text-overlap verification deferred to fresh archive worker.",
+        "Distinct document containers do not establish that every archived section is missing elsewhere.",
+        "No dated status, ownership or current wiki bulk import advised."
+      ]
+    }
+  ],
+  "successor": {
+    "worker": "/root/archive_recovery_gen6",
+    "task": "Independently verify the seven historical archive/provenance artifacts from PR #259 against frozen source and candidate text, then preserve only proven unique dated evidence with original author/source attribution. No active status/wiki guidance import.",
+    "handoff_sent": true
+  }
+}

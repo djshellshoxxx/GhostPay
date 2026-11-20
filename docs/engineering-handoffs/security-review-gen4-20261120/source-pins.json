@@ -1,0 +1,64 @@
+{
+  "reviewed_source": "c344334d757db9ca51e107000b918fd23cc7397d",
+  "preceding_runtime": "fa5d4b143c7459c99a201433e661f6650b957e3e",
+  "review_tree": "688e961b0e6b59cff0c242c2436dcc3f7260f11f",
+  "changed_source": [
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "sha256": "7a29be1f740cce8b83c66dbd6ba792d1f58de31fd5db35c9933422e1f807ddcf"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "sha256": "5ea57e72798fa926ee2f4e26f8a41d304e3c532043ecc9b536cd6d03c8eec6e8"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "sha256": "540846cc836212f233e5ff760e41c82405ad16b48a0bf3893843cfae97a290fb"
+    }
+  ],
+  "unchanged_controls": [
+    {
+      "path": "apps/web/src/lib/payExec.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "unchanged": true
+    },
+    {
+      "path": ".github",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "unchanged": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/deployments",
+      "unchanged": true
+    }
+  ]
+}

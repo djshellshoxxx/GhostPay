@@ -1,0 +1,349 @@
+{
+  "source_checkout": "/workspace/scratch/e5b5e498b785/GhostPay",
+  "source_head": "a1e5090bac39bf3841f7d0403c79163d787a9793",
+  "destination_head": "898d3361af4320dccca7743d960b32a94fb66922",
+  "lockfile_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "matched_package_input_count": 2223,
+  "setup": "Private cp -a --reflink=auto of locked node_modules and matching package dist outputs; workspace symlinks must resolve inside this checkout.",
+  "copied_output_directories": [
+    "packages/address-safety/dist",
+    "packages/amount-blur/dist",
+    "packages/btc-family/dist",
+    "packages/btc-payjoin/dist",
+    "packages/btc-silent-payments/dist",
+    "packages/chain-adapters/dist",
+    "packages/chain-evm-extra/dist",
+    "packages/chain-solana/dist",
+    "packages/chain-tron/dist",
+    "packages/cli/dist",
+    "packages/confidential-amounts/dist",
+    "packages/core-crypto/dist",
+    "packages/donation/dist",
+    "packages/external-pools/dist",
+    "packages/external-pools-privacypools/dist",
+    "packages/external-pools-railgun/dist",
+    "packages/hops/dist",
+    "packages/hygiene/dist",
+    "packages/i18n/dist",
+    "packages/invoice-schema/dist",
+    "packages/merchant-billing/dist",
+    "packages/merchant-hooks/dist",
+    "packages/merchant-ledger/dist",
+    "packages/merchant-multisig/dist",
+    "packages/metadata-hardening/dist",
+    "packages/net-harness/dist",
+    "packages/net-transport/dist",
+    "packages/ops-monitor/dist",
+    "packages/payer-sponsor/dist",
+    "packages/payment-uri/dist",
+    "packages/pir-two-server/dist",
+    "packages/plugin-api/dist",
+    "packages/policy-scheme/dist",
+    "packages/pool-circuits/dist",
+    "packages/pool-prover/dist",
+    "packages/pool-relayer/dist",
+    "packages/pool-sdk/dist",
+    "packages/privacy-pipeline/dist",
+    "packages/privacy-profiles/dist",
+    "packages/qr-exchange/dist",
+    "packages/relayer-guard/dist",
+    "packages/sandbox/dist",
+    "packages/scan-source/dist",
+    "packages/sdk/dist",
+    "packages/secret-box/dist",
+    "packages/solana-stealth/dist",
+    "packages/tron-adapter/dist",
+    "packages/tx-review/dist",
+    "packages/ux-connect/dist",
+    "packages/ux-core/dist",
+    "packages/ux-export/dist",
+    "packages/ux-fees/dist",
+    "packages/ux-fiat/dist",
+    "packages/ux-flow/dist",
+    "packages/ux-guide/dist",
+    "packages/ux-i18n/dist",
+    "packages/ux-intake/dist",
+    "packages/ux-links/dist",
+    "packages/ux-notify/dist",
+    "packages/ux-presets/dist",
+    "packages/ux-privacy/dist",
+    "packages/ux-receipts/dist",
+    "packages/ux-sandbox/dist",
+    "packages/ux-schedule/dist",
+    "packages/ux-vault/dist"
+  ],
+  "local_workspace_symlinks": [
+    {
+      "name": "address-safety",
+      "target": "packages/address-safety"
+    },
+    {
+      "name": "amount-blur",
+      "target": "packages/amount-blur"
+    },
+    {
+      "name": "btc-family",
+      "target": "packages/btc-family"
+    },
+    {
+      "name": "btc-payjoin",
+      "target": "packages/btc-payjoin"
+    },
+    {
+      "name": "btc-silent-payments",
+      "target": "packages/btc-silent-payments"
+    },
+    {
+      "name": "chain-adapters",
+      "target": "packages/chain-adapters"
+    },
+    {
+      "name": "chain-evm-extra",
+      "target": "packages/chain-evm-extra"
+    },
+    {
+      "name": "chain-solana",
+      "target": "packages/chain-solana"
+    },
+    {
+      "name": "chain-tron",
+      "target": "packages/chain-tron"
+    },
+    {
+      "name": "cli",
+      "target": "packages/cli"
+    },
+    {
+      "name": "confidential-amounts",
+      "target": "packages/confidential-amounts"
+    },
+    {
+      "name": "confidential-contracts",
+      "target": "packages/confidential-contracts"
+    },
+    {
+      "name": "core-crypto",
+      "target": "packages/core-crypto"
+    },
+    {
+      "name": "donation",
+      "target": "packages/donation"
+    },
+    {
+      "name": "external-pools",
+      "target": "packages/external-pools"
+    },
+    {
+      "name": "external-pools-privacypools",
+      "target": "packages/external-pools-privacypools"
+    },
+    {
+      "name": "external-pools-railgun",
+      "target": "packages/external-pools-railgun"
+    },
+    {
+      "name": "hops",
+      "target": "packages/hops"
+    },
+    {
+      "name": "hygiene",
+      "target": "packages/hygiene"
+    },
+    {
+      "name": "i18n",
+      "target": "packages/i18n"
+    },
+    {
+      "name": "invoice-schema",
+      "target": "packages/invoice-schema"
+    },
+    {
+      "name": "merchant-billing",
+      "target": "packages/merchant-billing"
+    },
+    {
+      "name": "merchant-hooks",
+      "target": "packages/merchant-hooks"
+    },
+    {
+      "name": "merchant-ledger",
+      "target": "packages/merchant-ledger"
+    },
+    {
+      "name": "merchant-multisig",
+      "target": "packages/merchant-multisig"
+    },
+    {
+      "name": "metadata-hardening",
+      "target": "packages/metadata-hardening"
+    },
+    {
+      "name": "net-harness",
+      "target": "packages/net-harness"
+    },
+    {
+      "name": "net-transport",
+      "target": "packages/net-transport"
+    },
+    {
+      "name": "ops-monitor",
+      "target": "packages/ops-monitor"
+    },
+    {
+      "name": "payer-sponsor",
+      "target": "packages/payer-sponsor"
+    },
+    {
+      "name": "payment-uri",
+      "target": "packages/payment-uri"
+    },
+    {
+      "name": "pir-two-server",
+      "target": "packages/pir-two-server"
+    },
+    {
+      "name": "plugin-api",
+      "target": "packages/plugin-api"
+    },
+    {
+      "name": "policy-scheme",
+      "target": "packages/policy-scheme"
+    },
+    {
+      "name": "pool-circuits",
+      "target": "packages/pool-circuits"
+    },
+    {
+      "name": "pool-prover",
+      "target": "packages/pool-prover"
+    },
+    {
+      "name": "pool-relayer",
+      "target": "packages/pool-relayer"
+    },
+    {
+      "name": "pool-sdk",
+      "target": "packages/pool-sdk"
+    },
+    {
+      "name": "privacy-pipeline",
+      "target": "packages/privacy-pipeline"
+    },
+    {
+      "name": "privacy-profiles",
+      "target": "packages/privacy-profiles"
+    },
+    {
+      "name": "qr-exchange",
+      "target": "packages/qr-exchange"
+    },
+    {
+      "name": "relayer",
+      "target": "apps/relayer"
+    },
+    {
+      "name": "relayer-guard",
+      "target": "packages/relayer-guard"
+    },
+    {
+      "name": "sandbox",
+      "target": "packages/sandbox"
+    },
+    {
+      "name": "scan-source",
+      "target": "packages/scan-source"
+    },
+    {
+      "name": "sdk",
+      "target": "packages/sdk"
+    },
+    {
+      "name": "secret-box",
+      "target": "packages/secret-box"
+    },
+    {
+      "name": "solana-stealth",
+      "target": "packages/solana-stealth"
+    },
+    {
+      "name": "tron-adapter",
+      "target": "packages/tron-adapter"
+    },
+    {
+      "name": "tx-review",
+      "target": "packages/tx-review"
+    },
+    {
+      "name": "ux-connect",
+      "target": "packages/ux-connect"
+    },
+    {
+      "name": "ux-core",
+      "target": "packages/ux-core"
+    },
+    {
+      "name": "ux-export",
+      "target": "packages/ux-export"
+    },
+    {
+      "name": "ux-fees",
+      "target": "packages/ux-fees"
+    },
+    {
+      "name": "ux-fiat",
+      "target": "packages/ux-fiat"
+    },
+    {
+      "name": "ux-flow",
+      "target": "packages/ux-flow"
+    },
+    {
+      "name": "ux-guide",
+      "target": "packages/ux-guide"
+    },
+    {
+      "name": "ux-i18n",
+      "target": "packages/ux-i18n"
+    },
+    {
+      "name": "ux-intake",
+      "target": "packages/ux-intake"
+    },
+    {
+      "name": "ux-links",
+      "target": "packages/ux-links"
+    },
+    {
+      "name": "ux-notify",
+      "target": "packages/ux-notify"
+    },
+    {
+      "name": "ux-presets",
+      "target": "packages/ux-presets"
+    },
+    {
+      "name": "ux-privacy",
+      "target": "packages/ux-privacy"
+    },
+    {
+      "name": "ux-receipts",
+      "target": "packages/ux-receipts"
+    },
+    {
+      "name": "ux-sandbox",
+      "target": "packages/ux-sandbox"
+    },
+    {
+      "name": "ux-schedule",
+      "target": "packages/ux-schedule"
+    },
+    {
+      "name": "ux-vault",
+      "target": "packages/ux-vault"
+    },
+    {
+      "name": "web",
+      "target": "apps/web"
+    }
+  ]
+}

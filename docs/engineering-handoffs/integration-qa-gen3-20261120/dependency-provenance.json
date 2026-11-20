@@ -1,0 +1,597 @@
+{
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "source_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "dependencies": "private reflink/copy of matching-lock root node_modules; workspace links must resolve locally",
+  "declarations_copied_for_identical_package_inputs": [
+    "address-safety",
+    "amount-blur",
+    "btc-family",
+    "btc-payjoin",
+    "btc-silent-payments",
+    "chain-adapters",
+    "chain-evm-extra",
+    "chain-solana",
+    "chain-tron",
+    "cli",
+    "confidential-amounts",
+    "core-crypto",
+    "donation",
+    "external-pools",
+    "external-pools-privacypools",
+    "external-pools-railgun",
+    "hops",
+    "hygiene",
+    "i18n",
+    "invoice-schema",
+    "merchant-billing",
+    "merchant-hooks",
+    "merchant-ledger",
+    "merchant-multisig",
+    "metadata-hardening",
+    "net-harness",
+    "net-transport",
+    "ops-monitor",
+    "payer-sponsor",
+    "payment-uri",
+    "pir-two-server",
+    "plugin-api",
+    "policy-scheme",
+    "pool-circuits",
+    "pool-prover",
+    "pool-relayer",
+    "pool-sdk",
+    "privacy-pipeline",
+    "privacy-profiles",
+    "relayer-guard",
+    "sandbox",
+    "scan-source",
+    "sdk",
+    "secret-box",
+    "solana-stealth",
+    "tron-adapter",
+    "tx-review",
+    "ux-connect",
+    "ux-core",
+    "ux-export",
+    "ux-fees",
+    "ux-fiat",
+    "ux-flow",
+    "ux-guide",
+    "ux-i18n",
+    "ux-intake",
+    "ux-links",
+    "ux-notify",
+    "ux-presets",
+    "ux-privacy",
+    "ux-receipts",
+    "ux-sandbox",
+    "ux-schedule",
+    "ux-vault"
+  ],
+  "qr_exchange": "not reused; build locally",
+  "prior_cache_receipt": {
+    "prior_checkout": "/workspace/scratch/0a7bc3583588/GhostPay",
+    "source_head": "13088d3c12366e96bb4c800a2277170116d07bbf",
+    "entries": [
+      {
+        "package": "address-safety",
+        "action": "reused-unchanged-inputs",
+        "input_count": 12,
+        "inputs_sha256": "9796f1436d71f5649b421abf57e7970236e1662cef9a390e021f2cb5903f7c8f",
+        "output_count": 18,
+        "outputs_sha256": "e6393bdacfe2b23100482ce2411dd72b0025318d78c91fe93d4a2e6270385e15"
+      },
+      {
+        "package": "amount-blur",
+        "action": "reused-unchanged-inputs",
+        "input_count": 18,
+        "inputs_sha256": "a7a76e1ebd10099f4ae0add327dd610b83a952201363c35477471d02653d9838",
+        "output_count": 33,
+        "outputs_sha256": "4b4eeb5a70c568e29c9c5407908f93a5e2d8ef162991a34362668d048f267718"
+      },
+      {
+        "package": "btc-family",
+        "action": "reused-unchanged-inputs",
+        "input_count": 27,
+        "inputs_sha256": "e40103f482e8bd7b3c6b5ebcb84ddf1c3e343f42736a06255bb556d42d5df6b9",
+        "output_count": 54,
+        "outputs_sha256": "f73170d58aa64e539fbd0abac92d5f574f36faae7649192d170b6c1b4e8bf771"
+      },
+      {
+        "package": "btc-payjoin",
+        "action": "reused-unchanged-inputs",
+        "input_count": 31,
+        "inputs_sha256": "7110e6b6571df397d267a1a3d321cbef51fbfc17d4751468b367b5f7698acedd",
+        "output_count": 63,
+        "outputs_sha256": "fe7aa06a8d4ba76be86310d52dc38162fa1350ef12f7731f684352ad571c6d1f"
+      },
+      {
+        "package": "btc-silent-payments",
+        "action": "reused-unchanged-inputs",
+        "input_count": 57,
+        "inputs_sha256": "eaa87ac9b3c308c98edf5d71f3e6d8b1a9ce56b68daf6ebc63057717867695f6",
+        "output_count": 102,
+        "outputs_sha256": "15c769112ae121dd189a3c551cfefe0a4d2bf11e733ed57251ee96f3a74c6d34"
+      },
+      {
+        "package": "chain-adapters",
+        "action": "reused-unchanged-inputs",
+        "input_count": 44,
+        "inputs_sha256": "ec638d7e8d64cff9bc322389fd953c919dea848f3cc1ce8d2988e1f10ec1d6af",
+        "output_count": 93,
+        "outputs_sha256": "ee885100676cc0ccda1ec01b12b6121ca8b19c0678c950ee2a0e96fdfa43e180"
+      },
+      {
+        "package": "chain-evm-extra",
+        "action": "reused-unchanged-inputs",
+        "input_count": 14,
+        "inputs_sha256": "0c6996c0fa7cb76fefb58a5ad22e69cf74cf98fbc73816959892c5bbe4e03356",
+        "output_count": 24,
+        "outputs_sha256": "85fbe4aded0bd45f9df61ebe6560bd24c778155bd0a7b543e57af6b0e2fac356"
+      },
+      {
+        "package": "chain-solana",
+        "action": "reused-unchanged-inputs",
+        "input_count": 23,
+        "inputs_sha256": "c1e009321f7c141bbfff6bbeeec96334dfcbcbdc3a91d01b016df4d2c1465f81",
+        "output_count": 39,
+        "outputs_sha256": "0c963c85fcae7803c58cb5ae5310143f6ffad7eb55152245d35ff5911c950306"
+      },
+      {
+        "package": "chain-tron",
+        "action": "reused-unchanged-inputs",
+        "input_count": 13,
+        "inputs_sha256": "a19da1325fb5333d4bc59bc977ef38e341b7ea469d02ffacab7e4f0d3eb87804",
+        "output_count": 18,
+        "outputs_sha256": "1ad86558a728dec2f1c8adf2fa1a2c6f6617693e5cadb52166a63f37aec1208d"
+      },
+      {
+        "package": "cli",
+        "action": "reused-unchanged-inputs",
+        "input_count": 49,
+        "inputs_sha256": "fb777f03fd9c780a620c29b70a13af211bc1ea021ee238ba3d7cf4f8d538d39e",
+        "output_count": 117,
+        "outputs_sha256": "b3822cacfd5250a26721fcb8ff5d5cc9e9ed8e2d0612362c4776732d5c99ee10"
+      },
+      {
+        "package": "confidential-amounts",
+        "action": "reused-unchanged-inputs",
+        "input_count": 23,
+        "inputs_sha256": "678e8a251e247f3a2b58970d24ea838ca1ee274708d843b69b78236ec5ca8e79",
+        "output_count": 45,
+        "outputs_sha256": "cba35e6e9f60156c5e2191ace1538bfc9780d1a757bb2406b63e61367135953d"
+      },
+      {
+        "package": "core-crypto",
+        "action": "reused-unchanged-inputs",
+        "input_count": 16,
+        "inputs_sha256": "304aefe5ab7ecc1dfddbec740e50b5be2c481c7aeb8c9b3a064948939433457f",
+        "output_count": 24,
+        "outputs_sha256": "d1da606b54df799a431ec865219d7721fff9569ca7789731daebab2ff2333d12"
+      },
+      {
+        "package": "donation",
+        "action": "reused-unchanged-inputs",
+        "input_count": 14,
+        "inputs_sha256": "0546ea11247e38e1652dd9af3820cf62f2c8f12d6714cbf3d5c78157b06b0812",
+        "output_count": 24,
+        "outputs_sha256": "9e0cca1c335393fedf7fc671c0ef6bf33a68fac7749fc2f5aab62f5cd404a698"
+      },
+      {
+        "package": "external-pools",
+        "action": "reused-unchanged-inputs",
+        "input_count": 27,
+        "inputs_sha256": "c1cd5b514db0f14538b61e3ab61a000fc9584292ae07eddb61f6f603bb7b0c10",
+        "output_count": 63,
+        "outputs_sha256": "c7e2e993f5706d88b898d3019cc2752b9eae4421644a74314c187f815ef9be49"
+      },
+      {
+        "package": "external-pools-privacypools",
+        "action": "reused-unchanged-inputs",
+        "input_count": 17,
+        "inputs_sha256": "ffc13cd6d729f1bbcd26618ad59f17b6d7f206b1ebeb9f742790c40126747818",
+        "output_count": 24,
+        "outputs_sha256": "6c1db0f47941d18f6e55312e35f4ff4e0f0c04c2ab6f2193459b824dcf80d992"
+      },
+      {
+        "package": "external-pools-railgun",
+        "action": "reused-unchanged-inputs",
+        "input_count": 13,
+        "inputs_sha256": "2e70f2c236941eb7a8c38db1aa08cf72cadbf232abd476320cad904b7a2eefd7",
+        "output_count": 15,
+        "outputs_sha256": "6a646a02827a6764fd4651a13e1af0938c068a2e3e380f8eb7d88b29f0bce7dd"
+      },
+      {
+        "package": "hops",
+        "action": "reused-unchanged-inputs",
+        "input_count": 21,
+        "inputs_sha256": "f217edcf9674e1482fbf6ace62bfcedf5c98bfb9014cc41a6b5cfa6759d42e41",
+        "output_count": 33,
+        "outputs_sha256": "eb80897473e59bf59be1315d85808c5e8284745bfaf44de97da3ed7259448ec5"
+      },
+      {
+        "package": "hygiene",
+        "action": "reused-unchanged-inputs",
+        "input_count": 19,
+        "inputs_sha256": "5be24f42954078b2e29431d7d8776669552b3ee3090e17ca7b558b58332cdbd3",
+        "output_count": 36,
+        "outputs_sha256": "be7a8ecb90e0b5b3158b55dedade4eece1f08e6f04196ee63a5eff49fe628bf7"
+      },
+      {
+        "package": "i18n",
+        "action": "reused-unchanged-inputs",
+        "input_count": 30,
+        "inputs_sha256": "c367fae2e6c39feedb86d6342a54f24a8574946659f52a4ec6ee55525ea6a4e3",
+        "output_count": 75,
+        "outputs_sha256": "0ece53bcea955791a48f1e1e6fbecd551a4d24c7f9ee3b9ee4007c74f94a884b"
+      },
+      {
+        "package": "invoice-schema",
+        "action": "reused-unchanged-inputs",
+        "input_count": 19,
+        "inputs_sha256": "dec2299c02955c1b1acd535c68df99789c932ca1fef558c3786f12ca047d1a5b",
+        "output_count": 33,
+        "outputs_sha256": "bb2f545c06931fc3b950cc6fd038d1484c84c8ce2f0a065f511f2e5f0ae5c164"
+      },
+      {
+        "package": "merchant-billing",
+        "action": "reused-unchanged-inputs",
+        "input_count": 16,
+        "inputs_sha256": "4da42fe5e79a6f360bc2e6430067694bc50238c9499e5f840ada46bb81b87ac6",
+        "output_count": 33,
+        "outputs_sha256": "6f11ef1b8a4474b6bd1cb672ae5bc90684e3ff97aebda4b20c54c3bfe1f36d35"
+      },
+      {
+        "package": "merchant-hooks",
+        "action": "reused-unchanged-inputs",
+        "input_count": 12,
+        "inputs_sha256": "0869af53c746d3cc4850d502a8b8090ed7d9934fdbd40a8f0c1f80b7d4e0469c",
+        "output_count": 21,
+        "outputs_sha256": "c1dc7f8073e158b2c2c49772f7ba4fc417a2807ca592421c1b745e41ae8e94b3"
+      },
+      {
+        "package": "merchant-ledger",
+        "action": "reused-unchanged-inputs",
+        "input_count": 10,
+        "inputs_sha256": "0dd54ddb3041e6e432138590ea43150d060fb1ab37f6f6dd66471be2638b1cea",
+        "output_count": 18,
+        "outputs_sha256": "669ca69006003fa4a1d8641ab7d13c106eefb012f018c6cc57e95edd236637ba"
+      },
+      {
+        "package": "merchant-multisig",
+        "action": "reused-unchanged-inputs",
+        "input_count": 16,
+        "inputs_sha256": "0bb12e0dedce91a91dc3c342ffe2907fdcaa535e0c88c3876fb76aafe94210de",
+        "output_count": 27,
+        "outputs_sha256": "0dc98085bf60a6c5f4d4c67c63b3d95fb76e0ef64680351d13b7fa2f7742d7de"
+      },
+      {
+        "package": "metadata-hardening",
+        "action": "reused-unchanged-inputs",
+        "input_count": 19,
+        "inputs_sha256": "5943305934ecf0901c83829e033636851fe94e2499cc7711f95a4d424e2918bc",
+        "output_count": 39,
+        "outputs_sha256": "ddacbc6d9563e96da2202969c07c35110bf3ed52fb25f6d6ea336e713334b1e4"
+      },
+      {
+        "package": "net-harness",
+        "action": "reused-unchanged-inputs",
+        "input_count": 13,
+        "inputs_sha256": "6d18f401d9a47d9f031a5cc4483c870b7fba816ea3df1b885cab343137631906",
+        "output_count": 24,
+        "outputs_sha256": "2b20423b33cff7fd00ec23ff4e260dc76f9054d115ba4688aae08486b94dd88b"
+      },
+      {
+        "package": "net-transport",
+        "action": "reused-unchanged-inputs",
+        "input_count": 27,
+        "inputs_sha256": "c04face24345225a1667b6fec09f0bade00f79d529ccedbe7cd552ad3178d4c4",
+        "output_count": 63,
+        "outputs_sha256": "f8642dab82318d23dec71ae05d94b73daaa65de8552ae701d018f67a28e435bd"
+      },
+      {
+        "package": "ops-monitor",
+        "action": "reused-unchanged-inputs",
+        "input_count": 26,
+        "inputs_sha256": "e185ca0438b3d45a6c4f5f878b86537824b7bee24421a66caee3df4b30d31224",
+        "output_count": 48,
+        "outputs_sha256": "d4d5617ecf2f777b812eee408d27ec20d0126692cd569975cb8fe7eec5339c95"
+      },
+      {
+        "package": "payer-sponsor",
+        "action": "reused-unchanged-inputs",
+        "input_count": 33,
+        "inputs_sha256": "80b8222ea3373b09a536bb318f8d311aa875d850284214871e885b4e342ba39b",
+        "output_count": 72,
+        "outputs_sha256": "5adb3892f04bb5518722c8ce7ba3709dbcfb886444524e1231fe01c54db860bd"
+      },
+      {
+        "package": "payment-uri",
+        "action": "reused-unchanged-inputs",
+        "input_count": 21,
+        "inputs_sha256": "1ddbd73464c1e403b486c0b55702f41ed1cb642f2773fbf4ad22dce8aafb6d61",
+        "output_count": 42,
+        "outputs_sha256": "54bf28b27b3f49f7daeeab2d629ec07268cd31ec93bcfbba04b01f298c47cfb8"
+      },
+      {
+        "package": "pir-two-server",
+        "action": "reused-unchanged-inputs",
+        "input_count": 17,
+        "inputs_sha256": "40d06b5d4924a04d6bd526c72c362253e811368c0c40904c32bef860fbb0c6dd",
+        "output_count": 36,
+        "outputs_sha256": "7c76cc3900e9e5b45ab58e8370857aaba6ac54b2a9f3d27fb3b3c4a970dcf7a3"
+      },
+      {
+        "package": "plugin-api",
+        "action": "reused-unchanged-inputs",
+        "input_count": 13,
+        "inputs_sha256": "5a5709fb9ba903ecf4299ce44c9767c081e6c3eff33520a9a4178be08fbb9630",
+        "output_count": 21,
+        "outputs_sha256": "7f55765e464e70afcf592b831c8da228b3d4ac82cd727ec3ca8d5046dba99d1b"
+      },
+      {
+        "package": "policy-scheme",
+        "action": "reused-unchanged-inputs",
+        "input_count": 24,
+        "inputs_sha256": "50794151ffb517bdc68ce73691662186ccf63d16d252673362c2b6528ea2ad77",
+        "output_count": 45,
+        "outputs_sha256": "389b7da8de50f7f59664454451e3195aae1e7d6f885c0d348594bb25af84a4d1"
+      },
+      {
+        "package": "pool-circuits",
+        "action": "reused-unchanged-inputs",
+        "input_count": 42,
+        "inputs_sha256": "9b9f46cc3d42efd2058951e5d633ee232f636088eb8f58d39b55e8f5a0ccdc81",
+        "output_count": 21,
+        "outputs_sha256": "c8e33d618ebcb1bdcc78b0f7249e8c7e099b38e8ede40591ce3166d6943e1b94"
+      },
+      {
+        "package": "pool-prover",
+        "action": "reused-unchanged-inputs",
+        "input_count": 10,
+        "inputs_sha256": "82e4a72a84138a9364ea52b5c306d36080a3a0b892a9efb4d4dd5defec4bd575",
+        "output_count": 9,
+        "outputs_sha256": "9c2d919234b40f0467e3f57fe91e7bbf8ca7690135ce3558925f894262107672"
+      },
+      {
+        "package": "pool-relayer",
+        "action": "reused-unchanged-inputs",
+        "input_count": 20,
+        "inputs_sha256": "7a1101f3331da8eb3919fe7744153829cdc5260d45c0ae8a679ec2b16e8a815f",
+        "output_count": 33,
+        "outputs_sha256": "a68eede1cd208008b48af40bf8bd26d3d3794bbbb5a53b7ee24f67a446fe0203"
+      },
+      {
+        "package": "pool-sdk",
+        "action": "reused-unchanged-inputs",
+        "input_count": 27,
+        "inputs_sha256": "88c58da30734d1a76181e1f59531f49588f47eed500dbb70c34147190d7e4874",
+        "output_count": 60,
+        "outputs_sha256": "3c022cdd5d2f14d4787003821a4510040a0b60a6cae1318166ce10fb9ab76541"
+      },
+      {
+        "package": "privacy-pipeline",
+        "action": "reused-unchanged-inputs",
+        "input_count": 29,
+        "inputs_sha256": "13e748b39196d195edb8272cb7ff2a898b74e16430dc7976467a6d938eb20760",
+        "output_count": 63,
+        "outputs_sha256": "6be2bcfb48500279f4df6eecf0cb16a36504dc0dc0dcbd20517088777069a510"
+      },
+      {
+        "package": "privacy-profiles",
+        "action": "reused-unchanged-inputs",
+        "input_count": 20,
+        "inputs_sha256": "3963411673a45427231c33d45f420261d2d04a20463076642654e9ba650af91d",
+        "output_count": 36,
+        "outputs_sha256": "40c947d5ab62d201f1400bee46de32594997114b6d3c55c1d85ae75f6859a658"
+      },
+      {
+        "package": "qr-exchange",
+        "action": "not-reused",
+        "different_inputs": [
+          "packages/qr-exchange/src/assembler.ts"
+        ]
+      },
+      {
+        "package": "relayer-guard",
+        "action": "reused-unchanged-inputs",
+        "input_count": 15,
+        "inputs_sha256": "7bfc175b1d827bf4af20ff768e2cecf6bfe1fc3a56b4cebf79fb677057773d05",
+        "output_count": 27,
+        "outputs_sha256": "e5a8e2a40005a1da67e90c72b67ad7c1f05ed9fec3e927916ab55a8ef7ede954"
+      },
+      {
+        "package": "sandbox",
+        "action": "reused-unchanged-inputs",
+        "input_count": 18,
+        "inputs_sha256": "b28d4d2f64460df1d35255484f22184ecc6ade94dda3cfef399aee32c34e8a2e",
+        "output_count": 36,
+        "outputs_sha256": "6d57c6f7896ac774983070d8ae4f22f1b74d6b310fddcac9c7db31742e567290"
+      },
+      {
+        "package": "scan-source",
+        "action": "reused-unchanged-inputs",
+        "input_count": 20,
+        "inputs_sha256": "79e36e1596cf4c7ef9752570fb3e25871fde1806f70f2e44d8a31b1a621064cb",
+        "output_count": 45,
+        "outputs_sha256": "7a253ef1399566b220dee6d0f5fe6cd870ab4230a8c10ae5dd38720bf209f427"
+      },
+      {
+        "package": "sdk",
+        "action": "reused-unchanged-inputs",
+        "input_count": 17,
+        "inputs_sha256": "134654bf6c9379c00a20a29b990427a0331ea307e6d0f70b40a0e864d8fc14da",
+        "output_count": 27,
+        "outputs_sha256": "c85b83ae574ba817981598ee2cb46946c33e76113a22a168e283d95d9dbcdb65"
+      },
+      {
+        "package": "secret-box",
+        "action": "reused-unchanged-inputs",
+        "input_count": 9,
+        "inputs_sha256": "a56129b3c448f2b5847fb6b2ddebb961e4d898bc8be74ee370b8e64123020517",
+        "output_count": 9,
+        "outputs_sha256": "b98f42ca36b7f72e5d885af8cc5fcbd230cacbfaff45a1bb93ff173fa6df83ac"
+      },
+      {
+        "package": "solana-stealth",
+        "action": "reused-unchanged-inputs",
+        "input_count": 24,
+        "inputs_sha256": "a62538c2414210fb0a94024c2a5b92650260d77819e55f6397a96f9ee53ac27f",
+        "output_count": 45,
+        "outputs_sha256": "f4ce270d761adb6afa64e1c9b66068f35f94c37b4eaaee6922ce7c17ea4e42d4"
+      },
+      {
+        "package": "tron-adapter",
+        "action": "reused-unchanged-inputs",
+        "input_count": 18,
+        "inputs_sha256": "b93aa5d283153b4b2637c1f49b005cdd1bf613327dba975f7a7131cda369fc60",
+        "output_count": 30,
+        "outputs_sha256": "bada3ce238124e7e2ab258af6e775cb835b94dd76f37799d78696429447bba05"
+      },
+      {
+        "package": "tx-review",
+        "action": "reused-unchanged-inputs",
+        "input_count": 12,
+        "inputs_sha256": "f8e373ea4d0148ce8d2698ac0eacb7399232da81fd5fcf2486f436706bd64a2c",
+        "output_count": 15,
+        "outputs_sha256": "b67b6382bd7d37ffcb5063310c83a2cda463aae33bfb82c783dcb7799e77826f"
+      },
+      {
+        "package": "ux-connect",
+        "action": "reused-unchanged-inputs",
+        "input_count": 11,
+        "inputs_sha256": "f9d5eecb179e97990527350c0031767292c25e8ceee77310d23b69de76361129",
+        "output_count": 15,
+        "outputs_sha256": "9c129838783736079ec61d9ebda8ee4849e02850d4c0ba107c214ca7121042cd"
+      },
+      {
+        "package": "ux-core",
+        "action": "reused-unchanged-inputs",
+        "input_count": 11,
+        "inputs_sha256": "d17739f73aea551a21a904f59fa7e0ee3c2228cc62e84f4bfd9d4102190d7589",
+        "output_count": 18,
+        "outputs_sha256": "cc88ae3a4860c139f0ebcc6be2c1d7dc584d6ad15b3a7c839ab6705d265e5060"
+      },
+      {
+        "package": "ux-export",
+        "action": "reused-unchanged-inputs",
+        "input_count": 16,
+        "inputs_sha256": "0aa93c190db9c6fbc05513cde9a55c34744fc121a587744b2b6671c66b3f37d1",
+        "output_count": 30,
+        "outputs_sha256": "c7b3c1a872afe8b719114e5654c62b996780b72135e7535361e954289df8c128"
+      },
+      {
+        "package": "ux-fees",
+        "action": "reused-unchanged-inputs",
+        "input_count": 11,
+        "inputs_sha256": "c830a5b2fa3c9908d23e72155fee41a23c74ccb75bf359bdf9e43902fa8b70f3",
+        "output_count": 18,
+        "outputs_sha256": "1f34c23ff8a4cc4fca0dd5acc66a90f6e7d58c2ede330f0404a0b7e85f131caf"
+      },
+      {
+        "package": "ux-fiat",
+        "action": "reused-unchanged-inputs",
+        "input_count": 12,
+        "inputs_sha256": "ce620b83a6cd6c12b4d9d04eff15d5865b170c2ac8848a6d67c4145ead3ebf9c",
+        "output_count": 21,
+        "outputs_sha256": "d698b5130e91cd73f1090bd6bba9197015d1ed221bec8d45359f927a9315aeeb"
+      },
+      {
+        "package": "ux-flow",
+        "action": "reused-unchanged-inputs",
+        "input_count": 13,
+        "inputs_sha256": "dbf9cf8e8f4b43a06cf42eff4edb142dbfb26a1c9324b928f48f614e9b3dea15",
+        "output_count": 24,
+        "outputs_sha256": "e48de124bdb9fe4136b4a39b6b7acaf0b8a42057860663e039cf7d8538c7a738"
+      },
+      {
+        "package": "ux-guide",
+        "action": "reused-unchanged-inputs",
+        "input_count": 9,
+        "inputs_sha256": "185af95594f8c70a3ed7b28aae56c60aa8a156225f5e1facff3ac1088f9de938",
+        "output_count": 12,
+        "outputs_sha256": "87d46bca2a5d7bbb9f6aebd463011fe4e95308be30a19b1320db9067ecc32b0f"
+      },
+      {
+        "package": "ux-i18n",
+        "action": "reused-unchanged-inputs",
+        "input_count": 6,
+        "inputs_sha256": "b4fd373d4b381888fbaeaf284dc8b0d0d6371f08c2c995cdc71a4df5cd20ccb2",
+        "output_count": 3,
+        "outputs_sha256": "59e94474806604680ca83c2477411843c7d355d1a418f9608c8ea866f6b255fc"
+      },
+      {
+        "package": "ux-intake",
+        "action": "reused-unchanged-inputs",
+        "input_count": 14,
+        "inputs_sha256": "6c0b50a837b175af7252376952b1163bdb8ce75e987a2f1821f1297c7d6c660a",
+        "output_count": 24,
+        "outputs_sha256": "e74a887dbacef83800da1feb01e948bfaeae4093d8a4ba451659883aaea260c2"
+      },
+      {
+        "package": "ux-links",
+        "action": "reused-unchanged-inputs",
+        "input_count": 18,
+        "inputs_sha256": "9e05d54d7434ee992b51592d9658da8f148890268ef2416a7dfd5f5da0bd49a5",
+        "output_count": 36,
+        "outputs_sha256": "d053ccd81de24440ff70790ecdd7fe1212e38b3a11a9e1c1076c34a850b4e954"
+      },
+      {
+        "package": "ux-notify",
+        "action": "reused-unchanged-inputs",
+        "input_count": 13,
+        "inputs_sha256": "ecaba6c5bbe92aab5955cfa08f7bd2ca9b2b865b8df28782359b4e7d3fb99178",
+        "output_count": 24,
+        "outputs_sha256": "378353eba951a4f96cebec6e0fbc9195ab892aa57e9fa46f763dc2a5985c3b0c"
+      },
+      {
+        "package": "ux-presets",
+        "action": "reused-unchanged-inputs",
+        "input_count": 12,
+        "inputs_sha256": "70ad74b575f903e70ee3bd170606e9e825ec7f8a7fee0521cdecf9d07b5eacf1",
+        "output_count": 18,
+        "outputs_sha256": "47174163c5de466ee53df71fc2b04192274746b4be3bed6de253502ba8089012"
+      },
+      {
+        "package": "ux-privacy",
+        "action": "reused-unchanged-inputs",
+        "input_count": 9,
+        "inputs_sha256": "191e2a891ec90baeb4f3f178540a337b1118e76588c51e47338c40959a21b905",
+        "output_count": 12,
+        "outputs_sha256": "357f038f5aeef224bee48744b07d7f32304c9321f3d3490c92eaaa84bb2cdab1"
+      },
+      {
+        "package": "ux-receipts",
+        "action": "reused-unchanged-inputs",
+        "input_count": 20,
+        "inputs_sha256": "5f6c937b6d897ce9f080ed9802145a01906a135085999a75ecb5014e02dbc1ea",
+        "output_count": 42,
+        "outputs_sha256": "e9409920d2973de6a4295a774c3f994bb127311f17c7addac119bc4ae253c84d"
+      },
+      {
+        "package": "ux-sandbox",
+        "action": "reused-unchanged-inputs",
+        "input_count": 6,
+        "inputs_sha256": "d816718d631e9ae67ee6016a89af211023c47b9c7ebfeeadcc806e9770592f93",
+        "output_count": 3,
+        "outputs_sha256": "0ef41302c194e8ba34b9d693296750f84aa6e1c8716307eea23f0e37ccbb457a"
+      },
+      {
+        "package": "ux-schedule",
+        "action": "reused-unchanged-inputs",
+        "input_count": 14,
+        "inputs_sha256": "2f91acf48b2728a91470eadfc21a7aa4326184ce06e59cb342f0fca77a661b53",
+        "output_count": 24,
+        "outputs_sha256": "fcfbe9750289ebfc764d5c7b7839d30766639bce78227140e5f6676fa8b205e2"
+      },
+      {
+        "package": "ux-vault",
+        "action": "reused-unchanged-inputs",
+        "input_count": 25,
+        "inputs_sha256": "c06c8252bc77675c4d94ce0e1c94de97136927fe5b15f9d40d806f799eb634ac",
+        "output_count": 57,
+        "outputs_sha256": "b100948a0b1066674b4ec7ca54b4fa9dff8f5376d045e83bbee5ac1239a3271a"
+      }
+    ]
+  }
+}

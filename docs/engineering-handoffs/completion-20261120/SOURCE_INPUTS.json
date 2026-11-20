@@ -1,0 +1,88 @@
+{
+  "format": "ghostpay-completion-inputs/1",
+  "product_freeze": "2149ad2814d9ae031b23322f87f74842af5dde78",
+  "initial_canonical": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "entries": [
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "source": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "blob": "a85e1011cdface74c87683146ff7428654b7830d"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "source": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "blob": "257b634250f033ddec042b67941fec23ffba1323"
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "source": "172695efb41665a4e50d335029e54184bbb5b328",
+      "blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd"
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.test.ts",
+      "source": "172695efb41665a4e50d335029e54184bbb5b328",
+      "blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227"
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c"
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "blob": "a9081deadbfac984619299d39de77c0fba3370cc"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "e3813045c7975bcbd4e1201d65869e6962827c25"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b"
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59"
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "2022cf30a0f18535131c2f9651d292226550835b"
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1"
+    },
+    {
+      "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+      "source": "898d3361af4320dccca7743d960b32a94fb66922",
+      "blob": "6db098624324846c7a6f577a90bd35b01c80f200"
+    }
+  ],
+  "prior_product_freeze": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7"
+}

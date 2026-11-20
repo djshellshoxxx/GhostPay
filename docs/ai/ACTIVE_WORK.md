@@ -2175,3 +2175,91 @@ Boundaries: no remote writes, deployment, fee/contract changes, alert dismissal,
 Security generation 1 temporary probe extension: `apps/web/src/lib/wallet.securitygen1.test.ts` is owned only for an isolated runtime probe of `pollReceipt` destination/status shape. No production file changes; preserve the probe as evidence and remove it from the test tree after execution. The root coordinator was notified of wallet.ts overlap with #298; any implementation belongs to a separately coordinated repair after consolidation.
 
 Security generation 1 completed its bounded review: live CodeQL annotation identities resolved; #292 five-path review found no blocking scoped issue; 73 original artifact/CSP tests and 13 original deployment-manifest tests passed. Fixture equivalence is exact. Secret-export inspection is source-only; optional full library build stopped at the coordinator's freeze. The unexecuted receipt probe is evidence only and was removed from the application test tree. Handoff: `docs/engineering-handoffs/security-gen1-20261120/README.md`.
+
+
+# Fresh generation 2 receipt-status bug hunt — 2026-11-20
+
+Worker: /root/bug_hunt_gen2.
+Branch: fix/ghostpay-receipt-status-20261120.
+Base: 9e062b7150e74d1b20e34b0f120add660d9ef02e, the coordinator's isolated combined candidate.
+Owned paths: apps/web/src/lib/wallet.ts, apps/web/src/lib/wallet.test.ts, apps/web/src/lib/payExec.test.ts, this additive claim, and docs/engineering-handoffs/completion-20261120/receipt-status/.
+Acceptance: reproduce unsupported EIP-658 receipt statuses without claiming a revert, preserve valid zero/one, hash correlation, null-pending and legacy destination semantics, then verify the submitted transaction hash/journal remain authoritative and resend stays blocked. Run original focused suites, scoped typed lint and typecheck where executable; record infrastructure failures separately. Independent source review and exact-source hosted qualification remain required.
+Boundaries: no remote/shared-branch changes, fees, contracts, deployment, gate changes or mutation of the concurrently active original privacy branches. Root owns integration.
+
+Adjacent audit scope: temporarily collect apps/web/src/lib/wallet.transactionShapeAudit.test.ts to check JSON array coercion at verifySubmission. Archive the exact probe under the owned receipt-status evidence directory and remove it from active collection afterward; no extra production change is part of the frozen receipt-status fix.
+
+
+## 2026-11-20 — Fresh transaction-field security review generation 4
+
+Reviewer: `/root/final_security_gen4`.
+Branch: `review/ghostpay-transaction-shapes-gen4-20261120`.
+Initial base: `fa5d4b143c7459c99a201433e661f6650b957e3e`, preserving the separately reviewed receipt-status source `f77fe8572f54669098ee8cb5d47a6313ef72e37b`.
+Owned writes: this additive claim and `docs/engineering-handoffs/security-review-gen4-20261120/`; temporary independent probes require a scoped addendum and must be archived outside active collection afterward. No production source changes are owned.
+Acceptance: independently inspect the frozen transaction hash/input/data primitive-string repair and its original-config regressions; preserve nullish fallback, valid case normalization, safe errors, existing receipt guards and post-broadcast journal/no-resend semantics. Recheck the coordinator's final integrated product blobs and unchanged workflow/contract/fee/activation controls when supplied. Run only the assigned bounded independent test window, preserving exact source identities and all incomplete/resource-failure outcomes.
+Boundaries: no remote writes, shared-branch mutation, deployments/releases, fee/contract changes, security-gate suppression, lost prior work or whole-product security certification. Prior partial Pay UI runs remain incomplete and are not aggregated.
+# Fresh generation 3 transaction-field shape repair — 2026-11-20
+
+Worker: /root/bug_hunt_gen3.
+Branch: fix/ghostpay-transaction-field-shapes-20261120.
+Base: fa5d4b143c7459c99a201433e661f6650b957e3e; predecessor's status repair runtime f77fe8572f54669098ee8cb5d47a6313ef72e37b remains preserved.
+Owned paths: apps/web/src/lib/wallet.ts, apps/web/src/lib/wallet.test.ts, apps/web/src/lib/payExec.test.ts, this additive claim, and docs/engineering-handoffs/completion-20261120/transaction-shapes/.
+Scope: reproduce the three established JSON-array hash/input/fallback-data acceptance cases, reject nonprimitive transaction fields before string normalization, preserve valid string normalization and input/data fallback semantics, and retain the original submitted hash/journal with no resend after post-broadcast verification fails.
+Acceptance: permanent original-config RED regressions, minimal production repair, GREEN affected suites, coercion-hook and compatibility controls, scoped typed lint if available, independent source/test review and source-pinned handoff. Root/integration QA owns the coordinated broad build/typecheck window.
+Boundaries: no remote or shared-branch mutation, deployment, release, real funds, contracts, fees, dependency/configuration/gate changes, unrelated cleanup or edits to actively advancing original privacy lanes.
+
+
+## Coordinator continuation of transaction-field repair
+
+The generation3 worker saved regression commit 795a3892ded8a8d20aea67b2b88d69620a4afdf5 before its turn ended. The coordinator continues this same scoped branch and owned files; no new branch or alternate security task is started. The coordinator executed the original wallet/payment regression baseline on that exact unchanged runtime, then will add only primitive-string checks before the existing normalization. Independent final_security_gen4 retains review ownership. Full combined checks remain with integration_qa_gen3.
+
+## Fresh receipt-status security review — generation 2
+
+Worker: /root/security_review_gen2. Branch: review/ghostpay-receipt-status-gen2-20261120.
+Exact production source: f77fe8572f54669098ee8cb5d47a6313ef72e37b; regression baseline: b416ea615d40f6375c868b05e8af0683cf1e10fd.
+Owned writes: this additive claim and docs/engineering-handoffs/security-review-gen2-receipt-20261120/ only.
+Acceptance: independently review and execute unsupported-status rejection, preserve valid0/1/null-destination/hash behavior and submitted-journal/no-resend consumer outcomes. Keep new nearby array-field finding separate and unapproved until a successor reproduces and repairs it.
+No runtime/source-branch mutation, remote writes, release, contracts, fees or security gate changes.
+
+
+# Fresh integration QA generation 3 — 2026-11-20
+
+Worker: /root/integration_qa_gen3, independent of the source implementers.
+Branch: review/ghostpay-integration-qa-gen3-20261120.
+Exact initial candidate: 9e062b7150e74d1b20e34b0f120add660d9ef02e, canonical baseline 417f7c71daf8645e1432f2ec8f070110879b80bd.
+Owned writes: this additive claim and docs/engineering-handoffs/integration-qa-gen3-20261120/ only. Temporary independent probes may run in this isolated checkout and must be preserved as evidence or removed before finalization. Product source changes require coordination.
+Acceptance: verify the four cumulative source candidates are ancestors; independently compare each of the 15 non-documentation input blobs and preserved browser/signer/control scopes; review standards and documented acceptance separately; run original QR package coverage, typecheck, lint and build plus original Pages verifier/promotion/CSP tests without gate changes. Record exact source, environment, actual failures and qualification limits.
+Root owns publication and integration. The separate bug-hunt worker owns receipt-status and any further wallet boundary fixes; separate reviewer owns the new quick-hide feature and its active privacy dependency. Full web qualification must wait for the final wallet freeze and an exclusive resource window.
+No shared-source or remote ref mutation, deployment, contract/fee change, real-funds operation, branch deletion, force push or security-gate weakening.
+
+
+## 2026-11-20 — Policy receipt fixture repair, generation 7
+
+Worker: `/root/policy_fixture_gen7`.
+Branch: `fix/ghostpay-policy-receipt-fixture-20261120`.
+Exact base: `53f4253bd9afc33bea43a7bdfe95ae287e035bf7`.
+Owned writes: `apps/web/src/features/policy/fixtures.testutil.ts`, this additive claim, and `docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/` only.
+Scope: restore the modeled receipt shape in the shared `walletMirror` test helper by supplying the same transaction hash returned by its transaction lookup and by `MockWallet.eth_sendTransaction`. The original full web coverage run on the frozen base exposed the missing field in policy send and guard consumers after receipt hash validation was consolidated.
+Acceptance: preserve every existing assertion, deadline, timeout, policy outcome, configuration and production guard; retain the unchanged full-run failure evidence or execute a narrow unchanged-fixture baseline; run the affected original policy consumer suites with one worker after integration QA releases its exclusive execution window; deliver a clean committed source-pinned repair for independent coordinator review and original full requalification.
+Coordination: inspected frozen active original policy privacy branch `037b6b896be70911bc715c868fa23bb83c35e47c` and wallet privacy branch `f94feab3d92e443666553eda62ac6a202bca9704`. Both still omit the receipt hash in this helper, and neither unique changed-path set owns a helper repair. Those branches remain untouched. Parent explicitly expanded this assignment from `send.test.ts` to this shared helper on the evidence from `/root/integration_qa_gen3`.
+Boundaries: no production changes, assertion removal or weakening, test skips, runtime guard changes, dependency/configuration changes, remote/shared-branch writes, contract/fee/deployment changes, or parallel tests/builds during QA's exclusive window. Root owns consolidation and full requalification.
+
+Completion: tested repair `898d3361af4320dccca7743d960b32a94fb66922`; coordinator independently approved the one-field source diff. All seven original helper consumers passed (87 tests, exit 0) with one worker and unchanged configuration/assertions/timeouts. The exclusive execution window is released. Lossless unchanged-source partial coverage failure evidence, exact focused output, dependency/input pins and integration limits are in `docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/README.md`. Root owns full requalification; no whole-suite or aggregate coverage success is claimed by this worker.
+## Integration QA final-source continuation — 2026-11-20
+
+The same independent worker /root/integration_qa_gen3 continues; this is not another fresh agent.
+Branch: review/ghostpay-integration-final-qa-gen3-20261120. Exact product/test source: 53f4253bd9afc33bea43a7bdfe95ae287e035bf7.
+Ownership remains this additive claim and docs/engineering-handoffs/integration-qa-gen3-20261120/ only. Verify the final source against reviewed transaction repair c344334d and the original four imported candidates; then run original web QR, full web TypeScript, lint, configured coverage, no-coverage pass and development Pages build where resources permit. Root granted the sole execution window after independent wallet review.
+Preserve initial 9e062b71 evidence, all failure outcomes and exact artifact identities. No repeated resource-only retry campaign, gate changes, deployment or remote mutation.
+
+Final-source baseline checkpoint: the 15 inputs and eight preserved controls match; 87 web QR cases, full web TypeScript, and four original no-coverage cases pass. Full lint reached the explicit 1024 MiB heap limit. The original full coverage command reached its recorded 900-second overall cap after 1,467 passing lines and 19 real policy-fixture failures; it emitted no aggregate coverage. Source remained unchanged. Root assigned the shared missing-receipt-hash fixture to fresh policy_fixture_gen7, and this worker released the execution window after the no-coverage pass. Further combined qualification waits for a reviewed corrected source and a renewed exclusive window. Exact outcomes and lossless logs are under the owned evidence directory.
+# Fresh remaining-source review, generation 5 — 2026-11-20
+
+Worker: /root/remaining_sources_gen5; a separate read-only comparison worker may inspect one original source scope.
+Branch: review/ghostpay-remaining-sources-gen5-20261120.
+Base and frozen comparison: 53f4253bd9afc33bea43a7bdfe95ae287e035bf7.
+Owned writes: this additive claim and docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/ only.
+Scope: up to three still-unresolved source heads after consulting the later four-small-source review: claude/ghostpay-lean-core-milestone-t5lwox, codex/ghostpay-security-audit-20261030, and integration/ghostpay-docs-recovery-20261119.
+Acceptance: freshly verify each live ref, all best merge bases and current/source blobs; inspect the original intended behavior and current source/tests; record precise equivalent, superseded, future, unique or unknown dispositions with limits. Absent commits alone are not uniqueness evidence. Report any required missing behavior before proposing edits.
+Boundaries: source-only comparison; no tests, builds, package installation, product/test/configuration changes, remote mutations, branch closure/deletion or deployment. Existing original privacy implementation remains actively owned and is not modified or duplicated. Root owns integration and full qualification.
+
+Status: Complete on 2026-11-20. All three selected scopes were compared at frozen 53f4253b; no required runtime gap was established. Report: docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REPORT.md. Fresh archive-recovery worker /root/archive_recovery_gen6 received the seven PR #259 historical artifact paths and the unverified section-overlap boundary.

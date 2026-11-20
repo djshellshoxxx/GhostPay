@@ -1,0 +1,56 @@
+{
+  "reviewer": "/root/security_review_gen2",
+  "source": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+  "node": "24.22.3",
+  "vitest": "5.1.0",
+  "resource_settings": {
+    "heap_mib": 768,
+    "maxWorkers": 1,
+    "fileParallelism": false
+  },
+  "original_config_unchanged": true,
+  "coverage_disabled_for_focused_selection": true,
+  "runs": [
+    {
+      "command": "timeout 240s node ../../node_modules/vitest/vitest.mjs run src/lib/wallet.test.ts src/lib/payExec.test.ts src/lib/payExec.acceptance.test.ts src/views/Pay.test.tsx --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "cwd": "apps/web",
+      "exit_code": 1,
+      "completed_test_files": 3,
+      "selected_test_files": 4,
+      "reported_passed_tests_including_partial_file": 158,
+      "reported_total_tests": 188,
+      "unhandled_errors": 1,
+      "error": "Pay.test.tsx worker exited with SIGKILL; no assertion failure reported",
+      "duration_seconds": 66.95,
+      "log": "receipt-status-independent"
+    },
+    {
+      "command": "timeout 180s node ../../node_modules/vitest/vitest.mjs run src/views/Pay.test.tsx --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "cwd": "apps/web",
+      "exit_code": 1,
+      "completed_test_files": 0,
+      "selected_test_files": 1,
+      "reported_passed_tests_partial": 9,
+      "reported_total_tests": 66,
+      "unhandled_errors": 1,
+      "error": "Pay.test.tsx worker exited with SIGKILL; no assertion failure reported",
+      "duration_seconds": 21.39,
+      "log": "receipt-pay-independent-retry"
+    }
+  ],
+  "logs": {
+    "receipt-status-independent": {
+      "raw_sha256": "0363c7b0ffb2a967a3745a5958118705b9b5f9ced32382e00596eb210293d3fa",
+      "compressed_sha256": "35418f20bfd227f7ea4bb1a5e9eaa5a3e4a7fe7723651773b2a76513d768f250"
+    },
+    "receipt-pay-independent-retry": {
+      "raw_sha256": "c9ed8921d4de9595003b9765ee95d043a13e92f19940639c7856041e6e232588",
+      "compressed_sha256": "0403fea8b4dce5ea2e4f00d186a26c9e1cfed97ff3e279f21e53934058e7efe1"
+    }
+  },
+  "count_interpretation": "The first run completed wallet, payExec and payExec.acceptance. Their combined selected count is122 (188 total minus66 in Pay.test.tsx); the reported158 includes36 cases from the interrupted Pay file. The retry is partial and overlapping. Do not aggregate retries or claim188 independently completed cases.",
+  "full_ui_validation": "incomplete",
+  "full_project_typecheck": false,
+  "browser_execution": false,
+  "fresh_library_build": false
+}

@@ -1,0 +1,26 @@
+{
+  "review_head": "d1be6aff8de70bde42872f2bfd50c0a240236cfa",
+  "reviewed_source": "c344334d757db9ca51e107000b918fd23cc7397d",
+  "baseline": "795a3892ded8a8d20aea67b2b88d69620a4afdf5",
+  "command": [
+    "npm",
+    "exec",
+    "--workspace",
+    "@ghostpay/web",
+    "--",
+    "vitest",
+    "run",
+    "src/lib/wallet.test.ts",
+    "src/lib/payExec.test.ts",
+    "--maxWorkers=1",
+    "--no-file-parallelism"
+  ],
+  "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-transaction-shapes-review",
+  "started_at": "2026-11-20T02:33:35.754158+00:00",
+  "elapsed_seconds": 5.936,
+  "exit_code": 0,
+  "external_timeout": false,
+  "heap_mib": 768,
+  "raw_log_sha256": "e704ed009aa2cbd638ffdbacdeddaa355c5f724ff56b8012a4de823653f13b1d",
+  "gzip_log_sha256": "cbb168660a5b64e86bf493a2c9cbedf53b76dee449b879c3be7333dca019cd3b"
+}

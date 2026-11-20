@@ -1,0 +1,220 @@
+{
+  "integration_commit": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "integration_tree": "6054b38d9b97f317dfb34e115a03c1dce9e0acf7",
+  "baseline": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "selected_files": [
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "source_commit": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "expected_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "actual_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "source_commit": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "expected_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "actual_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "identical": true
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "source_commit": "172695efb41665a4e50d335029e54184bbb5b328",
+      "expected_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "actual_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "identical": true
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.test.ts",
+      "source_commit": "172695efb41665a4e50d335029e54184bbb5b328",
+      "expected_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "actual_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "identical": true
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "source_commit": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "expected_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "actual_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "source_commit": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "expected_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "actual_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "source_commit": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "expected_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "actual_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "source_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "expected_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "actual_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "identical": true
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "source_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "expected_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "actual_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "identical": true
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "source_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "expected_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "actual_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "identical": true
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "source_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "expected_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "actual_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "identical": true
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "source_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "expected_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "actual_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "source_commit": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "expected_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "actual_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "source_commit": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "expected_blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "actual_blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "source_commit": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "expected_blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "actual_blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "identical": true
+    }
+  ],
+  "control_scopes": [
+    {
+      "scope": ".github",
+      "changed_paths": []
+    },
+    {
+      "scope": "package.json",
+      "changed_paths": []
+    },
+    {
+      "scope": "package-lock.json",
+      "changed_paths": []
+    },
+    {
+      "scope": "tsconfig.base.json",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/deployments",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/src/views/Settings.tsx",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/e2e/network-authorization.spec.ts",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/src/views/Pay.signer.test.tsx",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/src/lib/payExec.ts",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/src/lib/transactionOutcome.ts",
+      "changed_paths": []
+    },
+    {
+      "scope": "apps/web/src/lib/errors.ts",
+      "changed_paths": []
+    },
+    {
+      "scope": "packages/confidential-contracts",
+      "changed_paths": []
+    },
+    {
+      "scope": "packages/contracts",
+      "changed_paths": []
+    },
+    {
+      "scope": "packages/payer-hiding-contracts",
+      "changed_paths": []
+    },
+    {
+      "scope": "packages/pool-contracts",
+      "changed_paths": []
+    }
+  ],
+  "source_ancestry": [
+    {
+      "commit": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "is_ancestor": true
+    },
+    {
+      "commit": "172695efb41665a4e50d335029e54184bbb5b328",
+      "is_ancestor": true
+    },
+    {
+      "commit": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "is_ancestor": true
+    },
+    {
+      "commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "is_ancestor": true
+    },
+    {
+      "commit": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "is_ancestor": true
+    }
+  ],
+  "non_documentation_changed_paths": [
+    "apps/web/e2e/flowMocks.ts",
+    "apps/web/src/lib/payExec.acceptance.test.ts",
+    "apps/web/src/lib/payExec.test.ts",
+    "apps/web/src/lib/qrKinds.test.ts",
+    "apps/web/src/lib/qrKinds.ts",
+    "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+    "apps/web/src/lib/wallet.test.ts",
+    "apps/web/src/lib/wallet.ts",
+    "apps/web/src/views/Pay.test.tsx",
+    "packages/chain-adapters/src/deployments.test.ts",
+    "packages/qr-exchange/src/assembler.test.ts",
+    "packages/qr-exchange/src/assembler.ts",
+    "scripts/pages/build-pages-artifact-gate.test.mjs",
+    "scripts/pages/build-pages.sh",
+    "scripts/tests/privacy-csp-bundle.test.mjs"
+  ],
+  "unexpected_non_documentation_changes": [],
+  "selected_paths_without_base_delta": [],
+  "review_limits": "Source/blob/control verification only. No new tests, typecheck, coverage, browser run or hosted gate result is asserted by this receipt."
+}

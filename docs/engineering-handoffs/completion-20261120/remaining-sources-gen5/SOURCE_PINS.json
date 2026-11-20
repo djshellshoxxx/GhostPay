@@ -1,0 +1,2224 @@
+{
+  "schema": "ghostpay-remaining-sources-gen5/2",
+  "observed_at_utc": "2026-11-20T02:41:23.185187+00:00",
+  "candidate": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "candidate_tree": "6054b38d9b97f317dfb34e115a03c1dce9e0acf7",
+  "main_expected": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "main_observed": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "canonical_pr278_observed": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "rows": [
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "merge_bases_candidate": [
+        "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+      ],
+      "merge_bases_main": [
+        "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+      ],
+      "right_only_commits": [
+        "6cb957a70c5066b0a5c2fc168a7dca46b43d66bf",
+        "215f98d801266d4e0d7f15e4e0926cfb3197da20",
+        "dd5be2e28c4e4f6afc273c77bc2c1c68acdcd9d8",
+        "7fa75889273d596b63d6948f6157acd98334a5b3",
+        "ebf9214778f388bdeb2d9d6dfe9b7df248332415",
+        "cede5cfda895b42e28708ba99d253e976490b963",
+        "4c4baf273e009a88d564c987630444e08325e733",
+        "2527d6b9367887508d7d8f678a18564132652a03"
+      ],
+      "paths": [
+        {
+          "path": ".github/agent-prompts/openai-agents.steps.disabled.yml.txt",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c276287dfc4a575944b897666d619147980d4109"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c276287dfc4a575944b897666d619147980d4109"
+          },
+          "equal": true
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fb18e62280f436e0326417e0d079c8a66613f7bb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5e7081f57d6a8a50c86f4efe333f967107c32e66"
+          },
+          "equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "84f239f1226480480489218b8ff0d79ae7b7a3ae"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5cdda9261404abc06d2b4b827033d0614dcea04c"
+          },
+          "equal": false
+        },
+        {
+          "path": ".github/workflows/openai-agents.yml",
+          "source": null,
+          "candidate": null,
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/deployment.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "be90aa64969b62e5616161b848ef35e0b12b9804"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "be90aa64969b62e5616161b848ef35e0b12b9804"
+          },
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "24276e195ecea59d6d5487e2ec90b3fdc85df795"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2ac9bc61dbebd721aecab2fedf1eb3e50d501d68"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "28b1d77972a7588e706579e88f4ffa27d6e6ffbb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7e27cf90328b7d9421e394edc10515e61157a1d5"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "78c1c57d792a68d6f3ff3323ea77572fa028fb76"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "479341df5a6a5a5f90038520d3934fe2d4fcdea8"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fa5a4df306126a1234ccf2e7a2d0520cd083cdb8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0e9a3abe4e78e4091b19614ef68efb285b5c1254"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bf58da0b8f3e3a9c81964871cb22b157b089b56f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3ce29cb9498df24def6a1137e2c0030b656d771f"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "babeec0bb9bd42da593a558ac3a170cc761e6350"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c"
+          },
+          "equal": false
+        },
+        {
+          "path": "scripts/scan-secrets.sh",
+          "source": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "2f4a14cd9ed1ff05d60885ad056335d6b0bf0793"
+          },
+          "candidate": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "2f4a14cd9ed1ff05d60885ad056335d6b0bf0793"
+          },
+          "equal": true
+        },
+        {
+          "path": "scripts/tests/ghostpay-codex-cloud-workflow.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6d5c71ba9bb77a2704269414b5a52a5d967cf1ed"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e642da8ae0740b347ffd2d4dad285b0176a330d3"
+          },
+          "equal": false
+        },
+        {
+          "path": "scripts/tests/lean-core-reachability.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c554553534f2b9a2bdbc9957483a391fb7202ad6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "304b41ea3d6f2964eae5063c89a7c1847709effe"
+          },
+          "equal": false
+        },
+        {
+          "path": "scripts/tests/scan-secrets.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c68118e2a1387aee28ac8879422b7981f69477b8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c68118e2a1387aee28ac8879422b7981f69477b8"
+          },
+          "equal": true
+        },
+        {
+          "path": "scripts/tests/workflow-files.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4bad2a33a1b596d25c5480c57de1657ae7f9ee7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4bad2a33a1b596d25c5480c57de1657ae7f9ee7"
+          },
+          "equal": true
+        }
+      ],
+      "pr_number": 151,
+      "actual_pr_base": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+      "actual_pr_base_is_candidate_ancestor": true,
+      "rename_aware_delta_record_count": 15,
+      "actual_pr_delta": [
+        {
+          "path": ".github/agent-prompts/openai-agents.steps.disabled.yml.txt",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c276287dfc4a575944b897666d619147980d4109"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c276287dfc4a575944b897666d619147980d4109"
+          },
+          "equal": true,
+          "proposal_base": null
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fb18e62280f436e0326417e0d079c8a66613f7bb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5e7081f57d6a8a50c86f4efe333f967107c32e66"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "36565777a9c27ebb6fdb9e7802bcc7c634680a6c"
+          }
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "84f239f1226480480489218b8ff0d79ae7b7a3ae"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5cdda9261404abc06d2b4b827033d0614dcea04c"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "be5e694fbd0c48960a2643c1df5d5e6e7c7bb629"
+          }
+        },
+        {
+          "path": ".github/workflows/openai-agents.yml",
+          "source": null,
+          "candidate": null,
+          "equal": true,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6dc56a5c7275436fec40df0e3bb68e63d94b32be"
+          }
+        },
+        {
+          "path": "apps/web/src/lib/deployment.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "be90aa64969b62e5616161b848ef35e0b12b9804"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "be90aa64969b62e5616161b848ef35e0b12b9804"
+          },
+          "equal": true,
+          "proposal_base": null
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "24276e195ecea59d6d5487e2ec90b3fdc85df795"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2ac9bc61dbebd721aecab2fedf1eb3e50d501d68"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e8ac257868ce454e8b060e486656e8eb544ebc4e"
+          }
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "28b1d77972a7588e706579e88f4ffa27d6e6ffbb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7e27cf90328b7d9421e394edc10515e61157a1d5"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1c5e294744821b78d2ac55e42846307f3c11496a"
+          }
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "78c1c57d792a68d6f3ff3323ea77572fa028fb76"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "479341df5a6a5a5f90038520d3934fe2d4fcdea8"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8a3533666f7070666f08274881307d9a0f913a81"
+          }
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fa5a4df306126a1234ccf2e7a2d0520cd083cdb8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0e9a3abe4e78e4091b19614ef68efb285b5c1254"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f00715d437395bdb3961340757bbf33030e758a1"
+          }
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bf58da0b8f3e3a9c81964871cb22b157b089b56f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3ce29cb9498df24def6a1137e2c0030b656d771f"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ac1a4961d869d69da506d9977b9853a564df7b70"
+          }
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "babeec0bb9bd42da593a558ac3a170cc761e6350"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6bbe952c78f64f19e419570a49b4b8e572edc7fc"
+          }
+        },
+        {
+          "path": "scripts/scan-secrets.sh",
+          "source": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "2f4a14cd9ed1ff05d60885ad056335d6b0bf0793"
+          },
+          "candidate": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "2f4a14cd9ed1ff05d60885ad056335d6b0bf0793"
+          },
+          "equal": true,
+          "proposal_base": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "744ab2edfe28366d51a5dce5671993ff0bdd4965"
+          }
+        },
+        {
+          "path": "scripts/tests/ghostpay-codex-cloud-workflow.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6d5c71ba9bb77a2704269414b5a52a5d967cf1ed"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e642da8ae0740b347ffd2d4dad285b0176a330d3"
+          },
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "scripts/tests/lean-core-reachability.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c554553534f2b9a2bdbc9957483a391fb7202ad6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "304b41ea3d6f2964eae5063c89a7c1847709effe"
+          },
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "scripts/tests/scan-secrets.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c68118e2a1387aee28ac8879422b7981f69477b8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c68118e2a1387aee28ac8879422b7981f69477b8"
+          },
+          "equal": true,
+          "proposal_base": null
+        },
+        {
+          "path": "scripts/tests/workflow-files.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4bad2a33a1b596d25c5480c57de1657ae7f9ee7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4bad2a33a1b596d25c5480c57de1657ae7f9ee7"
+          },
+          "equal": true,
+          "proposal_base": null
+        }
+      ],
+      "head_author": {
+        "name": "Claude",
+        "authored_at": "2026-11-14T05:01:22Z",
+        "subject": "test(scope): lock lean-core reachability of deferred code"
+      },
+      "scope_stats": {
+        "all_best_base_affected_path_names": 16,
+        "exact_entries_including_deletions": 6,
+        "actual_pr_delta_path_names": 16,
+        "actual_pr_nondocs_path_names": 16
+      }
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "merge_bases_candidate": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "merge_bases_main": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "right_only_commits": [
+        "363bb43ae47fcecaf01c2c4f6ba20cdb0373a9fd",
+        "97787665d316395f54b3f3dbd1ef70d4beaa2959",
+        "8daa03cf3dda60c60864a134ecb3bc5e658e1010",
+        "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+        "63994db6cff8b3b3ca698427eee9e95904230546"
+      ],
+      "paths": [
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7f4c6e7c1e3f23dc93e109622a404910c19ded52"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1cca3b929360d4d55835751c87115247559391bb"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/relayer/src/secrets.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4d4236ede8c70056165709a2508c089306269b2"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "apps/relayer/src/secrets.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c3cf6874994b19bd6e2f0a2bb7b922df1e159d48"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4d2742303be69a6b707f8fcee425b0eb51a5e68"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5433563005b0bcc203c228b2e07098d35c354e8c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a7b3dfb5fc01b7cf7b8e7f9bc9dc58c7bd17b3ef"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e68f9534de7484c3882645b6eaae960ef0cd6dcc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a9caf2d289016c372ad83e82e7e4a0a7d5f0f2ce"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/txGuard.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a9b6f7c3b4ab5fd22d93d0ffb418b92c7529c5a7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "abba792709126a191cbd589f2023351a7b9e1c66"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/audits/25-security-triage-2026-10-30.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "240c9137d9689c2a0a73b10688e8e36e48f45cba"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "240c9137d9689c2a0a73b10688e8e36e48f45cba"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/developer/api/chain-adapters.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "dc24ff12c850f32c8e074771f9cc2d680f95282b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "303165fb3a6f20c331cf3dbf474b533efcb8978b"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "47148dd0319eb3b5c4b4dc7dc4ad756491abac39"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9ad9c2964221af8663b474f277b4f106f14b4ea3"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/errors.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bf86754109333eee97dd60da6ed0d79b715790f7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3b2cb127f6bbe1f4d46987206039e06554d33038"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/logs.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8e81818c0d4446326e2150e44d976e5623c7735e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4801b9589043c0d003cf1d002e745451239f6b21"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bea5a7a5979ab6cdbf24e63b34bb803f7d1b2a8d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f7bb85cb0296ccae726859842b06c6f76b6974b8"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "475316da2e0808cc2cb9c9c072d365217bf8b33d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/scanHardening.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fc3a13bc2283b8ee4c0f97922006e79016c6b1f0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e"
+          },
+          "equal": false
+        }
+      ],
+      "pr_number": 40,
+      "actual_pr_base": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "actual_pr_base_is_candidate_ancestor": false,
+      "rename_aware_delta_record_count": 15,
+      "actual_pr_delta": [
+        {
+          "path": "apps/relayer/src/secrets.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4d4236ede8c70056165709a2508c089306269b2"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "apps/relayer/src/secrets.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c3cf6874994b19bd6e2f0a2bb7b922df1e159d48"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b4d2742303be69a6b707f8fcee425b0eb51a5e68"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0f570629fadc7772c1972a512e80376aec1e8574"
+          }
+        },
+        {
+          "path": "docs/audits/25-security-triage-2026-10-30.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "240c9137d9689c2a0a73b10688e8e36e48f45cba"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "240c9137d9689c2a0a73b10688e8e36e48f45cba"
+          },
+          "equal": true,
+          "proposal_base": null
+        }
+      ],
+      "head_author": {
+        "name": "sheldon",
+        "authored_at": "2026-10-30T00:57:13-07:00",
+        "subject": "fix(relayer): bind secret validation and reads to one file descriptor"
+      },
+      "scope_stats": {
+        "all_best_base_affected_path_names": 15,
+        "exact_entries_including_deletions": 1,
+        "actual_pr_delta_path_names": 3,
+        "actual_pr_nondocs_path_names": 2
+      }
+    },
+    {
+      "branch": "integration/ghostpay-docs-recovery-20261119",
+      "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "merge_bases_candidate": [
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+        "bb193849a5688bb604e3e32dc83e1647e37fe447"
+      ],
+      "merge_bases_main": [
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+        "bb193849a5688bb604e3e32dc83e1647e37fe447"
+      ],
+      "right_only_commits": [
+        "0fafcc0fbea6d496cfbd79e7043e7b0ae3ff6c21",
+        "328cddc3118bc41b7d5b02d2331514cdbcc0a0e2",
+        "b43b134028357455a557ca95f820e7dfd586eef7",
+        "9b661a2908e9e83b3b8daaa27311ff2f6f09a3ce",
+        "00963f5085b1f409c631623643753e43b014a0c2",
+        "706434ee7610d4106eb054f4c7588c4d0f68bd36",
+        "96292d2167ff15b97ddb8ff6116a976e4cfb2c49",
+        "bc32be1a34ae2a23929b4536475dbe1b08232a15",
+        "19188e7f37ec79904637ec0f152bddf4fda710cf",
+        "9220b91086c57b65ec3e82716cf36c258a3711a6",
+        "a37e8a607c610b483cac166cd5b422be9e169a1d",
+        "90755bec003079f5a9f060eda776b332045a1400",
+        "7ecf6d6b0509313ae412f48181975a01282f7aab",
+        "0805db3df22bb8779c37f9f48d88e9b8aca2b4fa",
+        "c202060296bccd1153c6cc1382835e4810a1132f",
+        "b2dadf16d49bfe2f6f7dab483581ca1ecd591be9",
+        "5dcd5dfdf8a77d108adbbc16aef2e3bac77bf302",
+        "c16920efd912c0cc8f01112f1743cd2afa364d13",
+        "a77430cebd5cd68fc05e0fcf45e419caac8fe193",
+        "6b2a43922758409482bac31a6e9fa7c6235153f3",
+        "34c4dbc768e1bc151c57f58e3abc8d57a2a72c2c",
+        "d5b9df866372ced359bd4860e1ced1b4a526ce46",
+        "d207a1fac420197a5ad5f77dd0269cba252b0938",
+        "4b8118c72d71501835ffa69c9c613e2d1005e39b",
+        "b9ea08c87f2d23c31661cdc60a35661567cf31f0",
+        "362dfa999a96dc615a1d146b4f37f8325268a595",
+        "8acd3273dfacf867b33ca89d008c3540897b9bf3",
+        "b0617e272096c2145acd90fb00a5f8a4bac2f9cc",
+        "62d9554d1cb4f77259a8f8463c4472c1824d1cc1",
+        "4ff80733a3b36019e2f12fc21a8448e7666b6049"
+      ],
+      "paths": [
+        {
+          "path": ".claude/skills/ghostpay-affected-checks/SKILL.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4c6d428b02e1a00c843afee9653b1abf59b4c564"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4c6d428b02e1a00c843afee9653b1abf59b4c564"
+          },
+          "equal": true
+        },
+        {
+          "path": ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "93645e24b5e2a4717637754943cfccf563f0fb9e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4f1c785d338d32da0df58ae78f820d8daceb17e9"
+          },
+          "equal": false
+        },
+        {
+          "path": ".claude/skills/ghostpay-package-map/SKILL.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "511119be800bc79c2b85b8fe2eacdb7d1a63a42a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "511119be800bc79c2b85b8fe2eacdb7d1a63a42a"
+          },
+          "equal": true
+        },
+        {
+          "path": ".claude/skills/ghostpay-security-invariants/REFERENCE.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "db23efbe37fc7f802554e261f4569bc75fff564b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "db23efbe37fc7f802554e261f4569bc75fff564b"
+          },
+          "equal": true
+        },
+        {
+          "path": ".claude/skills/ghostpay-security-invariants/SKILL.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f4950b717eb1aed7c9335dec0586bc5f8325aa1e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f4950b717eb1aed7c9335dec0586bc5f8325aa1e"
+          },
+          "equal": true
+        },
+        {
+          "path": ".github/workflows/beta-acceptance.yml",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8b343c410018decc4a46ad142e46bcb58dc7f3a7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8b343c410018decc4a46ad142e46bcb58dc7f3a7"
+          },
+          "equal": true
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3fb2f03dc8fa4f9bad1cac94bbdfe063662e58a7"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5e7081f57d6a8a50c86f4efe333f967107c32e66"
+          },
+          "equal": false
+        },
+        {
+          "path": "CLAUDE.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "774bf70ac75f3d9332b6f828ddd78a2711dfa762"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "774bf70ac75f3d9332b6f828ddd78a2711dfa762"
+          },
+          "equal": true
+        },
+        {
+          "path": "apps/web/e2e/network-isolation.spec.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9327d9570232e2809d7564b983f5583ec08da0ab"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9327d9570232e2809d7564b983f5583ec08da0ab"
+          },
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "560e879fbf8e457983b9c682157a9da56b786185"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ba81445f5861a3895a364fb0c357fe09a3842d6e"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/release.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c815c8cab8e867c9100d6bc45d6518a8dce5a7d8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c815c8cab8e867c9100d6bc45d6518a8dce5a7d8"
+          },
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/release.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "49ef9237bd75259bb829d0d64cbc404e51ec9533"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "49ef9237bd75259bb829d0d64cbc404e51ec9533"
+          },
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanCheckpointPrivacy.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5a8984f59efedbad9c71eb2aea9e6379d3b55b63"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5a8984f59efedbad9c71eb2aea9e6379d3b55b63"
+          },
+          "equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c9f850561062eb011c0d97ca02d95898301fdd2b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "043fb19af6e3ccf88224122185192829eed29c92"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f83c257546972347ae3860d15c53c20388aeb7e6"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3565f11dd4ef6cee70789fa26c9da22e4230a03d"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d33c6f6e4099fb386016289cc8aa560b1380ffa8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4997190d33dceca56b2a9ec4f24238fec44ce0dd"
+          },
+          "equal": false
+        },
+        {
+          "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "671e4041953379c58270388eebb201fcec2dd541"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "671e4041953379c58270388eebb201fcec2dd541"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "76a77d6c25e8cb8c0cf83c6f7a9db0b324c29ada"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "13527f20a94d13c3ae45f2e8a8af23e5bfb51d00"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a54f3fa7572206040b05cde859b5732860cde438"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bdd43ff933f2e458e121575e64cbf24c06204d68"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/consolidation/master-20261118/QUALIFIED_GROUP.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bdea062a0c5833eb5d0c93fa8ff45fdd881d6abb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bdea062a0c5833eb5d0c93fa8ff45fdd881d6abb"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "42ac665977e388dd4e910b0f368259e24eab28ba"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "43544e9fbff8c7caf887085c5cf4af6546ceb5a1"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/BROWSER_NETWORK_ISOLATION_2026-11-18.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "96829af20ef06cfcc2eb52c64e73da4325612de4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "96829af20ef06cfcc2eb52c64e73da4325612de4"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3c892233c808c9d7388fa80b0c1c4f355b3b5d72"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8244c138e3365d09faca85746156948ae312b814"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fba68061aeb04959e064260ee155fe491a8dc66f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0b9553527c2230772f0dea4ef0a1aaf81335c471"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "cbb31bbc6f601c5f6fa3dd8b6b3009e33da6d126"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "cbb31bbc6f601c5f6fa3dd8b6b3009e33da6d126"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/PAGES_IDLE_CLOCK_INTEGRATION_20261118.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "106a7cbaeb269d04d508633e211dd3f111b16045"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "106a7cbaeb269d04d508633e211dd3f111b16045"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1d954db79beb6dae7d427fe185e7e5fa3cf71d45"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1d954db79beb6dae7d427fe185e7e5fa3cf71d45"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/agents/INVOICE_VALIDATION_20261118.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "40f73dabbc43d9c7a09a87ccf7effb28705cfe04"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "40f73dabbc43d9c7a09a87ccf7effb28705cfe04"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/README.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3828fd322b7b446b085d452a77eab3699fc8e9ee"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/archive/pr139-historical-evidence.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b796d5b32c492b58d77b97850d1d3b854582bbae"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/archive/pr140-historical-evidence.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6dd9e005c35e597fc2653f8f1efb318067f3f886"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/archive/pr153-historical-evidence.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7eddd572112745b713219ffa1f77e46efcda7ffa"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/provenance.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fb0d15323e12ac30f096d3aaf367bf2a2de801fc"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/publication.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b2d89337c52aef5b0a9c06baad7446bb50332eda"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/verification.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1cdae315c58f35be87ee94cf21bfa982c649a1ae"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/privacy/browser-network-isolation.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "70de6b582a417150fb40f88cc74ff8ac73f4925d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a874e1a7138280e782a5d8219cc777e47a771d4a"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/privacy/evidence/network-isolation-independent-review.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "482612fd2250f4336559c357b36ebed5816c576b"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "482612fd2250f4336559c357b36ebed5816c576b"
+          },
+          "equal": true
+        },
+        {
+          "path": "docs/privacy/network-egress-inventory.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "94a7010b23d3bf92403ae7f5ed2092db1228a3d4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5b4f13aead42cf0f5a4842ce78a2ddbfe77fc7b7"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/threat-model/PRIVACY_THREAT_MODEL.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "55f1990fc39756c2b488cd69bbbc9f2abaea0161"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "082ad5b291de6d45dc18bfb7d3f3dd8762d57537"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/threat-model/THREAT_MODEL.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "53a30bd1b6660b1ef42bca01bb429c14252a0139"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "023d2871418b0a04c64b69a9fe5e992472b8b3d1"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/Architecture-and-Design-Rationale.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8156b95b872ac6acb42eb819fbcaccb7b016fe29"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3b6a6c84c1b93e9fa9ce741b7a8345267c5730d3"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/Codebase-Map.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "896ac5679b3fe6e817987323c14609d7bc9c4334"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "37930c257064dd2cf51ecd1b93f1f646314238a9"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/Current-Status.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b5983646a028fbd5f9b06fba84b5acb389ad5884"
+          },
+          "candidate": null,
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/Developer-Guide.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "30dbed8f80972695378f60c9a0a5bff6731ae9e4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fd1f48db95686bcb85e49de3a3905b5220bff739"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/Home.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d3e77aac1b1be5c9122f60f575c54e8eaada0da0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7a6f8ac545d8c941319b597f1298b4e5d2406a77"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/QR-and-Devices.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5962fa598214518bc3810353cd947eeb59bd4555"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "45bc5a580cd97360601100d52ff345608270cf4f"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/User-Guide.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "274b58d42d09ff4d78f3d5704ee69319d76290dc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "649702598b7af8b0bc14ee099a14bcfaf3f44894"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/Verification-and-Release-Gates.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "552c44d01bf0e58fb82897d0276cd532196eb3f9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9569674e34f4ab0ebe417aa8a6c59a3cd42d6036"
+          },
+          "equal": false
+        },
+        {
+          "path": "docs/wiki/_Sidebar.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "922f906a551dd773e40e874f104c9c0dc599971e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5f0fc56cc8536445487ddff97b7e91875b0b9880"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7e31289f847fb54cd8293582c9c07fde54a3a907"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a67320d562b914faff0ab715c3dc956ebdd33de0"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/invoice-schema/README.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d09d2cd2ebd3dad0b609f6b2ad8976ff95f2e69d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d68bae336b9d85bb41c975b224a3b71c3a602e1e"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9e6f5d8b80405d634252bf0b65a50d8610325f58"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "cc6b9dd6fc20fb93ecb22b00e8391338bfd6a0e4"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/errors.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a2fded81b112dc570571566e1c87bb6d78e292d4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "903641f49f24629b21a225b2724c58cf2db402d2"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/pinnedSigner.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6df3d196d0aaccfcd75ac59255279b07a50df9a0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "30fb5bc7b563a6522c0a9aa23579100407eeef61"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/net-transport/src/fetchAdapter.isolation.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7eb5b48dc17d030b6b0e8a2d456ad3ea9bc331a3"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7eb5b48dc17d030b6b0e8a2d456ad3ea9bc331a3"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/net-transport/src/fetchAdapter.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "977ace28e04bc6dca12fb67d1b3275ae72f9a700"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "977ace28e04bc6dca12fb67d1b3275ae72f9a700"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/net-transport/src/fetchIsolation.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e46041cb959fd6148e557174cb90c719ed00e8e1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e46041cb959fd6148e557174cb90c719ed00e8e1"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/net-transport/src/fetchTransport.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/solana-stealth/src/rpc.isolation.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5f38bbf24645ed71940ed55b49b285edb07d7657"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5f38bbf24645ed71940ed55b49b285edb07d7657"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/solana-stealth/src/rpc.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8cf20d721bfa038c0a4068155cfbbe7d3e9024b1"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8cf20d721bfa038c0a4068155cfbbe7d3e9024b1"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/tron-adapter/src/rpc.isolation.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "61cb45773ebd3ef1cfef9f9b85ef9e22f9b565bd"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "61cb45773ebd3ef1cfef9f9b85ef9e22f9b565bd"
+          },
+          "equal": true
+        },
+        {
+          "path": "packages/tron-adapter/src/rpc.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "45983a55998d9ba820c00466f941670231cb445a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d0a921bb15848c23db3338fa1c96e18146cbda88"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/ux-core/src/errors.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e3398612a56c743aefabe1b6adda1f29aa4dd602"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6c6c304e46dd46352f6bdd3d58e24cf733ea107c"
+          },
+          "equal": false
+        },
+        {
+          "path": "packages/ux-core/src/errors.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8000ccac11046a646a3c9153a0da1cd7070fc8ab"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "549b5bd1dd9fdd90b663a2d3f3b736a7dfa37dd3"
+          },
+          "equal": false
+        },
+        {
+          "path": "scripts/agent/affected.mjs",
+          "source": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "6a8781056aad59bc679598c225c631600a3bafb7"
+          },
+          "candidate": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "6a8781056aad59bc679598c225c631600a3bafb7"
+          },
+          "equal": true
+        },
+        {
+          "path": "scripts/agent/package-map.mjs",
+          "source": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "5c743b28a984e5788d82da79781e663efa227c74"
+          },
+          "candidate": {
+            "mode": "100755",
+            "type": "blob",
+            "sha": "5c743b28a984e5788d82da79781e663efa227c74"
+          },
+          "equal": true
+        },
+        {
+          "path": "scripts/agent/workspaces.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7b768ecc56fccd35c36a7cb00bc6f049d0a47e8d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7b768ecc56fccd35c36a7cb00bc6f049d0a47e8d"
+          },
+          "equal": true
+        },
+        {
+          "path": "scripts/agent/workspaces.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "073d998655bb2ab4b9266928051aea33df378e0a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "073d998655bb2ab4b9266928051aea33df378e0a"
+          },
+          "equal": true
+        },
+        {
+          "path": "scripts/tests/network-egress-inventory.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "062277c30f3e1e3e03515337068ae15e2045ca0d"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d48716335d66af3ce36c5add29fcaf05da53e8ad"
+          },
+          "equal": false
+        },
+        {
+          "path": "scripts/tests/network-isolation-native.test.mjs",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bcac353941e5fb9cbafdc5a177de42cb8c6fcd9e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bcac353941e5fb9cbafdc5a177de42cb8c6fcd9e"
+          },
+          "equal": true
+        }
+      ],
+      "pr_number": 259,
+      "actual_pr_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "actual_pr_base_is_candidate_ancestor": true,
+      "rename_aware_delta_record_count": 72,
+      "actual_pr_delta": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "76a77d6c25e8cb8c0cf83c6f7a9db0b324c29ada"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "13527f20a94d13c3ae45f2e8a8af23e5bfb51d00"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9a7376fb9caf4d7a120fa34c4bfb17c31d7b14a5"
+          }
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "42ac665977e388dd4e910b0f368259e24eab28ba"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "43544e9fbff8c7caf887085c5cf4af6546ceb5a1"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "36f6a9782bf31536e5e34a066e15fc1daf9fbae3"
+          }
+        },
+        {
+          "path": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3c892233c808c9d7388fa80b0c1c4f355b3b5d72"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8244c138e3365d09faca85746156948ae312b814"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8244c138e3365d09faca85746156948ae312b814"
+          }
+        },
+        {
+          "path": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fba68061aeb04959e064260ee155fe491a8dc66f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0b9553527c2230772f0dea4ef0a1aaf81335c471"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "62883b1a9bc2d876f76f11b3f3346b1247a088e2"
+          }
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/README.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3828fd322b7b446b085d452a77eab3699fc8e9ee"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/archive/pr139-historical-evidence.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b796d5b32c492b58d77b97850d1d3b854582bbae"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/archive/pr140-historical-evidence.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6dd9e005c35e597fc2653f8f1efb318067f3f886"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/archive/pr153-historical-evidence.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7eddd572112745b713219ffa1f77e46efcda7ffa"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/provenance.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fb0d15323e12ac30f096d3aaf367bf2a2de801fc"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/publication.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b2d89337c52aef5b0a9c06baad7446bb50332eda"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/handoffs/docs-recovery-20261119/verification.json",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1cdae315c58f35be87ee94cf21bfa982c649a1ae"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/wiki/Architecture-and-Design-Rationale.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8156b95b872ac6acb42eb819fbcaccb7b016fe29"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3b6a6c84c1b93e9fa9ce741b7a8345267c5730d3"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3b6a6c84c1b93e9fa9ce741b7a8345267c5730d3"
+          }
+        },
+        {
+          "path": "docs/wiki/Codebase-Map.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "896ac5679b3fe6e817987323c14609d7bc9c4334"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "37930c257064dd2cf51ecd1b93f1f646314238a9"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "37930c257064dd2cf51ecd1b93f1f646314238a9"
+          }
+        },
+        {
+          "path": "docs/wiki/Current-Status.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b5983646a028fbd5f9b06fba84b5acb389ad5884"
+          },
+          "candidate": null,
+          "equal": false,
+          "proposal_base": null
+        },
+        {
+          "path": "docs/wiki/Developer-Guide.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "30dbed8f80972695378f60c9a0a5bff6731ae9e4"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fd1f48db95686bcb85e49de3a3905b5220bff739"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fd1f48db95686bcb85e49de3a3905b5220bff739"
+          }
+        },
+        {
+          "path": "docs/wiki/Home.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d3e77aac1b1be5c9122f60f575c54e8eaada0da0"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7a6f8ac545d8c941319b597f1298b4e5d2406a77"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7a6f8ac545d8c941319b597f1298b4e5d2406a77"
+          }
+        },
+        {
+          "path": "docs/wiki/QR-and-Devices.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5962fa598214518bc3810353cd947eeb59bd4555"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "45bc5a580cd97360601100d52ff345608270cf4f"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "45bc5a580cd97360601100d52ff345608270cf4f"
+          }
+        },
+        {
+          "path": "docs/wiki/User-Guide.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "274b58d42d09ff4d78f3d5704ee69319d76290dc"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "649702598b7af8b0bc14ee099a14bcfaf3f44894"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "649702598b7af8b0bc14ee099a14bcfaf3f44894"
+          }
+        },
+        {
+          "path": "docs/wiki/Verification-and-Release-Gates.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "552c44d01bf0e58fb82897d0276cd532196eb3f9"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9569674e34f4ab0ebe417aa8a6c59a3cd42d6036"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e78426bab77bd06fd4eb2dee9da4082fac8b49a5"
+          }
+        },
+        {
+          "path": "docs/wiki/_Sidebar.md",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "922f906a551dd773e40e874f104c9c0dc599971e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5f0fc56cc8536445487ddff97b7e91875b0b9880"
+          },
+          "equal": false,
+          "proposal_base": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5f0fc56cc8536445487ddff97b7e91875b0b9880"
+          }
+        }
+      ],
+      "head_author": {
+        "name": "sheldon",
+        "authored_at": "2026-11-19T00:00:16-08:00",
+        "subject": "docs: record verified remote publication provenance"
+      },
+      "scope_stats": {
+        "all_best_base_affected_path_names": 72,
+        "exact_entries_including_deletions": 30,
+        "actual_pr_delta_path_names": 20,
+        "actual_pr_nondocs_path_names": 0
+      }
+    }
+  ],
+  "path_inventory_method": "Union of git diff --no-renames --name-only for every best merge base; keeps both old and new names in a rename. actual_pr_delta uses the declared PR base instead of conflating stacked/inherited changes.",
+  "refinement_at_utc": "2026-11-20T02:47:02.404995+00:00",
+  "referenced_candidate_paths": [
+    {
+      "path": "packages/relayer-guard/src/secrets.ts",
+      "entry": "100644 blob d519892bdb89efbfdf44b4ccb1b435e50b16635a\tpackages/relayer-guard/src/secrets.ts"
+    },
+    {
+      "path": "packages/relayer-guard/src/secrets.test.ts",
+      "entry": "100644 blob ba997aa9b5a2762dcb7f543d945cc26b81ba4f8b\tpackages/relayer-guard/src/secrets.test.ts"
+    },
+    {
+      "path": "packages/relayer-guard/package.json",
+      "entry": "100644 blob d6925f2149b17c7a90a2c664fb755ee67ff43fc7\tpackages/relayer-guard/package.json"
+    },
+    {
+      "path": "apps/web/src/lib/opStackFee.ts",
+      "entry": "100644 blob 2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb\tapps/web/src/lib/opStackFee.ts"
+    },
+    {
+      "path": "apps/web/src/lib/deployment.ts",
+      "entry": "100644 blob 6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b\tapps/web/src/lib/deployment.ts"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "entry": "100644 blob a9565d96c42e35b57f62e7235a13aa6729c886b9\tapps/web/src/lib/manifest.ts"
+    },
+    {
+      "path": "apps/web/src/i18n/context.tsx",
+      "entry": "100644 blob c8709538e3b04aa8c5ef333ce6f57d393a9be362\tapps/web/src/i18n/context.tsx"
+    },
+    {
+      "path": "apps/web/src/i18n/languages.ts",
+      "entry": "100644 blob 3339adebd736a89ea3517f46d2199258d637e778\tapps/web/src/i18n/languages.ts"
+    },
+    {
+      "path": "apps/web/src/i18n/translator.ts",
+      "entry": "100644 blob 837ddfa467ca45bd8b5becffa35e0824f84367be\tapps/web/src/i18n/translator.ts"
+    },
+    {
+      "path": "docs/consolidation/LEAN_CORE_GATE_PORT_2026-11-14.md",
+      "entry": "100644 blob 8a9c78daba26c95c724bbe185687cc359d26a340\tdocs/consolidation/LEAN_CORE_GATE_PORT_2026-11-14.md"
+    }
+  ]
+}

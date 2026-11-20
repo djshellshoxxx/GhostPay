@@ -1,0 +1,60 @@
+{
+  "schema": "ghostpay-remaining-sources-gen5-receipt/1",
+  "completed_at_utc": "2026-11-20T02:50:33.211629+00:00",
+  "worker": "/root/remaining_sources_gen5",
+  "branch": "review/ghostpay-remaining-sources-gen5-20261120",
+  "frozen_candidate": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "claim_commit": "2ddec55717d630ea27d70d06b2b3753aa5cadc69",
+  "new_product_changes": false,
+  "new_tests_or_builds": false,
+  "remote_mutations": false,
+  "checks": [
+    {
+      "name": "JSON parsing",
+      "result": "PASS",
+      "files": [
+        "REVIEW.json",
+        "SOURCE_PINS.json",
+        "SOURCE_PRS.json"
+      ]
+    },
+    {
+      "name": "Initial and final live-ref identity",
+      "result": "PASS",
+      "count": 5
+    },
+    {
+      "name": "Full merge-base-union source and candidate entry identity",
+      "result": "PASS",
+      "path_pairs": 103
+    },
+    {
+      "name": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "name": "git diff --cached --check",
+      "result": "PASS"
+    },
+    {
+      "name": "Owned staged-path boundary",
+      "result": "PASS",
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REPORT.md",
+        "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REVIEW.json",
+        "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/SOURCE_PINS.json",
+        "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/SOURCE_PRS.json",
+        "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/live-refs-final.txt",
+        "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/live-refs-initial.txt"
+      ]
+    }
+  ],
+  "outcome": "No required missing static-EVM or Pages runtime behavior found in the three scoped proposals. PR #259 historical text overlap remains a separate fresh-worker task.",
+  "successor": "/root/archive_recovery_gen6",
+  "limits": [
+    "No runtime, build, browser, CI or independent security qualification is claimed.",
+    "No original privacy worktree files or shared source refs were changed.",
+    "No whole-repository completeness or branch-retirement authorization is claimed."
+  ]
+}

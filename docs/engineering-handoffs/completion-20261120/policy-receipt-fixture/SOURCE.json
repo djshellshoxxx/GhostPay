@@ -1,0 +1,89 @@
+{
+  "worker": "/root/policy_fixture_gen7",
+  "base_commit": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "source_commit": "898d3361af4320dccca7743d960b32a94fb66922",
+  "owned_test_helper": "apps/web/src/features/policy/fixtures.testutil.ts",
+  "base_helper_blob": "5237abb184401270ac2cb96f75fb9507969f32df",
+  "fixed_helper_blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+  "actual_mock_transaction_hash": "0x9999999999999999999999999999999999999999999999999999999999999999",
+  "mock_wallet_blob": "9b533f45adb1fb9d334a592c30f3ef76007ed29f",
+  "unchanged_consumers": [
+    {
+      "path": "apps/web/src/features/policy/send.test.ts",
+      "base_blob": "aa1b08c198e72dc55854551183670d37061984b0",
+      "fixed_blob": "aa1b08c198e72dc55854551183670d37061984b0"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.guard.test.tsx",
+      "base_blob": "9ccdadb0fd50fed4112e5abc399c0598ba26f93d",
+      "fixed_blob": "9ccdadb0fd50fed4112e5abc399c0598ba26f93d"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.scope.test.tsx",
+      "base_blob": "0c80f5a339d28cbe9eecd3e547fb76f70e615052",
+      "fixed_blob": "0c80f5a339d28cbe9eecd3e547fb76f70e615052"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.network.test.tsx",
+      "base_blob": "bfcf526291cc81f624b97441cfc186997fa485ed",
+      "fixed_blob": "bfcf526291cc81f624b97441cfc186997fa485ed"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+      "base_blob": "7cd927c29357adda705d353a33379aea0bc29df2",
+      "fixed_blob": "7cd927c29357adda705d353a33379aea0bc29df2"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+      "base_blob": "2d5df14501a00e9842d2aa055cf7b08e67209693",
+      "fixed_blob": "2d5df14501a00e9842d2aa055cf7b08e67209693"
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyReceive.regression.test.tsx",
+      "base_blob": "9c493241a69595b1c1d7d1aa92e7152da7b50397",
+      "fixed_blob": "9c493241a69595b1c1d7d1aa92e7152da7b50397"
+    }
+  ],
+  "preserved_runtime_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+  "original_privacy_branches_inspected": [
+    {
+      "branch": "fix/ghostpay-policy-wallet-privacy-20261120",
+      "head": "037b6b896be70911bc715c868fa23bb83c35e47c",
+      "helper_fix_present": false
+    },
+    {
+      "branch": "fix/ghostpay-wallet-privacy-286-20261120",
+      "head": "f94feab3d92e443666553eda62ac6a202bca9704",
+      "helper_fix_present": false
+    }
+  ],
+  "baseline": {
+    "source_commit": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+    "log_source_path": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3/docs/engineering-handoffs/integration-qa-gen3-20261120/logs/final-web-coverage.log.gz",
+    "archived_log": "BASELINE-coverage-partial.log.gz",
+    "log_sha256": "0104f7d3c0f44a4f395ec26af2b9fd3b4ab414fb6440bc654ab54e2777d4520d",
+    "qa_reported_result": "Stopped at existing external 900-second cap; 1467 observed pass lines and 19 failures (12 send, 7 guard); no complete test or coverage summary."
+  },
+  "validation_status": "PASS: original seven helper consumer suites, 87 tests, exit 0; final full integration qualification remains separate.",
+  "focused_validation": {
+    "file_count": 7,
+    "passed_tests": 87,
+    "exit_code": 0,
+    "command_record": "FOCUSED-result.json",
+    "log": "FOCUSED-consumers.log.gz",
+    "log_sha256": "fe7b6e867cfd6dfbe9619d921b844c62542fbe5b5489e43cf24ef5ed589ffa02",
+    "original_test_timeout_ms": 60000,
+    "full_coverage_run": false,
+    "raw_log_sha256": "98b41ac0b3e3f984a9afe336b694d40da372139bdd29fe8c073cc20b8f821916"
+  },
+  "independent_review": {
+    "reviewer": "/root",
+    "source_commit": "898d3361af4320dccca7743d960b32a94fb66922",
+    "finding": "Approved single-field fixture correlation with the exact MockWallet hash; no assertion, runtime or configuration changes.",
+    "review_delivery": "Coordination message received before the focused run completed."
+  },
+  "non_documentation_changed_paths": [
+    "apps/web/src/features/policy/fixtures.testutil.ts"
+  ],
+  "original_privacy_branches_final_recheck": "Heads remained at the recorded frozen commits; both helper blobs remained 5237abb184401270ac2cb96f75fb9507969f32df before handoff."
+}

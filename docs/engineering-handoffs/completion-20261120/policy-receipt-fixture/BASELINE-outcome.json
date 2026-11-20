@@ -1,0 +1,115 @@
+{
+  "source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "complete_suite": false,
+  "aggregate_coverage_available": false,
+  "termination": "External overall command cap of 900 seconds; project testTimeout remained 60000 ms.",
+  "exit_code": 124,
+  "reported_pass_lines": 1467,
+  "reported_failed_tests": 19,
+  "failures_by_file": {
+    "src/features/policy/send.test.ts": 12,
+    "src/features/policy/PolicyView.guard.test.tsx": 7
+  },
+  "failures": [
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (fund safety) > does not send the payment when the allowance readback is too low 48ms",
+      "reported_detail": "\u2192 expected [Function] to throw error matching /did not take effect/ but got 'Your wallet already sent this transac\u2026'"
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (fund safety) > approves, waits for the receipt, reads the allowance back, then pays 44ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (fund safety) > skips the approval when the allowance already covers the payment 35ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (fund safety) > sends a native payment directly 27ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (session guard and reviewed transaction) > sends exactly the reviewed approval and payment on the happy path 28ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (session guard and reviewed transaction) > does not pay when the approval receipt exists but the approval itself could not be compared (as Pay) 22ms",
+      "reported_detail": "\u2192 expected [Function] to throw error matching /could not be compared with the preview/ but got 'Your wallet already sent this transac\u2026'"
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (session guard and reviewed transaction) > refuses the payment when the session changes while the approval is mined 23ms",
+      "reported_detail": "\u2192 expected [Function] to throw error matching /Seller keys changed during this actio\u2026/ but got 'Your wallet already sent this transac\u2026'"
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (deadline, same boundary as Pay) > sends at deadline - 1 23ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (deadline, same boundary as Pay) > does not send the payment when it expires while the approval is mined 27ms",
+      "reported_detail": "\u2192 expected [Function] to throw error matching /has expired/ but got 'Your wallet already sent this transac\u2026'"
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (single use and final-gate details) > M1: a completed review cannot be sent again 26ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (single use and final-gate details) > still sends an unchanged payment re-encoded through the same helpers 21ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/send.test.ts",
+      "reported_test": "policy payment sending (attempt journal lookup) > does not block a different, already completed scoped payment by the same payer 23ms",
+      "reported_detail": "\u2192 Your wallet already sent this transaction (hash 0x9999999999999999999999999999999999999999999999999999999999999999), but it could not be verified: Your RPC returned an unexpected receipt shape. It may still go through. Check your wallet and a block explorer before doing anything else; do not send again."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy view: session guard before the wallet request > refuses a reviewed policy payment after a session change without contacting the wallet 1594ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /Payment submitted/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy pay: no second wallet request after a broadcast or an unknown outcome > M1: locks the payment after an unverified approval (no Send, no Review until cleared) 1415ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /could not be compared with the preview/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy pay: a verified repeat stays blocked until cleared (by design) > M2: after a verified successful policy payment, an identical re-review does not reach the wallet 1360ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /Payment submitted: 0x9{64} \\(confirmed\\)/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy pay: a verified repeat stays blocked until cleared (by design) > M2: an identical ERC-20 repeat is refused before its approval reaches the wallet 1409ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /Payment submitted: 0x9{64} \\(confirmed\\)/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy pay: a verified repeat stays blocked until cleared (by design) > M2: after an explicit clear under Wallet attempts, the same payment can be sent on purpose 1625ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /Payment submitted/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy pay: ERC-20 repeats and the attempt journal > after an unknown payment outcome, a re-review sends no new approval even when the approval record was cleared 1654ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /unknown outcome and may already have been submitted/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "file": "src/features/policy/PolicyView.guard.test.tsx",
+      "reported_test": "policy pay: ERC-20 repeats and the attempt journal > a deliberate ERC-20 repeat is sent after clearing both the payment and its approval 1438ms",
+      "reported_detail": "\u2192 Unable to find an element with the text: /Payment submitted: 0x9{64} \\(confirmed\\)/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    }
+  ],
+  "fixture_path": "apps/web/src/features/policy/fixtures.testutil.ts",
+  "fixture_line": 236,
+  "fixture_reason": "Receipt omits transactionHash although mirrored transaction and MockWallet broadcast use the same primitive 0x9...9 hash.",
+  "raw_log": "logs/final-web-coverage.log.gz",
+  "limitations": "The observed failures are a partial suite result. No unexecuted test or aggregate coverage is represented as passed."
+}

@@ -1,0 +1,72 @@
+{
+  "node": "v24.22.3",
+  "configuration": "original repository configurations; bounded concurrency/heap only",
+  "checks": [
+    {
+      "name": "final-web-qr",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/qrKinds.test.ts",
+        "src/lib/qrClassify.test.ts",
+        "src/components/QrFrame.security.test.tsx",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3/apps/web",
+      "source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+      "started_at": "2026-11-20T02:36:59.892760+00:00",
+      "duration_seconds": 7.272,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 180,
+      "heap_mib": 768,
+      "log": "logs/final-web-qr.log.gz",
+      "raw_log_sha256": "f22d2453b2dc7aa01602d175f84d7bf260867cebef614e0c3cddd7e9f40d88c9",
+      "gzip_sha256": "5ac2c273e76646aa84c9c89c4581d3ab7afedcac6d5ad17abb2b424a9d1c5bf7"
+    },
+    {
+      "name": "final-web-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+      "started_at": "2026-11-20T02:37:07.170630+00:00",
+      "duration_seconds": 36.69,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 180,
+      "heap_mib": 1024,
+      "log": "logs/final-web-typecheck.log.gz",
+      "raw_log_sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+      "gzip_sha256": "0699a4bf16c490643447a38fb134c175abda7b5485e1ccd111b8947b99fdcb40"
+    },
+    {
+      "name": "final-web-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+      "started_at": "2026-11-20T02:37:43.867173+00:00",
+      "duration_seconds": 53.028,
+      "exit_code": 134,
+      "external_timeout": false,
+      "timeout_seconds": 240,
+      "heap_mib": 1024,
+      "log": "logs/final-web-lint.log.gz",
+      "raw_log_sha256": "9e0030d69245e8715bfe658d5ba64707102b4343095529a0ac477f0c4a7124b3",
+      "gzip_sha256": "8b0e2e998fa5a70412b3c134f85bbec2c83deffc7b99db8c5d282f9b01800af5"
+    }
+  ]
+}

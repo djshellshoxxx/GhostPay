@@ -1,0 +1,60 @@
+{
+  "format": "ghostpay-transaction-field-qualification/1",
+  "implementation": "c344334d757db9ca51e107000b918fd23cc7397d",
+  "regressions": "795a3892ded8a8d20aea67b2b88d69620a4afdf5",
+  "inherited_status_fix": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+  "node": "v24.22.3",
+  "vitest": "5.1.0",
+  "command": [
+    "npm",
+    "exec",
+    "--workspace",
+    "@ghostpay/web",
+    "--",
+    "vitest",
+    "run",
+    "src/lib/wallet.test.ts",
+    "src/lib/payExec.test.ts",
+    "--maxWorkers=1"
+  ],
+  "heap_mib": 768,
+  "external_command_cap_seconds": 180,
+  "source_sha256": {
+    "apps/web/src/lib/wallet.ts": "7a29be1f740cce8b83c66dbd6ba792d1f58de31fd5db35c9933422e1f807ddcf",
+    "apps/web/src/lib/wallet.test.ts": "5ea57e72798fa926ee2f4e26f8a41d304e3c532043ecc9b536cd6d03c8eec6e8",
+    "apps/web/src/lib/payExec.test.ts": "540846cc836212f233e5ff760e41c82405ad16b48a0bf3893843cfae97a290fb"
+  },
+  "runs": [
+    {
+      "name": "baseline-red",
+      "source": "795a3892ded8a8d20aea67b2b88d69620a4afdf5",
+      "exit_code": 1,
+      "counts": {
+        "failed": 12,
+        "passed": 125
+      },
+      "skipped": 0,
+      "log": "baseline-red.log.gz",
+      "raw_sha256": "bb5ff23b4bd361a46890b32622cb2336d8cdd162242941b9647fc290776a4113",
+      "gzip_sha256": "40997be59d46fbb879cb71a36db239df6935409aaafe44109f9faa13462b83d3"
+    },
+    {
+      "name": "fixed-green",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "exit_code": 0,
+      "counts": {
+        "failed": 0,
+        "passed": 137
+      },
+      "skipped": 0,
+      "log": "fixed-green.log.gz",
+      "raw_sha256": "6210c61b287bcd14f596a5a0ac86aca083c9267bcc1c685442cd43ab9fc1a001",
+      "gzip_sha256": "212b67fe2f96bf2a396d9b428002111088cb7f3863b900376d4cf206e3071606"
+    }
+  ],
+  "limits": [
+    "Mocked provider and RPC tests, no live-chain acceptance.",
+    "Full web typing, lint, coverage, browser and exact-head hosted qualification remain assigned to integration QA.",
+    "Ordinary JSON inputs are covered. This is not general hostile JavaScript accessor/proxy isolation."
+  ]
+}
