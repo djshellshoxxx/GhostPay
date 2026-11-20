@@ -1932,3 +1932,12 @@ Owned writes: this additive claim and `docs/engineering-handoffs/continuous-2026
 Acceptance: trace current production-zero/full-17-low npm audit results through exact installed and locked dependencies, compare earlier dispositions, inspect current primary advisories and supported fix availability, and identify a concrete minimally disruptive repair if one exists. Preserve observed failures and advisory limitations.
 Boundaries: no product, dependency, lockfile, workflow, gate, remote-ref, deployment or fee mutations. Coordinate any proposed dependency change before implementation. This is internal current advisory/graph assessment, not external security signoff or proof that dependencies contain no vulnerabilities.
 
+
+# Generation 5 unpaid invoice tolerance correction — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`, specifically authorized by the coordinator after source uniqueness review.
+Branch: `fix/ghostpay-ledger-zero-payment-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; candidate and main reconciliation blobs both `9e8b5e310e0c445c954e43de3ad712a1a88512b2`.
+Owned writes: `packages/merchant-ledger/src/reconcile.ts`, `packages/merchant-ledger/src/ledger.test.ts`, the matching R4 boundary in `docs/remote/usability/specs/reconciliation.md`, this additive claim, and `docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/`.
+Upstream: exact missing guard/regression in `6db11492` retained at `security/mythril-full-remediation-20261118` (`16c48521`). Extract only this scope; other audit changes remain separate.
+Acceptance: reproduce original upstream regression against unchanged current runtime; preserve zero-due semantics, genuine payments, expiry and tolerance behavior; add necessary boundary controls; run original package coverage, typecheck, lint and build, identify actual consumers, and submit frozen source for independent review. No Pages feature activation, fee, dependency, deployment, source-ref or release gate changes.
