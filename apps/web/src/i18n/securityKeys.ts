@@ -4,6 +4,15 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  paymentRequestFiles: [
+    'requestFile.downloadHint',
+    'requestFile.downloadFailed',
+    'requestFile.hint',
+    'requestFile.ready',
+    'requestFile.rejected',
+    'requestFile.tooLarge',
+    'requestFile.invalid',
+  ],
   bitcoinOracleSources: [
     'btc.oracle.modeLabel',
     'btc.oracle.none',
@@ -1814,6 +1823,14 @@ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object
 
 /** Only explicitly classified neutral UI may use an unreviewed catalog. Future keys fail closed to reviewed/source text. */
 export const NEUTRAL_KEY_LIST = [
+  'requestFile.download',
+  'requestFile.summarySuffix',
+  'requestFile.label',
+  'requestFile.reading',
+  'requestFile.reviewAria',
+  'requestFile.reviewHeading',
+  'requestFile.open',
+  'requestFile.clear',
   'sellerKeys.verify.heading',
   'sellerKeys.verify.file',
   'sellerKeys.verify.passphrase',
