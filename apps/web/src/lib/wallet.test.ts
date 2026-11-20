@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
+import { UserFacingError } from './errors';
 import { buildApproveTx } from './pay';
 import {
   SubmissionMismatchError,
@@ -257,7 +258,7 @@ describe('verifySubmission (provider mutation / chain lies caught on the user RP
 });
 
 describe('pollReceipt', () => {
-  const receipt = (patch: Record<string, unknown> = {}): Record<string, unknown> => ({ status: '0x1', blockNumber: '0x10', to: ROUTER, ...patch });
+  const receipt = (patch: Record<string, unknown> = {}): Record<string, unknown> => ({ transactionHash: HASH, status: '0x1', blockNumber: '0x10', to: ROUTER, ...patch });
   it('returns success and reverted states', async () => {
     expect(await pollReceipt(rpc(() => receipt()), HASH as `0x${string}`, ROUTER, noSleep)).toEqual({ status: 'success', blockNumber: 16n });
     expect((await pollReceipt(rpc(() => receipt({ status: '0x0' })), HASH as `0x${string}`, ROUTER, noSleep))?.status).toBe('reverted');
@@ -268,5 +269,60 @@ describe('pollReceipt', () => {
     await expect(pollReceipt(rpc(() => 5), HASH as `0x${string}`, ROUTER, noSleep)).rejects.toThrow(/receipt shape/);
     await expect(pollReceipt(rpc(() => receipt({ status: 'x' })), HASH as `0x${string}`, ROUTER, noSleep)).rejects.toThrow(/receipt shape/);
     await expect(pollReceipt(rpc(() => receipt({ to: '0x2222222222222222222222222222222222222222' })), HASH as `0x${string}`, ROUTER, noSleep)).rejects.toThrow(SubmissionMismatchError);
+  });
+  it.each(['0x1', '0x0'])('rejects a receipt for another transaction with status %s', async (status) => {
+    const p = pollReceipt(rpc(() => receipt({ transactionHash: `0x${'8'.repeat(64)}`, status })), HASH as `0x${string}`, ROUTER, noSleep);
+    await expect(p).rejects.toThrow(SubmissionMismatchError);
+    await expect(p).rejects.toMatchObject({ field: 'hash' });
+  });
+  it('rejects a receipt without a transaction hash', async () => {
+    const missing = receipt();
+    delete missing['transactionHash'];
+    const p = pollReceipt(rpc(() => missing), HASH as `0x${string}`, ROUTER, noSleep);
+    await expect(p).rejects.toThrow(UserFacingError);
+    await expect(p).rejects.toMatchObject({ translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' } });
+  });
+  it.each<[string, unknown]>([
+    ['undefined', undefined],
+    ['null', null],
+    ['number', 9],
+    ['boolean', true],
+    ['array', [HASH]],
+    ['array-like object', { 0: HASH, length: 1 }],
+    ['object', {}],
+    ['symbol', Symbol('hash')],
+    ['empty', ''],
+    ['short', `0x${'9'.repeat(63)}`],
+    ['long', `0x${'9'.repeat(65)}`],
+    ['nonhex', `0x${'z'.repeat(64)}`],
+    ['missing prefix', '9'.repeat(64)],
+    ['uppercase prefix', `0X${'9'.repeat(64)}`],
+  ])('rejects a malformed receipt transaction hash: %s', async (_label, transactionHash) => {
+    const p = pollReceipt(rpc(() => receipt({ transactionHash })), HASH as `0x${string}`, ROUTER, noSleep);
+    await expect(p).rejects.toThrow(UserFacingError);
+    await expect(p).rejects.toMatchObject({ translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' } });
+  });
+  it('rejects an object hash without invoking its coercion hook', async () => {
+    const coerce = vi.fn(() => HASH);
+    const p = pollReceipt(rpc(() => receipt({ transactionHash: { [Symbol.toPrimitive]: coerce } })), HASH as `0x${string}`, ROUTER, noSleep);
+    await expect(p).rejects.toThrow(UserFacingError);
+    await expect(p).rejects.toMatchObject({ translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' } });
+    expect(coerce).not.toHaveBeenCalled();
+  });
+  it.each([
+    [`0x${'ab'.repeat(32)}`, `0x${'AB'.repeat(32)}`],
+    [`0x${'AB'.repeat(32)}`, `0x${'ab'.repeat(32)}`],
+  ] as const)('compares the bytes of requested %s with receipt %s', async (requestedHash, transactionHash) => {
+    expect(await pollReceipt(rpc(() => receipt({ transactionHash })), requestedHash, ROUTER, noSleep)).toEqual({ status: 'success', blockNumber: 16n });
+  });
+  it('keeps polling null receipts and accepts a later matching receipt', async () => {
+    let calls = 0;
+    const request = vi.fn(() => Promise.resolve(++calls === 3 ? receipt() : null));
+    const sleep = vi.fn(noSleep);
+    expect(await pollReceipt({ request }, HASH as `0x${string}`, ROUTER, sleep, 3)).toEqual({ status: 'success', blockNumber: 16n });
+    expect(request).toHaveBeenCalledTimes(3);
+    expect(request).toHaveBeenCalledWith('eth_getTransactionReceipt', [HASH]);
+    expect(sleep).toHaveBeenCalledTimes(2);
+    expect(sleep).toHaveBeenCalledWith(2000);
   });
 });

@@ -489,6 +489,11 @@ export async function pollReceipt(
       const o = r as Record<string, unknown>;
       let to: Address | undefined;
       try {
+        const receiptHash = o['transactionHash'];
+        if (typeof receiptHash !== 'string' || !HASH_RE.test(receiptHash)) {
+          throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
+        }
+        if (receiptHash.toLowerCase() !== hash.toLowerCase()) throw new SubmissionMismatchError('hash');
         to = o['to'] === null || o['to'] === undefined ? undefined : toAccount(o['to']);
         const status = parseQuantity(o['status']);
         if (to !== undefined && to !== getAddress(expectedTo)) throw new SubmissionMismatchError('receipt destination');
