@@ -177,6 +177,7 @@ export const QR_PALETTE_DARK: QrPalette = {
 
 /** CSS class for a kind's frame. */
 export function qrKindClass(kind: QrKind): string {
+  if (!Object.prototype.hasOwnProperty.call(QR_KINDS, kind)) throw new TypeError('unknown QR kind');
   return `qr-kind-${kind}`;
 }
 
@@ -230,6 +231,8 @@ export interface QrPayloadFlags {
  * All other flagged payloads are shown as CAUTION.
  */
 export function kindForPayload(type: QrPayloadType, flags: QrPayloadFlags = {}): QrKind {
+  // Runtime state is not guaranteed to respect the TypeScript union: reject missing and inherited keys.
+  if (!Object.prototype.hasOwnProperty.call(PAYLOAD_KIND, type)) throw new TypeError('unknown QR payload type');
   const base = PAYLOAD_KIND[type];
   if (base === 'secret' || base === 'bearer') return base;
   if (flags.testnet === true || flags.unsigned === true || flags.unverified === true) return 'caution';

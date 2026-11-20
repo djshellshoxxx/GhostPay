@@ -3,6 +3,12 @@ import { fail } from './errors.js';
 /** Hard cap for any URI accepted by this package. */
 export const MAX_URI_LENGTH = 2048;
 
+/** Reject a built URI that the corresponding parser would refuse for exceeding the wire limit. */
+export function boundBuiltUri(uri: string): string {
+  if (uri.length > MAX_URI_LENGTH) return fail('TOO_LONG');
+  return uri;
+}
+
 const UNRESERVED = /^[A-Za-z0-9\-._~]$/;
 const KEY = /^[A-Za-z0-9._-]{1,32}$/;
 const RAW_OK = /^[\x21-\x7e]*$/;
