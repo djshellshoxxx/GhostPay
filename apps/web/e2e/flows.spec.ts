@@ -27,7 +27,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     page,
     context,
   }) => {
-    const state: { sent?: SentTx } = {};
+    const state: { sent?: SentTx; sendCalls?: number } = {};
     await mockNetwork(context, state);
     await injectWallet(page, state);
     await configureRpc(page);
@@ -57,6 +57,34 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByText(/Independently verified on your RPC/)).toBeVisible();
     expect(state.sent?.to.toLowerCase()).toBe(FAKE_ROUTER.toLowerCase());
     expect(BigInt(state.sent?.value ?? '0x0')).toBe(500_000_000_000_000_000n);
+
+    // Retention closes only this explicit proof display; the completed payment remains authoritative.
+    const journal = await page.evaluate(() => window.sessionStorage.getItem('ghostpay.wallet-attempts.v1'));
+    expect(journal).not.toBeNull();
+    const sent = state.sent;
+    expect(state.sendCalls).toBe(1);
+    const proof = page.getByRole('region', { name: 'Proof of payment', exact: true });
+    await expect(proof.getByLabel('Close payment proof previews automatically')).toHaveValue('0');
+    await proof.getByRole('button', { name: 'Show proof QR' }).click();
+    await expect(proof.getByLabel('Proof of payment text')).toBeVisible();
+    await proof.getByRole('button', { name: 'Preview proof cleanup' }).click();
+    await expect(proof.getByText('Payment proof previews to close: 1')).toBeVisible();
+    await proof.getByRole('button', { name: 'Cancel cleanup' }).click();
+    await expect(proof.getByLabel('Proof of payment text')).toBeVisible();
+    await expect(proof.getByRole('button', { name: 'Close previewed proofs' })).toHaveCount(0);
+    await proof.getByRole('button', { name: 'Preview proof cleanup' }).click();
+    await proof.getByRole('button', { name: 'Close previewed proofs' }).click();
+    await expect(proof.getByLabel('Proof of payment text')).toHaveCount(0);
+    await expect(proof.locator('.qr-frame')).toHaveCount(0);
+    await expect(proof.getByRole('button', { name: 'Copy proof JSON' })).toBeVisible();
+    await expect(proof.getByRole('button', { name: 'Download proof JSON' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Download local receipt' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Submitted' })).toBeVisible();
+    await expect(page.getByText(/Independently verified on your RPC/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
+    expect(await page.evaluate(() => window.sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBe(journal);
+    expect(state.sent).toEqual(sent);
+    expect(state.sendCalls).toBe(1);
   });
 
   test('retains a late wallet hash after seller-session, account and provider changes, and requires confirmed clearing before retry', async ({ page, context }) => {
