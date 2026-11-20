@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "held",
+  "status": "released",
   "owner": "20261120T2206Z-ghostpay-tron-321-integration",
   "token": "bd481b11-a4d2-4e20-a71d-08bdc991d733",
   "generation": 9,
@@ -8,5 +8,6 @@
   "acquired_at": "2026-11-20T22:06:30.224Z",
   "heartbeat_at": "2026-11-20T22:06:30.224Z",
   "expires_at": "2026-11-20T23:06:30.224Z",
-  "transport": "github-connector-expected-head-nonforce"
+  "transport": "github-connector-expected-head-nonforce",
+  "released_at": "2026-11-20T22:07:02.430Z"
 }
