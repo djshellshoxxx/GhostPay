@@ -1093,3 +1093,14 @@ Prior full web build attempts were environment-limited (heap OOM 134, killed137)
 final full typecheck/build, browser acceptance and exact-head hosted gates remain.
 See the source-pinned handoff for commands and limits. Candidate remains draft.
 No deployment, release or real transaction is authorized by this worker claim.
+
+
+## Sleep-aware idle-session recovery — 2026-11-20
+
+Worker: `/root/idle_completion_r2`, delegated by the consolidation coordinator.
+Branch: `integration/ghostpay-idle-session-20261120-r2`; exact base: `1788f1e0a0fe1fb22bb887427c47bdd62db78c1a` (PR #325).
+Donor: PR #256, `e2ebb4902e53e2249c6585a1d72be6e1e416c36c`; common ancestor `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Owned paths: `apps/web/src/AppShell.tsx`, `AppShell.idleClock.test.tsx`; `apps/web/src/lib/{session.ts,session.idleLock.test.ts,keyVault.ts,scanCursorSlot.ts,scanCursorSlot.test.ts}`; `apps/web/src/components/TagArchive.test.tsx`; only suspension integration in `apps/web/src/views/SellerKeys.tsx`; four idle-message additions in `apps/web/locales/{ar,en,es,ja}.json` and `apps/web/src/i18n/securityKeys.ts`; `apps/web/e2e/idle-session.spec.ts` and only invoice/idle deadline isolation in `core-journey.spec.ts` and `pages-devnet.spec.ts`; donor idle-session docs, scoped continuation evidence, and this additive record.
+Acceptance: recover GP-PAGES-04 synchronous authority revocation, session-bound clock leases, sole-copy encrypted recovery and private-checkpoint revocation. Preserve PR #307's separate cancellable-unlock/durable-write lifetimes and every PR #325 Sweep guard. Union shared catalogs/claims; retain donor ancestry through a normal merge after a tests-only checkpoint. Correct the demonstrated expiry-fixture collision by placing payer time five minutes before and after signed invoice expiry, preserving all no-send/journal/reopen assertions and the 15-minute idle policy. Run decisive existing-API regressions against unchanged runtime, then qualify/review the actual combined source.
+Ownership/dependencies: source-specific prior idle claims remain preserved as donor provenance. Current user continuation and coordinator assignment authorize this isolated recovery; donor branches and shared targets remain untouched. Existing dependencies are retained after exact root/web manifest, lock and build/test/lint configuration comparison; no install, copy or removal. Parent coordinates heavy checks and remote publication. No persistent-record deletion, contracts, relayers, live chain/wallet calls or deployment.
+Status: claim recorded before test/runtime edits. Local browser execution remains unavailable under the existing socket policy; hosted full/lean acceptance is still required.
