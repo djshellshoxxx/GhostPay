@@ -1,3 +1,17 @@
+# QR kind primitive input follow-up — cycle 20261120T0035Z
+
+- Worker: native ChatGPT `spec_verification_review`, assigned by coordinator `/root`; this worker is the implementation author and does not independently approve its own patch.
+- Isolated branch: `automation/20261120T0035Z/worker/qr-kind-primitives`; exact base PR #285 head `89942105c48df03b9351f777278b6a992e35a95e`; main observed at `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrKinds.ts`, `apps/web/src/lib/qrKinds.test.ts`, `docs/design/qr-colors.md`, `docs/handoffs/QR_KIND_PRIMITIVES_20261120.md`, and this additive claim only.
+- Existing ownership: preserve #285 and its `automation/20261119T204728Z/bug/qr-kind-failclosed` branch; do not modify it. This follow-up is stacked on its exact head and adds primitive-string validation missing from the existing own-property correction.
+- Uniqueness: inspected 299 available remote refs, containing six distinct `qrKinds.ts` blobs; none has a primitive input guard. Two refs have the #285 own-property guards. Recheck live candidate heads before publication/integration.
+- Finding: own-property validation coerces non-string keys, then lookup/interpolation coerces again. Arrays/boxed strings are accepted; a stateful key can validate `spend-key` but return `shareable`, or validate `secret` but emit `qr-kind-shareable`. No browser-reachable exploit is established.
+- Acceptance: both public classification helpers reject every non-string input with their existing fixed TypeError before property lookup or coercion; valid mappings, unverified/secret/bearer precedence and frame classes stay unchanged. Correct the source-backed bearer-precedence sentence in the design guide.
+- Tests: commit failing Vitest regressions before implementation; run taxonomy, contrast and QrFrame regressions, scoped ESLint and applicable TypeScript checks. Record actual runtime/dependency provenance and any blocked checks. Independent review belongs to `standards_security_review`; hosted exact-head CI remains required.
+- Dependencies and restrictions: existing web Vitest setup only; no new packages, protocol, contract, crypto, release or production configuration changes; no shared integration update or lock acquisition. Coordinator owns remote publication and final source-pinned handoff.
+
+---
+
 # QR kind handling fail-closed — 2026-11-19 cycle 20261119T204728Z
 
 - Worker: one ChatGPT coordinator, sequential implementation and read-only audit phases (no independent subagent; not independently approved).
