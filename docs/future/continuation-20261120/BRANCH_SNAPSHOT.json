@@ -1,0 +1,482 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "observed_at_utc": "2026-11-20T16:12:21.470124+00:00",
+  "main": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+  "feature_module_count": 40,
+  "branch_ref_count": 41,
+  "note": "F03 implementation and original F03 specification are separate refs. Counts describe source differences, not release readiness. This is the discovery snapshot before this round changes.",
+  "branches": [
+    {
+      "branch": "future/f01-ghosttips",
+      "observed_head": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f02-ghoststore",
+      "observed_head": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f03-private-payment-links",
+      "observed_head": "1de98f6c9371010883253450446e6f7294da84fa",
+      "ahead_behind_main": [
+        "0",
+        "7"
+      ],
+      "changed_files": 85,
+      "runtime_files": [
+        "apps/web/e2e/payment-request-file.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/PaymentRequestDownload.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/requestFileInterop.test.ts",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "apps/web/src/views/Pay.requestFile.test.tsx",
+        "apps/web/src/views/Pay.tsx",
+        "packages/invoice-schema/README.md",
+        "packages/invoice-schema/src/index.ts",
+        "packages/invoice-schema/src/requestFile.interop.test.ts",
+        "packages/invoice-schema/src/requestFile.test.ts",
+        "packages/invoice-schema/src/requestFile.ts"
+      ],
+      "state_at_discovery": "implemented_request_file_slice"
+    },
+    {
+      "branch": "future/f03-private-payment-links-spec",
+      "observed_head": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "observed_head": "711e9e8f7e2b32431353b82c4e39e184d3ba0b58",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f05-ghostproof",
+      "observed_head": "a241d0a5556c23bf2670f6ba17e7c928b41d7eb4",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f06-encrypted-backups",
+      "observed_head": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f07-ghostpayouts",
+      "observed_head": "90b86766119d3f72870948ee83d039b989659b5f",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "observed_head": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "observed_head": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "observed_head": "1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "observed_head": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "observed_head": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f13-fiat-conversion",
+      "observed_head": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "observed_head": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f15-private-rpc",
+      "observed_head": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f16-per-client-identities",
+      "observed_head": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f17-private-funds",
+      "observed_head": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/f18-privacy-modes",
+      "observed_head": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/fee01-modular-fee-policy",
+      "observed_head": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p01-tor-onion-hosting",
+      "observed_head": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p02-rpc-policy",
+      "observed_head": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p03-local-stealth-scanning",
+      "observed_head": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p04-encrypted-offline-invoices",
+      "observed_head": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p05-encrypted-local-state",
+      "observed_head": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p06-key-role-separation",
+      "observed_head": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "observed_head": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p08-linkability-analysis",
+      "observed_head": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p09-noncustodial-gas-services",
+      "observed_head": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p10-private-submission",
+      "observed_head": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "ahead_behind_main": [
+        "7",
+        "6"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p11-metadata-timing-policy",
+      "observed_head": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p12-selective-disclosure-proofs",
+      "observed_head": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p13-confidential-amounts",
+      "observed_head": "8846d5553469753d963258023974ea044467cd6c",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p14-shielded-payments",
+      "observed_head": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p15-anonymous-withdrawals",
+      "observed_head": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p16-shielded-cross-chain",
+      "observed_head": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p17-private-fee-outputs",
+      "observed_head": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p18-telemetry-release-integrity",
+      "observed_head": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/p19-optional-fee-gateway",
+      "observed_head": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/t01-staggered-transfers",
+      "observed_head": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    },
+    {
+      "branch": "future/t02-intermediary-routing",
+      "observed_head": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "ahead_behind_main": [
+        "7",
+        "5"
+      ],
+      "changed_files": 6,
+      "runtime_files": [],
+      "state_at_discovery": "specification_only"
+    }
+  ]
+}

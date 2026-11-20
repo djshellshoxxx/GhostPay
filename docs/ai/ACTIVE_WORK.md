@@ -651,3 +651,16 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## Future-feature continuation coordination — 2026-11-20
+
+Worker: ChatGPT root; branch `work/future-feature-coordination-20261120`.
+Base/main: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `docs/future/continuation-20261120/` and this appended record.
+Separate workers own F04, F05 and F10 on their existing future branches.
+Acceptance: preserve original branch ancestry; reconcile current main in each lane;
+complete bounded independently reviewed milestones; retain exact source/test evidence;
+publish qualified source checkpoints without activating future features or deploying.
+Other active F03, beta, privacy and repair streams remain independently owned.
+Status: discovery and assignment complete; implementation underway.
