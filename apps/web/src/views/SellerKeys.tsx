@@ -121,9 +121,16 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     resetVerify();
   };
   const stopOperation = (): void => {
+    const previousKind = operationKind.current;
     generation.current += 1;
     operation.current?.abort(); operation.current = null;
     operationKind.current = undefined;
+    // Export/import and verification use different form controls but share cancellation.
+    // Retire only the previous controller's busy flag before another operation starts;
+    // its late callbacks cannot clear the newer controller's state.
+    if (previousKind === 'export' || previousKind === 'import') setBusy(false);
+    if (previousKind === 'verify') setVerifyBusy(false);
+    // Vault save/delete writes have an independent lifetime and must not be cancelled here.
   };
   const clearImport = (): void => {
     stopOperation();
