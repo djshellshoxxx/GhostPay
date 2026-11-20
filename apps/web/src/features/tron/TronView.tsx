@@ -15,7 +15,7 @@ import { useServices } from '../../lib/services';
 import { TRON_NETWORK_LIST, tronNetwork, type TronNetworkId } from './network';
 import { broadcastHex, checkNetwork, createRpc, getChainParams, isActivated, TronViewError, captureTronErrorMessage } from './rpc';
 import { MAX_SCAN_BLOCKS, scanForPayments, type FoundPayment, type ScanResult } from './scan';
-import { formatTrx, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { formatTrx, readSweepDetails, reviewSweep, signSweep, type FundedPayment, type SignedSweep, type SweepReview } from './sweep';
 import { backupHex, newWallet, walletFromBackupHex, wipeWallet, type TronWallet } from './wallet';
 
 /**
@@ -41,6 +41,8 @@ export function TronView(): ReactNode {
   const [busy, setBusy] = useState(false);
   const [scanNote, setScanNote] = useState<DisplayMessage | undefined>(undefined);
   const [scan, setScan] = useState<ScanResult | undefined>(undefined);
+  /** The reviewed payment with the balance and memo read at review time; signing re-checks that balance. */
+  const fundedRef = useRef<FundedPayment | undefined>(undefined);
   const [picked, setPicked] = useState<string | undefined>(undefined);
   const [destination, setDestination] = useState('');
   const [review, setReview] = useState<SweepReview | undefined>(undefined);
@@ -64,6 +66,8 @@ export function TronView(): ReactNode {
     setBusy(false);
   };
 
+  useEffect(() => services.network?.subscribe(invalidate), [services]);
+
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
     abort.current?.abort();
     const ac = new AbortController();
@@ -84,6 +88,7 @@ export function TronView(): ReactNode {
   const resetFlow = (): void => {
     setScan(undefined);
     setPicked(undefined);
+    fundedRef.current = undefined;
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
@@ -101,10 +106,11 @@ export function TronView(): ReactNode {
   };
 
   /** Fresh client for the current URL, after refusing a node that reports mainnet. */
-  const connect = async (signal: AbortSignal): Promise<TronRpc> => {
+  const connect = async (signal: AbortSignal, action: 'tron-scan' | 'tron-sweep' = 'tron-sweep'): Promise<TronRpc> => {
+    const context = services.network?.authorize({ action, category: 'rpc', endpoint: url, network: { kind: 'tron', network: net.id }, match: 'prefix', signal });
     let rpc: TronRpc;
     try {
-      rpc = createRpc(url, services.fetchFn);
+      rpc = createRpc(url, context?.fetchFn ?? services.fetchFn);
     } catch {
       throw new TronViewError({ key: 'tron.node.missing' });
     }
@@ -133,7 +139,7 @@ export function TronView(): ReactNode {
     setScanning(true);
     void (async () => {
       try {
-        const rpc = await connect(signal);
+        const rpc = await connect(signal, 'tron-scan');
         if (!/^\d{1,15}$/.test(fromBlock.trim())) throw new TronViewError({ key: 'tron.block.required' });
         const res = await scanForPayments({
           rpc,
@@ -165,10 +171,16 @@ export function TronView(): ReactNode {
         // Cheap local checks first, so a typo never costs a round trip.
         decodeTronAddress(destination.trim());
         const rpc = await connect(signal);
-        const params = await getChainParams(rpc, signal);
-        const destinationActivated = await isActivated(rpc, destination.trim(), signal);
-        const out = reviewSweep(wallet, selected, destination, { params, destinationActivated });
         if (!live()) return;
+        // The balance of this one address is read now, not for every match during the scan.
+        const funded = await readSweepDetails(rpc, selected, signal);
+        if (!live()) return;
+        const params = await getChainParams(rpc, signal);
+        if (!live()) return;
+        const destinationActivated = await isActivated(rpc, destination.trim(), signal);
+        if (!live()) return;
+        const out = reviewSweep(wallet, funded, destination, { params, destinationActivated });
+        fundedRef.current = funded;
         setReview(out);
         setApproved(false);
         setSigned(undefined);
@@ -181,7 +193,8 @@ export function TronView(): ReactNode {
   };
 
   const doSign = (): void => {
-    if (wallet === undefined || selected === undefined || review === undefined || !approved || busy) return;
+    const funded = fundedRef.current;
+    if (wallet === undefined || selected === undefined || funded === undefined || review === undefined || !approved || busy) return;
     setError(undefined);
     const { signal, live } = begin();
     setBusy(true);
@@ -189,7 +202,7 @@ export function TronView(): ReactNode {
       try {
         const rpc = await connect(signal);
         if (!live()) return;
-        const out = await signSweep({ rpc, wallet, found: selected, review, nowMs: services.nowMs(), signal });
+        const out = await signSweep({ rpc, wallet, found: funded, review, nowMs: services.nowMs(), signal });
         if (live()) setSigned(out);
       } catch (e) {
         if (live()) setError(captureTronErrorMessage(e));
@@ -255,6 +268,7 @@ export function TronView(): ReactNode {
 
   const clearReview = (): void => {
     clearSigning();
+    fundedRef.current = undefined;
     setReview(undefined);
   };
 
@@ -356,6 +370,7 @@ export function TronView(): ReactNode {
               <input id={id} aria-describedby={d} inputMode="numeric" value={fromBlock} onChange={(e) => { setFromBlock(e.target.value); }} />
             )}
           </Field>
+          <p role="note">{t('tron.exposure.notice')}</p>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
@@ -369,7 +384,6 @@ export function TronView(): ReactNode {
                 {scan.found.length === 0
                   ? t('chainView.noneFound')
                   : t('chainView.foundCount', { count: String(scan.found.length) })}
-                {scan.emptiedCount > 0 && ` ${t('chainView.alreadySwept', { count: String(scan.emptiedCount) })}`}
                 {scan.tokenCount > 0 && ` ${t('tron.tokens', { count: String(scan.tokenCount) })}`}
               </p>
               {scan.found.length > 0 && (
@@ -377,7 +391,7 @@ export function TronView(): ReactNode {
                   <p role="note">{t('tron.singleProvider')}</p>
                   <table>
                     <thead>
-                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('sweep.oneTimeAddress')}</th><th>{t('btc.scan.block')}</th><th>{t('policy.account.balance')}</th></tr>
+                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('sweep.oneTimeAddress')}</th><th>{t('btc.scan.block')}</th></tr>
                     </thead>
                     <tbody>
                       {scan.found.map((f) => (
@@ -393,7 +407,6 @@ export function TronView(): ReactNode {
                           </td>
                           <td dir="ltr"><Mono>{f.stealthAddress}</Mono></td>
                           <td>{String(f.blockNumber)}</td>
-                          <td>{formatTrx(f.balanceSun)}</td>
                         </tr>
                       ))}
                     </tbody>

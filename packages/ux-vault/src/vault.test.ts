@@ -110,7 +110,7 @@ describe('profiles', () => {
   it('input validation, limits, delete', async () => {
     const { storage, vault } = setup();
     await expect(vault.createProfile({ password: 'short' })).rejects.toMatchObject({ code: 'WEAK_PASSWORD' });
-    await expect(vault.createProfile({ password: PW, publicLabel: 'x‮y' })).rejects.toMatchObject({
+    await expect(vault.createProfile({ password: PW, publicLabel: 'x\u202ey' })).rejects.toMatchObject({
       code: 'INVALID_INPUT',
     });
     await expect(vault.createProfile({ password: PW, publicLabel: 'x'.repeat(41) })).rejects.toMatchObject({

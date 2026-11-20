@@ -30,6 +30,31 @@ beforeEach(() => {
 });
 
 describe('Scan privacy (spec 10)', () => {
+  it.each(['primary', 'secondary'] as const)('Cancel stops padded %s windows after an in-flight response settles', async (source) => {
+    generateSession();
+    bothRpcs();
+    window.localStorage.setItem(SCAN_PRIVACY_KEY, JSON.stringify({ windowBlocks: 1000, padBlocks: 1000 }));
+    let release!: () => void;
+    const pending = new Promise<readonly never[]>((resolve) => { release = () => { resolve([]); }; });
+    let windows = 0;
+    const pauseWindow = (method: string): unknown => {
+      if (method !== 'eth_getLogs') return undefined;
+      windows++;
+      return windows === 1 ? pending : undefined;
+    };
+    const primary = chainWithLogs(84532, 5000, [], source === 'primary' ? pauseWindow : undefined);
+    const secondary = chainWithLogs(84532, 5000, [], source === 'secondary' ? pauseWindow : undefined);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (_c, url) => Promise.resolve(new URL(url).host === 'rpc2.test' ? secondary : withManifestChain(primary)) }));
+    await user.type(screen.getByLabelText('Start block'), '1234');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(windows).toBe(1); });
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    release();
+    await waitFor(() => { expect(screen.getByText(/Cancelled\./)).toBeTruthy(); });
+    expect(windows).toBe(1);
+    expect(screen.queryByText(/Finished\./)).toBeNull();
+  });
+
   it('queries announcements only in whole aligned windows by default and shows what each party learns', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));

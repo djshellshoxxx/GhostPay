@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "candidate": "73124433c08c8ef6835f11d03709060c6eea7a3f",
+  "captured_at": "2026-11-19T11:46:49Z",
+  "files": [
+    {
+      "path": "branch-disposition-ledger-final.json",
+      "bytes": 218869,
+      "sha256": "64e10bcb61d38c24e6c9475692ff9cfe374153f480e689dffe2962425ff0ad7f"
+    },
+    {
+      "path": "combined-source-review.json",
+      "bytes": 5514,
+      "sha256": "3730c1dcde4895a7ef219521f2d9b837fe90567e22899bbed7959343120b6dec"
+    },
+    {
+      "path": "independent-merged-review.json",
+      "bytes": 7181,
+      "sha256": "a08923cd5a4a5ec223815b5178c6faf56f731ecf94235b2deb3c9c151dbe95bf"
+    },
+    {
+      "path": "exact-head-check-runs-final.json",
+      "bytes": 339588,
+      "sha256": "89bdabc5070a9d9ef037dc821b64c1e4358e3052872b59e81617bf5283f98afa"
+    },
+    {
+      "path": "current-remote-branches.json",
+      "bytes": 37276,
+      "sha256": "1ce002627eab80d8c288ed7b0088432bc83ed3fa0fed03ec043dad7bf50c2d16"
+    },
+    {
+      "path": "jitter-independent-results.json",
+      "bytes": 5920,
+      "sha256": "2afb3bcf3cc392e93780f8411524c517a2abb6f496e2313ec258bdef0b8d77e2"
+    },
+    {
+      "path": "jitter-vitest.log",
+      "bytes": 204,
+      "sha256": "8254dd1ebb7e84ae5c8d1f39543b5182422376e332c3bef975cb9abad82f4dd4"
+    },
+    {
+      "path": "sweep-helper-independent-vitest.log",
+      "bytes": 196,
+      "sha256": "11c6c48541be698221882952026df5d87aa722b3276bcc0da7b3f06e28c1194d"
+    },
+    {
+      "path": "sweep-entry-independent-vitest.log",
+      "bytes": 221,
+      "sha256": "9765f1087e2d23ab6b1c827ae20774bd3ef7147b2e70f0814c283756a568b701"
+    },
+    {
+      "path": "sweep-native-independent-vitest.log",
+      "bytes": 208,
+      "sha256": "562404834ca53d65dd56cdd35f90780e43ffff82bfa3b6158eaa26daf9010ebe"
+    }
+  ]
+}

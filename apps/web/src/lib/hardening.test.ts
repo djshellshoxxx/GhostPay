@@ -54,7 +54,7 @@ describe('S3-13: keystore import ceilings and passphrase policy', () => {
 
 describe('S3-12: display sanitiser', () => {
   it('makes bidi, zero-width, tag and private-use characters visible', () => {
-    const s = sanitizeDisplayText('pay‮evil⁦x​y\u{E0041}z');
+    const s = sanitizeDisplayText('pay\u202eevil\u2066x​y\u{E0041}z');
     expect(s.text).toBe('pay⟨U+202E⟩evil⟨U+2066⟩x⟨U+200B⟩y⟨U+E0041⟩z⟨U+E000⟩');
     expect(s.replaced).toBe(5);
   });
@@ -103,8 +103,8 @@ describe('S3-22: wallet picker', () => {
         const announce = (info: Record<string, unknown>): void => {
           for (const l of listeners) l(new CustomEvent('eip6963:announceProvider', { detail: { info, provider } }));
         };
-        announce({ uuid: 'u1', name: 'Real‮Wallet', rdns: 'io.real' });
-        announce({ uuid: 'u1', name: 'Real‮Wallet', rdns: 'io.real' }); // identical repeat: fine
+        announce({ uuid: 'u1', name: 'Real\u202eWallet', rdns: 'io.real' });
+        announce({ uuid: 'u1', name: 'Real\u202eWallet', rdns: 'io.real' }); // identical repeat: fine
         announce({ uuid: 'u2', name: 'Other', rdns: 'io.other' });
         announce({ uuid: 'u2', name: 'Imposter', rdns: 'evil.example' });
         return true;

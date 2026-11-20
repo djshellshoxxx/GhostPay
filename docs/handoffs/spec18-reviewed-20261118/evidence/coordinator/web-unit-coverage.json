@@ -1,0 +1,18 @@
+{
+  "source": "58995408bec0e072a969db7bd4eb4687579bd4a7",
+  "tree": "27aeec9cca36e1b5a8a4643b96bc9336e5fae52d",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "--coverage",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/a264c19c9f94/GhostPay/apps/web",
+  "node": "v22.23.5",
+  "heap_mib": 512,
+  "started_utc": "2026-11-18T23:13:13.640115+00:00",
+  "working_changes": {},
+  "exit_code": 1,
+  "seconds": 1000.145,
+  "max_rss_kib": 407652
+}

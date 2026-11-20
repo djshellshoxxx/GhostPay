@@ -4,7 +4,7 @@ name: Pages
 #
 # GitHub Pages cannot set response headers: only the <meta http-equiv="Content-Security-Policy"> in index.html applies.
 # frame-ancestors, X-Frame-Options, nosniff, Permissions-Policy, COOP/CORP and Cache-Control cannot be set, so
-# clickjacking protection is absent and the iframe embed mode is unavailable (docs/pages/README.md).
+# header-enforced framing protection is absent; sensitive views refuse framing and Pages embed mode stays unavailable.
 #
 # Triggers:
 #   pull_request       validation only: Pages verifier/server tests, the Pages artifact build + independent site
@@ -210,9 +210,48 @@ jobs:
           GHOSTPAY_LOCAL_BUILD_PROFILE: lean
         run: npm run test:e2e --workspace @ghostpay/web
 
+  # Publishing runs only (SEC-43): the SHA256SUMS of every served file is attested with GitHub's keyless build-provenance
+  # (Sigstore, bound to this workflow run) before anything is deployed, so a visitor can check served files against
+  # `gh attestation verify` instead of a 14-day artifact. No checkout and no repository code run with these permissions.
+  # Signing the sums with the release key is owner-gated (OD-07) and not done here.
+  attest:
+    name: Attest the Pages artifact checksums
+    needs: [site, acceptance, release-gates]
+    if: needs.site.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write       # Sigstore signing identity for the attestation
+      attestations: write   # store the attestation
+    steps:
+      # The site job's retained copy of the directory it uploaded as the Pages artifact (site/) and its evidence.
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pages-site-${{ github.sha }}
+          path: ${{ runner.temp }}/pages
+      - name: SHA256SUMS covers exactly the served files and every hash matches
+        working-directory: ${{ runner.temp }}/pages/site
+        run: |
+          set -euo pipefail
+          sums=../evidence/SHA256SUMS
+          if grep -Evq '^[0-9a-f]{64}  \./[^ ]+$' "$sums"; then echo "SHA256SUMS has a malformed line" >&2; exit 1; fi
+          listed="$(sed -E 's/^[0-9a-f]{64}  //' "$sums" | LC_ALL=C sort)"
+          served="$(find . -type f | LC_ALL=C sort)"
+          if [ "$listed" != "$served" ]; then
+            diff <(printf '%s\n' "$listed") <(printf '%s\n' "$served") >&2 || true
+            echo "SHA256SUMS does not list exactly the files of the Pages artifact" >&2
+            exit 1
+          fi
+          sha256sum --check --strict --quiet "$sums"
+          echo "$(wc -l < "$sums") served files checked"
+      - name: Attest build provenance of the served files
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-checksums: ${{ runner.temp }}/pages/evidence/SHA256SUMS
+
   deploy:
     name: Deploy to GitHub Pages
-    needs: [site, acceptance, release-gates]
+    needs: [site, acceptance, release-gates, attest]
     if: needs.site.outputs.publish == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -252,10 +291,13 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: ./node_modules/.bin/playwright install --with-deps chromium
-      - name: Smoke test the published site
+      # The build trusted the declared origin (shared-origin gate, runtime origin guard): the URL GitHub deployed to must be
+      # exactly that origin, or the run fails (SEC-09). Same expression as the site job's GHOSTPAY_PAGES_ORIGIN.
+      - name: Smoke test the published site (deployed origin = declared origin)
         env:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+          DECLARED_ORIGIN: ${{ vars.GHOSTPAY_PAGES_ORIGIN || format('https://{0}.github.io', github.repository_owner) }}
         run: |
           set -euo pipefail
           case "$PAGE_URL" in */) ;; *) PAGE_URL="$PAGE_URL/" ;; esac
-          node scripts/pages/smoke.mjs "$PAGE_URL" --commit "$GITHUB_SHA" --timeout-s 600
+          node scripts/pages/smoke.mjs "$PAGE_URL" --expect-origin "$DECLARED_ORIGIN" --commit "$GITHUB_SHA" --timeout-s 600

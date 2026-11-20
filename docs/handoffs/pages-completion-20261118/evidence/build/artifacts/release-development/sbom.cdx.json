@@ -1,0 +1,5009 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:dc14edac-1c1a-448d-8600-ce268586b5ff",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-18T14:41:34.000Z",
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": [
+      {
+        "vendor": "npm",
+        "name": "cli",
+        "version": "11.21.2"
+      }
+    ],
+    "component": {
+      "bom-ref": "ghostpay@0.1.0",
+      "type": "application",
+      "name": "ghostpay",
+      "version": "0.1.0",
+      "scope": "required",
+      "purl": "pkg:npm/ghostpay@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "@ghostpay/relayer@0.1.0",
+      "type": "library",
+      "name": "relayer",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay gas-sponsorship relay service (node:http, viem).",
+      "purl": "pkg:npm/%40ghostpay/relayer@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/web@0.1.0",
+      "type": "library",
+      "name": "web",
+      "version": "0.1.0",
+      "scope": "required",
+      "purl": "pkg:npm/%40ghostpay/web@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@0xbow/privacy-pools-core-sdk@1.5.0",
+      "type": "library",
+      "name": "@0xbow/privacy-pools-core-sdk",
+      "version": "1.5.0",
+      "scope": "required",
+      "author": "Wonderland",
+      "description": "Typescript SDK for the Privacy Pool protocol",
+      "purl": "pkg:npm/%400xbow/privacy-pools-core-sdk@1.5.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@0xbow/privacy-pools-core-sdk/-/privacy-pools-core-sdk-1.5.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "d0bb55f29fda6a03dadbd1319a85faa6f99efefecfc4cde0dae070270a5d19832788043ba1d259d8d7bd7bcf587c2e326c13669504783b4cc6d927193c8d325a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@zk-kit/lean-imt@2.2.4",
+      "type": "library",
+      "name": "@zk-kit/lean-imt",
+      "version": "2.2.4",
+      "scope": "required",
+      "description": "Lean Incremental Merkle tree implementation in TypeScript.",
+      "purl": "pkg:npm/%40zk-kit/lean-imt@2.2.4",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@zk-kit/lean-imt/-/lean-imt-2.2.4.tgz"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit/tree/main/packages/lean-imt"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit.git/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ba8465f7d0c80fd67912e85f79c0ee2063f428bac61277551f4fad7b1c154019a55d3bef7be82b90a4f8c34e82f951734667d8355b91a3db57bea23343776a3c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "dotenv@17.3.1",
+      "type": "library",
+      "name": "dotenv",
+      "version": "17.3.1",
+      "scope": "required",
+      "description": "Loads environment variables from .env file",
+      "purl": "pkg:npm/dotenv@17.3.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/dotenv/-/dotenv-17.3.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git://github.com/motdotla/dotenv.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/motdotla/dotenv#readme"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "20ef02fddcc46fa3b717dfedc20e992d7cf5eb86b67e14e71166fde47db70e6e0eb8dfbdd8d9840254ebba93fd556e899b7b0edbab5096acafca2e02b2763d18"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "snarkjs@0.7.5",
+      "type": "library",
+      "name": "snarkjs",
+      "version": "0.7.5",
+      "scope": "required",
+      "author": "Jordi Baylina",
+      "description": "zkSNARKs implementation in JavaScript",
+      "purl": "pkg:npm/snarkjs@0.7.5",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/snarkjs/-/snarkjs-0.7.5.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/iden3/snarkjs.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "87eddce2b5d928b84bb879382c7c9d64293f87919c36f9391a354a45190799f6fa36d7fc807380f7379ade0eb9ea272546e86a43788a0d6160883f72a4baca88"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "GPL-3.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@bufbuild/protobuf@2.17.0",
+      "type": "library",
+      "name": "@bufbuild/protobuf",
+      "version": "2.17.0",
+      "scope": "required",
+      "description": "Protocol Buffers for ECMAScript. Fully compliant with the Protobuf conformance tests.",
+      "purl": "pkg:npm/%40bufbuild/protobuf@2.17.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@bufbuild/protobuf/-/protobuf-2.17.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/bufbuild/protobuf-es.git"
+        },
+        {
+          "type": "website",
+          "url": "https://protobufes.com/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "85c3e44b3e83ecc89353fe5504184afa4c5a603a0e750eb2251149de44bc372769f956577e0d6fae900128f36877c6d732e7ec5429a2509548285cc2ced6b8bb"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "(Apache-2.0 AND BSD-3-Clause)"
+        }
+      ]
+    },
+    {
+      "bom-ref": "@fhevm/sdk@0.13.2",
+      "type": "library",
+      "name": "@fhevm/sdk",
+      "version": "0.13.2",
+      "scope": "optional",
+      "description": "TypeScript Interface for FHEVM",
+      "purl": "pkg:npm/%40fhevm/sdk@0.13.2",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@fhevm/sdk/-/sdk-0.13.2.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/zama-ai/fhevm.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/zama-ai/fhevm/sdk/#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/zama-ai/fhevm/sdk/js/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "33565429d44979dc516b9edb55e43b8ebcd53fa84a0178d2f1669bbcc349281ba2ec2d995c3b2fa326fbaa92ea6226fce686c0f8e413c1c3d957fa3159f72258"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause-Clear"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@noble/curves@2.0.1",
+      "type": "library",
+      "name": "@noble/curves",
+      "version": "2.0.1",
+      "scope": "optional",
+      "author": "Paul Miller (https://paulmillr.com)",
+      "description": "Audited & minimal JS implementation of elliptic curve cryptography",
+      "purl": "pkg:npm/%40noble/curves@2.0.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@noble/curves/-/curves-2.0.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/paulmillr/noble-curves.git"
+        },
+        {
+          "type": "website",
+          "url": "https://paulmillr.com/noble/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "becd40cf638e4c188fe2ad29c235b9685d31a7d9f833156b9a4141c5ce8429973a75d631e60699880b19a2ad2e4515d66e2dc04ffb01aa7d397913ed9f52423f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@noble/hashes@2.0.1",
+      "type": "library",
+      "name": "@noble/hashes",
+      "version": "2.0.1",
+      "scope": "optional",
+      "author": "Paul Miller (https://paulmillr.com)",
+      "description": "Audited & minimal 0-dependency JS implementation of SHA, RIPEMD, BLAKE, HMAC, HKDF, PBKDF & Scrypt",
+      "purl": "pkg:npm/%40noble/hashes@2.0.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@noble/hashes/-/hashes-2.0.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/paulmillr/noble-hashes.git"
+        },
+        {
+          "type": "website",
+          "url": "https://paulmillr.com/noble/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5e53a511b41c13d7e6b97c6b5535c24e51b69e54576bd463debaf951effeb57fa79a481b5fbdb4607874551de1045f710efc276fc0f6b215463b0371fae940af"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@noble/curves@2.4.0",
+      "type": "library",
+      "name": "@noble/curves",
+      "version": "2.4.0",
+      "scope": "required",
+      "author": "Paul Miller (https://paulmillr.com)",
+      "description": "Audited & minimal JS implementation of elliptic curve cryptography",
+      "purl": "pkg:npm/%40noble/curves@2.4.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@noble/curves/-/curves-2.4.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/paulmillr/noble-curves.git"
+        },
+        {
+          "type": "website",
+          "url": "https://paulmillr.com/noble/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "3f8ffadb3ae07c7df70a7784dc39f85a1255036d98514d1e479d702886a7e0d551bf0b00d189cf4f0586a4d6e9b9a712ba399214bbf2ce9cae477d3e7dbab613"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@scure/btc-signer@2.4.1",
+      "type": "library",
+      "name": "@scure/btc-signer",
+      "version": "2.4.1",
+      "scope": "required",
+      "author": "Paul Miller (https://paulmillr.com)",
+      "description": "Audited & minimal library for Bitcoin. Handle transactions, Schnorr, Taproot, UTXO & PSBT",
+      "purl": "pkg:npm/%40scure/btc-signer@2.4.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@scure/btc-signer/-/btc-signer-2.4.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/paulmillr/scure-btc-signer.git"
+        },
+        {
+          "type": "website",
+          "url": "https://paulmillr.com/noble/#scure"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "721ea1ebaa3d9cf844a1efca72230c509787d8c04f07c500248d627f7e45c65ebcf3994a4ec73d628091a935b4fd18c8d15bfd192835b662ad1c7383c80c3cd6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@scure/base@2.4.0",
+      "type": "library",
+      "name": "@scure/base",
+      "version": "2.4.0",
+      "scope": "required",
+      "author": "Paul Miller (https://paulmillr.com)",
+      "description": "Secure, audited & 0-dep implementation of base64, bech32, base58, base32 & base16",
+      "purl": "pkg:npm/%40scure/base@2.4.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@scure/base/-/base-2.4.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/paulmillr/scure-base.git"
+        },
+        {
+          "type": "website",
+          "url": "https://paulmillr.com/noble/#scure"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "b616754ee27017005b94e860b230cabef1a2ac1c4da7ec12bd8fc347ab490493930e174001c1c9f156ebd9e167a9ac5e71ae3eb748bd2817feb876065b064e46"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/accounts@8.6.0",
+      "type": "library",
+      "name": "@solana/accounts",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for representing, fetching and decoding Solana accounts",
+      "purl": "pkg:npm/%40solana/accounts@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/accounts/-/accounts-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaaccounts"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "c8872b2a36d45f3b352ba2a471125f00714eb27f09a69f4079ccdc1ce1d0a01bf5d40c473392a67424eff2b9efece39babaf7ab1dde0a5b6a6571b6a9cbd2679"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/addresses@8.6.0",
+      "type": "library",
+      "name": "@solana/addresses",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for generating account addresses",
+      "purl": "pkg:npm/%40solana/addresses@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/addresses/-/addresses-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaaddresses"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "577d2ca5afb32ac63b8b87a5104399401ff5c6945cd02cdb4b2a48ff24d9c23fc1835a34f53e80fa97e53034c1a08587dec8259a281d2b58c0a4438e03b072a6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/assertions@8.6.0",
+      "type": "library",
+      "name": "@solana/assertions",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for asserting that a JavaScript environment supports certain features necessary for the operation of the Solana JavaScript SDK",
+      "purl": "pkg:npm/%40solana/assertions@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/assertions/-/assertions-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaassertions"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "cd015b6683c51371aa070ffb272671687e6dfc86e6ede1ce98e7d1239e36ff3cf40475929cc911d0de5a4a774f25df5cade3143fe985b57f2102be9b67aac306"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/codecs@8.6.0",
+      "type": "library",
+      "name": "@solana/codecs",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "A library for encoding and decoding any data structure",
+      "purl": "pkg:npm/%40solana/codecs@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/codecs/-/codecs-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanacodecs"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "eef5152dd6254dacb7aec8a38813cde20f7dd95f115db818d833405ebb04e9e1c59f0697f20cdd0cd012805e19d266e0342d36eaa74b1ba2d3638975eadbc4f2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/codecs-core@8.6.0",
+      "type": "library",
+      "name": "@solana/codecs-core",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Core types and helpers for encoding and decoding byte arrays on Solana",
+      "purl": "pkg:npm/%40solana/codecs-core@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/codecs-core/-/codecs-core-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanacodecs-core"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "d4dd97675c8224699d4c4de0e4587afd4384eb2e3aaa29e0fbb099a717eb801e10fb597e47f774cf81b5e48a5050d977bf3a8c2fc08517bf757ff0355d256624"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/codecs-data-structures@8.6.0",
+      "type": "library",
+      "name": "@solana/codecs-data-structures",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Codecs for various data structures",
+      "purl": "pkg:npm/%40solana/codecs-data-structures@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/codecs-data-structures/-/codecs-data-structures-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanacodecs-data-structures"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "04bc1c94548b56aba0524b57b9c8c67e950549a5f857ba5aca34a2eb1d030dd2ece8f6857e3887df29103d5e504644de3a57f4c42e9d38c5149ed0e16335721b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/codecs-numbers@8.6.0",
+      "type": "library",
+      "name": "@solana/codecs-numbers",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Codecs for numbers of different sizes and endianness",
+      "purl": "pkg:npm/%40solana/codecs-numbers@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/codecs-numbers/-/codecs-numbers-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanacodecs-numbers"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "191200aef589898c47e70d5130a9fb20e08bcb4b9807f5914f69055bfbb25c7ccbd55345cae776048cc6d03de233e0314ddf3949d4bfc7ddda57b344c3499339"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/codecs-strings@8.6.0",
+      "type": "library",
+      "name": "@solana/codecs-strings",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Codecs for strings of different sizes and encodings",
+      "purl": "pkg:npm/%40solana/codecs-strings@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/codecs-strings/-/codecs-strings-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanacodecs-strings"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6cb4bfa3935d0916fdc63db7ccb0023e3c58bc385d8ef4831f85e8040990d423e7ddc0ef56a56f033d13e3506cfcb3329216a6926a6a4dc58ba13395aa34f3df"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/errors@8.6.0",
+      "type": "library",
+      "name": "@solana/errors",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Throw, identify, and decode Solana JavaScript errors",
+      "purl": "pkg:npm/%40solana/errors@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/errors/-/errors-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaerrors"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "be21cbe75ca64751d907b653a7411290b3b21c26b86cf7e893d76f4586cc998a24639cacd718a721228752170e1ec83dcdbb8058144950e9d945600f6dbe3ec8"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "chalk@5.6.2",
+      "type": "library",
+      "name": "chalk",
+      "version": "5.6.2",
+      "scope": "required",
+      "description": "Terminal string styling done right",
+      "purl": "pkg:npm/chalk@5.6.2",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/chalk/-/chalk-5.6.2.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ecdcc12f4acde9f3145be7fb03a228e21e34a90946fb11a6b4cc5f6e71ff2bb4c0b6df094165502beea0d145ca31e549a3257912490db04ad0f29543ddb2c76c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "commander@15.0.0",
+      "type": "library",
+      "name": "commander",
+      "version": "15.0.0",
+      "scope": "required",
+      "author": "TJ Holowaychuk <tj@vision-media.ca>",
+      "description": "the complete solution for node.js command-line programs",
+      "purl": "pkg:npm/commander@15.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/commander/-/commander-15.0.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/tj/commander.js.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "cfaeeee1987308bfd3c9dbb5949011b4465859b59a37ba182c76ecbb3a1cafacb837a59901a806dd1438156eb5575ff4fa3226a63dbddd77eb7189ddd6ac6d3e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/fast-stable-stringify@8.6.0",
+      "type": "library",
+      "name": "@solana/fast-stable-stringify",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Deterministic stringification for when performance and bundle size matters",
+      "purl": "pkg:npm/%40solana/fast-stable-stringify@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/fast-stable-stringify/-/fast-stable-stringify-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "3d5bb32deb2a8efb96d6a7a0d1bae452da519d06022d2d2607b4ac16efa28a8f9dc45cdbaeb1f3912615a1404411b8d7cac0aad4bdf9d05aecd7ebfb084b1719"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/fixed-points@8.6.0",
+      "type": "library",
+      "name": "@solana/fixed-points",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Fixed-point number types for JavaScript",
+      "purl": "pkg:npm/%40solana/fixed-points@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/fixed-points/-/fixed-points-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanafixed-points"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "c92d17207c16113b538c08141cf86942972280fbc2ea985b6b7bd6eebbd53d2bd5cf5161c4d922f36a23ca5d692128252bb22451361c1a16970e1b18fe8cfcad"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/functional@8.6.0",
+      "type": "library",
+      "name": "@solana/functional",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Functional JavaScript helpers",
+      "purl": "pkg:npm/%40solana/functional@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/functional/-/functional-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanafunctional"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "82b78b7f6b62309e6859a49da77ce401c505dec206dc253552cb31a0c60d1f2ff1cb06d989f2a73a5e6cc908ca6355dd60f65998b0162411580a4cd59ece5bc4"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/instruction-plans@8.6.0",
+      "type": "library",
+      "name": "@solana/instruction-plans",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Construct, plan and execute transactions from multiple instructions.",
+      "purl": "pkg:npm/%40solana/instruction-plans@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/instruction-plans/-/instruction-plans-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanainstruction-plans"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "86ad5b2d94ad6ae1ca9b01d685e0a817d531705949b189bd5f8b1a523e25964265e86993ac34e67a213dde6267833e063ba700926eb90ff023611729ebd8d457"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/instructions@8.6.0",
+      "type": "library",
+      "name": "@solana/instructions",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for creating transaction instructions",
+      "purl": "pkg:npm/%40solana/instructions@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/instructions/-/instructions-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanainstructions"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "d665e181fe57688262af4d93824530ccd449b3c982091451b16e39670a82a7ae9b9c8c66c44cb76bdd6dc20197bc17c4e9dbf3ce0dd33528dc7ea190fc00c1a2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/keys@8.6.0",
+      "type": "library",
+      "name": "@solana/keys",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for generating and transforming key material",
+      "purl": "pkg:npm/%40solana/keys@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/keys/-/keys-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanakeys"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "bf18f7ce67077d8d04a8348947c9e7ef0fea4007421b7b92c8619c21f2e07ff6615548150d80d4c94aabc522f90f102ceb8733852bbeb9f461ec1e402b032d69"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/kit@8.6.0",
+      "type": "library",
+      "name": "@solana/kit",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Solana Javascript API",
+      "purl": "pkg:npm/%40solana/kit@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/kit/-/kit-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "51a8a053e2e24f3914db7ec5c5f889871b9fbc47dbd49d3676324e9c6a52cf51808d9b5b67ca1ce04910d5b4b8b077b0491c91f51524eb28416f96cb1c6d30e3"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/nominal-types@8.6.0",
+      "type": "library",
+      "name": "@solana/nominal-types",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Type utilties for creating nominal/branded types in TypeScript",
+      "purl": "pkg:npm/%40solana/nominal-types@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/nominal-types/-/nominal-types-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solananominal-types"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "bae4517a2b8459f4d3c2d94936f4d24adb87ac3178e48b65da4dc11a0ff89075b1a9476d4b9bb83cae1b320ce83d6a323e8ac38f9cba4c431af8cc9d3390fb4a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/offchain-messages@8.6.0",
+      "type": "library",
+      "name": "@solana/offchain-messages",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for encoding and decoding messages according to the offchain message specification",
+      "purl": "pkg:npm/%40solana/offchain-messages@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/offchain-messages/-/offchain-messages-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaoffchain-messages"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "54589cddfa2d98bf5f223b3b026938d3608c58b796c21350bc017d73264efbec78da853614d7937b6eebc5f8052d83da207691a2794823ee699ac1d01c0db8d1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/options@8.6.0",
+      "type": "library",
+      "name": "@solana/options",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Managing and serializing Rust-like Option types in JavaScript",
+      "purl": "pkg:npm/%40solana/options@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/options/-/options-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaoptions"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "585b13b4842e90d1861d12267269fc49ef28e80e2fbb8c18d1fb8b49e07f2fb0b8e453e8408d9f4c8b9dea17fd8367ee9b4751dd4d2914d21c8b0423955ab62c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/plugin-core@8.6.0",
+      "type": "library",
+      "name": "@solana/plugin-core",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Core helpers for creating and extending Kit clients with plugins",
+      "purl": "pkg:npm/%40solana/plugin-core@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/plugin-core/-/plugin-core-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaplugin-core"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "c2f8e947ae85ade0f10d77c5e51ac86b2eda5d6f897dc9928f54e20eefab53259a5755eedfdd04fca28bddd33a39f9083ad3fae87f4cf70d578a107cb323247e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/plugin-interfaces@8.6.0",
+      "type": "library",
+      "name": "@solana/plugin-interfaces",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "TypeScript interfaces for building pluggable Solana clients",
+      "purl": "pkg:npm/%40solana/plugin-interfaces@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/plugin-interfaces/-/plugin-interfaces-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaplugin-interfaces"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "b5af8962c283ec6314a012db784d6760a0cf37d9cec10375cb4e31478b5bc9f0db36c18b3f3ddf4ca1fc638f1b3ace79dac5b839c501f05de919565e7ea3f25a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/program-client-core@8.6.0",
+      "type": "library",
+      "name": "@solana/program-client-core",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Core utilities for building Solana program clients",
+      "purl": "pkg:npm/%40solana/program-client-core@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/program-client-core/-/program-client-core-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaprogram-client-core"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7ba5b1d98d94ad0d1d3c1ea19dd55cc945d0c01b7dfc32ebf24d8feed4605b424d5611cdca5650e9a61002ac59cd2f19f76806cfb9775cbfabf6d08b28190857"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/programs@8.6.0",
+      "type": "library",
+      "name": "@solana/programs",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for defining programs and resolving program errors",
+      "purl": "pkg:npm/%40solana/programs@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/programs/-/programs-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanaprograms"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "24a1ada97b624f8ce89fbc59926cacd86d7f1dc8706cd8f36cff84fb4469fc2928facbc1f70f521363d1384549652f141fdf256e2d5ea63b0760080449a9b0be"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/promises@8.6.0",
+      "type": "library",
+      "name": "@solana/promises",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for using JavaScript promises",
+      "purl": "pkg:npm/%40solana/promises@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/promises/-/promises-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanapromises"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "1cb9403305e7132860f47c552460e55a0165338414b7f42ad272faf5b6c2ec23821e151015170a2eae6e21b6973f2ec534994d0524d308167023420af6ea7449"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "A library for sending JSON RPC requests to Solana RPCs",
+      "purl": "pkg:npm/%40solana/rpc@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc/-/rpc-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "bb9760f7a4e10d501e9250bdbed569b982fbc11aa4ca8966fbea9829deb22fbb4f45d2993717461db147411daa21c310d2855f100f6d1a7421a658fee98b7fd2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-api@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-api",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Defines all default Solana RPC methods as types",
+      "purl": "pkg:npm/%40solana/rpc-api@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-api/-/rpc-api-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-api"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "3451ed381f73e07c95f1facdf38a3e77d8ca8f996e473af249924b830320706fd0d9f59a8530eb3fe66a44a2e6aa26ef14183f7f085cc65efbf937ca663a6f84"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-parsed-types@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-parsed-types",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Type definitions for parsed types used in the Solana RPC",
+      "purl": "pkg:npm/%40solana/rpc-parsed-types@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-parsed-types/-/rpc-parsed-types-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-parsed-types"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "c192ad40e4b745d1d9a89df27297626eea77d6d7db63a94760650a8e6cde17a376136cbb584a41eea884afd00c041d3498352da2b72a04ca4e962e8fc93e06a2"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-spec@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-spec",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "A generic implementation of JSON RPCs using proxies",
+      "purl": "pkg:npm/%40solana/rpc-spec@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-spec/-/rpc-spec-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-spec"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "57573eafa1d74dbfe708497948728b3f3cdbe9a3046ebd2514e7208c45fc4d0f1f13a6652f3373ded2af7206c194e2427b25574ab70d977b6ff22f31369fa7fe"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-spec-types@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-spec-types",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Shared generic JSON RPC specifications",
+      "purl": "pkg:npm/%40solana/rpc-spec-types@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-spec-types/-/rpc-spec-types-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-spec-types"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ebed85d81376097a7883b727bcba76991a3f5f074de40b7b7f71db74469b97135ed54bc8e52f1620463797f63e9e1d8d408684573f5f2e3993615f947d937312"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-subscriptions@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-subscriptions",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "A library for subscribing to Solana RPC notifications",
+      "purl": "pkg:npm/%40solana/rpc-subscriptions@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-subscriptions/-/rpc-subscriptions-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-subscriptions"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "65aa05b622a0db92aa632901b2507c4c35aa7e6ed2d7ad85c9326f148d072f453de0ad4eebbe481b687dd7799eb37be86ad8a0a6a2e7785c6436b56ce7213bb4"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-subscriptions-api@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-subscriptions-api",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Defines all default Solana RPC subscriptions as types",
+      "purl": "pkg:npm/%40solana/rpc-subscriptions-api@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-subscriptions-api/-/rpc-subscriptions-api-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-subscriptions-api"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "09bca2d19a703427314608e3735bca55605dc0d3802864f5563af27d053f143c92528d8b83cbb92d4b096fa779dd00f9761114fb49e8a317c1991514c9e6d9ba"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-subscriptions-channel-websocket@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-subscriptions-channel-websocket",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "An RPC Subscriptions transport that uses WebSockets",
+      "purl": "pkg:npm/%40solana/rpc-subscriptions-channel-websocket@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-subscriptions-channel-websocket/-/rpc-subscriptions-channel-websocket-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-subscriptions-channel-websocket"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "93552632220915ea3bc005138aa83b362ea076c24077ae43dd6c6a76d7f98815fd4e392f586acbdca5dd26ad99cd2d5cf5ea9ddb6d16d2fedf9054c0f2d7d7e5"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-subscriptions-spec@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-subscriptions-spec",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "A generic implementation of JSON RPC Subscriptions using proxies",
+      "purl": "pkg:npm/%40solana/rpc-subscriptions-spec@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-subscriptions-spec/-/rpc-subscriptions-spec-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-subscriptions-spec"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9bb941412f6183358dd5923e254cb9ad5f1cb46ee8cb459b187a23e2f7af0787ac2b64985322347900781ab4215701a79324f10134bf47dd596735980ca19796"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-transformers@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-transformers",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Reusable transformers for patching RPC inputs and outputs",
+      "purl": "pkg:npm/%40solana/rpc-transformers@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-transformers/-/rpc-transformers-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-transformers"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6927dcb5078b4eccc441d3460eb3d66e2ffbbe8258ad8a3faef2194436e89184110f032ea61c3b90434677069007b03d5d25f4b6c3def9d2a46f18d67f40ebbb"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-transport-http@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-transport-http",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "An RPC transport that uses HTTP requests",
+      "purl": "pkg:npm/%40solana/rpc-transport-http@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-transport-http/-/rpc-transport-http-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-transport-http"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "8ebede7ff50e20eedb46323b0c45e38b727b9c214ede32183c6c372f47f217b544268c7d061f13347b27f46f63bf592a7709149c5acf3d654cbe60164304a6be"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "undici-types@8.12.3",
+      "type": "library",
+      "name": "undici-types",
+      "version": "8.12.3",
+      "scope": "required",
+      "description": "A stand-alone types package for Undici",
+      "purl": "pkg:npm/undici-types@8.12.3",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/undici-types/-/undici-types-8.12.3.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/nodejs/undici.git"
+        },
+        {
+          "type": "website",
+          "url": "https://undici.nodejs.org"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/nodejs/undici/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "117138c9d2f74bbe9d15bdbb5058cd5591d3caffd32dd0138ff2947b6f69b5d720eaa5cbe3c276b59df5dba1399080a3e639fbf35391f979551f537a333f236c"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/rpc-types@8.6.0",
+      "type": "library",
+      "name": "@solana/rpc-types",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Type definitions for values used in the Solana RPC, and helper functions for working with them",
+      "purl": "pkg:npm/%40solana/rpc-types@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/rpc-types/-/rpc-types-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanarpc-types"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "820d3966366af2c15c7f424a3bafcc435a1848542e4f9494e757618ab1a37e5f140b15ff43aa1cb148336fd6bfccf36b46c5c991db9a645d5b0116a1eccaeb63"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/signers@8.6.0",
+      "type": "library",
+      "name": "@solana/signers",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "An abstraction layer over signing messages and transactions in Solana",
+      "purl": "pkg:npm/%40solana/signers@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/signers/-/signers-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanasigners"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "abc14d41f1a732c1dced52c1861f93c2c31fa1d898b588684ea363ea50c83f66f3f77975ef7af3719592447fe183fee4b057611ee5789c49168f42fae4dd12d1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/subscribable@8.6.0",
+      "type": "library",
+      "name": "@solana/subscribable",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for creating subscription-based event emitters",
+      "purl": "pkg:npm/%40solana/subscribable@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/subscribable/-/subscribable-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanasubscribable"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "cfaa91968513c68238e7d7545762bf1d064ed4762e3f97fa350c57c5ddb94ed3364c3a678cece83b7a490253993f77305c682d1a4e945a63046356b88f44c82f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/sysvars@8.6.0",
+      "type": "library",
+      "name": "@solana/sysvars",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "An abstraction layer over signing messages and transactions in Solana",
+      "purl": "pkg:npm/%40solana/sysvars@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/sysvars/-/sysvars-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanasysvars"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "a002154e155c66bdaa0f076f737171f822826c6d5de15c304435dbbbfb432950d42195c35a84cffff057d2ed458a692e8ab3071d6f5297e02c48615b6b428f7b"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/transaction-confirmation@8.6.0",
+      "type": "library",
+      "name": "@solana/transaction-confirmation",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for confirming Solana transactions",
+      "purl": "pkg:npm/%40solana/transaction-confirmation@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/transaction-confirmation/-/transaction-confirmation-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanatransaction-confirmation"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "91decbc0dd64e8bfa4f635cc8f39ba2aa183b94b044d9d6958c9d663b653fb56c38d13db922fd1ca541cfb608817b618a614f91889684e6533880026872c3879"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/transaction-introspection@8.6.0",
+      "type": "library",
+      "name": "@solana/transaction-introspection",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for inspecting confirmed Solana transactions and walking their instructions",
+      "purl": "pkg:npm/%40solana/transaction-introspection@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/transaction-introspection/-/transaction-introspection-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanatransaction-introspection"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ffb31844b9ccec0174f7cde86a272386f59640475e160927062286e4b54577c593ebc9b9bcbd7c77bfdf64792fb00e35cd690822b455ba1d0f33808e78434d95"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/transaction-messages@8.6.0",
+      "type": "library",
+      "name": "@solana/transaction-messages",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for creating transaction messages",
+      "purl": "pkg:npm/%40solana/transaction-messages@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/transaction-messages/-/transaction-messages-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanatransaction-messages"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "65bee607c5eef805da3624a682086cca58863688bb1cee2129dc900b442d878856f5038131d8d227af3b288530b00cc34955f07486ec9e450fa700a5d5f70c77"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@solana/transactions@8.6.0",
+      "type": "library",
+      "name": "@solana/transactions",
+      "version": "8.6.0",
+      "scope": "required",
+      "author": "Solana Labs Maintainers <maintainers@solanalabs.com>",
+      "description": "Helpers for creating and serializing transactions",
+      "purl": "pkg:npm/%40solana/transactions@8.6.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@solana/transactions/-/transactions-8.6.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/anza-xyz/kit"
+        },
+        {
+          "type": "website",
+          "url": "https://www.solanakit.com/api#solanatransactions"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/anza-xyz/kit/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9b68b47710ed07d986aa125def5e0e4292b3185a7d7106d4f3493020115f94eac7759d9c27367ad718c67bebde833fd61aca8f79ceb4e2951b1ca5d720590d8e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@types/snarkjs@0.7.9",
+      "type": "library",
+      "name": "@types/snarkjs",
+      "version": "0.7.9",
+      "scope": "required",
+      "description": "TypeScript definitions for snarkjs",
+      "purl": "pkg:npm/%40types/snarkjs@0.7.9",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@types/snarkjs/-/snarkjs-0.7.9.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/snarkjs"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "a5be01ab7188d9840e40e1b4751fd8b90b3f9aa72e2fa93fbe7cfaf0b20fb690367ebad42f7b707faf5adc050af5e52634d796d1120a92aeac703942ef922cfa"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@zama-fhe/sdk@3.7.2",
+      "type": "library",
+      "name": "@zama-fhe/sdk",
+      "version": "3.7.2",
+      "scope": "optional",
+      "author": "Zama",
+      "description": "TypeScript SDK for Zama fhEVM confidential smart contracts",
+      "purl": "pkg:npm/%40zama-fhe/sdk@3.7.2",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@zama-fhe/sdk/-/sdk-3.7.2.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/zama-ai/sdk.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/zama-ai/sdk#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/zama-ai/sdk/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "ae5eebaade22d285a13c335d3ee3983e7bfd80da5b445ebb39073b34b82abd72781e6f260acbc3d58231226beb4089fb7e4114e42cc3c94579e562a17106605e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause-Clear"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@zk-kit/baby-jubjub@1.0.3",
+      "type": "library",
+      "name": "@zk-kit/baby-jubjub",
+      "version": "1.0.3",
+      "scope": "required",
+      "description": "A JavaScript library for adding points to the curve.",
+      "purl": "pkg:npm/%40zk-kit/baby-jubjub@1.0.3",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@zk-kit/baby-jubjub/-/baby-jubjub-1.0.3.tgz"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit/tree/main/packages/baby-jubjub"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit.git/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5a5f907d5e9718e324d72536253a875de2967c9557a7cde2b34f9db6a7e3f70c78c2c00fa5bfaacd8bf00315b93c1c79fcdbbbd4187b8e9ff9bccfba4201d2c0"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@zk-kit/utils@1.2.1",
+      "type": "library",
+      "name": "@zk-kit/utils",
+      "version": "1.2.1",
+      "scope": "required",
+      "description": "Essential zero-knowledge utility library for JavaScript developers.",
+      "purl": "pkg:npm/%40zk-kit/utils@1.2.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@zk-kit/utils/-/utils-1.2.1.tgz"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit/tree/main/packages/utils"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit.git/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "1f69d3b3259d89c54ecafa82e408e053bb6c4e0991e8f0ebaee1493669667612a9ed1c4489afc4d41d6cc0c66369ab186b640ca7865cea807b716721b72ec1d9"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@zk-kit/eddsa-poseidon@1.1.0",
+      "type": "library",
+      "name": "@zk-kit/eddsa-poseidon",
+      "version": "1.1.0",
+      "scope": "required",
+      "description": "A JavaScript EdDSA library for secure signing and verification using Poseidon the Baby Jubjub elliptic curve.",
+      "purl": "pkg:npm/%40zk-kit/eddsa-poseidon@1.1.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@zk-kit/eddsa-poseidon/-/eddsa-poseidon-1.1.0.tgz"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit/tree/main/packages/eddsa-poseidon"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit.git/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "0e373ecce66377bdc5a4b2dfdf6fd7795662f065f84a13d02464b822283540c011ff60a08048befba26b92bf4dd85337338311087d6ac73daedb60e338bb404a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@zk-kit/poseidon-cipher@0.3.2",
+      "type": "library",
+      "name": "@zk-kit/poseidon-cipher",
+      "version": "0.3.2",
+      "scope": "required",
+      "description": "Poseidon encryption and decryption in TypeScript.",
+      "purl": "pkg:npm/%40zk-kit/poseidon-cipher@0.3.2",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@zk-kit/poseidon-cipher/-/poseidon-cipher-0.3.2.tgz"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/privacy-scaling-explorations/zk-kit/tree/main/packages/poseidon-cipher"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "133cf57b49a3fc6443947754e66d2e863e621d8ef6cd6254d013fc0ec082bcfb9b53b2cf236b5568fa71ac08d3e0942a6ad6d54501cb2218b15bb17b04fcda16"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "b4a@1.9.0",
+      "type": "library",
+      "name": "b4a",
+      "version": "1.9.0",
+      "scope": "required",
+      "author": "Holepunch",
+      "description": "Bridging the gap between buffers and typed arrays",
+      "purl": "pkg:npm/b4a@1.9.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/b4a/-/b4a-1.9.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/holepunchto/b4a.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/holepunchto/b4a#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/holepunchto/b4a/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7697dc17d7c3351ebef9cb615d1ebb8b2860a96cbd081a2e02f2168489edcc11ba72f2bf72720f8994230708bf66a8e30440c67e8343b660749138eba0e277a5"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "blake2b-wasm@2.4.0",
+      "type": "library",
+      "name": "blake2b-wasm",
+      "version": "2.4.0",
+      "scope": "required",
+      "author": "Mathias Buus (@mafintosh)",
+      "description": "Blake2b implemented in WASM",
+      "purl": "pkg:npm/blake2b-wasm@2.4.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/blake2b-wasm/-/blake2b-wasm-2.4.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/mafintosh/blake2b-wasm.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/mafintosh/blake2b-wasm"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/mafintosh/blake2b-wasm/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "4b5930996d9985914514e821731ef7f996a311f281aa13fcd8932cb31b4b54cc6568f79ad69f6ea0b894679598c879f429d7706cb73ed2f878c11d0a04da13e7"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "jsqr@1.4.0",
+      "type": "library",
+      "name": "jsqr",
+      "version": "1.4.0",
+      "scope": "required",
+      "description": "A pure javascript QR code reading library that takes in raw images and will locate, extract and parse any QR code found within.",
+      "purl": "pkg:npm/jsqr@1.4.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/jsqr/-/jsqr-1.4.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "7712e86fbabae578360efb2d624469918b662a6dac3c9f68161ae19ae753d5d66f34515396ba1a8b70164a92decbfc39bcc70b057460389b1b5e974df47cd4fc"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "maci-crypto@2.5.0",
+      "type": "library",
+      "name": "maci-crypto",
+      "version": "2.5.0",
+      "scope": "required",
+      "description": "A package containing cryptography utilities for MACI",
+      "purl": "pkg:npm/maci-crypto@2.5.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/maci-crypto/-/maci-crypto-2.5.0.tgz"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "a33acb0c7ea468aeb64e898daf9b67560ad4b3ab335c70b0711c8fcec432d3b5a0d995fad67c98d0416058a02e53c917aaf611753b507607e5c3aaa9573ff8fb"
+        }
+      ]
+    },
+    {
+      "bom-ref": "micro-packed@0.11.1",
+      "type": "library",
+      "name": "micro-packed",
+      "version": "0.11.1",
+      "scope": "required",
+      "author": "Paul Miller (https://paulmillr.com)",
+      "description": "Define complex binary structures using composable primitives",
+      "purl": "pkg:npm/micro-packed@0.11.1",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/micro-packed/-/micro-packed-0.11.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/paulmillr/micro-packed.git"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "6a0406067042c3c3a829064c53171a40f68ea3075fc7212606cab808d0170170b207c2b19511b49539791800c922c3040da15bd2dae15c11ca62c8d359ae64bb"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "nanoassert@2.0.0",
+      "type": "library",
+      "name": "nanoassert",
+      "version": "2.0.0",
+      "scope": "required",
+      "author": "Emil Bay <github@tixz.dk>",
+      "description": "Nanoscale assertion module",
+      "purl": "pkg:npm/nanoassert@2.0.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/nanoassert/-/nanoassert-2.0.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/emilbayes/nanoassert.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/emilbayes/nanoassert#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/emilbayes/nanoassert/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "eef3bb9f6f3e6983b827ef30f7a03386653c1be63fc693c3273fec7b5f480acaa3fe6a2645b6fd9a1f5952d9282795f79d39cf761109c9cd2a9cceb202c1c168"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "ISC"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "poseidon-lite@0.3.0",
+      "type": "library",
+      "name": "poseidon-lite",
+      "version": "0.3.0",
+      "scope": "required",
+      "description": "Lightweight poseidon hash",
+      "purl": "pkg:npm/poseidon-lite@0.3.0",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/poseidon-lite/-/poseidon-lite-0.3.0.tgz"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/vimwitch/poseidon-lite#readme"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "8a5263e0c22f7b8b81106ed2aed3ea514364be927fa4b55b9ddc5ad16bde6dc42a78885efa1ef6251e20d04bf07215339bdb0e40394e8e20cd991020c4d665e0"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "qrcode-generator@2.0.4",
+      "type": "library",
+      "name": "qrcode-generator",
+      "version": "2.0.4",
+      "scope": "required",
+      "author": "Kazuhiko Arase",
+      "description": "QR Code Generator implementation in JavaScript.",
+      "purl": "pkg:npm/qrcode-generator@2.0.4",
+      "properties": [],
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/qrcode-generator/-/qrcode-generator-2.0.4.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/kazuhikoarase/qrcode-generator.git"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/kazuhikoarase/qrcode-generator/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "9994a23fa4676c7978c4bd80a791df9232e79b17ca70f5a959efdcfb95f10ae7ad11e9ea98d15fd451ff7ed5cf0ad146e7f4c3a1b8ec8f3eac48d2f44abf19f6"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@ghostpay/address-safety@0.1.0",
+      "type": "library",
+      "name": "address-safety",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Address poisoning, lookalike and display-text safety checks.",
+      "purl": "pkg:npm/%40ghostpay/address-safety@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/amount-blur@0.1.0",
+      "type": "library",
+      "name": "amount-blur",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Amount blurring options AB-ROUND/SPLIT/DENOM/DELAY and honesty meter (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/amount-blur@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/btc-family@0.1.0",
+      "type": "library",
+      "name": "btc-family",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "BIP-352 silent payments with pluggable per-chain network parameters (Litecoin, Dogecoin, Bitcoin Cash research port).",
+      "purl": "pkg:npm/%40ghostpay/btc-family@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/btc-payjoin@0.1.0",
+      "type": "library",
+      "name": "btc-payjoin",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "BIP-78 PayJoin policy core (sender/receiver checks), PayjoinTransport interface with memory and v1 HTTP transports, optional BIP-77 v2 adapter over payjoin-ffi. Testnet/signet/regtest only.",
+      "purl": "pkg:npm/%40ghostpay/btc-payjoin@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/btc-silent-payments@0.1.0",
+      "type": "library",
+      "name": "btc-silent-payments",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "BIP-352 Silent Payments engine and Bitcoin ChainAdapter for GhostPay (MULTICHAIN_SPEC section 3).",
+      "purl": "pkg:npm/%40ghostpay/btc-silent-payments@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/chain-adapters@0.1.0",
+      "type": "library",
+      "name": "chain-adapters",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay EVM chain adapter: config, fee math, deployment manifests, router calldata, sweep signing, RPC, logs and quotes.",
+      "purl": "pkg:npm/%40ghostpay/chain-adapters@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/chain-evm-extra@0.1.0",
+      "type": "library",
+      "name": "chain-evm-extra",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Typed manifests and offline/online verifier for extra EVM chains (config only, no deployments).",
+      "purl": "pkg:npm/%40ghostpay/chain-evm-extra@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/chain-solana@0.1.0",
+      "type": "library",
+      "name": "chain-solana",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Dual-key ed25519 stealth address derive/scan/spend for Solana (testnet proof of concept).",
+      "purl": "pkg:npm/%40ghostpay/chain-solana@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/chain-tron@0.1.0",
+      "type": "library",
+      "name": "chain-tron",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Tron address codec, secp256k1 stealth (ERC-5564 scheme 1 maths) and TRC-20 transfer builders (testnet proof of concept).",
+      "purl": "pkg:npm/%40ghostpay/chain-tron@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/cli@0.1.0",
+      "type": "library",
+      "name": "cli",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay command line: invoices, webhooks, schedules, splits, batch payouts, exports, sandbox, doctor. Offline by default.",
+      "purl": "pkg:npm/%40ghostpay/cli@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/confidential-amounts@0.1.0",
+      "type": "library",
+      "name": "confidential-amounts",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay confidential-amount backends: ConfidentialBackend interface, pinned testnet manifest, CT-M cleartext test double, CT-1 Zama fhEVM adapter, metadata codec, decrypt scheduler. Testnet only (31337, 11155111).",
+      "purl": "pkg:npm/%40ghostpay/confidential-amounts@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/confidential-contracts@0.1.0",
+      "type": "library",
+      "name": "confidential-contracts",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay CT-1 proof of concept: confidential checkout router for ERC-7984 tokens on the Zama fhEVM. Testnet only (31337, 11155111). Hardhat + fhEVM mock; not Foundry (see DEVIATIONS.md).",
+      "purl": "pkg:npm/%40ghostpay/confidential-contracts@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/core-crypto@0.1.0",
+      "type": "library",
+      "name": "core-crypto",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "ERC-5564 scheme-1 stealth address engine for GhostPay (ADR-0001).",
+      "purl": "pkg:npm/%40ghostpay/core-crypto@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/donation@0.1.0",
+      "type": "library",
+      "name": "donation",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Optional, itemised developer donation: rate validation, amount computation, review view-model, post-payment transfer builders.",
+      "purl": "pkg:npm/%40ghostpay/donation@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/external-pools@0.1.0",
+      "type": "library",
+      "name": "external-pools",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "External private pool adapter interface, encrypted note vault, planner, linter and mock pool for GhostPay sweep exits (testnet only).",
+      "purl": "pkg:npm/%40ghostpay/external-pools@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/external-pools-privacypools@0.1.0",
+      "type": "library",
+      "name": "external-pools-privacypools",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Privacy Pools (0xbow) adapter for @ghostpay/external-pools (testnet only).",
+      "purl": "pkg:npm/%40ghostpay/external-pools-privacypools@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/external-pools-railgun@0.1.0",
+      "type": "library",
+      "name": "external-pools-railgun",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Railgun adapter for @ghostpay/external-pools (testnet only).",
+      "purl": "pkg:npm/%40ghostpay/external-pools-railgun@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/hops@0.1.0",
+      "type": "library",
+      "name": "hops",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Delayed multi-hop forwarding HOP-0/HOP-N, labelled Weak (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/hops@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/hygiene@0.1.0",
+      "type": "library",
+      "name": "hygiene",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Own-leak hygiene options HY-DST/CON/VER/BUF/FUND (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/hygiene@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/i18n@0.1.0",
+      "type": "library",
+      "name": "i18n",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay localisation framework: message catalogs, ICU-lite plural/placeholder formatting, locale negotiation, RTL, BCP47 validation, completeness checks.",
+      "purl": "pkg:npm/%40ghostpay/i18n@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/invoice-schema@0.1.0",
+      "type": "library",
+      "name": "invoice-schema",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay v1 invoice schema, canonical serialization, signing and fragment envelope (ADR-0002, ADR-0005).",
+      "purl": "pkg:npm/%40ghostpay/invoice-schema@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/merchant-billing@0.1.0",
+      "type": "library",
+      "name": "merchant-billing",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Pure merchant billing logic for GhostPay: subscriptions (reminder invoices), deposits and installments, private refund plans, split and bulk payouts.",
+      "purl": "pkg:npm/%40ghostpay/merchant-billing@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/merchant-hooks@0.1.0",
+      "type": "library",
+      "name": "merchant-hooks",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Self-hosted order webhooks, payment buttons, POS/QR and NFC payload builders (pure).",
+      "purl": "pkg:npm/%40ghostpay/merchant-hooks@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/merchant-ledger@0.1.0",
+      "type": "library",
+      "name": "merchant-ledger",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Merchant reconciliation and accounting/tax exports (pure, bigint money).",
+      "purl": "pkg:npm/%40ghostpay/merchant-ledger@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/merchant-multisig@0.1.0",
+      "type": "library",
+      "name": "merchant-multisig",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay m-of-n merchant account approval policy: proposals, canonical digests, domain-separated secp256k1 approvals, replay protection, timelocks.",
+      "purl": "pkg:npm/%40ghostpay/merchant-multisig@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/metadata-hardening@0.1.0",
+      "type": "library",
+      "name": "metadata-hardening",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Client-side metadata hardening helpers MH-* (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/metadata-hardening@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/net-harness@0.1.0",
+      "type": "library",
+      "name": "net-harness",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Local network-privacy test harness: fake SOCKS5h, HTTP, OHTTP gateway (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/net-harness@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/net-transport@0.1.0",
+      "type": "library",
+      "name": "net-transport",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Transport profiles (Tor/I2P/Nym/OHTTP), SOCKS5h agent and config validation (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/net-transport@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ops-monitor@0.1.0",
+      "type": "library",
+      "name": "ops-monitor",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Read-only chain-side anomaly probes with Prometheus and webhook output.",
+      "purl": "pkg:npm/%40ghostpay/ops-monitor@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/payer-sponsor@0.1.0",
+      "type": "library",
+      "name": "payer-sponsor",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Payer-address hiding modes for GhostPay (fresh payer wallet planning, permit relay, EIP-7702 sponsored, ERC-4337 paymaster) plus the testnet-only sponsor service core. Reduces the native-gas funding link only; the payer address stays public.",
+      "purl": "pkg:npm/%40ghostpay/payer-sponsor@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/payment-uri@0.1.0",
+      "type": "library",
+      "name": "payment-uri",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Strict builders and parsers for payment payloads exchanged between computer and phone wallets (EIP-681, EIP-3770, BIP-21/321 with BIP-352 sp, Solana Pay, TRON, GhostPay invoice links).",
+      "purl": "pkg:npm/%40ghostpay/payment-uri@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/pir-two-server@0.1.0",
+      "type": "library",
+      "name": "pir-two-server",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Two-server XOR PIR for private log-page retrieval (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/pir-two-server@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/plugin-api@0.1.0",
+      "type": "library",
+      "name": "plugin-api",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay plugin/extension API for privacy options: manifest validation, capability-scoped sandbox, deny-by-default permissions, deterministic registry.",
+      "purl": "pkg:npm/%40ghostpay/plugin-api@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/policy-scheme@0.1.0",
+      "type": "library",
+      "name": "policy-scheme",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay scheme 0x47500002 (policy-guarded stealth account): derivation, limits tree, CREATE2 prediction, scanner, EIP-712 and calldata (experimental, ADR-0014).",
+      "purl": "pkg:npm/%40ghostpay/policy-scheme@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/pool-circuits@0.1.0",
+      "type": "library",
+      "name": "pool-circuits",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "circom 2.2.3 + snarkjs Groth16 circuits for the GhostPay testnet shielded pool (withdraw, ragequit). INSECURE DEV CEREMONY. GPL-3.0 toolchain isolated here (OWNER DECISION on repo licence).",
+      "purl": "pkg:npm/%40ghostpay/pool-circuits@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/pool-prover@0.1.0",
+      "type": "library",
+      "name": "pool-prover",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Local Groth16 prover wrapper (snarkjs) for the GhostPay testnet shielded pool. GPL-3.0 isolated package (OWNER DECISION on repo licence).",
+      "purl": "pkg:npm/%40ghostpay/pool-prover@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/pool-relayer@0.1.0",
+      "type": "library",
+      "name": "pool-relayer",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Withdrawal relayer for the GhostPay testnet shielded pool: HTTP-agnostic core plus a node:http entry (testnet only).",
+      "purl": "pkg:npm/%40ghostpay/pool-relayer@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/pool-sdk@0.1.0",
+      "type": "library",
+      "name": "pool-sdk",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Client SDK for the GhostPay testnet shielded pool: notes, Poseidon commitments, local Merkle tree, event sync, withdraw inputs, encrypted note storage (testnet only).",
+      "purl": "pkg:npm/%40ghostpay/pool-sdk@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/privacy-pipeline@0.1.0",
+      "type": "library",
+      "name": "privacy-pipeline",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Privacy pipeline planner, validator and executor chaining privacy steps (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/privacy-pipeline@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/privacy-profiles@0.1.0",
+      "type": "library",
+      "name": "privacy-profiles",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Privacy option catalogue, presets, compatibility rules and honest labels (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/privacy-profiles@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/qr-exchange@0.1.0",
+      "type": "library",
+      "name": "qr-exchange",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Multipart QR transfer (chunk, reassemble, verify) and camera scanning behind small interfaces for moving data between computer and phone.",
+      "purl": "pkg:npm/%40ghostpay/qr-exchange@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/relayer-guard@0.1.0",
+      "type": "library",
+      "name": "relayer-guard",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Abuse controls for the GhostPay sweep relayer: non-wedging circuit breaker, trusted-proxy client address, IPv6 /64 buckets, flood-proof token bucket, unreimbursed-gas budget.",
+      "purl": "pkg:npm/%40ghostpay/relayer-guard@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/sandbox@0.1.0",
+      "type": "library",
+      "name": "sandbox",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay sandbox / test mode: deterministic in-memory mock chain, faucet, clock and fault injection.",
+      "purl": "pkg:npm/%40ghostpay/sandbox@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/scan-source@0.1.0",
+      "type": "library",
+      "name": "scan-source",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Scan source abstraction: range, indexer, pir2, light-client (testnet PoC).",
+      "purl": "pkg:npm/%40ghostpay/scan-source@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/sdk@0.1.0",
+      "type": "library",
+      "name": "sdk",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay typed SDK: client, invoice builder and verification, typed events, React hook factories.",
+      "purl": "pkg:npm/%40ghostpay/sdk@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/secret-box@0.1.0",
+      "type": "library",
+      "name": "secret-box",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Closure-held secret bytes with scoped, best-effort zeroization and move semantics for GhostPay key handling.",
+      "purl": "pkg:npm/%40ghostpay/secret-box@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/solana-stealth@0.1.0",
+      "type": "library",
+      "name": "solana-stealth",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Proof of concept: dual-key ed25519 stealth payments (SOL + SPL) and Solana ChainAdapter for GhostPay (ADR-0017). Not audited.",
+      "purl": "pkg:npm/%40ghostpay/solana-stealth@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/tron-adapter@0.1.0",
+      "type": "library",
+      "name": "tron-adapter",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Proof of concept: TRON (TRX + TRC-20) stealth payments and ChainAdapter for GhostPay, reusing ERC-5564 scheme-1 secp256k1 derivation (ADR-0019). Not audited. Nile testnet only.",
+      "purl": "pkg:npm/%40ghostpay/tron-adapter@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/tx-review@0.1.0",
+      "type": "library",
+      "name": "tx-review",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "Pre-sign transaction and typed-data decoder with allowlist review (closed intents, reason codes).",
+      "purl": "pkg:npm/%40ghostpay/tx-review@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-connect@0.1.0",
+      "type": "library",
+      "name": "ux-connect",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: connect (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-connect@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-core@0.1.0",
+      "type": "library",
+      "name": "ux-core",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: core (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-core@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-export@0.1.0",
+      "type": "library",
+      "name": "ux-export",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: export (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-export@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-fees@0.1.0",
+      "type": "library",
+      "name": "ux-fees",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: fees (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-fees@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-fiat@0.1.0",
+      "type": "library",
+      "name": "ux-fiat",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: fiat (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-fiat@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-flow@0.1.0",
+      "type": "library",
+      "name": "ux-flow",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: flow (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-flow@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-guide@0.1.0",
+      "type": "library",
+      "name": "ux-guide",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: guide (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-guide@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-i18n@0.1.0",
+      "type": "library",
+      "name": "ux-i18n",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: i18n (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-i18n@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-intake@0.1.0",
+      "type": "library",
+      "name": "ux-intake",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: intake (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-intake@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-links@0.1.0",
+      "type": "library",
+      "name": "ux-links",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: links (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-links@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-notify@0.1.0",
+      "type": "library",
+      "name": "ux-notify",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: notify (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-notify@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-presets@0.1.0",
+      "type": "library",
+      "name": "ux-presets",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: presets (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-presets@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-privacy@0.1.0",
+      "type": "library",
+      "name": "ux-privacy",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: privacy (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-privacy@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-receipts@0.1.0",
+      "type": "library",
+      "name": "ux-receipts",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: receipts (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-receipts@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-sandbox@0.1.0",
+      "type": "library",
+      "name": "ux-sandbox",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: sandbox (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-sandbox@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-schedule@0.1.0",
+      "type": "library",
+      "name": "ux-schedule",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: schedule (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-schedule@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    },
+    {
+      "bom-ref": "@ghostpay/ux-vault@0.1.0",
+      "type": "library",
+      "name": "ux-vault",
+      "version": "0.1.0",
+      "scope": "required",
+      "description": "GhostPay usability: vault (pure logic, no UI, no network).",
+      "purl": "pkg:npm/%40ghostpay/ux-vault@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": []
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "ghostpay@0.1.0",
+      "dependsOn": [
+        "@ghostpay/address-safety@0.1.0",
+        "@ghostpay/amount-blur@0.1.0",
+        "@ghostpay/btc-family@0.1.0",
+        "@ghostpay/btc-payjoin@0.1.0",
+        "@ghostpay/btc-silent-payments@0.1.0",
+        "@ghostpay/chain-adapters@0.1.0",
+        "@ghostpay/chain-evm-extra@0.1.0",
+        "@ghostpay/chain-solana@0.1.0",
+        "@ghostpay/chain-tron@0.1.0",
+        "@ghostpay/cli@0.1.0",
+        "@ghostpay/confidential-amounts@0.1.0",
+        "@ghostpay/confidential-contracts@0.1.0",
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/donation@0.1.0",
+        "@ghostpay/external-pools@0.1.0",
+        "@ghostpay/external-pools-privacypools@0.1.0",
+        "@ghostpay/external-pools-railgun@0.1.0",
+        "@ghostpay/hops@0.1.0",
+        "@ghostpay/hygiene@0.1.0",
+        "@ghostpay/i18n@0.1.0",
+        "@ghostpay/invoice-schema@0.1.0",
+        "@ghostpay/merchant-billing@0.1.0",
+        "@ghostpay/merchant-hooks@0.1.0",
+        "@ghostpay/merchant-ledger@0.1.0",
+        "@ghostpay/merchant-multisig@0.1.0",
+        "@ghostpay/metadata-hardening@0.1.0",
+        "@ghostpay/net-transport@0.1.0",
+        "@ghostpay/ops-monitor@0.1.0",
+        "@ghostpay/payer-sponsor@0.1.0",
+        "@ghostpay/payment-uri@0.1.0",
+        "@ghostpay/pir-two-server@0.1.0",
+        "@ghostpay/plugin-api@0.1.0",
+        "@ghostpay/policy-scheme@0.1.0",
+        "@ghostpay/pool-circuits@0.1.0",
+        "@ghostpay/pool-prover@0.1.0",
+        "@ghostpay/pool-relayer@0.1.0",
+        "@ghostpay/pool-sdk@0.1.0",
+        "@ghostpay/privacy-pipeline@0.1.0",
+        "@ghostpay/privacy-profiles@0.1.0",
+        "@ghostpay/qr-exchange@0.1.0",
+        "@ghostpay/relayer-guard@0.1.0",
+        "@ghostpay/sandbox@0.1.0",
+        "@ghostpay/scan-source@0.1.0",
+        "@ghostpay/sdk@0.1.0",
+        "@ghostpay/secret-box@0.1.0",
+        "@ghostpay/solana-stealth@0.1.0",
+        "@ghostpay/tron-adapter@0.1.0",
+        "@ghostpay/tx-review@0.1.0",
+        "@ghostpay/ux-connect@0.1.0",
+        "@ghostpay/ux-core@0.1.0",
+        "@ghostpay/ux-export@0.1.0",
+        "@ghostpay/ux-fees@0.1.0",
+        "@ghostpay/ux-fiat@0.1.0",
+        "@ghostpay/ux-flow@0.1.0",
+        "@ghostpay/ux-guide@0.1.0",
+        "@ghostpay/ux-i18n@0.1.0",
+        "@ghostpay/ux-intake@0.1.0",
+        "@ghostpay/ux-links@0.1.0",
+        "@ghostpay/ux-notify@0.1.0",
+        "@ghostpay/ux-presets@0.1.0",
+        "@ghostpay/ux-privacy@0.1.0",
+        "@ghostpay/ux-receipts@0.1.0",
+        "@ghostpay/ux-sandbox@0.1.0",
+        "@ghostpay/ux-schedule@0.1.0",
+        "@ghostpay/ux-vault@0.1.0",
+        "@ghostpay/relayer@0.1.0",
+        "@ghostpay/web@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/relayer@0.1.0",
+      "dependsOn": [
+        "@ghostpay/chain-adapters@0.1.0",
+        "@ghostpay/metadata-hardening@0.1.0",
+        "@ghostpay/relayer-guard@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/web@0.1.0",
+      "dependsOn": [
+        "@ghostpay/address-safety@0.1.0",
+        "@ghostpay/btc-silent-payments@0.1.0",
+        "@ghostpay/chain-adapters@0.1.0",
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/hygiene@0.1.0",
+        "@ghostpay/invoice-schema@0.1.0",
+        "@ghostpay/metadata-hardening@0.1.0",
+        "@ghostpay/net-transport@0.1.0",
+        "@ghostpay/payment-uri@0.1.0",
+        "@ghostpay/policy-scheme@0.1.0",
+        "@ghostpay/qr-exchange@0.1.0",
+        "@ghostpay/scan-source@0.1.0",
+        "@ghostpay/secret-box@0.1.0",
+        "@ghostpay/solana-stealth@0.1.0",
+        "@ghostpay/tron-adapter@0.1.0",
+        "@ghostpay/tx-review@0.1.0",
+        "@ghostpay/ux-vault@0.1.0",
+        "qrcode-generator@2.0.4"
+      ]
+    },
+    {
+      "ref": "@0xbow/privacy-pools-core-sdk@1.5.0",
+      "dependsOn": [
+        "@types/snarkjs@0.7.9",
+        "@zk-kit/lean-imt@2.2.4",
+        "dotenv@17.3.1",
+        "maci-crypto@2.5.0",
+        "snarkjs@0.7.5"
+      ]
+    },
+    {
+      "ref": "@zk-kit/lean-imt@2.2.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "dotenv@17.3.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "snarkjs@0.7.5",
+      "dependsOn": [
+        "blake2b-wasm@2.4.0"
+      ]
+    },
+    {
+      "ref": "@bufbuild/protobuf@2.17.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@fhevm/sdk@0.13.2",
+      "dependsOn": [
+        "@noble/curves@2.0.1",
+        "@noble/hashes@2.0.1"
+      ]
+    },
+    {
+      "ref": "@noble/curves@2.0.1",
+      "dependsOn": [
+        "@noble/hashes@2.0.1"
+      ]
+    },
+    {
+      "ref": "@noble/hashes@2.0.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "@noble/curves@2.4.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@scure/btc-signer@2.4.1",
+      "dependsOn": [
+        "@noble/curves@2.4.0",
+        "@scure/base@2.4.0",
+        "micro-packed@0.11.1"
+      ]
+    },
+    {
+      "ref": "@scure/base@2.4.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/accounts@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/rpc-spec@8.6.0",
+        "@solana/rpc-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/addresses@8.6.0",
+      "dependsOn": [
+        "@solana/assertions@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/nominal-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/assertions@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/codecs@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-data-structures@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/options@8.6.0",
+        "@solana/fixed-points@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/codecs-core@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/codecs-data-structures@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/codecs-numbers@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/codecs-strings@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/errors@8.6.0",
+      "dependsOn": [
+        "chalk@5.6.2",
+        "commander@15.0.0"
+      ]
+    },
+    {
+      "ref": "chalk@5.6.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "commander@15.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/fast-stable-stringify@8.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/fixed-points@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/functional@8.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/instruction-plans@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/promises@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/instructions@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/codecs-core@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/keys@8.6.0",
+      "dependsOn": [
+        "@solana/assertions@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/nominal-types@8.6.0",
+        "@solana/promises@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/kit@8.6.0",
+      "dependsOn": [
+        "@solana/codecs@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/instruction-plans@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/offchain-messages@8.6.0",
+        "@solana/plugin-core@8.6.0",
+        "@solana/plugin-interfaces@8.6.0",
+        "@solana/program-client-core@8.6.0",
+        "@solana/accounts@8.6.0",
+        "@solana/programs@8.6.0",
+        "@solana/addresses@8.6.0",
+        "@solana/promises@8.6.0",
+        "@solana/rpc@8.6.0",
+        "@solana/rpc-api@8.6.0",
+        "@solana/rpc-parsed-types@8.6.0",
+        "@solana/rpc-spec-types@8.6.0",
+        "@solana/rpc-subscriptions@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/signers@8.6.0",
+        "@solana/subscribable@8.6.0",
+        "@solana/sysvars@8.6.0",
+        "@solana/transaction-confirmation@8.6.0",
+        "@solana/transaction-introspection@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/nominal-types@8.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/offchain-messages@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-data-structures@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/nominal-types@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/addresses@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/options@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/codecs-data-structures@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/plugin-core@8.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/plugin-interfaces@8.6.0",
+      "dependsOn": [
+        "@solana/accounts@8.6.0",
+        "@solana/addresses@8.6.0",
+        "@solana/instruction-plans@8.6.0",
+        "@solana/rpc-spec@8.6.0",
+        "@solana/rpc-subscriptions-spec@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/transactions@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/signers@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/program-client-core@8.6.0",
+      "dependsOn": [
+        "@solana/accounts@8.6.0",
+        "@solana/addresses@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/instruction-plans@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/plugin-interfaces@8.6.0",
+        "@solana/rpc-api@8.6.0",
+        "@solana/signers@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/programs@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/promises@8.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/rpc@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/rpc-api@8.6.0",
+        "@solana/fast-stable-stringify@8.6.0",
+        "@solana/rpc-spec@8.6.0",
+        "@solana/rpc-spec-types@8.6.0",
+        "@solana/rpc-transformers@8.6.0",
+        "@solana/rpc-transport-http@8.6.0",
+        "@solana/rpc-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-api@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/rpc-spec@8.6.0",
+        "@solana/rpc-transformers@8.6.0",
+        "@solana/rpc-parsed-types@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-parsed-types@8.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/rpc-spec@8.6.0",
+      "dependsOn": [
+        "@solana/rpc-spec-types@8.6.0",
+        "@solana/subscribable@8.6.0",
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-spec-types@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-subscriptions@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/fast-stable-stringify@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/rpc-spec-types@8.6.0",
+        "@solana/promises@8.6.0",
+        "@solana/rpc-subscriptions-api@8.6.0",
+        "@solana/rpc-subscriptions-channel-websocket@8.6.0",
+        "@solana/rpc-subscriptions-spec@8.6.0",
+        "@solana/rpc-transformers@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/subscribable@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-subscriptions-api@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/rpc-subscriptions-spec@8.6.0",
+        "@solana/rpc-transformers@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-subscriptions-channel-websocket@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/rpc-subscriptions-spec@8.6.0",
+        "@solana/subscribable@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-subscriptions-spec@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/promises@8.6.0",
+        "@solana/subscribable@8.6.0",
+        "@solana/rpc-spec-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-transformers@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/rpc-spec-types@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/nominal-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/rpc-transport-http@8.6.0",
+      "dependsOn": [
+        "undici-types@8.12.3",
+        "@solana/errors@8.6.0",
+        "@solana/rpc-spec@8.6.0",
+        "@solana/rpc-spec-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "undici-types@8.12.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "@solana/rpc-types@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/addresses@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/fixed-points@8.6.0",
+        "@solana/nominal-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/signers@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/instruction-plans@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/nominal-types@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/offchain-messages@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/subscribable@8.6.0",
+      "dependsOn": [
+        "@solana/errors@8.6.0",
+        "@solana/promises@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/sysvars@8.6.0",
+      "dependsOn": [
+        "@solana/accounts@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-data-structures@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/rpc-types@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/transaction-confirmation@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/promises@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/rpc@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/rpc-subscriptions@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/transaction-introspection@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/addresses@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/transaction-messages@8.6.0",
+        "@solana/transactions@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/transaction-messages@8.6.0",
+      "dependsOn": [
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-data-structures@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/nominal-types@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/addresses@8.6.0"
+      ]
+    },
+    {
+      "ref": "@solana/transactions@8.6.0",
+      "dependsOn": [
+        "@solana/addresses@8.6.0",
+        "@solana/codecs-core@8.6.0",
+        "@solana/codecs-data-structures@8.6.0",
+        "@solana/codecs-numbers@8.6.0",
+        "@solana/codecs-strings@8.6.0",
+        "@solana/errors@8.6.0",
+        "@solana/functional@8.6.0",
+        "@solana/instructions@8.6.0",
+        "@solana/keys@8.6.0",
+        "@solana/nominal-types@8.6.0",
+        "@solana/rpc-types@8.6.0",
+        "@solana/transaction-messages@8.6.0"
+      ]
+    },
+    {
+      "ref": "@types/snarkjs@0.7.9",
+      "dependsOn": []
+    },
+    {
+      "ref": "@zama-fhe/sdk@3.7.2",
+      "dependsOn": [
+        "@fhevm/sdk@0.13.2"
+      ]
+    },
+    {
+      "ref": "@zk-kit/baby-jubjub@1.0.3",
+      "dependsOn": [
+        "@zk-kit/utils@1.2.1"
+      ]
+    },
+    {
+      "ref": "@zk-kit/utils@1.2.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "@zk-kit/eddsa-poseidon@1.1.0",
+      "dependsOn": [
+        "@zk-kit/baby-jubjub@1.0.3",
+        "@zk-kit/utils@1.2.1",
+        "poseidon-lite@0.3.0"
+      ]
+    },
+    {
+      "ref": "@zk-kit/poseidon-cipher@0.3.2",
+      "dependsOn": [
+        "@zk-kit/baby-jubjub@1.0.3",
+        "@zk-kit/utils@1.2.1"
+      ]
+    },
+    {
+      "ref": "b4a@1.9.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "blake2b-wasm@2.4.0",
+      "dependsOn": [
+        "b4a@1.9.0",
+        "nanoassert@2.0.0"
+      ]
+    },
+    {
+      "ref": "jsqr@1.4.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "maci-crypto@2.5.0",
+      "dependsOn": [
+        "@zk-kit/baby-jubjub@1.0.3",
+        "@zk-kit/eddsa-poseidon@1.1.0",
+        "@zk-kit/poseidon-cipher@0.3.2"
+      ]
+    },
+    {
+      "ref": "micro-packed@0.11.1",
+      "dependsOn": [
+        "@scure/base@2.4.0"
+      ]
+    },
+    {
+      "ref": "nanoassert@2.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "poseidon-lite@0.3.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "qrcode-generator@2.0.4",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/address-safety@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/amount-blur@0.1.0",
+      "dependsOn": [
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/btc-family@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/btc-payjoin@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0",
+        "@scure/btc-signer@2.4.1"
+      ]
+    },
+    {
+      "ref": "@ghostpay/btc-silent-payments@0.1.0",
+      "dependsOn": [
+        "@bufbuild/protobuf@2.17.0",
+        "@noble/curves@2.4.0",
+        "@scure/btc-signer@2.4.1"
+      ]
+    },
+    {
+      "ref": "@ghostpay/chain-adapters@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/invoice-schema@0.1.0",
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/chain-evm-extra@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/chain-solana@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/chain-tron@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/cli@0.1.0",
+      "dependsOn": [
+        "@ghostpay/i18n@0.1.0",
+        "@ghostpay/invoice-schema@0.1.0",
+        "@ghostpay/merchant-billing@0.1.0",
+        "@ghostpay/merchant-hooks@0.1.0",
+        "@ghostpay/merchant-ledger@0.1.0",
+        "@ghostpay/sandbox@0.1.0",
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/chain-adapters@0.1.0",
+        "@ghostpay/btc-silent-payments@0.1.0",
+        "@ghostpay/chain-solana@0.1.0",
+        "@ghostpay/chain-tron@0.1.0",
+        "@ghostpay/qr-exchange@0.1.0",
+        "@ghostpay/ux-vault@0.1.0",
+        "@ghostpay/merchant-multisig@0.1.0",
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/confidential-amounts@0.1.0",
+      "dependsOn": [
+        "@zama-fhe/sdk@3.7.2"
+      ]
+    },
+    {
+      "ref": "@ghostpay/confidential-contracts@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/core-crypto@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/donation@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/external-pools@0.1.0",
+      "dependsOn": [
+        "@ghostpay/secret-box@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/external-pools-privacypools@0.1.0",
+      "dependsOn": [
+        "@0xbow/privacy-pools-core-sdk@1.5.0",
+        "@ghostpay/external-pools@0.1.0",
+        "@zk-kit/poseidon-cipher@0.3.2"
+      ]
+    },
+    {
+      "ref": "@ghostpay/external-pools-railgun@0.1.0",
+      "dependsOn": [
+        "@ghostpay/external-pools@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/hops@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/hygiene@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/i18n@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/invoice-schema@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/merchant-billing@0.1.0",
+      "dependsOn": [
+        "@ghostpay/invoice-schema@0.1.0",
+        "@noble/curves@2.4.0",
+        "@ghostpay/merchant-hooks@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/merchant-hooks@0.1.0",
+      "dependsOn": [
+        "@ghostpay/invoice-schema@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/merchant-ledger@0.1.0",
+      "dependsOn": [
+        "@ghostpay/invoice-schema@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/merchant-multisig@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/metadata-hardening@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/net-harness@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/net-transport@0.1.0",
+      "dependsOn": [
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/ops-monitor@0.1.0",
+      "dependsOn": [
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/payer-sponsor@0.1.0",
+      "dependsOn": [
+        "@ghostpay/relayer-guard@0.1.0",
+        "@ghostpay/secret-box@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/payment-uri@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/pir-two-server@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/plugin-api@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/policy-scheme@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/pool-circuits@0.1.0",
+      "dependsOn": [
+        "poseidon-lite@0.3.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/pool-prover@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/pool-relayer@0.1.0",
+      "dependsOn": [
+        "@ghostpay/pool-prover@0.1.0",
+        "@ghostpay/pool-sdk@0.1.0",
+        "@ghostpay/relayer-guard@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/pool-sdk@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/secret-box@0.1.0",
+        "poseidon-lite@0.3.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/privacy-pipeline@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/privacy-profiles@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/qr-exchange@0.1.0",
+      "dependsOn": [
+        "jsqr@1.4.0",
+        "qrcode-generator@2.0.4",
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/invoice-schema@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/relayer-guard@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/sandbox@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/scan-source@0.1.0",
+      "dependsOn": [
+        "@ghostpay/pir-two-server@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/sdk@0.1.0",
+      "dependsOn": [
+        "@ghostpay/invoice-schema@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/secret-box@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/solana-stealth@0.1.0",
+      "dependsOn": [
+        "@noble/curves@2.4.0",
+        "@solana/kit@8.6.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/tron-adapter@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@noble/curves@2.4.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/tx-review@0.1.0",
+      "dependsOn": [
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/ux-connect@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-core@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-export@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-fees@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-fiat@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-flow@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-guide@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-i18n@0.1.0",
+      "dependsOn": [
+        "@ghostpay/i18n@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/ux-intake@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-links@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-notify@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-presets@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-privacy@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-receipts@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-sandbox@0.1.0",
+      "dependsOn": [
+        "@ghostpay/sandbox@0.1.0"
+      ]
+    },
+    {
+      "ref": "@ghostpay/ux-schedule@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "@ghostpay/ux-vault@0.1.0",
+      "dependsOn": [
+        "@ghostpay/core-crypto@0.1.0",
+        "@ghostpay/invoice-schema@0.1.0",
+        "@ghostpay/chain-adapters@0.1.0"
+      ]
+    }
+  ]
+}

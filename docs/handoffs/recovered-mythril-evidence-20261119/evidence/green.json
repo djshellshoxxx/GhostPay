@@ -1,0 +1,23 @@
+{
+  "phase": "GREEN",
+  "source_commit": "bd05411b2a4c5b1b1793065bce1c10e0553cf952",
+  "started_at_utc": "2026-11-19T12:54:26.987070+00:00",
+  "elapsed_seconds": 107.84621150099701,
+  "command_argv": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "--max-old-space-size=128",
+    "--test",
+    "--test-concurrency=1",
+    "scripts/tests/mythril-runner.test.mjs",
+    "scripts/tests/mythril-completeness.test.mjs",
+    "scripts/tests/mythril-evidence.test.mjs",
+    "scripts/tests/contract-analysis-workflow.test.mjs"
+  ],
+  "exit_code": 0,
+  "tool_versions": {
+    "node": "v22.23.5",
+    "python": "Python 3.12.14",
+    "jq": "jq-1.7"
+  },
+  "scope": "All original 54 dependency-free runner, wrapper-completeness, passive-evidence and workflow regressions. No native Mythril/Echidna or whole-repository acceptance is inferred."
+}

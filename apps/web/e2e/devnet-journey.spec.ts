@@ -168,6 +168,9 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
     await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();
@@ -188,8 +191,12 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     const sweepRawBefore = net.sentRaw.length;
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(net.sentRaw.length).toBe(sweepRawBefore);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await expect(sign).toBeEnabled();
     await sign.click();
@@ -218,13 +225,14 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect.poll(() => sweepJournal(s)).toMatchObject([{ expectedHash: sweepHash, status: 'included' }]);
 
     // 8. Already swept: a second sweep of the same one-time address is refused before signing; nothing new on chain.
-    // Leave and re-enter the Sweep view for the same selected payment, so it re-reads the (now dust) balance.
+    // Leave and re-enter the Sweep view for the same selected payment, then request the current (now dust) balance.
     await nav(s).getByRole('button', { name: 'Seller keys' }).click();
     await nav(s).getByRole('button', { name: 'Sweep' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
-    const again = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
+    const again = sweepView(s).getByRole('button', { name: 'Review native sweep fees' });
     // EIP-1559 leaves the unspent part of the max fee behind; that dust cannot pay for another transfer.
     expect(dust).toBeGreaterThan(0n);
     await expect(again).toBeEnabled();

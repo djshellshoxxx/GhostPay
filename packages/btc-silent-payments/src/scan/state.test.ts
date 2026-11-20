@@ -284,11 +284,197 @@ describe('local spent tracking in ScanState', () => {
     expect(codeOf(() => parseScanState(JSON.stringify({ ...good, matches: [{ ...m0, spent: 'yes' }, m1] })))).toBe('INVALID_INPUT');
     // A match without an outpoint cannot carry a spend.
     const without = (o: Record<string, unknown>, ...keys: string[]): Record<string, unknown> => Object.fromEntries(Object.entries(o).filter(([k]) => !keys.includes(k)));
-    const legacy = without(m0, 'spent');
+    const legacy = without(m0, 'spent', 'spentCheckedThrough');
     const noOutpoint = without(legacy, 'txid', 'vout');
     expect(codeOf(() => parseScanState(JSON.stringify({ ...good, matches: [{ ...noOutpoint, spent }, m1] })))).toBe('INVALID_INPUT');
     expect(parseScanState(JSON.stringify({ ...good, matches: [noOutpoint, m1] })).matches[0]?.spent).toBeUndefined();
     // Version-1 input without the field still parses.
     expect(parseScanState(JSON.stringify({ ...good, matches: [legacy, m1] })).matches[0]?.spent).toBeUndefined();
+  });
+
+  it('persists continuous local spend coverage only after each whole block', async () => {
+    const saved: ScanState[] = [];
+    const { state } = await run(resumeScan({
+      source: spending(blocks(), {}), keys, state: createScanState('mainnet', 100),
+      onState: (s) => { saved.push(parseScanState(serializeScanState(s))); },
+    }));
+    expect(saved.map((s) => s.matches[0]?.spentCheckedThrough)).toEqual(
+      [100, 101, 102, 103].map((height) => ({ height, blockHash: blockHashOf(height) })),
+    );
+    expect(state.matches.map((m) => m.spentCheckedThrough)).toEqual([
+      { height: 103, blockHash: blockHashOf(103) }, { height: 103, blockHash: blockHashOf(103) },
+    ]);
+    expect(parseScanState(serializeScanState(state))).toEqual(state);
+  });
+
+  it('never bridges a light-source gap in local spend coverage', async () => {
+    const first = await run(resumeScan({ source: spending(blocks(), {}), keys, state: createScanState('mainnet', 100), toHeight: 100 }));
+    const light = await run(resumeScan({ source: new InMemoryTweakSource(blocks()), keys, state: first.state, toHeight: 101 }));
+    expect(light.state.matches[0]?.spentCheckedThrough).toEqual({ height: 100, blockHash: blockHashOf(100) });
+    const resumed = await run(resumeScan({ source: spending(blocks(), {}), keys, state: light.state }));
+    expect(resumed.state.matches.map((m) => m.spentCheckedThrough)).toEqual([
+      { height: 100, blockHash: blockHashOf(100) }, { height: 103, blockHash: blockHashOf(103) },
+    ]);
+  });
+
+  it('keeps legacy spentness unknown while still detecting a later positive spend', async () => {
+    const legacy = await run(resumeScan({ source: new InMemoryTweakSource(blocks()), keys, state: createScanState('mainnet', 100), toHeight: 101 }));
+    expect(legacy.state.matches[0]?.spentCheckedThrough).toBeUndefined();
+    const resumed = await run(resumeScan({ source: spending(blocks()), keys, state: parseScanState(serializeScanState(legacy.state)) }));
+    expect(resumed.state.matches[0]).toMatchObject({ spent });
+    expect(resumed.state.matches[0]?.spentCheckedThrough).toBeUndefined();
+    expect(resumed.state.matches[1]?.spentCheckedThrough).toEqual({ height: 103, blockHash: blockHashOf(103) });
+  });
+
+  it('clamps coverage on reorg and removes orphaned discovery evidence before rescanning', async () => {
+    const { state } = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const newChain = reorged(102);
+    const hashOf = new Map(newChain.map((b) => [b.tweaks.height, b.tweaks.blockHash]));
+    const rec = await reconcileScanState(state, (h) => hashOf.get(h));
+    expect(rec.state.matches.map((m) => m.spentCheckedThrough)).toEqual([{ height: 101, blockHash: blockHashOf(101) }, undefined]);
+    expect(rec.state.matches.every((m) => m.spent === undefined)).toBe(true);
+    expect(parseScanState(serializeScanState(rec.state))).toEqual(rec.state);
+    const resumed = await run(resumeScan({ source: spending(newChain, {}), keys, state: rec.state, hashAt: (h) => hashOf.get(h) }));
+    expect(resumed.state.matches.map((m) => m.spentCheckedThrough)).toEqual([
+      { height: 103, blockHash: hashOf.get(103) }, { height: 103, blockHash: hashOf.get(103) },
+    ]);
+    const deep = await reconcileScanState(state, () => undefined);
+    expect(deep.state.matches.every((m) => m.spentCheckedThrough === undefined)).toBe(true);
+  });
+
+  it('does not persist spend coverage for an interrupted block', async () => {
+    const controller = new AbortController();
+    const source = spending(blocks(), {});
+    const saved: ScanState[] = [];
+    const interrupted: TweakSource = {
+      ...source,
+      getSpends: async (height, signal) => {
+        const result = await source.getSpends!(height, signal);
+        if (height === 101) controller.abort();
+        return result;
+      },
+    };
+    const { state } = await run(resumeScan({ source: interrupted, keys, state: createScanState('mainnet', 100), signal: controller.signal,
+      onState: (s) => { saved.push(s); } }));
+    expect(saved.map((s) => s.lastHeight)).toEqual([100]);
+    expect(state.matches[0]?.spentCheckedThrough).toEqual({ height: 100, blockHash: blockHashOf(100) });
+    const resumed = await run(resumeScan({ source, keys, state: parseScanState(serializeScanState(state)) }));
+    expect(resumed.state.matches[0]?.spentCheckedThrough).toEqual({ height: 103, blockHash: blockHashOf(103) });
+  });
+
+  it('rejects corrupt coverage, duplicate identities and contradictory chain evidence', async () => {
+    const { state } = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const good = JSON.parse(serializeScanState(state)) as Record<string, unknown>;
+    const ms = good['matches'] as Record<string, unknown>[];
+    const m0 = ms[0]!;
+    const m1 = ms[1]!;
+    const invalidCoverage: unknown[] = [null, false, {}, { height: 99, blockHash: blockHashOf(99) },
+      { height: 104, blockHash: blockHashOf(104) }, { height: 100.5, blockHash: blockHashOf(100) },
+      { height: 103, blockHash: 'ab' }, { height: 103, blockHash: blockHashOf(102) }];
+    for (const spentCheckedThrough of invalidCoverage) {
+      expect.soft(codeOf(() => parseScanState(JSON.stringify({ ...good, matches: [{ ...m0, spentCheckedThrough }, m1] }))), JSON.stringify(spentCheckedThrough)).toBe('INVALID_INPUT');
+    }
+    for (const matches of [
+      [m0, m0, m1],
+      [m0, { ...m0, xOnlyPublicKey: fakeTxid('other-key'), spent: undefined }, m1],
+      [{ ...m0, txid: undefined }, m1],
+      [{ ...m0, status: 'pending' }, m1],
+      [{ ...m0, spent: { ...spent, blockHash: blockHashOf(101) } }, m1],
+      [{ ...m0, spent: { ...spent, spentBy: m0['txid'] } }, m1],
+      [{ ...m0, blockHash: blockHashOf(101) }, m1],
+    ]) expect.soft(codeOf(() => parseScanState(JSON.stringify({ ...good, matches })))).toBe('INVALID_INPUT');
+  });
+
+  it('invalidates historical evidence outside the reorg window even when the remembered tip is unchanged', async () => {
+    const longChain = [...blocks(), ...Array.from({ length: 102 }, (_, i) => makeBlock(104 + i, []))];
+    const source = spending(longChain, { 101: [{ txid: tx(100, 0), vout: 0, spentBy: fakeTxid('older-spend') }] });
+    const { state } = await run(resumeScan({ source, keys, state: createScanState('mainnet', 100) }));
+    expect(state.recent[0]?.height).toBe(106);
+    const first = state.matches[0]!;
+    const last = state.matches[1]!;
+    const corrupt = { ...state, matches: [{ ...first, spent: { ...first.spent!, blockHash: blockHashOf(99) } }, last] };
+    const saved: ScanState[] = [];
+    const seen: number[] = [];
+    const { state: fixed } = await run(resumeScan({ source, keys, state: parseScanState(serializeScanState(corrupt)),
+      hashAt: (height) => { seen.push(height); return blockHashOf(height); },
+      onState: (next) => { saved.push(next); } }));
+    expect(fixed).toMatchObject({ lastHeight: 205, lastHash: blockHashOf(205) });
+    expect(fixed.matches[0]?.status).toBe('confirmed');
+    expect(fixed.matches[0]?.spent).toBeUndefined();
+    expect(fixed.matches[0]?.spentCheckedThrough).toBeUndefined();
+    expect(saved).toEqual([fixed]);
+    expect(new Set(seen).size).toBe(seen.length);
+    const missing = await reconcileScanState(state, (height) => height === 101 ? undefined : blockHashOf(height));
+    expect(missing.state.matches[0]?.spent).toBeUndefined();
+    expect(missing.state.matches[0]?.spentCheckedThrough).toBeUndefined();
+    expect(missing.rolledBack).toBe(true);
+    const noDiscovery = await reconcileScanState(state, (height) => height === 100 ? undefined : blockHashOf(height));
+    expect(noDiscovery.state.matches[0]).toMatchObject({ status: 'pending' });
+    expect(noDiscovery.state.matches[0]?.spent).toBeUndefined();
+    expect(noDiscovery.state.matches[0]?.spentCheckedThrough).toBeUndefined();
+    const badCoverage = await reconcileScanState({ ...state, matches: [{ ...first,
+      spentCheckedThrough: { height: 105, blockHash: blockHashOf(99) } }, last] }, blockHashOf);
+    expect(badCoverage.state.matches[0]?.spent).toBeUndefined();
+    expect(badCoverage.state.matches[0]?.spentCheckedThrough).toBeUndefined();
+  });
+
+  it('never applies spends to an orphaned pending discovery unless the canonical scan rediscovers it', async () => {
+    const { state } = await run(resumeScan({ source: spending(blocks(), {}), keys, state: createScanState('mainnet', 100) }));
+    const newChain = reorged(102);
+    const without = newChain.map((b) => b.tweaks.height === 102 ? {
+      tweaks: { ...b.tweaks, tweaks: [] }, outputs: { ...b.outputs, outputs: [] },
+    } : b);
+    const hashOf = new Map(newChain.map((b) => [b.tweaks.height, b.tweaks.blockHash]));
+    const input = { txid: tx(102, 0), vout: 0, spentBy: fakeTxid('orphan-reference') };
+    const absent = await run(resumeScan({ source: spending(without, { 103: [input] }), keys, state,
+      hashAt: (h) => hashOf.get(h), onState: (s) => { parseScanState(serializeScanState(s)); } }));
+    expect(absent.state.matches[1]?.status).toBe('pending');
+    expect(absent.state.matches[1]?.spent).toBeUndefined();
+    expect(absent.state.matches[1]?.spentCheckedThrough).toBeUndefined();
+    const rec = await reconcileScanState(state, (h) => hashOf.get(h));
+    const direct = recordScannedBlock(rec.state, 102, hashOf.get(102)!, [], [{ ...input, height: 102, blockHash: hashOf.get(102)! }], true);
+    expect(direct.matches[1]?.spent).toBeUndefined();
+    expect(parseScanState(serializeScanState(direct))).toEqual(direct);
+    const rediscovered = await run(resumeScan({ source: spending(newChain, { 102: [input] }), keys, state, hashAt: (h) => hashOf.get(h) }));
+    expect(rediscovered.state.matches[1]).toMatchObject({ status: 'confirmed', spent: { height: 102, blockHash: hashOf.get(102), spentBy: input.spentBy } });
+    expect(parseScanState(serializeScanState(rediscovered.state))).toEqual(rediscovered.state);
+  });
+
+  it('preserves the first canonical spend when a later duplicate consumer is orphaned', async () => {
+    const original = { txid: tx(100, 0), vout: 0, spentBy: fakeTxid('first-canonical-spend') };
+    const replay = { ...original, spentBy: fakeTxid('later-repeated-consumer') };
+    const { state } = await run(resumeScan({ source: spending(blocks(), { 101: [original], 103: [replay] }),
+      keys, state: createScanState('mainnet', 100) }));
+    const firstEvidence = { height: 101, blockHash: blockHashOf(101), spentBy: original.spentBy };
+    expect.soft(state.matches[0]?.spent).toEqual(firstEvidence);
+    const reorg = await reconcileScanState(state, (h) => h === 103 ? fakeTxid('new-tip') : blockHashOf(h));
+    expect(reorg.resumeHeight).toBe(103);
+    expect.soft(reorg.state.matches[0]?.spent).toEqual(firstEvidence);
+    expect(parseScanState(serializeScanState(reorg.state))).toEqual(reorg.state);
+  });
+
+  it('recordScannedBlock never overwrites already recorded canonical spend evidence', async () => {
+    const original = { txid: tx(100, 0), vout: 0, spentBy: fakeTxid('first-canonical-spend') };
+    const { state } = await run(resumeScan({ source: spending(blocks(), { 101: [original] }),
+      keys, state: createScanState('mainnet', 100), toHeight: 101 }));
+    const repeated = recordScannedBlock(state, 102, blockHashOf(102), [], [
+      { ...original, spentBy: fakeTxid('replacement-consumer'), height: 102, blockHash: blockHashOf(102) },
+    ], true);
+    expect(repeated.matches[0]?.spent).toEqual(state.matches[0]?.spent);
+  });
+
+  it('rejects a later-block replay of a confirmed outpoint instead of replacing its discovery and spend evidence', async () => {
+    const original = blocks();
+    const { state } = await run(resumeScan({ source: spending(original), keys, state: createScanState('mainnet', 100) }));
+    const old = original[0]!;
+    const replay = {
+      tweaks: { ...old.tweaks, height: 104, blockHash: blockHashOf(104) },
+      outputs: { ...old.outputs, height: 104, blockHash: blockHashOf(104) },
+    };
+    const saved: ScanState[] = [];
+    await expect(run(resumeScan({ source: spending([...original, replay], {}), keys, state,
+      onState: (next) => { saved.push(next); } }))).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(saved).toEqual([]);
+    expect(state.matches[0]).toMatchObject({ height: 100, blockHash: blockHashOf(100), spent });
   });
 });

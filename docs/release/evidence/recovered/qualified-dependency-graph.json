@@ -1,0 +1,30 @@
+{
+  "command": [
+    "node",
+    "/tmp/ghostpay-npm10-recovery-246ff268d20d/_npx/d8f2e63c6145eb9d/node_modules/npm/bin/npm-cli.js",
+    "ls",
+    "--all",
+    "--omit=dev"
+  ],
+  "cwd": "/tmp/ghostpay-qualified-246ff268d20d",
+  "started_utc": "2026-11-19T13:19:08.737182+00:00",
+  "source_commit": "d7e66ff42b1caf4858a6152985d8afaaefaee572",
+  "source_tree": "11a70e0576af5aaa177c81c45b0df2cd1cc88c6b",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 1.7652637958526611,
+  "finished_utc": "2026-11-19T13:19:10.502441+00:00",
+  "final_source_commit": "d7e66ff42b1caf4858a6152985d8afaaefaee572",
+  "final_status": "",
+  "log": "qualified-dependency-graph.log.gz",
+  "uncompressed_bytes": 34862,
+  "uncompressed_sha256": "05f87282633371b83495260743153bb222bc87f6b43d45017c5e55d26811edd6",
+  "stored_bytes": 4013,
+  "stored_sha256": "68cee9f7b4ae8e81762523e50c9ed94e83ed04fcca016ac813f1704bffac5965"
+}

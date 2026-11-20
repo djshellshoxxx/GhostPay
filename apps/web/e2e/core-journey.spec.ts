@@ -336,7 +336,7 @@ async function verifyBackup(page: Page, keystore: string): Promise<void> {
   await expect(page.getByText('This backup is not verified yet')).toBeVisible();
   await keysView(page).getByLabel('Downloaded keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
   await keysView(page).getByLabel('Keystore passphrase', { exact: true }).fill(BACKUP_PASS);
-  await keysView(page).getByRole('button', { name: 'Verify backup' }).click();
+  await keysView(page).getByRole('button', { name: 'Verify backup', exact: true }).click();
   await kdfExpect(keysView(page).getByText(/^Backup verified: the file decrypts and holds exactly the loaded keys/)).toBeVisible();
   await expect(page.getByText('This backup is not verified yet')).toHaveCount(0);
 }
@@ -513,6 +513,9 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
     await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
     await expect(s.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    const includeAddress = panel.getByRole('checkbox', { name: 'Include the one-time payment address in this receipt', exact: true });
+    await expect(includeAddress).not.toBeChecked();
+    await includeAddress.check();
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const receiptText = await panel.getByLabel('Signed receipt JSON').inputValue();
@@ -534,8 +537,13 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     // 6. Direct sweep of that payment, step-up authorized with the vault passphrase; journaled, then included.
     await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
+    await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(sim.raws).toHaveLength(0);
     await sweepView(s).getByLabel('Vault passphrase (required for each sweep action)').fill(VAULT_PASS);
     const sign = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
     await expect(sign).toBeEnabled();
@@ -598,10 +606,13 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
     const link = await createShortInvoice(s, 1);
+    const { invoice } = await parseFragment(new URL(link).hash);
     const payer = await openPayer(open, sim, { clock: true });
+    // Mount near expiry so the 90-second transition tests the send guard without also crossing the idle deadline.
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt - 60) * 1000));
     await reviewToFinalCheck(payer.page, sim, link);
     // The invoice expires between the reviewed final check and the send click.
-    await payer.context.clock.setSystemTime(Date.now() + 2 * 3_600_000);
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt + 30) * 1000));
     await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(payer.page.getByText('This invoice has expired. Nothing was sent.')).toBeVisible();
     await expect(payer.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
@@ -628,8 +639,12 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     await payAndDetect(payer.page, sim, link, s);
 
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    await sweepView(s).getByRole('button', { name: 'Read balance from the Settings RPC' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
+    await sweepView(s).getByRole('button', { name: 'Review native sweep fees' }).click();
+    await expect(sweepView(s).getByRole('region', { name: 'Review this native sweep' })).toBeVisible();
+    expect(sim.raws).toHaveLength(0);
     const held = sim.hold('eth_gasPrice'); // The first RPC read inside the actual direct sweep, after its session capture.
     await sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' }).click();
     await held.arrived;

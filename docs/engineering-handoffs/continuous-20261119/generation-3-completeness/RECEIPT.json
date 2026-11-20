@@ -1,0 +1,297 @@
+{
+  "schema": "ghostpay-generation-3-completeness/1",
+  "recorded_at": "2026-11-19T23:49:03.542194+00:00",
+  "worker": "/root/completion_gen3",
+  "branch": "review/ghostpay-completion-gen3-20261119",
+  "source_commit": "a1386906c264e2353e39ff8143083b0bbf107395",
+  "source_tree": "a386655a87e345bd036cf2d600aa1a1d4f0f1359",
+  "baseline_candidate": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "coordinator_head_observed": "bd24d2a3453dc2407a75ca280aaeeb7fb6198209",
+  "coordinator_head_qualified_by_this_run": false,
+  "result": "No additional confirmed Pages feature defect outside the existing owned repairs.",
+  "production_changes": false,
+  "node_version": "v22.23.4",
+  "configuration": "Original apps/web/vite.config.ts; maxWorkers=1; focused selection without coverage.",
+  "dependencies": {
+    "symlink_target": "/workspace/scratch/0a7bc3583588/GhostPay/node_modules",
+    "source_resolution": "Worktree Vite source aliases; unchanged workspace dependent packages use shared built dist.",
+    "clean_install_receipt": "../GENERATION_1_EVIDENCE.json"
+  },
+  "execution": {
+    "started_at": "2026-11-19T23:47:04.519556+00:00",
+    "finished_at": "2026-11-19T23:47:15.762363+00:00",
+    "duration_seconds": 11.243,
+    "exit_code": 0,
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-completion-gen3/apps/web",
+    "argv": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/AppLean.test.tsx",
+      "src/AppLean.fragment.test.tsx",
+      "src/AppShell.frameGuard.test.tsx",
+      "src/lib/frameGuard.test.ts",
+      "src/lib/manifest.test.ts",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/completion-gen3-evidence/lean-origin-final.json"
+    ]
+  },
+  "counts": {
+    "files": 5,
+    "nested_suites": 16,
+    "tests": 48,
+    "passed": 48,
+    "failed": 0,
+    "skipped": 0
+  },
+  "files": [
+    {
+      "path": "apps/web/src/AppLean.fragment.test.tsx",
+      "status": "passed",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "apps/web/src/AppLean.test.tsx",
+      "status": "passed",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+      "status": "passed",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "apps/web/src/lib/frameGuard.test.ts",
+      "status": "passed",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "apps/web/src/lib/manifest.test.ts",
+      "status": "passed",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "evidence": [
+    {
+      "path": "lean-origin-final.json.gz",
+      "raw_bytes": 18588,
+      "raw_sha256": "9c4992b058d3aae974c307740e91e024090f83da66213f094304ca6d5f3d1fad",
+      "compressed_sha256": "2784b4cba547bcfdc065b98fb1699374095552ab53faa1ea714889092db89e24"
+    },
+    {
+      "path": "lean-origin-final.log.gz",
+      "raw_bytes": 1152,
+      "raw_sha256": "e1e189bca59cf9bbe908d48e956282aa34643d22697389c0b8d85aec9683a180",
+      "compressed_sha256": "df235e9cf5b41e291a5bf80579c4e662b185910fadd7d90e0f838048f8d7b8cc"
+    }
+  ],
+  "source_hashes": [
+    {
+      "path": "apps/web/src/AppLean.tsx",
+      "git_blob": "b9bbdfe053510ba13ef5ebac4488411a04f6770e",
+      "sha256": "71e758fe2f6a277917b5d9371efbdf9e507a72fdaa7ab56b28d3af7f0c32434f"
+    },
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "git_blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "sha256": "9a9716abdc2c891e494337c8b0ffcbf228a9659205b185af45115c9ee7cb6198"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.tsx",
+      "git_blob": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+      "sha256": "b04ddedc01dc0ae240c2a47dfe2e67fc09bad9bb3f6a0e8735a9e0ab764e18a6"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "git_blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "sha256": "e4a9a5479ca2fb8079b8f4035beaf9d06fef7493769ed77c0698dcbdc6b9dffd"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "git_blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "sha256": "c850bcbaa104eb0ba5f0f8e6017a433e7b31bb1c7f85a032d73702ffbdff95e6"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "git_blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "sha256": "420d9b8fbf6c31df7cc592c907f73cb903426a42eeccb9fbd4515742017d00ae"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportMaster.tsx",
+      "git_blob": "c703b8a853f9b8613db64d78892bce49484872dc",
+      "sha256": "28e59e8524e225ae133385dc47f86d29854e49a9c513e825b40b1418be0895d8"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "git_blob": "fda705e782c147702ebcbac125ddb30ffee94910",
+      "sha256": "ec4205232e9962c7c19aa0f4d1bf198a86277c0a7a35c3a6b282c5d99b1cde61"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.tsx",
+      "git_blob": "8db65de1837b1bf70dff72a4be1e0e30a5d27006",
+      "sha256": "6ac29c027f86b93a424240b15080fbc9580c0178372fe3384d9168e886d90299"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportArchive.tsx",
+      "git_blob": "b4ba62a90797295349725dbc0e991d83da576826",
+      "sha256": "cab1422b4798978ebf3c5c40914046bbd16b365445270bab0f4b9a63211e33cb"
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "git_blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "sha256": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "git_blob": "a9565d96c42e35b57f62e7235a13aa6729c886b9",
+      "sha256": "24d884b3f44b11d5cb9620327846dbf6ca23fdd02b86c953c72d1bddb818dfc0"
+    },
+    {
+      "path": "apps/web/src/lib/frameGuard.ts",
+      "git_blob": "e1f2279c35ca58966f3a4aa270378da48b78ee94",
+      "sha256": "a042ce989f53c5d3cfadf9d27f38bed9665a9c3672286de9c01811ab9d7eb8d7"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "git_blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "sha256": "783adf54a9956b3e1d12763797e869e1de893532970d8f8b6a7df1ae5cc696ee"
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.mjs",
+      "git_blob": "c33e64770aa71b2d0751ce6104853725b0f2cbd7",
+      "sha256": "889c3b2cfb25b997d5304bbf4349a5b8d7444467a6ff12e4db4c872673d8c888"
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.test.mjs",
+      "git_blob": "f773ce1f8918e22f0fe4eb34729e85b2b506c0d9",
+      "sha256": "cd64359174bcdf91d12da54f60c815d5f69a40469dce424fe4fe53e6c2c5daa7"
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "git_blob": "087d5ee32ed8f3724b4cce635e2e9702d959068c",
+      "sha256": "394405785542ddac814e5b81e236bfc7318c1ebdad8514480c869d98aa6f94e2"
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "git_blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "sha256": "443cc9feb27faa65c3032c92a18a953933249f3b126707bd00570ef567abe7c0"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "git_blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "sha256": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67"
+    },
+    {
+      "path": "apps/web/src/AppLean.test.tsx",
+      "git_blob": "66de30ed6f99258b38f5cbc44e6c8a518eb341aa",
+      "sha256": "e39065a581f315be2456edfbbc800607e092e39defb6031e2fe27845be0c4d07"
+    },
+    {
+      "path": "apps/web/src/AppLean.fragment.test.tsx",
+      "git_blob": "f3a0bd09abada7d88f02483ef10d920fc158c038",
+      "sha256": "96c59814ab7a95db9f7c633545d633af685181f7fcfbc0a8bc0c20f55fc34fd0"
+    },
+    {
+      "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+      "git_blob": "0896c29c5eeb62ed6538870e1d9ef7db4ce01cfb",
+      "sha256": "8812b785b19f92ccb18d379d016de2ef8c06cceea421d4df37653705f9805db0"
+    },
+    {
+      "path": "apps/web/src/lib/frameGuard.test.ts",
+      "git_blob": "e52932be58a380e349f62fe38a34aaad1e150345",
+      "sha256": "1c12a1c15f6cf714995e948f4a1575f0d3fee6364dddc1454b757e1fe35fe5eb"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.test.ts",
+      "git_blob": "2ac9bc61dbebd721aecab2fedf1eb3e50d501d68",
+      "sha256": "9c8be2e2ef60c0c517f0f8acba0f795e3a43140e5427928b66343e2b7da0593a"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+    },
+    {
+      "path": "docs/release/FEATURE_MATRIX.md",
+      "git_blob": "e62447046d89c251689561b648a5d0d4d8eb65ac",
+      "sha256": "31e7e9c37cdbe8b0fe50772d519c4ddaa0ca7980dd20cc6fa70a0f48ec4ac8e2"
+    },
+    {
+      "path": "docs/release/RELEASE_BLOCKERS.md",
+      "git_blob": "c138ddec6ef432e9b354c5f43b7d0f2ad0e3b8a8",
+      "sha256": "06dd93f5584908bd02edf0215818a30ced6aa6441038e2a7d021aa55c0221771"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export.md",
+      "git_blob": "277d4885fc7120d551cac378be2eda51bdb3a70e",
+      "sha256": "92897738faf927c0943f25975557a9444e2fbd483868a9374071baf27887b77d"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export-formats.md",
+      "git_blob": "fce382473e351f3f637a685f2e9b660964f1da3b",
+      "sha256": "fb680ea06f871506f2f20cebc0f87c27cf207cbb0f8e229b5b4001b2f6045e09"
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "git_blob": "64620132778c782c2b3170b064e65eef41e7462f",
+      "sha256": "60b6a96a422da6f32d48035924f0784cd4133889684935b70327be5826e2768b"
+    },
+    {
+      "path": "docs/pages/README.md",
+      "git_blob": "0f32a12648406e8dd9ffc00de11a8be885b5c324",
+      "sha256": "81cb88ffd9599fb74ea78fb57c96137da7cbde45a6a46c87b807eebec057d5ce"
+    },
+    {
+      "path": "docs/engineering-handoffs/continuous-20261119/TASK_LEDGER.json",
+      "git_blob": "babce9f6b4711562b9fbf0f13a3d039d8283c7c4",
+      "sha256": "655af9f878ced50a0c76ae5bf3b48948a8832445c7c5a9ce75607b6b357986da"
+    },
+    {
+      "path": "docs/engineering-handoffs/continuous-20261119/archaeology/REPORT.md",
+      "git_blob": "16cc6c0e94a3a7d005d2efd02d864acf85b81d25",
+      "sha256": "c786f8949bcf3cdebda721eff7584d42a3cb7d40a1d93f854d9abff4cfae4f91"
+    }
+  ],
+  "other_evidence": [
+    {
+      "source": "d553630c064f2874df1c9ee32f0d70719abdfb32",
+      "path": "docs/engineering-handoffs/generation1-security/MYTHRIL_C993_REVIEW.json",
+      "verification": "Receipt read; artifact not independently replayed or rehashed by this worker.",
+      "findings": {
+        "total": 10,
+        "medium": 3,
+        "low": 7
+      },
+      "strict_exit_code": 1
+    },
+    {
+      "source": "bd24d2a3453dc2407a75ca280aaeeb7fb6198209",
+      "path": "docs/engineering-handoffs/continuous-20261119/generation-2-review/REVIEW.md",
+      "verification": "Independent review report read; its executions are not counted as this worker runs."
+    }
+  ],
+  "limits": [
+    "The earlier identical 48-case run overlaps completely and is not added to final counts.",
+    "Source review references existing regression files beyond the five-file selection; those were not freshly executed by this worker.",
+    "No real browser, public testnet, native analyzer, full coverage, final artifact or external audit qualification is claimed.",
+    "Known export expiry and manifest freshness repairs were owned by other workers and intentionally not duplicated.",
+    "The 299-branch inventory is inherited mechanical census, not a fresh semantic audit by this worker.",
+    "No remote mutation, contract edit, deployment, release publication or source-branch cleanup."
+  ]
+}

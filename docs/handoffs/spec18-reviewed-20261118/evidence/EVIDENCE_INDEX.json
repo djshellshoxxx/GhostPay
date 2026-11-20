@@ -1,0 +1,493 @@
+{
+  "implementation_and_test_source": "07a7497d1a0cb39fb6904e5c50f8a52db2285820",
+  "equivalent_local_source": "8461dbdfeab16648a78e3c1cd2f4dbb3c0fa5187",
+  "source_tree": "6febc03ffd521fe9ac00ac10275f9ff625db509c",
+  "note": "Stored artifact bytes; index excludes itself. Final documentation commit does not alter implementation, tests, dependencies or gates. Historical local and hosted failures remain preserved.",
+  "files": [
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "bytes": 63425,
+      "sha256": "becb6db66fbbcfa998ad8d6c442ff84de6ecc51aaee5893c133bbfd72ea50dcf"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/COMPLETION_REPORT.md",
+      "bytes": 33630,
+      "sha256": "0ed5c50ad0143fdb67ac6902bfce7f48e2b47b854a4c939b7a918647cdcfb91b"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md",
+      "bytes": 41942,
+      "sha256": "3d6d722d991d2893b2aba18cdcb3027972a836eeeda4b4165d8bbd66b8c3c1bd"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/PUBLICATION_MAP.json",
+      "bytes": 1149,
+      "sha256": "9303d1fa6ee8ef73b7c87474becf71cc1bc78c6a149cc8f18f53848b3cd2c109"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/README.md",
+      "bytes": 2481,
+      "sha256": "e66f48a7cd8a1b1fb42696eafe1a923f6ed8dc7daee9d16c42b29de742821bd6"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/SOURCE_MANIFEST.json",
+      "bytes": 8238,
+      "sha256": "02c7417bd0f3b188e2b6853b31ba037d2a705a220b1a990c71dbe128e2ed45bb"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/browser-launch.log",
+      "bytes": 7563,
+      "sha256": "d5645af3efd068542666b26e54b1dbd9b0d6e56fd0ecbec867204b05c86770db"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/download-retry-green.log",
+      "bytes": 738,
+      "sha256": "03cfb954e0e0f4ace9a7e6f7d663eeacec4e8517abba6cba71e6248c647c8511"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/download-retry-red.log",
+      "bytes": 27896,
+      "sha256": "f200ffe8b2f13aa9cb93980df731ad4c0dd996435eb77860839d1d330a66f4db"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/feature-final.json",
+      "bytes": 1312,
+      "sha256": "99890b3b9ee07b578ff289bb72ec94fc32480882875337424e4ffd4e133c382d"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/feature-final.log",
+      "bytes": 2880,
+      "sha256": "df5ca8866e07f17e1d4e07bb50f9387de2b9597a754aecf5a816ab7728d8a3d0"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/i18n-check-fixed.log",
+      "bytes": 49676,
+      "sha256": "21b8f37ac7940f0dbc0a7c81e540527379d723c25441433eb85db9918e6677b6"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/i18n-check.log",
+      "bytes": 46926,
+      "sha256": "4d3277f13a5dc7475a251d30f333b584c1a67782f40f92c18ce9a0ddbc848f24"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/i18n-extract-final.log",
+      "bytes": 4934,
+      "sha256": "7ef6b7b2e4bb67b4ef88d71b55ece61d1b029798993aa17ed7940018f63363b9"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/i18n-extract.log",
+      "bytes": 5190,
+      "sha256": "c6dd6f657710846d8dfb77af59190dcab4bd17956ebfaa1a902fb61a284898b6"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/npm-ci-bounded.log",
+      "bytes": 99,
+      "sha256": "7125f194612fcff2f454c05d848e7cb71facc1967b4d5017e25b34fdee3ba74f"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/npm-ci.log",
+      "bytes": 324,
+      "sha256": "933c0848d4ec1f26f25e4d950bf506cbb97ceab031fcc1f6f41c6bed87f3326f"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-scoped-lint.json",
+      "bytes": 1251,
+      "sha256": "d66aa6c310775a3dea98f3486ef5513461e2c03909aee5c847e77c63fa9757ff"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-scoped-lint.log",
+      "bytes": 175,
+      "sha256": "32cae8510576a2afee21664cd6a0a04d864a349c5f95a04eae4f62d70fd93009"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-bounded.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-final.json",
+      "bytes": 436,
+      "sha256": "f7e92374023ab306d3310790081c953640e21ab175960183e9a846b04fb8d0a0"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-final.log",
+      "bytes": 1507,
+      "sha256": "1fff39925637f9393c58199c64377afee4a1e203d293d13ededc026b9bfad010"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-fixed.json",
+      "bytes": 436,
+      "sha256": "8e4bebdbe862b379f04dd423101e4731ec2f320d52bc9d01dd13f60744033ace"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-fixed.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-serialized.json",
+      "bytes": 435,
+      "sha256": "18d1028bce4d150a8423a0fb0b32889b8319190780d791f5c10a35fdf2e2f47e"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck-serialized.log",
+      "bytes": 969,
+      "sha256": "91f21a0f0bd21ebf7714d40777a6dbcf8a391c2a3b3e3fea859736e83f99b482"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-unit-coverage.json",
+      "bytes": 468,
+      "sha256": "f26058d4c04e1dcafd882232ae3e5eff49197203ace232d038c5ea6b3bf0b051"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/coordinator/web-unit-coverage.log",
+      "bytes": 55186,
+      "sha256": "d810b9c4d42ff951b7eb3b5d1bb640b2f4df9358c5fc07c2c90b503645fae2f4"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/CRYPTO_REVIEW.md",
+      "bytes": 3600,
+      "sha256": "dc62f10b6dd00070bf713db3e5d80410aaf13ebb8d1b4ce6c1c0baf86f30f055"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/core-crypto-coverage.log",
+      "bytes": 3371,
+      "sha256": "7019388d458404109a7a6da00ceeb12a9f7ca5e725cd8b7be0d5afc667b7f6f6"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/evidence-index.json",
+      "bytes": 2451,
+      "sha256": "54c4ef0fb13fd23c7ad373727cb4884beeaed81b7ca454b960829da56e4ea667"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/final-validation.json",
+      "bytes": 1947,
+      "sha256": "e51e752326dd464288d3694bb6ce65d47acede7cd17149c366fbc55573b214a3"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/passphrase-stream-green.log",
+      "bytes": 729,
+      "sha256": "15849f28b8a08cd5aa1cdb6f6f52c25b2d8ae1c5ace74782b9d1336766b1dfcd"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/passphrase-stream-red.log",
+      "bytes": 1390,
+      "sha256": "29b37b8ad2703cb75cb2075757e86f4db94b504aba6639445c1e6f614e52ed08"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/raw-key-anvil.log",
+      "bytes": 637,
+      "sha256": "f685dd98917ff616632fb6de1d5ba3674529a69fa4e516208d8a091f252dbeb4"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/source-manifest.json",
+      "bytes": 1867,
+      "sha256": "4aa0abc46d84de59b07f55544857f92b9f7c53ecee079e78b1fa4aa411a4b164"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/standalone-recovery-final.log",
+      "bytes": 5841,
+      "sha256": "3cceefa13aa14c3fd622f52063cd861675832e6c3dbb0f7e842c8dbee0d921b0"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/standalone-recovery.log",
+      "bytes": 5839,
+      "sha256": "edf43181cdfec2fd7ae6621ddb6d66ebc9cd75369b0d3dff72ec7e2d99c6ea3d"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/time-wrapper-attempt.json",
+      "bytes": 246,
+      "sha256": "6a782a9b87441bc6e30e95f8f3921ef10c0a1369ec963dfb8a06357b0cce0cf3"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/ux-vault-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/ux-vault-coverage-serialized.json",
+      "bytes": 448,
+      "sha256": "5753626be4254b457c3e6089d4290b5c1928a9219e1da3e7cab8f20a1493395f"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/ux-vault-coverage-serialized.log",
+      "bytes": 3889,
+      "sha256": "2c02d1c9611a9c0ff241d2c3d28ee5acd43fad2713246157e5a4feec9b02b1ef"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/ux-vault-coverage.log",
+      "bytes": 6718,
+      "sha256": "e90b018f043abbeed7f58b203dd16359f418f8b2f97fde09af1fd21557c30811"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/ux-vault-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/checks-07a7497d.json",
+      "bytes": 7328,
+      "sha256": "ccb5b0cc1222b2ba5e8c8781c44b5bf358c50657e150a8c48ac96e442857b403"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/checks-82f909.json",
+      "bytes": 7723,
+      "sha256": "476f84cbe8a94d228c239c10977150d5f2d4f1ab478f313ee52441b0505e67a9"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/checks-b536b1c5.json",
+      "bytes": 3633,
+      "sha256": "7c58597726c20685e213044ae6a7be15ea8e8e8e7509e37a5be4ec5d544ead18"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135206357114.log",
+      "bytes": 79849,
+      "sha256": "fb62dd5075ed9ba686ee6370582e1e6a86363b2e51e55fbae5402061b87e4654"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135206455231.log",
+      "bytes": 124572,
+      "sha256": "45870da97779101bc46e4e929466bf85a3c490f12682f478f668ad90598cd21d"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135206455356.log",
+      "bytes": 40433,
+      "sha256": "473b7bc30761af348a35c15503ec45d38d48919eda42e60115d6d22eefe7d117"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135206455366.log",
+      "bytes": 120089,
+      "sha256": "85face60e5a19a75f316508d5b04d090cd33488e8725ec01dbec07ee772464ff"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135206455667.log",
+      "bytes": 254766,
+      "sha256": "d7c3ce0c500fdd7ae36c1f626eeaba42b2ea4c8e1df5bed670b403f194a0e5fb"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135211939647.log",
+      "bytes": 75329,
+      "sha256": "6e6786eb34eac889a63c2ff45d11a79e31c39677e46ff63d8ee25a169a1a9796"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135211940688.log",
+      "bytes": 78228,
+      "sha256": "abd29faea3fcc6750572a98cc5ed4828013c15fd90ae1d3342c8535754da74f8"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212472929.log",
+      "bytes": 38132,
+      "sha256": "7024f3f03be7de8cd5299ab374057a12c7d4d98abc5eefb1cdcfe8ac19047dae"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212473010.log",
+      "bytes": 109137,
+      "sha256": "c646ce9ce8e09bc02c47089bfad1f2a06a0908b4f14839ec80ffd9d2d1f2b333"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212473022.log",
+      "bytes": 292755,
+      "sha256": "54fdf6dcbd89204782821b881e6823abc6f3664a9c0539a69bacbba58b19ee98"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212473061.log",
+      "bytes": 125905,
+      "sha256": "a366ab34aa040dd4066456de02a60e4b2c799b8efeb409ffd886ca7f84bdade2"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212473116.log",
+      "bytes": 158564,
+      "sha256": "f517545b028ed4f35e62701f920f6bbd450c3f8ddf5201c9be91d229b3553fa2"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212473161.log",
+      "bytes": 254500,
+      "sha256": "bcc6695a2a13bea0b601cd0e5d410e2b34835df4beaac5681131b34a26d1c93c"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135212473168.log",
+      "bytes": 106928,
+      "sha256": "aa1dee2af0f0630294ca11ca8461a5077f71b386e0c8d8702dcbaf4e03393477"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221638981.log",
+      "bytes": 20097,
+      "sha256": "255bd8bda47406f9d942d68e203ac9f41af4aedcceaae42fd5104361cf3684c9"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221639687.log",
+      "bytes": 78153,
+      "sha256": "5a5c89f90001e3553b2f77a0581efc1c663b24b26ac9e5ea00a0fcfb61c1ce61"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221640221.log",
+      "bytes": 75329,
+      "sha256": "0771a0c8c0ec3f2b4a82cd512a429cccf8011fee51141f9759eda10aea97c8c0"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221700874.log",
+      "bytes": 37222,
+      "sha256": "2e2ca781a9e6f60fd992fa54c3c487cc6836ad8c1f16679a4260f014145e4e24"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221700941.log",
+      "bytes": 109060,
+      "sha256": "0c58076ae9c59e1d0f05bfc72b3a158132e1e07417c7be5f0818f9d26bdf5921"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701031.log",
+      "bytes": 38051,
+      "sha256": "d2c8ee94ff4ce2a8813f97e61a5f472c1e8a10a16f03517524eb35c153767909"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701147.log",
+      "bytes": 126205,
+      "sha256": "acaed42afc8268d31b6a1fcd4880ec43f699d065a73bf0356877091ff60d9616"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701169.log",
+      "bytes": 107151,
+      "sha256": "193ceaf35293fbc62b11dd5f895d49e5394fce25c430bd02573025b493a62b46"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701208.log",
+      "bytes": 35841,
+      "sha256": "068fa03ceee7077172d464438228f6a60c3d8093bcdb14f2413985330576d66a"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701253.log",
+      "bytes": 283911,
+      "sha256": "6c53ac595d3cda29bfe1836206c93859aab5cd4a8087864de25097de89162112"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701273.log",
+      "bytes": 159634,
+      "sha256": "4a0b9e7d8c9809cdc73b4b77f0a6781e461e710f2f4dcc48b64f64f00670cab2"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/hosted-135221701284.log",
+      "bytes": 256291,
+      "sha256": "8393660bdb3e78742a0bc9f910c02bd2342844609c8a714c36fe3bef509fcfc5"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/pages-build.json",
+      "bytes": 3391,
+      "sha256": "2c2dfbdde9f363883aaaf9376fd71410a4fb64f1155beef182561803c3f713fd"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/pages-build.log",
+      "bytes": 78071,
+      "sha256": "42c0c992b530373754eca4f3f566c29cb09505dafad980fcddddef680f90747b"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/ts-check-82f909.log",
+      "bytes": 126064,
+      "sha256": "453947013ef37b8c341073ebd08c423055c65cabfa853078841fa9c9a4bbe863"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/hosted/typecheck-82f909.log",
+      "bytes": 37004,
+      "sha256": "428efb73ca446479db6eb70a3adec6d2f0f5f6ff5f5539387ab17f189130a110"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/independent-document-review.json",
+      "bytes": 3052,
+      "sha256": "0ee8d973622c6e660aa1035be7be0403175346301360cfdc73f14a26cded49d6"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/independent-test-review.json",
+      "bytes": 1564,
+      "sha256": "816ad89892a18d4f3d0bda7fb58562c767320abe27db194f776c8390a3bccf00"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/independent-verification-sync-review.json",
+      "bytes": 1113,
+      "sha256": "457e37dbfdd0794002b466cd8863fb9cf903a9e5ac96a93b2d3cbf374673569a"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/atomicity-verification-green.log",
+      "bytes": 2251,
+      "sha256": "16926666c9a1a086ec3b689269188acd9d359294d2db28d365722ac0d3ae3b2d"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/atomicity-verification-red.log",
+      "bytes": 8470,
+      "sha256": "10b2bea10ad90243d85280184aa2abbabb43a7ef47a04b3aaf6466a9929825e5"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/feature-sync.json",
+      "bytes": 1027,
+      "sha256": "130bd2ab61f8f797b848a1b48ee0186f48ab72992641ebeca9f9a0e8c404a4d1"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/feature-sync.log",
+      "bytes": 2878,
+      "sha256": "01beceaa1c4b76f9233176518621e0c26e3101d01ec902d54b5c610d2fd8d258"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/hosted-followup-atomicity.log",
+      "bytes": 548,
+      "sha256": "741ce0df3147b7b4a6fbf53e7ad708eb11e8fb60dd826f88443c581a22fee091"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/hosted-followup-browser-list.log",
+      "bytes": 2653,
+      "sha256": "2396d2f1a73c782456aeee02dc3b3e89945a7f41317b2a3979a58e6092a25108"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/hosted-followup.json",
+      "bytes": 2925,
+      "sha256": "1bb5456139c74b547b7189f3d249654c27753f72cb78184ca0fda6a4fe6d250d"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/lifecycle-session-final.log",
+      "bytes": 7925,
+      "sha256": "b01fa576505441d763b13774a898269bef07652db228e76390459d7e00133e0f"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/report.json",
+      "bytes": 6745,
+      "sha256": "276e685c4378cb8da67cecff59109244596972e82192f6e5cc9f63beb91ad5f3"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/verification-final.log",
+      "bytes": 566,
+      "sha256": "5329cff259b9957e7f98b99ca2041f206eeba95f25e37bc8a04bf85bfabb8eec"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/verification-sync.json",
+      "bytes": 2357,
+      "sha256": "3469063bee64a7639f66be752904608cd7aaeb8a1b38bc3a56a17a535e8cdc76"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/evidence/lifecycle-evidence/verification-sync.log",
+      "bytes": 566,
+      "sha256": "36b914271597bbb24c496cfa2f14d4b4c8ab1829bfbb29d3f2f93cc7fc41173e"
+    },
+    {
+      "path": "docs/handoffs/spec18-reviewed-20261118/snapshot.json",
+      "bytes": 4133,
+      "sha256": "6ed999aad1691aa056f29d71d571fb381a5d252548837d854202a4e3c5724da9"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export-formats.md",
+      "bytes": 16916,
+      "sha256": "fb680ea06f871506f2f20cebc0f87c27cf207cbb0f8e229b5b4001b2f6045e09"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export.md",
+      "bytes": 9916,
+      "sha256": "92897738faf927c0943f25975557a9444e2fbd483868a9374071baf27887b77d"
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "bytes": 18605,
+      "sha256": "60b6a96a422da6f32d48035924f0784cd4133889684935b70327be5826e2768b"
+    }
+  ]
+}

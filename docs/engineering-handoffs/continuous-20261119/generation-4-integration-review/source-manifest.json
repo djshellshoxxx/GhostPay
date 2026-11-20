@@ -1,0 +1,391 @@
+{
+  "schema": "ghostpay-generation4-combined-source/1",
+  "reviewer": "integration_review_gen4",
+  "repository": "https://github.com/djshellshoxxx/GhostPay",
+  "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "reviewed_commit": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "reviewed_tree": "7a7b189be05b802d3545e8823230076125d7bbf6",
+  "review_claim": "6c259361dd34445a4cbe5d81c2b37f211d3af2cd",
+  "changed_non_documentation_files": 23,
+  "all_changed_non_documentation_files_accounted_for": true,
+  "source_matches": [
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "origin_commit": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "origin_blob": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+      "final_blob": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+      "exact_match": true,
+      "sha256": "55ebe9d0096bf655969b2f77d79442c0262c706815c279db3ecbaec53f12bc55"
+    },
+    {
+      "path": "apps/web/e2e/privacy-settings.spec.ts",
+      "origin_commit": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "origin_blob": "a673b37c5927c60aa8d4ca260a0861209178a00f",
+      "final_blob": "a673b37c5927c60aa8d4ca260a0861209178a00f",
+      "exact_match": true,
+      "sha256": "7fdb26b0730b32649108cfc5c5073a41bc8bb0c551cfccbf2afc12d9ff2517b0"
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "origin_commit": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+      "origin_blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+      "final_blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+      "exact_match": true,
+      "sha256": "505a612227ccb2a6bf86cb6e713c6a7bb801403b8202b323ec5c1be53341bebe"
+    },
+    {
+      "path": "apps/web/e2e/stealthExportFixtures.ts",
+      "origin_commit": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+      "origin_blob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+      "final_blob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+      "exact_match": true,
+      "sha256": "c20f34cbee17db4bfeec6a3b360f674cc35db58df3c8a732256bdc37299991d9"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.manifest.test.tsx",
+      "origin_commit": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "origin_blob": "da7fd9a6813dc6b1ddfa1aaa5ec165d199b525e8",
+      "final_blob": "da7fd9a6813dc6b1ddfa1aaa5ec165d199b525e8",
+      "exact_match": true,
+      "sha256": "348527df50d8a2f68241a803c7e2b413b86a98beb9b4f2f7fb30e6f35a0eb425"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.tsx",
+      "origin_commit": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "origin_blob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+      "final_blob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+      "exact_match": true,
+      "sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+      "origin_commit": "84f39e41ef132af88b4ca3280818ed701026d412",
+      "origin_blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+      "final_blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+      "exact_match": true,
+      "sha256": "6d22194e24c38d63c6ca07dc26db6646ad051cbe6c2d257764c7879d99974eee"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+      "origin_commit": "767cebd1a7c519e622435053457d8ae46b94d95e",
+      "origin_blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+      "final_blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+      "exact_match": true,
+      "sha256": "3e922cdcbc62cda6a67fbeea2ff52682d4b93e4052bf8808583d263f0d6e2b7b"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "origin_commit": "84f39e41ef132af88b4ca3280818ed701026d412",
+      "origin_blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+      "final_blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+      "exact_match": true,
+      "sha256": "7a5d823f58b9fc51b72c77600577d352fb9ee88af397668ea9070058ca287f7a"
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.test.ts",
+      "origin_commit": "c6d16c25243973a7b316b966bd86d7674e802da7",
+      "origin_blob": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+      "final_blob": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+      "exact_match": true,
+      "sha256": "0c32414f4ec7af70981dd0585f288b9eea86b4e1cfe15a17e1c70b0ada92f44e"
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "origin_commit": "c6d16c25243973a7b316b966bd86d7674e802da7",
+      "origin_blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+      "final_blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+      "exact_match": true,
+      "sha256": "8a1969829c500eaf6f152b75ccb3d809553f46beebb3c8819c17fbf15e5708ec"
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.test.ts",
+      "origin_commit": "4c4b221e4a764d2fe30f1ce6c9ff39a81d51bb76",
+      "origin_blob": "957027808890f366f337c375e52b5c081206dae7",
+      "final_blob": "957027808890f366f337c375e52b5c081206dae7",
+      "exact_match": true,
+      "sha256": "7f953bacc01db5ab531670a9027d42c6395de33132786d3b2daa717831371f35"
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "origin_commit": "4c4b221e4a764d2fe30f1ce6c9ff39a81d51bb76",
+      "origin_blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+      "final_blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+      "exact_match": true,
+      "sha256": "51bdc05ec685846714fde4dbb54a83cf8c70431d3f1f243acc845222d5b2446c"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "origin_commit": "613f1d900b2b886cf055977972f105d7ee5a000a",
+      "origin_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "final_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "exact_match": true,
+      "sha256": "8ff18b7b804f5ad7f30d49cc9884c65ed3d3b8c1b0fa8b15b78405577843908b"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "origin_commit": "613f1d900b2b886cf055977972f105d7ee5a000a",
+      "origin_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "final_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "exact_match": true,
+      "sha256": "e2ddb9df28b89c22f0feac698ceb9c2847af5b2517f43ca44c82826dc3f6a7f2"
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+      "origin_commit": "be74b36efc1df3d3c39d1ade9c810cd282e44b87",
+      "origin_blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "final_blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "exact_match": true,
+      "sha256": "99c05fffeef0ed341cac9cc27568306a732c7b36eb9dcbd998b355c5df803557"
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "origin_commit": "be74b36efc1df3d3c39d1ade9c810cd282e44b87",
+      "origin_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "final_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "exact_match": true,
+      "sha256": "a83618676f65d6588ebafb798884b40d2a6ffe69e00b0bf8b868e04597a09d51"
+    },
+    {
+      "path": "apps/web/src/views/Pay.network.test.tsx",
+      "origin_commit": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "origin_blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887",
+      "final_blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887",
+      "exact_match": true,
+      "sha256": "4b7f3f3d2b1ef6acf65163181135deb5a4c6d2aa62909b289a056f6c75d8f17b"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.test.ts",
+      "origin_commit": "b2711401af5f3786ef1685bb8e1ebd98b29c9e7d",
+      "origin_blob": "8d959c2b144182d0d0f576214dc7b761b7166c47",
+      "final_blob": "8d959c2b144182d0d0f576214dc7b761b7166c47",
+      "exact_match": true,
+      "sha256": "dca9cda287265c2f5111251a7f75bcafa665e2af7c96d77f0cffd1a1643e528a"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.ts",
+      "origin_commit": "401b2e77f24170d84fa4f2edf129f9bde4bdf1a8",
+      "origin_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+      "final_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+      "exact_match": true,
+      "sha256": "eeea0eb7a12345afe05258fb8890f577675374220b0da396905961cf4c7ff991"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "origin_commit": "a080c2db54d79a280def1f1ed365637d16180e44",
+      "origin_blob": "2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+      "final_blob": "2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+      "exact_match": true,
+      "sha256": "9d6dcdfdf03d3e013b5af380f816e4fdc38619a2def5bb02edb2b6fe6f1da661"
+    },
+    {
+      "path": "scripts/automation/integration-lock.mjs",
+      "origin_commit": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "origin_blob": "47a7411628f7775228e15f88b120c3684b461249",
+      "final_blob": "47a7411628f7775228e15f88b120c3684b461249",
+      "exact_match": true,
+      "sha256": "321d3ece9aeceac338fd958be84c0f97820a7456ebdf184275350a464e33eb4e"
+    },
+    {
+      "path": "scripts/tests/integration-lock.test.mjs",
+      "origin_commit": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "origin_blob": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+      "final_blob": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+      "exact_match": true,
+      "sha256": "fc2182e4da1c279299b0f84b0a8c2deb9c9a75bcb75d0b4b7c18087677eb6203"
+    }
+  ],
+  "unchanged_control_scopes": [
+    {
+      "path": "package.json",
+      "baseline_object": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "final_object": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "exact_match": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseline_object": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "final_object": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "exact_match": true
+    },
+    {
+      "path": "eslint.config.js",
+      "baseline_object": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "final_object": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "exact_match": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "baseline_object": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "final_object": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "baseline_object": "dc383c41588864646c2bfa0083acc1d9d33e1f54",
+      "final_object": "dc383c41588864646c2bfa0083acc1d9d33e1f54",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "baseline_object": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "final_object": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/vitest.nocov.config.ts",
+      "baseline_object": "294c480e9bb915656cd8f525110d9f18b60727e0",
+      "final_object": "294c480e9bb915656cd8f525110d9f18b60727e0",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "baseline_object": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "final_object": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "exact_match": true
+    },
+    {
+      "path": ".github",
+      "baseline_object": "0121626f7f77afce6bbe21809a3eeb26e27093c4",
+      "final_object": "0121626f7f77afce6bbe21809a3eeb26e27093c4",
+      "exact_match": true
+    },
+    {
+      "path": "packages/contracts",
+      "baseline_object": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "final_object": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "exact_match": true
+    },
+    {
+      "path": "packages/core-crypto",
+      "baseline_object": "d50ffb1e8afe32101c27f08e40c6cd1c67264a84",
+      "final_object": "d50ffb1e8afe32101c27f08e40c6cd1c67264a84",
+      "exact_match": true
+    },
+    {
+      "path": "packages/net-transport",
+      "baseline_object": "51efb5fdfdb0352c7ee5fcb32460123b73ca57c3",
+      "final_object": "51efb5fdfdb0352c7ee5fcb32460123b73ca57c3",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "baseline_object": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "final_object": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "baseline_object": "04defade63f86886f12a6299f19f46a2e562b680",
+      "final_object": "04defade63f86886f12a6299f19f46a2e562b680",
+      "exact_match": true
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.ts",
+      "baseline_object": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+      "final_object": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+      "exact_match": true
+    }
+  ],
+  "all_changed_paths": [
+    "apps/web/e2e/network-authorization.spec.ts",
+    "apps/web/e2e/privacy-settings.spec.ts",
+    "apps/web/e2e/stealth-export.spec.ts",
+    "apps/web/e2e/stealthExportFixtures.ts",
+    "apps/web/src/components/Disclosure.manifest.test.tsx",
+    "apps/web/src/components/Disclosure.tsx",
+    "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+    "apps/web/src/components/StealthExportCommon.review.test.tsx",
+    "apps/web/src/components/StealthExportCommon.tsx",
+    "apps/web/src/lib/buildProfile.test.ts",
+    "apps/web/src/lib/buildProfile.ts",
+    "apps/web/src/lib/merchantIdentity.test.ts",
+    "apps/web/src/lib/merchantIdentity.ts",
+    "apps/web/src/lib/qrKinds.test.ts",
+    "apps/web/src/lib/qrKinds.ts",
+    "apps/web/src/lib/scanSpam.partial.test.ts",
+    "apps/web/src/lib/scanSpam.ts",
+    "apps/web/src/views/Pay.network.test.tsx",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/engineering-handoffs/continuous-20261119/GENERATION_1_EVIDENCE.json",
+    "docs/engineering-handoffs/continuous-20261119/TASK_LEDGER.json",
+    "docs/engineering-handoffs/continuous-20261119/archaeology/REPORT.md",
+    "docs/engineering-handoffs/continuous-20261119/archaeology/branch-summary.json",
+    "docs/engineering-handoffs/continuous-20261119/archaeology/narrow-fix-source-evidence.json",
+    "docs/engineering-handoffs/continuous-20261119/archaeology/pull-request-complete-inventory.json",
+    "docs/engineering-handoffs/continuous-20261119/evidence/base64url-green.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/base64url-red.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/build-libs.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/integration-lock-tests.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/json-fixture-green.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/json-lint-green.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/json-lint-red.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/narrow-web-green.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/narrow-web-red.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/evidence/npm-ci.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/REVIEW.md",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/REVIEW_MANIFEST.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-green.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-green.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-receipts.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-red.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-red.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/export-combined.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/export-combined.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/export-lint-final.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/export-lint.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/extraction-blobs.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/extraction-receipts.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/extractions-invoice.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/extractions-invoice.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/extractions-web.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/extractions-web.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/review-final.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-2-review/review-final.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-completeness/ASSESSMENT.md",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-completeness/RECEIPT.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-completeness/lean-origin-final.json.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-completeness/lean-origin-final.log.gz",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/README.md",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/Disclosure.gen3-review.test.tsx.txt",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/lifecycle-green.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/lifecycle-green.log",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/manifest-green.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/manifest-green.log",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/manifest-receipt.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/manifest-red.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/manifest-red.log",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/review-probe-first-run.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/review-probe-first-run.log",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/source-receipt.json",
+    "docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/evidence/typecheck.log",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/README.md",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/baseline-regressions-red.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/browser-spec-discovery.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/compiled-dependencies.json",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/final-lint.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/final-typecheck.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/fixture-support-green.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/focused-green.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/hosted-full-baseline-failures.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/hosted-lean-baseline-failures.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/receipt.json",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/recovery-spec-discovery.txt.gz",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/runtime-imports.json",
+    "docs/engineering-handoffs/continuous-20261119/qa-gen1/source-pins.json",
+    "docs/engineering-handoffs/generation1-security/LOCK_261_REVIEW.json",
+    "docs/engineering-handoffs/generation1-security/MYTHRIL_C993_REVIEW.json",
+    "docs/engineering-handoffs/generation1-security/README.md",
+    "docs/engineering-handoffs/generation1-security/RECEIPT.json",
+    "docs/engineering-handoffs/generation1-security/UPSTREAM_PATCH_REVIEW.json",
+    "docs/engineering-handoffs/generation1-security/evidence/expiry-baseline.log.gz",
+    "docs/engineering-handoffs/generation1-security/evidence/expiry-fixed-and-export-regression.log.gz",
+    "docs/engineering-handoffs/generation1-security/evidence/expiry-selection-download-regression.log.gz",
+    "docs/engineering-handoffs/generation1-security/evidence/expiry-typed-lint.log.gz",
+    "docs/engineering-handoffs/generation1-security/evidence/mythril-c993.zip",
+    "packages/invoice-schema/src/base64url.test.ts",
+    "packages/invoice-schema/src/base64url.ts",
+    "packages/invoice-schema/src/json.test.ts",
+    "scripts/automation/integration-lock.mjs",
+    "scripts/tests/integration-lock.test.mjs"
+  ]
+}

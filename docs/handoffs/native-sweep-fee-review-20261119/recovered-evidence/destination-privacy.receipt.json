@@ -1,0 +1,47 @@
+{
+  "source": "ed95c5601b0ec127be56cad57fcb78d44954b2fb",
+  "tree": "7de0e0371f078ca5d0926b0fa1162d23dd781074",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay-native/node_modules/vitest/vitest.mjs",
+    "run",
+    "--maxWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/workspace/scratch/246ff268d20d/GhostPay-native/docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/destination-privacy.json",
+    "src/lib/sweep.destinations.privacy.test.ts"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay-native/apps/web",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512",
+    "NO_COLOR": "1"
+  },
+  "started": "2026-11-19T13:06:07.580189+00:00",
+  "ended": "2026-11-19T13:06:10.015584+00:00",
+  "durationSeconds": 2.436,
+  "exitCode": 0,
+  "log": {
+    "path": "docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/destination-privacy.log.gz",
+    "uncompressedSha256": "9f8ffe5754d759e795f6f632bb56d5d4ff2f71f881e07f98f0c36b4b0cab278e",
+    "uncompressedBytes": 794,
+    "storedSha256": "a942ed227f96004f2b5c7638a2e10ce3231fdfc3bb611025b88b78e483719fe8"
+  },
+  "report": {
+    "path": "docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/destination-privacy.json.gz",
+    "uncompressedSha256": "e8170b72f9657275f25762aa8c862b161bedaf8937091d9272ada2e423666cb9",
+    "uncompressedBytes": 4505,
+    "storedSha256": "a426acaf9ec25f50a9813358b4753387e1e8e03003dd5e7c54c076b216d956c1"
+  },
+  "testSummary": {
+    "numTotalTestSuites": 2,
+    "numPassedTestSuites": 2,
+    "numFailedTestSuites": 0,
+    "numPendingTestSuites": 0,
+    "numTotalTests": 10,
+    "numPassedTests": 10,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "success": true
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "command": [
+    "node",
+    "scripts/build-workspaces.mjs",
+    "--libraries"
+  ],
+  "cwd": "/tmp/ghostpay-qualified-246ff268d20d",
+  "started_utc": "2026-11-19T13:19:10.052197+00:00",
+  "source_commit": "d7e66ff42b1caf4858a6152985d8afaaefaee572",
+  "source_tree": "11a70e0576af5aaa177c81c45b0df2cd1cc88c6b",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=768"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 216.9904270172119,
+  "finished_utc": "2026-11-19T13:22:47.042617+00:00",
+  "final_source_commit": "d7e66ff42b1caf4858a6152985d8afaaefaee572",
+  "final_status": "",
+  "log": "qualified-library-builds.log.gz",
+  "uncompressed_bytes": 27144,
+  "uncompressed_sha256": "ff39e895981106073ac533a90ea2feddbe0799eafaf3f90bc620dceb2acdcb86",
+  "stored_bytes": 1322,
+  "stored_sha256": "c978e31c71308ef557589540d46ec16c22c07c69ef4ce6d7fd2895ecbae0b7e6"
+}

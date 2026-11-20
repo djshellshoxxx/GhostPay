@@ -9,7 +9,7 @@ import { Metrics } from './metrics.js';
 import { MetricsHttpServer } from './metricsServer.js';
 import { DEV_CHAIN_ID, type RelayerConfig } from './config.js';
 import { KeyHasher, RateLimiter } from './limiter.js';
-import type { Logger } from './log.js';
+import { zeroLogLogger, type Logger } from './log.js';
 import { RpcGasPriceSource } from './pricing.js';
 import { ConfiguredPriceSource, type NativeFeedSource } from './feedPricing.js';
 import { CanonicalSourceChecks, type SourcePair } from './sourceChecks.js';
@@ -136,6 +136,8 @@ export async function buildSourceClients(config: RelayerConfig): Promise<Map<num
  * @returns The relayer (not yet listening).
  */
 export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
+  // Zero-log mode wraps the one logger every component gets (PRIVACY.md).
+  const logger = d.config.privacy?.zeroLog === true ? zeroLogLogger(d.logger) : d.logger;
   const hotBytes = Buffer.from(d.hotKey);
   if (Buffer.from(d.quoteSecret).subarray(0, hotBytes.length).equals(hotBytes) ||
       (d.previousQuoteSecret !== undefined && Buffer.from(d.previousQuoteSecret).subarray(0, hotBytes.length).equals(hotBytes))) {
@@ -150,7 +152,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     d.alerts ??
     (d.config.alertWebhookUrl === undefined || d.config.alertWebhookSecret === undefined || d.config.alertWebhookAllowedHosts === undefined
       ? nullAlerts
-      : createWebhookAlerts({ url: d.config.alertWebhookUrl, secret: d.config.alertWebhookSecret, allowedHosts: d.config.alertWebhookAllowedHosts, logger: d.logger, now: mono }));
+      : createWebhookAlerts({ url: d.config.alertWebhookUrl, secret: d.config.alertWebhookSecret, allowedHosts: d.config.alertWebhookAllowedHosts, logger, now: mono }));
   const sourceClients = d.sourceClients ?? await buildSourceClients(d.config);
   const pairs = new Map<number, SourcePair>();
   const feeds = new Map<number, NativeFeedSource>();
@@ -187,7 +189,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     sourceChecks: new CanonicalSourceChecks(pairs, alerts, metrics),
     ownerLimiter,
     ...(d.policy === undefined ? {} : { policy: d.policy }),
-    logger: d.logger,
+    logger,
     now,
     monotonic: mono,
     hasher,
@@ -197,7 +199,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     version: RELAYER_VERSION,
     journal: opened.journal,
   });
-  const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, quoteGroupLimiter, alerts, logger: d.logger, metrics, monotonic: mono });
+  const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, quoteGroupLimiter, alerts, logger, metrics, monotonic: mono });
   const metricsServer = d.config.metricsEnabled ? new MetricsHttpServer(d.config, metrics) : undefined;
   const rotationTimer = setInterval(() => hasher.refresh(), Math.min(d.config.rateLimit.saltRotationHours * 3_600_000, 60_000));
   rotationTimer.unref();
@@ -206,7 +208,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
   if (lock !== undefined) {
     let lastBeat = now();
     const lost = (): void => {
-      d.logger.log('error', 'state_lock_lost', { errorClass: 'state_lock_lost' });
+      logger.log('error', 'state_lock_lost', { errorClass: 'state_lock_lost' });
       clearInterval(lockTimer);
       // Journal writes are fenced already (no new send can start); this ends the process or its admission.
       if (d.onLockLost !== undefined) d.onLockLost();
@@ -221,7 +223,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
         if (!(e instanceof StateError)) throw e;
         // Transient I/O trouble: retry on the next beat, but give up before the lock can go stale.
         metrics.inc('relayer_state_lock_heartbeat_failures_total');
-        d.logger.log('warn', 'state_lock_heartbeat_failed', { errorClass: 'state_lock_heartbeat_failed' });
+        logger.log('warn', 'state_lock_heartbeat_failed', { errorClass: 'state_lock_heartbeat_failed' });
         if (now() - lastBeat >= LOCK_GIVE_UP_MS) lost();
       }
     }, LOCK_HEARTBEAT_MS);

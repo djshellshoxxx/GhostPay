@@ -1,0 +1,146 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: independence: the decoder imports only node: built-ins and @noble/curves + @noble/hashes
+ok 1 - independence: the decoder imports only node: built-ins and @noble/curves + @noble/hashes
+  ---
+  duration_ms: 1.319896
+  type: 'test'
+  ...
+# Subtest: canonical() matches format section 1.5 (sorted keys, no whitespace, integers, JSON.stringify strings)
+ok 2 - canonical() matches format section 1.5 (sorted keys, no whitespace, integers, JSON.stringify strings)
+  ---
+  duration_ms: 0.312981
+  type: 'test'
+  ...
+# Subtest: public record: validates, binds publicKey to stealthAddress and re-serializes byte for byte
+ok 3 - public record: validates, binds publicKey to stealthAddress and re-serializes byte for byte
+  ---
+  duration_ms: 6.861578
+  type: 'test'
+  ...
+# Subtest: public record: tampered or malformed records are refused
+ok 4 - public record: tampered or malformed records are refused
+  ---
+  duration_ms: 4.556227
+  type: 'test'
+  ...
+# Subtest: single keypair file: decrypts the a1 key and re-serializes byte for byte
+ok 5 - single keypair file: decrypts the a1 key and re-serializes byte for byte
+  ---
+  duration_ms: 56.421745
+  type: 'test'
+  ...
+# Subtest: archive: three keys in address order, each matching its vector; a3 is not in it
+ok 6 - archive: three keys in address order, each matching its vector; a3 is not in it
+  ---
+  duration_ms: 36.793731
+  type: 'test'
+  ...
+# Subtest: master backup: recovers the seller pair and every vector announcement, including one omitted from the archive
+ok 7 - master backup: recovers the seller pair and every vector announcement, including one omitted from the archive
+  ---
+  duration_ms: 76.84729
+  type: 'test'
+  ...
+# Subtest: raw private-key text: exact section 6 layout and the key controls the address
+ok 8 - raw private-key text: exact section 6 layout and the key controls the address
+  ---
+  duration_ms: 1.675612
+  type: 'test'
+  ...
+# Subtest: every invalid[] vector is refused with its documented error code
+ok 9 - every invalid[] vector is refused with its documented error code
+  ---
+  duration_ms: 192.812718
+  type: 'test'
+  ...
+# Subtest: tampering, wrong passphrase, wrong chain and bounds fail closed
+ok 10 - tampering, wrong passphrase, wrong chain and bounds fail closed
+  ---
+  duration_ms: 262.238256
+  type: 'test'
+  ...
+# Subtest: master header rejects the same key in spending and viewing roles before decryption
+ok 11 - master header rejects the same key in spending and viewing roles before decryption
+  ---
+  duration_ms: 0.481014
+  type: 'test'
+  ...
+# Subtest: cross-implementation: files freshly written by the built @ghostpay/ux-vault codec decrypt here
+ok 12 - cross-implementation: files freshly written by the built @ghostpay/ux-vault codec decrypt here
+  ---
+  duration_ms: 2236.570034
+  type: 'test'
+  ...
+# Subtest: CLI: archive decrypts with the passphrase on stdin and prints no private key without the flag
+ok 13 - CLI: archive decrypts with the passphrase on stdin and prints no private key without the flag
+  ---
+  duration_ms: 202.149121
+  type: 'test'
+  ...
+# Subtest: CLI: wrong passphrase, wrong chain, tampering and argv/env passphrases are refused without echoing input
+ok 14 - CLI: wrong passphrase, wrong chain, tampering and argv/env passphrases are refused without echoing input
+  ---
+  duration_ms: 349.299186
+  type: 'test'
+  ...
+# Subtest: CLI: master --scan-announcement recovers the archive-omitted a3 address; keys only with the flag, never master keys
+ok 15 - CLI: master --scan-announcement recovers the archive-omitted a3 address; keys only with the flag, never master keys
+  ---
+  duration_ms: 290.944995
+  type: 'test'
+  ...
+# Subtest: CLI: public record and raw-key files need no passphrase; the raw key prints only with the flag
+ok 16 - CLI: public record and raw-key files need no passphrase; the raw key prints only with the flag
+  ---
+  duration_ms: 258.89857
+  type: 'test'
+  ...
+# Subtest: CLI: expected chain is enforced for raw keys, public records and header-only inspection
+ok 17 - CLI: expected chain is enforced for raw keys, public records and header-only inspection
+  ---
+  duration_ms: 301.498404
+  type: 'test'
+  ...
+# Subtest: CLI: a chain-neutral master backup never silently accepts an expected-chain assertion
+ok 18 - CLI: a chain-neutral master backup never silently accepts an expected-chain assertion
+  ---
+  duration_ms: 86.200467
+  type: 'test'
+  ...
+# Subtest: CLI: unknown options never echo their untrusted contents
+ok 19 - CLI: unknown options never echo their untrusted contents
+  ---
+  duration_ms: 43.66651
+  type: 'test'
+  ...
+# Subtest: CLI: failed passphrase input wipes previously received chunks and never prints their contents
+ok 20 - CLI: failed passphrase input wipes previously received chunks and never prints their contents
+  ---
+  duration_ms: 1.510413
+  type: 'test'
+  ...
+# Subtest: CLI: raw-file read buffers are wiped after successful recovery and oversized-input refusal
+ok 21 - CLI: raw-file read buffers are wiped after successful recovery and oversized-input refusal
+  ---
+  duration_ms: 12.354255
+  type: 'test'
+  ...
+# Subtest: offline recovery works in a fresh directory with no GhostPay packages or repository access
+ok 22 - offline recovery works in a fresh directory with no GhostPay packages or repository access
+  ---
+  duration_ms: 593.431677
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5142.510812

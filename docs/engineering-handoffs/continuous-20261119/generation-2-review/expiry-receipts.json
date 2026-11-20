@@ -1,0 +1,52 @@
+[
+  {
+    "stage": "red",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/StealthExportCommon.expiry.test.tsx",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-red.json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+    "exit": 1,
+    "duration_seconds": 5.361,
+    "production_blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55",
+    "production_sha256": "2806b9c32c95a2faf127c00368c95307dd3c45ad5c54f12ad8766a3df10cdcd1",
+    "test_blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+    "counts": {
+      "numTotalTests": 4,
+      "numPassedTests": 1,
+      "numFailedTests": 3,
+      "numPendingTests": 0,
+      "success": false
+    }
+  },
+  {
+    "stage": "green",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/StealthExportCommon.expiry.test.tsx",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/docs/engineering-handoffs/continuous-20261119/generation-2-review/expiry-green.json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-review-gen2/apps/web",
+    "exit": 0,
+    "duration_seconds": 3.483,
+    "production_blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+    "production_sha256": "7a5d823f58b9fc51b72c77600577d352fb9ee88af397668ea9070058ca287f7a",
+    "test_blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+    "counts": {
+      "numTotalTests": 4,
+      "numPassedTests": 4,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  }
+]

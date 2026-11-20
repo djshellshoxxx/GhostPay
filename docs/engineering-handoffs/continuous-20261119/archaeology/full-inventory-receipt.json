@@ -1,0 +1,8 @@
+{
+  "raw_bytes": 4485588,
+  "raw_sha256": "11141bbf5d6fa0c8c2433e750095aef9fd5d2a18efb0d11072225594e08e0815",
+  "compressed_bytes": 565819,
+  "compressed_sha256": "36750314c4fce73c4fc9890d40b44d17f11c65a5ab21b9a0ddb49a6ab5ae91cc",
+  "evidence": "branch-inventory.json.gz",
+  "scope": "Complete captured mechanical ancestry, changed/test paths and prior classifications; not fresh semantic/CI certification of every branch."
+}

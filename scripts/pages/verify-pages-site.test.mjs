@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { checkHtml, checkLeanReport, checkManifestDir, checkText, sha256sums, verifySite } from './verify-pages-site.mjs';
+import { LEAN_EXCLUDED_MODULES } from './lean-exclusions.mjs';
 
 const CSP = `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https: wss:; object-src 'none'; base-uri 'none'; form-action 'none'" />`;
 const INDEX = `<!doctype html><html><head>${CSP}<link rel="icon" href="./favicon.svg"><script type="module" crossorigin src="./assets/index-abc.js"></script></head><body><p class="gp-pages-mirror" role="note" id="gp-pages-mirror"><strong>GitHub Pages mirror.</strong></p><div id="root"></div></body></html>`;
@@ -183,4 +184,21 @@ test('HTML: comment and script scanning is spec-shaped and fails closed (no sing
   // Still-accepted shapes.
   assert.deepEqual(checkHtml('x.html', `${INDEX}<!-- a --><!---->< !-- not a comment --><!-- <script>x</script> -->`.replace('< !-- not a comment -->', '')), []);
   assert.deepEqual(checkHtml('x.html', INDEX.replace('</script>', '</SCRIPT >')), []);
+});
+
+// SEC-24 / E-13: the verifier and apps/web/scripts/scan-bundle.mjs share scripts/pages/lean-exclusions.mjs; every entry
+// (including those that only the build guard used to know: src/App.tsx, embedProtocol, chain-evm-extra) fails here too.
+test('the lean report is checked against the shared exclusion list', () => {
+  for (const { sample } of LEAN_EXCLUDED_MODULES) {
+    const bad = { ...REPORT, chunks: [{ fileName: 'a.js', modules: [{ id: sample, renderedLength: 3, renderedExports: [] }] }] };
+    assert.ok(checkLeanReport(bad).some((p) => p.includes('excluded module')), sample);
+  }
+  for (const id of ['src/App.tsx', 'src/lib/embedProtocol.ts', '../../packages/chain-evm-extra/src/index.ts', 'src/components/BackupPanel.tsx']) {
+    const bad = { ...REPORT, chunks: [{ fileName: 'a.js', modules: [{ id, renderedLength: 3, renderedExports: [] }] }] };
+    assert.ok(checkLeanReport(bad).some((p) => p.includes('excluded module')), id);
+  }
+  const embed = { ...REPORT, chunks: [{ fileName: 'a.js', modules: [{ id: 'src/lib/embedHost.ts', renderedLength: 3, renderedExports: ['notifyEmbedDone', 'startEmbedHost'] }] }] };
+  assert.ok(checkLeanReport(embed).some((p) => p.includes('embedding startup/profile exports')));
+  const ok = { ...REPORT, chunks: [{ fileName: 'a.js', modules: [{ id: 'src/lib/embedHost.ts', renderedLength: 3, renderedExports: ['notifyEmbedDone'] }] }] };
+  assert.deepEqual(checkLeanReport(ok), []);
 });

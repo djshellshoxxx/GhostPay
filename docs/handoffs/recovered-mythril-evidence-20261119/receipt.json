@@ -1,0 +1,107 @@
+{
+  "schema": "ghostpay.recovered-analyzer-qualification.v1",
+  "observed_at_utc": "2026-11-19T12:57:18.547889+00:00",
+  "base_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b",
+  "upstream_pr": 255,
+  "upstream_commit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+  "regression_first_commit": "003c2bc7f57df4a243ec87f7ca112c6a3d2e8a5c",
+  "implementation_commit": "bd05411b2a4c5b1b1793065bce1c10e0553cf952",
+  "upstream_exact_files": 8,
+  "workflow_added_lines": 5,
+  "workflow_deleted_lines": 0,
+  "red": {
+    "passed_controls": 2,
+    "failed_regressions": 9,
+    "selected": 11,
+    "full_suite": false,
+    "command_receipt": "evidence/red.json"
+  },
+  "green": {
+    "passed": 54,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "elapsed_seconds": 107.84621150099701,
+    "command_receipt": "evidence/green.json"
+  },
+  "syntax": {
+    "passed": 9,
+    "failed": 0,
+    "receipt": "evidence/syntax.json"
+  },
+  "fixture_diagnostic": "The first baseline attempt had 8 failures and 3 passes because the newer mock tried to write an unset telemetry path. It is retained separately and is not regression evidence. A temporary unused output path restores mock compatibility while leaving baseline source and all assertions unchanged; the original runner ignores the sidecar and valid RED produces 9 failures with 2 controls.",
+  "historical_identifiers_only": [
+    "31f1f4ec0e0c5dbbad53199831c01e4255d62cb4",
+    "0bb110589461140d2a2c42f45ee1f1c95c2d43be"
+  ],
+  "historical_limit": "The prior executor and its unpushed local objects/artifacts were lost. These IDs identify historical work only; no old bytes or execution evidence are claimed available here.",
+  "review_status": "Exact original upstream blobs and minimal workflow delta verified locally; independent coordinator review and integrated-source qualification pending.",
+  "release_status": "BLOCKED; no native analyzer campaign, whole-repository CI, deployment or release pass is inferred.",
+  "files": [
+    {
+      "path": "evidence/red-fixture-compatibility.log.gz",
+      "sha256": "c8cb1ebc5103edfec4c6792901026231d93d31e58c7bde14eed6a657aa057e69",
+      "bytes": 1590,
+      "decoded_name": "red-fixture-compatibility.log",
+      "decoded_sha256": "53926891aecba0010b2c83e5b8e4c3c58dbaf9e90cfb86d1ad035b925ce317d7",
+      "decoded_bytes": 19372
+    },
+    {
+      "path": "evidence/red.log.gz",
+      "sha256": "7d3804d428f11e5f50ba7f3c7a073d367533b26799a52f6e364e9e2f269f22c3",
+      "bytes": 1307,
+      "decoded_name": "red.log",
+      "decoded_sha256": "dd0f73122230caa67d023e02f30fc85b7bb8f662fc0aae02278636ea73e50084",
+      "decoded_bytes": 12693
+    },
+    {
+      "path": "evidence/green.log.gz",
+      "sha256": "ee12c9493f4f3ff8b72a0ae41ac77c046c4bf905a2384e715ba8a69f93ebb5a0",
+      "bytes": 2542,
+      "decoded_name": "green.log",
+      "decoded_sha256": "189cbc817598c47cf9a5d845d31bd1b1b5f3dbcc1e0aefa8d17a656eea8eac4d",
+      "decoded_bytes": 14075
+    },
+    {
+      "path": "evidence/source.json",
+      "sha256": "48ed2ecd993ba494fd48bb9e953eaab540a29fc8b78ffc2ccfa37946e9c62af9",
+      "bytes": 2308
+    },
+    {
+      "path": "evidence/syntax.json",
+      "sha256": "73e99cf11b2f10719cba8ef3ecfc5a43b3ea8d39f20660bd966e727ccfff9aad",
+      "bytes": 2763
+    },
+    {
+      "path": "evidence/red-fixture-compatibility.json",
+      "sha256": "371365cc7fb25d831efdf08980e487590d0317cc15d0a422f0f7e18f3b3cec03",
+      "bytes": 834
+    },
+    {
+      "path": "evidence/red.json",
+      "sha256": "dbabfc9449ab12da7cd31fd9fd943cfb9f9250a8faed3b519f32af84f965a4d2",
+      "bytes": 1227
+    },
+    {
+      "path": "evidence/green.json",
+      "sha256": "6c510a8985569ee6347689114e2805f0f71c0e99d595d8427420576f0e2fa8b0",
+      "bytes": 847
+    },
+    {
+      "path": "evidence/live-ci-7b4c1554.json",
+      "sha256": "cb0acfb0ec5bd3bb4ac4fd6f5b82377f1189dcb19b53bb20583187b97cae652d",
+      "bytes": 17430,
+      "scope": "Read-only hosted CI observation for the earlier published PR278 source only, not this recovered implementation or subsequent integrations.",
+      "observed_at_utc": "2026-11-19 12:51:09 UTC",
+      "observed_source_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b"
+    }
+  ],
+  "hosted_ci_observation": {
+    "path": "evidence/live-ci-7b4c1554.json",
+    "sha256": "cb0acfb0ec5bd3bb4ac4fd6f5b82377f1189dcb19b53bb20583187b97cae652d",
+    "bytes": 17430,
+    "scope": "Read-only hosted CI observation for the earlier published PR278 source only, not this recovered implementation or subsequent integrations.",
+    "observed_at_utc": "2026-11-19 12:51:09 UTC",
+    "observed_source_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b"
+  }
+}

@@ -1,0 +1,10 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/packages/chain-adapters
+
+
+ Test Files  2 passed (2)
+      Tests  45 passed (45)
+   Start at  06:05:42
+   Duration  865ms (import 55%, tests 34%, transform 10%, worker 1%)
+

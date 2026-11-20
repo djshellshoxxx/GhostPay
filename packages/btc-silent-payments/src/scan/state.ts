@@ -21,9 +21,15 @@ export interface ScanStateMatch {
   readonly status: 'confirmed' | 'pending';
   /**
    * Where the output was spent, learned locally from the source's block spends (only a match with an outpoint can
-   * carry it). Cleared when that block is rolled back, so the output counts as unspent again.
+   * carry it). Cleared when that block is rolled back; absence alone is not proof that the output is unspent.
    */
   readonly spent?: { readonly height: number; readonly blockHash: string; readonly spentBy: string };
+  /**
+   * Every block's complete input set was checked from this output's discovery through this block (inclusive).
+   * Missing for legacy matches and sources without complete spends. A later scan cannot bridge a missing interval.
+   * This covers confirmed blocks only, never mempool spends or blocks above the recorded height.
+   */
+  readonly spentCheckedThrough?: { readonly height: number; readonly blockHash: string };
 }
 
 /**
@@ -62,9 +68,11 @@ const matchKey = (m: { readonly txid?: string; readonly vout?: number; readonly 
   m.txid !== undefined && m.vout !== undefined ? `${m.txid}:${String(m.vout)}` : `key:${m.xOnlyPublicKey}`;
 
 /**
- * Appends one fully scanned block (must be `lastHeight + 1`), its outputs and the spends it reported. Outputs seen
- * before are re-confirmed in place (unspent again); a spend marks the match with that outpoint and is ignored when no
- * match has it.
+ * Appends one fully scanned block (must be `lastHeight + 1`), its outputs and the spends it reported. Pending outputs
+ * are re-confirmed in place; a previously confirmed outpoint cannot reappear at a later height. The first recorded
+ * spend is preserved so a later duplicate cannot replace its canonical evidence. Spends of unknown or pending
+ * matches are ignored. `localSpendsComplete` must be true only after the complete spend list for this block was validated.
+ * The default preserves legacy callers without granting negative spend evidence from an empty list.
  */
 export function recordScannedBlock(
   state: ScanState,
@@ -72,6 +80,7 @@ export function recordScannedBlock(
   hash: string,
   found: readonly ReceivedOutput[],
   spends: readonly SpendEvent[] = [],
+  localSpendsComplete = false,
 ): ScanState {
   if (height !== state.lastHeight + 1 || !HEX64.test(hash)) return fail('INVALID_INPUT');
   const matches = new Map(state.matches.map((m) => [matchKey(m), m]));
@@ -87,15 +96,28 @@ export function recordScannedBlock(
       ...(f.vout === undefined ? {} : { vout: f.vout }),
       ...(f.amountSats === undefined ? {} : { amountSats: f.amountSats }),
       status: 'confirmed',
+      ...(localSpendsComplete && f.txid !== undefined && f.vout !== undefined ? { spentCheckedThrough: { height, blockHash: hash } } : {}),
     };
-    matches.delete(matchKey(m));
-    matches.set(matchKey(m), m);
+    const key = matchKey(m);
+    const prior = matches.get(key);
+    if (prior?.status === 'confirmed' && m.txid !== undefined && m.vout !== undefined) {
+      if (prior.height !== height || prior.blockHash !== hash) return fail('INVALID_RESPONSE');
+      continue; // An identical outpoint repeated within this block keeps its first discovery record.
+    }
+    matches.delete(key);
+    matches.set(key, m);
   }
   for (const sp of spends) {
     if (sp.height !== height || sp.blockHash !== hash) return fail('INVALID_INPUT');
     const key = `${sp.txid}:${String(sp.vout)}`;
     const m = matches.get(key);
-    if (m !== undefined) matches.set(key, { ...m, spent: { height, blockHash: hash, spentBy: sp.spentBy } });
+    if (m?.status === 'confirmed' && m.spent === undefined) matches.set(key, { ...m, spent: { height, blockHash: hash, spentBy: sp.spentBy } });
+  }
+  if (localSpendsComplete) {
+    for (const [key, m] of matches) {
+      if (m.status === 'confirmed' && m.spentCheckedThrough?.height === height - 1)
+        matches.set(key, { ...m, spentCheckedThrough: { height, blockHash: hash } });
+    }
   }
   const recent = [...state.recent, { height, hash }].slice(-SCAN_REORG_WINDOW);
   return { ...state, lastHeight: height, lastHash: hash, recent, matches: [...matches.values()] };
@@ -103,6 +125,7 @@ export function recordScannedBlock(
 
 export interface ReconcileResult {
   readonly state: ScanState;
+  /** The cursor or match evidence was corrected and the returned state needs persistence. */
   readonly rolledBack: boolean;
   /** Next height to scan. */
   readonly resumeHeight: number;
@@ -111,36 +134,68 @@ export interface ReconcileResult {
 /**
  * Compares remembered blocks with the current best chain (`hashAt`, e.g. a verified {@link HeaderChain}).
  * On a mismatch it rolls back to the highest remembered block still on the chain, marks every match above
- * it `pending` and clears every spend above it (the output is unspent again until a rescan finds the spend); with no
- * common block inside the window it restarts from `birthHeight` and marks all `pending`.
+ * it `pending`, clears spends above it and clamps continuous input coverage to the ancestor; with no common block
+ * inside the window it restarts from `birthHeight` and marks all `pending`. A removed spend is unknown unless retained
+ * coverage supports the caller's requested range.
+ * By default, also validates discovery/spend/coverage hashes outside the remembered window using cached `hashAt`
+ * lookups. Inconsistent or unavailable evidence is removed conservatively even when the cursor's hash still agrees.
+ * `validateEvidence=false` is used by resumeScan's implicit provider lookup to avoid unbounded historical requests;
+ * callers with a local header chain should keep the default.
  */
 export async function reconcileScanState(
   state: ScanState,
   hashAt: (height: number) => string | undefined | Promise<string | undefined>,
+  validateEvidence = true,
 ): Promise<ReconcileResult> {
   if (state.recent.length === 0) return { state, rolledBack: false, resumeHeight: state.lastHeight + 1 };
+  const hashes = new Map<number, string | undefined>();
+  const hash = async (height: number): Promise<string | undefined> => {
+    if (!hashes.has(height)) hashes.set(height, await hashAt(height));
+    return hashes.get(height);
+  };
   let ancestor: { height: number; hash: string } | undefined;
   for (let i = state.recent.length - 1; i >= 0; i--) {
     const r = state.recent[i] as { height: number; hash: string };
-    if ((await hashAt(r.height)) === r.hash) {
+    if ((await hash(r.height)) === r.hash) {
       ancestor = r;
       break;
     }
   }
-  if (ancestor !== undefined && ancestor.height === state.lastHeight) return { state, rolledBack: false, resumeHeight: state.lastHeight + 1 };
   const keepTo = ancestor?.height ?? state.birthHeight - 1;
-  const next: ScanState = {
+  let next: ScanState = keepTo === state.lastHeight ? state : {
     ...state,
     lastHeight: keepTo,
     lastHash: ancestor?.hash ?? null,
     recent: state.recent.filter((r) => r.height <= keepTo),
     matches: state.matches.map((m) => {
-      const { spent, ...unspent } = m;
-      const kept = spent !== undefined && spent.height <= keepTo ? m : unspent;
-      return kept.height > keepTo ? { ...kept, status: 'pending' as const } : kept;
+      const { spent, spentCheckedThrough, ...plain } = m;
+      if (m.height > keepTo) return { ...plain, status: 'pending' as const };
+      const checked = spentCheckedThrough === undefined || spentCheckedThrough.height <= keepTo ? spentCheckedThrough :
+        ancestor === undefined ? undefined : { height: keepTo, blockHash: ancestor.hash };
+      return { ...plain,
+        ...(spent !== undefined && spent.height <= keepTo ? { spent } : {}),
+        ...(checked === undefined ? {} : { spentCheckedThrough: checked }),
+      };
     }),
   };
-  return { state: next, rolledBack: true, resumeHeight: keepTo + 1 };
+  if (validateEvidence) {
+    const matches: ScanStateMatch[] = [];
+    let changed = false;
+    for (const m of next.matches) {
+      if (m.status === 'pending') { matches.push(m); continue; }
+      const discoveryValid = await hash(m.height) === m.blockHash;
+      const spentValid = m.spent === undefined || await hash(m.spent.height) === m.spent.blockHash;
+      const coverageValid = m.spentCheckedThrough === undefined || await hash(m.spentCheckedThrough.height) === m.spentCheckedThrough.blockHash;
+      if (discoveryValid && spentValid && coverageValid) { matches.push(m); continue; }
+      const plain = { ...m };
+      delete plain.spent;
+      delete plain.spentCheckedThrough;
+      matches.push(discoveryValid ? plain : { ...plain, status: 'pending' });
+      changed = true;
+    }
+    if (changed) next = { ...next, matches };
+  }
+  return { state: next, rolledBack: next !== state, resumeHeight: keepTo + 1 };
 }
 
 /** JSON text of a {@link ScanState} (amounts as decimal strings). */
@@ -163,9 +218,16 @@ function parseSpent(v: unknown, matchHeight: number, lastHeight: number): NonNul
   return { height, blockHash, spentBy };
 }
 
+function parseCoverage(v: unknown, matchHeight: number, lastHeight: number): NonNullable<ScanStateMatch['spentCheckedThrough']> {
+  if (!isRecord(v)) return fail('INVALID_INPUT');
+  const { height, blockHash } = v;
+  if (!isHeight(height) || height < matchHeight || height > lastHeight || typeof blockHash !== 'string' || !HEX64.test(blockHash)) return fail('INVALID_INPUT');
+  return { height, blockHash };
+}
+
 function parseMatch(v: unknown, lastHeight: number): ScanStateMatch {
   if (!isRecord(v)) return fail('INVALID_INPUT');
-  const { height, blockHash, xOnlyPublicKey, k, label, txid, vout, amountSats, status, spent } = v;
+  const { height, blockHash, xOnlyPublicKey, k, label, txid, vout, amountSats, status, spent, spentCheckedThrough } = v;
   if (!isHeight(height) || typeof blockHash !== 'string' || !HEX64.test(blockHash) || typeof xOnlyPublicKey !== 'string' || !HEX64.test(xOnlyPublicKey)) {
     return fail('INVALID_INPUT');
   }
@@ -180,7 +242,9 @@ function parseMatch(v: unknown, lastHeight: number): ScanStateMatch {
     amount = BigInt(amountSats);
     if (amount > MAX_SATS) return fail('INVALID_INPUT');
   }
-  if (spent !== undefined && (txid === undefined || vout === undefined)) return fail('INVALID_INPUT');
+  if ((spent !== undefined || spentCheckedThrough !== undefined) && (txid === undefined || vout === undefined || status !== 'confirmed')) return fail('INVALID_INPUT');
+  const parsedSpent = spent === undefined ? undefined : parseSpent(spent, height, lastHeight);
+  if (parsedSpent !== undefined && parsedSpent.spentBy === txid) return fail('INVALID_INPUT');
   return {
     height,
     blockHash,
@@ -191,7 +255,8 @@ function parseMatch(v: unknown, lastHeight: number): ScanStateMatch {
     ...(vout === undefined ? {} : { vout: vout }),
     ...(amount === undefined ? {} : { amountSats: amount }),
     status,
-    ...(spent === undefined ? {} : { spent: parseSpent(spent, height, lastHeight) }),
+    ...(parsedSpent === undefined ? {} : { spent: parsedSpent }),
+    ...(spentCheckedThrough === undefined ? {} : { spentCheckedThrough: parseCoverage(spentCheckedThrough, height, lastHeight) }),
   };
 }
 
@@ -219,6 +284,21 @@ export function parseScanState(text: string): ScanState {
   if (rec.some((r) => r.height < birthHeight)) return fail('INVALID_INPUT');
   const parsed = matches.map((m: unknown) => parseMatch(m, lastHeight as number));
   if (parsed.some((m) => m.height < birthHeight || (m.status === 'confirmed' && m.height > (lastHeight as number)))) return fail('INVALID_INPUT');
+  const identities = new Set<string>();
+  const knownHashes = new Map(rec.map((r) => [r.height, r.hash]));
+  for (const m of parsed) {
+    const id = matchKey(m);
+    if (identities.has(id)) return fail('INVALID_INPUT');
+    identities.add(id);
+    if (m.status === 'confirmed' && knownHashes.has(m.height) && knownHashes.get(m.height) !== m.blockHash) return fail('INVALID_INPUT');
+    for (const evidence of [m.spent, m.spentCheckedThrough]) {
+      if (evidence === undefined) continue;
+      const expected = evidence.height === m.height ? m.blockHash : knownHashes.get(evidence.height);
+      if (expected !== undefined && evidence.blockHash !== expected) return fail('INVALID_INPUT');
+    }
+    if (m.spent !== undefined && m.spentCheckedThrough !== undefined && m.spent.height === m.spentCheckedThrough.height &&
+        m.spent.blockHash !== m.spentCheckedThrough.blockHash) return fail('INVALID_INPUT');
+  }
   return {
     version: 1,
     network: network as HeaderNetwork,
@@ -268,7 +348,7 @@ export interface ResumeScanParams extends Omit<ScanBlocksParams, 'fromHeight' | 
  */
 export async function* resumeScan(p: ResumeScanParams): AsyncGenerator<ReceivedOutput, ScanState> {
   const hashAt = p.hashAt ?? (async (h: number) => (await p.source.getTweaks(h, p.signal)).blockHash);
-  const rec = await reconcileScanState(p.state, hashAt);
+  const rec = await reconcileScanState(p.state, hashAt, p.hashAt !== undefined);
   let state = rec.state;
   if (rec.rolledBack && p.onState !== undefined) await p.onState(state);
   const from = rec.resumeHeight;
@@ -277,7 +357,8 @@ export async function* resumeScan(p: ResumeScanParams): AsyncGenerator<ReceivedO
   let pending: ReceivedOutput[] = [];
   let spends: SpendEvent[] = [];
   const watchOutpoints = new Set<string>();
-  for (const m of state.matches) if (m.txid !== undefined && m.vout !== undefined && m.spent === undefined) watchOutpoints.add(`${m.txid}:${String(m.vout)}`);
+  for (const m of state.matches) if (m.status === 'confirmed' && m.txid !== undefined && m.vout !== undefined && m.spent === undefined)
+    watchOutpoints.add(`${m.txid}:${String(m.vout)}`);
   for await (const r of scanBlocks({
     ...p,
     fromHeight: from,
@@ -287,7 +368,7 @@ export async function* resumeScan(p: ResumeScanParams): AsyncGenerator<ReceivedO
       spends.push(e);
     },
     onBlock: async ({ height, blockHash }) => {
-      state = recordScannedBlock(state, height, blockHash, pending, spends);
+      state = recordScannedBlock(state, height, blockHash, pending, spends, p.source.getSpends !== undefined);
       pending = [];
       spends = [];
       if (p.onState !== undefined) await p.onState(state);

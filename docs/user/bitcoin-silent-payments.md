@@ -28,21 +28,24 @@ Source: `apps/web/src/features/btc/network.ts`. The app refuses a server whose g
 Scanning needs an Esplora-compatible server URL that you supply. No public server is hard-coded.
 
 - The app downloads each block's transactions and computes the tweak locally. Keys never leave the page.
-- The server sees block heights, the outputs you check for spends, and any transaction you broadcast.
+- The server sees your connecting IP address, requested block heights and any transaction you broadcast. A full-block scan checks consumed outpoints locally by default. The optional provider check reveals each queried output; light oracle mode also requests matched transaction proofs and requires provider spent-status checks.
 - A malicious server can hide payments, invent payments (see below) or lie about spent state. It cannot spend your funds.
 - Each scanned block is checked locally: the header hashes to the served block hash, its proof of work meets the network limit, txids recomputed from the served transactions produce the header's Merkle root, and the witness data matches the coinbase witness commitment (BIP-141). Omitted, injected or edited transactions in a block are refused.
 - Before scanning, the view loads and rechecks a header chain anchored to the pinned genesis block, then checks linkage, proof of work, difficulty rules, timestamps and versions. Among branches the server supplies, it keeps the one with the most cumulative work. Every scanned block must match this checked chain at its height, even when the requested scan starts later than genesis.
-- This is header-chain validation, not SPV or full transaction/script validation. A server can hide a heavier chain or mine its own heavier fork cheaply on a test network. The scripts and amounts of the outputs a transaction spends (from earlier blocks), and spent status, remain server-supplied. Confirm a payment with a source you trust before relying on it. See the [exact scan disclosures](../../apps/web/src/features/btc/verification.ts).
-- A scan covers at most 500 blocks per run.
+- This is header-chain validation, not SPV or full transaction/script validation. A server can hide a heavier chain or mine its own heavier fork cheaply on a test network. The scripts and amounts of the outputs a transaction spends (from earlier blocks) remain server-supplied. Local spentness covers only the continuous input-checked range through the current checked tip; it cannot see mempool spends. A provider's spent-status report is not independent proof. See the [exact scan disclosures](../../apps/web/src/features/btc/verification.ts).
+- A scan covers at most 500 new blocks per run. Opt-in encrypted scan progress can resume across reloads after you import the same wallet. Private keys and spending tweaks are not stored in that progress. Incomplete or legacy spending history remains **unknown** until refreshed; unknown outputs cannot be selected for a sweep.
+- Changing the network, source or optional provider consent cancels the running operation. Turning consent off prevents further optional queries but cannot recall a request already sent. Forgetting headers and reloading a shorter prefix also invalidates local spentness until a fresh scan checks the relevant suffix.
+
+The [spent-status guide](bitcoin-spent-status.md) explains local, provider and unknown evidence, encrypted resume, light-mode disclosure and refresh choices.
 
 Run your own Esplora-compatible node if you can. See [Local scanner and RPC](../operators/local-scanner-and-rpc.md).
 
 ## Seller: sweep
 
-1. Select the outputs to spend and enter a destination (a regular address or another `tsp1` address).
+1. Select outputs whose current spent status permits sweeping and enter a destination (a regular address or another `tsp1` address). Refresh unknown history before selecting an output.
 2. Enter a fee rate in sat/vB. The app has no fee oracle. Rates above 50 sat/vB or fees above 10 % of the amount show a warning.
 3. Review the card: inputs, fee, amount and destination. The sign button stays disabled until you tick the confirmation box.
-4. The app signs with the software key and checks every signature. It aborts if the fee or size differs from what you reviewed.
+4. The app signs with the software key and checks every signature. It aborts if the fee or size differs from what you reviewed. Signing does not silently query the provider about your selected outputs. Local scan evidence does not cover mempool spends; an optional provider refresh must be explicitly chosen and can clear a stale review.
 5. Broadcasting is a separate click.
 
 The sweep uses BIP-125 signalling. The view has no fee-bump button or replacement workflow for a stuck, unconfirmed sweep.
@@ -56,7 +59,7 @@ The sweep uses BIP-125 signalling. The view has no fee-bump button or replacemen
 ## Not in scope yet
 
 - No relayer, no fee sponsorship and no GhostPay fee on this path.
-- No BlindBit oracle in the UI (the client exists in the package but is not wired).
+- No guarantee that a selected BlindBit oracle reports every payment. The UI supports explicit HTTP/gRPC-web sources, a second-source cross-check and light scans with inclusion proofs; proofs do not establish completeness.
 - No fee estimator in the UI.
 - Mainnet is disabled until the project's enablement checklist is complete and an independent audit exists.
 

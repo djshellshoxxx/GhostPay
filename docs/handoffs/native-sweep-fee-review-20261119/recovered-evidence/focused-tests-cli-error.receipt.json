@@ -1,0 +1,39 @@
+{
+  "source": "ed95c5601b0ec127be56cad57fcb78d44954b2fb",
+  "tree": "7de0e0371f078ca5d0926b0fa1162d23dd781074",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay-native/node_modules/vitest/vitest.mjs",
+    "run",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/workspace/scratch/246ff268d20d/GhostPay-native/docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/focused-tests.json",
+    "src/lib/sweep.test.ts",
+    "src/lib/sweep.reviewAuthority.test.ts",
+    "src/lib/sweep.nativeReview.test.ts",
+    "src/lib/sweepAttemptJournal.test.ts",
+    "src/state.sweep.test.ts",
+    "src/views/Sweep.test.tsx",
+    "src/views/Sweep.privacy.test.tsx",
+    "src/views/Sweep.quoteLifecycle.test.tsx",
+    "src/views/Sweep.nativeReview.test.tsx"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay-native/apps/web",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=768",
+    "NO_COLOR": "1"
+  },
+  "started": "2026-11-19T13:03:34.981395+00:00",
+  "ended": "2026-11-19T13:03:35.179476+00:00",
+  "durationSeconds": 0.198,
+  "exitCode": 1,
+  "log": {
+    "path": "docs/handoffs/native-sweep-fee-review-20261119/recovered-evidence/focused-tests-cli-error.log.gz",
+    "uncompressedSha256": "d2960344a57288fb74023fd62407b176b639069d6e40f3d6ffc64a4b23f4519a",
+    "uncompressedBytes": 1229,
+    "storedSha256": "a9e5dca66280b6b0b5632c82d91e8d57ef6123c41ec6301e7e290167e00f62c7"
+  },
+  "classification": "Runner option error before test execution; zero product tests qualified."
+}

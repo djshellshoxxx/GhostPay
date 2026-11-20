@@ -1,4 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import {
+  DEFAULT_WEB_NETWORK_SELECTION, FIRST_USE_NOTICE, PROFILE_VERIFICATION, TOR_BROWSER_NOTICE, UNVERIFIED_NOTICE, WEB_NETWORK_SELECTION_KEY, WEB_RPC_MODES, WEB_SELECTABLE_PROFILES,
+  firstUseNotices, isNonDefaultSelection, parseWebNetworkSelection,
+  type ProfileVerification, type WebNetworkSelection, type WebProfileId, type WebRpcMode,
+} from '@ghostpay/net-transport/browser';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import {
@@ -10,13 +15,15 @@ import { shortHex } from '../lib/format';
 import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
-import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
-import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
-import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
+import { checkDelayRange, checkRelayerUrl, checkRpcUrl, isRpcSessionOnly, rpcUrlLooksSecret, setRpcSessionOnly, type RpcSlot, type Settings as SettingsData } from '../lib/settings';
+import { SCAN_PRIVACY_KEY, MAX_BULK_EVIDENCE, MAX_PAD_BLOCKS, applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
+import { SCAN_LANES_KEY, MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
+import type { NetworkAuthorization } from '../lib/networkAuthorization';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import { readNetworkSelection } from '../lib/networkSelection';
 
 export function Settings(): ReactNode {
   const app = useApp();
@@ -27,6 +34,15 @@ export function Settings(): ReactNode {
   const s = app.settings;
   const [rpc, setRpc] = useState<Record<string, string>>({ ...s.rpcUrls });
   const [rpc2, setRpc2] = useState<Record<string, string>>({ ...s.rpcUrlsSecondary });
+  // Chains whose endpoint the user keeps for this session only (never written to localStorage).
+  const [sessionOnly, setSessionOnly] = useState<Record<string, boolean>>(() => {
+    const out: Record<string, boolean> = {};
+    for (const [slot, map] of [['primary', s.rpcUrls], ['secondary', s.rpcUrlsSecondary]] as const) {
+      for (const [k, v] of Object.entries(map)) if (isRpcSessionOnly(slot, k, v)) out[`${slot}:${k}`] = true;
+    }
+    return out;
+  });
+  const uid = useId();
   const [relayer, setRelayer] = useState(s.relayerUrl);
   const [minSec, setMinSec] = useState(s.delayMinSec);
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
@@ -37,19 +53,32 @@ export function Settings(): ReactNode {
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
   const testRevision = useRef(new Map<number, number>());
+  const testControllers = useRef(new Map<number, AbortController>());
   const mounted = useRef(true);
 
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; for (const controller of testControllers.current.values()) controller.abort(); }; }, []);
 
   const invalidateTest = (chainId: number): void => {
+    testControllers.current.get(chainId)?.abort();
+    testControllers.current.delete(chainId);
     testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
     setChecks((current) => { const next = { ...current }; delete next[chainId]; return next; });
   };
 
   // A saved-settings change invalidates pending RPC tests (the exchange section resets its own review and export).
   useEffect(() => {
+    for (const controller of testControllers.current.values()) controller.abort();
+    testControllers.current.clear();
     for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
     setChecks({});
+    setRpc({ ...s.rpcUrls }); setRpc2({ ...s.rpcUrlsSecondary }); setRelayer(s.relayerUrl);
+    setMinSec(s.delayMinSec); setMaxSec(s.delayMaxSec); setLock(s.lockTimeoutMin);
+    setTheme(s.theme); setAutoClear(s.autoClearFragment); setPins(s.pinnedSigners.join('\n'));
+    const ephemeral: Record<string, boolean> = {};
+    for (const [slot, map] of [['primary', s.rpcUrls], ['secondary', s.rpcUrlsSecondary]] as const) {
+      for (const [id, value] of Object.entries(map)) if (isRpcSessionOnly(slot, id, value)) ephemeral[`${slot}:${id}`] = true;
+    }
+    setSessionOnly(ephemeral);
   }, [s]);
 
   const onSave = (e: FormEvent): void => {
@@ -70,6 +99,12 @@ export function Settings(): ReactNode {
         return;
       }
       const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      // Commit retention choices only after the entire form validates. A rejected form must not clear an earlier
+      // session-only decision that a later, unrelated preference save still needs to honor.
+      for (const [slot, map] of [['primary', rpcUrls], ['secondary', rpcUrlsSecondary]] as const) {
+        const known = slot === 'primary' ? rpc : rpc2;
+        for (const k of Object.keys(known)) setRpcSessionOnly(slot, k, sessionOnly[`${slot}:${k}`] === true ? map[k] : undefined);
+      }
       const saved = app.updateSettings(next);
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
@@ -82,18 +117,44 @@ export function Settings(): ReactNode {
     const chain = services.chains.find((c) => c.chainId === chainId);
     const url = rpc[String(chainId)] ?? '';
     if (chain === undefined) return;
+    testControllers.current.get(chainId)?.abort();
+    const controller = new AbortController();
+    testControllers.current.set(chainId, controller);
     const revision = (testRevision.current.get(chainId) ?? 0) + 1;
     testRevision.current.set(chainId, revision);
     const current = (): boolean => mounted.current && testRevision.current.get(chainId) === revision;
     setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.checking' } }));
     void (async () => {
+      let context: NetworkAuthorization | undefined;
       try {
-        await services.createRpc(chain, checkRpcUrl(url));
+        const checked = checkRpcUrl(url);
+        context = services.network?.authorize({ action: 'settings-check', category: 'rpc', endpoint: checked, network: { kind: 'evm', chainId }, signal: controller.signal });
+        await services.createRpc(chain, checked, context);
+        context?.assertCurrent();
         if (current()) setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.connected' } }));
       } catch (err) {
         if (current()) setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? { key: 'settings.rpc.failed' } : captureUserMessage(err) }));
+      } finally {
+        context?.dispose();
+        controller.abort();
+        if (testControllers.current.get(chainId) === controller) testControllers.current.delete(chainId);
       }
     })();
+  };
+
+  const sessionToggle = (slot: RpcSlot, chainId: string, value: string, saved: string | undefined): ReactNode => {
+    if (value.trim() === '') return null;
+    const key = `${slot}:${chainId}`;
+    const stored = saved !== undefined && saved === value && !isRpcSessionOnly(slot, chainId, value);
+    return (
+      <div className="stack">
+        {rpcUrlLooksSecret(value) && <Notice kind="warn">{t(stored ? 'settings.rpc.secretStored' : 'settings.rpc.secretWarning')}</Notice>}
+        <div className="check">
+          <input id={`${uid}-so-${slot}-${chainId}`} type="checkbox" checked={sessionOnly[key] === true} onChange={(e) => { setSessionOnly({ ...sessionOnly, [key]: e.target.checked }); }} />
+          <label htmlFor={`${uid}-so-${slot}-${chainId}`}>{t('settings.rpc.sessionOnly')}</label>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -115,11 +176,13 @@ export function Settings(): ReactNode {
               <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
                 {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
+              {sessionToggle('primary', String(c.chainId), rpc[String(c.chainId)] ?? '', s.rpcUrls[String(c.chainId)])}
               <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
               <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
+              {sessionToggle('secondary', String(c.chainId), rpc2[String(c.chainId)] ?? '', s.rpcUrlsSecondary[String(c.chainId)])}
             </div>
           ))}
         </fieldset>
@@ -161,6 +224,7 @@ export function Settings(): ReactNode {
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
+      <NetworkProfilesSection />
       <ScanPrivacySection />
       <SettingsExchangeSection onApplied={(next, applied) => {
         // Only the form fields of applied sections follow the import; other unsaved edits stay as typed.
@@ -388,6 +452,139 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
   );
 }
 
+// i18n-use: settings.network.rpcProfile settings.network.relayerProfile settings.network.saved settings.network.refused settings.scanPrivacy.errPad settings.scanPrivacy.bulkEvidence settings.scanPrivacy.bulkEvidenceHint settings.scanPrivacy.errBulk
+// i18n-use: settings.network.profile.direct settings.network.profile.torBrowser settings.network.rpcMode.single settings.network.rpcMode.ownNode settings.network.status.loopbackTested settings.network.status.unverified settings.network.notice.unverified scanPrivacy.disclosure.firstUseNotice scanPrivacy.disclosure.torBrowserNotice
+const PROFILE_OPTION: Readonly<Record<WebProfileId, MessageKey>> = { direct: 'settings.network.profile.direct', 'tor-browser': 'settings.network.profile.torBrowser' };
+const RPC_MODE_OPTION: Readonly<Record<WebRpcMode, MessageKey>> = { single: 'settings.network.rpcMode.single', 'own-node': 'settings.network.rpcMode.ownNode' };
+const VERIFICATION_LABEL: Readonly<Record<ProfileVerification, MessageKey>> = { 'loopback-tested': 'settings.network.status.loopbackTested', unverified: 'settings.network.status.unverified' };
+/** Translations of the normative net-transport notices (same wording as `claims.ts`). */
+const NOTICE_KEY: ReadonlyMap<string, MessageKey> = new Map<string, MessageKey>([
+  [FIRST_USE_NOTICE, 'scanPrivacy.disclosure.firstUseNotice'],
+  [TOR_BROWSER_NOTICE, 'scanPrivacy.disclosure.torBrowserNotice'],
+  [UNVERIFIED_NOTICE, 'settings.network.notice.unverified'],
+]);
+
+/** Returns false when the browser refused to store the selection. */
+function saveNetworkSelection(sel: WebNetworkSelection): boolean {
+  try {
+    const storage = browserStorage();
+    if (storage === undefined) return false;
+    storage.setItem(WEB_NETWORK_SELECTION_KEY, JSON.stringify(parseWebNetworkSelection(sel)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * TM14: network profile per purpose and RPC mode. Defaults (Direct, single RPC) are unchanged; a non-default choice is
+ * stored but requests are blocked until the first-use notice is acknowledged. Invalid/unreadable settings also block
+ * RPC; only an absent preference uses the default. Changing any draft choice clears its acknowledgement, without
+ * changing the saved choice until Save. Tor Browser and own node are unverified here.
+ */
+function preferenceRevision(key: string): string | null | undefined {
+  try { return browserStorage()?.getItem(key); } catch { return undefined; }
+}
+
+function NetworkProfilesSection(): ReactNode {
+  const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const uid = useId();
+  const storedRevision = useRef(preferenceRevision(WEB_NETWORK_SELECTION_KEY));
+  const [draft, setDraft] = useState<WebNetworkSelection>(() => {
+    const stored = readNetworkSelection();
+    return stored.status === 'invalid' ? DEFAULT_WEB_NETWORK_SELECTION : stored.selection;
+  });
+  const [saved, setSaved] = useState(readNetworkSelection);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  const choose = (patch: Partial<Omit<WebNetworkSelection, 'noticeAcknowledged'>>): void => {
+    setDraft((d) => ({ ...d, ...patch, noticeAcknowledged: false }));
+    setMessage(undefined);
+  };
+  const refreshStored = (): void => {
+    storedRevision.current = preferenceRevision(WEB_NETWORK_SELECTION_KEY);
+    const value = readNetworkSelection();
+    setDraft(value.status === 'invalid' ? DEFAULT_WEB_NETWORK_SELECTION : value.selection);
+    setSaved(value);
+    services.network?.invalidate();
+    setMessage(undefined);
+  };
+  useEffect(() => {
+    const changed = (event: StorageEvent): void => {
+      if (event.key === null || event.key === WEB_NETWORK_SELECTION_KEY) {
+        // Keep the user's draft and its original revision. A subsequent stale save must fail the comparison below
+        // rather than overwrite a newer profile simply because its storage event already arrived.
+        setSaved(readNetworkSelection());
+        services.network?.invalidate();
+        setMessage(undefined);
+      }
+    };
+    window.addEventListener('storage', changed);
+    return () => { window.removeEventListener('storage', changed); };
+  }, []);
+  const nonDefault = isNonDefaultSelection(draft);
+  const effective = saved.status === 'ready' ? saved.selection : undefined;
+  const onSave = (e: FormEvent): void => {
+    e.preventDefault();
+    if (preferenceRevision(WEB_NETWORK_SELECTION_KEY) !== storedRevision.current) {
+      refreshStored();
+      setMessage({ kind: 'warn', text: { key: 'error.network.authorizationRefused' } });
+      return;
+    }
+    const ok = saveNetworkSelection(draft);
+    storedRevision.current = preferenceRevision(WEB_NETWORK_SELECTION_KEY);
+    services.network?.invalidate();
+    setSaved(readNetworkSelection());
+    setMessage(ok ? { kind: 'ok', text: { key: 'settings.network.saved' } } : { kind: 'warn', text: { key: 'settings.network.refused' } });
+  };
+  const profileSelect = (field: 'rpcProfile' | 'relayerProfile', label: MessageKey): ReactNode => (
+    <Field label={t(label)}>
+      {(id) => (
+        <select id={id} value={draft[field]} onChange={(e) => { const v = WEB_SELECTABLE_PROFILES.find((p) => p === e.target.value); if (v !== undefined) choose({ [field]: v }); }}>
+          {WEB_SELECTABLE_PROFILES.map((p) => <option key={p} value={p}>{t(PROFILE_OPTION[p])}</option>)}
+        </select>
+      )}
+    </Field>
+  );
+  return (
+    <form onSubmit={onSave} className="stack" noValidate>
+      <fieldset>
+        <legend>{t('settings.network.legend')}</legend>
+        <p className="hint">{t('settings.network.hint')}</p>
+        {profileSelect('rpcProfile', 'settings.network.rpcProfile')}
+        {profileSelect('relayerProfile', 'settings.network.relayerProfile')}
+        <Field label={t('settings.network.rpcMode')}>
+          {(id) => (
+            <select id={id} value={draft.rpcMode} onChange={(e) => { const v = WEB_RPC_MODES.find((m) => m === e.target.value); if (v !== undefined) choose({ rpcMode: v }); }}>
+              {WEB_RPC_MODES.map((m) => <option key={m} value={m}>{t(RPC_MODE_OPTION[m])}</option>)}
+            </select>
+          )}
+        </Field>
+        <h3>{t('settings.network.statusHeading')}</h3>
+        <ul>
+          {WEB_SELECTABLE_PROFILES.map((p) => <li key={p}>{t('settings.network.statusLine', { option: t(PROFILE_OPTION[p]), status: t(VERIFICATION_LABEL[PROFILE_VERIFICATION[p]]) })}</li>)}
+          {/* Own node is an RPC mode, not a transport profile: never tested against a real own node or onion RPC here. */}
+          <li>{t('settings.network.statusLine', { option: t(RPC_MODE_OPTION['own-node']), status: t(VERIFICATION_LABEL.unverified) })}</li>
+        </ul>
+        {nonDefault && <Notice kind="warn" title={t('settings.network.notice.title')}>
+          <p>{t('settings.network.notice.body')}</p>
+          <ul>{firstUseNotices(draft).map((n) => { const key = NOTICE_KEY.get(n); return <li key={n}>{key === undefined ? n : t(key)}</li>; })}</ul>
+          <div className="check">
+            <input id={`${uid}-net-ack`} type="checkbox" checked={draft.noticeAcknowledged} onChange={(e) => { setDraft((d) => ({ ...d, noticeAcknowledged: e.target.checked })); setMessage(undefined); }} />
+            <label htmlFor={`${uid}-net-ack`}>{t('settings.network.notice.ack')}</label>
+          </div>
+        </Notice>}
+        {saved.status === 'invalid' && <Notice kind="warn">{t('error.network.profileInvalid')}</Notice>}
+        {saved.status === 'pending' && <p role="status" className="hint">{t('settings.network.pending')}</p>}
+        {effective !== undefined && <p className="hint">{t('settings.network.active', { rpc: t(PROFILE_OPTION[effective.rpcProfile]), relayer: t(PROFILE_OPTION[effective.relayerProfile]), mode: t(RPC_MODE_OPTION[effective.rpcMode]) })}</p>}
+        <button type="submit" className="btn btn-primary">{t('settings.network.save')}</button>
+        {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
+      </fieldset>
+    </form>
+  );
+}
+
 /** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
 // i18n-use: settings.scanLanes.errFlood
 function ScanPrivacySection(): ReactNode {
@@ -395,10 +592,20 @@ function ScanPrivacySection(): ReactNode {
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const storedRevision = useRef([preferenceRevision(SCAN_PRIVACY_KEY), preferenceRevision(SCAN_LANES_KEY)]);
   const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
   // Spec 05 lane and privacy-set options: own key, saved by the same button.
   const [lanes, setLanes] = useState<ScanLaneSettings>(() => loadScanLanes(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  const refreshStored = (): void => {
+    storedRevision.current = [preferenceRevision(SCAN_PRIVACY_KEY), preferenceRevision(SCAN_LANES_KEY)];
+    setCfg(loadScanPrivacy(browserStorage())); setLanes(loadScanLanes(browserStorage())); setMessage(undefined);
+  };
+  useEffect(() => {
+    const changed = (event: StorageEvent): void => { if (event.key === null || event.key === SCAN_PRIVACY_KEY || event.key === SCAN_LANES_KEY) refreshStored(); };
+    window.addEventListener('storage', changed);
+    return () => { window.removeEventListener('storage', changed); };
+  }, []);
   const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const setLane = (patch: Partial<ScanLaneSettings>): void => { setLanes((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
@@ -406,6 +613,10 @@ function ScanPrivacySection(): ReactNode {
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
     try {
+      if (preferenceRevision(SCAN_PRIVACY_KEY) !== storedRevision.current[0] || preferenceRevision(SCAN_LANES_KEY) !== storedRevision.current[1]) {
+        refreshStored();
+        throw new UserFacingError({ key: 'error.network.authorizationRefused' });
+      }
       const endpoints: Record<string, string> = {};
       for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
       const indexerUrls: Record<string, string> = {};
@@ -415,9 +626,13 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new UserFacingError({ key: 'settings.scanPrivacy.errDelays' });
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
+      if (!ok(cfg.padBlocks, 0, MAX_PAD_BLOCKS)) throw new UserFacingError({ key: 'settings.scanPrivacy.errPad' });
+      if (!ok(cfg.bulkEvidence, 0, MAX_BULK_EVIDENCE)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBulk' });
       const next = { ...cfg, endpoints, indexerUrls };
       setCfg(next);
       const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      storedRevision.current = [preferenceRevision(SCAN_PRIVACY_KEY), preferenceRevision(SCAN_LANES_KEY)];
+      services.network?.invalidate();
       setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
@@ -464,6 +679,12 @@ function ScanPrivacySection(): ReactNode {
         ))}
         <Field label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
           {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
+        </Field>
+        <Field label={t('settings.scanPrivacy.padBlocks')} hint={t('settings.scanPrivacy.padBlocksHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} max={MAX_PAD_BLOCKS} value={Number.isNaN(cfg.padBlocks) ? '' : cfg.padBlocks} onChange={(e) => { set({ padBlocks: num(e.target.value) }); }} />}
+        </Field>
+        <Field label={t('settings.scanPrivacy.bulkEvidence')} hint={t('settings.scanPrivacy.bulkEvidenceHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} max={MAX_BULK_EVIDENCE} value={Number.isNaN(cfg.bulkEvidence) ? '' : cfg.bulkEvidence} onChange={(e) => { set({ bulkEvidence: num(e.target.value) }); }} />}
         </Field>
         <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
         <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>

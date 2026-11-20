@@ -55,7 +55,8 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
   const [busy, setBusy] = useState(false);
 
   const client = async () => {
-    const c = await app.getRpc(ctx.chain.chainId);
+    ctx.assertDeploymentCurrent();
+    const c = await app.getRpc(ctx.chain.chainId, { action: 'policy', ...(ctx.networkSignal === undefined ? {} : { signal: ctx.networkSignal }) });
     if (c === undefined) throw new UserFacingError(t('policy.error.noRpc'));
     return c;
   };
@@ -265,7 +266,7 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
     try {
       const assertSessionCurrent = captureSessionGuard();
       ctx.assertDeploymentCurrent();
-      const c = await app.getRpc(ctx.chain.chainId);
+      const c = await app.getRpc(ctx.chain.chainId, { action: 'policy', ...(ctx.networkSignal === undefined ? {} : { signal: ctx.networkSignal }) });
       assertSessionCurrent();
       ctx.assertDeploymentCurrent();
       if (c === undefined) throw new UserFacingError(t('policy.error.noRpc'));

@@ -15,9 +15,9 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 5. **Quote token format** `v2.<keyId>.<expiresAt>.<fee>.<mac>` (fee readable inside the token so the server stays stateless;
    a verify-only previous key can be configured for one quote-TTL rotation window).
    Expired quote is HTTP 410; tampered/malformed is 400; the spec lists no codes for these.
-6. **Signature is exactly 65 bytes.** The contract's `ECDSA.recover` also accepts 64-byte EIP-2098 signatures; the
-   relayer rejects them in validation. High-s signatures pass recovery here and are rejected by the simulation
-   (`invalid_signature` class, as the contract reverts with `ECDSAInvalidSignatureS`).
+6. **Signature is exactly 65 bytes.** Request validation rejects other lengths. The relayer also requires low-s
+   and `v` equal to 27 or 28 before signature recovery, lane reservation or RPC work. Non-canonical forms are refused
+   as `invalid_signature` without an owner strike instead of waiting for the contract's simulation to reject them.
 7. **One in-flight transaction means one per receipt.** The lane slot is held until the receipt (or
    `receiptTimeoutSeconds`), so throughput is about one sweep per block per chain. The HTTP response is sent as soon as the
    transaction is broadcast. After a timeout or send failure the nonce is re-read from the pending count. A receipt
@@ -65,3 +65,60 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 - `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain); it raises the gas term only and stays bounded by the 300 bps cap.
 - `quoteTtlSeconds` is now capped at 60 (was default 120, max 600); configs above 60 are refused at startup. `relayer.config.example.json` updated.
 - Option C (`PermitSkipped` event) needs a contract change and is not done. The anvil owner-drains-first / front-run e2e was not run here.
+
+## Hardening restored after the 84c2c185 merge (R07, lost-fix scan)
+
+- Logging is best effort (R07-3): `createLogger` drops a line whose sink throws, and `main.ts` writes through
+  `createStdoutSink(process.stdout)`, which swallows stream `'error'` events (EPIPE, ENOSPC) and synchronous write
+  errors. A failing log destination therefore loses lines instead of exiting the process. Lost lines are not counted
+  or retried. An exit would keep only what the state journal persists (daily budget, unsettled transactions); the
+  rate-limit buckets, loss budget, owner failure counter and breaker window are memory-only by design (PRIVACY.md).
+- Per-peer connection cap (LF-6f25385ce-1, S3-18): `server.maxConnectionsPerIp` (default 64, 1..1024) bounds the open
+  connections of one peer (IPv4 address, IPv6 /64) under the server-wide 1024. A connection over the cap is destroyed
+  on accept, before any request is read, and counted as `relayer_connections_refused_total` (no log line, no address).
+  Trusted proxies are exempt, so behind a proxy the per-client connection limit belongs to the proxy. The counter is
+  keyed by an HMAC under a random per-process key and holds an entry only while that peer has an open connection.
+- Per-client lane cap (LF-074edb61e-4, LF-2789f780b-2): `queue.maxPerClient` (default
+  `min(maxPending, max(2, ceil(maxPending / 4)))`, 1..`maxPending`) bounds the sweeps one client network bucket (IPv4
+  address, IPv6 /64, salted) holds, `429 client_queue_full`. The ticket is taken synchronously right after the cheap
+  synchronous checks and before the first await (signature recovery), and is held until the lane job settles (receipt
+  included), so concurrent requests cannot overshoot it. The map holds an entry only while a ticket is held. A salt
+  rotation gives a client a fresh key, so at a rotation one client can briefly hold twice the cap. Clients that spread
+  over many /64s or IPv4 addresses are bounded by `queue.maxPending`, the rate limits and the loss budget, not by this cap.
+- No out-of-lane pre-simulation (LF-29de09c05-1, LF-2789f780b-3): the historical design ran a bounded `eth_call`
+  before the lane (8 per chain, 2 per client, `503 busy`). Today's lane reads gas price, balance and the order state
+  (owner balance, allowance, nonce) before any simulation, so a sweep from an unfunded throw-away key is refused after
+  three cheap reads without simulating. The per-client fairness that the pre-simulation sub-limit gave is provided by
+  the per-client ticket above, which also covers the awaits before the lane (signature recovery, `PolicyGate`). Not
+  restored: a pre-simulation would add one `eth_call` per sweep and change the documented check order. Residual: a
+  flood of doomed sweeps from many client buckets still occupies lane slots for a few reads each and can make honest
+  sweeps get `503 queue_full`.
+- Quote-path RPC failures (LF-074edb61e-1): `breaker.minSamples` consecutive failed `/v1/quote` gas price reads, with
+  no good read in between, trip a closed breaker, so an outage that only quotes see still opens it and degrades
+  `/healthz`. Quote reads are kept out of the breaker's count window: their successes would dilute send and receipt
+  failures, and failures alone would pile up there with no time decay (isolated blips hours apart would open it).
+  Residual: a flaky RPC whose quote reads fail often but never `minSamples` times in a row does not open the breaker
+  from the quote path; in-lane reads still count each failure. Quote failures neither take the half-open probe nor
+  extend an open breaker's cooldown. The quote path has no funding read today; source-check and price-feed refusals
+  stay neutral on both paths, as in the lane.
+- `feeTo` pinned to the manifest (R07-2, LF-2d64ee5c3-2): with a signed deployment manifest for the chain, a `feeTo`
+  (or the hot key under `allowFeeToHotKey`) that is not the manifest's top-level `feeRecipient` stops startup. The web
+  client refuses quotes whose `feeTo` differs, so such a relayer could only ever refuse. Without a manifest (testnet,
+  dev chain) `feeTo` is the operator's choice. `deploy/config/relayer.config.example.json` (outside this directory)
+  carries a placeholder `feeTo`; an operator with a manifest must set it to the manifest's recipient.
+- OP Stack L1 data fee not accounted (R07-4, evaluated, not implemented). On OP Stack chains (chain-adapters
+  `opStack: true`: Base Sepolia 84532, OP Sepolia 11155420, Base 8453, OP Mainnet 10) every transaction also pays an
+  L1 data fee and, since Isthmus, an operator fee outside `gasUsed x gasPrice`. The relayer can tell the family
+  (`findChain(chainId).opStack`, already used to build chain clients in `runtime.ts`) but never reads it: the quote's
+  gas term (`gasUnits x eth_gasPrice`), the send-time `fee_below_gas_cost` check, the daily-budget and loss-budget
+  reservations (`gasLimit x gasPrice`) and the settlement (`gasUsed x gasPrice`, `chain.ts` receipt summaries drop
+  `l1Fee`) all count execution gas only. Exposure: the hot key pays more than the daily budget, the loss budget and
+  `relayer_gas_spent_wei_total` show, and a sweep near `amount_too_small` can be sponsored below cost; the 50 bps fee
+  floor covers this for ordinary amounts while L2 and blob fees stay low, and the `minBalanceWei` floor still trips
+  the breaker on the real balance. A contained fix is not small: (1) a quote-path and in-lane read of the
+  GasPriceOracle predeploy (`getL1Fee(serialized tx)`, `getOperatorFee(gas)`) on the configured RPC, cached like the
+  gas price, on `opStack` chains only; (2) add it, with a reserve multiplier like the web's direct sweep
+  (`apps/web/src/lib/opStackFee.ts`), to the quote's gas term, `coversGas` and both reservations; (3) carry `l1Fee` and
+  the operator fee in `ReceiptSummary`/`MinedReceipt` and charge them in `settleReceipt`; (4) tests against a fake OP
+  RPC, since anvil is not an OP Stack node. That changes the `ChainClient` interface, adds RPC calls on the quote path
+  and needs a reserve parameter, so it is left for a separate change.

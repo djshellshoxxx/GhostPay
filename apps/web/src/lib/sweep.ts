@@ -17,16 +17,18 @@ import {
   type SweepOrder,
 } from '@ghostpay/chain-adapters';
 import { findLookalikes, parseStrictAddress, isReason, classifyDestination, type DestinationClass } from '@ghostpay/address-safety';
+import { DestLedger, fundingGuard } from '@ghostpay/hygiene';
 import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScalar } from '@ghostpay/core-crypto';
 import type { TypedDataInput } from '@ghostpay/tx-review';
 import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError, type MessageDescriptor } from './errors';
-import { sweepFeeFields, sweepFeeReserve } from './opStackFee';
+import { sweepFeeFields, sweepFeeReserve, type SweepTxFields } from './opStackFee';
 import { TransactionOutcomeError } from './transactionOutcome';
 import { buildPermit } from './pay';
 import type { MessageKey } from '../i18n/catalog';
 import { RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
-import { captureSessionGuard, withSessionSecrets } from './session';
+import { captureSessionGuard, getSessionPublic, subscribeSession, withSessionSecrets } from './session';
+import { subscribeAppLock } from './appLock';
 import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reportsRevert, reviewPolicy, simulateCall, type Simulation } from './txGuard';
 
 export interface SweepTarget {
@@ -82,6 +84,115 @@ export function checkDestination(destination: string, owner: Address, manifest: 
 /** How the destination relates to what the user knows; the UI shows the linkability warning for `new`. */
 export function describeDestination(destination: Address, owner: Address, saved: readonly Address[] = []): DestinationClass {
   return classifyDestination(destination, { saved, ownStealth: [owner], feeRecipients: [] });
+}
+
+export const DEST_LEDGER_KEY = 'ghostpay.sweepDestinations.v1';
+
+interface LedgerStorage {
+  getItem(k: string): string | null;
+  setItem(k: string, v: string): void;
+  /** Older storage wrappers expose only get/set. Neither method is used by this ledger. */
+  removeItem?(k: string): void;
+}
+
+let destinationLedger = new DestLedger();
+let destinationLedgerSession = getSessionPublic();
+let destinationLedgerEpoch = 0;
+
+/** Delete only the old plaintext key; never read it or import its address links into the active session. */
+function discardLegacyDestinationLedger(storage: LedgerStorage | undefined): void {
+  try {
+    storage?.removeItem?.(DEST_LEDGER_KEY);
+  } catch {
+    // Cleanup is best effort when browser storage is denied; the app never reads or writes the legacy record.
+  }
+}
+
+function discardBrowserLegacyDestinationLedger(): void {
+  try {
+    if (typeof window !== 'undefined') discardLegacyDestinationLedger(window.localStorage);
+  } catch {
+    // Accessing localStorage itself can be denied.
+  }
+}
+
+function resetDestinationLedger(): void {
+  destinationLedger = new DestLedger();
+  destinationLedgerSession = getSessionPublic();
+  destinationLedgerEpoch++;
+  discardBrowserLegacyDestinationLedger();
+}
+
+function synchronizeDestinationLedger(): void {
+  // Also detect an intentionally silent clearSession(false), which sends no subscription notification.
+  if (destinationLedgerSession !== getSessionPublic()) resetDestinationLedger();
+}
+
+// Module-lifetime subscriptions: address links must not survive a lock or a change of seller keys.
+subscribeSession(resetDestinationLedger);
+subscribeAppLock(resetDestinationLedger);
+discardBrowserLegacyDestinationLedger();
+
+/** Capture before starting an asynchronous sweep so a late completion cannot repopulate a cleared ledger. */
+export function captureDestinationLedgerGuard(): () => boolean {
+  synchronizeDestinationLedger();
+  const epoch = destinationLedgerEpoch;
+  const session = getSessionPublic();
+  return () => session !== undefined && session === getSessionPublic() && epoch === destinationLedgerEpoch;
+}
+
+/** Snapshot of current-session history only. No persistent record is read; storage is used solely for legacy removal. */
+export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {
+  discardLegacyDestinationLedger(storage);
+  synchronizeDestinationLedger();
+  return DestLedger.from(destinationLedger.toJSON());
+}
+
+/** Records a submitted sweep in memory only. The advisory history must never make a completed sweep fail. */
+export function recordSweepDestination(
+  storage: LedgerStorage | undefined,
+  chainId: number,
+  destination: Address,
+  source: Address,
+  unchanged: () => boolean = captureDestinationLedgerGuard(),
+): void {
+  discardLegacyDestinationLedger(storage);
+  synchronizeDestinationLedger();
+  try {
+    if (getSessionPublic() === undefined || !unchanged()) return;
+    try {
+      destinationLedger.record(chainId, destination, source);
+    } catch {
+      destinationLedger.recordAcknowledgedReuse(chainId, destination, source);
+    }
+  } catch {
+    // Invalid advisory input or stale operation: transaction outcome handling is independent of this history.
+  }
+}
+
+export type DestinationWarning = 'used' | 'known-wallet';
+
+/**
+ * Advisory only (never blocks): does the destination appear in this session's swept-to history, or is it a known wallet?
+ * @returns `undefined` for an unknown or unparsable destination and for an empty ledger.
+ */
+export function destinationWarning(
+  destination: string,
+  owner: Address,
+  chainId: number,
+  ledger: DestLedger,
+  knownWallets: readonly Address[] = [],
+): DestinationWarning | undefined {
+  const parsed = parseStrictAddress(destination.trim());
+  if (isReason(parsed)) return undefined;
+  try {
+    if (!fundingGuard(parsed, { wallets: knownWallets, destinations: [] }).allow) return 'known-wallet';
+    if (describeDestination(parsed, owner, knownWallets) === 'saved') return 'known-wallet';
+    if (ledger.linkedSources(chainId, parsed).length > 0) return 'used';
+  } catch {
+    // Unsupported chain id or malformed address: no advisory.
+  }
+  return undefined;
 }
 
 export async function readBalance(rpc: Rpc, owner: Address, token: Address | 'native'): Promise<bigint> {
@@ -155,6 +266,8 @@ export interface RelayedSweepInput {
   readonly nowSeconds: () => number;
   readonly fetchFn?: FetchFn;
   readonly randomNonce?: () => bigint;
+  /** Revalidates the caller's live review before key derivation, signatures and pre-handoff continuations. */
+  readonly assertReviewCurrent?: () => void;
   /**
    * Called with the signed order's on-chain identity immediately before it is posted to the relayer. It must persist
    * the lock; if it throws, nothing is posted and the error propagates.
@@ -175,6 +288,9 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
   // Validate before deriving the one-time key or doing any signing work. The quote is rechecked after each await.
   checkQuote();
   const assertSessionUnchanged = captureSessionGuard();
+  const assertCurrent = (): void => { assertSessionUnchanged(); i.assertReviewCurrent?.(); };
+  // A loaded session does not authorize a review that the user has since changed or cancelled.
+  assertCurrent();
   const secret = deriveVerifiedSweepKey(i.target);
   try {
     const deadline = BigInt(readNow() + 20 * 60);
@@ -210,10 +326,10 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       readNow(),
     );
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     const sweepSig = await signSweep(td, secret);
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     const ptd = await buildPermit(i.rpc, {
       chainId: i.target.chainId,
       token: i.target.token,
@@ -223,7 +339,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       deadline,
     });
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     guardTypedData(
       ptd,
       {
@@ -240,14 +356,14 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       readNow(),
     );
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     const permit = await signPermit(ptd, secret);
     checkQuote();
-    assertSessionUnchanged();
+    assertCurrent();
     zeroize(secret);
     // This is the last pre-broadcast checkpoint. Do not reject after submitSweep resolves: the relayer may
     // already have accepted the signed order even if the seller session was locked while the request was in flight.
-    assertSessionUnchanged();
+    assertCurrent();
     checkQuote();
     i.onBeforeHandoff?.({ relayer: i.manifest.sweepRelayer, nonce: order.nonce, deadline: Number(deadline) });
     return await submitSweep(
@@ -285,6 +401,8 @@ export interface DirectSweepInput {
    * replace the recorded one but never add a second transfer. Refused once a transaction with this nonce is mined.
    */
   readonly replaceNonce?: number;
+  /** Revalidates the caller's live review before key derivation, signatures and pre-handoff continuations. */
+  readonly assertReviewCurrent?: () => void;
   /**
    * Called with the `unknown-after-handoff` attempt immediately before the signed bytes are handed to the RPC. It must
    * persist the lock; if it throws, nothing is broadcast and the error propagates.
@@ -558,106 +676,304 @@ async function sweepNonce(i: DirectSweepInput): Promise<number> {
   return i.replaceNonce;
 }
 
-/** Signs a plain EIP-1559 transfer with the stealth key (the stealth address pays gas) and broadcasts it. */
+interface PreparedDirectSweep {
+  readonly unsigned: SweepTxFields & { readonly type: 'eip1559' };
+  readonly simulation: Simulation;
+  readonly sent: bigint;
+  readonly maxGasCost: bigint;
+  readonly additionalFeeReserve: bigint;
+}
+
+/** Shared fee/nonce/balance/simulation preflight; callers prove key ownership before disclosing the address. */
+async function prepareDirectSweepTransaction(i: DirectSweepInput, assertCurrent: () => void): Promise<PreparedDirectSweep> {
+  const { owner, chainId, token } = i.target;
+  const gasPrice = parseQuantity(await i.rpc.request('eth_gasPrice', []));
+  assertCurrent();
+  const { maxFeePerGas, maxPriorityFeePerGas: priority } = sweepFeeFields(gasPrice);
+  const nonce = await sweepNonce(i);
+  assertCurrent();
+  const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
+  assertCurrent();
+  // The native amount is the balance the user explicitly reviewed. A new deposit or withdrawal must require a
+  // fresh balance read and consent instead of silently changing the amount this signing action will sweep.
+  if (token === 'native' && nativeBalance !== i.amount) {
+    throw new UserFacingError({ key: 'error.sweep.yourRPCReturnedAnUnexpectedBalance' });
+  }
+  let to: Address;
+  let data: Hex = '0x';
+  let value: bigint;
+  let gas: bigint;
+  let additionalFeeReserve: bigint;
+  if (token === 'native') {
+    to = i.destination;
+    if (nativeBalance <= TRANSFER_GAS * maxFeePerGas) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
+    // A contract or EIP-7702 destination needs more than 21 000 gas, and Arbitrum's estimate includes its L1 cost.
+    // Estimated with the largest value this sweep could send.
+    const est = await estimateGas(i.rpc, { from: owner, to, value: nativeBalance - TRANSFER_GAS * maxFeePerGas });
+    assertCurrent();
+    gas = est <= TRANSFER_GAS ? TRANSFER_GAS : (est * 12n) / 10n;
+    const gasCost = gas * maxFeePerGas;
+    if (nativeBalance <= gasCost) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
+    // An OP Stack node also charges an L1 data fee (and an operator fee) outside gas * price and refuses a transaction
+    // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
+    // largest value it can carry: the value only shrinks, so the encoding never grows.
+    additionalFeeReserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data });
+    assertCurrent();
+    if (nativeBalance <= gasCost + additionalFeeReserve) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe' });
+    value = nativeBalance - gasCost - additionalFeeReserve;
+    // The review below caps gas * fee at a share of the amount moved; the L1 data fee counts towards that share too.
+    if (additionalFeeReserve > 0n && (gasCost + additionalFeeReserve) * 10_000n > value * BigInt(DIRECT_MAX_FEE_SHARE_BPS)) {
+      throw new UserFacingError({ key: 'error.sweep.excessiveFee', values: { maximum: String(DIRECT_MAX_FEE_SHARE_BPS / 100) } });
+    }
+  } else {
+    to = token;
+    value = 0n;
+    data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [i.destination, i.amount] });
+    const est = await estimateGas(i.rpc, { from: owner, to, data });
+    assertCurrent();
+    gas = (est * 12n) / 10n;
+    if (nativeBalance < gas * maxFeePerGas) {
+      throw new UserFacingError({ key: 'error.sweep.theStealthAddressHasNoNativeCoinForGasUse' });
+    }
+    // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
+    // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
+    additionalFeeReserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data });
+    assertCurrent();
+    if (nativeBalance < gas * maxFeePerGas + additionalFeeReserve) {
+      throw new UserFacingError({ key: 'error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor' });
+    }
+  }
+  const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
+  // Review the exact serialized bytes that will be hashed (S3-09): allowlisted token only, capped fee fields.
+  const reviewed = parseTransaction(serializeTransaction(unsigned));
+  guardTx(
+    {
+      chainId,
+      to: reviewed.to ?? '',
+      data: reviewed.data ?? '0x',
+      value: reviewed.value ?? 0n,
+      from: owner,
+      maxFeePerGas: reviewed.maxFeePerGas ?? 0n,
+      maxPriorityFeePerGas: reviewed.maxPriorityFeePerGas ?? 0n,
+      gasLimit: reviewed.gas ?? 0n,
+    },
+    {
+      kind: 'direct_sweep',
+      chainId,
+      from: owner,
+      token,
+      to: i.destination,
+      amount: token === 'native' ? value : i.amount,
+      maxFeePerGas,
+      maxPriorityFeePerGas: priority,
+      gasLimit: gas,
+    },
+    reviewPolicy(i.manifest, chainId, { maxFeeShareBps: DIRECT_MAX_FEE_SHARE_BPS }),
+    i.nowSeconds ?? Math.floor(Date.now() / 1000),
+  );
+  // Dry run with the gas limit that is signed, where the node supports it: a transfer that would revert is never signed
+  // (S3-09, S3-19). A node that cannot run it is reported to the caller as a warning, not a refusal (L2-F1).
+  const simulation = await simulateCall(i.rpc, { from: owner, to, data, value, gas }, token !== 'native');
+  assertCurrent();
+  return { unsigned, simulation, sent: token === 'native' ? value : i.amount, maxGasCost: gas * maxFeePerGas, additionalFeeReserve };
+}
+
+/** A native review authorizes one confirmation for at most one minute, including time spent preparing it. */
+export const NATIVE_SWEEP_REVIEW_MS = 60_000;
+
+export interface NativeDirectSweepInput extends Omit<DirectSweepInput, 'nowSeconds' | 'replaceNonce' | 'onBeforeHandoff'> {
+  /** Exact user-selected endpoint; a fresh client for the same endpoint is allowed at confirmation. */
+  readonly endpoint: string;
+  /** Stable UI review scope, replaced when any selected payment/network/manifest/recipient setting changes. */
+  readonly context: object;
+  /** Full unresolved attempt, not just its nonce: another same-nonce attempt needs another fee review. */
+  readonly replacement?: SweepLock & { readonly nonce: number };
+}
+
+export interface NativeSweepClock {
+  readonly nowMs?: () => number;
+  readonly monotonicNow?: () => number;
+}
+
+/** Public values only. No key, signature, live network grant or unsigned transaction is retained in UI state. */
+export interface NativeDirectSweepReview {
+  readonly chainId: number;
+  readonly owner: Address;
+  readonly destination: Address;
+  readonly balance: bigint;
+  readonly nonce: number;
+  readonly gas: bigint;
+  readonly maxFeePerGas: bigint;
+  readonly maxPriorityFeePerGas: bigint;
+  readonly maxGasCost: bigint;
+  readonly additionalFeeReserve: bigint;
+  readonly totalFeeReserve: bigint;
+  readonly net: bigint;
+  readonly expiresAtMs: number;
+  readonly simulation: Simulation;
+}
+
+interface NativeReviewState {
+  readonly binding: string;
+  readonly context: object;
+  readonly assertSession: () => void;
+  readonly clock: NativeSweepClock;
+  readonly startedWall: number;
+  readonly startedMonotonic: number;
+  lastWall: number;
+  lastMonotonic: number;
+  closed: boolean;
+  consumed: boolean;
+  serialized?: Hex;
+}
+const nativeReviews = new WeakMap<NativeDirectSweepReview, NativeReviewState>();
+
+function nativeReviewRefused(): never {
+  throw new UserFacingError({ key: 'sweep.nativeReview.stale' });
+}
+
+function nativeBinding(i: NativeDirectSweepInput): string {
+  if (i.target.token !== 'native' || typeof i.endpoint !== 'string' || i.endpoint === '' || typeof i.context !== 'object' || i.context === null) return nativeReviewRefused();
+  const replacement = i.replacement;
+  if (replacement !== undefined && (replacement.chainId !== i.target.chainId || replacement.owner !== i.target.owner ||
+      replacement.status !== 'unknown-after-handoff' || replacement.order !== undefined || replacement.expectedHash === undefined ||
+      !Number.isSafeInteger(replacement.nonce) || replacement.nonce < 0)) return nativeReviewRefused();
+  // The authenticated manifest may include a bigint policy fee in the full build. Only public, typed data is encoded.
+  return JSON.stringify({ target: i.target, manifest: i.manifest, destination: i.destination,
+    amount: i.amount, endpoint: i.endpoint, replacement }, (_key, value: unknown) => typeof value === 'bigint' ? value.toString() : value);
+}
+
+function sampleNativeClock(clock: NativeSweepClock): { wall: number; monotonic: number } {
+  try {
+    const wall = clock.nowMs === undefined ? Date.now() : clock.nowMs();
+    const monotonic = clock.monotonicNow === undefined ? performance.now() : clock.monotonicNow();
+    if (!Number.isFinite(wall) || !Number.isFinite(monotonic) || wall < 0 || monotonic < 0 ||
+        wall + NATIVE_SWEEP_REVIEW_MS > 8_640_000_000_000_000) return nativeReviewRefused();
+    return { wall, monotonic };
+  } catch { return nativeReviewRefused(); }
+}
+
+function assertNativeState(state: NativeReviewState): void {
+  try {
+    if (state.closed) return nativeReviewRefused();
+    state.assertSession();
+    const { wall, monotonic } = sampleNativeClock(state.clock);
+    if (wall < state.lastWall || monotonic < state.lastMonotonic ||
+        wall - state.startedWall >= NATIVE_SWEEP_REVIEW_MS || monotonic - state.startedMonotonic >= NATIVE_SWEEP_REVIEW_MS) return nativeReviewRefused();
+    state.lastWall = wall; state.lastMonotonic = monotonic;
+  } catch { state.closed = true; return nativeReviewRefused(); }
+}
+
+/** Checks expiry and the original session even when browser timers or lock events have been delayed. */
+export function assertNativeSweepReview(review: NativeDirectSweepReview): void {
+  const state = nativeReviews.get(review);
+  if (state === undefined) return nativeReviewRefused();
+  assertNativeState(state);
+}
+
+/** Explicit cancellation is final, including while confirmation is pending on a read or local signature. */
+export function cancelNativeSweepReview(review: NativeDirectSweepReview): void {
+  const state = nativeReviews.get(review);
+  if (state !== undefined) state.closed = true;
+}
+
+function nativeOperation(i: NativeDirectSweepInput, state: NativeReviewState): DirectSweepInput {
+  const assertCurrent = (): void => {
+    assertNativeState(state);
+    try {
+      if (state.context !== i.context || state.binding !== nativeBinding(i)) return nativeReviewRefused();
+      i.assertReviewCurrent?.();
+    } catch (error) { state.closed = true; throw error; }
+  };
+  assertCurrent();
+  return {
+    ...i, ...(i.replacement === undefined ? {} : { replaceNonce: i.replacement.nonce }),
+    nowSeconds: Math.floor(state.lastWall / 1000), assertReviewCurrent: assertCurrent,
+    rpc: { async request(method, params) {
+      // Includes nested L1/operator-fee and simulation reads; no later request follows an expired or cancelled review.
+      assertCurrent();
+      const result = await i.rpc.request(method, params);
+      // An accepted or uncertain transport cannot be made unsent by cancellation during its response.
+      if (method !== 'eth_sendRawTransaction') assertCurrent();
+      return result;
+    } },
+  };
+}
+
+/** Proves ownership, wipes the temporary key immediately, then reads and simulates fees without signing anything. */
+export async function prepareNativeDirectSweep(i: NativeDirectSweepInput, clock: NativeSweepClock = {}): Promise<NativeDirectSweepReview> {
+  const assertSession = captureSessionGuard();
+  const binding = nativeBinding(i);
+  const clocks = Object.freeze({ ...clock });
+  const { wall, monotonic } = sampleNativeClock(clocks);
+  const state: NativeReviewState = { binding, context: i.context, assertSession, clock: clocks,
+    startedWall: wall, startedMonotonic: monotonic, lastWall: wall, lastMonotonic: monotonic, closed: false, consumed: false };
+  try {
+    const operation = nativeOperation(i, state);
+    // Maintain ownership validation before disclosing the payment address to any RPC.
+    zeroize(deriveVerifiedSweepKey(i.target));
+    const prepared = await prepareDirectSweepTransaction(operation, operation.assertReviewCurrent!);
+    operation.assertReviewCurrent?.();
+    const tx = prepared.unsigned;
+    const review: NativeDirectSweepReview = Object.freeze({ chainId: tx.chainId, owner: i.target.owner, destination: i.destination,
+      balance: i.amount, nonce: tx.nonce, gas: tx.gas, maxFeePerGas: tx.maxFeePerGas, maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+      maxGasCost: prepared.maxGasCost, additionalFeeReserve: prepared.additionalFeeReserve,
+      totalFeeReserve: prepared.maxGasCost + prepared.additionalFeeReserve, net: prepared.sent,
+      expiresAtMs: wall + NATIVE_SWEEP_REVIEW_MS, simulation: prepared.simulation });
+    state.serialized = serializeTransaction(tx);
+    nativeReviews.set(review, state);
+    return review;
+  } catch (error) { state.closed = true; throw error; }
+}
+
+/** Consumes one review before awaiting anything; any changed preflight requires a new explicit preparation. */
+export async function confirmNativeDirectSweep(
+  review: NativeDirectSweepReview,
+  i: NativeDirectSweepInput & Pick<DirectSweepInput, 'onBeforeHandoff'>,
+): Promise<DirectSweepResult> {
+  const state = nativeReviews.get(review);
+  // A duplicate confirmation must not cancel the already-running first confirmation.
+  if (state === undefined || state.consumed) return nativeReviewRefused();
+  state.consumed = true;
+  try {
+    const operation = nativeOperation(i, state);
+    return await executeDirectSweep({ ...operation, ...(i.onBeforeHandoff === undefined ? {} : { onBeforeHandoff: i.onBeforeHandoff }) }, (fresh) => {
+      assertNativeState(state);
+      if (serializeTransaction(fresh.unsigned) !== state.serialized || fresh.additionalFeeReserve !== review.additionalFeeReserve ||
+          fresh.simulation !== review.simulation) return nativeReviewRefused();
+    });
+  } finally { state.closed = true; }
+}
+
+// i18n-use: sweep.nativeReview.stale
+
+/** Signs a plain EIP-1559 transfer with the stealth key. Native UI actions use the separate prepare/confirm review. */
 export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResult> {
+  return executeDirectSweep(i);
+}
+
+async function executeDirectSweep(i: DirectSweepInput, checkPrepared?: (prepared: PreparedDirectSweep) => void): Promise<DirectSweepResult> {
   const assertSessionUnchanged = captureSessionGuard();
+  const assertCurrent = (): void => { assertSessionUnchanged(); i.assertReviewCurrent?.(); };
+  assertCurrent();
   const secret = deriveVerifiedSweepKey(i.target);
   try {
+    const prepared = await prepareDirectSweepTransaction(i, assertCurrent);
+    checkPrepared?.(prepared);
+    const { unsigned, simulation, sent, maxGasCost } = prepared;
     const { owner, chainId, token } = i.target;
-    const gasPrice = parseQuantity(await i.rpc.request('eth_gasPrice', []));
-    assertSessionUnchanged();
-    const { maxFeePerGas, maxPriorityFeePerGas: priority } = sweepFeeFields(gasPrice);
-    const nonce = await sweepNonce(i);
-    assertSessionUnchanged();
-    const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
-    assertSessionUnchanged();
-    let to: Address;
-    let data: Hex = '0x';
-    let value: bigint;
-    let gas: bigint;
-    if (token === 'native') {
-      to = i.destination;
-      if (nativeBalance <= TRANSFER_GAS * maxFeePerGas) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
-      // A contract or EIP-7702 destination needs more than 21 000 gas, and Arbitrum's estimate includes its L1 cost.
-      // Estimated with the largest value this sweep could send.
-      const est = await estimateGas(i.rpc, { from: owner, to, value: nativeBalance - TRANSFER_GAS * maxFeePerGas });
-      assertSessionUnchanged();
-      gas = est <= TRANSFER_GAS ? TRANSFER_GAS : (est * 12n) / 10n;
-      const gasCost = gas * maxFeePerGas;
-      if (nativeBalance <= gasCost) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
-      // An OP Stack node also charges an L1 data fee (and an operator fee) outside gas * price and refuses a transaction
-      // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
-      // largest value it can carry: the value only shrinks, so the encoding never grows.
-      const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data });
-      assertSessionUnchanged();
-      if (nativeBalance <= gasCost + reserve) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe' });
-      value = nativeBalance - gasCost - reserve;
-      // The review below caps gas * fee at a share of the amount moved; the L1 data fee counts towards that share too.
-      if (reserve > 0n && (gasCost + reserve) * 10_000n > value * BigInt(DIRECT_MAX_FEE_SHARE_BPS)) {
-        throw new UserFacingError({ key: 'error.sweep.excessiveFee', values: { maximum: String(DIRECT_MAX_FEE_SHARE_BPS / 100) } });
-      }
-    } else {
-      to = token;
-      value = 0n;
-      data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [i.destination, i.amount] });
-      const est = await estimateGas(i.rpc, { from: owner, to, data });
-      assertSessionUnchanged();
-      gas = (est * 12n) / 10n;
-      if (nativeBalance < gas * maxFeePerGas) {
-        throw new UserFacingError({ key: 'error.sweep.theStealthAddressHasNoNativeCoinForGasUse' });
-      }
-      // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
-      // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
-      const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data });
-      assertSessionUnchanged();
-      if (nativeBalance < gas * maxFeePerGas + reserve) {
-        throw new UserFacingError({ key: 'error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor' });
-      }
-    }
-    const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
-    // Review the exact serialized bytes that will be hashed (S3-09): allowlisted token only, capped fee fields.
-    const reviewed = parseTransaction(serializeTransaction(unsigned));
-    guardTx(
-      {
-        chainId,
-        to: reviewed.to ?? '',
-        data: reviewed.data ?? '0x',
-        value: reviewed.value ?? 0n,
-        from: owner,
-        maxFeePerGas: reviewed.maxFeePerGas ?? 0n,
-        maxPriorityFeePerGas: reviewed.maxPriorityFeePerGas ?? 0n,
-        gasLimit: reviewed.gas ?? 0n,
-      },
-      {
-        kind: 'direct_sweep',
-        chainId,
-        from: owner,
-        token,
-        to: i.destination,
-        amount: token === 'native' ? value : i.amount,
-        maxFeePerGas,
-        maxPriorityFeePerGas: priority,
-        gasLimit: gas,
-      },
-      reviewPolicy(i.manifest, chainId, { maxFeeShareBps: DIRECT_MAX_FEE_SHARE_BPS }),
-      i.nowSeconds ?? Math.floor(Date.now() / 1000),
-    );
-    // Dry run with the gas limit that is signed, where the node supports it: a transfer that would revert is never signed
-    // (S3-09, S3-19). A node that cannot run it is reported to the caller as a warning, not a refusal (L2-F1).
-    const simulation = await simulateCall(i.rpc, { from: owner, to, data, value, gas }, token !== 'native');
-    assertSessionUnchanged();
+    const nonce = unsigned.nonce;
     // Check immediately before using the secret to sign, and again before handing the raw transaction to the RPC.
-    assertSessionUnchanged();
+    assertCurrent();
     const sig = await signDigest(keccak256(serializeTransaction(unsigned)), secret);
-    assertSessionUnchanged();
+    assertCurrent();
     const raw = serializeTransaction(unsigned, { r: sig.r, s: sig.s, yParity: sig.v - 27 });
     zeroize(secret);
-    const sent = token === 'native' ? value : i.amount;
     // Known before handoff, so an uncertain broadcast can still be tracked by its exact hash (GP-SWEEP-OUTCOME-01).
     const expectedHash = keccak256(raw);
     const attempt: DirectSweepAttempt = { chainId, owner, nonce, destination: i.destination, asset: token, amount: sent, expectedHash, status: 'unknown-after-handoff' };
     // Last pre-handoff checkpoint: a failure up to here means the signed bytes never left this page.
-    assertSessionUnchanged();
+    assertCurrent();
     i.onBeforeHandoff?.(attempt);
     let hash: unknown;
     try {
@@ -678,7 +994,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
         'RPC_HASH_MISMATCH',
       );
     }
-    return { hash: expectedHash, sent, maxGasCost: gas * maxFeePerGas, attempt: { ...attempt, status: 'submitted' }, simulation };
+    return { hash: expectedHash, sent, maxGasCost, attempt: { ...attempt, status: 'submitted' }, simulation };
   } finally {
     zeroize(secret);
   }

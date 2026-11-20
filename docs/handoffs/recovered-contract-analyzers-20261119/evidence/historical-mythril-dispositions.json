@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T13:31:27.249743+00:00",
+  "inspection_scope": "Read-only retained evidence integrity and exact disposition transcription; no Mythril execution or fresh exploit reproduction.",
+  "original_report": {
+    "requested_commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "checkout_commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "analysis_outcome": "failure",
+    "runner_exit": 1,
+    "sha256_verified": true,
+    "records": 11,
+    "severity_counts": {
+      "Low": 8,
+      "Medium": 3
+    }
+  },
+  "records": [
+    {
+      "id": "R1",
+      "alias": "EXP-1",
+      "severity": "Low",
+      "swc_id": "116",
+      "contract": "GhostPaySweepRelayer",
+      "filename": "src/GhostPaySweepRelayer.sol",
+      "line": 83,
+      "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+      "historical_disposition": "Benign: intended inclusive signed-deadline check (spec `docs/CONTRACTS_SPEC.md:53`, `IGhostPaySweepRelayer.sol:15`)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R2",
+      "alias": "EXP-2",
+      "severity": "Low",
+      "swc_id": "116",
+      "contract": "PolicyAccount",
+      "filename": "src/PolicyAccount.sol",
+      "line": 161,
+      "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+      "historical_disposition": "Benign: intended inclusive deadline (`IPolicyAccount.sol:22`, `DEVIATIONS.md:93`)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R3",
+      "alias": "EXP-3",
+      "severity": "Low",
+      "swc_id": "116",
+      "contract": "PolicyAccount",
+      "filename": "src/PolicyAccount.sol",
+      "line": 262,
+      "function": "proposeDestination(address,uint256,uint256,bytes)",
+      "historical_disposition": "Benign: intended inclusive deadline (`IPolicyAccount.sol:175`)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R4",
+      "alias": null,
+      "severity": "Low",
+      "swc_id": "110",
+      "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+      "filename": null,
+      "line": null,
+      "function": "fallback",
+      "historical_disposition": "False positive (analyzer model artifact)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R5",
+      "alias": null,
+      "severity": "Medium",
+      "swc_id": "107",
+      "contract": "PolicyAccountFactory",
+      "filename": "src/PolicyAccountFactory.sol",
+      "line": 117,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "Benign: intended order (fee first, documented `:22-27`), no exploitable reentrancy",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R6",
+      "alias": null,
+      "severity": "Low",
+      "swc_id": "107",
+      "contract": "PolicyAccountFactory",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "line": 99,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "False positive (the mitigation itself)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R7",
+      "alias": null,
+      "severity": "Low",
+      "swc_id": "113",
+      "contract": "PolicyAccountFactory",
+      "filename": "src/PolicyAccountFactory.sol",
+      "line": 131,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "Benign: intended fail-closed behaviour, with the design residual N1 (REVIEW_FINDINGS R-11, Medium conditional)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R8",
+      "alias": null,
+      "severity": "Low",
+      "swc_id": "113",
+      "contract": "PolicyAccountFactory",
+      "filename": "src/PolicyAccountFactory.sol",
+      "line": 132,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "Benign: intended fail-closed behaviour; residual N1 as R7",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R9",
+      "alias": null,
+      "severity": "Medium",
+      "swc_id": "107",
+      "contract": "PolicyAccountFactory",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "line": 104,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "Benign: intended order",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R10",
+      "alias": null,
+      "severity": "Low",
+      "swc_id": "107",
+      "contract": "PolicyAccountFactory",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "line": 227,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "False positive (the premise \"caller-chosen target\" is false)",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    },
+    {
+      "id": "R11",
+      "alias": null,
+      "severity": "Medium",
+      "swc_id": "104",
+      "contract": "PolicyAccountFactory",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "line": 227,
+      "function": "deploy(address,address,uint256,bytes32)",
+      "historical_disposition": "False positive as \"unchecked\"; the reachable path is the intended waiver",
+      "current_gate_disposition": "UNRESOLVED_STRICT_GATE_FAILS_ON_ANY_ISSUE",
+      "fresh_reproduction_by_this_review": false
+    }
+  ],
+  "later_report": {
+    "source": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "run_id": 44297673763,
+    "job_id": 134778851902,
+    "source_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44297673763/job/134778851902",
+    "records": 11,
+    "matched_documented_location_tuples": 10,
+    "new_records": [
+      {
+        "contract": "PolicyAccountFactory",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "swc-id": "113",
+        "address": 999,
+        "severity": "Low",
+        "title": "Multiple Calls in a Single Transaction",
+        "filename": "src/PolicyAccountFactory.sol",
+        "lineno": 117,
+        "sourceMap": "6237:81:26::1",
+        "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+        "historical_location_match": null,
+        "classification": "NEW_RECORD_REQUIRES_EXPLICIT_DISPOSITION"
+      }
+    ],
+    "absent_historical_records": [
+      {
+        "contract": "PolicyAccountFactory",
+        "swc-id": "113",
+        "address": 1781,
+        "severity": "Low",
+        "historical_record": "R8"
+      }
+    ],
+    "strict_gate": "FAILURE_EXIT_1_RETAINED"
+  },
+  "evidence": {
+    "original_metadata": {
+      "path": "docs/consolidation/master-20261118/preserved-mythril-metadata.json",
+      "sha256": "778fde76eb0dda7842fae219377917a733dd48e1a9c6945a57787ef935191fcb"
+    },
+    "original_findings": {
+      "path": "docs/consolidation/master-20261118/preserved-mythril-findings.json",
+      "sha256": "87a1f5bfe88e46e0034a47809a6078cce85ac152e35b9917fe35b730a7de42eb"
+    },
+    "original_raw": {
+      "path": "docs/consolidation/master-20261118/preserved-mythril-full-report.txt",
+      "sha256": "ce72f158a9d7d3bff3f6a2dafa2fde390cafcb5cf79364d4980f0c7cb3a6de00"
+    },
+    "dispositions": {
+      "path": "docs/audits/mythril-reevaluation-20261118.md",
+      "sha256": "233ff2956f0a970921d71460e7ce2f8c5fe2fca77cb42cef2eca77edd917be5e"
+    },
+    "later_comparison": {
+      "path": "docs/handoffs/pages-completion-20261118/reviews/HOSTED_MYTHRIL_DISPOSITION_COMPARISON_20261118.json",
+      "sha256": "3e07de9fcd82036306188986e9cca8d787705db32e041cbf7fd73c49920765b4"
+    },
+    "trace_counterevidence": {
+      "path": "docs/handoffs/pages-completion-20261118/reviews/INDEPENDENT_MYTHRIL_TRACE_COUNTEREVIDENCE_20261118.json",
+      "sha256": "f60b9c31a80393c1a57bfa3ec19dc6bcd7a6d99a0ee9ec20c88f4cb00a479717"
+    }
+  },
+  "remaining_conditions": [
+    "Historical judgments are preserved as judgments, not accepted gate exceptions, fresh scans or closed findings.",
+    "Later Low SWC-113 PC999 initialize-call identity is distinct from Medium SWC-107 PC999 and requires an explicit evidence-based disposition.",
+    "Absent historical R8 is not remediation; count-only matching misses this changed identity.",
+    "Current-trace constructor address(1) rejection is trace-specific counterevidence; it does not prove all valid-constructor executions safe.",
+    "N1 conditional fee-token availability/freeze and fee-waiver residuals remain relevant before any deferred scheme-2 deployment.",
+    "No owner exception or independent external review is inferred."
+  ]
+}

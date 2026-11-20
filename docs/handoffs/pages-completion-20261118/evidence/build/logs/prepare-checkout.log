@@ -1,0 +1,22 @@
+$ ['git', 'clone', '--shared', '--no-checkout', '/workspace/scratch/4fa14be12559/GhostPay', '/workspace/scratch/4fa14be12559/analysis-build/source']
+Cloning into '/workspace/scratch/4fa14be12559/analysis-build/source'...
+done.
+
+Exit 0
+$ ['git', '-C', '/workspace/scratch/4fa14be12559/analysis-build/source', 'fetch', '--no-tags', 'https://github.com/djshellshoxxx/GhostPay.git', 'refs/heads/integration/ghostpay-pages-completion-20261118']
+From https://github.com/djshellshoxxx/GhostPay
+ * branch              integration/ghostpay-pages-completion-20261118 -> FETCH_HEAD
+
+Exit 0
+$ ['git', '-C', '/workspace/scratch/4fa14be12559/analysis-build/source', 'checkout', '--detach', '9bad95e5cc0ee73f5adb8d2c587161074b21e080']
+HEAD is now at 9bad95e5 fix(vault): wipe temporary keystore passphrase bytes on every exit
+
+Exit 0
+$ ['git', '-C', '/workspace/scratch/4fa14be12559/analysis-build/source', 'rev-parse', 'HEAD', 'HEAD^{tree}']
+9bad95e5cc0ee73f5adb8d2c587161074b21e080
+81341de7972041b5f7ce53da76027846356fab90
+
+Exit 0
+$ ['git', '-C', '/workspace/scratch/4fa14be12559/analysis-build/source', 'status', '--short']
+
+Exit 0

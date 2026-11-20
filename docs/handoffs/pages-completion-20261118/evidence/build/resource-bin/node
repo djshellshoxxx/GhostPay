@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec /workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node --max-old-space-size=1536 "$@"

@@ -19,6 +19,7 @@ export { TokenBucketLimiter, LossBudget, OVERFLOW_KEY } from './limiter.js';
 export type {
   TokenBucketOptions,
   TakeResult,
+  LimiterStats,
   LossBudgetOptions,
   LossReservation,
   LossSource,

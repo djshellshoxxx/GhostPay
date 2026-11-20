@@ -1,0 +1,288 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./vite.config" without a file extension (vitest.privacy-local.config.ts:2:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/views/Home.authorization.test.tsx (4 tests | 3 failed) 1339ms
+   ❯ Home release hash with production network authority (4)
+     × authorizes and hashes the exact document-relative entry under a project path (base element: false) 146ms
+     × authorizes and hashes the exact document-relative entry under a project path (base element: true) 46ms
+     × revokes the pending resource grant when Home unmounts and ignores a late response 1056ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Home.authorization.test.tsx > Home release hash with production network authority > authorizes and hashes the exact document-relative entry under a project path (base element: false)
+AssertionError: expected "vi.fn()" to be called with arguments: [ { action: 'release-hash', …(2) } ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+    {
+      "action": "release-hash",
+      "category": "resource",
+-     "endpoint": "http://localhost:3000/GhostPay/assets/index-home.js",
++     "endpoint": "./assets/index-home.js",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/views/Home.authorization.test.tsx:53:23
+     51|     const authorize = vi.fn(network.authorize);
+     52|     renderApp(makeServices({ network: { ...network, authorize }, fetch…
+     53|     expect(authorize).toHaveBeenCalledWith({ action: 'release-hash', c…
+       |                       ^
+     54|     expect(await screen.findByText(DIGEST)).toBeTruthy();
+     55|     expect(fetchFn).toHaveBeenCalledTimes(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/views/Home.authorization.test.tsx > Home release hash with production network authority > authorizes and hashes the exact document-relative entry under a project path (base element: true)
+AssertionError: expected "vi.fn()" to be called with arguments: [ { action: 'release-hash', …(2) } ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+    {
+      "action": "release-hash",
+      "category": "resource",
+-     "endpoint": "http://localhost:3000/GhostPay/nested/assets/index-home.js",
++     "endpoint": "./assets/index-home.js",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/views/Home.authorization.test.tsx:53:23
+     51|     const authorize = vi.fn(network.authorize);
+     52|     renderApp(makeServices({ network: { ...network, authorize }, fetch…
+     53|     expect(authorize).toHaveBeenCalledWith({ action: 'release-hash', c…
+       |                       ^
+     54|     expect(await screen.findByText(DIGEST)).toBeTruthy();
+     55|     expect(fetchFn).toHaveBeenCalledTimes(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/views/Home.authorization.test.tsx > Home release hash with production network authority > revokes the pending resource grant when Home unmounts and ignores a late response
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"skip"[39m
+        [33mhref[39m=[32m"#main"[39m
+      [36m>[39m
+        [0mSkip to content[0m
+      [36m</a>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"site-header"[39m
+      [36m>[39m
+        [36m<h1>[39m
+          [0mGhostPay[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"tagline"[39m
+        [36m>[39m
+          [0mStealth-address payments. Everything runs in your browser. Unaudited software.[0m
+        [36m</p>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Main"[39m
+        [36m>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"nav"[39m
+          [36m>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33maria-current[39m=[32m"page"[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"home"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mHome[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"seller"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mSeller keys[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"create"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCreate invoice[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"pay"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mPay[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"scan"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mScan and receive[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"sweep"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mSweep[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"btc"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mBitcoin (test)[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"solana"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mSolana (test)[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"tron"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mTRON (test)[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"registry"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mPublic registry[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"settings"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mSettings[0m
+              [36m</button>[39m
+            [36m</li>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"nav-btn"[39m
+                [33mdata-view[39m=[32m"about"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mAbout and privacy[0m
+              [36m</button>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</nav>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mid[39m=[32m"main"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"notice notice-info"[39m
+          [33mrole[39m=[32m"note"[39m
+        [36m>[39m
+          [36m<strong[39m
+            [33mclass[39m=[32m"notice-title"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+            [36m>[39m
+              [0mℹ[0m
+              [0m [0m
+            [36m</span>[39m
+            [0mNote[0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m:[0m
+            [36m</span>[39m
+          [36m</strong>[39m
+          [36m<div>[39m
+            [36m<p>[39m
+              [0mEach network action authorizes only its displayed endpoint and purpose. Changing settings, locking, or cancelling revokes pending access. Offline wallet and invoice tools remain available.[0m
+            [36m</p>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCancel network activity[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<details[39m
+          [33mclass[39m=[32m"card"[39m
+        [36m>[39m
+          [36m<summary>[39m
+            [0mMerchant profile[0m
+          [36m</summary>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"_r_3_"[39m
+            [36m>[39m
+              [0mProfile URL[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33maria-describedby[39m=[32m"_r_3_-hint"[39m
+              [33mautocomplete[39m=[32m"off"[39m
+              [33mid[39m=[32m"_r_3_"[39m
+              [33minputmode[39m=...
+ ❯ src/views/Home.authorization.test.tsx:76:41
+     74|     const fetchFn = vi.fn<(url: string, init: RequestInit) => Promise<…
+     75|     const rendered = renderApp(makeServices({ network: authority(fetch…
+     76|     await waitFor(() => expect(fetchFn).toHaveBeenCalledTimes(1));
+       |                                         ^
+     77|     const signal = fetchFn.mock.calls[0]?.[1].signal;
+     78|     expect(signal?.aborted).toBe(false);
+ ❯ runWithExpensiveErrorDiagnosticsDisabled ../../node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback ../../node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback ../../node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  00:26:41
+   Duration  11.36s (transform 34%, import 31%, environment 23%, tests 12%)

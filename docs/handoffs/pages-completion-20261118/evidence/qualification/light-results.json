@@ -1,0 +1,44 @@
+[
+  {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "npm run ci:scan-secrets",
+    "exitCode": 0,
+    "seconds": 0.21,
+    "log": "secrets.log"
+  },
+  {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "npm run ci:check-actions",
+    "exitCode": 0,
+    "seconds": 0.2,
+    "log": "action-pins.log"
+  },
+  {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "node scripts/i18n/check.mjs",
+    "exitCode": 0,
+    "seconds": 0.31,
+    "log": "i18n-check.log"
+  },
+  {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "node scripts/i18n/extract.mjs",
+    "exitCode": 0,
+    "seconds": 0.15,
+    "log": "i18n-extract.log"
+  },
+  {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "npm audit --omit=dev --json",
+    "exitCode": 0,
+    "seconds": 6.57,
+    "log": "audit-production.log"
+  },
+  {
+    "source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "command": "npm audit --json",
+    "exitCode": 1,
+    "seconds": 19.0,
+    "log": "audit-full.log"
+  }
+]

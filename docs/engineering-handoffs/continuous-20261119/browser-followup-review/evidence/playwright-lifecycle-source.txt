@@ -1,0 +1,46 @@
+coreBundle.js:24896-24908
+      frameCommittedSameDocumentNavigation(frameId, url3) {
+        const frame = this._frames.get(frameId);
+        if (!frame)
+          return;
+        const pending = frame.pendingDocument();
+        if (pending && pending.documentId === void 0 && pending.request === void 0) {
+          frame._setPendingDocument(void 0);
+        }
+        frame._url = url3;
+        const navigationEvent = { url: url3, name: frame._name, isPublic: true };
+        this._fireInternalFrameNavigation(frame, navigationEvent);
+        frame.apiLog(`  navigated to "${url3}"`);
+      }
+
+coreBundle.js:24999-25009
+      _inflightRequestStarted(request2) {
+        const frame = request2.frame();
+        if (request2._isFavicon || !frame)
+          return;
+        frame._inflightRequests.add(request2);
+        if (request2.resourceType() === "eventsource")
+          return;
+        frame._networkIdleRequests.add(request2);
+        if (frame._networkIdleRequests.size === 1)
+          frame._stopNetworkIdleTimer();
+      }
+
+coreBundle.js:62387-62403
+      async waitForLoadState(state = "load", options) {
+        state = verifyLoadState("state", state);
+        const waiter = this._setupNavigationWaiter(options ?? {});
+        try {
+          if (this._loadStates.has(state)) {
+            waiter.log(`  not waiting, "${state}" event already fired`);
+            waiter.throwIfImmediatelyRejected();
+          } else {
+            await waiter.waitForEvent(this._eventEmitter, "loadstate", (s) => {
+              waiter.log(`  "${s}" event fired`);
+              return s === state;
+            });
+          }
+        } finally {
+          waiter.dispose();
+        }
+      }

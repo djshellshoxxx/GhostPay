@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 // server (apps/relayer test harness, with a scripted chain instead of an RPC). If either side changes the request or
 // response format alone, this suite fails.
 import { parseQuoteRequest, parseSweepRequest } from '../../../relayer/src/validate';
+import { unpadBody } from '../../../relayer/src/server';
 import { CHAIN_ID, FEE_TO, NOW_SEC, STRANGER, SWEEP_CONTRACT, USDC, startHarness, type Harness } from '../../../relayer/src/harness.testutil';
 import { fakeManifestJson } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
@@ -35,7 +36,8 @@ let h: Harness;
 let posted: { path: string; body: unknown }[];
 /** Real HTTP to the harness relayer; records every body the web client sends. */
 const recordingFetch: FetchFn = (url, init) => {
-  posted.push({ path: new URL(url).pathname, body: JSON.parse(typeof init.body === 'string' ? init.body : '') });
+  // The client pads bodies (MH-REL-3); the relayer server strips the pad before these parsers run.
+  posted.push({ path: new URL(url).pathname, body: unpadBody(JSON.parse(typeof init.body === 'string' ? init.body : ''), false) });
   return fetch(url, init);
 };
 

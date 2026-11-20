@@ -1,0 +1,1686 @@
+{
+  "status": "INITIAL_CANDIDATE_PUBLISHED_TREE_VERIFIED",
+  "local_runtime_snapshot": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+  "local_documentation_snapshot": "2d83582af7b4611a3cde062a8041bc3dbe423555",
+  "remote_main_at_start": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "remote_main_merge_count": 0,
+  "remote_candidate_ref": "integration/ghostpay-pages-completion-20261118",
+  "remote_candidate_head": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "pull_request_url": "https://github.com/djshellshoxxx/GhostPay/pull/238",
+  "mappings": [
+    {
+      "local_sha": "b828b44e9f745e723e64ddbcd34fff36b20acabd",
+      "remote_sha": "7135d49a81f5b6e48065e52d02443f76c28e52d0",
+      "tree_sha": "8d27902cfd22c70736e87f5fb12541383f26450a",
+      "local_parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:54:58-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:54:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:33:31.601097+00:00",
+      "subject": "docs: claim Pages beta consolidation continuation",
+      "original_message": "docs: claim Pages beta consolidation continuation\n"
+    },
+    {
+      "local_sha": "b45f0eeada982bc93b3ee6872e9ecd09ae9a7bed",
+      "remote_sha": "c2df1f63e3a62404d63f0e5686a4c93dc03ea8ec",
+      "tree_sha": "0ea82bc10e92d5b1c4361321e6086d5eaa715c0c",
+      "local_parents": [
+        "b828b44e9f745e723e64ddbcd34fff36b20acabd",
+        "613667be4eeb132c7d21ccd06c627f9a7144d85b"
+      ],
+      "parents": [
+        "7135d49a81f5b6e48065e52d02443f76c28e52d0",
+        "613667be4eeb132c7d21ccd06c627f9a7144d85b"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:34:15.285836+00:00",
+      "subject": "merge: integrate reviewed Pages idle-clock repair (#227)",
+      "original_message": "merge: integrate reviewed Pages idle-clock repair (#227)\n"
+    },
+    {
+      "local_sha": "036cf9fa1a99f486681646289edba54ea25dca59",
+      "remote_sha": "4cbee743f3b24d0e7735126f74faa862bcac3274",
+      "tree_sha": "96204614c85963ce222c3426ee8145c99b062669",
+      "local_parents": [
+        "b45f0eeada982bc93b3ee6872e9ecd09ae9a7bed",
+        "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1"
+      ],
+      "parents": [
+        "c2df1f63e3a62404d63f0e5686a4c93dc03ea8ec",
+        "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:34:19.144876+00:00",
+      "subject": "merge: integrate reviewed Pages repair (#235)",
+      "original_message": "merge: integrate reviewed Pages repair (#235)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "f9954310c08be220d6abf87692e3832d23d92ca0",
+      "remote_sha": "97220333fb2ede8f6ac6fbe0c8e1f31a00f68917",
+      "tree_sha": "57391bf76858c01758355128ff12a928fe276872",
+      "local_parents": [
+        "036cf9fa1a99f486681646289edba54ea25dca59",
+        "d9ff386807de724eb1a1c4d400c882df0fc20bb7"
+      ],
+      "parents": [
+        "4cbee743f3b24d0e7735126f74faa862bcac3274",
+        "d9ff386807de724eb1a1c4d400c882df0fc20bb7"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:34:22.928295+00:00",
+      "subject": "merge: integrate reviewed Pages repair (#231)",
+      "original_message": "merge: integrate reviewed Pages repair (#231)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "f437987be0190bdf1d4de1d69f6ce4b84905e3e8",
+      "remote_sha": "32c0bf978c709167bde991542309bb19511f1575",
+      "tree_sha": "dfa125027c348c4c2d706c1210d95851606607a8",
+      "local_parents": [
+        "f9954310c08be220d6abf87692e3832d23d92ca0",
+        "5e9e7be70399a9818579cf87bd494e013e25d4f9"
+      ],
+      "parents": [
+        "97220333fb2ede8f6ac6fbe0c8e1f31a00f68917",
+        "5e9e7be70399a9818579cf87bd494e013e25d4f9"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:34:26.532009+00:00",
+      "subject": "merge: integrate reviewed Pages repair (#234)",
+      "original_message": "merge: integrate reviewed Pages repair (#234)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "305ccb0d570c27a47435083059492edc819a0101",
+      "remote_sha": "8ef138f1ce14d034ab2dd6c3b9d440c6603de3ef",
+      "tree_sha": "3826d1c34566815675a1e30112a8e8984b83dd81",
+      "local_parents": [
+        "f437987be0190bdf1d4de1d69f6ce4b84905e3e8",
+        "7109290b7e4f029c36d9743bde9fd664d1da5474"
+      ],
+      "parents": [
+        "32c0bf978c709167bde991542309bb19511f1575",
+        "7109290b7e4f029c36d9743bde9fd664d1da5474"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:57:56-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:34:30.272177+00:00",
+      "subject": "merge: integrate reviewed Pages repair (#237)",
+      "original_message": "merge: integrate reviewed Pages repair (#237)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "6cae32f392a49a246f2b15cb0f7df3937a0ce13c",
+      "remote_sha": "74e28f770fbaf5bc43d8f25935312e81ae2ebf36",
+      "tree_sha": "b44f7a75089941be4eb9815dffe584250db79ada",
+      "local_parents": [
+        "305ccb0d570c27a47435083059492edc819a0101"
+      ],
+      "parents": [
+        "8ef138f1ce14d034ab2dd6c3b9d440c6603de3ef"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:00:07-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:00:07-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:34:33.838729+00:00",
+      "subject": "docs: claim privacy consolidation and collision resolution",
+      "original_message": "docs: claim privacy consolidation and collision resolution\n"
+    },
+    {
+      "local_sha": "e194a5c5bafe08e3b6b59f2cec33dfff7ef41f61",
+      "remote_sha": "e0038dcc02de75022e607bc3254e2347d844e308",
+      "tree_sha": "dafed00653999dbf9f402495cbac8dd65c3e3977",
+      "local_parents": [
+        "6cae32f392a49a246f2b15cb0f7df3937a0ce13c",
+        "2bc2098298d90928eb1acafad969f28316bb05fc"
+      ],
+      "parents": [
+        "74e28f770fbaf5bc43d8f25935312e81ae2ebf36",
+        "2bc2098298d90928eb1acafad969f28316bb05fc"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:05-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:05-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:04.330121+00:00",
+      "subject": "merge: consolidate privacy defaults while preserving v4 checkpoints and balance consent",
+      "original_message": "merge: consolidate privacy defaults while preserving v4 checkpoints and balance consent\n"
+    },
+    {
+      "local_sha": "f73ce555d5c0d862880713fe51fa0f87f3b0fe93",
+      "remote_sha": "3ea5356b3caa80b95e6c8fa93d706b40e0ab9009",
+      "tree_sha": "8ba77f315e808cbdd6dcd1f8cf3a8e69bf67b6aa",
+      "local_parents": [
+        "e194a5c5bafe08e3b6b59f2cec33dfff7ef41f61",
+        "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed"
+      ],
+      "parents": [
+        "e0038dcc02de75022e607bc3254e2347d844e308",
+        "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:06-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:06-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:08.301168+00:00",
+      "subject": "merge: consolidate reviewed privacy follow-up (#228)",
+      "original_message": "merge: consolidate reviewed privacy follow-up (#228)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "c17f5778815a85e297fe442f628c4f73a4041dcf",
+      "remote_sha": "0868a0b08fa9efb090c53845b14768f2e96db8a3",
+      "tree_sha": "08833040d2571cdb3f1d6dac1933a2d110d00b93",
+      "local_parents": [
+        "f73ce555d5c0d862880713fe51fa0f87f3b0fe93",
+        "0b2609c2c83143741ad343bfb08234a2d1182aa5"
+      ],
+      "parents": [
+        "3ea5356b3caa80b95e6c8fa93d706b40e0ab9009",
+        "0b2609c2c83143741ad343bfb08234a2d1182aa5"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:21-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:21-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:12.354815+00:00",
+      "subject": "merge: consolidate reviewed privacy follow-up (#230)",
+      "original_message": "merge: consolidate reviewed privacy follow-up (#230)\n\n# Conflicts:\n#\tapps/web/locales/ar.json\n#\tapps/web/locales/en.json\n#\tapps/web/locales/es.json\n#\tapps/web/locales/ja.json\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "b10ce324750a4e1dbd068d3bc53484e9a0a28115",
+      "remote_sha": "d1aada64f2b4e4b89aa5dc148cc29ca638c4e7ab",
+      "tree_sha": "ef601f4a2486b38fd8c44213aa5a3eed818a913c",
+      "local_parents": [
+        "c17f5778815a85e297fe442f628c4f73a4041dcf",
+        "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050"
+      ],
+      "parents": [
+        "0868a0b08fa9efb090c53845b14768f2e96db8a3",
+        "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:27-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:02:27-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:16.196383+00:00",
+      "subject": "merge: consolidate browser fixtures for privacy defaults (#233)",
+      "original_message": "merge: consolidate browser fixtures for privacy defaults (#233)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "821d1035b3e8b20921904f5c3bf6411f22ea3346",
+      "remote_sha": "0322956e7370f6499f05e15ea18af8c0d9ee6b41",
+      "tree_sha": "b7750a45d4609266e890cad5892c0b9319f556f5",
+      "local_parents": [
+        "b10ce324750a4e1dbd068d3bc53484e9a0a28115"
+      ],
+      "parents": [
+        "d1aada64f2b4e4b89aa5dc148cc29ca638c4e7ab"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:06:58-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:06:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:19.865741+00:00",
+      "subject": "fix(privacy): stop scheduling bulk evidence requests after scan cancellation",
+      "original_message": "fix(privacy): stop scheduling bulk evidence requests after scan cancellation\n"
+    },
+    {
+      "local_sha": "27e80199ab7299e6cc72d64366366335c57196b3",
+      "remote_sha": "d6016a822f3bf238506ea5b426380bceb9d1ee83",
+      "tree_sha": "4e696c732479d0ac7f7a4ec5c328b5a08380fb61",
+      "local_parents": [
+        "821d1035b3e8b20921904f5c3bf6411f22ea3346"
+      ],
+      "parents": [
+        "0322956e7370f6499f05e15ea18af8c0d9ee6b41"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:09:28-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:09:28-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:23.542620+00:00",
+      "subject": "fix(web): align scan disclosure with explicit sweep balance consent",
+      "original_message": "fix(web): align scan disclosure with explicit sweep balance consent\n"
+    },
+    {
+      "local_sha": "766ce6d8e41feaefb09047ce846d7adad360cf6c",
+      "remote_sha": "21fdd4350d1a4a2fa04198d7e11e922cd7f3da31",
+      "tree_sha": "3e1eeb88f361dab00e49268f902162e8065b250c",
+      "local_parents": [
+        "27e80199ab7299e6cc72d64366366335c57196b3"
+      ],
+      "parents": [
+        "d6016a822f3bf238506ea5b426380bceb9d1ee83"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:25:49Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:27.476214+00:00",
+      "subject": "Reject published test keys as release keys in production builds",
+      "original_message": "Reject published test keys as release keys in production builds\n\nSEC-44 / E-21: GHOSTPAY_RELEASE_PUBKEYS parsing had no denylist, so the\npublic Playwright manifest-signing key (secret 0x07*32) could verify a\nrelease build's manifests. parseReleaseKeys now refuses every key in\nPUBLIC_TEST_RELEASE_KEYS (repeated-byte fixture secrets 0x01..0x10, the\ndefault anvil accounts, scalars 1..3) when the build is a release:\nexplicit `production`, else GP_COMMIT is a full commit id and\nGHOSTPAY_PAGES_DEV is not 1. build-pages.sh checks explicitly for a\nrelease Pages build and passes GHOSTPAY_PAGES_DEV to the Vite build so\nthe dev-mode Pages acceptance keeps its fixture key.\n\nRED: src/releaseKeyDenylist.test.ts \"rejects a public test key in a\nproduction build\" -> AssertionError: expected [Function] to throw an\nerror (and PUBLIC_TEST_RELEASE_KEYS / isReleaseBuildEnv undefined).\nGREEN: npx vitest run src/releaseKeyDenylist.test.ts\nsrc/buildScripts.test.ts -> 2 files, 21 tests passed.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 79c9fd0dc589f0931a62ee38b1db8508f85f23e4)\n"
+    },
+    {
+      "local_sha": "5510ecdc406154d262373bf44ea4503050baae45",
+      "remote_sha": "c0d00610198467274a86612e83105b9f8afc6cdb",
+      "tree_sha": "d5fafae0f4fbb551b5837b70b6935b8172af696f",
+      "local_parents": [
+        "766ce6d8e41feaefb09047ce846d7adad360cf6c"
+      ],
+      "parents": [
+        "21fdd4350d1a4a2fa04198d7e11e922cd7f3da31"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:31:20Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:31.166194+00:00",
+      "subject": "Scan every HTML page and share one lean exclusion list",
+      "original_message": "Scan every HTML page and share one lean exclusion list\n\nSEC-24 / E-13: scan-bundle checked inline scripts, handlers, styles,\nremote resources and the CSP/referrer meta only in index.html, and the\nlean module exclusions of the Pages verifier differed from the build\nguard's (the verifier missed src/App.tsx, the tag archive, embedProtocol,\nchain-evm-extra and the embedHost export rule).\n\nscan-bundle now applies the document checks to every *.html/*.htm in the\noutput (help/privacy pages may link out with plain https <a href>\nnavigation, as the Pages verifier allows; index.html stays strict), and\nchecks dist/ghostpay-lean-build.json (lean builds) against\nscripts/pages/lean-exclusions.mjs, the one list verify-pages-site.mjs\nnow imports too (union of both former lists, each entry with a sample id\nboth test suites push through their gate).\n\nRED: src/scanBundle.test.ts \"checks help.html like index.html\" ->\nAssertionError: expected '' to contain 'help.html: inline <script>' (also\nprivacy.html, nested/extra.html, custom.HTM, and the lean report case);\nverify-pages-site.test.mjs \"the lean report is checked against the\nshared exclusion list\" -> AssertionError (src/App.tsx not flagged);\n\"allows external https navigation links in pages other than index.html\"\n-> expected [ ...(2) ] to deeply equal [] (found against a real lean\nbuild's help.html before this commit was finalised).\nGREEN: npx vitest run src/scanBundle.test.ts src/buildScripts.test.ts ->\nall passed; node --test scripts/pages/*.test.mjs -> pass 73, fail 0;\nscanBundle() on a real GHOSTPAY_LOCAL_BUILD_PROFILE=lean vite build ->\nno problems.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit be646f5f069e5950fc59f1eac40acc21ad9498d7)\n"
+    },
+    {
+      "local_sha": "4a5249b13af5a8119466619822c6977a5e1e0d22",
+      "remote_sha": "c66b63a04095ea326303d6a87bca6df8ed0b60d8",
+      "tree_sha": "9b61e71643d5aaf1f5b65e8866063cac22eaec83",
+      "local_parents": [
+        "5510ecdc406154d262373bf44ea4503050baae45"
+      ],
+      "parents": [
+        "c0d00610198467274a86612e83105b9f8afc6cdb"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:34:40Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:35.259759+00:00",
+      "subject": "Remove the legacy runtime-fetch unsigned-dev manifest loader",
+      "original_message": "Remove the legacy runtime-fetch unsigned-dev manifest loader\n\nSEC-14 / D-09: apps/web/src/lib/manifest.ts still exported loadManifest:\na runtime fetch of ./deployments/<id>.json verified with the legacy text\nscheme (sha256/ed25519, domain GhostPay-deployment-manifest-v1) that\naccepted unsigned testnet manifests as 'unsigned-dev' and console.warn'ed.\nIts only caller was manifest.test.ts (the default services use\nloadBundledManifest; defaultServices.ts:30). It is removed, so the app\nhas no runtime manifest fetch and no unsigned acceptance path in any\nbuild. scan-bundle now fails any build whose JS carries the acceptance\nwarning (chain-adapters UNSIGNED_DEV_WARNING) or the legacy signing\ndomain. The 'unsigned-dev' member stays in the ManifestState type only so\nthe views keep their loud warning for injected test states.\n\nOut of scope (not owned): @ghostpay/chain-adapters still exports\nverifyTextManifestSignature for apps/relayer and packages/ops-monitor.\n\nRED: src/lib/manifest.test.ts \"exports no runtime-fetch or unsigned-dev\nmanifest loader\" -> AssertionError: expected [ 'loadBundledManifest',\n...(3) ] to deeply equal [ ...(2) ] (loadManifest exported);\nsrc/scanBundle.test.ts \"fails on legacy unsigned-dev manifest\nacceptance\" / \"... signing domain\" -> expected '' to match.\nGREEN: npx vitest run src/lib/manifest.test.ts src/scanBundle.test.ts\nsrc/lib/defaultServices.test.ts -> all passed; scanBundle() on a real\nlean vite build -> no problems (markers absent).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 2f0b2de51c5d9c38a48c5810315009c4828b6ea2)\n"
+    },
+    {
+      "local_sha": "1ff82f9a0920f391970c245e128eb46f08acfa22",
+      "remote_sha": "ec7dd86db9b20ab906582c35fcb370b043e44ec4",
+      "tree_sha": "5308331138d36861615ac574bae526f51635cf20",
+      "local_parents": [
+        "4a5249b13af5a8119466619822c6977a5e1e0d22"
+      ],
+      "parents": [
+        "c66b63a04095ea326303d6a87bca6df8ed0b60d8"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:36:11Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:39.303229+00:00",
+      "subject": "Pass sanitized root error handlers to createRoot",
+      "original_message": "Pass sanitized root error handlers to createRoot\n\nSEC-42 / E-19: createRoot ran with React's default error reporting,\nwhich logs caught and uncaught render errors with message and component\nstack (possibly input snippets: key hex, passphrases). main.tsx now\npasses onCaughtError / onUncaughtError / onRecoverableError that log one\nfixed line naming only a sanitized error class (A-Z identifier, else\n\"Error\"); message, stack, component stack and error values never reach\nthe console. The ErrorBoundary panel is unchanged.\n\nRED: src/main.test.tsx \"passes onCaughtError, onUncaughtError and\nonRecoverableError to createRoot\" -> AssertionError: onCaughtError:\nexpected 'undefined' to be 'function'.\nGREEN: npx vitest run src/main.test.tsx -> 2 passed; tsc --noEmit adds\nno errors over the environment baseline.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit e46a0d91867d6c33b970718b4d9be6324a992fa5)\n"
+    },
+    {
+      "local_sha": "fd110c68147cad4d3e120c9d90ff042b1fbdc51d",
+      "remote_sha": "ec4cab70198e2e01978e5dcea128c706240fc61e",
+      "tree_sha": "e4513604a668053a263ddabf98dda12e1b0392f0",
+      "local_parents": [
+        "1ff82f9a0920f391970c245e128eb46f08acfa22"
+      ],
+      "parents": [
+        "ec7dd86db9b20ab906582c35fcb370b043e44ec4"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:39:37Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:43.853247+00:00",
+      "subject": "Refuse key, sweep and settings views when framed",
+      "original_message": "Refuse key, sweep and settings views when framed\n\nSEC-18 / D-13, E-11: GitHub Pages cannot send frame-ancestors or\nX-Frame-Options (the meta CSP cannot carry it), and nothing in the app\nrefused to render when framed, so any site could overlay seller-key,\nsweep or settings flows (clickjacking).\n\nNew src/lib/frameGuard.ts: isFramed (window.top !== window.self; an\nunreadable top counts as framed), embedModeEnabled (full profile and\nVITE_EMBED_IFRAME=1 only, as MerchantProfilePanel/embedHost use it) and\nFRAME_SAFE_VIEWS = home, pay, about. AppShell renders a refusal notice\nwith a target=_blank rel=\"noopener noreferrer\" link to ./ (no fragment)\ninstead of every other view (seller, create, scan, sweep, registry,\nsettings, and the full profile's extra chain views) while framed outside\nthe embed mode. The notice is fixed English text: new catalog keys would\nneed classification in src/i18n/securityKeys.ts, outside this lane.\n\nRED: src/AppShell.frameGuard.test.tsx \"refuses seller, create, scan,\nsweep, registry and settings views when framed\" -> TestingLibraryElement\nError: Unable to find an element with the text: /Open GhostPay in its\nown tab/.\nGREEN: npx vitest run src/lib/frameGuard.test.ts\nsrc/AppShell.frameGuard.test.tsx -> 7 passed (includes a real jsdom\niframe for isFramed); tsc adds no errors; eslint clean; i18n check 0\nerrors, extract 0 missing.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 595da5e5e0c8473471aa81328386b87b8c5c996f)\n"
+    },
+    {
+      "local_sha": "e88f4bed3ab3538a3269fc0f86f4a78d09a947b8",
+      "remote_sha": "e5057395861a2f034626f97af11ad8ac25740737",
+      "tree_sha": "1d09f31e053afd3acb98462bba065c843bcf28ab",
+      "local_parents": [
+        "fd110c68147cad4d3e120c9d90ff042b1fbdc51d"
+      ],
+      "parents": [
+        "ec4cab70198e2e01978e5dcea128c706240fc61e"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:41:10Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:47.994882+00:00",
+      "subject": "Guard unsaved keys against leaving the page",
+      "original_message": "Guard unsaved keys against leaving the page\n\nSEC-40 / E-12: the Pages mirror banner's \"how to verify\" link navigated\nthe same tab, and nothing asked before leaving while seller keys existed\nonly in memory. The banner link now opens a new tab (target=_blank\nrel=\"noopener noreferrer\", labelled as such), and AppShell registers a\nbeforeunload prompt only while keys are loaded and the existing session\nbackup state is not verified (no backup, an unverified download, or a\nwaiver); imported/vault-stored keys and no keys never prompt. No new\nstorage; the listener is removed on change and unmount.\n\nRED: src/AppShell.beforeUnload.test.tsx \"prompts only while loaded keys\nhave no verified backup\" -> AssertionError: expected false to be true;\nscripts/pages/pages-hosting.test.mjs \"the mirror banner link opens a new\ntab...\" -> actual '<a href=... rel=\"noopener noreferrer\">' (no target).\nGREEN: npx vitest run src/AppShell.beforeUnload.test.tsx\nsrc/AppShell.frameGuard.test.tsx -> 6 passed; node --test\nscripts/pages/pages-hosting.test.mjs -> pass 1; tsc adds no errors;\neslint clean.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit b6614da8a61cedd671eb0d24aad7c91e4458d4ae)\n"
+    },
+    {
+      "local_sha": "16d3e39b5bc6d3b57ed159c3fb14df4c9d9b173a",
+      "remote_sha": "dff33996d463bf1a4d1c187fd02be269ee6f0448",
+      "tree_sha": "6adf0412bd124378176cfb00086954a7412bc7fa",
+      "local_parents": [
+        "e88f4bed3ab3538a3269fc0f86f4a78d09a947b8"
+      ],
+      "parents": [
+        "e5057395861a2f034626f97af11ad8ac25740737"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:44:09Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:55.252295+00:00",
+      "subject": "Check the deployed origin against the declared origin",
+      "original_message": "Check the deployed origin against the declared origin\n\nSEC-09 / TB-03 / E-03: the shared-origin gate trusted the declared\nGHOSTPAY_PAGES_ORIGIN and the deployed page_url was never compared with\nit, so a mislabelled origin passed every gate.\n\nWorkflow: the smoke job (needs: deploy) passes --expect-origin with the\nsame expression the site job built with; smoke.mjs fails the run before\nany request when new URL(page_url).origin differs\n(smoke-url.mjs deployedOriginProblem; a non-origin declaration fails\ntoo). Runtime: build-pages.sh compiles the declared origin in as\nVITE_GHOSTPAY_PAGES_ORIGIN; served from any other origin,\nloadBundledManifest returns invalid (payments disabled, fail closed) and\nAppShell shows an error notice naming both origins. Builds without a\ndeclaration are unchanged. Repo-level CNAME/https_enforced from the\nPages API is not checked here (needs a Pages-read token in the job).\n\nRED: scripts/pages/pages-hosting.test.mjs \"build-pages hands the\ndeclared origin to the Vite build\" -> input did not match\n/VITE_GHOSTPAY_PAGES_ORIGIN=\"\\$origin\"/; \"the publishing workflow fails\nwhen the deployed page_url origin differs\" -> strictEqual\n(DECLARED_ORIGIN missing); smoke-url.test.mjs \"deployedOriginProblem...\"\n-> 'deployedOriginProblem is not a function'; \"--expect-origin fails\nbefore any request\" -> got 'SMOKE FAIL: build-info.json did not\nreport...'; src/lib/manifest.test.ts \"refuses it ... on any other\norigin\" -> expected 'loaded' to be 'invalid'; src/AppShell.frameGuard\n.test.tsx \"shows a visible warning...\" -> Unable to find an element.\nGREEN: node --test scripts/pages/*.test.mjs -> pass 78 fail 0;\nbash scripts/check-actions-pinned.sh -> OK 111 pinned; node --test\nscripts/tests/workflows.test.mjs scripts/tests/workflow-files.test.mjs\n-> pass 6; npx vitest run (frameGuard, manifest, AppShell.frameGuard,\nAppShell.beforeUnload, defaultServices) -> 33 passed.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 43a73df2ca3ee3f5fc8b65b540ccc65f719e610a)\n"
+    },
+    {
+      "local_sha": "bffd60955ce06ccc90eef9c6e2d7559dc352395a",
+      "remote_sha": "53826983a71e34433f390c68ba449c5add6382d4",
+      "tree_sha": "000b22b28ba0b8528964d909f88a97bdc14dc0e8",
+      "local_parents": [
+        "16d3e39b5bc6d3b57ed159c3fb14df4c9d9b173a"
+      ],
+      "parents": [
+        "dff33996d463bf1a4d1c187fd02be269ee6f0448"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:52:25Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:38:58.755256+00:00",
+      "subject": "Allow the build's own declared origin literal in the bundle scan",
+      "original_message": "Allow the build's own declared origin literal in the bundle scan\n\nSEC-09 / TB-03 follow-up: commit 43a73df2 compiles the declared\nGHOSTPAY_PAGES_ORIGIN into the bundle as VITE_GHOSTPAY_PAGES_ORIGIN, but\nscan-bundle (run by build-pages.sh via e2e/devnet/scan-dist.mjs) flags\nevery URL literal not in ALLOWED_URLS, so every Pages build with an\norigin (the workflow always sets one) failed:\n  Devnet bundle scan FAILED:\n   - assets/index-*.js: unexpected origin or hostname \"http://127.0.0.1:4791\"\nscanBundle now takes options.ownOrigin (default: the build's\nVITE_GHOSTPAY_PAGES_ORIGIN) and allows exactly that literal in JS, only\nwhen it is exactly an http(s) origin; a path under it, a longer host,\nanother scheme or any other origin still fails. Nothing is fetched.\n\nRED: src/scanBundle.test.ts \"allows exactly the declared own origin of\nthe build and nothing else\" -> AssertionError: expected [ Array(1) ] to\ndeeply equal [].\nGREEN: npx vitest run src/scanBundle.test.ts src/buildScripts.test.ts ->\n69 passed; GHOSTPAY_PAGES_DEV=1 GHOSTPAY_PAGES_ORIGIN=http://127.0.0.1:4791\nbash scripts/pages/build-pages.sh <out> -> \"Pages site verified: 16\nfiles\" (web typecheck step shimmed locally: the sandbox lacks axe-core\nand @bufbuild/protobuf, a pre-existing environment baseline).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 4b3f1a5df182019de849108b9927ec1a916888e4)\n"
+    },
+    {
+      "local_sha": "3e02b8e7fd044333a470080e3fe836a8f411784d",
+      "remote_sha": "153965f2298150987b2673e49f4e8ff180d279a6",
+      "tree_sha": "25826c4d5e9b9691850c43171da93ffeff10ddf8",
+      "local_parents": [
+        "bffd60955ce06ccc90eef9c6e2d7559dc352395a"
+      ],
+      "parents": [
+        "53826983a71e34433f390c68ba449c5add6382d4"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:52:25Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:02.636872+00:00",
+      "subject": "Walk every lean view and a fixture invoice in the Pages smoke test",
+      "original_message": "Walk every lean view and a fixture invoice in the Pages smoke test\n\nSEC-46 / E-23: the post-deployment smoke only idled 3 s on the home\nview, so a third-party request from any other view or from the Pay\nreview went unnoticed. smoke.mjs now, after the idle check, clicks every\nlean view of the main navigation (scripts/pages/smoke-walk.mjs; the\nlabel list is pinned to AppShell CORE_ORDER and en.json), then opens a\ncommitted fixture invoice (synthetic keys, memo \"never pay\", Base\nSepolia) and waits for its Pay review, failing on any page error, any\nunreachable view, or any request outside the published site's\norigin+project path (requestWithinPublishedSite). It still clicks only\nthe navigation: no wallet, no key creation, no RPC.\n\nRED: node --test scripts/pages/smoke-walk.test.mjs -> ERR_MODULE_NOT_FOUND\nsmoke-walk.mjs; with the old smoke.mjs: \"smoke.mjs walks every lean view\nand opens the fixture invoice, failing on any request outside the site\"\n-> AssertionError.\nGREEN: node --test scripts/pages/smoke-walk.test.mjs -> pass 7 fail 0;\nagainst a local dev Pages build served by serve-pages.mjs under\n/GhostPay/: node scripts/pages/smoke.mjs http://127.0.0.1:4791/GhostPay/\n--expect-origin http://127.0.0.1:4791 -> \"visited 9 views and the\nfixture invoice, no page errors, no third-party requests ... SMOKE PASS\";\nsame build from http://localhost:4791 -> \"SMOKE FAIL: deployed origin\nhttp://localhost:4791 != declared http://127.0.0.1:4791\" and the app\nshows \"This copy is not served from its declared address\".\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 898e563138c42e4e39d24b2563e2bf9519a612ef)\n"
+    },
+    {
+      "local_sha": "8af196a2ba8b962f4b84050b8904a14178f04b84",
+      "remote_sha": "633dd86d1e9950c25b94167dc3ab6b0a458bfbc8",
+      "tree_sha": "4c56deb8c3bba38e0a73ad4d7a061b734be8eb96",
+      "local_parents": [
+        "3e02b8e7fd044333a470080e3fe836a8f411784d"
+      ],
+      "parents": [
+        "153965f2298150987b2673e49f4e8ff180d279a6"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:54:28Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:06.524016+00:00",
+      "subject": "Attest the Pages artifact checksums before deploying",
+      "original_message": "Attest the Pages artifact checksums before deploying\n\nSEC-43: the served files' SHA256SUMS existed only in the run summary and\na 14-day artifact, unsigned, so nothing durable bound the published site\nto this repository's workflow. A new attest job (publishing runs only,\nneeds site, acceptance and release-gates; deploy now needs it) downloads\nthe site job's retained artifact (the same site/ directory uploaded as\nthe Pages artifact), checks that SHA256SUMS lists exactly the served\nfiles with well-formed lines and that every hash matches, then runs\nactions/attest-build-provenance with subject-checksums. Pinned to\n4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2 (resolved with\n`git ls-remote --tags https://github.com/actions/attest-build-provenance`:\nv4.2.2 and v4^{} both point there; release.yml already pins the same).\nThe job holds only id-token: write and attestations: write, with no\ncheckout and no repository code. Signing the sums with the release key\nstays owner-gated (OD-07); SRI is not applicable to a same-origin static\nbundle under the meta CSP and is not added here.\n\nRED: node --test scripts/pages/pages-hosting.test.mjs \"a publishing run\nattests the SHA256SUMS of the Pages artifact before deploying\" ->\nerror: 'attest job'.\nGREEN: node --test scripts/pages/*.test.mjs -> pass 86 fail 0;\nbash scripts/check-actions-pinned.sh -> OK: 113 pinned; node --test\nscripts/tests/workflows.test.mjs scripts/tests/workflow-files.test.mjs\n-> pass 6; the check step's script run on a local Pages build -> \"16\nserved files checked\" (exit 0), with an extra file -> exit 1, with a\nmodified index.html -> \"./index.html: FAILED\" exit 1.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 1d46bc5e29fd5a0b7df206db516b6e9f14038b67)\n"
+    },
+    {
+      "local_sha": "3d2688a7cfa6949bca849ef5e712dea2b34a61ca",
+      "remote_sha": "a71a612acda5c1d4c5820fbdd55cb934803914dd",
+      "tree_sha": "59ba42dba606a6cd824f3bbe597299f6eaa33693",
+      "local_parents": [
+        "8af196a2ba8b962f4b84050b8904a14178f04b84"
+      ],
+      "parents": [
+        "633dd86d1e9950c25b94167dc3ab6b0a458bfbc8"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T07:59:10Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:10.604940+00:00",
+      "subject": "Tighten the audited fetch call sites after the manifest loader removal",
+      "original_message": "Tighten the audited fetch call sites after the manifest loader removal\n\nSEC-14 / D-09 follow-up: commit 2f0b2de5 removed the runtime\n./deployments fetch from apps/web/src/lib/manifest.ts, so the privacy\ninvariant that lists every module calling the global fetch() now finds\ntwo audited call sites instead of three. The expected list drops\nlib/manifest.ts (narrower, not weaker): any new fetch in manifest.ts or\nelsewhere fails it again.\n\nRED: npm test -w apps/web -> src/privacyInvariants.test.ts \"issues\nfetch() only from the three audited call sites\" -> expected\n[ 'lib/defaultServices.ts', \u2026(1) ] to deeply equal\n[ 'lib/defaultServices.ts', \u2026(2) ] (lib/manifest.ts no longer fetches).\nGREEN: npx vitest run src/privacyInvariants.test.ts -> 34 passed.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit cd390fdd1bf92ef1e75fd4d397cbe2ca6e11229f)\n"
+    },
+    {
+      "local_sha": "60f7cc06f08633050cf52eab6134637393ab212e",
+      "remote_sha": "6b32714151aecce16ad2cac506b7315b53b39dc9",
+      "tree_sha": "448ad79bf676b4b2847bd812ad45b1345fc568a8",
+      "local_parents": [
+        "3d2688a7cfa6949bca849ef5e712dea2b34a61ca"
+      ],
+      "parents": [
+        "a71a612acda5c1d4c5820fbdd55cb934803914dd"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T08:27:36Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:14.607949+00:00",
+      "subject": "Recover isolated-context seller-vault recovery checks R1-R3",
+      "original_message": "Recover isolated-context seller-vault recovery checks R1-R3\n\nPorts the R1-R3 Chromium acceptance scenarios (fresh-context encrypted\nimport is memory-only, explicit re-encrypted save under a new passphrase,\nreload/unlock, occupied-store refusal, source vault and backup preserved,\nloopback-only traffic) into apps/web/scripts/test-seller-vault-idb.mjs.\nThe two-tab V1/V2 atomicity assertions are unchanged.\n\nRecovered from 57dcf7e8ab4f40bcbad859943cf88b3e71c4c221 on\norigin/ghostpay-cloud-recovery-2026-10-26 (git cherry-pick -x applied\ncleanly), then adjusted for harness drift:\n(cherry picked from commit 57dcf7e8ab4f40bcbad859943cf88b3e71c4c221)\n\nHarness drift, not a product regression: the recovered config\n`optimizeDeps: { entries: [], noDiscovery: true }` disables Vite 8.3.5\npre-bundling, so the CommonJS dependency eventemitter3 (reached via\nviem/ox from the vault modules) fails to load in the browser.\nRED: page.evaluate: SyntaxError: The requested module\n'/@fs/.../node_modules/eventemitter3/index.js' does not provide an export\nnamed 'default' (at the pre-existing two-tab import, before R1).\nThe prior HEAD harness also failed on this tree, with\n\"Failed to fetch dynamically imported module .../src/lib/keyVault.ts\"\n(runtime dep discovery reload). Fix: scan only src/lib/keyVault.ts and\nsrc/lib/session.ts as optimizer entries, force a fresh bundle into a\nprivate temp cacheDir (removed afterwards), so the result does not depend\non a stale shared .vite cache. No product code changed.\n\nGREEN (twice): cd apps/web && GHOSTPAY_CHROMIUM=/usr/bin/google-chrome\nnode scripts/test-seller-vault-idb.mjs -> \"PASS: Chromium seller vault\nrecovery R1-R3 ...\" and \"PASS: Chromium seller vault two-tab\ncompare-and-delete, stale-session save abort, no external egress.\"\nnode --check and git diff --check pass; eslint ignores scripts/ by config.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 884744d444d60636f42620020a9c807de4c8d72e)\n"
+    },
+    {
+      "local_sha": "63317df07e9071314ebbc86d6c08c512e3bb70a9",
+      "remote_sha": "6e48ce51ac6b550c998d0331fc7692621dcf174d",
+      "tree_sha": "a8cfc6cf5603c482e9a847197b9836976134cb9c",
+      "local_parents": [
+        "60f7cc06f08633050cf52eab6134637393ab212e"
+      ],
+      "parents": [
+        "6b32714151aecce16ad2cac506b7315b53b39dc9"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T08:29:26Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:18.342885+00:00",
+      "subject": "Call invalidateFrom with its current signature in the IndexedDB check",
+      "original_message": "Call invalidateFrom with its current signature in the IndexedDB check\n\nTB-06: apps/web/scripts/test-reconciliation-idb.mjs:71 still called\ninvalidateFrom(100n). The method is now invalidateFrom(block, observed,\ncanonicalHash) (packages/ux-vault/src/reconciliation-portable.ts:961), so the\nscript crashed before checking the two-tab reorg refresh.\n\nThe script now passes no new observations and a canonicalHash that reports a\nreplaced block at height 120 (the only stored observation), asserts that it is\nthe only height read, and still waits for the other tab to see\n'invalidated-after-reorg'. It also looks for Chromium at the same pre-installed\npaths as playwright.config.ts instead of only /usr/bin/chromium.\n\nRED: GHOSTPAY_CHROMIUM=/opt/pw-browsers/chromium node scripts/test-reconciliation-idb.mjs (apps/web)\n  exit 1: \"page.evaluate: TypeError: Cannot read properties of undefined (reading 'map')\"\n  at ReconciliationVault.invalidateFrom ... test-reconciliation-idb.mjs:71:18\nGREEN: node scripts/test-reconciliation-idb.mjs (apps/web) exit 0\n  \"PASS: Chromium IndexedDB exact-ciphertext CAS, two-tab race/reorg refresh,\n  stale-session abort, no external egress.\"\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 2a3e78c99fae1585ca958e4e95d2bdc2b6134d12)\n"
+    },
+    {
+      "local_sha": "fb68a868b3b525046ae1b1bae83c2385374fa039",
+      "remote_sha": "c9cdb646d1a6e614152f7a4ad3450db2f08bf04f",
+      "tree_sha": "a4a4aac6377e76434b00ae62a5aedec2ac2f5084",
+      "local_parents": [
+        "63317df07e9071314ebbc86d6c08c512e3bb70a9"
+      ],
+      "parents": [
+        "6e48ce51ac6b550c998d0331fc7692621dcf174d"
+      ],
+      "original_author": {
+        "name": "Claude",
+        "email": "noreply@anthropic.com",
+        "date": "2026-11-18T08:25:42Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:08-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:21.937330+00:00",
+      "subject": "Document bearer precedence over caution flags in QR design guide",
+      "original_message": "Document bearer precedence over caution flags in QR design guide\n\nDocs-only. The guide said only `secret` is never downgraded, but\nkindForPayload (apps/web/src/lib/qrKinds.ts:234) returns early for both\n`secret` and `bearer`, and apps/web/src/lib/qrKinds.test.ts:41-42 assert\nbearer survives testnet/unsigned/unverified flags.\n\nRecovered from 647f838a0aa335d4377936469059a866ed2a4635 on\norigin/chatgpt/zero-codex/docs-pages-scope-20261112 (head c5efadab).\n(cherry picked from commit 647f838a0aa335d4377936469059a866ed2a4635)\n\nCheck: cd apps/web && npx vitest run src/lib/qrKinds.test.ts -> 11 passed.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01KtKj8n7zqgSHJpnKg7TtSV\n(cherry picked from commit 865fccb6ef4f49eafcb9258a0074fa28c09ff917)\n"
+    },
+    {
+      "local_sha": "0bbd8965b2535a48ecd4eab700cd4f28e54b38fa",
+      "remote_sha": "e73fdb16f81f2e4811931585f59c041441ba1c78",
+      "tree_sha": "52474a3fc68a5570f85089361e74792dc664aca7",
+      "local_parents": [
+        "fb68a868b3b525046ae1b1bae83c2385374fa039"
+      ],
+      "parents": [
+        "c9cdb646d1a6e614152f7a4ad3450db2f08bf04f"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:14:36-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:14:36-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:25.711165+00:00",
+      "subject": "fix(web): keep root error reporting free of mutable error content",
+      "original_message": "fix(web): keep root error reporting free of mutable error content\n"
+    },
+    {
+      "local_sha": "2073f4d1a58d04d6a208b283666587ae407d3690",
+      "remote_sha": "6079bb673520c1269818613bed99aea2f571fa68",
+      "tree_sha": "c9e7443a9831003de1c54d15b565499bd2afbd90",
+      "local_parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:36-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:36-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:29.119615+00:00",
+      "subject": "docs: claim Pages recovery integration lane",
+      "original_message": "docs: claim Pages recovery integration lane\n"
+    },
+    {
+      "local_sha": "7aebde3656e56e1cd9fb0b63802fec8299f412d0",
+      "remote_sha": "70a815c81ffadd6117d7483af6ac24c63a42fdbb",
+      "tree_sha": "771bc750aeec51f5b5cb0573b92209ac27768b74",
+      "local_parents": [
+        "2073f4d1a58d04d6a208b283666587ae407d3690",
+        "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc"
+      ],
+      "parents": [
+        "6079bb673520c1269818613bed99aea2f571fa68",
+        "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:47-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:47-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:33.464937+00:00",
+      "subject": "Merge Spec 18 recovery implementation onto current Pages main",
+      "original_message": "Merge Spec 18 recovery implementation onto current Pages main\n"
+    },
+    {
+      "local_sha": "705ded7c526694d8f3535cc67a3ed4763f1bc46d",
+      "remote_sha": "01ff216ef779ec36c0a3e16eddf81cfd957faef8",
+      "tree_sha": "594d0931bf85d450e22ae6db99d70e0cc83a5c73",
+      "local_parents": [
+        "7aebde3656e56e1cd9fb0b63802fec8299f412d0",
+        "18110015e99efbeb4f23d47cd88bd6f917010108"
+      ],
+      "parents": [
+        "70a815c81ffadd6117d7483af6ac24c63a42fdbb",
+        "18110015e99efbeb4f23d47cd88bd6f917010108"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:56-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:56-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:37.197588+00:00",
+      "subject": "Merge reviewed recovery consent and key-boundary disclosures",
+      "original_message": "Merge reviewed recovery consent and key-boundary disclosures\n"
+    },
+    {
+      "local_sha": "5fec109375ef916a6dcc15fd199aa828691817c6",
+      "remote_sha": "1bbc45d638f26c2a60be27b811f9334d0688ed11",
+      "tree_sha": "46256aced6e485ef5833e72b0baa1eaa7f5ca72d",
+      "local_parents": [
+        "705ded7c526694d8f3535cc67a3ed4763f1bc46d"
+      ],
+      "parents": [
+        "01ff216ef779ec36c0a3e16eddf81cfd957faef8"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:58:27-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:58:27-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:40.732390+00:00",
+      "subject": "test(web): require disclosure before key-export RPC lookup",
+      "original_message": "test(web): require disclosure before key-export RPC lookup\n"
+    },
+    {
+      "local_sha": "933bdedc07dfeb6024f1ea23045bacbbc81972fb",
+      "remote_sha": "4859051c84bf27bda216cf044089f87e5fc65913",
+      "tree_sha": "2d8da6d6d8d54c2178e5f0959aa6c58e664fd27a",
+      "local_parents": [
+        "5fec109375ef916a6dcc15fd199aa828691817c6"
+      ],
+      "parents": [
+        "1bbc45d638f26c2a60be27b811f9334d0688ed11"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:59:42-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:59:42-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:44.958187+00:00",
+      "subject": "fix(web): disclose payment-key export RPC exposure before consent",
+      "original_message": "fix(web): disclose payment-key export RPC exposure before consent\n"
+    },
+    {
+      "local_sha": "f2ed1ed4240f91ef2fb41f3edaf3ea6546e87e60",
+      "remote_sha": "11aeb6937c449c3556e18c87d15725ddba8f5379",
+      "tree_sha": "cc322bbd3f7ea43fc749baf3ba9eeb3074213eb7",
+      "local_parents": [
+        "933bdedc07dfeb6024f1ea23045bacbbc81972fb"
+      ],
+      "parents": [
+        "4859051c84bf27bda216cf044089f87e5fc65913"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:00:39-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:00:39-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:48.368358+00:00",
+      "subject": "test(web): reconcile archive assertions with reviewed metadata disclosure",
+      "original_message": "test(web): reconcile archive assertions with reviewed metadata disclosure\n"
+    },
+    {
+      "local_sha": "1aba6d2c5798f5e2b0103cbd80914c59848d92d9",
+      "remote_sha": "29934b98fa19b963d74df0f38ce524e043568911",
+      "tree_sha": "c626bdde79ac34784891cca3afe569dda522c327",
+      "local_parents": [
+        "f2ed1ed4240f91ef2fb41f3edaf3ea6546e87e60"
+      ],
+      "parents": [
+        "11aeb6937c449c3556e18c87d15725ddba8f5379"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:11:05-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:11:05-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:52.130583+00:00",
+      "subject": "docs: record Pages recovery integration and exact qualification limits",
+      "original_message": "docs: record Pages recovery integration and exact qualification limits\n"
+    },
+    {
+      "local_sha": "fefb7a57ec45c152c9269a553b3f18347e836206",
+      "remote_sha": "19e3b770831d491bbe85d08a33cd1e7a2af1f5d7",
+      "tree_sha": "b4f0e59409af40d07f99a655f8f2c3afb235bc29",
+      "local_parents": [
+        "0bbd8965b2535a48ecd4eab700cd4f28e54b38fa",
+        "1aba6d2c5798f5e2b0103cbd80914c59848d92d9"
+      ],
+      "parents": [
+        "e73fdb16f81f2e4811931585f59c041441ba1c78",
+        "29934b98fa19b963d74df0f38ce524e043568911"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:05-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:05-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:39:57.052412+00:00",
+      "subject": "merge: consolidate reviewed independent key recovery (#213, #229)",
+      "original_message": "merge: consolidate reviewed independent key recovery (#213, #229)\n\n# Conflicts:\n#\tapps/web/locales/ar.json\n#\tapps/web/locales/en.json\n#\tapps/web/locales/es.json\n#\tapps/web/locales/ja.json\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "4ccaf010b7777b0f7ade098c24a8b6fcba33bbbc",
+      "remote_sha": "d710df4ae2baaa178f9d33883ccd6f82d396e3d9",
+      "tree_sha": "d4a3c994696bfe716886e55412dd0e91b8ae96d2",
+      "local_parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:48-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:48-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:01.051920+00:00",
+      "subject": "docs: claim paired dependency qualification work",
+      "original_message": "docs: claim paired dependency qualification work\n"
+    },
+    {
+      "local_sha": "5f2162ee3dc6554387d0e1366fcb6b49c145d4ea",
+      "remote_sha": "f9494bf448fd4e1162ade3b9cf0d1a375eed3844",
+      "tree_sha": "17f59503d592cbb0076f889b6db20a09438a0c28",
+      "local_parents": [
+        "4ccaf010b7777b0f7ade098c24a8b6fcba33bbbc"
+      ],
+      "parents": [
+        "d710df4ae2baaa178f9d33883ccd6f82d396e3d9"
+      ],
+      "original_author": {
+        "name": "dependabot[bot]",
+        "email": "49699333+dependabot[bot]@users.noreply.github.com",
+        "date": "2026-11-18T07:18:30Z"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:48-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:05.185139+00:00",
+      "subject": "deps: bump the npm-minor-patch group across 1 directory with 9 updates",
+      "original_message": "deps: bump the npm-minor-patch group across 1 directory with 9 updates\n\nBumps the npm-minor-patch group with 9 updates in the / directory:\n\n| Package | From | To |\n| --- | --- | --- |\n| [viem](https://github.com/wevm/viem) | `2.57.13` | `2.57.19` |\n| [@vitest/coverage-v8](https://github.com/vitest-dev/vitest/tree/HEAD/packages/coverage-v8) | `5.0.5` | `5.1.0` |\n| [prettier](https://github.com/prettier/prettier) | `3.9.10` | `3.10.1` |\n| [vitest](https://github.com/vitest-dev/vitest/tree/HEAD/packages/vitest) | `5.0.5` | `5.1.0` |\n| [@zama-fhe/sdk](https://github.com/zama-ai/sdk/tree/HEAD/packages/sdk) | `3.7.1` | `3.7.2` |\n| [@playwright/test](https://github.com/microsoft/playwright) | `1.64.1` | `1.65.1` |\n| [@testing-library/user-event](https://github.com/testing-library/user-event) | `14.6.8` | `14.6.10` |\n| [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/tree/HEAD/packages/plugin-react) | `6.1.2` | `6.3.0` |\n| [vite](https://github.com/vitejs/vite/tree/HEAD/packages/vite) | `8.3.5` | `8.3.8` |\n\nUpdates `viem` from 2.57.13 to 2.57.19\n- [Release notes](https://github.com/wevm/viem/releases)\n- [Commits](https://github.com/wevm/viem/compare/viem@2.57.13...viem@2.57.19)\n\nUpdates `@vitest/coverage-v8` from 5.0.5 to 5.1.0\n- [Release notes](https://github.com/vitest-dev/vitest/releases)\n- [Changelog](https://github.com/vitest-dev/vitest/blob/main/docs/releases.md)\n- [Commits](https://github.com/vitest-dev/vitest/commits/v5.1.0/packages/coverage-v8)\n\nUpdates `prettier` from 3.9.10 to 3.10.1\n- [Release notes](https://github.com/prettier/prettier/releases)\n- [Changelog](https://github.com/prettier/prettier/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/prettier/prettier/compare/3.9.10...3.10.1)\n\nUpdates `vitest` from 5.0.5 to 5.1.0\n- [Release notes](https://github.com/vitest-dev/vitest/releases)\n- [Changelog](https://github.com/vitest-dev/vitest/blob/main/docs/releases.md)\n- [Commits](https://github.com/vitest-dev/vitest/commits/v5.1.0/packages/vitest)\n\nUpdates `@zama-fhe/sdk` from 3.7.1 to 3.7.2\n- [Release notes](https://github.com/zama-ai/sdk/releases)\n- [Changelog](https://github.com/zama-ai/sdk/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/zama-ai/sdk/commits/v3.7.2/packages/sdk)\n\nUpdates `@playwright/test` from 1.64.1 to 1.65.1\n- [Release notes](https://github.com/microsoft/playwright/releases)\n- [Commits](https://github.com/microsoft/playwright/compare/v1.64.1...v1.65.1)\n\nUpdates `@testing-library/user-event` from 14.6.8 to 14.6.10\n- [Release notes](https://github.com/testing-library/user-event/releases)\n- [Changelog](https://github.com/testing-library/user-event/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/testing-library/user-event/compare/v14.6.8...v14.6.10)\n\nUpdates `@vitejs/plugin-react` from 6.1.2 to 6.3.0\n- [Release notes](https://github.com/vitejs/vite-plugin-react/releases)\n- [Changelog](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/CHANGELOG.md)\n- [Commits](https://github.com/vitejs/vite-plugin-react/commits/plugin-react@6.3.0/packages/plugin-react)\n\nUpdates `vite` from 8.3.5 to 8.3.8\n- [Release notes](https://github.com/vitejs/vite/releases)\n- [Changelog](https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md)\n- [Commits](https://github.com/vitejs/vite/commits/v8.3.8/packages/vite)\n\n---\nupdated-dependencies:\n- dependency-name: viem\n  dependency-version: 2.57.19\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: npm-minor-patch\n- dependency-name: \"@vitest/coverage-v8\"\n  dependency-version: 5.1.0\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n  dependency-group: npm-minor-patch\n- dependency-name: prettier\n  dependency-version: 3.10.1\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n  dependency-group: npm-minor-patch\n- dependency-name: vitest\n  dependency-version: 5.1.0\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n  dependency-group: npm-minor-patch\n- dependency-name: \"@zama-fhe/sdk\"\n  dependency-version: 3.7.2\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: npm-minor-patch\n- dependency-name: \"@playwright/test\"\n  dependency-version: 1.65.1\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n  dependency-group: npm-minor-patch\n- dependency-name: \"@testing-library/user-event\"\n  dependency-version: 14.6.10\n  dependency-type: direct:development\n  update-type: version-update:semver-patch\n  dependency-group: npm-minor-patch\n- dependency-name: \"@vitejs/plugin-react\"\n  dependency-version: 6.3.0\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n  dependency-group: npm-minor-patch\n- dependency-name: vite\n  dependency-version: 8.3.8\n  dependency-type: direct:development\n  update-type: version-update:semver-patch\n  dependency-group: npm-minor-patch\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\n(cherry picked from commit 4d19655a2e5d93ad9378803cd4163245168aca24)\n"
+    },
+    {
+      "local_sha": "811276498b589c0576fdc76e58a52296b155c413",
+      "remote_sha": "fbe79a4ad020bea800577a40e0b0a97602a761bf",
+      "tree_sha": "bd8f41c5f4c6ae255e926653591b343a1cab7ce1",
+      "local_parents": [
+        "5f2162ee3dc6554387d0e1366fcb6b49c145d4ea"
+      ],
+      "parents": [
+        "f9494bf448fd4e1162ade3b9cf0d1a375eed3844"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:48-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T05:55:48-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:09.202700+00:00",
+      "subject": "fix(deps): extract paired viem and coverage resolution repair",
+      "original_message": "fix(deps): extract paired viem and coverage resolution repair\n\nExtract package.json and package-lock.json from defdaa308a2d05ab407af7e42f8dc457cf52d103 (PR #236) after exact dependency update 4d19655a2e5d93ad9378803cd4163245168aca24 (PR #210). Preserve existing coverage gates and all workspace pins.\n"
+    },
+    {
+      "local_sha": "ef464ee582086192c5c8a498ec9730cdf62c3f66",
+      "remote_sha": "4dc662b0a917ad9bb1db841ea4cb2377f17cf335",
+      "tree_sha": "0e827bdf5f19c4214a64e03e7b15aa5f718a1f1e",
+      "local_parents": [
+        "811276498b589c0576fdc76e58a52296b155c413"
+      ],
+      "parents": [
+        "fbe79a4ad020bea800577a40e0b0a97602a761bf"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:04:06-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:04:06-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:13.016257+00:00",
+      "subject": "docs: record paired dependency qualification and remaining gates",
+      "original_message": "docs: record paired dependency qualification and remaining gates\n"
+    },
+    {
+      "local_sha": "0ca168f26a368d60782a12ce2dcb7c42d3b2f2c8",
+      "remote_sha": "549a819d4421c55d1d8334052a2f8722fd78e3a8",
+      "tree_sha": "4f192c73e46ed22215b7d1fb34569d0667bcb020",
+      "local_parents": [
+        "fefb7a57ec45c152c9269a553b3f18347e836206",
+        "ef464ee582086192c5c8a498ec9730cdf62c3f66"
+      ],
+      "parents": [
+        "19e3b770831d491bbe85d08a33cd1e7a2af1f5d7",
+        "4dc662b0a917ad9bb1db841ea4cb2377f17cf335"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:13-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:13-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:17.340227+00:00",
+      "subject": "merge: qualify paired dependency and viem alignment (#210, #236)",
+      "original_message": "merge: qualify paired dependency and viem alignment (#210, #236)\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n"
+    },
+    {
+      "local_sha": "0faf9221406c6bf2621d815f22b0764f5317f60d",
+      "remote_sha": "c053b3cfdd44a99932e836dc2814fff9a106c48f",
+      "tree_sha": "9d9cf12a7f2f6615d9641a7127bd104214607b67",
+      "local_parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:00:20-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:00:20-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:21.091349+00:00",
+      "subject": "docs(ai): claim Pages security-tooling extraction lane",
+      "original_message": "docs(ai): claim Pages security-tooling extraction lane\n"
+    },
+    {
+      "local_sha": "f219cc89986eeef36c77e58175d4c417ff0f138d",
+      "remote_sha": "157ad783b3985a565c84e5b533632ba88c7fd883",
+      "tree_sha": "88b3713a47e59e75f2d173e402def429cd44abcd",
+      "local_parents": [
+        "0faf9221406c6bf2621d815f22b0764f5317f60d"
+      ],
+      "parents": [
+        "c053b3cfdd44a99932e836dc2814fff9a106c48f"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:07:57-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:07:57-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:25.245994+00:00",
+      "subject": "fix(audit): contain static helper paths and malformed requests",
+      "original_message": "fix(audit): contain static helper paths and malformed requests\n\nExtract paired #224 and #226 at 3a3b136a. Regression proof on main exposed sibling and symlink reads plus malformed-request and filesystem failures. Final 8-case Node suite passes; helper remains localhost-only.\n"
+    },
+    {
+      "local_sha": "bf6c8d1d65139b3785f4146244ec72c06a6baf65",
+      "remote_sha": "c150aed91f3d976be37d8ac34e12da3943c7008d",
+      "tree_sha": "0d31afa9cd8bb05108ed999006464228c383e616",
+      "local_parents": [
+        "f219cc89986eeef36c77e58175d4c417ff0f138d"
+      ],
+      "parents": [
+        "157ad783b3985a565c84e5b533632ba88c7fd883"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:07:57-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:07:57-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:29.326649+00:00",
+      "subject": "fix(security): retain fail-closed standalone Mythril checker",
+      "original_message": "fix(security): retain fail-closed standalone Mythril checker\n\nExtract #212 plus #225 at 94ca7d5b. Runner-process and malformed-annotation regressions change from 11 pass / 2 fail to 13 pass. Existing analyzer/workflow tests pass. Helper remains unwired and does not certify clean-target coverage or change release gates.\n"
+    },
+    {
+      "local_sha": "fce8d96d0e18f79a437f20a801a6dd4aa9a8cfc6",
+      "remote_sha": "9aa2f4cd60a724310b40b04040b80b9fa592a2f4",
+      "tree_sha": "8eb45453ec55d57cfb0b5eb1e07ae5fb20356d89",
+      "local_parents": [
+        "bf6c8d1d65139b3785f4146244ec72c06a6baf65"
+      ],
+      "parents": [
+        "c150aed91f3d976be37d8ac34e12da3943c7008d"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:07:57-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:07:57-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:33.334501+00:00",
+      "subject": "fix(ci): constrain agent inputs and verify cached compiler integrity",
+      "original_message": "fix(ci): constrain agent inputs and verify cached compiler integrity\n\nExtract #220 security policy and independent-review follow-up at 16c48521 without runner or action-pin changes. Added automation regressions change from 25 pass / 2 fail to 27 pass. Existing security gate tests 33 pass; tampered cached compiler rejected. No workflow trigger, approval gate or deployment behavior changes.\n"
+    },
+    {
+      "local_sha": "c4a6e0a10230b6c791ac716dd4cc7341e41f7e5d",
+      "remote_sha": "30f07a9441a79a22bb5d2190528704cb48fba59b",
+      "tree_sha": "cf30a538d1f51d6cccdacfe5f0f182d8f20757fc",
+      "local_parents": [
+        "fce8d96d0e18f79a437f20a801a6dd4aa9a8cfc6"
+      ],
+      "parents": [
+        "9aa2f4cd60a724310b40b04040b80b9fa592a2f4"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:37.140068+00:00",
+      "subject": "fix(privacy): omit RPC metadata and explain recovery key boundaries",
+      "original_message": "fix(privacy): omit RPC metadata and explain recovery key boundaries\n\nExtract #220 fbda6b13 and e800d142. RPC regression changes from 86 pass / 1 fail to 87 pass. Executable key-boundary proof passes and supports the corrected viewing-key plus one-time-private-key disclosure. No cryptographic protocol changes.\n"
+    },
+    {
+      "local_sha": "29784adb573ab3084480464d640efd7f4ab42dfb",
+      "remote_sha": "9669766c21f57c28f201586a116517af341706e0",
+      "tree_sha": "ae83abae867180388426ff9e4276660fc41f17fb",
+      "local_parents": [
+        "c4a6e0a10230b6c791ac716dd4cc7341e41f7e5d"
+      ],
+      "parents": [
+        "30f07a9441a79a22bb5d2190528704cb48fba59b"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:40.608063+00:00",
+      "subject": "fix(web): expose documented deployment validation command",
+      "original_message": "fix(web): expose documented deployment validation command\n\nExtract #212 deployment validator entrypoint and command-line regression. Baseline missing script produces 1 pass / 2 fail; corrected command passes all 3 tests, including missing/wrong signing keys, invalid filenames and a valid signed fixture.\n"
+    },
+    {
+      "local_sha": "b1d31915081048326e23eac5c0c3bbb5327b6f5f",
+      "remote_sha": "06d4951853987ef1af50ecf9b33f9c045f8f1909",
+      "tree_sha": "8c0c41d49468bdc1f1ac107f83fbd957f4cc8558",
+      "local_parents": [
+        "29784adb573ab3084480464d640efd7f4ab42dfb"
+      ],
+      "parents": [
+        "9669766c21f57c28f201586a116517af341706e0"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:44.999440+00:00",
+      "subject": "fix(build): restrict pinned downloads and disable implicit package installs",
+      "original_message": "fix(build): restrict pinned downloads and disable implicit package installs\n\nExtract #224 commit 51a50695. Existing content hashes and download versions remain unchanged. curl permits HTTPS only across redirects; the integration runner refuses on-demand npx installation. Shell syntax checks pass; no container build or network download is claimed.\n"
+    },
+    {
+      "local_sha": "0b67fa9fbd125b18412ef53a5d377ab5ccd460e2",
+      "remote_sha": "f8edb72ea0395046eee631c7a605ea88bcda0463",
+      "tree_sha": "2510bbf439b08ea578bb28fa2bfe126ff249b330",
+      "local_parents": [
+        "b1d31915081048326e23eac5c0c3bbb5327b6f5f"
+      ],
+      "parents": [
+        "06d4951853987ef1af50ecf9b33f9c045f8f1909"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:10:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:48.919157+00:00",
+      "subject": "chore(source): make bidirectional control characters visible",
+      "original_message": "chore(source): make bidirectional control characters visible\n\nExtract #224 commit 5be8daf6. All 30 changed files exactly match prior source after normalizing only the explicit bidi Unicode escapes. i18n format 27/27 and web display/message/hardening 59/59 regressions pass. Literal values and security filtering are preserved.\n"
+    },
+    {
+      "local_sha": "2563e43e676bc6613bd525302c56195fa4332044",
+      "remote_sha": "572ed990869ab90ca1db58ec3ae8524900068717",
+      "tree_sha": "c74ca495fdf01062fd70cdba251a5cd58a05f2e8",
+      "local_parents": [
+        "0b67fa9fbd125b18412ef53a5d377ab5ccd460e2"
+      ],
+      "parents": [
+        "f8edb72ea0395046eee631c7a605ea88bcda0463"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:44-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:13:44-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:52.527040+00:00",
+      "subject": "docs(handoff): retain security extraction provenance and execution evidence",
+      "original_message": "docs(handoff): retain security extraction provenance and execution evidence\n"
+    },
+    {
+      "local_sha": "985b57935eb295ac88353a5596d8231c5f45713c",
+      "remote_sha": "dcc19786840bef8784c8598312d1724e32e4b019",
+      "tree_sha": "3c1c8d1db3f4555e33e6a1cdeed1b74488f0decb",
+      "local_parents": [
+        "0ca168f26a368d60782a12ce2dcb7c42d3b2f2c8",
+        "2563e43e676bc6613bd525302c56195fa4332044"
+      ],
+      "parents": [
+        "549a819d4421c55d1d8334052a2f8722fd78e3a8",
+        "572ed990869ab90ca1db58ec3ae8524900068717"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:32-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:32-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:40:56.718444+00:00",
+      "subject": "merge: consolidate reviewed security tooling without relaxing release gates",
+      "original_message": "merge: consolidate reviewed security tooling without relaxing release gates\n\n# Conflicts:\n#\tdocs/ai/ACTIVE_WORK.md\n#\tpackages/chain-adapters/src/rpc.test.ts\n#\tpackages/chain-adapters/src/rpc.ts\n"
+    },
+    {
+      "local_sha": "e85db1ef942bda9cb54317a6c036a22484b46ff9",
+      "remote_sha": "ef998c8b02ddde5fe69c899bbbacc078f259f026",
+      "tree_sha": "a143fee35f035d53886b535e08180c6ebd204a2a",
+      "local_parents": [
+        "985b57935eb295ac88353a5596d8231c5f45713c"
+      ],
+      "parents": [
+        "dcc19786840bef8784c8598312d1724e32e4b019"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:41-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:15:58-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:00.458557+00:00",
+      "subject": "docs(security): clarify delegated viewing-key boundary",
+      "original_message": "docs(security): clarify delegated viewing-key boundary\n\n(cherry picked from commit d973a1a0e4a19da20ac64942d174e5544fea5c1c)\n"
+    },
+    {
+      "local_sha": "2f4b7801d08970c18eb36d4847c90efae45c414b",
+      "remote_sha": "12dc21b08435ec20ee4997a681b546b56b1898ab",
+      "tree_sha": "c1972c36d1e7a11435ab4f4d15c31d550236fe10",
+      "local_parents": [
+        "e85db1ef942bda9cb54317a6c036a22484b46ff9"
+      ],
+      "parents": [
+        "ef998c8b02ddde5fe69c899bbbacc078f259f026"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:21:25-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:21:25-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:04.190568+00:00",
+      "subject": "docs(pages): align hosting and privacy guidance with integrated behavior",
+      "original_message": "docs(pages): align hosting and privacy guidance with integrated behavior\n"
+    },
+    {
+      "local_sha": "ff6962fa93a2371e464fa04a756ce72221e4a561",
+      "remote_sha": "7c5a8796272f490620df982f61024700c7ac8169",
+      "tree_sha": "3a27fdb87ee448d7f9d07e54002ad3c90ebad24c",
+      "local_parents": [
+        "e85db1ef942bda9cb54317a6c036a22484b46ff9"
+      ],
+      "parents": [
+        "ef998c8b02ddde5fe69c899bbbacc078f259f026"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:17:23-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:17:23-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:07.850709+00:00",
+      "subject": "docs: claim Pages smoke render-error regression",
+      "original_message": "docs: claim Pages smoke render-error regression\n"
+    },
+    {
+      "local_sha": "6e6be44d3213e247076397bf30b9ee1665265de0",
+      "remote_sha": "5a502e55ee18889bdca75ae9cddf9e585ef48782",
+      "tree_sha": "2a81f76db5d3cca20970636cd5ab68abfa7c6e88",
+      "local_parents": [
+        "ff6962fa93a2371e464fa04a756ce72221e4a561"
+      ],
+      "parents": [
+        "7c5a8796272f490620df982f61024700c7ac8169"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:19:13-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:19:13-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:11.728384+00:00",
+      "subject": "test(pages): reproduce ignored root render errors in smoke",
+      "original_message": "test(pages): reproduce ignored root render errors in smoke\n"
+    },
+    {
+      "local_sha": "a77cadbb7deca0cb2bf8829ed1215962bb8b4d9f",
+      "remote_sha": "c8e0a703df3cacd7c0ee9092c08dd053f40cecce",
+      "tree_sha": "bb3526bc8f1dabc6711d884c7d8366592f9a1261",
+      "local_parents": [
+        "6e6be44d3213e247076397bf30b9ee1665265de0"
+      ],
+      "parents": [
+        "5a502e55ee18889bdca75ae9cddf9e585ef48782"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:19:53-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:19:53-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:15.214745+00:00",
+      "subject": "fix(pages): fail smoke on sanitized root render errors",
+      "original_message": "fix(pages): fail smoke on sanitized root render errors\n"
+    },
+    {
+      "local_sha": "b8134b3c57960afc383788f7e1bb8509148a5850",
+      "remote_sha": "4c67ef07a41bb65928da5f0154160fb0deaa1e13",
+      "tree_sha": "241739de3ba290a75d272cfdc580363046391fdb",
+      "local_parents": [
+        "a77cadbb7deca0cb2bf8829ed1215962bb8b4d9f"
+      ],
+      "parents": [
+        "c8e0a703df3cacd7c0ee9092c08dd053f40cecce"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:22:04-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:22:04-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:19.197091+00:00",
+      "subject": "docs: record Pages smoke repair and selected source review",
+      "original_message": "docs: record Pages smoke repair and selected source review\n"
+    },
+    {
+      "local_sha": "ec5c63c79d6ff82353c0e9197a19023a59f9ae4d",
+      "remote_sha": "50dfdc50b34e11f97abc38a1427775662a848bc5",
+      "tree_sha": "c474ff3e544b09dcf176feebed3790293e790c14",
+      "local_parents": [
+        "b8134b3c57960afc383788f7e1bb8509148a5850"
+      ],
+      "parents": [
+        "4c67ef07a41bb65928da5f0154160fb0deaa1e13"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:22:27-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:22:27-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:22.654005+00:00",
+      "subject": "docs: pin independent smoke regression log",
+      "original_message": "docs: pin independent smoke regression log\n"
+    },
+    {
+      "local_sha": "9156f803849997058f398ee05648675e99fec1a1",
+      "remote_sha": "f570fa17067d47b2f7c9daf64991c2992608d050",
+      "tree_sha": "cfb1b2b49c95057de5f4e2cd114701bc4d4119e0",
+      "local_parents": [
+        "2f4b7801d08970c18eb36d4847c90efae45c414b",
+        "ec5c63c79d6ff82353c0e9197a19023a59f9ae4d"
+      ],
+      "parents": [
+        "12dc21b08435ec20ee4997a681b546b56b1898ab",
+        "50dfdc50b34e11f97abc38a1427775662a848bc5"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:24:03-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:24:03-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:27.913243+00:00",
+      "subject": "merge: qualify Pages smoke render-error failure gate",
+      "original_message": "merge: qualify Pages smoke render-error failure gate\n"
+    },
+    {
+      "local_sha": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+      "remote_sha": "fcb662cf7b1b534154ac25b216d8a6f9016b4644",
+      "tree_sha": "308146c010f1ac93febc2b64357057347e01e578",
+      "local_parents": [
+        "9156f803849997058f398ee05648675e99fec1a1"
+      ],
+      "parents": [
+        "f570fa17067d47b2f7c9daf64991c2992608d050"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:25:18-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:25:18-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:31.540521+00:00",
+      "subject": "docs(pages): describe runtime framing guard and artifact provenance accurately",
+      "original_message": "docs(pages): describe runtime framing guard and artifact provenance accurately\n"
+    },
+    {
+      "local_sha": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+      "remote_sha": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+      "tree_sha": "81341de7972041b5f7ce53da76027846356fab90",
+      "local_parents": [
+        "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929"
+      ],
+      "parents": [
+        "fcb662cf7b1b534154ac25b216d8a6f9016b4644"
+      ],
+      "original_author": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:31:36-08:00"
+      },
+      "original_committer": {
+        "name": "Codex",
+        "email": "codex@openai.com",
+        "date": "2026-11-18T06:31:36-08:00"
+      },
+      "verified": true,
+      "recorded_at": "2026-11-18T14:41:36.022870+00:00",
+      "subject": "fix(vault): wipe temporary keystore passphrase bytes on every exit",
+      "original_message": "fix(vault): wipe temporary keystore passphrase bytes on every exit\n"
+    }
+  ],
+  "required_before_final_closeout": [
+    "Append final documentation through a verified expected-head fast-forward and record the new published head/tree",
+    "Fresh checks attached to the intended final candidate/merge result",
+    "Refresh live main and relevant PR states before any authorized main merge"
+  ],
+  "note": "The initial published candidate has exactly the local runtime tree. Its 61 recreated commit identities differ because the GitHub connector cannot set author/date fields; provenance trailers preserve originals. The separate documentation branch, including this packet, is not included in initial published head 9bad95e5. Publication is not a merge to main, release or deployment.",
+  "updated_utc": "2026-11-18 15:01:41 UTC",
+  "pull_request_state": "open",
+  "pull_request_draft": true,
+  "identical_tree": "81341de7972041b5f7ce53da76027846356fab90",
+  "remote_main_verified": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+  "remote_main_observed_utc": "2026-11-18 14:58:28 UTC",
+  "recreated_commits": 61,
+  "preserved_merge_commits": 15,
+  "verified_root_trees": 61,
+  "uploaded_distinct_blobs": 95,
+  "reused_remote_boundary_parents": [
+    {
+      "expected": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "tree": "979f41c3a27e1eaa2f906fbca7a36c9b7d0b72d3",
+      "parents": [
+        "2bc2098298d90928eb1acafad969f28316bb05fc"
+      ]
+    },
+    {
+      "expected": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "tree": "b8475e156a7a929b1f90fc6118f257fc5e76fe4e",
+      "parents": [
+        "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc"
+      ]
+    },
+    {
+      "expected": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "tree": "1cbb8d092cacf5b158121e4001600ed379e291bf",
+      "parents": [
+        "72c4b533793d0b14f96d491f9172a9c901f78281"
+      ]
+    },
+    {
+      "expected": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "tree": "c9c773efd95e0799cf2219bd2f8cab9d44c9648d",
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ]
+    },
+    {
+      "expected": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "tree": "35560821a127947b8e5915d4596d11995375c671",
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ]
+    },
+    {
+      "expected": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "tree": "d2344cba3807580c3314fe38b91a1a58de1a1d4a",
+      "parents": [
+        "2bc2098298d90928eb1acafad969f28316bb05fc"
+      ]
+    },
+    {
+      "expected": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "tree": "65ddbf08951341ee2c8e183e23b7401495ce0f68",
+      "parents": [
+        "2bc2098298d90928eb1acafad969f28316bb05fc"
+      ]
+    },
+    {
+      "expected": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "tree": "4050112cd1cc24e2307b8fd1f97009a8277a8e18",
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ]
+    },
+    {
+      "expected": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "tree": "cd44faa8d2110061de95f3bd28a558c54672fd42",
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ]
+    },
+    {
+      "expected": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "tree": "e003f7d0e2c953d9779c357dabf982069d951ad0",
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ]
+    },
+    {
+      "expected": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+      "tree": "21929503cbb7ee6186cfbfc4b278815387d35d66",
+      "parents": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13",
+        "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62"
+      ]
+    },
+    {
+      "expected": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "tree": "5b40456f84ec2879069f87f43272ba2a96490095",
+      "parents": [
+        "2e4a76c90d6663fc1d96aeb9196e99d237efc7a5"
+      ]
+    }
+  ],
+  "publication_record": "publication/PUBLICATION.md",
+  "publication_map": "publication/publication-map.json",
+  "publication_map_sha256": "c047b2e53a548d53c6434b8acc8a7312b663d966abe50a327faa198c677fb2c6",
+  "independent_verification": "publication/PUBLICATION_PACKET_REVIEW_20261118.json"
+}

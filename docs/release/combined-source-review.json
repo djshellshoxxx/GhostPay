@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "captured_at": "2026-11-19T11:46:49Z",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "candidate": "73124433c08c8ef6835f11d03709060c6eea7a3f",
+  "product_checkpoint": "35978ab796b7c476eb35dd9ed634ca4ff86ff9b9",
+  "candidate_changes_since_product_checkpoint": [
+    "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+    "docs/handoffs/agents/PAGES_ARTIFACT_INTEGRITY_20261119.md",
+    "docs/handoffs/final-dependency-qualification-20261119/QUALIFICATION.md",
+    "docs/handoffs/final-dependency-qualification-20261119/RESULTS.json",
+    "docs/handoffs/final-dependency-qualification-20261119/SHA256SUMS.json",
+    "docs/handoffs/final-dependency-qualification-20261119/evidence/dependency-arborist-comparison.json",
+    "docs/handoffs/final-dependency-qualification-20261119/evidence/dependency-tree-full-npm10.log.gz",
+    "docs/handoffs/final-dependency-qualification-20261119/evidence/dependency-tree-npm10.log.gz",
+    "docs/handoffs/final-dependency-qualification-20261119/evidence/dependency-tree.log.gz",
+    "docs/handoffs/final-pages-artifact-review-20261119/QUALIFICATION.md",
+    "docs/handoffs/final-pages-artifact-review-20261119/RESULTS.json",
+    "docs/handoffs/final-pages-artifact-review-20261119/SHA256SUMS.json",
+    "docs/handoffs/final-pages-artifact-review-20261119/evidence/invoice-schema-source-comparison.json",
+    "docs/handoffs/final-pages-artifact-review-20261119/evidence/original-verifier-tests.log.gz",
+    "docs/handoffs/final-pages-artifact-review-20261119/evidence/pages-tools-missing-dependencies.log.gz",
+    "docs/handoffs/final-pages-artifact-review-20261119/evidence/pages-tools-qualified.log.gz",
+    "docs/pages/README.md",
+    "scripts/pages/verify-pages-artifact.mjs",
+    "scripts/pages/verify-pages-artifact.test.mjs"
+  ],
+  "source_pins": [
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "reviewed_source": "89ec593b0c3a324fa30c2973ecb26b53c8ba6eec",
+      "reviewed_blob": "2b04af66b8d6b46898ba2a504527e70f9dd510df",
+      "candidate_blob": "2b04af66b8d6b46898ba2a504527e70f9dd510df",
+      "identical": true,
+      "review_scope": "Semantic quote/balance lifecycle plus source-reviewed session entry handling"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "reviewed_source": "3f6fcb845320a6d898e996d4a11d6fa22816b671",
+      "reviewed_blob": "6d14435b315f38646c30d6406ae358a73210d715",
+      "candidate_blob": "6d14435b315f38646c30d6406ae358a73210d715",
+      "identical": true,
+      "review_scope": "Session and review authority before signing; native balance equals consent"
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "reviewed_source": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "reviewed_blob": "9845576adfb522c17db145b1772276f66523180c",
+      "candidate_blob": "9845576adfb522c17db145b1772276f66523180c",
+      "identical": true,
+      "review_scope": "Monotonic invoice-expiry floor"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "reviewed_source": "2006f2115943e44f867f31f90d39518021a2e115",
+      "reviewed_blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "candidate_blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "identical": true,
+      "review_scope": "Fresh payment-key-export authorization with private checkpoint fixes"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "reviewed_source": "676093a3e802032ca5508693fd60ef08a3acc6a9",
+      "reviewed_blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "candidate_blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "identical": true,
+      "review_scope": "Rollback/nonfinite clock revokes network authority"
+    }
+  ],
+  "all_reviewed_production_blobs_retained": true,
+  "independent_review_receipt": "independent-merged-review.json",
+  "independent_review_receipt_sha256": "a08923cd5a4a5ec223815b5178c6faf56f731ecf94235b2deb3c9c151dbe95bf",
+  "verdict": "No lost reviewed production behavior detected by exact blob comparison after main refresh. This is a focused AI-assisted source review, not fresh full-suite execution, hosted acceptance, external independent audit, or release approval.",
+  "release_verdict": "BLOCKED",
+  "late_arrivals": [
+    {
+      "pr": 275,
+      "head": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "disposition": "still_actionable"
+    },
+    {
+      "pr": 276,
+      "head": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "disposition": "integrated_in_candidate",
+      "review": "Separate key_exports reviewer; see docs/handoffs/final-pages-artifact-review-20261119/QUALIFICATION.md"
+    }
+  ],
+  "typed_test_followup": {
+    "source": "2844c97d24dc1932bcecf20e28bc55e76b0404e2",
+    "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+    "source_blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+    "candidate_blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+    "review": "No source blocker. Runtime EIP1559 envelope assertion narrows transaction only after a throwing assertion; existing parse/value/gas/outcome/recovered-sender checks remain. No production runtime, signing boundary, skipped assertion or cast-only trust introduced.",
+    "worker_validation": "Original complete web tsconfig noEmit exit 0; typed ESLint exit 0; focused 19/19 passed. Separate worker source, not a claim of combined-candidate runtime execution by this reviewer.",
+    "worker_receipt": "sweep-test-envelope-receipt.json"
+  }
+}

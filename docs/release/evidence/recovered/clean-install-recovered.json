@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/lib/node_modules/npm/bin/npm-cli.js",
+    "ci",
+    "--cache",
+    "/tmp/ghostpay-npm-recovery-cache-246ff268d20d"
+  ],
+  "source": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b",
+  "lock_sha256": "0b79a483446f8c5778ff7f5bf178762e2c12c66a90fc13ca8f62158b1e01cce2",
+  "started_utc": "2026-11-19T12:52:01.301850+00:00",
+  "seconds": 34.02783179283142,
+  "exit_code": 0,
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "log_sha256": "836ff0fde24a65fb353b88f2695d5053febe523aeeef80feccad4954fd440146"
+}

@@ -1,0 +1,5 @@
+{
+  "apps/web/scripts/apply-csp.mjs": "914a80cab61dbe0a3f203a6cd2b6b305de63ebe224a0dd2979c969e52dea7139",
+  "apps/web/scripts/scan-bundle.mjs": "5fb3017bcf62f924ab1461f05ab16a4bdf74bc8edcd4451f511a8a2987481c8f",
+  "scripts/tests/privacy-csp-bundle.test.mjs": "0d184d94dd418d5b897e1436815f1e1859c152ab3cc888dd5e6e45dd442418a8"
+}

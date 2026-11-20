@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source": "2844c97d24dc1932bcecf20e28bc55e76b0404e2",
+  "recorded_at": "2026-11-19T11:39:50.339229+00:00",
+  "change": "Test-only EIP1559 envelope assertion narrows captured RPC bytes before existing cryptographic recovered-sender checks. No application source or previous assertion changed.",
+  "baseline": "Coordinator full-web-build.log reported TS2322 at two recoverTransactionAddress calls accepting generic Hex; inspected installed viem TransactionSerializedEIP1559 type and preserved actual recovery.",
+  "checks": [
+    {
+      "kind": "vitest",
+      "exit_code": 0,
+      "result": "19 passed,0 failed,0 skipped; original config; focused coverage disabled",
+      "log": "sweep-test-envelope-vitest.log",
+      "sha256": "ca5ca95d74fd122255b24004bdabb5a8d9a3c5d76d6f108248823d0b4b5c0768"
+    },
+    {
+      "kind": "typed_eslint",
+      "exit_code": 0,
+      "result": "exit0, no diagnostics; original eslint.config.js",
+      "log": "sweep-test-envelope-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "web_tsc",
+      "exit_code": 0,
+      "result": "exit0, no diagnostics; complete original web tsconfig, noEmit",
+      "log": "sweep-test-envelope-tsc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope_limit": "Web tsc uses complete unchanged apps/web/tsconfig.json in this isolated helper branch; combined coordinator candidate requires its own post-merge build/typecheck."
+}

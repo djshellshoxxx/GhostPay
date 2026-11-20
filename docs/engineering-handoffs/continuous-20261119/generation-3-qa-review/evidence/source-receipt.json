@@ -1,0 +1,132 @@
+{
+  "reviewed_base": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "reviewed_initial": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+  "reviewed_final": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+  "review_checkout_before_evidence": "18bc072c930d07e860bb25723e89a58bbc180dcd",
+  "review_branch": "review/ghostpay-qa-gen3-20261119",
+  "baseline_ci_execution": "5c1ff468974b20d7160b2cf12776b3b82a69b537",
+  "baseline_shared_tree": "dc2e653671506663df8e077153b06787929d37af",
+  "baseline_ci_execution_tree": "dc2e653671506663df8e077153b06787929d37af",
+  "node": "v22.23.4",
+  "dependency_source": "/workspace/scratch/0a7bc3583588/GhostPay/node_modules (shared installed and compiled workspace graph; no install or configuration change)",
+  "source_hashes": [
+    {
+      "path": "apps/web/src/components/Disclosure.tsx",
+      "sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391",
+      "git_blob": "4ecacbf464c6e1b413d9857be417569200a05b69"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.manifest.test.tsx",
+      "sha256": "348527df50d8a2f68241a803c7e2b413b86a98beb9b4f2f7fb30e6f35a0eb425",
+      "git_blob": "da7fd9a6813dc6b1ddfa1aaa5ec165d199b525e8"
+    },
+    {
+      "path": "apps/web/src/views/Pay.network.test.tsx",
+      "sha256": "4b7f3f3d2b1ef6acf65163181135deb5a4c6d2aa62909b289a056f6c75d8f17b",
+      "git_blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887"
+    },
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "sha256": "55ebe9d0096bf655969b2f77d79442c0262c706815c279db3ecbaec53f12bc55",
+      "git_blob": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b"
+    },
+    {
+      "path": "apps/web/e2e/privacy-settings.spec.ts",
+      "sha256": "7fdb26b0730b32649108cfc5c5073a41bc8bb0c551cfccbf2afc12d9ff2517b0",
+      "git_blob": "a673b37c5927c60aa8d4ca260a0861209178a00f"
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "sha256": "505a612227ccb2a6bf86cb6e713c6a7bb801403b8202b323ec5c1be53341bebe",
+      "git_blob": "7914f00fd505121edb5271e7040603b2dc2a847a"
+    },
+    {
+      "path": "apps/web/e2e/stealthExportFixtures.ts",
+      "sha256": "c20f34cbee17db4bfeec6a3b360f674cc35db58df3c8a732256bdc37299991d9",
+      "git_blob": "97044edcd17c4ead4f16b6e5a852a85480121987"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "sha256": "c04b57bc90614d159ebb7de9d24ccec2a5996384427523589a1e0bf9da0763cb",
+      "git_blob": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31"
+    },
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "sha256": "9a9716abdc2c891e494337c8b0ffcbf228a9659205b185af45115c9ee7cb6198",
+      "git_blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "sha256": "e4a9a5479ca2fb8079b8f4035beaf9d06fef7493769ed77c0698dcbdc6b9dffd",
+      "git_blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.tsx",
+      "sha256": "b04ddedc01dc0ae240c2a47dfe2e67fc09bad9bb3f6a0e8735a9e0ab764e18a6",
+      "git_blob": "2c17d389ad6d108a68470e075caf98d0a987cd33"
+    }
+  ],
+  "review_probe_sha256": "8bb1d1a589fbb367c971fe6b43259e0f577616907df54d97cc8120bcb0217e9e",
+  "small_fixture_fix_review": {
+    "commit": "b2711401af5f3786ef1685bb8e1ebd98b29c9e7d",
+    "path": "packages/invoice-schema/src/base64url.test.ts",
+    "sha256": "dca9cda287265c2f5111251a7f75bcafa665e2af7c96d77f0cffd1a1643e528a"
+  },
+  "commands": [
+    {
+      "label": "controlled baseline red / fixed green",
+      "details_file": "manifest-receipt.json"
+    },
+    {
+      "label": "existing Pay plus first independent probe batch",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-review-gen3/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/Disclosure.gen3-review.test.tsx",
+        "src/components/Disclosure.manifest.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/views/Pay.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/qa-review-gen3/focused-green.json"
+      ],
+      "exit_code": 1,
+      "note": "66 existing Pay cases pass; one reviewer helper default-argument error, corrected and rerun below"
+    },
+    {
+      "label": "corrected independent lifecycle probes plus supplied regressions",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-review-gen3/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/components/Disclosure.gen3-review.test.tsx",
+        "src/components/Disclosure.manifest.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/qa-review-gen3/lifecycle-green.json"
+      ],
+      "exit_code": 0
+    },
+    {
+      "label": "web typecheck after follow-up",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-review-gen3/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "../../node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.json"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

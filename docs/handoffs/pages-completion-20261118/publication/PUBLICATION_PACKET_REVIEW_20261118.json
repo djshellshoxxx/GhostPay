@@ -1,0 +1,41 @@
+{
+  "observed_utc": "2026-11-18 14:58:28 UTC",
+  "method": "Read-only GitHub connector GET; commit trees and ordered parents independently checked against locally fetched Git objects.",
+  "pr": {
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/238",
+    "number": 238,
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "merged_at": null,
+    "head_ref": "integration/ghostpay-pages-completion-20261118",
+    "head_sha": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "base_ref": "main",
+    "base_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "mergeable": true,
+    "mergeable_state": "unstable",
+    "synthetic_merge_sha": "f8cf77781311635e281d3c9e3d692ed17ee778b3",
+    "commits": 78,
+    "changed_files": 339
+  },
+  "main": {
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches/main",
+    "head_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "tree_sha": "21929503cbb7ee6186cfbfc4b278815387d35d66",
+    "protected": false
+  },
+  "mapping": {
+    "source": "analysis-publish/publication-map.json",
+    "sha256": "c047b2e53a548d53c6434b8acc8a7312b663d966abe50a327faa198c677fb2c6",
+    "records_checked": 61,
+    "tree_or_ordered_parent_errors": 0,
+    "local_source": "e8c77e7e8699dd16b86b7a1ff90b834594d07105",
+    "published_source": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+    "identical_tree": "81341de7972041b5f7ce53da76027846356fab90"
+  },
+  "limits": [
+    "Synthetic merge SHA is GitHub's candidate ref, not evidence of a completed merge.",
+    "Mergeable=true/unstable is not qualification or authorization to merge.",
+    "No new CI result, analyzer campaign, browser/build outcome or runtime test was executed during this review."
+  ]
+}

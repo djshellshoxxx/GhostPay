@@ -293,6 +293,18 @@ const REJECT = [
   'apps/web/playwright.config.ts', 'packages/contracts/slither.config.json', 'packages/sdk/.gitignore',
   'packages/sdk/dist/index.js', 'packages/sdk/package.json', 'package.json', 'package-lock.json', 'AGENTS.md',
   'eslint.config.js', 'packages/contracts/foundry.toml', 'apps/web/.env.local', 'README.md',
+  // Audit F-1 (2026-11-18): build, bundle-gate and analyzer configuration that judges the shipped artifact.
+  'apps/web/vite.config.ts', 'packages/confidential-contracts/hardhat.config.ts', 'apps/web/.npmrc',
+  'packages/contracts/echidna.yaml', 'apps/web/index.html', 'apps/web/public/_headers',
+  'apps/web/e2e/devnet/scan-dist.mjs', 'apps/web/scripts/localBuildProfile.mjs', 'apps/web/scripts/validate-deployments.mjs',
+  'scripts/pages/build-pages.sh', 'scripts/pages/verify-pages-site.mjs', 'scripts/beta/x.mjs',
+  'scripts/integration/x.sh', 'scripts/release/x.sh',
+  // Independent review G (2026-11-18): infix configs, CI-imported helpers, analyzer runners, vendored libs, trust roots.
+  'apps/web/vitest.nocov.config.ts', 'packages/btc-payjoin/vitest.e2e.config.ts', 'apps/web/playwright.devnet.config.ts',
+  'apps/web/postcss.config.js', 'apps/web/.postcssrc.json', 'packages/contracts/remappings.txt', 'scripts/i18n/check.mjs',
+  'scripts/lib/chain-matrix.mjs', 'packages/contracts/scripts/run-mythril.sh', 'packages/contracts/scripts/mythril-compat.py',
+  'packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol',
+  'packages/pool-circuits/SHA256SUMS', 'packages/pool-circuits/vkeys/withdraw.json',
 ];
 const ALLOW = [
   'apps/web/src/lib/invoice.ts', 'apps/relayer/test/relay.test.ts', 'packages/sdk/src/index.ts',

@@ -9,11 +9,11 @@ describe('safeText (S3-12)', () => {
   });
 
   it('makes every hostile character visible instead of reordering or hiding text', () => {
-    const rlo = safeText('Pay ‮evil‬ total');
+    const rlo = safeText('Pay \u202eevil\u202c total');
     expect(rlo.flagged).toBe(true);
     expect(rlo.text).toContain('⟦U+202E⟧');
-    expect(rlo.text).not.toContain('‮');
-    const hidden = safeText('a​b⁦c\u{E0041}de\u0007f');
+    expect(rlo.text).not.toContain('\u202e');
+    const hidden = safeText('a​b\u2066c\u{E0041}de\u0007f');
     expect(hidden.text).toBe('a⟦U+200B⟧b⟦U+2066⟧c⟦U+E0041⟧d⟦U+E000⟧e⟦U+0007⟧f');
     expect(hidden.flagged).toBe(true);
   });

@@ -1,0 +1,37 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./vite.config" without a file extension (vitest.privacy-local.config.ts:2:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/lib/networkAuthorization.profileConsistency.test.ts (6 tests | 5 failed) 330ms
+   ❯ shared browser profile validity (6)
+     × rejects a saved profile missing rpcProfile at both dispatch boundaries 118ms
+     × rejects a saved profile missing relayerProfile at both dispatch boundaries 23ms
+     × rejects a saved profile missing rpcMode at both dispatch boundaries 100ms
+     × rejects a saved profile missing noticeAcknowledged at both dispatch boundaries 26ms
+     × rejects a saved profile missing all at both dispatch boundaries 24ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/networkAuthorization.profileConsistency.test.ts > shared browser profile validity > rejects a saved profile missing rpcProfile at both dispatch boundaries
+ FAIL  src/lib/networkAuthorization.profileConsistency.test.ts > shared browser profile validity > rejects a saved profile missing relayerProfile at both dispatch boundaries
+ FAIL  src/lib/networkAuthorization.profileConsistency.test.ts > shared browser profile validity > rejects a saved profile missing rpcMode at both dispatch boundaries
+ FAIL  src/lib/networkAuthorization.profileConsistency.test.ts > shared browser profile validity > rejects a saved profile missing noticeAcknowledged at both dispatch boundaries
+ FAIL  src/lib/networkAuthorization.profileConsistency.test.ts > shared browser profile validity > rejects a saved profile missing all at both dispatch boundaries
+AssertionError: expected [Function] to throw an error
+ ❯ src/lib/networkAuthorization.profileConsistency.test.ts:29:33
+     27|     h.values.set(WEB_NETWORK_SELECTION_KEY, JSON.stringify(partial));
+     28|     expect(() => loadNetworkSelection(h.storage)).toThrow();
+     29|     expect(() => h.authorize()).toThrow();
+       |                                 ^
+     30|     expect(() => previous.assertCurrent()).toThrow();
+     31|     expect(previous.signal.aborted).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  23:59:31
+   Duration  48.26s (transform 53%, import 47%, tests 1%)

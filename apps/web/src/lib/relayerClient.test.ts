@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +25,67 @@ describe('requestQuote', () => {
     expect(q).toEqual({ fee: 5000n, feeTo: FEE_TO, expiresAt: 1_800_000_100, quoteToken: 'abc.DEF-123_=' });
     expect(seen?.url).toBe('https://relay.test/v1/quote');
     expect(seen?.init).toMatchObject({ method: 'POST', credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer', cache: 'no-store' });
-    expect(JSON.parse(bodyText(seen?.init.body))).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+    const sent = bodyText(seen?.init.body);
+    // MH-REL-3: padded to a fixed bucket with a random hex `pad` the relayer discards.
+    expect([1024, 2048, 4096]).toContain(new TextEncoder().encode(sent).length);
+    const { pad, ...rest } = JSON.parse(sent) as Record<string, unknown>;
+    expect(pad).toMatch(/^[0-9a-f]+$/);
+    expect(rest).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+  });
+  it('sends the exact unpadded body when padding is off', async () => {
+    let sent = '';
+    await requestQuote('https://relay.test', Q, (_u, init) => {
+      sent = bodyText(init.body);
+      return Promise.resolve(json(goodQuote));
+    }, { pad: false });
+    expect(JSON.parse(sent)).toEqual({ chainId: 84532, token: TOKEN, owner: OWNER, destination: DEST, amount: '1000000' });
+  });
+  it('does not silently drop padding or send a request when secure randomness fails', async () => {
+    const fetchFn = vi.fn<FetchFn>().mockResolvedValue(json(goodQuote));
+    const random = vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(() => {
+      throw new Error('private random-source diagnostic');
+    });
+    try {
+      await expect(requestQuote('https://relay.test', Q, fetchFn)).rejects.toMatchObject({
+        translation: { key: 'error.relayerClient.paddingFailed' },
+      });
+      expect(fetchFn).not.toHaveBeenCalled();
+    } finally {
+      random.mockRestore();
+    }
+  });
+  it('retries once unpadded only when an older relayer refuses the pad member while parsing', async () => {
+    const bodies: string[] = [];
+    const q = await requestQuote('https://relay.test', Q, (_u, init) => {
+      bodies.push(bodyText(init.body));
+      return Promise.resolve(bodies.length === 1 ? json({ error: { code: 'invalid_request' } }, 400) : json(goodQuote));
+    });
+    expect(q.fee).toBe(5000n);
+    expect(bodies).toHaveLength(2);
+    expect(JSON.parse(bodies[0] ?? '')).toHaveProperty('pad');
+    expect(JSON.parse(bodies[1] ?? '')).not.toHaveProperty('pad');
+  });
+  it('does not retry any other refusal', async () => {
+    let calls = 0;
+    await expect(requestQuote('https://relay.test', Q, () => {
+      calls += 1;
+      return Promise.resolve(json({ error: { code: 'invalid_pad' } }, 400));
+    })).rejects.toBeInstanceOf(RelayerRefusedError);
+    expect(calls).toBe(1);
+  });
+  it('sends an oversized body unpadded instead of failing', async () => {
+    let sent = '';
+    const big = { ...goodQuote };
+    await submitSweep('https://relay.test', {
+      chainId: 84532,
+      sweep: { token: TOKEN, owner: OWNER, destination: DEST, feeTo: FEE_TO, amount: 1n, fee: 1n, deadline: 1n, nonce: 1n },
+      sweepSig: `0x${'a'.repeat(5000)}`,
+      quoteToken: big.quoteToken,
+    }, (_u, init) => {
+      sent = bodyText(init.body);
+      return Promise.resolve(json({ txHash: `0x${'ab'.repeat(32)}` }));
+    });
+    expect(JSON.parse(sent)).not.toHaveProperty('pad');
   });
   it.each([
     ['fee', { ...goodQuote, fee: '1e3' }, /invalid fee\./],
@@ -83,6 +143,11 @@ describe('requestQuote', () => {
     }
     expect(RELAYER_PRE_BROADCAST_CODES).not.toContain('nonce_used');
     expect(emitted.get('send_failed')).toBe(503);
+    // The other direction: a 4xx class the relayer can emit and this list does not know keeps the signing lock for
+    // nothing (the relayer sends no 4xx after a broadcast, see its README). A new class must be listed here on purpose.
+    const unknown = [...emitted].filter(([code, status]) => status >= 400 && status < 500 && code !== 'nonce_used' && !/^invalid_[a-z_]{1,32}$/.test(code) && !RELAYER_PRE_BROADCAST_CODES.includes(code)).map(([code]) => code);
+    expect(unknown).toEqual([]);
+    expect(new RelayerRefusedError('x', 429, 'client_queue_full').beforeBroadcast).toBe(true);
   });
   it('handles transport failures, oversized and non-JSON replies', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);

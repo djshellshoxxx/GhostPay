@@ -185,6 +185,50 @@ describe('SEC-22 scan cursor slot names', () => {
     expect(called).toBe(false);
   });
 
+  it('refuses and wipes a replacement wallet copy when the second deadline check changes the holder', () => {
+    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    let observations = 0;
+    const off = session.subscribeSessionExpiryCheck(() => {
+      if (++observations === 2) {
+        session.suspendSession();
+        importSession({ spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) });
+      }
+    });
+    const lent = vi.spyOn(session, 'revealViewingKey');
+    const use = vi.fn(() => 'unexpected replacement loan');
+    try {
+      expect(sessionViewingKey(keyId, use)).toBeUndefined();
+      expect(use).not.toHaveBeenCalled();
+      expect(getSessionPublic()).not.toBe(pub);
+      expect(lent).toHaveBeenCalledOnce();
+      const refused = lent.mock.results[0]?.value as Uint8Array;
+      expect(refused.length).toBe(32);
+      expect(refused.every((byte) => byte === 0)).toBe(true);
+    } finally {
+      off();
+      lent.mockRestore();
+    }
+  });
+
+  it('returns undefined when the second deadline check suspends the matched holder before borrowing', () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    let observations = 0;
+    const off = session.subscribeSessionExpiryCheck(() => {
+      if (++observations === 2) session.suspendSession();
+    });
+    const use = vi.fn();
+    try {
+      expect(sessionViewingKey(keyId, use)).toBeUndefined();
+      expect(use).not.toHaveBeenCalled();
+      expect(getSessionPublic()).toBe(pub);
+      expect(session.isSessionSuspended()).toBe(true);
+    } finally {
+      off();
+    }
+  });
+
   it('lend the session viewing key once per slot while the scan view loads its checkpoint on every render', () => {
     const hex = { spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) };
     const pub = importSession(hex);
@@ -233,6 +277,54 @@ describe('SEC-22 scan cursor slot names', () => {
       expect(seen?.every((b) => b === 0)).toBe(true);
     } finally {
       lent.mockRestore();
+    }
+  });
+
+  it('refuses cached checkpoint reads, writes and clears while a sole copy is suspended', () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const st = mem();
+    const cp = localCheckpointStore(st);
+    cp.save(84532, keyId, CURSOR);
+    expect(cp.load(84532, keyId)).toEqual(CURSOR);
+    const before = [...st.map];
+
+    session.suspendSession();
+    expect(getSessionPublic()).toBe(pub);
+    expect(cp.load(84532, keyId)).toBeUndefined();
+    cp.save(84532, keyId, { nextBlock: 9999n });
+    cp.clear(84532, keyId);
+    expect([...st.map]).toEqual(before);
+    const use = vi.fn();
+    expect(sessionViewingKey(keyId, use)).toBeUndefined();
+    expect(use).not.toHaveBeenCalled();
+    expect(session.hasSession()).toBe(true);
+  });
+
+  it('checks expiry before a cached checkpoint save even without a browser lifecycle event', async () => {
+    const pub = generateSession();
+    const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+    const st = mem();
+    const cp = localCheckpointStore(st);
+    cp.save(84532, keyId, CURSOR);
+    const before = [...st.map];
+    let now = 0;
+    const off = session.subscribeSessionExpiryCheck(() => {
+      if (now >= 60_000 && !session.isSessionSuspended()) session.suspendSession();
+    });
+    try {
+      now = 60_000;
+      // A scan's awaited persistence check can settle before a timer or lifecycle event observes the deadline.
+      await Promise.resolve();
+      cp.save(84532, keyId, { nextBlock: 9999n });
+      expect(session.isSessionSuspended()).toBe(true);
+      expect(getSessionPublic()).toBe(pub);
+      expect([...st.map]).toEqual(before);
+      expect(cp.load(84532, keyId)).toBeUndefined();
+      cp.clear(84532, keyId);
+      expect([...st.map]).toEqual(before);
+    } finally {
+      off();
     }
   });
 

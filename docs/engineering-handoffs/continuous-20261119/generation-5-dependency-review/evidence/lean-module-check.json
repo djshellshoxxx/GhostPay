@@ -1,0 +1,25 @@
+{
+  "source": "/workspace/scratch/0a7bc3583588/pages-final-c93/evidence/ghostpay-lean-build.json",
+  "sha256": "b35e9501673ca23a8e1ccc4ebc47abc6b6f4c6b9990bf8f4670d9c7ecdc3c3e8",
+  "module_ids_inspected": 374,
+  "affected_packages_found": {
+    "@ethersproject/abi": [],
+    "@ethersproject/abstract-provider": [],
+    "@ethersproject/abstract-signer": [],
+    "@ethersproject/hash": [],
+    "@ethersproject/signing-key": [],
+    "@ethersproject/transactions": [],
+    "@fhevm/hardhat-plugin": [],
+    "@nomicfoundation/hardhat-chai-matchers": [],
+    "@nomicfoundation/hardhat-ethers": [],
+    "@nomicfoundation/hardhat-network-helpers": [],
+    "@sentry/node": [],
+    "cookie": [],
+    "elliptic": [],
+    "ethereum-cryptography": [],
+    "ethereumjs-util": [],
+    "hardhat": [],
+    "secp256k1": []
+  },
+  "limits": "Inspection of coordinator-created final lean artifact module evidence, not an independently rebuilt bundle or all possible runtime import paths."
+}

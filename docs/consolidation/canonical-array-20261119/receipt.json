@@ -1,0 +1,226 @@
+{
+  "base": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "product": "0f8dca27613fe9952cdb772cb10d05ced0f2b455",
+  "upstream_pr": 265,
+  "upstream_head": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+  "upstream_merge": "7b2642768f9e4d2a3c631e47dbf6a4153d30d3c9",
+  "branch": "codex/ghostpay-canonical-array-integration-20261119",
+  "claim_commit": "3c58321c",
+  "source": {
+    "path": "packages/invoice-schema/src/json.ts",
+    "base_blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+    "upstream_blob": "8b2481cb117334b779ec6c77a0a8dac22bce27dc",
+    "product_blob": "63e02aa59219f5ba4732c6cc0198e9c0466eaa48",
+    "sha256": "948ea28f70bff55601d292a73c97b6d92d0ca8b5ba0ec457ca75254a150861c8",
+    "runtime_guard_unchanged_from_upstream": true,
+    "only_upstream_source_variance": "Replace literal backslash-n in JSDoc with an actual newline; no executable source variance."
+  },
+  "tests": {
+    "path": "packages/invoice-schema/src/json.test.ts",
+    "baseline_test_blob": "37a29eb627a76d9531bd0bbd549167481720af9d",
+    "product_blob": "f2b5ff6804784df1f153a60b0488f4b9b2c98f5f",
+    "sha256": "d7b6ee94c624d621db0fa62b4a3eba729e51dad2a9c67055364a4e76deec4778",
+    "upstream_assertions_retained": true,
+    "additions": [
+      "Sparse array with an extra property balancing its own-key count: exercises ordered-key rejection.",
+      "Empty and frozen dense arrays preserve prior exact bytes."
+    ]
+  },
+  "ancestry": {
+    "base_is_ancestor": true,
+    "upstream_head_is_ancestor": true,
+    "merge_parents": [
+      "3c58321cda36cc7b5729cfea22c4043cde11974c",
+      "c591b54078febcf24cba01b29bc173b2fac1f9cb"
+    ]
+  },
+  "scope": {
+    "non_documentation_changed_paths": [
+      "packages/invoice-schema/src/json.test.ts",
+      "packages/invoice-schema/src/json.ts"
+    ],
+    "base_claim_bytes": 122698,
+    "base_claim_file_preserved_contiguously": true,
+    "exact_upstream_claim_lines_retained": 9,
+    "upstream_handoff_retained": true
+  },
+  "unchanged_configuration": [
+    {
+      "path": "packages/invoice-schema/package.json",
+      "base_blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "product_blob": "92bceed2e93389bf7d0033909d6c9d1773d52ff4",
+      "unchanged": true
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "base_blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "product_blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "unchanged": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.json",
+      "base_blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "product_blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "unchanged": true
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.build.json",
+      "base_blob": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "product_blob": "7cd92421109e2b1988a7e547ec0860610aa5460a",
+      "unchanged": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "base_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "product_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "unchanged": true
+    },
+    {
+      "path": "eslint.config.js",
+      "base_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "product_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "base_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "product_blob": "12156705352eb7ddfaaab7b3190e60feefbb9f92",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "base_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "product_blob": "4ecb16f7c938f98d47fab19f7b4be8218af0a7ef",
+      "unchanged": true
+    }
+  ],
+  "environment": {
+    "node": "22.23.4",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0",
+    "node_executable": "/home/agent/.npm/_npx/361c55be1121897e/node_modules/node/bin/node",
+    "node_heap_mib": 384,
+    "cwd": "packages/invoice-schema"
+  },
+  "verification": {
+    "red": {
+      "command": "node --max-old-space-size=384 ../../node_modules/vitest/vitest.mjs run --maxWorkers=1 src/json.test.ts",
+      "source_blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+      "test_blob": "37a29eb627a76d9531bd0bbd549167481720af9d",
+      "exit_code": 1,
+      "files": 1,
+      "tests": 11,
+      "passed": 10,
+      "failed": 1,
+      "duration_ms": 654,
+      "failure": "Upstream sparse/decorated-array test expected JsonParseError but first sparse fixture did not throw. This is one failed Vitest test, not five separately failed tests.",
+      "log": "evidence/upstream-regression-red.txt.gz"
+    },
+    "green": {
+      "command": "node --max-old-space-size=384 ../../node_modules/vitest/vitest.mjs run --maxWorkers=1 src/json.test.ts src/schema.test.ts src/sign.test.ts src/receipts.test.ts",
+      "product": "0f8dca27613fe9952cdb772cb10d05ced0f2b455",
+      "exit_code": 0,
+      "files": 4,
+      "tests": 200,
+      "passed": 200,
+      "failed": 0,
+      "duration_seconds": 3.53,
+      "coverage_requested": false,
+      "log": "evidence/focused-green.txt.gz"
+    },
+    "typecheck": {
+      "command": "node --max-old-space-size=384 ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+      "scope": "Entire package source/tests under original tsconfig",
+      "exit_code": 0,
+      "log": "evidence/typecheck.txt"
+    },
+    "lint": {
+      "command": "node --max-old-space-size=384 ../../node_modules/eslint/bin/eslint.js --config ../../eslint.config.js src",
+      "scope": "Entire package src including tests; original typed repository rules",
+      "exit_code": 0,
+      "log": "evidence/lint.txt"
+    },
+    "build": {
+      "command": "node --max-old-space-size=384 ../../node_modules/typescript/bin/tsc -p tsconfig.build.json",
+      "scope": "Original package production build; only isolated clone dist emitted",
+      "exit_code": 0,
+      "log": "evidence/build.txt"
+    },
+    "source_whitespace": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "exact_source_diagnostic": {
+      "file": "exact-source-diagnostic.json",
+      "case_counts": {
+        "malformed_baseline_shapes": 5,
+        "candidate_rejections": 5,
+        "unchanged_dense_controls": 3
+      },
+      "execution": "Exact frozen and PR TypeScript modules transpiled in memory with actual frozen error module; no repository Vitest or semantic typecheck claim from this separate diagnostic."
+    }
+  },
+  "independent_review": {
+    "reviewer": "/root/privacy_completion",
+    "product": "0f8dca27613fe9952cdb772cb10d05ced0f2b455",
+    "verdict": "No introduced source blocker.",
+    "checked": [
+      "Original PR and e74 ancestry",
+      "Only json.ts/json.test.ts non-documentation deltas",
+      "Runtime guard equal to upstream apart from cosmetic comment",
+      "All existing assertions retained",
+      "Count-balanced missing-index rejection",
+      "Empty/frozen/nested dense byte controls",
+      "Own index range and length arithmetic",
+      "Actual red and green logs"
+    ],
+    "execution_attribution": "Author ran all checks; reviewer independently read source and red/green logs, did not rerun runtime checks. Typecheck/lint/build exits remain author-attributed."
+  },
+  "limits": [
+    "The full14-file package test/coverage script was not run; several omitted files contain many real scrypt derivations, so those were deferred during root full-web coverage.",
+    "Original package coverage thresholds remain95 statements/90 branches/95 functions/95 lines. Focused unit execution does not qualify that gate.",
+    "No root consumer, browser, artifact or release check was run on this product. Root source/dist remained unchanged during its frozen coverage run.",
+    "Canonicalizer still has pre-existing accessor/proxy/custom inherited map, cycle and unbounded-size limitations. This repair rejects sparse/decorated inert arrays and does not claim to sanitize arbitrary hostile JavaScript objects.",
+    "Invoice signers schema-normalize first; receipts reconstruct fields. No signature bypass or private-key compromise was executed or established.",
+    "No remote branch mutation, main merge, deployment or mainnet action occurred."
+  ],
+  "evidence": [
+    {
+      "path": "evidence/upstream-regression-red.txt.gz",
+      "bytes": 732,
+      "sha256": "3c9305c4dbccc4b1eb5712fabdfbe0cdff56e34c5ca52b0d3ea53310f2d2506d",
+      "trailing_whitespace_lines": [],
+      "encoding": "gzip",
+      "uncompressed_bytes": 1499,
+      "uncompressed_sha256": "2ef387eabd9cebe064e391650c91261536489cdb67913059171c22b38ce085ec"
+    },
+    {
+      "path": "evidence/focused-green.txt.gz",
+      "bytes": 456,
+      "sha256": "feb7da225ed227cf2ad6edb3623c2627d30e69a7bea0dac0bd676a420660b0d6",
+      "trailing_whitespace_lines": [],
+      "encoding": "gzip",
+      "uncompressed_bytes": 1305,
+      "uncompressed_sha256": "3aa96891972de2ce958ed86e6cdaf5cb8defb62a672121f3148f2a31558f80f4"
+    },
+    {
+      "path": "evidence/typecheck.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trailing_whitespace_lines": []
+    },
+    {
+      "path": "evidence/lint.txt",
+      "bytes": 174,
+      "sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "trailing_whitespace_lines": []
+    },
+    {
+      "path": "evidence/build.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trailing_whitespace_lines": []
+    }
+  ],
+  "raw_test_log_storage": "Lossless gzip preserves original TAP output including trailing blank lines. Stored and uncompressed digests are recorded; no output text is removed."
+}

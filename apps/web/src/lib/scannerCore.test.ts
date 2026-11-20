@@ -37,6 +37,64 @@ describe('ScanSession', () => {
     expect(s.scanned).toBe(logs.length);
     expect(seen).toEqual([128]);
   }, 15_000);
+  it('rejects unsupported schemes without curve work while preserving progress, matches and replay state', () => {
+    const f = fixture();
+    const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+    const rejected: WireLog[] = Array.from({ length: 257 }, (_, index) => ({
+      ...f.mine,
+      id: `unsupported-${String(index)}`,
+      schemeId: index % 3 === 0 ? 0n : BigInt((index % 3) + 1),
+    }));
+    const seen: number[] = [];
+    vi.mocked(checkAnnouncement).mockClear();
+    try {
+      const logs = [...rejected.slice(0, 128), f.mine, ...rejected.slice(128)];
+      expect(s.processBatch(logs, (count) => seen.push(count))).toEqual([
+        { id: 'mine', stealthAddress: f.mine.stealthAddress, tagMatches: true },
+      ]);
+      expect(s.scanned).toBe(258);
+      expect(seen).toEqual([128, 256]);
+      expect(vi.mocked(checkAnnouncement)).toHaveBeenCalledTimes(1);
+      expect(s.processBatch([{ ...f.mine, id: 'replay' }])).toEqual([
+        { id: 'replay', stealthAddress: f.mine.stealthAddress, tagMatches: true },
+      ]);
+      expect(s.scanned).toBe(259);
+      expect(vi.mocked(checkAnnouncement)).toHaveBeenCalledTimes(1);
+    } finally {
+      s.dispose();
+    }
+  });
+  it('honors cancellation from a progress callback after unsupported schemes', () => {
+    const f = fixture();
+    const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+    const rejected: WireLog[] = Array.from({ length: 128 }, (_, index) => ({
+      ...f.mine, id: `unsupported-${String(index)}`, schemeId: 2n,
+    }));
+    vi.mocked(checkAnnouncement).mockClear();
+    try {
+      expect(s.processBatch([...rejected, f.mine], () => s.cancel())).toEqual([]);
+      expect(s.scanned).toBe(128);
+      expect(vi.mocked(checkAnnouncement)).not.toHaveBeenCalled();
+    } finally {
+      s.dispose();
+    }
+  });
+  it('preserves core-crypto compatibility with a missing runtime scheme', () => {
+    const f = fixture();
+    const s = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+    // The crypto API accepts an omitted scheme even though worker messages normally provide one.
+    const implicit = { ...f.mine, schemeId: undefined } as unknown as WireLog;
+    vi.mocked(checkAnnouncement).mockClear();
+    try {
+      expect(s.processBatch([implicit])).toEqual([
+        { id: 'mine', stealthAddress: f.mine.stealthAddress, tagMatches: true },
+      ]);
+      expect(s.scanned).toBe(1);
+      expect(vi.mocked(checkAnnouncement)).toHaveBeenCalledTimes(1);
+    } finally {
+      s.dispose();
+    }
+  });
   it('deep-scan bypasses only the view tag and reports that diagnostic', () => {
     const f = fixture();
     const bytes = Uint8Array.from(f.mine.metadata.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));

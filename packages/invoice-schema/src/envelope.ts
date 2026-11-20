@@ -13,7 +13,9 @@ import {
   SigningError,
   UnsupportedError,
   InvalidSignatureError,
+  MissingSignatureError,
   UntrustedSignerError,
+  VerificationUnavailableError,
   Utf8Error,
 } from './errors.js';
 import { canonicalize, parseStrictJson } from './json.js';
@@ -160,7 +162,7 @@ export type OpenFragmentResult =
 
 function getSubtle(): SubtleCrypto {
   const c = (globalThis as { crypto?: { subtle?: SubtleCrypto } }).crypto;
-  if (c?.subtle === undefined) throw new UnsupportedError();
+  if (c?.subtle === undefined) throw new VerificationUnavailableError();
   return c.subtle;
 }
 
@@ -179,13 +181,23 @@ async function aesGcm(
   data: Uint8Array<ArrayBuffer>,
 ): Promise<Uint8Array> {
   const subtle = getSubtle();
-  const k = await subtle.importKey('raw', key, { name: 'AES-GCM' }, false, [mode]);
+  let k: CryptoKey;
+  try {
+    k = await subtle.importKey('raw', key, { name: 'AES-GCM' }, false, [mode]);
+  } catch {
+    // Keys have already passed the fixed-size schema. Do not expose a provider's exception or mislabel
+    // a locally unavailable crypto operation as an unsupported invoice format or a bad signature.
+    throw new VerificationUnavailableError();
+  }
   const params = { name: 'AES-GCM', iv: nonce, additionalData: aad, tagLength: 128 };
   try {
     const out =
       mode === 'encrypt' ? await subtle.encrypt(params, k, data) : await subtle.decrypt(params, k, data);
     return new Uint8Array(out);
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotSupportedError')) {
+      throw new VerificationUnavailableError();
+    }
     throw new DecryptionError();
   }
 }
@@ -297,6 +309,27 @@ function obj(v: unknown, keys: readonly string[]): Record<string, unknown> {
   return rec;
 }
 
+/** Preserve strict field-set validation while reporting an absent signature separately. */
+function signedObj(v: unknown, keys: readonly string[]): Record<string, unknown> {
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new SchemaError('$envelope');
+  if (!Object.hasOwn(v, 'sig')) {
+    obj(v, keys.filter((key) => key !== 'sig'));
+    throw new MissingSignatureError();
+  }
+  return obj(v, keys);
+}
+
+/** Unknown positive numeric versions are unsupported; missing, wrongly typed or invalid versions stay malformed. */
+function parsedInvoice(value: unknown): Invoice {
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    const version = (value as Record<string, unknown>)['v'];
+    if (typeof version === 'number' && Number.isSafeInteger(version) && version > 0 && version !== 1 && version !== 2) {
+      throw new UnsupportedError();
+    }
+  }
+  return validateInvoice(value);
+}
+
 function str(v: unknown, re: RegExp, path: string): string {
   if (typeof v !== 'string' || !re.test(v)) throw new SchemaError(path);
   return v;
@@ -323,7 +356,10 @@ function decodeUtf8(bytes: Uint8Array): string {
 
 /** Strict decode of `#gpi=v1.<b64url>` into the canonical envelope object (no crypto). */
 function decodeEnvelopeRoot(fragment: string): Record<string, unknown> {
-  if (typeof fragment !== 'string' || !fragment.startsWith(FRAGMENT_PREFIX)) throw new FragmentFormatError();
+  if (typeof fragment !== 'string' || !fragment.startsWith(FRAGMENT_PREFIX)) {
+    if (typeof fragment === 'string' && /^#gpi=v[1-9][0-9]{0,15}\./.test(fragment)) throw new UnsupportedError();
+    throw new FragmentFormatError();
+  }
   const encoded = fragment.slice(FRAGMENT_PREFIX.length);
   if (encoded.length > MAX_ENCODED_CHARS) throw new FragmentTooLargeError();
   const bytes = decodeBase64Url(encoded);
@@ -390,9 +426,9 @@ async function decryptPassphraseEnvelope(
     const text = decodeUtf8(plain);
     const parsed = parseStrictJson(text);
     if (canonicalize(parsed) !== text) throw new NonCanonicalError();
-    const body = obj(parsed, ['inv', 'sig']);
+    const body = signedObj(parsed, ['inv', 'sig']);
     const signature = str(body['sig'], HEX_SIG_RE, 'sig');
-    const invoice = validateInvoice(body['inv']);
+    const invoice = parsedInvoice(body['inv']);
     if (invoice.chainId !== header.chainId) throw new SchemaError('chainId');
     if (invoice.signer !== header.signer) throw new SchemaError('signer');
     return { invoice, signature };
@@ -513,12 +549,12 @@ async function parseV1(root: Record<string, unknown>, options: ParseOptions): Pr
   let signature: string;
   let encrypted: boolean;
   if (alg === 'none') {
-    const e = obj(root, ['alg', 'inv', 'sig']);
-    invoice = validateInvoice(e['inv']);
+    const e = signedObj(root, ['alg', 'inv', 'sig']);
+    invoice = parsedInvoice(e['inv']);
     signature = str(e['sig'], HEX_SIG_RE, 'sig');
     encrypted = false;
   } else if (alg === 'A256GCM') {
-    const e = obj(root, ['alg', 'pub', 'enc', 'sig']);
+    const e = signedObj(root, ['alg', 'pub', 'enc', 'sig']);
     signature = str(e['sig'], HEX_SIG_RE, 'sig');
     const enc = obj(e['enc'], ['k', 'n', 'c']);
     const key = str(enc['k'], KEY_RE, 'enc.k');
@@ -554,7 +590,7 @@ async function parseV1(root: Record<string, unknown>, options: ParseOptions): Pr
     if (canonicalize(privParsed) !== plainText) throw new NonCanonicalError();
     const priv = validatePrivatePart(privParsed);
     for (const k of PRIVATE_KEYS) if (k in p) throw new SchemaError('pub');
-    invoice = validateInvoice({ ...p, ...priv });
+    invoice = parsedInvoice({ ...p, ...priv });
     encrypted = true;
   } else {
     throw new UnsupportedError();

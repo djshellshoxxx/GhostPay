@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-19T13:31:56.921140+00:00",
+  "removed_reproducible_installation": "/tmp/ghostpay-runtime-246ff268d20d",
+  "bytes": 901888614,
+  "canonical_node_modules_now": "/tmp/ghostpay-qualified-246ff268d20d/node_modules",
+  "source_history_test_logs_preserved": true,
+  "coordination": "Root, native and QR checks quiescent; lint worker explicitly retargeted its408 external links and completed all checks. Other workers installations untouched.",
+  "tmp_after": {
+    "total": 5225713664,
+    "used": 3494920192,
+    "free": 1730793472
+  }
+}

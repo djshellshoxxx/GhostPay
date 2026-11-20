@@ -295,7 +295,7 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
 
   it('explains when the stealth address has no gas, and when native balance is too low', async () => {
     await expect(directSweep({ target, manifest, destination: DEST, amount: 1n, rpc: rpcFor(0n, {}) })).rejects.toThrow(/no native coin for gas/);
-    await expect(directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 1n, rpc: rpcFor(1000n, {}) })).rejects.toThrow(/does not cover the network fee/);
+    await expect(directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 1000n, rpc: rpcFor(1000n, {}) })).rejects.toThrow(/does not cover the network fee/);
   });
 
   it('rejects an RPC that returns a hash that does not match the signed transaction', async () => {
@@ -714,13 +714,13 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
 
   it('refuses, before signing, a balance that covers the gas but not the L1 data fee', async () => {
     const rpc = chainRpc(84532, { balance: 45_000_000_000_000n }, {});
-    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not cover the network fee, including the L1 data fee/);
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 45_000_000_000_000n, rpc })).rejects.toThrow(/does not cover the network fee, including the L1 data fee/);
     expect(sends(rpc)).toBe(0);
   });
 
   it('refuses when the fees including the L1 data fee would exceed 10 % of the amount moved', async () => {
     const rpc = chainRpc(84532, { balance: 10n ** 15n, l1Fee: 10n ** 14n }, {});
-    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/more than 10 %/);
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 10n ** 15n, rpc })).rejects.toThrow(/more than 10 %/);
     expect(sends(rpc)).toBe(0);
   });
 
@@ -779,22 +779,22 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     ['the operator fee call reports out of gas in its text', { operatorFee: new Error('out of gas') }],
   ] as const)('refuses when %s: the fee, so the amount to send, cannot be computed', async (_n, net) => {
     const rpc = chainRpc(84532, net, {});
-    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/fee oracle/);
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc })).rejects.toThrow(/fee oracle/);
     expect(sends(rpc)).toBe(0);
   });
 
   it('refuses a destination that rejects the transfer (the gas estimate reverts), before signing', async () => {
     const rpc = chainRpc(84532, { estimate: new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true }) }, {});
-    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/would revert/);
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc })).rejects.toThrow(/would revert/);
     expect(sends(rpc)).toBe(0);
   });
 
   it('L2-F1: the dry run refuses a revert the RPC client reports as a flag, and reports one it cannot run', async () => {
     const reverting = chainRpc(84532, { dryRun: new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true }) }, {});
-    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: reverting })).rejects.toThrow(/would revert/);
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc: reverting })).rejects.toThrow(/would revert/);
     expect(sends(reverting)).toBe(0);
     const blind = chainRpc(84532, { dryRun: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601') }, {});
-    const res = await directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: blind });
+    const res = await directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc: blind });
     expect(res.simulation).toBe('unavailable');
     expect(sends(blind)).toBe(1);
   });
@@ -804,7 +804,7 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
       const base = chainRpc(84532, net, {});
       return { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'connection reset after write')) : base.request(m, p)) };
     };
-    const outcome = (net: Net): Promise<unknown> => directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: lost(net) }).then(() => undefined, (e: unknown) => e);
+    const outcome = (net: Net): Promise<unknown> => directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc: lost(net) }).then(() => undefined, (e: unknown) => e);
     const blind = await outcome({ dryRun: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601') });
     expect(blind).toBeInstanceOf(DirectSweepOutcomeUnknownError);
     expect(blind).toMatchObject({ simulation: 'unavailable', attempt: { status: 'unknown-after-handoff' } });
@@ -1087,5 +1087,38 @@ describe('sweep permit state messages (spec 04)', () => {
   it.each([['permit_failed', 502], ['permit_expired', 409], ['owner_failure_limit', 500]])('does not map %s with status %i (outcome unknown, not proven pre-broadcast)', async (code, status) => {
     const { RelayerRefusedError } = await import('./relayerClient');
     expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', status, code))).toBeUndefined();
+  });
+});
+
+describe('TM7 destination reuse ledger', () => {
+  const mem = (): { store: Map<string, string>; getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void } => {
+    const store = new Map<string, string>();
+    return { store, getItem: (k) => store.get(k) ?? null, setItem: (k, v) => { store.set(k, v); }, removeItem: (k) => { store.delete(k); } };
+  };
+  const OWNER = '0x1111111111111111111111111111111111111111' as Address;
+  const OTHER = '0x2222222222222222222222222222222222222222' as Address;
+
+  it('an empty, missing or corrupt ledger warns about nothing', () => {
+    const st = mem();
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined))).toBeUndefined();
+    st.setItem(sweepModule.DEST_LEDGER_KEY, '{not json');
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();
+  });
+
+  it('records a submitted destination and then warns, also for another source, and keeps both sources', () => {
+    const st = mem();
+    sweepModule.recordSweepDestination(st, 84532, DEST, OWNER);
+    expect(sweepModule.destinationWarning(DEST, OTHER, 84532, sweepModule.loadDestLedger(st))).toBe('used');
+    sweepModule.recordSweepDestination(st, 84532, DEST, OTHER);
+    expect(sweepModule.loadDestLedger(st).linkedSources(84532, DEST)).toHaveLength(2);
+    expect(sweepModule.destinationWarning(DEST, OWNER, 11155111, sweepModule.loadDestLedger(st))).toBeUndefined();
+  });
+
+  it('warns for a known wallet and never throws on blocked storage', () => {
+    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');
+    const broken = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); }, removeItem: () => { throw new Error('blocked'); } };
+    expect(() => { sweepModule.recordSweepDestination(broken, 84532, DEST, OWNER); }).not.toThrow();
+    expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();
   });
 });

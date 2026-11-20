@@ -24,14 +24,14 @@
 | `external-pools-privacypools` | Privacy Pools (0xbow) adapter for @ghostpay/external-pools (testnet only). | external-pools | - | - |
 | `external-pools-railgun` | Railgun adapter for @ghostpay/external-pools (testnet only). | external-pools | - | - |
 | `hops` | Delayed multi-hop forwarding HOP-0/HOP-N, labelled Weak (testnet PoC). | chain-adapters, core-crypto | - | - |
-| `hygiene` | Own-leak hygiene options HY-DST/CON/VER/BUF/FUND (testnet PoC). | chain-adapters, core-crypto | - | - |
+| `hygiene` | Own-leak hygiene options HY-DST/CON/VER/BUF/FUND (testnet PoC). | chain-adapters, core-crypto | apps/web | - |
 | `i18n` | GhostPay localisation framework: message catalogs, ICU-lite plural/placeholder formatting, locale negotiation, RTL, BCP47 validation, completeness checks. | - | cli, ux-i18n | - |
 | `invoice-schema` | GhostPay v1 invoice schema, canonical serialization, signing and fragment envelope (ADR-0002, ADR-0005). | - | apps/web, chain-adapters, cli, merchant-billing, merchant-hooks, merchant-ledger, qr-exchange, sdk, ux-vault | - |
 | `merchant-billing` | Pure merchant billing logic for GhostPay: subscriptions (reminder invoices), deposits and installments, private refund plans, split and bulk payouts. | invoice-schema, merchant-hooks | cli | - |
 | `merchant-hooks` | Self-hosted order webhooks, payment buttons, POS/QR and NFC payload builders (pure). | invoice-schema | cli, merchant-billing | - |
 | `merchant-ledger` | Merchant reconciliation and accounting/tax exports (pure, bigint money). | invoice-schema | cli | - |
 | `merchant-multisig` | GhostPay m-of-n merchant account approval policy: proposals, canonical digests, domain-separated secp256k1 approvals, replay protection, timelocks. | - | cli | - |
-| `metadata-hardening` | Client-side metadata hardening helpers MH-* (testnet PoC). | core-crypto | - | - |
+| `metadata-hardening` | Client-side metadata hardening helpers MH-* (testnet PoC). | core-crypto | apps/relayer, apps/web | - |
 | `net-harness` | Local network-privacy test harness: fake SOCKS5h, HTTP, OHTTP gateway (testnet PoC). | - | net-transport | - |
 | `net-transport` | Transport profiles (Tor/I2P/Nym/OHTTP), SOCKS5h agent and config validation (testnet PoC). | chain-adapters, net-harness | apps/web | pretypecheck, pretest, prelint |
 | `ops-monitor` | Read-only chain-side anomaly probes with Prometheus and webhook output. | chain-adapters | - | - |
@@ -72,8 +72,8 @@
 | `ux-sandbox` | GhostPay usability: sandbox (pure logic, no UI, no network). | sandbox | - | - |
 | `ux-schedule` | GhostPay usability: schedule (pure logic, no UI, no network). | - | - | - |
 | `ux-vault` | GhostPay usability: vault (pure logic, no UI, no network). | chain-adapters, core-crypto, invoice-schema | apps/web, cli | - |
-| `apps/relayer` | GhostPay gas-sponsorship relay service (node:http, viem). | chain-adapters, relayer-guard | - | start, ops, smoke:container |
-| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, invoice-schema, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, test:e2e, e2e:devnet |
+| `apps/relayer` | GhostPay gas-sponsorship relay service (node:http, viem). | chain-adapters, metadata-hardening, relayer-guard | - | start, ops, smoke:container |
+| `apps/web` | (no description) | address-safety, btc-silent-payments, chain-adapters, core-crypto, hygiene, invoice-schema, metadata-hardening, net-transport, payment-uri, policy-scheme, qr-exchange, scan-source, secret-box, solana-stealth, tron-adapter, tx-review, ux-vault | - | dev, postbuild, preview, validate:deployments, test:e2e, e2e:devnet |
 
 ## Foundry projects (no package.json; run `forge` inside the directory)
 

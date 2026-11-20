@@ -1,0 +1,28 @@
+$ node /workspace/scratch/4fa14be12559/analysis-build/check-pages-artifact.mjs /workspace/scratch/4fa14be12559/analysis-build/source /workspace/scratch/4fa14be12559/analysis-build/artifacts/pages-dedicated / https://ghostpay.example false 9bad95e5cc0ee73f5adb8d2c587161074b21e080
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=384", "pages_node_cap": false}
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "result": "PASS",
+  "scope": "static artifact and loopback HTTP only",
+  "commit": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "source": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "artifact": "/workspace/scratch/4fa14be12559/analysis-build/artifacts/pages-dedicated",
+  "base": "/",
+  "declaredOrigin": "https://ghostpay.example",
+  "sharedOrigin": false,
+  "hostedOriginTested": false,
+  "browserTested": false,
+  "paymentsEnabledChainIds": [],
+  "filesHashed": 16,
+  "filesFetched": 15,
+  "markerExcludedFromHttp": ".nojekyll",
+  "sha256sumsSha256": "ddcca5eda8cb44ea3f781df0e8483da28e50c9738cd91d472e81fe60ed75ec17",
+  "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "moduleChunks": 6,
+  "workers": 1
+}
+
+EXIT_CODE=0
+SECONDS=0.187

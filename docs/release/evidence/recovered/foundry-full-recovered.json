@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/workspace/scratch/75c78c17e2fc/contract-tools/forge",
+    "test",
+    "--threads",
+    "2"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay/packages/contracts",
+  "started_utc": "2026-11-19T13:04:34.372686+00:00",
+  "source_commit": "6aeb0f8aba1177ae3defd766cfa3279452a1f412",
+  "source_tree": "b0bfa31a8dea6872dbc6a16aa39150458e5a9616",
+  "initial_status": "",
+  "node": "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+  "node_sha256": "2f822d544601dfff107f57d945b649d15c5bf6302595735a6bd9cdc7ee9669bd",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=256",
+    "FOUNDRY_OUT": "/tmp/ghostpay-forge-out-246ff268d20d",
+    "FOUNDRY_CACHE_PATH": "/tmp/ghostpay-forge-cache-246ff268d20d",
+    "FOUNDRY_SOLC": "/workspace/scratch/75c78c17e2fc/contract-tools/solc-0.8.28"
+  },
+  "status": "completed",
+  "exit_code": 0,
+  "duration_seconds": 143.13737320899963,
+  "finished_utc": "2026-11-19T13:06:57.510051+00:00",
+  "final_source_commit": "4ce683bc7bda9c79631b629015082b1f6298751e",
+  "final_status": "",
+  "log": "foundry-full-recovered.log.gz",
+  "uncompressed_bytes": 45122,
+  "uncompressed_sha256": "60ae74af963bf0c4b83d4285ccf3dbf0b09ac34ced3819703377416aad6eaa84",
+  "stored_bytes": 11040,
+  "stored_sha256": "adcdf6cc56792fa644ccdc7c58f756f38c1645eb04b574678c40ff66549a2e0e"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "clean-install-retry-384",
+  "cwd": "/workspace/scratch/4fa14be12559/analysis-build/source",
+  "command": [
+    "npm",
+    "ci",
+    "--ignore-scripts",
+    "--prefer-offline",
+    "--no-audit",
+    "--no-fund"
+  ],
+  "started": "2026-11-18T15:01:32.075901+00:00",
+  "node_bin": "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin",
+  "npm_bin": "/workspace/scratch/4fa14be12559/toolchain-probe/npm-bin",
+  "heap_mib": 384,
+  "pages_node_cap": false,
+  "overrides": {},
+  "removed_ambient_build_variable_names": [],
+  "exit_code": -9,
+  "seconds": 16.25,
+  "finished": "2026-11-18T15:01:48.325858+00:00",
+  "log": "/workspace/scratch/4fa14be12559/analysis-build/logs/clean-install-retry-384.log"
+}

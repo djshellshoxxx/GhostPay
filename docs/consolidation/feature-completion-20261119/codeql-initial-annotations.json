@@ -1,0 +1,33 @@
+{
+  "source_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "check_run": 135014939758,
+  "method": "ordinary unauthenticated HTTPS GET, inherited proxy and TLS verification",
+  "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/135014939758/annotations?per_page=100",
+  "http_status": 200,
+  "annotations": [
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/apps/web/src/views/Settings.test.tsx",
+      "start_line": 47,
+      "start_column": 47,
+      "end_line": 47,
+      "end_column": 95,
+      "annotation_level": "failure",
+      "title": "Clear text storage of sensitive information",
+      "message": "This stores sensitive data returned by [an access to SECRET](1) as clear text.",
+      "raw_details": null
+    },
+    {
+      "path": "packages/pir-two-server/src/client.ts",
+      "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/198aa5baff22272453733a0f3dcfcac0e0994eec/packages/pir-two-server/src/client.ts",
+      "start_line": 79,
+      "start_column": 16,
+      "end_line": 79,
+      "end_column": 43,
+      "annotation_level": "failure",
+      "title": "Polynomial regular expression used on uncontrolled data",
+      "message": "This [regular expression](1) that depends on [library input](2) may run slow on strings with many repetitions of '/'.\nThis [regular expression](1) that depends on [library input](3) may run slow on strings with many repetitions of '/'.\nThis [regular expression](1) that depends on [library input](4) may run slow on strings with many repetitions of '/'.",
+      "raw_details": null
+    }
+  ]
+}

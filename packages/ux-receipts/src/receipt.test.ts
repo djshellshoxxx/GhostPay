@@ -48,7 +48,7 @@ describe('validateRecord', () => {
     ['recipient', 'not an address!!!!!!!!'],
     ['recipientKind', 'other'],
     ['memo', ''],
-    ['memo', 'a‮b'],
+    ['memo', 'a\u202eb'],
     ['asset', { symbol: 'USDC' }],
     ['asset', { symbol: 'US DC', decimals: 6 }],
     ['asset', { symbol: 'USDC', decimals: 40 }],
@@ -390,7 +390,7 @@ describe('render', () => {
     expect(t).not.toContain('Withheld');
   });
   it('sanitizes hostile content in hand-built receipts', async () => {
-    const r = { ...(await mk('full')), memo: 'ok‮evil\nline', sender: 'x\u0007y' } as Receipt;
+    const r = { ...(await mk('full')), memo: 'ok\u202eevil\nline', sender: 'x\u0007y' } as Receipt;
     const t = renderText(r);
     expect(t.includes('\u202e') || t.includes('\u0007')).toBe(false);
     expect(t.split('\n').filter((l) => l.startsWith('Memo:')).length).toBe(1);

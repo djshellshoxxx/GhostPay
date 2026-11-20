@@ -1,0 +1,167 @@
+
+ RUN  v5.1.0 /tmp/ghostpay-security-246ff268d20d/apps/web
+
+ ❯ src/lib/sweep.test.ts (102 tests | 15 failed) 2941ms
+   ❯ directSweep (stealth address pays gas, signs a plain transfer) (6)
+     × explains when the stealth address has no gas, and when native balance is too low 47ms
+   ❯ L2-F2: a native direct sweep keeps back every fee the chain charges (32)
+     × refuses, before signing, a balance that covers the gas but not the L1 data fee 137ms
+     × refuses when the fees including the L1 data fee would exceed 10 % of the amount moved 22ms
+     × refuses when the L1 fee call fails: the fee, so the amount to send, cannot be computed 21ms
+     × refuses when the L1 fee answer is malformed: the fee, so the amount to send, cannot be computed 21ms
+     × refuses when the L1 fee call reverts: the fee, so the amount to send, cannot be computed 19ms
+     × refuses when the operator fee call has an unclassified execution failure: the fee, so the amount to send, cannot be computed 21ms
+     × refuses when the operator fee call fails: the fee, so the amount to send, cannot be computed 22ms
+     × refuses when the operator fee call fails at the transport: the fee, so the amount to send, cannot be computed 24ms
+     × refuses when the operator fee call gets a JSON-RPC error that is no revert: the fee, so the amount to send, cannot be computed 20ms
+     × refuses when the operator fee call runs out of gas (reth): the fee, so the amount to send, cannot be computed 19ms
+     × refuses when the operator fee call reports out of gas in its text: the fee, so the amount to send, cannot be computed 34ms
+     × refuses a destination that rejects the transfer (the gas estimate reverts), before signing 22ms
+     × L2-F1: the dry run refuses a revert the RPC client reports as a flag, and reports one it cannot run 22ms
+     × B-R6: an outcome unknown after handoff carries the dry-run result, so a skipped dry run is still reported 21ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/sweep.test.ts > directSweep (stealth address pays gas, signs a plain transfer) > explains when the stealth address has no gas, and when native balance is too low
+AssertionError: expected [Function] to throw error matching /does not cover the network fee/ but got 'Your RPC returned an unexpected balan…'
+
+- Expected:
+/does not cover the network fee/
+
++ Received:
+"Your RPC returned an unexpected balance."
+
+ ❯ src/lib/sweep.test.ts:298:139
+    296|   it('explains when the stealth address has no gas, and when native ba…
+    297|     await expect(directSweep({ target, manifest, destination: DEST, am…
+    298|     await expect(directSweep({ target: { ...target, token: 'native' },…
+       |                                                                                                                                           ^
+    299|   });
+    300|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses, before signing, a balance that covers the gas but not the L1 data fee
+AssertionError: expected [Function] to throw error matching /does not cover the network fee, inclu…/ but got 'Your RPC returned an unexpected balan…'
+
+- Expected:
+/does not cover the network fee, including the L1 data fee/
+
++ Received:
+"Your RPC returned an unexpected balance."
+
+ ❯ src/lib/sweep.test.ts:717:98
+    715|   it('refuses, before signing, a balance that covers the gas but not t…
+    716|     const rpc = chainRpc(84532, { balance: 45_000_000_000_000n }, {});
+    717|     await expect(directSweep({ target: native(), manifest, destination…
+       |                                                                                                  ^
+    718|     expect(sends(rpc)).toBe(0);
+    719|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the fees including the L1 data fee would exceed 10 % of the amount moved
+AssertionError: expected [Function] to throw error matching /more than 10 %/ but got 'Your RPC returned an unexpected balan…'
+
+- Expected:
+/more than 10 %/
+
++ Received:
+"Your RPC returned an unexpected balance."
+
+ ❯ src/lib/sweep.test.ts:723:98
+    721|   it('refuses when the fees including the L1 data fee would exceed 10 …
+    722|     const rpc = chainRpc(84532, { balance: 10n ** 15n, l1Fee: 10n ** 1…
+    723|     await expect(directSweep({ target: native(), manifest, destination…
+       |                                                                                                  ^
+    724|     expect(sends(rpc)).toBe(0);
+    725|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the L1 fee call fails: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the L1 fee answer is malformed: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the L1 fee call reverts: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the operator fee call has an unclassified execution failure: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the operator fee call fails: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the operator fee call fails at the transport: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the operator fee call gets a JSON-RPC error that is no revert: the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the operator fee call runs out of gas (reth): the fee, so the amount to send, cannot be computed
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses when the operator fee call reports out of gas in its text: the fee, so the amount to send, cannot be computed
+AssertionError: expected [Function] to throw error matching /fee oracle/ but got 'Your RPC returned an unexpected balan…'
+
+- Expected:
+/fee oracle/
+
++ Received:
+"Your RPC returned an unexpected balance."
+
+ ❯ src/lib/sweep.test.ts:782:98
+    780|   ] as const)('refuses when %s: the fee, so the amount to send, cannot…
+    781|     const rpc = chainRpc(84532, net, {});
+    782|     await expect(directSweep({ target: native(), manifest, destination…
+       |                                                                                                  ^
+    783|     expect(sends(rpc)).toBe(0);
+    784|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > refuses a destination that rejects the transfer (the gas estimate reverts), before signing
+AssertionError: expected [Function] to throw error matching /would revert/ but got 'Your RPC returned an unexpected balan…'
+
+- Expected:
+/would revert/
+
++ Received:
+"Your RPC returned an unexpected balance."
+
+ ❯ src/lib/sweep.test.ts:788:98
+    786|   it('refuses a destination that rejects the transfer (the gas estimat…
+    787|     const rpc = chainRpc(84532, { estimate: new ChainAdapterError('RPC…
+    788|     await expect(directSweep({ target: native(), manifest, destination…
+       |                                                                                                  ^
+    789|     expect(sends(rpc)).toBe(0);
+    790|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > L2-F1: the dry run refuses a revert the RPC client reports as a flag, and reports one it cannot run
+AssertionError: expected [Function] to throw error matching /would revert/ but got 'Your RPC returned an unexpected balan…'
+
+- Expected:
+/would revert/
+
++ Received:
+"Your RPC returned an unexpected balance."
+
+ ❯ src/lib/sweep.test.ts:794:109
+    792|   it('L2-F1: the dry run refuses a revert the RPC client reports as a …
+    793|     const reverting = chainRpc(84532, { dryRun: new ChainAdapterError(…
+    794|     await expect(directSweep({ target: native(), manifest, destination…
+       |                                                                                                             ^
+    795|     expect(sends(reverting)).toBe(0);
+    796|     const blind = chainRpc(84532, { dryRun: new ChainAdapterError('RPC…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  src/lib/sweep.test.ts > L2-F2: a native direct sweep keeps back every fee the chain charges > B-R6: an outcome unknown after handoff carries the dry-run result, so a skipped dry run is still reported
+AssertionError: expected UserFacingError: Your RPC returned an une… { translation: { key: '…' } } to be an instance of DirectSweepOutcomeUnknownError
+ ❯ src/lib/sweep.test.ts:809:19
+    807|     const outcome = (net: Net): Promise<unknown> => directSweep({ targ…
+    808|     const blind = await outcome({ dryRun: new ChainAdapterError('RPC_F…
+    809|     expect(blind).toBeInstanceOf(DirectSweepOutcomeUnknownError);
+       |                   ^
+    810|     expect(blind).toMatchObject({ simulation: 'unavailable', attempt: …
+    811|     expect(await outcome({})).toMatchObject({ simulation: 'ok', attemp…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  15 failed | 116 passed (131)
+   Start at  03:23:57
+   Duration  11.84s (import 49%, tests 44%, transform 7%)
+
+    Isolate  3 workers spawned · ~424ms startup each (spawn + environment, per file)
+             at least ~848ms faster with isolate: false — reuses workers across files instead of one per file
+

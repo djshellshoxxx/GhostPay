@@ -1,0 +1,33 @@
+{
+  "source_before": "58995408bec0e072a969db7bd4eb4687579bd4a7",
+  "source_after": "7d99c223e977938cd96c5e496232bad44a3b4799",
+  "published_after": "b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73",
+  "review_kind": "Independent AI-agent read-only review, not external professional audit",
+  "reviewer": "crypto_recovery_review",
+  "decision": "No blocking defect found; assertions, skips, timeouts, runtime behavior and fixture security settings preserved",
+  "diff_bytes": 6978,
+  "diff_sha256": "8bcd9f34f4c972d187e2aa5b962d93308d706f8a1ff27fa4326aa7031fe9d92a",
+  "files": [
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "diff_sha256": "339f8b3cc0e03f0b944c94c76628de329370a7a1b20c249cbb2cfa03282a6d41"
+    },
+    {
+      "path": "apps/web/e2e/backup-panel.spec.ts",
+      "diff_sha256": "1cc99a0fc1687aba48bf5d3e74b1992f17fd53bfda80eb8adb61f95680e6667b"
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "diff_sha256": "acf0b3a68eddaa5082d7276b220405b74c32f73c1c6a7b9274a3d853c437e557"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "diff_sha256": "a03381c168b36fe03f7045b3c452ae2be7c4241ee597d18686acaf14aaae6680"
+    },
+    {
+      "path": "apps/web/src/lib/session.atomicity.test.ts",
+      "diff_sha256": "012465fe07a1d4c4b112d484937f32a4d67275f337163f086b6728713a9f9b62"
+    }
+  ],
+  "execution": "Reviewer ran no tests in this follow-up. Lifecycle worker executed 4/4 atomicity cases and 16-test discovery; coordinator later executed 156/156 combined cases; hosted runs supply browser evidence."
+}

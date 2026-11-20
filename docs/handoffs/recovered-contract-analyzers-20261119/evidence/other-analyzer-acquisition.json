@@ -1,0 +1,26 @@
+[
+  {
+    "name": "mythril-sdist",
+    "url": "https://pypi.org/pypi/mythril/0.24.8/json",
+    "expected_sha256": "6631ffaad0342c9b2a6b82dbe12106ab38512be45b6c8e0a364e9d4cb146874a",
+    "started_at": "2026-11-19T13:28:41.737482+00:00",
+    "download_url": "https://files.pythonhosted.org/packages/0e/9d/52478275d6b6c1f6f662634de7e53e9a4005d44226764dd59c7718f0b0db/mythril-0.24.8.tar.gz",
+    "bytes": 4561643,
+    "sha256": "6631ffaad0342c9b2a6b82dbe12106ab38512be45b6c8e0a364e9d4cb146874a",
+    "checksum_matches": true,
+    "result": "VERIFIED_READ_ONLY_SOURCE_INSPECTION",
+    "finished_at": "2026-11-19T13:28:51.463134+00:00"
+  },
+  {
+    "name": "echidna-archive",
+    "url": "https://github.com/crytic/echidna/releases/download/v2.2.7/echidna-2.2.7-x86_64-linux.tar.gz",
+    "expected_sha256": "d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314",
+    "started_at": "2026-11-19T13:28:51.463665+00:00",
+    "bytes": 8976603,
+    "sha256": "d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314",
+    "checksum_matches": true,
+    "binary_sha256": "04f9437a655c79fc1a4ca7ecdadff68ffc64aacbafafa04cad0a408eb9cd621c",
+    "result": "CHECKSUM_PINNED_BINARY_RESTORED_NOT_EXECUTED",
+    "finished_at": "2026-11-19T13:29:02.437321+00:00"
+  }
+]

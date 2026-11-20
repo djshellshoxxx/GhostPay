@@ -1,0 +1,107 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-vault@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+(node:18) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/a264c19c9f94/GhostPay/packages/ux-vault
+      Coverage enabled with v8
+
+(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:77) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:89) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:101) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:113) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:125) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:137) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:149) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:161) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Worker forks emitted error.
+ ❯ EventEmitter.onTaskError ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5926:21
+ ❯ EventEmitter.emit node:events:519:28
+ ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5401:22
+ ❯ ChildProcess.emit node:events:519:28
+ ❯ ChildProcess._handle.onexit node:internal/child_process:293:12
+
+Caused by: Error: Worker exited unexpectedly with signal SIGKILL during started state while running test file /workspace/scratch/a264c19c9f94/GhostPay/packages/ux-vault/src/portable-parity.test.ts
+ ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5399:33
+ ❯ ChildProcess.emit node:events:519:28
+ ❯ ChildProcess._handle.onexit node:internal/child_process:293:12
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Worker forks emitted error.
+ ❯ EventEmitter.onTaskError ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5926:21
+ ❯ EventEmitter.emit node:events:519:28
+ ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5401:22
+ ❯ ChildProcess.emit node:events:519:28
+ ❯ ChildProcess._handle.onexit node:internal/child_process:293:12
+
+Caused by: Error: Worker exited unexpectedly with signal SIGKILL during started state while running test file /workspace/scratch/a264c19c9f94/GhostPay/packages/ux-vault/src/stealth-export-portable.test.ts
+ ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5399:33
+ ❯ ChildProcess.emit node:events:519:28
+ ❯ ChildProcess._handle.onexit node:internal/child_process:293:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  8 passed (10)
+      Tests  262 passed (353)
+     Errors  2 errors
+   Start at  15:01:44
+   Duration  93.68s (tests 75%, import 16%, transform 8%, worker 1%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   58.63 |    53.04 |   60.14 |   62.74 |                   
+ confusables.ts    |     100 |    98.14 |     100 |     100 | 168               
+ contacts.ts       |     100 |    98.68 |     100 |     100 | 213               
+ ...re-portable.ts |   77.37 |    71.06 |   82.14 |   91.13 | ...89,411,432-437 
+ ...on-portable.ts |   11.84 |    19.51 |    6.55 |   13.33 | ...2-643,656-1143 
+ schema.ts         |     100 |    96.29 |     100 |     100 | 107,111           
+ seller-scope.ts   |       0 |      100 |       0 |       0 | 9                 
+ ...rt-portable.ts |   62.66 |     61.2 |   69.76 |   71.18 | ...88-789,800-816 
+ ...ve-portable.ts |       0 |        0 |       0 |       0 | 58-253            
+ vault.ts          |     100 |    95.08 |     100 |     100 | 104,207,230       
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 58.63% ( 1212/2067 )
+Branches     : 53.04% ( 783/1476 )
+Functions    : 60.14% ( 243/404 )
+Lines        : 62.74% ( 1019/1624 )
+================================================================================
+ERROR: Coverage for lines (62.74%) does not meet global threshold (95%)
+ERROR: Coverage for functions (60.14%) does not meet global threshold (95%)
+ERROR: Coverage for statements (58.63%) does not meet global threshold (95%)
+ERROR: Coverage for branches (53.04%) does not meet global threshold (90%)
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /workspace/scratch/a264c19c9f94/GhostPay/packages/ux-vault
+npm error workspace @ghostpay/ux-vault@0.1.0
+npm error location /workspace/scratch/a264c19c9f94/GhostPay/packages/ux-vault
+npm error command failed
+npm error command sh -c vitest run --coverage --maxWorkers=1

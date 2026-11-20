@@ -1,0 +1,28 @@
+{
+  "base": "7d99c223e977938cd96c5e496232bad44a3b4799",
+  "command": [
+    "/workspace/scratch/a884a1d6c4d8/fs35-node22-npm-cache/_npx/e5e7bdc4f892e393/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/components/StealthExportPayment.test.tsx",
+    "src/components/StealthExportRecovery.test.tsx",
+    "src/components/StealthExportVerification.test.tsx",
+    "src/components/StealthExportSelection.test.tsx",
+    "src/components/StealthExportDownload.test.tsx",
+    "src/lib/session.atomicity.test.ts",
+    "src/lib/session.test.ts",
+    "src/lib/keyVault.idb.test.ts",
+    "src/lib/keyVault.test.ts",
+    "src/lib/keyVault.secretExport.test.ts",
+    "src/lib/paymentKeyExport.test.ts",
+    "src/views/Scan.stealthExport.test.tsx",
+    "src/views/SellerKeys.stealthExport.test.tsx",
+    "--coverage.enabled=false",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/a264c19c9f94/GhostPay/apps/web",
+  "node": "v22.23.5",
+  "heap_mib": 512,
+  "exit_code": 0,
+  "seconds": 35.493
+}

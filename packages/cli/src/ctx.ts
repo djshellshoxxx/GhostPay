@@ -1,5 +1,11 @@
 import { type Parsed, parseArgs, type OptSpec } from './args.js';
-import { ioError, MAX_BINARY_BYTES, MAX_INPUT_CHARS, type Io, usageError } from './io.js';
+import { displayPath, ioError, MAX_BINARY_BYTES, MAX_INPUT_CHARS, type Io, usageError } from './io.js';
+
+/** "file \"name.json\"" for a plain local path; otherwise a generic phrase that does not echo the value. */
+function named(noun: string, path: string): string {
+  const shown = displayPath(path);
+  return shown === undefined ? `the ${noun} (name not shown)` : `${noun} ${shown}`;
+}
 
 /** Per-invocation context handed to command handlers. */
 export class Ctx {
@@ -72,7 +78,7 @@ export class Ctx {
     try {
       return await f();
     } catch {
-      throw ioError('READ_FAILED', `cannot read ${what === 'stdin' ? 'stdin' : `file ${JSON.stringify(what)}`}.`, 'Check the path and permissions.');
+      throw ioError('READ_FAILED', `cannot read ${what === 'stdin' ? 'stdin' : named('file', what)}.`, 'Check the path and permissions.');
     }
   }
 
@@ -89,7 +95,7 @@ export class Ctx {
     try {
       await this.io.writeFile(path, data, { overwrite: a.flags.has('force') });
     } catch {
-      throw ioError('WRITE_FAILED', `cannot write ${JSON.stringify(path)}.`, 'It may already exist (use --force) or the directory is not writable.');
+      throw ioError('WRITE_FAILED', `cannot write ${named('output file', path)}.`, 'It may already exist (use --force) or the directory is not writable.');
     }
     return true;
   }

@@ -56,7 +56,7 @@ describe('create/validate', () => {
     expect(code(() => createPaymentRequest(input, NOW, () => new Uint8Array(8)))).toBe('REQUEST');
     expect(code(() => createPaymentRequest({ ...input, amount: '0' }, NOW))).toBe('AMOUNT');
     expect(code(() => createPaymentRequest({ ...input, amount: '1.1234567' }, NOW))).toBe('AMOUNT');
-    expect(code(() => createPaymentRequest({ ...input, memo: 'a‮b' }, NOW))).toBe('TEXT');
+    expect(code(() => createPaymentRequest({ ...input, memo: 'a\u202eb' }, NOW))).toBe('TEXT');
     expect(createPaymentRequest({ ...input, ttlSeconds: MAX_LIFETIME_SECONDS }, NOW).expiresAt).toBe(
       NOW + MAX_LIFETIME_SECONDS,
     );

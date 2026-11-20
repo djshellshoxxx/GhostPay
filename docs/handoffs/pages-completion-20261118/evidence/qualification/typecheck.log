@@ -1,0 +1,332 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> ghostpay@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present
+
+(node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/address-safety@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/amount-blur@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/btc-family@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/btc-payjoin@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/btc-silent-payments@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/chain-adapters@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/chain-evm-extra@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/chain-solana@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/chain-tron@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/cli@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/confidential-amounts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/confidential-contracts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/core-crypto@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/donation@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/external-pools@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/external-pools-privacypools@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/external-pools-railgun@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/hops@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/hygiene@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/i18n@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/invoice-schema@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/merchant-billing@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/merchant-hooks@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/merchant-ledger@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/merchant-multisig@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/metadata-hardening@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/net-harness@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/net-transport@0.1.0 pretypecheck
+> npm run build -w @ghostpay/net-harness --if-present
+
+(node:276) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/net-harness@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/net-transport@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ops-monitor@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/payer-sponsor@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/payment-uri@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/pir-two-server@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/plugin-api@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/policy-scheme@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/pool-circuits@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/pool-prover@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/pool-relayer@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/pool-sdk@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/privacy-pipeline@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/privacy-profiles@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/qr-exchange@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/relayer-guard@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/sandbox@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/scan-source@0.1.0 pretypecheck
+> npm run build -w @ghostpay/pir-two-server --if-present
+
+(node:442) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/pir-two-server@0.1.0 build
+> tsc -p tsconfig.build.json
+
+
+> @ghostpay/scan-source@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/sdk@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/secret-box@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/solana-stealth@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/tron-adapter@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/tx-review@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-connect@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-core@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-export@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-fees@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-fiat@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-flow@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-guide@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-i18n@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-intake@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-links@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-notify@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-presets@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-privacy@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-receipts@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-sandbox@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-schedule@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/ux-vault@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/relayer@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @ghostpay/web@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+<--- Last few GCs --->
+
+[680:0xe545000]    13096 ms: Scavenge 764.4 (783.1) -> 762.5 (783.1) MB, pooled: 2 MB, 0.47 / 0.00 ms  (average mu = 0.068, current mu = 0.020) allocation failure; 
+[680:0xe545000]    13840 ms: Mark-Compact 764.6 (783.4) -> 762.2 (783.4) MB, pooled: 2 MB, 741.73 / 0.00 ms  (average mu = 0.056, current mu = 0.052) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0xe48c12 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node]
+ 2: 0x1249780 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [node]
+ 3: 0x1249a57 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [node]
+ 4: 0x1478965  [node]
+ 5: 0x1478993  [node]
+ 6: 0x1491a6a  [node]
+ 7: 0x1494c38  [node]
+ 8: 0x1cfd6e1  [node]
+Aborted
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 134
+npm error path /workspace/scratch/4fa14be12559/GhostPay/apps/web
+npm error workspace @ghostpay/web@0.1.0
+npm error location /workspace/scratch/4fa14be12559/GhostPay/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit
