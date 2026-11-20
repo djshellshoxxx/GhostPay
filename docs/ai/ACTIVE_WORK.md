@@ -689,4 +689,8 @@ lifecycle protection; deterministic tests with real signed receipts.
 Keep the feature outside production routes and the lean artifact. No provider
 cryptography, existing receipt-core changes, network access, automatic export,
 wallet access, production activation, release, main merge or remote writes.
-Status: ownership recorded before code; current-main reconciliation follows.
+Status: main reconciled at `7d64e0f4`; product/tests complete at
+`726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`. Normal configured focused tests
+pass 62/62; scoped coverage, strict TypeScript and repository ESLint pass.
+Source-pinned evidence and remaining scope: `docs/future/modules/F05-ghostproof/HANDOFF.md`.
+Full feature, production activation, independent review and hosted/browser gates remain pending.

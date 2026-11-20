@@ -3,9 +3,22 @@
 - Specification version: 1.0; prepared 2026-11-19.
 - Branch: `future/f05-ghostproof`.
 - Pinned source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
-- Status: **SPECIFICATION ONLY; implementation and release remain disabled.**
+- Status: **M1 offline receipt review implemented; full proof workflow and release remain disabled.**
 - Shared requirements: [COMMON.md](../COMMON.md); [module catalog](../README.md).
 - This future workflow does not modify current beta gates, deployed behavior, or existing fee decisions.
+
+## Implementation checkpoint — 2026-11-20
+
+The first implementation slice is now available in
+`apps/web/src/features/future/ghostproof/`: a bounded offline verifier for existing
+unsigned digest receipts and signed seller receipts, immutable disclosure reviews,
+and a cancellable import session. It reuses existing receipt providers and adds
+no cryptographic format, network lookup, storage or production entry point.
+
+Product source: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+[The source-pinned handoff](HANDOFF.md) records acceptance coverage and remaining
+work. This completes the existing-format assurance adapter, not the P12 proof
+provider, evidence-generation/export workflow or full F05 feature.
 
 ## Objective and user journeys
 
