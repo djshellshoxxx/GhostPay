@@ -6,18 +6,18 @@ import { expect, test, type Page } from '@playwright/test';
 const appCss = readFileSync(new URL('../src/styles/app.css', import.meta.url), 'utf8');
 const billCss = readFileSync(new URL('../src/styles/print.css', import.meta.url), 'utf8');
 
-async function printFixture(page: Page, order: 'app-first' | 'bill-first', withBill: boolean): Promise<void> {
+async function printFixture(page: Page, order: 'app-first' | 'bill-first', withBill: boolean, withReceipt = true): Promise<void> {
   const styles = order === 'app-first' ? [appCss, billCss] : [billCss, appCss];
   await page.setContent(`
     <style>${styles[0]}</style><style>${styles[1]}</style>
     <nav data-testid="private-navigation">Private wallet navigation</nav>
     <main>
       <div data-testid="private-controls">Wallet control and account details</div>
-      <article class="receipt-print" data-testid="receipt">
+      ${withReceipt ? `<article class="receipt-print" data-testid="receipt">
         <p data-testid="receipt-content">Signed payment receipt</p>
         <div class="receipt-actions" data-testid="receipt-actions">Print and archive actions</div>
         <textarea class="receipt-json" data-testid="receipt-json">private receipt JSON</textarea>
-      </article>
+      </article>` : ''}
       ${withBill ? '<article class="bill-sheet" data-testid="bill"><h2 data-testid="bill-content">Printable invoice</h2></article>' : ''}
     </main>
   `);
@@ -37,6 +37,14 @@ for (const order of ['app-first', 'bill-first'] as const) {
     expect(await visibility(page, '[data-testid="private-navigation"]')).toBe('hidden');
     await expect(page.getByTestId('receipt-actions')).toBeHidden();
     await expect(page.getByTestId('receipt-json')).toBeHidden();
+  });
+
+  test(`bill alone remains printable (${order})`, async ({ page }) => {
+    await printFixture(page, order, true, false);
+    expect(await visibility(page, '[data-testid="bill"]')).toBe('visible');
+    expect(await visibility(page, '[data-testid="bill-content"]')).toBe('visible');
+    expect(await visibility(page, '[data-testid="private-controls"]')).toBe('hidden');
+    await expect(page.getByTestId('receipt')).toHaveCount(0);
   });
 
   test(`bill remains the only printed target when a receipt exists (${order})`, async ({ page }) => {
