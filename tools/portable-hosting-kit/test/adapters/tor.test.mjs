@@ -106,7 +106,10 @@ test('wrong transport and malformed host configs are refused', () => {
   throwsCode(() => generateTorProfile({ hostConfig: onionHost({ mirrorLabel: 'evil\nHiddenServiceSingleHopMode 1' }), hiddenServiceDir: HS, target: 'host-listener' }), 'E_CONFIG');
   throwsCode(() => generateTorProfile(/** @type {any} */ ({ hiddenServiceDir: HS, target: 'host-listener' })), 'E_USAGE');
   const ok = generateTorProfile({ hostConfig: onionHost({ publicOrigin: ONION }), hiddenServiceDir: HS, target: 'host-listener' });
-  assert.ok(text(ok.files, 'tor/README-TOR.md').includes(ONION));
+  assert.deepEqual(
+    text(ok.files, 'tor/README-TOR.md').split('\n').filter((line) => line.startsWith('- Onion origin: ')),
+    [`- Onion origin: ${ONION}`],
+  );
 });
 
 test('direct Tor adapter calls validate the onion checksum and advertised port', () => {

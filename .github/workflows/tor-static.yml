@@ -51,7 +51,11 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
-      - run: npm ci --workspace @ghostpay/web --include-workspace-root --ignore-scripts
+      - run: npm ci --ignore-scripts
+      # Whole-web typechecking includes tests that import other workspace libraries.
+      # Build their real declarations as well as the web runtime dependency closure.
+      - name: Build workspace libraries from source
+        run: npm run build:libs
       - name: Validate hosting boundaries
         run: |
           npm run lint --prefix tools/portable-hosting-kit
@@ -62,7 +66,7 @@ jobs:
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: lean
           GP_COMMIT: ${{ github.sha }}
-        run: npm run build -- --workspace @ghostpay/web
+        run: npm run build --workspace @ghostpay/web
       - name: Package and prepare static-only onion hosting
         run: |
           mkdir -p "$RUNNER_TEMP/tor-evidence"
