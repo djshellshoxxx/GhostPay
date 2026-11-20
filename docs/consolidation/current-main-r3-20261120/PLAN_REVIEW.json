@@ -1,0 +1,23 @@
+{
+  "recorded_at_utc": "2026-11-20T23:16Z",
+  "reviewer": "/root/r3_branch_recovery",
+  "parent307": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+  "sweep325": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+  "main": "bfebea0acf213a113d2740366fd592042661ca67",
+  "merge_base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "merge_tree": "d8dea22ab39b973a37671653b7c63cc1a031b1f2",
+  "merge_tree_exit": 1,
+  "both_changed_paths": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "unexpected_nonregistry_blobs": [],
+  "source_paths_main_changes": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/consolidation/current-census-20261120/CENSUS.json",
+    "docs/consolidation/current-census-20261120/README.md",
+    "docs/handoffs/TRON_SCAN_ABORT_20261120.md",
+    "packages/tron-adapter/src/scan.cancellation.test.ts",
+    "packages/tron-adapter/src/scan.ts"
+  ],
+  "scope": "Independent object-level simulation and source conflict review only; no source worktree/ref edits or test execution."
+}
