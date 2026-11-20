@@ -34,7 +34,7 @@ Future source: [encrypted backup proposal](https://github.com/djshellshoxxx/Ghos
 
 Own proposed `apps/web/src/features/future/encrypted-backups/`: scope chooser, manifest preview, export/verify state machine, restore staging, and recovery report.
 
-Hard providers: [P05 encrypted state/recovery](https://github.com/djshellshoxxx/GhostPay/tree/future/p05-encrypted-local-state), [P06 key roles](https://github.com/djshellshoxxx/GhostPay/tree/future/p06-key-role-separation). Optional [P07 encrypted sync](https://github.com/djshellshoxxx/GhostPay/tree/future/p07-encrypted-device-sync) may transport ciphertext after separate consent; backup must work without it.
+Hard providers: [P05 encrypted state/recovery](https://github.com/djshellshoxxx/GhostPay/tree/future/p05-encrypted-local-state), [P06 key roles](https://github.com/djshellshoxxx/GhostPay/tree/future/p06-key-role-separation). Optional [P07 encrypted sync](https://github.com/djshellshoxxx/GhostPay/tree/future/p07-encrypted-device-sync) v1 may carry only its allowed nonsecret preferences and encrypted non-recovery metadata after separate consent. P07 v1 explicitly excludes signing/viewing keys, aggregate key-bearing backups, pending authorizations and recovery-critical material, even when encrypted. An F06 archive containing any excluded component cannot be handed to that transport; key/recovery archive synchronization requires a separately specified and approved capability. Local backup and independent restore work without P07.
 
 Providers own encryption, KDF policy, canonical codecs, key validation, and atomic persistence. F06 does not add cryptographic primitives, store passwords, auto-upload archives, introduce cloud accounts, or promise recovery without retained secrets/material.
 
@@ -120,6 +120,7 @@ Local backup, saved-file verification, and restore are essential recovery functi
 | F06-A09 | Pending transactions in archive | Recovery report preserves uncertainty; no automatic resend |
 | F06-A10 | Existing Spec 18 independent recovery | Remains compatible and independently verifiable |
 | F06-A11 | Fresh device imports old authentic archive | No unsupported “latest backup” assertion |
+| F06-A12 | Key-bearing or recovery-critical archive selected for P07 v1 | Transport refused; local export/restore remain available without a sync account |
 
 ## Implementation slices and existing commands
 
