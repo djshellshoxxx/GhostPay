@@ -518,6 +518,33 @@ Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
 
+## F10 browser recurring-plan continuation — 2026-11-20
+
+Worker: ChatGPT `future_inventory`, coordinated by the future-feature continuation lead.
+Branch: `future/f10-private-recurring`.
+Specification head: `1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9`.
+Current main to consolidate before implementation: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+
+Owned paths: `apps/web/src/features/future/private-recurring/**`,
+`docs/future/modules/F10-private-recurring/**`, this additive ownership record,
+and the minimal web workspace dependency declaration/lock entry for the existing
+`@ghostpay/merchant-billing` package if required. Other worktrees and active F03,
+seller-session, receipt-print, backup-ownership and v1 privacy repairs remain
+independently owned.
+
+Acceptance: implement a strict browser-safe plan/snapshot adapter using existing
+UTC schedule helpers, canonical token-atomic quantities distinct from fiat plans,
+validated presentation timezones, at most 24 due-period previews, duplicate
+identity checks, and explicit one-period review with revision/session/clock
+invalidation. Preview must not invoke invoice creation or consume nonce
+randomness. Exercise month-end/leap-year cadence, pause/cancel behavior, bounded
+catch-up and malformed state with deterministic tests. Record exact verification
+commands and limitations in the F10 handoff.
+
+Scope is an unmounted future module. No signing, automatic invoice issuance,
+network requests, notification delivery, persistence-provider implementation,
+production/lean route activation, fees, deployment or remote publication.
+
 Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
 regressions (4 failed / 15 passed before correction; 19/19 after), package
 typecheck/lint/build, secret scan and action pins passing. Available full package
