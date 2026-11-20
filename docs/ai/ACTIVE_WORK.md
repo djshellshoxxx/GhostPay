@@ -1,3 +1,26 @@
+# Receipt print isolation continuation — 2026-11-20
+
+Worker: ChatGPT lead `/root`, with independent `print_isolation_review` worker.
+Branch: `fix/receipt-print-isolation-312-20261120`.
+Base: PR #316 `56b76e8fbae0aa0d3e9c9394616d4aa600d70fb7`, based on main
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; original finding GP-BUG-02 in #312.
+Owned paths: `apps/web/src/styles/{app,print}.css`, printable bill/receipt component
+print wiring and focused tests, a shared print-target lifecycle helper and its tests,
+`apps/web/e2e/print-targets.spec.ts`, this additive registry entry and the existing
+`docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` continuation.
+Acceptance: reproduce the original invisible receipt in Chromium print media;
+select only the clicked receipt or bill; exclude other receipts, wallet UI, receipt
+JSON/actions and secret QR; clean up after print/cancel, exceptions and unmount;
+preserve normal screen output; pass focused regression tests, typecheck, lint,
+static Pages build/bundle checks and independent review. Preserve the prior PR's
+history and inspect its live head before publishing a continuation. No deployment,
+contract, dependency, fee, wallet/signing or unrelated feature changes.
+Status: implementation and independent source review complete; 53 focused tests,
+typed lint, original-head regression comparison, lean Vite/bundle scan and secret
+scan passed. Final hosted browser/typecheck/full CI remain pending; local Chromium
+was socket-blocked and full-web TypeScript exited 137. Existing PR #316 hosted
+CI/Pages/Beta acceptance/Hosting kit are green only at the starting base.
+
 # Receipt/bill print-target isolation — 2026-11-20T12:41Z
 
 Worker: ChatGPT automation cycle 20261120T1241Z, sequential implementer/auditor (no independent worker available).
