@@ -854,71 +854,176 @@
     },
     {
       "name": "chatgpt/ghostpay-six-fixes-combined-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 840,
+        "changed_files_returned": 6,
+        "application_paths_returned": 6
+      }
     },
     {
       "name": "chatgpt/ghostpay-sonar-review-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 106,
+        "changed_files_returned": 41,
+        "application_paths_returned": 31
+      }
     },
     {
       "name": "chatgpt/ghostpay-sweep-balance-consent-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 102,
+        "changed_files_returned": 14,
+        "application_paths_returned": 12
+      }
     },
     {
       "name": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 106,
+        "changed_files_returned": 107,
+        "application_paths_returned": 97
+      }
     },
     {
       "name": "chatgpt/ghostpay-tm-hardening-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 86,
+        "behind_by": 98,
+        "changed_files_returned": 300,
+        "application_paths_returned": 140,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "chatgpt/ghostpay-top-down-audit-20261115",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 671,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-ux-clock-port-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 838,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-ux-guide-port-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 838,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-viem-alignment-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 106,
+        "changed_files_returned": 71,
+        "application_paths_returned": 67
+      }
     },
     {
       "name": "chatgpt/pages-browser-fixes-combined-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 476,
+        "changed_files_returned": 5,
+        "application_paths_returned": 4
+      }
     },
     {
       "name": "chatgpt/pages-release-gate-audit-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 476,
+        "changed_files_returned": 2,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/spec18-recovery-completion-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 89,
+        "behind_by": 98,
+        "changed_files_returned": 300,
+        "application_paths_returned": 131,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "chatgpt/spec18-recovery-reviewed-20261118-a264",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 89,
+        "behind_by": 98,
+        "changed_files_returned": 300,
+        "application_paths_returned": 133,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "chatgpt/zero-codex/audit-main-20261118-r185",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 92,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/audit-pages-release-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 43,
+        "behind_by": 623,
+        "changed_files_returned": 1,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/audit-secret-box-20261110",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 988,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1015,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/cli-sentinel-value-20261111",
