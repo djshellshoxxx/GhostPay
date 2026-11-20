@@ -47,7 +47,7 @@
       "slug": "private-payment-links",
       "title": "Private payment links and QR exchange",
       "kind": "product",
-      "branch": "future/f03-private-payment-links",
+      "branch": "future/f03-private-payment-links-spec",
       "spec_path": "docs/future/modules/F03-private-payment-links/SPEC.md",
       "hard_dependencies": [
         "P04"
@@ -57,7 +57,9 @@
         "P10"
       ],
       "status": "specification-only",
-      "implementation_authorized": false
+      "implementation_authorized": false,
+      "related_implementation_branch": "future/f03-private-payment-links",
+      "related_implementation_head": "dd665344d6290c109d2292093e01903e4770adff"
     },
     {
       "id": "F04",

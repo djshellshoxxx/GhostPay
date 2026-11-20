@@ -46,3 +46,7 @@ Active UI, recovery, transport and consolidation lanes retain ownership. This ta
 ## Open decisions
 
 New rates, recipients, supported paid networks, version and enforcement design need owner selection. Confidential settlement, shielded proofs, bridges, artifact trust, audits and supported devices need separate protocol decisions and evidence. Optional services cannot become necessary for independent recovery.
+
+## Publication-time concurrency update
+
+A separate active F03 implementation appeared after the initial branch inventory: future/f03-private-payment-links at dd665344d6290c109d2292093e01903e4770adff, based on newer main 773a94be1c8328d6fa1720ae48f1b6a2d903f0c5. It is preserved read-only. The F03 specification branch is future/f03-private-payment-links-spec; its baseline remains the inspected c977b5d6 snapshot. These specs are not an assertion that no newer implementation exists. Every implementation task must refresh the live branch comparison.

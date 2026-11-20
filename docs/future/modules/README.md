@@ -18,7 +18,7 @@ Product/provider pairs have distinct ownership: F05 is the GhostProof journey, P
 |---|---|---|---|
 | F01 | [GhostTips private donations and tips](https://github.com/djshellshoxxx/GhostPay/blob/future/f01-ghosttips/docs/future/modules/F01-ghosttips/SPEC.md) | [future/f01-ghosttips](https://github.com/djshellshoxxx/GhostPay/tree/future/f01-ghosttips) | F03, P05 |
 | F02 | [GhostStore static private storefronts](https://github.com/djshellshoxxx/GhostPay/blob/future/f02-ghoststore/docs/future/modules/F02-ghoststore/SPEC.md) | [future/f02-ghoststore](https://github.com/djshellshoxxx/GhostPay/tree/future/f02-ghoststore) | F03, F08, P05 |
-| F03 | [Private payment links and QR exchange](https://github.com/djshellshoxxx/GhostPay/blob/future/f03-private-payment-links/docs/future/modules/F03-private-payment-links/SPEC.md) | [future/f03-private-payment-links](https://github.com/djshellshoxxx/GhostPay/tree/future/f03-private-payment-links) | P04 |
+| F03 | [Private payment links and QR exchange](https://github.com/djshellshoxxx/GhostPay/blob/future/f03-private-payment-links-spec/docs/future/modules/F03-private-payment-links/SPEC.md) | [future/f03-private-payment-links-spec](https://github.com/djshellshoxxx/GhostPay/tree/future/f03-private-payment-links-spec) | P04 |
 | F04 | [Private local merchant dashboard](https://github.com/djshellshoxxx/GhostPay/blob/future/f04-merchant-dashboard/docs/future/modules/F04-merchant-dashboard/SPEC.md) | [future/f04-merchant-dashboard](https://github.com/djshellshoxxx/GhostPay/tree/future/f04-merchant-dashboard) | P05, P03 |
 | F05 | [GhostProof selective-disclosure evidence workflow](https://github.com/djshellshoxxx/GhostPay/blob/future/f05-ghostproof/docs/future/modules/F05-ghostproof/SPEC.md) | [future/f05-ghostproof](https://github.com/djshellshoxxx/GhostPay/tree/future/f05-ghostproof) | P12, P05 |
 | F06 | [Encrypted backup and independent recovery workflow](https://github.com/djshellshoxxx/GhostPay/blob/future/f06-encrypted-backups/docs/future/modules/F06-encrypted-backups/SPEC.md) | [future/f06-encrypted-backups](https://github.com/djshellshoxxx/GhostPay/tree/future/f06-encrypted-backups) | P05, P06 |
@@ -106,3 +106,7 @@ Commands are planned implementation checks, not runtime tests claimed by this do
 ## Instructions for subsequent workers
 
 Read COMMON and the selected spec, then refresh main and active claims. Implement only when separately authorized. Keep one owner per provider API and submit provider changes before consumers. Never import a whole old branch to obtain one feature. Preserve disabled gates and independent recovery; record exact-source evidence before claiming completion.
+
+## Concurrent F03 implementation lane
+
+During publication, a separate worker created [future/f03-private-payment-links](https://github.com/djshellshoxxx/GhostPay/tree/future/f03-private-payment-links) for active request-file implementation. Its observed head was dd665344d6290c109d2292093e01903e4770adff. This suite preserves that lane and gives F03 specifications their own branch, future/f03-private-payment-links-spec. Implementation status must be refreshed from that lane before starting F03 work.
