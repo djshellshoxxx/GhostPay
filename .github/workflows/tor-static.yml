@@ -1,0 +1,114 @@
+name: Tor static hosting
+on:
+  pull_request:
+    paths:
+      - 'deploy/tor-static/**'
+      - 'deploy/TOR.md'
+      - 'scripts/tor/**'
+      - 'tools/portable-hosting-kit/**'
+      - 'apps/web/**'
+      - 'packages/**/src/**'
+      - 'packages/**/package.json'
+      - 'packages/**/tsconfig*.json'
+      - 'package.json'
+      - 'tsconfig.base.json'
+      - 'scripts/build-workspaces.mjs'
+      - 'package-lock.json'
+      - '.github/workflows/tor-static.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/tor-static/**'
+      - 'scripts/tor/**'
+      - 'tools/portable-hosting-kit/**'
+      - 'apps/web/**'
+      - 'packages/**/src/**'
+      - 'packages/**/package.json'
+      - 'packages/**/tsconfig*.json'
+      - 'package.json'
+      - 'tsconfig.base.json'
+      - 'scripts/build-workspaces.mjs'
+      - 'package-lock.json'
+      - '.github/workflows/tor-static.yml'
+  workflow_dispatch:
+
+# Validation only. No deploy/signing credentials and no Tor network bootstrap.
+permissions:
+  contents: read
+concurrency:
+  group: tor-static-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NODE_OPTIONS: --max-old-space-size=2048
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - run: npm ci --ignore-scripts
+      # Whole-web typechecking includes tests that import other workspace libraries.
+      # Build their real declarations as well as the web runtime dependency closure.
+      - name: Build workspace libraries from source
+        run: npm run build:libs
+      - name: Validate hosting boundaries
+        run: |
+          npm run lint --prefix tools/portable-hosting-kit
+          npm run typecheck --prefix tools/portable-hosting-kit
+          node --test scripts/tor/hosting-config.test.mjs
+          node --test tools/portable-hosting-kit/test/config/host-config.test.mjs tools/portable-hosting-kit/test/adapters/tor.test.mjs tools/portable-hosting-kit/test/serve/headers.test.mjs
+      - name: Build the actual static application
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: lean
+          GP_COMMIT: ${{ github.sha }}
+        run: npm run build --workspace @ghostpay/web
+      - name: Package and prepare static-only onion hosting
+        run: |
+          mkdir -p "$RUNNER_TEMP/tor-evidence"
+          node tools/portable-hosting-kit/bin/ghostpay-host.mjs validate apps/web/dist
+          node tools/portable-hosting-kit/bin/ghostpay-host.mjs package apps/web/dist --out "$RUNNER_TEMP/ghostpay-web.zip" --label "ci-${GITHUB_SHA::12}" --git-dir . --license-file THIRD_PARTY.md
+          # This local hash binds test bytes; it is not independent publisher authentication.
+          archive_sha="$(sha256sum "$RUNNER_TEMP/ghostpay-web.zip" | cut -d ' ' -f 1)"
+          node deploy/tor-static/prepare.mjs --archive "$RUNNER_TEMP/ghostpay-web.zip" --expect-sha256 "$archive_sha" --out "$RUNNER_TEMP/tor-static"
+          cp "$RUNNER_TEMP/ghostpay-web.zip.sha256" "$RUNNER_TEMP/tor-evidence/"
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Browser acceptance with external requests blocked
+        run: node scripts/tor/browser-acceptance.mjs "$RUNNER_TEMP/ghostpay-web.zip" "$RUNNER_TEMP/tor-evidence/browser.json"
+      - name: Build patched Tor and verify configuration without bootstrap
+        working-directory: ${{ runner.temp }}/tor-static/container
+        run: |
+          docker compose -f compose.yaml -f tor/compose.tor.yml -f compose.onion.yaml config --format json > "$RUNNER_TEMP/tor-evidence/compose.json"
+          node --input-type=module - "$RUNNER_TEMP/tor-evidence/compose.json" <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const config = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+          assert.deepEqual(Object.keys(config.services).sort(), ['tor', 'web']);
+          for (const service of Object.values(config.services)) assert.equal(service.ports?.length ?? 0, 0);
+          assert.equal(config.networks.site_internal.internal, true);
+          assert.deepEqual(Object.keys(config.services.web.networks), ['site_internal']);
+          assert.equal(config.services.tor.read_only, true);
+          assert(config.services.tor.cap_drop.includes('ALL'));
+          NODE
+          docker compose -f compose.yaml -f tor/compose.tor.yml -f compose.onion.yaml build --pull tor
+          docker compose -f compose.yaml -f tor/compose.tor.yml -f compose.onion.yaml run --rm --no-deps tor --check-runtime
+          docker compose -f compose.yaml -f tor/compose.tor.yml -f compose.onion.yaml up -d --wait web
+          docker compose -f compose.yaml -f tor/compose.tor.yml -f compose.onion.yaml run --rm --no-deps tor --verify-config | tee "$RUNNER_TEMP/tor-evidence/tor-config.txt"
+      - name: Remove runner-only containers and empty identity volume
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/tor-static/container/compose.onion.yaml" ]; then
+            cd "$RUNNER_TEMP/tor-static/container"
+            docker compose -f compose.yaml -f tor/compose.tor.yml -f compose.onion.yaml down --volumes
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: tor-static-evidence
+          path: ${{ runner.temp }}/tor-evidence
+          if-no-files-found: warn
+          retention-days: 14
