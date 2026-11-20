@@ -50,6 +50,7 @@ export function encodeBase64Url(bytes: Uint8Array): string {
  * @testVector base64url-roundtrip
  */
 export function decodeBase64Url(text: string): Uint8Array<ArrayBuffer> {
+  if (typeof text !== 'string') throw new Base64UrlError();
   const len = text.length;
   if (len % 4 === 1) throw new Base64UrlError();
   const out = new Uint8Array(Math.floor((len * 3) / 4));
