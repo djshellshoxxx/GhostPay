@@ -3762,67 +3762,170 @@
     },
     {
       "name": "privacy/hardening-recommendations",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 106,
+        "changed_files_returned": 104,
+        "application_paths_returned": 96
+      }
     },
     {
       "name": "release/ghostpay-beta-qualification-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 426,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 259,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "repair/ghostpay-270-policy-fixture-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 244,
+        "behind_by": 41,
+        "changed_files_returned": 300,
+        "application_paths_returned": 236,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "repair/ghostpay-276-artifact-races-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 41,
+        "changed_files_returned": 5,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "repair/ghostpay-analyzer-recovered-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 327,
+        "behind_by": 39,
+        "changed_files_returned": 300,
+        "application_paths_returned": 243,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "repair/ghostpay-final-lint-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 339,
+        "behind_by": 39,
+        "changed_files_returned": 300,
+        "application_paths_returned": 245,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "repair/ghostpay-history-pool-values-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 85,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "repair/ghostpay-history-scanner-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 87,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "repair/ghostpay-native-fee-recovered-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 319,
+        "behind_by": 39,
+        "changed_files_returned": 300,
+        "application_paths_returned": 245,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "repair/ghostpay-pr-87-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 9,
+        "behind_by": 91,
+        "changed_files_returned": 73,
+        "application_paths_returned": 70
+      }
     },
     {
       "name": "repair/ghostpay-pr-231-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 91,
+        "changed_files_returned": 17,
+        "application_paths_returned": 14
+      }
     },
     {
       "name": "repair/ghostpay-qr-surrogates-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 340,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 245,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "research/privacy-evidence-matrix-20261110",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1595,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "review/ghostpay-sweep-quote-lifecycle-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 11,
+        "behind_by": 41,
+        "changed_files_returned": 19,
+        "application_paths_returned": 15
+      }
     },
     {
       "name": "security/mythril-full-remediation-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 9,
+        "behind_by": 106,
+        "changed_files_returned": 34,
+        "application_paths_returned": 12
+      }
     },
     {
       "name": "snapshot/ghostpay-privacy-8be15289-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 427,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 288,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "work/future-feature-coordination-20261120",
