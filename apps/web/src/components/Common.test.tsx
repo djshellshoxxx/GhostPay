@@ -52,8 +52,8 @@ describe('shared presentation helpers', () => {
   it('protects an explicitly opted-in sensitive copy without changing default copy behavior', async () => {
     vi.useFakeTimers();
     let value = '';
-    const readText = vi.fn(async () => value);
-    const writeText = vi.fn(async (text: string) => { value = text; });
+    const readText = vi.fn(() => Promise.resolve(value));
+    const writeText = vi.fn((text: string) => { value = text; return Promise.resolve(); });
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText, writeText } });
     const { rerender } = render(<CopyButton text="sensitive value" label="Copy secret" autoClearAfterMs={30_000} />);
     fireEvent.click(screen.getByRole('button', { name: 'Copy secret' }));

@@ -5,8 +5,8 @@ afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
 function fakeClipboard(initial = ''): { port: ClipboardPort; value: () => string; overwrite: (next: string) => void; write: ReturnType<typeof vi.fn>; read: ReturnType<typeof vi.fn> } {
   let value = initial;
-  const read = vi.fn(async () => value);
-  const write = vi.fn(async (next: string) => { value = next; });
+  const read = vi.fn(() => Promise.resolve(value));
+  const write = vi.fn((next: string) => { value = next; return Promise.resolve(); });
   return { port: { readText: read, writeText: write }, value: () => value, overwrite: (next) => { value = next; }, write, read };
 }
 
@@ -47,14 +47,14 @@ describe('opt-in clipboard cleanup', () => {
     vi.useFakeTimers();
     let value = 'private';
     let reads = 0;
-    const port: ClipboardPort = {
-      readText: vi.fn(async () => {
+    const port = {
+      readText: vi.fn(() => {
         reads += 1;
-        if (reads === 1) { value = 'newer external text'; return 'private'; }
-        return value;
+        if (reads === 1) { value = 'newer external text'; return Promise.resolve('private'); }
+        return Promise.resolve(value);
       }),
-      writeText: vi.fn(async (_text: string) => { throw new Error('Must not overwrite newer clipboard content'); }),
-    };
+      writeText: vi.fn(() => Promise.reject(new Error('Must not overwrite newer clipboard content'))),
+    } satisfies ClipboardPort;
     recordClipboardCopy('private', port, 30_000);
     await vi.advanceTimersByTimeAsync(30_000);
     expect(reads).toBe(2);
@@ -77,7 +77,7 @@ describe('opt-in clipboard cleanup', () => {
     vi.useFakeTimers();
     let resolveRead: ((value: string) => void) | undefined;
     const readText = vi.fn(() => new Promise<string>((resolve) => { resolveRead = resolve; }));
-    const writeText = vi.fn(async (_value: string) => undefined);
+    const writeText = vi.fn(() => Promise.resolve());
     const port: ClipboardPort = { readText, writeText };
     recordClipboardCopy('older', port, 30_000);
     await vi.advanceTimersByTimeAsync(30_000);
@@ -92,20 +92,20 @@ describe('opt-in clipboard cleanup', () => {
 
   it('fails quietly when clipboard read or clear permissions are denied', async () => {
     vi.useFakeTimers();
-    const readDenied: ClipboardPort = {
-      readText: vi.fn(async () => { throw new Error('permission denied'); }),
-      writeText: vi.fn(async (_value: string) => undefined),
-    };
+    const readDenied = {
+      readText: vi.fn(() => Promise.reject(new Error('permission denied'))),
+      writeText: vi.fn(() => Promise.resolve()),
+    } satisfies ClipboardPort;
     recordClipboardCopy('private', readDenied, 30_000);
     await vi.advanceTimersByTimeAsync(30_000);
     expect(readDenied.writeText).not.toHaveBeenCalled();
 
-    const writeDenied: ClipboardPort = {
-      readText: vi.fn(async () => 'private'),
-      writeText: vi.fn(async (_value: string) => { throw new Error('permission denied'); }),
-    };
+    const writeDenied = {
+      readText: vi.fn(() => Promise.resolve('private')),
+      writeText: vi.fn(() => Promise.reject(new Error('permission denied'))),
+    } satisfies ClipboardPort;
     recordClipboardCopy('private', writeDenied, 30_000);
-    await expect(vi.advanceTimersByTimeAsync(30_000)).resolves.toBeUndefined();
-    expect(writeDenied.writeText).toHaveBeenCalledWith('');
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(writeDenied.writeText).toHaveBeenCalledExactlyOnceWith('');
   });
 });
