@@ -1,6 +1,6 @@
 # Request-file passphrase test completion — 2026-11-20 continuation R3
 
-**The bounded test synchronization change is implemented and locally qualified at `9ca941305028fca0e68f86ca7e3ebe2becee724d`.** It adds nine lines to one test and changes no production behavior. Independent coordinator review and exact published-source hosted qualification remain required.
+**The bounded test synchronization change is implemented and locally qualified at `9ca941305028fca0e68f86ca7e3ebe2becee724d`.** It adds nine lines to one test and changes no production behavior. Independent coordinator source/integrity review is approved in [COORDINATOR_REVIEW.md](COORDINATOR_REVIEW.md); exact published-source hosted qualification remains required.
 
 ## Observed failure and scope
 
