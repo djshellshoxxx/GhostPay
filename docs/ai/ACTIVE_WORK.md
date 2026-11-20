@@ -2052,3 +2052,21 @@ plus AppShell's private-preference update/storage handler. The comparison exclud
 qa_bug_gen1 owns their separate nonsecret storage key/API, and root owns Pay/Registry guard integration.
 Existing raw execution-settings storage, external-setting revocation and network authority checks must remain intact.
 
+
+## Independent privacy quick-hide feature — 2026-11-19 Pacific
+
+Worker: `/root/new_feature_gen1`; branch `feat/ghostpay-privacy-quick-hide-20261120`.
+Frozen dependency: existing masking/history implementation at `8be15289`; this branch is stacked on that recovered local source and is not a replacement for its actively advancing owner branch.
+Owned source: new `apps/web/src/components/PrivacyQuickHide.tsx`, its focused tests, a minimal import/mount in `apps/web/src/AppShell.tsx`, and `apps/web/src/AppShell.quickHide.test.tsx`. Evidence: `docs/engineering-handoffs/privacy-quick-hide-20261120/`.
+Purpose: when privacy mode is already enabled, an explicit Alt+Shift+H shortcut or accessible button revokes all temporary reveals. The action only hides, never reveals or changes privacy preferences, keys, backups, history or payment authority. Plain typing, other shortcuts, composition and prevented events retain their behavior. One listener is mounted with the shell and removed on disable/unmount.
+Acceptance: demonstrate missing shortcut on frozen source; verify global and independent history reveals are revoked, unlock requirements remain, repeated activation cannot reveal, sensitive focus is moved by the existing boundary, underlying draft/session/recovery material remains intact, and unrelated key events are not consumed. Use original test/lint/typecheck settings and provide a fresh-review handoff.
+No edits to existing privacy semantics, Settings, catalogs, clipboard primitives, contracts, fees, network, deployment or release gates; no remote writes. Root explicitly approved this separate feature scope after discovering active ownership of the prior clipboard implementation.
+
+
+## Fresh quick-hide security/code review — generation 2
+
+Worker: /root/security_review_gen2. Branch: review/ghostpay-quick-hide-gen2-20261120.
+Exact feature source: 052ac56c36cf62419941223318d1b6a366954625; frozen privacy dependency: 8be15289.
+Owned writes: this additive claim and docs/engineering-handoffs/security-review-gen2-20261120/ only.
+Acceptance: independently inspect new shortcut source, shell integration and original focused tests for one-way hiding, keyboard/accessibility behavior, focus and listener lifecycle, preserved independent history authority and sole-copy material. Review the separately owned receipt-status repair at its later exact source. Preserve setup failures and distinguish focused execution from full/browser qualification.
+No source-branch mutations, remote writes, contract/fee/deployment/release changes or security gate weakening.

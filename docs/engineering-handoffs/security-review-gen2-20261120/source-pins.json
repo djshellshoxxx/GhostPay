@@ -1,0 +1,35 @@
+{
+  "source": "052ac56c36cf62419941223318d1b6a366954625",
+  "base": "8be152897a717447e33642c99a976cdbb76b709f",
+  "feature_final_documentation_head": "675c946fc01119c8b6f4f4cd965082567303a1ea",
+  "files": {
+    "apps/web/src/components/PrivacyQuickHide.tsx": {
+      "git_blob": "7e855836d25e8e70ed17430161efd12116794d52",
+      "sha256": "be3d365c37806aa59a3a91e2427a4b5e30626ec0fe8d7f9e48b3f05b8f82ea93"
+    },
+    "apps/web/src/components/PrivacyQuickHide.test.tsx": {
+      "git_blob": "abc4394869cf13217141dcf64d98d8edefb5dabd",
+      "sha256": "28d964c298a137bc336ea86e80f5e394ec034f5230bd0509d35c8187649ea49c"
+    },
+    "apps/web/src/AppShell.tsx": {
+      "git_blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+      "sha256": "956b71b282cadd2c9186e0b32e5842a7519d75829ed7c6353351ede803ffe47e"
+    },
+    "apps/web/src/AppShell.quickHide.test.tsx": {
+      "git_blob": "e524497cf602d5c08fbd15f11b7b5fd35f9e73a5",
+      "sha256": "b0e79a49d8387e378569d7b450d1f353ada5faf06c7903c322e8232b5bf3c281"
+    },
+    "apps/web/src/lib/privacyMode.tsx": {
+      "git_blob": "1ab179b7a39c6e5c4f54fb114d21e70f83f6effa",
+      "sha256": "6c0a7823bf35e46d142397e72cada021e8ee7a3617e14919e9403961c8d44bf8"
+    },
+    "apps/web/src/components/SensitiveContent.tsx": {
+      "git_blob": "e4b64ba4f3312c3392e2498ca5c6b306fd0871d5",
+      "sha256": "e57e22af4c1b133e845c0146159517579abba4f369087701072062b4fb94d1ab"
+    },
+    "apps/web/src/components/PrivateHistory.tsx": {
+      "git_blob": "1919f8a37f42fe5994450713c86c8f3fc276fb35",
+      "sha256": "01892a36db80a6abea491e64968b0505a0f0dbfb5a94ae02deb80f1df589c7b5"
+    }
+  }
+}
