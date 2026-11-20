@@ -68,6 +68,12 @@ describe('GP-BUG-11: bind ERC-20 evidence to the requested log filter', () => {
     expect(result.balanceEstimate).toBe(6n);
   });
 
+  it('discards conflicting rows that claim the same block hash and log index', async () => {
+    const accepted = row(A1, STEALTH, 20n);
+    const contradictory = row(A1, STEALTH, 999n);
+    await expect(addressFreeReceipt(rpcWith(accepted, contradictory), receipt)).resolves.toBe('absent');
+  });
+
   it('refuses receipt evidence without a usable log index or block identity', async () => {
     const logRow = row(A1, STEALTH, 20n);
     const missingIndex = { ...logRow };
