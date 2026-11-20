@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Assembler, DEFAULT_ASSEMBLY_MAX_AGE_MS, QrExchangeError, encodeMultipart } from './index.js';
+import { Assembler, DEFAULT_ASSEMBLY_MAX_AGE_MS, QrExchangeError, crc32Ascii, encodeMultipart, parseChunk } from './index.js';
 
 const payload = (n: number): Uint8Array => Uint8Array.from({ length: n }, (_, i) => (i * 31 + 7) & 0xff);
 
@@ -66,6 +66,65 @@ describe('Assembler idle expiry', () => {
     expect(a.missing()).toEqual([]);
     const r = a.add(chunks[1]!);
     expect(r.received).toBe(1);
+  });
+
+  it('keeps the original idle deadline after rejecting a CRC-valid conflicting chunk', () => {
+    let t = 0;
+    const a = new Assembler({ now: () => t, maxAgeMs: 100 });
+    const expected = payload(500);
+    const chunks = encodeMultipart(expected, { chunkChars: 400 });
+    expect(chunks).toHaveLength(2);
+    const first = parseChunk(chunks[0]);
+    const body = `${first.data[0] === 'A' ? 'B' : 'A'}${first.data.slice(1)}`;
+    const crc = crc32Ascii(`${first.session}/0/${String(first.total)}/${body}`).toString(16).padStart(8, '0');
+    const conflicting = `GPQ1/${first.session}/0/${String(first.total)}/${crc}/${body}`;
+    expect(parseChunk(conflicting).data).toBe(body);
+
+    a.add(chunks[0]!);
+    const session = a.session;
+    const missing = a.missing();
+    t = 90;
+    expect(() => a.add(conflicting)).toThrowError(expect.objectContaining({ code: 'CHUNK_CONFLICT' }));
+    expect(a.session).toBe(session);
+    expect(a.missing()).toEqual(missing);
+
+    t = 101;
+    expect(() => a.add(chunks[1]!)).toThrowError(expect.objectContaining({ code: 'SESSION_EXPIRED' }));
+    expect(a.session).toBeNull();
+    expect(a.missing()).toEqual([]);
+    expect(a.add(chunks[1]!).received).toBe(1);
+    expect(a.add(chunks[0]!)).toMatchObject({ complete: true, payload: expected });
+  });
+
+  it.each([
+    ['another session', 'SESSION_MISMATCH', () => encodeMultipart(payload(501), { chunkChars: 400 })[0]!],
+    ['another total', 'SESSION_MISMATCH', () => encodeMultipart(payload(500), { chunkChars: 200 })[0]!],
+    ['an invalid checksum', 'BAD_CHUNK', (chunks: string[]) => `${chunks[0]!}A`],
+    ['malformed text', 'BAD_CHUNK', () => 'not a QR chunk'],
+  ] as const)('does not refresh the idle deadline after rejecting %s', (_label, errorCode, rejectedChunk) => {
+    let t = 0;
+    const a = new Assembler({ now: () => t, maxAgeMs: 100 });
+    const chunks = encodeMultipart(payload(500), { chunkChars: 400 });
+    a.add(chunks[0]!);
+    t = 90;
+    expect(() => a.add(rejectedChunk(chunks))).toThrowError(expect.objectContaining({ code: errorCode }));
+    t = 101;
+    expect(() => a.add(chunks[1]!)).toThrowError(expect.objectContaining({ code: 'SESSION_EXPIRED' }));
+    expect(a.session).toBeNull();
+    expect(a.missing()).toEqual([]);
+  });
+
+  it('refreshes the idle deadline for an accepted duplicate and accepts the exact deadline', () => {
+    let t = 0;
+    const a = new Assembler({ now: () => t, maxAgeMs: 100 });
+    const expected = payload(500);
+    const chunks = encodeMultipart(expected, { chunkChars: 400 });
+    a.add(chunks[0]!);
+    t = 90;
+    expect(a.add(chunks[0]!)).toMatchObject({ complete: false, received: 1, total: 2 });
+    expect(a.missing()).toEqual([1]);
+    t = 190;
+    expect(a.add(chunks[1]!)).toMatchObject({ complete: true, payload: expected });
   });
 
   it('never expires a completed transfer and rejects invalid options', () => {

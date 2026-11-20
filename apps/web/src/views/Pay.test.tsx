@@ -55,7 +55,7 @@ function chainSeeing(wallet: MockWallet) {
       const s = wallet.sent;
       return s === undefined ? null : { hash: params[0], from: s['from'], to: s['to'], input: s['data'], value: s['value'], chainId: '0x14a34' };
     }
-    if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+    if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
     if (method === 'eth_gasPrice') return '0x3b9aca00';
     // Base Sepolia is OP Stack: its GasPriceOracle prices no L1 data or operator fee here.
     if (method === 'eth_call' && (params[0] as { to?: unknown }).to === '0x420000000000000000000000000000000000000F') return `0x${'0'.repeat(64)}`;
@@ -590,9 +590,9 @@ describe('Pay: sending', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet();
     // The RPC has a receipt for the hash but never returns the transaction itself.
-    const rpc = mockRpc(84532, (method) => {
+    const rpc = mockRpc(84532, (method, params) => {
       if (method === 'eth_getTransactionByHash') return null;
-      if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      if (method === 'eth_getTransactionReceipt') return { transactionHash: params[0], status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
       if (method === 'eth_gasPrice') return '0x3b9aca00';
       throw new Error(`unexpected ${method}`);
     });

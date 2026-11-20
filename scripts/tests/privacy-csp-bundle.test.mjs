@@ -127,7 +127,8 @@ for (const [name, transform] of [
   ['body policy', (tag) => `</head><body>${tag}`],
   ['duplicate policies', (tag) => `${tag}${tag}`],
   ['late duplicate policy', (tag) => `${tag}<script src="./early.js"></script>${meta(BROAD)}`],
-  ['duplicate content after valid policy', (tag) => tag.replace('>', ' content="connect-src *">')],
+  // Add a duplicate attribute to the single fixture meta tag, whose final character is its closing bracket.
+  ['duplicate content after valid policy', (tag) => `${tag.slice(0, -1)} content="connect-src *">`],
   ['duplicate content before valid policy', (tag) => tag.replace(' content=', ' content="connect-src *" content=')],
   ['duplicate http-equiv', (tag) => tag.replace(' http-equiv=', ' http-equiv="x" http-equiv=')],
 ]) {

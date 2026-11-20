@@ -1,0 +1,92 @@
+{
+  "node": "v22.23.4",
+  "verifierSha256": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67",
+  "sourceCommit": "a7ceff94269cddfbc725677dd03737d96a449039",
+  "tests": 12,
+  "passed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "case": "intact exact-source hosted artifact",
+      "expectedExit": 0,
+      "observedExit": 0,
+      "stdout": "Pages artifact verified: 16 files match trusted SHA256SUMS.",
+      "stderr": "(node:52) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    {
+      "case": "different SHA even with equivalent tree",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:60) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - build-info.json: unexpected source commit"
+    },
+    {
+      "case": "changed application bytes",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:68) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - index.html: SHA-256 mismatch"
+    },
+    {
+      "case": "extra executable file",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:76) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - unexpected.js: unlisted artifact file"
+    },
+    {
+      "case": "missing required file",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:84) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - .nojekyll: required Pages file missing\n - .nojekyll: listed file missing or unsafe"
+    },
+    {
+      "case": "matching bytes through symlink",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:92) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - index.html: symlink refused\n - index.html: required Pages file missing\n - index.html: listed file missing or unsafe\n - index.html: symlink refused"
+    },
+    {
+      "case": "duplicate manifest record",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:100) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - .nojekyll: duplicate SHA256SUMS record\n - SHA256SUMS entries must be uniquely sorted"
+    },
+    {
+      "case": "unsafe manifest traversal",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:108) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - SHA256SUMS has an invalid or unsafe record"
+    },
+    {
+      "case": "ambiguous CRLF manifest",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:116) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - SHA256SUMS requires canonical LF-terminated lines\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - SHA256SUMS has an invalid or unsafe record\n - .nojekyll: unlisted artifact file\n - assets/ar-DUvT08cM.js: unlisted artifact file\n - assets/es-C9FxJnQQ.js: unlisted artifact file\n - assets/index-viEpJ1Ye.js: unlisted artifact file\n - assets/ja-CwSzae9l.js: unlisted artifact file\n - assets/jsQR-DMfxOdIb.js: unlisted artifact file\n - assets/rolldown-runtime-XKyaHtl9.js: unlisted artifact file\n - assets/scanner.worker-CAQQ64R_.js: unlisted artifact file\n - assets/style-sbKVpGL7.css: unlisted artifact file\n - build-info.json: unlisted artifact file\n - favicon.svg: unlisted artifact file\n - help.css: unlisted artifact file\n - help.html: unlisted artifact file\n - index.html: unlisted artifact file\n - pages-mirror.css: unlisted artifact file\n - privacy.html: unlisted artifact file"
+    },
+    {
+      "case": "manifest symlink",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:124) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - SHA256SUMS must be a regular file"
+    },
+    {
+      "case": "invalid full commit argument",
+      "expectedExit": 1,
+      "observedExit": 1,
+      "stdout": "",
+      "stderr": "(node:132) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)\n - expected commit must be a full 40-hex SHA"
+    },
+    {
+      "case": "CLI usage",
+      "observedExit": 2,
+      "expectedExit": 2
+    }
+  ]
+}

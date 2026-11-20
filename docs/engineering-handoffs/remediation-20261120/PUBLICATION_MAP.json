@@ -1,0 +1,132 @@
+{
+  "format": "ghostpay-reviewed-object-publication-map/1",
+  "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "local_checkpoint": "142b58a5715bd927a8f26076f54deaed46486c89",
+  "reconstructed_checkpoint": "6c945e77c830d4998b02815dccb06288246c099f",
+  "frozen_local_source": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+  "frozen_remote_source": "e1658b1d3c4d50f42eaacd2bd7bb67bde79ce9f2",
+  "method": "GitHub authenticated connector; exact blob/tree hashes and mapped ordered parents. Local author/commit provenance retained in trailers. Ref publication is verified separately.",
+  "entries": [
+    {
+      "local": "8e2ba880a6d39e4a56dfaa7506de6117a5ab32c9",
+      "remote": "ff2d10da9691b5dfcfcbeee509c46ebafe81f312",
+      "tree": "80aa633214587e255047f8d2ce0d94ce6e130e15"
+    },
+    {
+      "local": "48fd207526cf6611cef272a49ebef038edb77155",
+      "remote": "5e73da1ac97bc7b4fff8e1f68463e9787c0b5cac",
+      "tree": "e3999b052b1554e19a84878216b6af98f232892a",
+      "parents": [
+        "ff2d10da9691b5dfcfcbeee509c46ebafe81f312"
+      ]
+    },
+    {
+      "local": "308dcbb2d40793514ea303a898282578dc17342d",
+      "remote": "94c01cac36d97e2d83ab763bf7b7a5d742217f38",
+      "tree": "0f1206f7f3f001cfd2d64f21535c164dbe31091f",
+      "parents": [
+        "5e73da1ac97bc7b4fff8e1f68463e9787c0b5cac"
+      ]
+    },
+    {
+      "local": "ed941fb102d54ee9bcda673e1d5b79ec98e042aa",
+      "remote": "e6339cdc94e6fd747fcd201192fa5823706d7e8b",
+      "tree": "35b3e9abdd5dae346f720ed6180ca2c312bac46c",
+      "parents": [
+        "d74af79ebabdc8cead843361c3497b46d8c421f9"
+      ]
+    },
+    {
+      "local": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "remote": "e250143f3c4263b9584e66acde64985a17222419",
+      "tree": "9743b8e98516bc9e0415333e1c80cbcde1ed5cd2",
+      "parents": [
+        "e6339cdc94e6fd747fcd201192fa5823706d7e8b"
+      ]
+    },
+    {
+      "local": "e434ef654067a7a328c25836fc0b1285c9f289f4",
+      "remote": "159f46abb73221b65fbcc816e2ed571165b8c086",
+      "tree": "86b48f5f64b2cedadedd8aa695e79c6e58941a5b",
+      "parents": [
+        "e250143f3c4263b9584e66acde64985a17222419"
+      ]
+    },
+    {
+      "local": "97d65368206e3af52d2b876215e22eb094e33575",
+      "remote": "fcc07e6d9a74cc8e63b709c9e44f1dba4eff3711",
+      "tree": "2af2af96ad2f1d2ddef3fd00d66f362c2be1fbed",
+      "parents": [
+        "94c01cac36d97e2d83ab763bf7b7a5d742217f38",
+        "159f46abb73221b65fbcc816e2ed571165b8c086"
+      ]
+    },
+    {
+      "local": "3814ad2efffc6588f1c176a39b1090033f2f3537",
+      "remote": "d298547e9ca4d41ba4690b76f7f1dab95b84216b",
+      "tree": "61ecb48d7d0e88dcdf05bfd29643030648079006",
+      "parents": [
+        "d74af79ebabdc8cead843361c3497b46d8c421f9"
+      ]
+    },
+    {
+      "local": "12fc6c716e7d07f0a5e2fd51f9ca6684f38eef03",
+      "remote": "9e9a74acd20669aa9401a1f6c4118bd76d2c032a",
+      "tree": "d44c5f4c4b96ea95188d1c7661245b980a7efcab",
+      "parents": [
+        "fcc07e6d9a74cc8e63b709c9e44f1dba4eff3711",
+        "d298547e9ca4d41ba4690b76f7f1dab95b84216b"
+      ]
+    },
+    {
+      "local": "715e1e071da73862052ccea979840e74bc01e369",
+      "remote": "7225534ce86f40a66c1acd5f1b74789ed7667171",
+      "tree": "6f77022c8946d96b2b0315da6bcff6f48b68aa65",
+      "parents": [
+        "d74af79ebabdc8cead843361c3497b46d8c421f9"
+      ]
+    },
+    {
+      "local": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+      "remote": "e1658b1d3c4d50f42eaacd2bd7bb67bde79ce9f2",
+      "tree": "80fd34834ccdbc81bf8f5fc63ba76edb52905ef1",
+      "parents": [
+        "9e9a74acd20669aa9401a1f6c4118bd76d2c032a",
+        "7225534ce86f40a66c1acd5f1b74789ed7667171"
+      ]
+    },
+    {
+      "local": "34a4347de648685d60b84cdea8c5d99aaebfd172",
+      "remote": "8b4bc8362a354ad604fc0ab00622c03b6e178d7e",
+      "tree": "d39359e85411443698fb41f9e10f967adc136850",
+      "parents": [
+        "d298547e9ca4d41ba4690b76f7f1dab95b84216b"
+      ]
+    },
+    {
+      "local": "0db5d3604b7fb99167750dbfbaab12f382b7d36f",
+      "remote": "6abc36051218c539b3b1f9015ec247f0164f87d2",
+      "tree": "bc506f2544f2eaa9f94ddf3808bafdb3cfbd6b73",
+      "parents": [
+        "8b4bc8362a354ad604fc0ab00622c03b6e178d7e"
+      ]
+    },
+    {
+      "local": "6d7ef6fa62c1df48753f51aeea41b47f92af0472",
+      "remote": "fa34d31fa89fbf64328086f3a47f4e1d9561dab5",
+      "tree": "55c8317c5ec092205f2bf8e302974b2f44f68353",
+      "parents": [
+        "e1658b1d3c4d50f42eaacd2bd7bb67bde79ce9f2",
+        "6abc36051218c539b3b1f9015ec247f0164f87d2"
+      ]
+    },
+    {
+      "local": "142b58a5715bd927a8f26076f54deaed46486c89",
+      "remote": "6c945e77c830d4998b02815dccb06288246c099f",
+      "tree": "5416bd05e76bcc2989a68966f4849ccccde601d2",
+      "parents": [
+        "fa34d31fa89fbf64328086f3a47f4e1d9561dab5"
+      ]
+    }
+  ]
+}
