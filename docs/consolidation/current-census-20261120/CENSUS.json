@@ -2773,19 +2773,45 @@
     },
     {
       "name": "evidence/ghostpay-completion-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 471,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 267,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "evidence/ghostpay-remediation-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 445,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 260,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "evidence/ghostpay-tron-qualification-r2-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 0,
+        "changed_files_returned": 6,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "evidence/ghostpay-web-qualification-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 69,
+        "behind_by": 0,
+        "changed_files_returned": 195,
+        "application_paths_returned": 77
+      }
     },
     {
       "name": "feat/ghostpay-privacy-quick-hide-20261120",
@@ -2842,27 +2868,66 @@
     },
     {
       "name": "fix/ghostpay-backup-completion-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 10,
+        "behind_by": 32,
+        "changed_files_returned": 5,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "fix/ghostpay-cloud-api-secret-aliases-20261103",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 1604,
+        "changed_files_returned": 1,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "fix/ghostpay-format-validation-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 477,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 269,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "fix/ghostpay-pages-integrity-gate-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 443,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 260,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 398,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 258,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "fix/ghostpay-reconciliation-saturated-state-20261109",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1069,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "fix/ghostpay-tor-qualification-20261120",
@@ -2876,15 +2941,33 @@
     },
     {
       "name": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 0,
+        "changed_files_returned": 3,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "fix/remediation-b16c7936-5ce634",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 1272,
+        "changed_files_returned": 1,
+        "application_paths_returned": 1
+      }
     },
     {
       "name": "fix/remediation-f95457fd-22ecf9",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 1269,
+        "changed_files_returned": 2,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "future/f01-ghosttips",
@@ -3302,15 +3385,33 @@
     },
     {
       "name": "ghostpay-cloud-recovery-2026-10-26",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 12,
+        "behind_by": 1608,
+        "changed_files_returned": 173,
+        "application_paths_returned": 158
+      }
     },
     {
       "name": "ghostpay-local-lean-boundary-20261027",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 18,
+        "behind_by": 1608,
+        "changed_files_returned": 187,
+        "application_paths_returned": 167
+      }
     },
     {
       "name": "ghostpay-offline-deps-2026-10-27",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 13,
+        "behind_by": 1608,
+        "changed_files_returned": 178,
+        "application_paths_returned": 158
+      }
     },
     {
       "name": "ghostpay-sbom-repro-2026-10-27",
