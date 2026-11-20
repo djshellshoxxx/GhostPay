@@ -3,6 +3,7 @@ import * as invoices from '@ghostpay/invoice-schema';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../lib/appLock';
 import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import { ServicesContext } from '../lib/services';
@@ -165,6 +166,48 @@ describe('Pay request-file intake', () => {
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
     expect(discoverWallets).not.toHaveBeenCalled();
     expect(createRpc).not.toHaveBeenCalled();
+  });
+
+  it.each(['absent', 'retained'] as const)('invalidates a pending file read on app lock (seller session=%s)', async (sessionState) => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    if (sessionState === 'absent') clearSession();
+    const session = getSessionPublic();
+    const read = deferred<ArrayBuffer>();
+    const { discoverWallets, createRpc, loadManifest, fetchFn } = await openInput();
+    selectFile(requestFile(fragment, () => read.promise));
+
+    // Idle locking does not clear an absent session or the sole copy of generated seller keys.
+    act(() => { notifyAppLock('idle'); });
+    expect(getSessionPublic()).toBe(session);
+    await act(async () => { read.resolve(bytes(invoices.serializePaymentRequestFile(fragment))); await read.promise; });
+
+    expect(screen.queryByRole('button', { name: 'Open request file', hidden: true })).toBeNull();
+    expect(screen.queryByText('Request file is ready for review.')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+    expect(discoverWallets).not.toHaveBeenCalled();
+    expect(createRpc).not.toHaveBeenCalled();
+    expect(loadManifest).not.toHaveBeenCalled();
+    expect(fetchFn).not.toHaveBeenCalled();
+  });
+
+  it.each(['absent', 'retained'] as const)('invalidates a staged file preview on app lock (seller session=%s)', async (sessionState) => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    if (sessionState === 'absent') clearSession();
+    const session = getSessionPublic();
+    const { discoverWallets, createRpc, loadManifest, fetchFn } = await openInput();
+    selectFile(requestFile(fragment));
+    const open = await screen.findByRole('button', { name: 'Open request file' });
+
+    act(() => { notifyAppLock('idle'); });
+    expect(getSessionPublic()).toBe(session);
+    expect(screen.queryByRole('button', { name: 'Open request file', hidden: true })).toBeNull();
+    expect(screen.queryByText('Request file is ready for review.')).toBeNull();
+    fireEvent.click(open);
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+    expect(discoverWallets).not.toHaveBeenCalled();
+    expect(createRpc).not.toHaveBeenCalled();
+    expect(loadManifest).not.toHaveBeenCalled();
+    expect(fetchFn).not.toHaveBeenCalled();
   });
 
   it('discards a pending file when pinned signer policy changes without unmounting Pay', async () => {
