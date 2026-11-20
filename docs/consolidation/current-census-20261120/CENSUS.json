@@ -1,0 +1,2063 @@
+{
+  "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "captured_date": "2026-11-20",
+  "pages": 5,
+  "total": 391,
+  "prefix": {
+    "ai": 1,
+    "audit": 7,
+    "automation": 36,
+    "backup": 3,
+    "chatgpt": 98,
+    "checkpoint": 2,
+    "claude": 73,
+    "codex": 38,
+    "consolidation": 2,
+    "dependabot": 3,
+    "docs": 8,
+    "evidence": 4,
+    "feat": 2,
+    "feature": 3,
+    "fix": 10,
+    "future": 41,
+    "gh-pages": 1,
+    "ghostpay-cloud-recovery-2026-10-26": 1,
+    "ghostpay-local-lean-boundary-20261027": 1,
+    "ghostpay-offline-deps-2026-10-27": 1,
+    "ghostpay-sbom-repro-2026-10-27": 1,
+    "gpt": 3,
+    "haiku": 4,
+    "integration": 18,
+    "main": 1,
+    "maintenance": 1,
+    "nodata": 6,
+    "privacy": 1,
+    "release": 1,
+    "repair": 10,
+    "research": 1,
+    "review": 1,
+    "security": 1,
+    "snapshot": 1,
+    "work": 6
+  },
+  "comparison_notes": "All 389 branches enumerated. Reported ahead/behind values are GitHub compare results for reviewed subset only. Nonzero ahead does not prove unique recoverable behavior. Application path count excludes workflows, config and docs. GitHub compare file listing can be truncated at 300. Uncompared names must not be treated as redundant.",
+  "branches": [
+    {
+      "name": "ai/agent-harness-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/bugcheck-core-latest-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/f03-browser-qualification-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/ghostpay-blue-team-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/ghostpay-core-latest-security-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/ghostpay-current-census-20261120-r2",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/ghostpay-qa-stress-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "audit/zero-cool-core-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/api-funded-ghostpay-cloud-20261103",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/ghostpay-integration-lock",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/ghostpay-parallel-four-agents-20261103",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/ghostpay-parallel-review-wave-20261103",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/ghostpay-recurrent-backlog-20261103",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119-c977/bug/build-profile-failclosed",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T073600Z/bug/camera-visibility",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T073600Z/coordinator/integration-lock",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T083600Z/audit/merchant-clock",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T083600Z/bug/json-canonical-array",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0035Z/worker/qr-kind-primitives",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0243Z/worker/format-units-validation",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T1241Z/bug/receipt-print-css",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T1635Z/bug/tron-scan-abort",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 0,
+        "changed_files_returned": 4,
+        "application_paths_returned": 2
+      }
+    },
+    {
+      "name": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T003500Z/coordinator/qualification-evidence",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "automation/20261120T004531Z/feature/clipboard-guard",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "backup/codex-observed-pr37-915d710-20261028",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "backup/pr30-before-consolidation-20261025",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "backup/pr31-before-consolidation-20261025",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/btc-spent-private-scan-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/btc-spent-qualification-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/btc-spentness-private-scan-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/consolidation-reconciliation-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 102,
+        "changed_files_returned": 62,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-beta-qualification-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-billing-horizon-port-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 460,
+        "changed_files_returned": 7,
+        "application_paths_returned": 7
+      }
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-integration-matrix-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-invoice-validation-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-merchant-csv-port-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-onion-canonical-port-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-own-node-guard-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-recovery-review-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-remaining-work-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-sonar-review-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-tm-hardening-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-top-down-audit-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-clock-port-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-ux-guide-port-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/ghostpay-viem-alignment-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/pages-browser-fixes-combined-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/pages-release-gate-audit-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/spec18-recovery-completion-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/docs-wiki-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/qualify-98-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "chatgpt/zero-codex-continuation-spec-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "checkpoint/ghostpay-recovery-20261102",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/admiring-albattani-6kydor",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/adoring-wozniak-850ue6",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-a0-pr47-green",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-a4-btc-headersync",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-a5-announcer-budget",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-a6-combined-backup",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-a7-policy-send-guard",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-b1-core-journey",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-b2-lean-bound-receipts",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-b3-sweep-permit-states",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-b5-testnet-feeds",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c1-reconciliation-adr",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c2-qr-pairing",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c4-i18n-pay",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c4-i18n-scan",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c5-device-matrix",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ar-c7-embed-iframe-e2e",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/consolidation-2026-11-04",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cool-albattani-xopr89",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-c2",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-c4",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-c5",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w1",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w5",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w6",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w7",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w8",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w9",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w10",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/cw-w11",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/docs-screenshots",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/docs-snapshot-1",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/docs-snapshot-2",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/exciting-brown-7v69cr",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/friendly-turing-1ui0on",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/gallant-hamilton-4wzkyn",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-autonomous-prompt-scpgun",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-completion-audit-ot5jjm",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-security",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-github-pages-up6cj6",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/gifted-planck-115x2k",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/gracious-heisenberg-97ji6q",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/haiku-wave-2-handoff-qepfoe",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/happy-maxwell-onl4x5",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/hopeful-bardeen-8ch6l8",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/inspiring-fermat-vxv689",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/kind-faraday-8qzf6e",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/laughing-bardeen-4t20ys",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/lucid-meitner-apalzc",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/nice-ritchie-8vivls",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/pages-site-1",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/portable-hosting-kit",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-1",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-2",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-3",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-4",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-5",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-6",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-7",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-8",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-9",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/remote-extensions-10",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/sharp-bohr-uigfgh",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/vibrant-cori-scu18b",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/vigilant-johnson-yjgq94",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/wizardly-babbage-mfsdrl",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "claude/wonderful-thompson-ir89i9",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-approval-gated-auto-integration-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-browser-isolation-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-canonical-time-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-caveman-completion-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-caveman-followup-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-cloud-41868394956",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-companion-merchant-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-completion-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-20261030",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-audit-20261104",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-followthrough-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-consolidation-records-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-continuation-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-export-authorization-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-feature-consolidation-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-hosting-timestamp-main-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-integrate-product-cli-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-mythril-recovery-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-observability-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-ops-response-cap-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-policy-localization-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-private-scan-lint-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-product-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-registry-recovery-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-research-documentation-ux-41750257638",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-research-release-qualification-41750257638",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-research-security-review-41750257638",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-resume-20261028",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-security-audit-20261030",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-spec09-matrix-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/ghostpay-unified-completion",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/network-isolation-complete-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/recovery-spec02-unqualified-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/seller-ledger-receipt-qr",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "codex/setup-autonomous-agent-20261104",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "consolidation/ops-monitor-bounded-streams-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "consolidation/six-verified-boundaries-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "dependabot/github_actions/actions-b9ade1236b",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/future-privacy-feature-specs-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/ghostpay-core-readonly-audit-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/ghostpay-deep-research-20261103",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/ghostpay-future-module-specs-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/lean-release-handoff-2026-10-24",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "docs/readme-and-wiki",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "evidence/ghostpay-completion-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "evidence/ghostpay-remediation-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "evidence/ghostpay-tron-qualification-r2-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "evidence/ghostpay-web-qualification-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "feat/ghostpay-privacy-quick-hide-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 428,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 291,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "feat/ghostpay-tor-completion-20261119",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 32,
+        "changed_files_returned": 38,
+        "application_paths_returned": 2
+      }
+    },
+    {
+      "name": "feature/ghostpay-invoice-file-completion-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 8,
+        "behind_by": 32,
+        "changed_files_returned": 87,
+        "application_paths_returned": 20
+      }
+    },
+    {
+      "name": "feature/ghostpay-retention-completion-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 445,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 291,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "feature/ghostpay-retention-focus-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 451,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 291,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "fix/ghostpay-backup-completion-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/ghostpay-format-validation-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/ghostpay-pages-integrity-gate-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/ghostpay-reconciliation-saturated-state-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/ghostpay-tor-qualification-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 0,
+        "changed_files_returned": 39,
+        "application_paths_returned": 2
+      }
+    },
+    {
+      "name": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/remediation-b16c7936-5ce634",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "fix/remediation-f95457fd-22ecf9",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "future/f01-ghosttips",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f02-ghoststore",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f03-private-payment-links",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 9,
+        "behind_by": 0,
+        "changed_files_returned": 122,
+        "application_paths_returned": 20
+      }
+    },
+    {
+      "name": "future/f03-private-payment-links-spec",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f04-merchant-dashboard",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 15,
+        "behind_by": 0,
+        "changed_files_returned": 23,
+        "application_paths_returned": 5
+      }
+    },
+    {
+      "name": "future/f05-ghostproof",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 14,
+        "behind_by": 0,
+        "changed_files_returned": 30,
+        "application_paths_returned": 7
+      }
+    },
+    {
+      "name": "future/f06-encrypted-backups",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f07-ghostpayouts",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f08-ghostid",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f09-ghostpos",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f10-private-recurring",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 13,
+        "behind_by": 0,
+        "changed_files_returned": 27,
+        "application_paths_returned": 7
+      }
+    },
+    {
+      "name": "future/f11-ghostteams",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f12-ghostbridge",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f13-fiat-conversion",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f14-multichain-routing",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f15-private-rpc",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f16-per-client-identities",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f17-private-funds",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/f18-privacy-modes",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/fee01-modular-fee-policy",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p01-tor-onion-hosting",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p02-rpc-policy",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p03-local-stealth-scanning",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p04-encrypted-offline-invoices",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p05-encrypted-local-state",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p06-key-role-separation",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p07-encrypted-device-sync",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p08-linkability-analysis",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p09-noncustodial-gas-services",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p10-private-submission",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p11-metadata-timing-policy",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p12-selective-disclosure-proofs",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p13-confidential-amounts",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p14-shielded-payments",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p15-anonymous-withdrawals",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p16-shielded-cross-chain",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p17-private-fee-outputs",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p18-telemetry-release-integrity",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/p19-optional-fee-gateway",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/t01-staggered-transfers",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "future/t02-intermediary-routing",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 39,
+        "changed_files_returned": 6,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "gh-pages",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "ghostpay-cloud-recovery-2026-10-26",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "ghostpay-local-lean-boundary-20261027",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "ghostpay-offline-deps-2026-10-27",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "ghostpay-sbom-repro-2026-10-27",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "gpt/ghostpay-beta-spec-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "gpt/ghostpay-cli-completion-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "gpt/ghostpay-product-completion-20261109",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "haiku/ghostpay-h01-inventory-20261111",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "haiku/l1-i18n-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "haiku/l2-pkg-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "haiku/l3-ledger-20261114",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "integration/consolidated-2026-10-21",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1659,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/consolidated-2026-11-14",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 460,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-accepted-20261102",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1276,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-adapter-qualification-20261119",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 41,
+        "changed_files_returned": 13,
+        "application_paths_returned": 9
+      }
+    },
+    {
+      "name": "integration/ghostpay-beta-consolidated-20261109",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1016,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-completion-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 470,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 267,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "integration/ghostpay-docs-recovery-20261119",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 30,
+        "behind_by": 62,
+        "changed_files_returned": 20,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-historical-promotion-20261118",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 92,
+        "changed_files_returned": 10,
+        "application_paths_returned": 7
+      }
+    },
+    {
+      "name": "integration/ghostpay-historical-security-promotion-20261119",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 74,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-idle-session-completion-20261119",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 59,
+        "changed_files_returned": 23,
+        "application_paths_returned": 17
+      }
+    },
+    {
+      "name": "integration/ghostpay-main-recovered-fixes-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 67,
+        "behind_by": 0,
+        "changed_files_returned": 193,
+        "application_paths_returned": 77
+      }
+    },
+    {
+      "name": "integration/ghostpay-main-unique-code-20261120",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 9,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-master-consolidation-20261118",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 205,
+        "behind_by": 44,
+        "changed_files_returned": 300,
+        "application_paths_returned": 234,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "integration/ghostpay-mythril-security-closure-20261118",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 91,
+        "changed_files_returned": 55,
+        "application_paths_returned": 21
+      }
+    },
+    {
+      "name": "integration/ghostpay-pages-completion-20261118",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 83,
+        "behind_by": 98,
+        "changed_files_returned": 300,
+        "application_paths_returned": 127,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "integration/ghostpay-qualified-fixes-20261118",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 92,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "integration/ghostpay-recovery-reconciled-20261119",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 92,
+        "behind_by": 98,
+        "changed_files_returned": 300,
+        "application_paths_returned": 133,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "integration/ghostpay-sweep-consent-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 84,
+        "behind_by": 0,
+        "changed_files_returned": 211,
+        "application_paths_returned": 89
+      }
+    },
+    {
+      "name": "main",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "maintenance/ghostpay-branch-audit-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "nodata/doc-sweep-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "nodata/eager-babbage-0w6sf6",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "nodata/jolly-rubin-u4zd45",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "nodata/wizardly-allen-qwol6u",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "nodata/wonderful-darwin-kd1h22",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "nodata/zealous-hopper-lr0nxe",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "privacy/hardening-recommendations",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "release/ghostpay-beta-qualification-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-270-policy-fixture-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-276-artifact-races-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-analyzer-recovered-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-final-lint-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-history-pool-values-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-history-scanner-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-native-fee-recovered-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-pr-87-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-pr-231-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "repair/ghostpay-qr-surrogates-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "research/privacy-evidence-matrix-20261110",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "security/mythril-full-remediation-20261118",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "assessment": "comparison_pending"
+    },
+    {
+      "name": "work/future-feature-coordination-20261120",
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 0,
+        "changed_files_returned": 13,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "work/ghostpay-consolidation-review-20261025",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1606,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "work/ghostpay-pr26-qa-2026-10-24",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1623,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    },
+    {
+      "name": "work/ghostpay-required-v1-candidate-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 429,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 291,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "work/ghostpay-required-v11-candidate-20261120",
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 430,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 291,
+        "note": "file listing may be truncated by compare API"
+      }
+    },
+    {
+      "name": "work/local-reconstruction-2026-10-24",
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1632,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
+    }
+  ]
+}
