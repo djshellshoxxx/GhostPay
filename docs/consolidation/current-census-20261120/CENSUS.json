@@ -44,35 +44,83 @@
   "branches": [
     {
       "name": "ai/agent-harness-20261113",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1591,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "audit/bugcheck-core-latest-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 32,
+        "changed_files_returned": 67,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "audit/f03-browser-qualification-20261120",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 11,
+        "behind_by": 32,
+        "changed_files_returned": 107,
+        "application_paths_returned": 20
+      }
     },
     {
       "name": "audit/ghostpay-blue-team-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 39,
+        "changed_files_returned": 77,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "audit/ghostpay-core-latest-security-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 39,
+        "changed_files_returned": 1,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "audit/ghostpay-current-census-20261120-r2",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 0,
+        "changed_files_returned": 2,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "audit/ghostpay-qa-stress-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 39,
+        "changed_files_returned": 27,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "audit/zero-cool-core-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 39,
+        "changed_files_returned": 59,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "automation/api-funded-ghostpay-cloud-20261103",
@@ -226,15 +274,33 @@
     },
     {
       "name": "backup/codex-observed-pr37-915d710-20261028",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1441,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "backup/pr30-before-consolidation-20261025",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1584,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "backup/pr31-before-consolidation-20261025",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1606,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/btc-spent-private-scan-20261118",
@@ -642,11 +708,23 @@
     },
     {
       "name": "checkpoint/ghostpay-recovery-20261102",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1607,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "checkpoint/ghostpay-source-reconciliation-20261101",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 1286,
+        "changed_files_returned": 1,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/admiring-albattani-6kydor",
@@ -1094,11 +1172,23 @@
     },
     {
       "name": "consolidation/ops-monitor-bounded-streams-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1595,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "consolidation/six-verified-boundaries-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1593,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "dependabot/github_actions/actions-b9ade1236b",
