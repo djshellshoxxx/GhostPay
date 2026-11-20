@@ -1,3 +1,14 @@
+# F01 future module specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f01-ghosttips`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; shared docs foundation: `d359d007a924cca64ccc0dbda96da0686b88b9c9`.
+Owned path: `docs/future/modules/F01-ghosttips/SPEC.md` and this additive claim.
+Acceptance: detailed bounded module contract, source reuse, dependencies, failure/recovery,
+privacy/fee boundaries, acceptance cases, planned checks and explicit unresolved decisions;
+remote spec content verified. Documentation only; no implementation, merge, deployment,
+activation or fee decision. Preserve other workers' claims and existing source.
+
 # Future module specifications — 2026-11-19
 
 Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
