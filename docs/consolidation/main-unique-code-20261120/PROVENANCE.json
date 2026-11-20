@@ -1,0 +1,263 @@
+{
+  "initial_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "base_main": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+  "donors": [
+    {
+      "pr": 279,
+      "head": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "source": "https://github.com/djshellshoxxx/GhostPay/pull/279",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "other": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrMultipart.test.ts",
+          "blob": "45992f537d1f226dd20e57d96a246c6f18419395"
+        },
+        {
+          "path": "apps/web/src/lib/qrMultipart.ts",
+          "blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3"
+        },
+        {
+          "path": "docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md",
+          "blob": "fe3c0da8a695d1cabec0faef7e1742a5a297cf69"
+        }
+      ],
+      "ci": [
+        {
+          "name": "typescript",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44527678568/job/135727421850"
+        },
+        {
+          "name": "CodeQL",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/runs/135633186140"
+        },
+        {
+          "name": "e2e (full)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44527678568/job/135618114775"
+        },
+        {
+          "name": "e2e (lean)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44527678568/job/135618114401"
+        },
+        {
+          "name": "Build and verify the Pages site",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44527678666/job/135572461300"
+        }
+      ]
+    },
+    {
+      "pr": 280,
+      "head": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+      "source": "https://github.com/djshellshoxxx/GhostPay/pull/280",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "other": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/buildProfile.test.ts",
+          "blob": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477"
+        },
+        {
+          "path": "apps/web/src/lib/buildProfile.ts",
+          "blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a"
+        },
+        {
+          "path": "docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md",
+          "blob": "250006d79e02bec971dba50c247c077455efd5e8"
+        }
+      ],
+      "ci": [
+        {
+          "name": "typescript",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44547717935/job/135751442874"
+        },
+        {
+          "name": "e2e (full)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44547717935/job/135713270229"
+        },
+        {
+          "name": "e2e (lean)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44547717935/job/135713270177"
+        },
+        {
+          "name": "CodeQL",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/runs/135702225743"
+        },
+        {
+          "name": "Build and verify the Pages site",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44547718047/job/135642704471"
+        }
+      ]
+    },
+    {
+      "pr": 281,
+      "head": "0041514a630398c89693498d9b5e44ef562d9c61",
+      "source": "https://github.com/djshellshoxxx/GhostPay/pull/281",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "other": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+          "blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61"
+        },
+        {
+          "path": "docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md",
+          "blob": "07ab7a5be99c0eae79510ab4fea10edd1c6f7a21"
+        }
+      ],
+      "ci": [
+        {
+          "name": "typescript",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44569415602/job/135749466844"
+        },
+        {
+          "name": "e2e (full)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44569415602/job/135734049241"
+        },
+        {
+          "name": "e2e (lean)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44569415602/job/135734048404"
+        },
+        {
+          "name": "CodeQL",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/runs/135731325682"
+        },
+        {
+          "name": "Build and verify the Pages site",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44569415501/job/135720059691"
+        }
+      ]
+    },
+    {
+      "pr": 282,
+      "head": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+      "source": "https://github.com/djshellshoxxx/GhostPay/pull/282",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "other": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/merchantIdentity.test.ts",
+          "blob": "957027808890f366f337c375e52b5c081206dae7"
+        },
+        {
+          "path": "apps/web/src/lib/merchantIdentity.ts",
+          "blob": "183a8fbc588cb1c66e5ec480e572849b803761db"
+        },
+        {
+          "path": "docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md",
+          "blob": "7f23de46f6c1b747e749f0955dcdce62b54dca4d"
+        }
+      ],
+      "ci": [
+        {
+          "name": "typescript",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44590644787/job/135804826247"
+        },
+        {
+          "name": "CodeQL",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/runs/135795700594"
+        },
+        {
+          "name": "e2e (full)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44590644787/job/135795476145"
+        },
+        {
+          "name": "e2e (lean)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44590644787/job/135795476044"
+        },
+        {
+          "name": "Build and verify the Pages site",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44590645131/job/135795407129"
+        }
+      ]
+    },
+    {
+      "pr": 285,
+      "head": "89942105c48df03b9351f777278b6a992e35a95e",
+      "source": "https://github.com/djshellshoxxx/GhostPay/pull/285",
+      "checks": {
+        "success": 36,
+        "skipped": 3,
+        "other": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "blob": "e918e36848f4e01322afbdf41cf561b3222cc14a"
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6"
+        },
+        {
+          "path": "docs/handoffs/QR_KIND_FAILCLOSED_20261119.md",
+          "blob": "5201c6a3899f4c608cba81fb1d0d089ca06789f0"
+        }
+      ],
+      "ci": [
+        {
+          "name": "typescript",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44613145140/job/135882649468"
+        },
+        {
+          "name": "CodeQL",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/runs/135875090483"
+        },
+        {
+          "name": "e2e (lean)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44613145140/job/135874997441"
+        },
+        {
+          "name": "e2e (full)",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44613145140/job/135874997347"
+        },
+        {
+          "name": "Build and verify the Pages site",
+          "conclusion": "success",
+          "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44613145002/job/135874854364"
+        }
+      ]
+    }
+  ],
+  "local_tests": "not run: executor unavailable",
+  "combined_checks": "pending new candidate"
+}

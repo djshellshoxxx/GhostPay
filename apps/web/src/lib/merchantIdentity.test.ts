@@ -32,6 +32,26 @@ describe('merchant origin pins', () => {
     expect(await forgetMerchantKey(origin, signer, s, originLock())).toBe(true);
     expect(await rememberMerchantKey(origin, other, other, s, originLock())).toBe(true);
   });
+  it('fails closed on ambiguous duplicate-key JSON in a persisted signer pin', async () => {
+    const s = storage();
+    expect(await rememberMerchantKey(origin, signer, signer, s, originLock())).toBe(true);
+    const keyName = s.key(0) as string;
+    const ambiguous = [
+      `{"v":1,"signer":"${other}","signer":"${signer}"}`,
+      `{"v":0,"v":1,"signer":"${signer}"}`,
+      `{"v":1,"signer":"${signer}","signer":"${signer}"}`,
+    ];
+    for (const text of ambiguous) {
+      s.setItem(keyName, text);
+      expect(readMerchantKey(origin, s)).toEqual({ kind: 'unavailable' });
+      expect(await rememberMerchantKey(origin, other, other, s, originLock())).toBe(false);
+      expect(await forgetMerchantKey(origin, signer, s, originLock())).toBe(false);
+    }
+    // Existing pins and order/whitespace-tolerant JSON remain compatible.
+    s.setItem(keyName, `{ "signer": "${signer}", "v": 1 }`);
+    expect(readMerchantKey(origin, s)).toEqual({ kind: 'saved', signer });
+    expect(await forgetMerchantKey(origin, signer, s, originLock())).toBe(true);
+  });
   it('fails closed on corrupt storage, denied writes and stale changes', async () => {
     const s = storage();
     await rememberMerchantKey(origin, signer, signer, s, originLock());
