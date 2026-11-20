@@ -1,0 +1,130 @@
+{
+  "source": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+  "exit_code": 0,
+  "raw_report_sha256": "1d9ae9747c4cd09dac5c83eef20378545f6d53ef0366f2f03f8655d8f4873660",
+  "normalization": "Relative paths; failed assertions retain only first diagnostic lines, excluding synthetic DOM dumps/stack paths.",
+  "files": [
+    {
+      "path": "apps/web/src/components/PaymentProofQr.retention.test.tsx",
+      "status": "passed",
+      "startTime": 1795193836322,
+      "endTime": 1795193837540.5693,
+      "tests": [
+        {
+          "title": "included-payment proof presentation retention previews and cancels without closing, then confirms only the QR/text while retaining exports and source data",
+          "status": "passed",
+          "duration": 338.89710700000023,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps the proof off-policy even when invoice preview cleanup was already enabled",
+          "status": "passed",
+          "duration": 68.73866799999996,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention closes at the opted-in deadline without restarting on ordinary receipt/timestamp rerenders",
+          "status": "passed",
+          "duration": 85.50832300000002,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention gives each deliberate Show a new lifetime and invalidates an older confirmation",
+          "status": "passed",
+          "duration": 86.07286599999998,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps manual confirmation bound to the displayed payment across ordinary same-source rerenders",
+          "status": "passed",
+          "duration": 50.00322300000016,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention preserves live receipt display and copy/download bytes across rerenders and cleanup",
+          "status": "passed",
+          "duration": 67.25020900000027,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention withdraws replaced result/context/session source before an old plan or age can close its successor",
+          "status": "passed",
+          "duration": 74.46502899999996,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll or expire a unconfirmed proof",
+          "status": "passed",
+          "duration": 62.5715110000001,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll or expire a reverted proof",
+          "status": "passed",
+          "duration": 36.824653000000126,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll or expire a unknown proof",
+          "status": "passed",
+          "duration": 36.35396200000014,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention revokes an included preview before a same-source unconfirmed projection can be cleaned",
+          "status": "passed",
+          "duration": 52.772515999999996,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention revokes an included preview before a same-source reverted projection can be cleaned",
+          "status": "passed",
+          "duration": 51.9033129999998,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention revokes an included preview before a same-source unknown projection can be cleaned",
+          "status": "passed",
+          "duration": 52.52152800000022,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll hidden or failed-to-render proofs and releases every timer on unmount",
+          "status": "passed",
+          "duration": 41.78677999999991,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention fails closed when saving the separate preference is denied",
+          "status": "passed",
+          "duration": 29.081474999999955,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps malformed proof policy off: {\"delay\":0,\"delay\":300000}",
+          "status": "passed",
+          "duration": 29.480387999999948,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps malformed proof policy off: {",
+          "status": "passed",
+          "duration": 28.140062999999827,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps malformed proof policy off: {\"delay\":300000,\"extra\":true}",
+          "status": "passed",
+          "duration": 25.569409000000178,
+          "failure": []
+        }
+      ]
+    }
+  ],
+  "numTotalTests": 18,
+  "numPassedTests": 18,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "success": true,
+  "startTime": 1795193834546
+}

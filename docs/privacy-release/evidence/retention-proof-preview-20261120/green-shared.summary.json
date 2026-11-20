@@ -1,0 +1,388 @@
+{
+  "source": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+  "exit_code": 0,
+  "raw_report_sha256": "217a5bc592d033faccc23f30b75ddd510a35ab4db9463268f681a347a4b66787",
+  "normalization": "Relative paths; failed assertions retain only first diagnostic lines, excluding synthetic DOM dumps/stack paths.",
+  "files": [
+    {
+      "path": "apps/web/src/components/MerchantTemplateIssuer.retention.test.tsx",
+      "status": "passed",
+      "startTime": 1795193949374,
+      "endTime": 1795193950049.7324,
+      "tests": [
+        {
+          "title": "merchant invoice presentation retention previews and cancels without clearing, then clears only the completed display while preserving its sources and shared link",
+          "status": "passed",
+          "duration": 363.931564,
+          "failure": []
+        },
+        {
+          "title": "merchant invoice presentation retention withdraws prior-mode cleanup authority and clears only a newly minimized result while preserving its selected mode",
+          "status": "passed",
+          "duration": 123.55393400000003,
+          "failure": []
+        },
+        {
+          "title": "merchant invoice presentation retention excludes pending issuance and rejects old cleanup authority while giving a replacement its own opt-in expiry",
+          "status": "passed",
+          "duration": 119.82446899999968,
+          "failure": []
+        },
+        {
+          "title": "merchant invoice presentation retention withdraws a closed result and never registers an issuance that completes after its view unmounts",
+          "status": "passed",
+          "duration": 68.7324450000001,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/MetadataRetentionControls.test.tsx",
+      "status": "passed",
+      "startTime": 1795193955216,
+      "endTime": 1795193955410.6624,
+      "tests": [
+        {
+          "title": "invoice presentation retention controls previews without deleting, supports cancellation, then clears only after confirmation",
+          "status": "passed",
+          "duration": 156.88294999999994,
+          "failure": []
+        },
+        {
+          "title": "invoice presentation retention controls invalidates an old destructive preview after generated content changes",
+          "status": "passed",
+          "duration": 13.942103999999972,
+          "failure": []
+        },
+        {
+          "title": "invoice presentation retention controls persists only the selected nonsecret preference and expires while the view is active",
+          "status": "passed",
+          "duration": 13.320997000000034,
+          "failure": []
+        },
+        {
+          "title": "invoice presentation retention controls leaves off as the effective policy if saving is denied and removes timers on unmount",
+          "status": "passed",
+          "duration": 10.662469000000101,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+      "status": "passed",
+      "startTime": 1795193951448,
+      "endTime": 1795193951854.7417,
+      "tests": [
+        {
+          "title": "buildPaymentRequestUri builds EIP-681 native and ERC-20 requests that re-parse",
+          "status": "passed",
+          "duration": 9.623558999999887,
+          "failure": []
+        },
+        {
+          "title": "buildPaymentRequestUri builds Solana Pay and TRON requests that re-parse",
+          "status": "passed",
+          "duration": 3.5702749999998105,
+          "failure": []
+        },
+        {
+          "title": "buildPaymentRequestUri throws on a bad recipient",
+          "status": "passed",
+          "duration": 0.8568150000000969,
+          "failure": []
+        },
+        {
+          "title": "PaymentRequestQr shows a QR frame, a text alternative and a copy button for each chain family",
+          "status": "passed",
+          "duration": 210.91081299999996,
+          "failure": []
+        },
+        {
+          "title": "PaymentRequestQr uses the caution frame for testnets",
+          "status": "passed",
+          "duration": 6.879183999999896,
+          "failure": []
+        },
+        {
+          "title": "PaymentRequestQr explains instead of rendering when the request is invalid",
+          "status": "passed",
+          "duration": 6.813333999999941,
+          "failure": []
+        },
+        {
+          "title": "PaymentRequestQr renders an optional note",
+          "status": "passed",
+          "duration": 8.225427000000082,
+          "failure": []
+        },
+        {
+          "title": "PaymentProofQr says it is not independent proof, hides the QR until asked, then shows it with text and copy",
+          "status": "passed",
+          "duration": 60.13213200000018,
+          "failure": []
+        },
+        {
+          "title": "PaymentProofQr downloads the proof JSON",
+          "status": "passed",
+          "duration": 11.033269999999902,
+          "failure": []
+        },
+        {
+          "title": "PaymentProofQr uses the caution frame when the transaction is not confirmed as included",
+          "status": "passed",
+          "duration": 33.25505499999986,
+          "failure": []
+        },
+        {
+          "title": "PaymentProofQr keeps the JSON available when the proof is too large for one QR",
+          "status": "passed",
+          "duration": 18.9424590000001,
+          "failure": []
+        },
+        {
+          "title": "PlainPaymentRequest shows nothing until an address is entered, then a request, with and without an amount",
+          "status": "passed",
+          "duration": 18.63368300000002,
+          "failure": []
+        },
+        {
+          "title": "PlainPaymentRequest builds a TRON request for a named network",
+          "status": "passed",
+          "duration": 9.095230999999785,
+          "failure": []
+        },
+        {
+          "title": "PlainPaymentRequest reports a bad address and declines local TRON chains",
+          "status": "passed",
+          "duration": 7.741647000000057,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/i18n/catalog.test.ts",
+      "status": "passed",
+      "startTime": 1795193956440,
+      "endTime": 1795193956535.5364,
+      "tests": [
+        {
+          "title": "catalog loading reports bundled and lazy catalogs and returns English directly",
+          "status": "passed",
+          "duration": 2.2098689999999976,
+          "failure": []
+        },
+        {
+          "title": "catalog loading builds pseudo catalogs from English with the requested development variant",
+          "status": "passed",
+          "duration": 90.37458000000001,
+          "failure": []
+        },
+        {
+          "title": "catalog loading loads existing layers in chain order, skips unavailable layers, and always appends English",
+          "status": "passed",
+          "duration": 1.2906699999999773,
+          "failure": []
+        },
+        {
+          "title": "catalog loading propagates a failure for a catalog that cannot be loaded",
+          "status": "passed",
+          "duration": 1.536440999999968,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.test.ts",
+      "status": "passed",
+      "startTime": 1795193956020,
+      "endTime": 1795193956256.571,
+      "tests": [
+        {
+          "title": "critical translation native-review boundary (IN-3) classifies every current English key exactly once without unknown or duplicate policy keys",
+          "status": "passed",
+          "duration": 4.410452999999961,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) provides explicit draft entries for every wallet disclosure consent key",
+          "status": "passed",
+          "duration": 1.5124250000000075,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries",
+          "status": "passed",
+          "duration": 3.358685000000037,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) keeps all critical text English in the es draft despite complete translated content",
+          "status": "passed",
+          "duration": 105.74658999999997,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) keeps all critical text English in the ar draft despite complete translated content",
+          "status": "passed",
+          "duration": 51.28041100000007,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) keeps all critical text English in the ja draft despite complete translated content",
+          "status": "passed",
+          "duration": 51.50110500000005,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) retains actual Spanish neutral labels, neutral plurals, and locale display formatting",
+          "status": "passed",
+          "duration": 14.68260399999997,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) does not accept a catalog metadata reviewed claim as native-review authority",
+          "status": "passed",
+          "duration": 0.3731440000000248,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) uses the actual catalog locale registry decision, not approval inferred from a regional tag",
+          "status": "passed",
+          "duration": 1.052449999999908,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) still skips broken reviewed messages and diagnoses the English fallback once",
+          "status": "passed",
+          "duration": 0.557472999999959,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) always has bundled source critical text even when a caller omits or replaces the English layer",
+          "status": "passed",
+          "duration": 0.39802099999997154,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) refuses draft text for an unknown runtime key before the classification census can run",
+          "status": "passed",
+          "duration": 0.2107580000000553,
+          "failure": []
+        },
+        {
+          "title": "critical translation native-review boundary (IN-3) reports policy fallback once and gives pseudo locales no production review exemption",
+          "status": "passed",
+          "duration": 0.5710030000000188,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/metadataRetention.test.ts",
+      "status": "passed",
+      "startTime": 1795193956733,
+      "endTime": 1795193956742.2234,
+      "tests": [
+        {
+          "title": "nonessential invoice presentation retention requires the exact preview, rejects stale previews and cannot replay approval",
+          "status": "passed",
+          "duration": 3.449973,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention expires only registered presentation callbacks, with opt-in and exact age boundaries",
+          "status": "passed",
+          "duration": 0.4804659999999785,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention does not expire on invalid clocks, rollback, unsupported policy or disposed ownership",
+          "status": "passed",
+          "duration": 0.7753210000000195,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention preserves registrations on failed cleanup and excludes reentrant replacements from approval",
+          "status": "passed",
+          "duration": 0.38385999999999854,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention isolates failed observers so registration remains disposable and cleanup can finish",
+          "status": "passed",
+          "duration": 0.5000459999999975,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention does not resurrect a failed adapter after its owner disposes during cleanup",
+          "status": "passed",
+          "duration": 0.556650999999988,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention keeps the registration bound when a reentrant adapter fills capacity then fails",
+          "status": "passed",
+          "duration": 0.4318219999999826,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention bounds registrations without evicting existing ownership",
+          "status": "passed",
+          "duration": 0.3863330000000076,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference keeps proof consent and manual authority separate from the invoice policy",
+          "status": "passed",
+          "duration": 0.9985580000000027,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference accepts only supported delays and touches only its dedicated preference key",
+          "status": "passed",
+          "duration": 0.34702400000000466,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference does not enable automatic cleanup from duplicate delay",
+          "status": "passed",
+          "duration": 0.22331800000000612,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference does not enable automatic cleanup from oversized preference",
+          "status": "passed",
+          "duration": 0.06902399999998465,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference handles denied or malformed storage without changing the policy or propagating input",
+          "status": "passed",
+          "duration": 0.15472399999998743,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.retention.test.tsx",
+      "status": "passed",
+      "startTime": 1795193953327,
+      "endTime": 1795193954130.0637,
+      "tests": [
+        {
+          "title": "clears a real generated invoice preview while preserving form, seller keys and stored records",
+          "status": "passed",
+          "duration": 803.0638099999999,
+          "failure": []
+        }
+      ]
+    }
+  ],
+  "numTotalTests": 53,
+  "numPassedTests": 53,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "success": true,
+  "startTime": 1795193946265
+}
