@@ -1,0 +1,719 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "recorded_at": "2026-11-19T11:29:00.470332+00:00",
+  "worker": "branch_recon",
+  "branch": "codex/ghostpay-hosting-main-reconcile-20261119",
+  "scope": "Resolve the sole ownership-registry conflict between focused PR267 and qualified current main. No authored runtime/test/config changes.",
+  "inputs": {
+    "focused_pr": 267,
+    "focused_head": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+    "current_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "merge_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "claim_before_merge": "2f18006d868c6a0f4eeebb0fa3c38c8945879009"
+  },
+  "product": {
+    "commit": "f8c9d4024f48fd6d813f503bceda939ac44277c1",
+    "tree": "66b698946ab9d93317d8c7b106014944eba96151",
+    "parents": [
+      "2f18006d868c6a0f4eeebb0fa3c38c8945879009",
+      "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+    ],
+    "focused_is_ancestor": true,
+    "main_is_ancestor": true
+  },
+  "conflict_resolution": {
+    "initial_merge_tree_exit": 1,
+    "conflict_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "staged_diff_check_exit": 0,
+    "resolution": "Exact new claim + exact focused-only claim prefix + entire exact current-main registry. No existing main claim or focused-only claim text discarded.",
+    "new_claim_bytes": 1225,
+    "focused_unique_prefix_bytes": 1480,
+    "main_registry_bytes": 59606,
+    "resolved_bytes": 62311,
+    "resolved_sha256": "6ec703540671669917b1d21a4eac08d36cafb31726cbaa30267457cc5abac30f",
+    "post_resolution_merge_tree_exit": 0,
+    "post_resolution_merge_tree": "66b698946ab9d93317d8c7b106014944eba96151"
+  },
+  "source_identity": {
+    "complete_kit_tree": "3295a7030121f51b1286ffc96b3a6480aa319aa7",
+    "kit_files": 80,
+    "all_kit_mode_type_blob_records_exact_focused": true,
+    "reviewed_product_files": [
+      {
+        "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+        "sha256": "a9906474a56a3e45699182e71b7b1fc7cf272a5304483d6f11e24646c84fde98"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+        "sha256": "1b3d2da446e657802c957de14fa25cde2447d3ef7e6fc34487e43ab19d682d31"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+        "sha256": "c45152e8274aa7112baaeb45c5484c3d03deedd09282086802f11e566f3a1ebc"
+      }
+    ],
+    "non_documentation_changes_from_main": [
+      "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "tools/portable-hosting-kit/test/profiles/static-export.test.mjs"
+    ],
+    "incoming_main_non_documentation_changes": [
+      {
+        "path": "apps/web/scripts/scan-bundle.d.mts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "340d3eec2eecdbc4f1cd726905a081008f7daac7"
+      },
+      {
+        "path": "apps/web/scripts/scan-bundle.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4"
+      },
+      {
+        "path": "apps/web/src/scanBundle.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "a694b8763fc5deb418f65d7ff3a6f13e9295d3ee"
+      },
+      {
+        "path": "packages/net-harness/src/harness.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "d57695d853e93fe3d3def188ad6f80fcbf278767"
+      },
+      {
+        "path": "packages/net-harness/src/socks5Server.ts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "1ace4e8ebea81703b1c8fc5d72970c2964f65f36"
+      },
+      {
+        "path": "packages/pool-circuits/DEVIATIONS.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "bff54456013a8f6a578752a68078b99c185505a9"
+      },
+      {
+        "path": "packages/pool-circuits/src/helpers.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "10b1f67f7c880e9da5fb86845b55a7b25bc89d2c"
+      },
+      {
+        "path": "packages/pool-circuits/src/inputs.ts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "3a82b848c11d98a7d4afe66050a15ef8003cedbe"
+      },
+      {
+        "path": "packages/pool-circuits/test/witness.test.ts",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "3cdd17fb07acdb5fe4424cc06312d37a2cc2b773"
+      }
+    ],
+    "all_incoming_main_non_documentation_blobs_exact": true,
+    "all_other_tracked_non_documentation_entries_exact_main": true,
+    "kit_entries": [
+      {
+        "path": "tools/portable-hosting-kit/HANDOFF.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "a0c21d380b7633f0d6c89ab9dde868b42f5ce78d"
+      },
+      {
+        "path": "tools/portable-hosting-kit/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "af59c25cb5507830967defad216ddf9c5c2b223a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/bin/ghostpay-host.mjs",
+        "mode": "100755",
+        "type": "blob",
+        "blob": "b2f6082dcf9788efad1d882ae797639ed6341709"
+      },
+      {
+        "path": "tools/portable-hosting-kit/docs/ARTIFACT-METADATA.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "d6244289a173654c27d8692f942cbe78035f07a9"
+      },
+      {
+        "path": "tools/portable-hosting-kit/docs/I2P.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c65e1175951dd18866bc33a7b98335b67625d7a6"
+      },
+      {
+        "path": "tools/portable-hosting-kit/docs/INTERFACES.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "15ca4f71321d5e4217464640aa931e6e901b58f3"
+      },
+      {
+        "path": "tools/portable-hosting-kit/docs/REUSE-AND-LICENSES.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "5ecbe9eaa36ab78668e4b88b4a114fbff2a1fec7"
+      },
+      {
+        "path": "tools/portable-hosting-kit/docs/SERVER-PROFILES.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "61b332b1ba569cc2fea6b311fda1b726dc18967d"
+      },
+      {
+        "path": "tools/portable-hosting-kit/docs/TOR.md",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "01cb7181b784bf649f40c1d1c037b3c535ae3382"
+      },
+      {
+        "path": "tools/portable-hosting-kit/eslint.config.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c582c87d8383e5bef509125255913116d098ac95"
+      },
+      {
+        "path": "tools/portable-hosting-kit/package.json",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "b454b1bdd1a93499d0a2e45b8cc782fb1ad85916"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/adapters/i2p-i2pd.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "81eee0e1b99bfa44ad6078834e41ccaf9a34bb95"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/adapters/i2p-java.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "520868c1fea883b5f9fd3879bac2e3c5786decb7"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/adapters/i2p.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "03bd1640f26322927519c7ebb7033e16f1549c37"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "0105435acbeb2a19bbf9b00564a0848846e2a60a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/cli.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "267551801dfebc4f71622a4d7aa8d9019196870a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/atomic.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "d6099cdbaffc8767c13de1532d399b0f1d4eec46"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/canonical-json.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c3ca8a92e1178ae50befb81583276f2f042e48cf"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/hash.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "3d9613977e76c984329b7e3068291b8a65ee85f0"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/inventory.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "28b1c41bd4ea5494c772706839073087d31d88d2"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/manifest.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "463341978463b1f4f4b4405d8ead98123dcb6143"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/package.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "cd7207c96ed47f9c3b1effae9997eedbecab2d6b"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/paths.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "8077026c02dd422a34fd4c38aa577179786bb4a6"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/validate.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "9a9d6f655fba74d08177af0e9ae0baeed15edcc3"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/verify.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c006df5aacaf9669d5f7cf400cfa24c8feb385eb"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/core/zip.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "fde2f1c7c7a45a20c5820718239e564bc467de32"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/errors.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "80d71210dd00b6f03a03a41943656fc41091741c"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/overlay/mirror.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "dcb33bd5b7238b12e50a71268a996f3522f8638d"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/package-docs.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "edcbcdb2aa709a8cc3b12ddcde0925dc8e6320a8"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/policy.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "4f13b17785cb53213f7dc6abce3902b34ca1fa5e"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/privacy/external-refs.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "7a0616b95dd7e3510895e427b298b532cfc04fa8"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/profiles/container.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "4ab2205f98233904ff02233a92987cd6daec6b8f"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/profiles/nginx.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c932bdfb392f83fec6ff10517db40235ddbf3a4a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "ae6571b9784a49dce019cf9776cd7f2d4b47cbc7"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/serve/preview.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "07d074f2a42993380714752ca01d5d6e77e8701b"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/serve/routing.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "b02f9ef440c4404d0ece1480531f54efef08fe30"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/types.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "cc9c73bd51da2342eb14a71d592fcf416c577dfe"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/version.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "29920000142c3aaa39de04b185e447b0255f78f1"
+      },
+      {
+        "path": "tools/portable-hosting-kit/src/wizard.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "a6630c1762e213d650d9ab8b611d410a8912911d"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "18ca28d400e80731554982da12df1c539795373b"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/adapters/i2p.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "163775a217465ce812a182f8ded4a6b360f2671e"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/adapters/tools.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "1eb26ef0bafc970f0b3a98ac0af04fa8b7e9bd38"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/adapters/tor.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "9a13c3f8360e48b9a74d3e6a2a0db7068c03e1d7"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/browser/chromium.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "ddcb63f2e7871dd84fa5853a663708d3a2338864"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/config/host-config.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "5bd2eb7fa6b5af8fbb452906e08990f718355aba"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/config/onion-crosscheck.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "238c3dd2b4eb7f4702b5bcd240338534c64138dd"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/config/wizard.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "9fc35b2bef2a89c050bedb3aca20cb8bfa9fe940"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/atomic.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "8afd9fdac31e3c71f72894b2f833ea92a1abead9"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/canonical-json.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "08bcc87e822ad97f52f5de5330da689c4d2f800f"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/hash.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "f980eaa4cd481a71d2255119195feea0633eb50c"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/helpers.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c07bcf322c360fc7f1b3cc56568384bd5bd2c37b"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/manifest.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "7022334d10a7c48597779a2de3ae5fd9dc625994"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/package.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "9a6f0db227762d190b5c03a8d5374b1ac21db1a9"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/paths.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "533c0d0642fc9ebadb10e23e1c77dbb477fb9d82"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/review-regressions.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "1caf284f0091421c490159dd48acb6219eaaf799"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/validate.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "3136fd471eb70262e8c611a486710a623a21e13a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/verify.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "1f6a94fe0d59fa0e4b194ca82378dacf62a37a75"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/zip-builder.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "5ccfb7f04c5bc6acf4aa5af36e5b910fd816e5e5"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/core/zip.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "f955ea9a7da738d4dcdd7b26d5918e23fd45c1f2"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/demo/demo-site.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "a87fa5f0f56e540fb142c685d7ef45f532a23434"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/integration/cli-hardening.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "dd372eda53b669a326185f46fba283834589067f"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/integration/cli.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "743f2829b6e12e18006404caee0ba5baf4dfb511"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/privacy/external-refs.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "c5e91680acabd69840dd2b48df990deee639ae72"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/privacy/quality-addons.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "3e3cf64da4c8dbf0014a7bcdb8afc17292f7bd0a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/privacy/quality-boundaries.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "4156f2b421e2008c6fc38940067a3d37e5384e35"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/privacy/quality-remainder.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "4c3da8dfd1b1501dcd105a23c82ab2f6c216a280"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "a9b869f584d95392bb2981c69cd1710aae590377"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/container.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "6471b8499aa3801061ed2cd5df08448bb01cbf4c"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/nginx.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "7cc1583bab7c48ec5f44a59d51b242f30d90dd2c"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "bbc06aa4df3056cff6c52b71e5f88d2e5510f7e9"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "0ea649190c0402c79caa55681553a680fcc626cb"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/serve/preview.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "a5ac10df2c31ac09fc869b8634d7c0c38592b73e"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/serve/routing.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "796d598199d1c1219cb69a3b63e1c33339535eff"
+      },
+      {
+        "path": "tools/portable-hosting-kit/test/shared/policy.test.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "f6945a74d1c95c3de66b96e7f35501ec2e849843"
+      },
+      {
+        "path": "tools/portable-hosting-kit/tsconfig.json",
+        "mode": "100644",
+        "type": "blob",
+        "blob": "267122e4936d9b7810873ab52cf0496d20ba2d65"
+      }
+    ]
+  },
+  "configuration_identity": {
+    "compared_paths": 291,
+    "all_records_exact_focused_main_product": true,
+    "path_list_artifact": {
+      "path": "docs/consolidation/hosting-timestamp-reconciliation-20261119/config-inputs.json",
+      "bytes": 50031,
+      "sha256": "2b7a5e19363ef5eee31716b9a0fa24d254de3c62fa4b983fe7ca6073626fe8f9"
+    }
+  },
+  "tree_diffs": {
+    "from_main_at_product": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md",
+      "docs/consolidation/hosting-timestamp-20261119/evidence/full-kit.log",
+      "docs/consolidation/hosting-timestamp-20261119/evidence/kit-lint.log",
+      "docs/consolidation/hosting-timestamp-20261119/evidence/kit-typecheck.log",
+      "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-green.log",
+      "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-red.log",
+      "docs/consolidation/hosting-timestamp-20261119/evidence/unused-time-wrapper.log",
+      "docs/consolidation/hosting-timestamp-20261119/receipt.json",
+      "docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md",
+      "docs/consolidation/hosting-timestamp-main-20261119/provenance.json",
+      "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "tools/portable-hosting-kit/test/profiles/static-export.test.mjs"
+    ],
+    "from_focused_at_product": [
+      "apps/web/scripts/scan-bundle.d.mts",
+      "apps/web/scripts/scan-bundle.mjs",
+      "apps/web/src/scanBundle.test.ts",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+      "docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md",
+      "docs/consolidation/merge-readiness/historical-pool-values-20261118.json",
+      "docs/handoffs/SCANNER_AST_RECONCILIATION_20261118.md",
+      "docs/handoffs/consolidation-20261118/HISTORICAL_SECURITY_PROMOTION.json",
+      "docs/handoffs/consolidation-20261118/HISTORICAL_SECURITY_PROMOTION.md",
+      "packages/net-harness/src/harness.test.ts",
+      "packages/net-harness/src/socks5Server.ts",
+      "packages/pool-circuits/DEVIATIONS.md",
+      "packages/pool-circuits/src/helpers.test.ts",
+      "packages/pool-circuits/src/inputs.ts",
+      "packages/pool-circuits/test/witness.test.ts"
+    ]
+  },
+  "verification": [
+    {
+      "command": "git merge-tree --write-tree c3a693e87053fbe91219f8edfe159a5ec0a37a34 c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "exit_code": 1,
+      "meaning": "Expected registry-only content conflict; source/test/config merge clean."
+    },
+    {
+      "command": "git merge --no-commit --no-ff c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "exit_code": 1,
+      "meaning": "Stopped on the same registry conflict after pre-edit claim."
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0,
+      "meaning": "No newly introduced whitespace errors in staged merge."
+    },
+    {
+      "command": "Read-only git ls-tree/rev-parse/show/merge-base comparison",
+      "exit_code": 0,
+      "meaning": "Exact 80-file kit, three reviewed product identities, 291 configuration records, two-parent ancestry and whole non-doc source union assertions passed."
+    },
+    {
+      "command": "git merge-tree --write-tree f8c9d4024f48fd6d813f503bceda939ac44277c1 c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "exit_code": 0,
+      "tree": "66b698946ab9d93317d8c7b106014944eba96151",
+      "meaning": "Resolved product cleanly contains the pinned main without another conflict."
+    }
+  ],
+  "historical_qualification": {
+    "head": "c3a693e87053fbe91219f8edfe159a5ec0a37a34",
+    "synthetic_checkout": "d97980dd98aa4ba0cb21dccdccf58f5949c63371",
+    "head_and_checkout_tree": "7cfbb2835be8a3c58ccd5dd549fbb2ecabcccfac",
+    "hosting_workflow_run": 44497615337,
+    "kit_job": 135468723862,
+    "kit_counts": {
+      "tests": 302,
+      "passed": 296,
+      "failed": 0,
+      "skipped": 6
+    },
+    "sibling_web_qualification_job": 135468724333,
+    "raw_receipt_in_feature_report": "docs/consolidation/feature-completion-20261119/hosted-hosting-review/receipt.json",
+    "scope_limit": "Historical native nginx/differential and Chromium results remain bound to c3a/d979. Exact hosting-tree identity is established, but no whole CI, new-head typecheck, new web build or new Chromium execution is transferred to this reconciliation."
+  },
+  "new_runtime_execution": {
+    "executed": false,
+    "reason": "Only manual resolution is documentation. Parent authorized no repeated source-identical kit execution solely for this conflict; recovery worker owns serial original-config export tests. Newly based hosted checks must run after coordinator publication."
+  },
+  "pending": [
+    "Coordinator independent resolution/tree review.",
+    "Coordinator expected-ref update of existing PR267; no remote update performed by worker.",
+    "Fresh current-head required CI, type/build/browser and other applicable workflow outcomes before any normal main merge.",
+    "Recheck current main and PR head immediately before publication/integration."
+  ],
+  "guardrails": {
+    "remote_writes": false,
+    "workflow_or_config_edits": false,
+    "test_or_threshold_weakening": false,
+    "deployment_or_mainnet_operations": false,
+    "source_replay_claimed": false
+  }
+}
