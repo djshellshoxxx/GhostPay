@@ -1,9 +1,9 @@
 {
   "base": "885b9569e6fc99e43bf01d23305494275e10120e",
-  "source_head": "e9d9331d2a04cb721610b1a25e157ed08eed64d7",
+  "source_head": "2836cd5f648c39ad683f09a382d7025887c1f101",
   "local_execution": "unavailable; not run",
-  "hosted_combined": "pending",
-  "independent_verification": "combined_verify: all 31 blobs/modes, no unexpected leaf changes, no blocking source findings",
+  "hosted_combined": "Pending/queued; no pass claimed. Freeze final evidence head, qualify #306, retarget #307 to main, and require applicable final-head checks including CodeQL.",
+  "independent_verification": "combined_verify independently approved original 31 paths and the final 7-path extension at 2836cd5f648c39ad683f09a382d7025887c1f101 / tree 30702edc2dc30150c28f76b84268654835a74285. All 38 file blobs/modes verified, all original paths preserved, exactly the expected six-line builder adaptation, no unexpected leaf changes or missing dependency, and no blocking integration finding. Static review only; combined CI required.",
   "modules": [
     {
       "id": "camera",
@@ -361,6 +361,111 @@
           "before": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d"
         }
       ]
+    },
+    {
+      "id": "integration_lock",
+      "description": "recover strict cooperative integration locking",
+      "source_prs": [
+        261,
+        278
+      ],
+      "commit": "33262b9218fabbb066fd85cd4f6a5c368e9c23b9",
+      "files": [
+        {
+          "path": "scripts/automation/integration-lock.mjs",
+          "mode": "100644",
+          "sha": "47a7411628f7775228e15f88b120c3684b461249",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": null,
+          "adapted": false
+        },
+        {
+          "path": "scripts/tests/integration-lock.test.mjs",
+          "mode": "100644",
+          "sha": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": null,
+          "adapted": false
+        }
+      ]
+    },
+    {
+      "id": "pages_integrity",
+      "description": "verify staged Pages artifact bytes before output promotion",
+      "source_prs": [
+        278,
+        292
+      ],
+      "commit": "a9806219fedd2365a7339b3e1fe0fd8f5828230f",
+      "files": [
+        {
+          "path": "scripts/pages/verify-pages-artifact.mjs",
+          "mode": "100644",
+          "sha": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": null,
+          "adapted": false
+        },
+        {
+          "path": "scripts/pages/verify-pages-artifact.test.mjs",
+          "mode": "100644",
+          "sha": "d827559a5db32969b955d4f299a65db420010824",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": null,
+          "adapted": false
+        },
+        {
+          "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+          "mode": "100644",
+          "sha": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+          "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+          "before": null,
+          "adapted": false
+        },
+        {
+          "path": "scripts/pages/build-pages.sh",
+          "mode": "100755",
+          "sha": "272d994a11987ba644f007a98a850af8e4c81650",
+          "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+          "before": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+          "adapted": true,
+          "adaptation": "Insert only artifact verifier invocation after build.log copy and before either final mv; all other current builder bytes retained."
+        }
+      ]
+    },
+    {
+      "id": "quote_decimals",
+      "description": "retain quote price decimal boundary regression coverage",
+      "source_prs": [
+        278
+      ],
+      "commit": "2836cd5f648c39ad683f09a382d7025887c1f101",
+      "files": [
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "mode": "100644",
+          "sha": "ab98c68605acba6a7d094e631ab1431ab88e2763",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "a6348941fa36533ca408d8a10e059fcd52ed5884",
+          "adapted": false
+        }
+      ]
     }
-  ]
+  ],
+  "source_tree": "30702edc2dc30150c28f76b84268654835a74285",
+  "source_file_count": 38,
+  "exact_copied_blob_count": 37,
+  "adapted_file_count": 1,
+  "builder_adaptation": {
+    "base_blob": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+    "result_blob": "272d994a11987ba644f007a98a850af8e4c81650",
+    "mode": "100755",
+    "inserted_hunk": "# Independently verify the assembled bytes and exact source against the build's\n# checksum manifest before any publishable output is promoted. This is an\n# integrity gate, not authentication of an externally supplied manifest.\nnode \"$ROOT/scripts/pages/verify-pages-artifact.mjs\" \"$site\" \"$evidence/SHA256SUMS\" \\\n  --expect-commit \"$commit\" >\"$evidence/artifact-verification.log\"\ncat \"$evidence/artifact-verification.log\"\n",
+    "all_other_bytes_identical": true
+  },
+  "coordination": {
+    "replacement_lease_release_commit": "93b50a03fea1f22ff9dc403099ce1eb09635299c",
+    "held_by_this_task": false,
+    "note": "An expired but still-held prior cooperative lease was advanced before inspection of the existing helper's no-takeover rule. This task released its replacement lease with owner/token/head checks. Expiry alone does not permit takeover."
+  }
 }

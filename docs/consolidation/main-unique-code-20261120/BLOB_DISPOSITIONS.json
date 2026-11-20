@@ -1,0 +1,2516 @@
+{
+  "schema_version": 1,
+  "main": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+  "candidate": "2836cd5f648c39ad683f09a382d7025887c1f101",
+  "census": "Same 321-reference snapshot as BRANCH_CENSUS.json; this file compares code-file blobs for 120 distinct related nonancestor heads.",
+  "scope": "Paths are bounded to files exposed by GitHub compare (maximum 300). Full recursive trees were then fetched without truncation. Exact blob equality is not semantic equivalence. A limited scope can establish included matches but cannot prove an entire branch is represented.",
+  "stats": {
+    "heads": 120,
+    "all_scoped_files_exact_at_main": 9,
+    "all_scoped_files_exact_at_candidate": 19,
+    "limited_scopes": 36
+  },
+  "heads": [
+    {
+      "head": "69cdc36f2b1a4f0e032dde8bde5d472eab2327c7",
+      "names": [
+        "automation/ghostpay-integration-lock"
+      ],
+      "scope_files": 278,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "names": [
+        "automation/ghostpay-parallel-four-agents-20261103"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/workflows/ghostpay-parallel-agents.yml",
+          "source": "af918710bcb8fbc82df2c33320c95dbedd2346a4",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/tests/ghostpay-parallel-workflow.test.mjs",
+          "source": "9e18fb6110a3de04ae8057d1eb7e662d64f6db13",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "names": [
+        "automation/ghostpay-recurrent-backlog-20261103"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": "e0052c78ac1d0c6993ec1ef8106335d15a064136",
+          "main": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "candidate": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+      "names": [
+        "automation/20261119-c977/bug/build-profile-failclosed"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/buildProfile.test.ts",
+          "source": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+          "main": "34530f5260e2b9ea52713d09b9229218ccf39b73",
+          "candidate": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/buildProfile.ts",
+          "source": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+          "main": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+          "candidate": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "0041514a630398c89693498d9b5e44ef562d9c61",
+      "names": [
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+          "source": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+          "main": null,
+          "candidate": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "source": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "candidate": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "names": [
+        "automation/20261119T2243Z/bug/base64url-runtime-input"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/base64url.test.ts",
+          "source": "8d32596d0fa34f6ebc40f3ccae11f1d9d620e8e5",
+          "main": "ef5f6d46556e658bbca154eb70d9f3be713e7712",
+          "candidate": "8d959c2b144182d0d0f576214dc7b761b7166c47",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/base64url.ts",
+          "source": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+          "main": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+          "candidate": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "names": [
+        "automation/20261119T073600Z/bug/camera-visibility"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/components/CameraImporter.tsx",
+          "source": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+          "main": "f592f573581511d7287608c3da068aae432f5738",
+          "candidate": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "source": "591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11",
+          "main": null,
+          "candidate": "591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "names": [
+        "automation/20261119T073600Z/coordinator/integration-lock"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "scripts/automation/integration-lock.mjs",
+          "source": "47a7411628f7775228e15f88b120c3684b461249",
+          "main": null,
+          "candidate": "47a7411628f7775228e15f88b120c3684b461249",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "scripts/tests/integration-lock.test.mjs",
+          "source": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "main": null,
+          "candidate": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "names": [
+        "automation/20261119T083600Z/bug/json-canonical-array"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/json.test.ts",
+          "source": "37a29eb627a76d9531bd0bbd549167481720af9d",
+          "main": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+          "candidate": "2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/json.ts",
+          "source": "8b2481cb117334b779ec6c77a0a8dac22bce27dc",
+          "main": "b7a34bb5176ec72daf0026a59991863421bdb341",
+          "candidate": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+      "names": [
+        "automation/20261119T095600Z/bug/merchant-profile-clock"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "source": "a1299d9ceedefeefb5784d287d556008531af02f",
+          "main": "0ee33da251a01df95d7aafae9d3118feb1fd9d82",
+          "candidate": "a1299d9ceedefeefb5784d287d556008531af02f",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "source": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+          "main": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+          "candidate": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "names": [
+        "automation/20261119T104800Z/bug/jitter-expiry-rollback"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/jitter.test.ts",
+          "source": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+          "main": "7790a713ce6fb5434b06370638d2f364b4f9f3f9",
+          "candidate": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/jitter.ts",
+          "source": "9845576adfb522c17db145b1772276f66523180c",
+          "main": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+          "candidate": "9845576adfb522c17db145b1772276f66523180c",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "names": [
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrMultipart.test.ts",
+          "source": "45992f537d1f226dd20e57d96a246c6f18419395",
+          "main": "4fd6b1e458b8d79a4828254f7b21982bf245a01e",
+          "candidate": "45992f537d1f226dd20e57d96a246c6f18419395",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/qrMultipart.ts",
+          "source": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+          "main": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+          "candidate": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+      "names": [
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/merchantIdentity.test.ts",
+          "source": "957027808890f366f337c375e52b5c081206dae7",
+          "main": "c26773145f2fdc22ff05871157c34b7021a644f4",
+          "candidate": "957027808890f366f337c375e52b5c081206dae7",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/merchantIdentity.ts",
+          "source": "183a8fbc588cb1c66e5ec480e572849b803761db",
+          "main": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+          "candidate": "183a8fbc588cb1c66e5ec480e572849b803761db",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "89942105c48df03b9351f777278b6a992e35a95e",
+      "names": [
+        "automation/20261119T204728Z/bug/qr-kind-failclosed"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "source": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+          "main": "990d723ee8877c6de7f9f604a3e7e183bb6ff358",
+          "candidate": "257b634250f033ddec042b67941fec23ffba1323",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "source": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+          "main": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+          "candidate": "a85e1011cdface74c87683146ff7428654b7830d",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "names": [
+        "automation/20261120T0035Z/coordinator/cycle-checkpoint"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "scripts/automation/integration-lock.mjs",
+          "source": "47a7411628f7775228e15f88b120c3684b461249",
+          "main": null,
+          "candidate": "47a7411628f7775228e15f88b120c3684b461249",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "scripts/tests/integration-lock.test.mjs",
+          "source": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "main": null,
+          "candidate": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "names": [
+        "automation/20261120T0035Z/worker/qr-flag-coverage"
+      ],
+      "scope_files": 263,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 16
+    },
+    {
+      "head": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+      "names": [
+        "automation/20261120T0035Z/worker/qr-kind-primitives"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "source": "3eaea811d82c9a1913313fc1c0d587147b68fd16",
+          "main": "990d723ee8877c6de7f9f604a3e7e183bb6ff358",
+          "candidate": "257b634250f033ddec042b67941fec23ffba1323",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "source": "1a4beffc898c7854f6183aac5a7e6f74f8228d63",
+          "main": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+          "candidate": "a85e1011cdface74c87683146ff7428654b7830d",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "names": [
+        "automation/20261120T0115Z/coordinator/clipboard-qualification"
+      ],
+      "scope_files": 267,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "names": [
+        "automation/20261120T0115Z/coordinator/cycle-checkpoint"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "scripts/automation/integration-lock.mjs",
+          "source": "47a7411628f7775228e15f88b120c3684b461249",
+          "main": null,
+          "candidate": "47a7411628f7775228e15f88b120c3684b461249",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "scripts/tests/integration-lock.test.mjs",
+          "source": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "main": null,
+          "candidate": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "names": [
+        "automation/20261120T0115Z/worker/receipt-hash-validation"
+      ],
+      "scope_files": 271,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 17
+    },
+    {
+      "head": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+      "names": [
+        "automation/20261120T0243Z/worker/format-units-validation"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/format.test.ts",
+          "source": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+          "main": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+          "candidate": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/format.ts",
+          "source": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+          "main": "18dad7e4235c922bb7f197312317cc86557a12c2",
+          "candidate": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "names": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "apps/web/src/lib/txGuard.test.ts",
+          "source": "1f1749730b2af7483bacdeecc29f2fbda5490de3",
+          "main": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+          "candidate": "1f1749730b2af7483bacdeecc29f2fbda5490de3",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/txGuard.ts",
+          "source": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+          "main": "abba792709126a191cbd589f2023351a7b9e1c66",
+          "candidate": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "names": [
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification"
+      ],
+      "scope_files": 263,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 15
+    },
+    {
+      "head": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+      "names": [
+        "automation/20261120T003500Z/coordinator/qualification-evidence"
+      ],
+      "scope_files": 263,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 15
+    },
+    {
+      "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "names": [
+        "automation/20261120T004531Z/feature/clipboard-guard"
+      ],
+      "scope_files": 267,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "names": [
+        "chatgpt/btc-spent-private-scan-20261118"
+      ],
+      "scope_files": 38,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "names": [
+        "chatgpt/btc-spent-qualification-20261119"
+      ],
+      "scope_files": 38,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "names": [
+        "chatgpt/btc-spentness-private-scan-20261118"
+      ],
+      "scope_files": 36,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "names": [
+        "chatgpt/ghostpay-historical-consolidation-20261115"
+      ],
+      "scope_files": 7,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 3,
+      "candidate_exact_file_count": 3,
+      "files": [
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "source": "4268e5d0e9fc5b8d5fcffbe6ab14a27548ea3304",
+          "main": "9aea116713f0ad916ecbd6aaa922b86361228941",
+          "candidate": "9aea116713f0ad916ecbd6aaa922b86361228941",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.test.tsx",
+          "source": "5821fb8db781285654210706f17424c75277d70e",
+          "main": "fb79a7398af4872f6cb129914dfea12b96cb8d6d",
+          "candidate": "fb79a7398af4872f6cb129914dfea12b96cb8d6d",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+          "source": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+          "main": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+          "candidate": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "source": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+          "main": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+          "candidate": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "source": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+          "main": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+          "candidate": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "source": "928077a19ec1c6ac7a09a10313a9e8530194606f",
+          "main": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+          "candidate": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "source": "d1fcc0b09ffd996cd84be5821229c49158d394e9",
+          "main": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+          "candidate": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "names": [
+        "chatgpt/ghostpay-idle-lifecycle-20261119"
+      ],
+      "scope_files": 133,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 5,
+      "candidate_exact_file_count": 5
+    },
+    {
+      "head": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+      "names": [
+        "chatgpt/ghostpay-idle-lifecycle-qualified-20261119"
+      ],
+      "scope_files": 14,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "names": [
+        "chatgpt/ghostpay-mythril-checker-failclosed-20261118"
+      ],
+      "scope_files": 7,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/dependabot.yml",
+          "source": "b3a712db55891caf61384e3f4d87804a40607125",
+          "main": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+          "candidate": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": "8376a55edfa06b511c1a68de2c008cb0de51f595",
+          "main": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "candidate": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "source": "d2d6b8310e926ba799b909ee0c6858a87caac0e7",
+          "main": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+          "candidate": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/package.json",
+          "source": "c402fa8d00a384766a3c53da624e9e4f2ba09ea7",
+          "main": "087747cbd56412fe67551b10d874805d01e7f2a4",
+          "candidate": "087747cbd56412fe67551b10d874805d01e7f2a4",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "source": "813431c540a31671352025d0d44052102f33d82f",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/contract-analysis/mythril-disposition-check.mjs",
+          "source": "c18bd4337dd18f197fe7d3e287b37691f9fea240",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/tests/mythril-disposition-check.test.mjs",
+          "source": "d8d056f09b84ece35f7c768970a637a929f1285c",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "names": [
+        "chatgpt/ghostpay-own-node-guard-20261118"
+      ],
+      "scope_files": 93,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "names": [
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "scripts/pages/verify-pages-artifact.mjs",
+          "source": "b13870688d722fe5928ed192499ae76be55554ee",
+          "main": null,
+          "candidate": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/pages/verify-pages-artifact.test.mjs",
+          "source": "341e14cfd555a8db44eba8861458b682dedd54ff",
+          "main": null,
+          "candidate": "d827559a5db32969b955d4f299a65db420010824",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "names": [
+        "chatgpt/ghostpay-pinned-signer-completion-20261119"
+      ],
+      "scope_files": 141,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "names": [
+        "chatgpt/ghostpay-privacy-browser-fixtures-20261118"
+      ],
+      "scope_files": 100,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "names": [
+        "chatgpt/ghostpay-private-scan-completion-20261119"
+      ],
+      "scope_files": 23,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "names": [
+        "chatgpt/ghostpay-recovery-review-20261118"
+      ],
+      "scope_files": 36,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "names": [
+        "chatgpt/ghostpay-remaining-work-20261119"
+      ],
+      "scope_files": 168,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "names": [
+        "chatgpt/ghostpay-rpc-filter-guard-20261114"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 1,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "source": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main": "762deed547d68f934999994d770369b2ee95c9ad",
+          "candidate": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "source": "1a87d1828ed753c6cfc12a43d7ede50247678352",
+          "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "candidate": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "names": [
+        "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+        "chatgpt/pages-browser-fixes-combined-20261114"
+      ],
+      "scope_files": 4,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "source": "d763331e0ece90b905fbdcef4c6185ad66d22374",
+          "main": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+          "candidate": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "source": "da3a822f186217203aeb2147fddc3e08022a1d86",
+          "main": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+          "candidate": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "source": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main": "762deed547d68f934999994d770369b2ee95c9ad",
+          "candidate": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "source": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "candidate": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main_equal": true,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "names": [
+        "chatgpt/ghostpay-six-fixes-combined-20261112"
+      ],
+      "scope_files": 6,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6,
+      "files": [
+        {
+          "path": "packages/cli/src/args.test.ts",
+          "source": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "main": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "candidate": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/cli/src/args.ts",
+          "source": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "main": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "candidate": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/merchant-billing/src/csv.test.ts",
+          "source": "2ae934c679705fd4e442cf4d00151794f9fb3ebb",
+          "main": "2ae934c679705fd4e442cf4d00151794f9fb3ebb",
+          "candidate": "2ae934c679705fd4e442cf4d00151794f9fb3ebb",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/merchant-billing/src/schedule.test.ts",
+          "source": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "main": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "candidate": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/ux-schedule/src/scheduled.test.ts",
+          "source": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "main": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "candidate": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/ux-schedule/src/scheduled.ts",
+          "source": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "main": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "candidate": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "names": [
+        "chatgpt/ghostpay-sonar-review-20261118"
+      ],
+      "scope_files": 33,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "names": [
+        "chatgpt/ghostpay-sweep-balance-consent-20261118"
+      ],
+      "scope_files": 12,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "names": [
+        "chatgpt/ghostpay-sweep-ledger-memory-20261118"
+      ],
+      "scope_files": 93,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "names": [
+        "chatgpt/ghostpay-tm-hardening-20261118"
+      ],
+      "scope_files": 145,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "names": [
+        "chatgpt/ghostpay-viem-alignment-20261118"
+      ],
+      "scope_files": 69,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "names": [
+        "chatgpt/spec18-recovery-completion-20261118"
+      ],
+      "scope_files": 135,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "names": [
+        "chatgpt/spec18-recovery-reviewed-20261118-a264"
+      ],
+      "scope_files": 137,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "names": [
+        "chatgpt/zero-codex/cli-sentinel-value-20261111"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "packages/cli/src/args.test.ts",
+          "source": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "main": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "candidate": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/cli/src/args.ts",
+          "source": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "main": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "candidate": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "names": [
+        "chatgpt/zero-codex/merchant-schedule-horizon-20261111"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 1,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "packages/merchant-billing/src/schedule.test.ts",
+          "source": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "main": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "candidate": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "names": [
+        "chatgpt/zero-codex/onion-canonical-host-20261111"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "packages/net-transport/src/core.test.ts",
+          "source": "9e74331f2b5dedc328e36af9687fe87ae2dc0336",
+          "main": "9e74331f2b5dedc328e36af9687fe87ae2dc0336",
+          "candidate": "9e74331f2b5dedc328e36af9687fe87ae2dc0336",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/net-transport/src/onion.ts",
+          "source": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+          "main": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+          "candidate": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "names": [
+        "chatgpt/zero-codex/pages-negative-fiat-regression-20261114"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 1,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/lib/format.ts",
+          "source": "18dad7e4235c922bb7f197312317cc86557a12c2",
+          "main": "18dad7e4235c922bb7f197312317cc86557a12c2",
+          "candidate": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+          "main_equal": true,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "names": [
+        "chatgpt/zero-codex/pages-owner-transfer-filter-20261115"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "source": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main": "762deed547d68f934999994d770369b2ee95c9ad",
+          "candidate": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "source": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "candidate": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main_equal": true,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "names": [
+        "chatgpt/zero-codex/pages-qr-combined-20261115"
+      ],
+      "scope_files": 6,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 3,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "source": "2e2c26459d1a9fd9f92a6f2ff80c36a2af7e933b",
+          "main": "990d723ee8877c6de7f9f604a3e7e183bb6ff358",
+          "candidate": "257b634250f033ddec042b67941fec23ffba1323",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "source": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+          "main": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+          "candidate": "a85e1011cdface74c87683146ff7428654b7830d",
+          "main_equal": true,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "source": "d763331e0ece90b905fbdcef4c6185ad66d22374",
+          "main": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+          "candidate": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "source": "da3a822f186217203aeb2147fddc3e08022a1d86",
+          "main": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+          "candidate": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "source": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main": "762deed547d68f934999994d770369b2ee95c9ad",
+          "candidate": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "source": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "candidate": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main_equal": true,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "names": [
+        "chatgpt/zero-codex/pages-scan-transfer-filter-20261114"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "source": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main": "762deed547d68f934999994d770369b2ee95c9ad",
+          "candidate": "762deed547d68f934999994d770369b2ee95c9ad",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "source": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+          "candidate": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "main_equal": true,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "names": [
+        "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "source": "34463a8849a430407fbb99ae5c2e046be191ca1d",
+          "main": "01beb3c0c5cf3142ad957a9e1209f15871062082",
+          "candidate": "01beb3c0c5cf3142ad957a9e1209f15871062082",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "names": [
+        "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "packages/ux-schedule/src/scheduled.test.ts",
+          "source": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "main": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "candidate": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/ux-schedule/src/scheduled.ts",
+          "source": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "main": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "candidate": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "names": [
+        "chatgpt/zero-codex/ux-guide-plain-object-20261111"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": true,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "packages/ux-guide/src/profiles.test.ts",
+          "source": "ab67eea47a034bc7d4e3cd95f5864b75b8bafc4f",
+          "main": "ab67eea47a034bc7d4e3cd95f5864b75b8bafc4f",
+          "candidate": "ab67eea47a034bc7d4e3cd95f5864b75b8bafc4f",
+          "main_equal": true,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/ux-guide/src/profiles.ts",
+          "source": "b6a18547cd19ec2c4a624e4d08cc55393fd359e3",
+          "main": "b6a18547cd19ec2c4a624e4d08cc55393fd359e3",
+          "candidate": "b6a18547cd19ec2c4a624e4d08cc55393fd359e3",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "names": [
+        "claude/exciting-brown-7v69cr"
+      ],
+      "scope_files": 36,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "names": [
+        "claude/ghostpay-completion-audit-ot5jjm"
+      ],
+      "scope_files": 40,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "names": [
+        "claude/ghostpay-consolidation-9xhtxg-feeguard"
+      ],
+      "scope_files": 5,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "packages/contracts/.gas-snapshot",
+          "source": "c5501171e498089cef03d37cc7547338210a935b",
+          "main": "e2b30d0fc25752a05105979799d54c74d16c103d",
+          "candidate": "e2b30d0fc25752a05105979799d54c74d16c103d",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/contracts/script/DeployPolicy.s.sol",
+          "source": "c20b4f85726f3634d91be71372cdcafda778ce4b",
+          "main": "ba2e6861fe48f99b1659d54b7f1596f46b6365f1",
+          "candidate": "ba2e6861fe48f99b1659d54b7f1596f46b6365f1",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/contracts/scripts/pre-deploy-check.sh",
+          "source": "ab298293d420a1075e11908649108db18cf75ccb",
+          "main": "0e85d5d4694ed10ec7d670fd09e493891146f5f1",
+          "candidate": "0e85d5d4694ed10ec7d670fd09e493891146f5f1",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/contracts/test/DeployChecksum.t.sol",
+          "source": "b732ef32587ac73dac65b7b3513fd799e5532769",
+          "main": "511d1c0801b496bcdda08015ec62e6a8014655ff",
+          "candidate": "511d1c0801b496bcdda08015ec62e6a8014655ff",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/contracts/test/DeployPolicy.t.sol",
+          "source": "38c6180c0e54805e162ac6efa89dfc06cc3bab65",
+          "main": "60ea62010d3beab805393faaf187e8451ed1de20",
+          "candidate": "60ea62010d3beab805393faaf187e8451ed1de20",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "names": [
+        "claude/ghostpay-consolidation-9xhtxg-security"
+      ],
+      "scope_files": 7,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/dependabot.yml",
+          "source": "b3a712db55891caf61384e3f4d87804a40607125",
+          "main": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+          "candidate": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": "8376a55edfa06b511c1a68de2c008cb0de51f595",
+          "main": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "candidate": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "source": "d2d6b8310e926ba799b909ee0c6858a87caac0e7",
+          "main": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+          "candidate": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/package.json",
+          "source": "c402fa8d00a384766a3c53da624e9e4f2ba09ea7",
+          "main": "087747cbd56412fe67551b10d874805d01e7f2a4",
+          "candidate": "087747cbd56412fe67551b10d874805d01e7f2a4",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "source": "813431c540a31671352025d0d44052102f33d82f",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/contract-analysis/mythril-disposition-check.mjs",
+          "source": "2e5a12ba0f5b94a1d19fa16924ee03a82d50503c",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/tests/mythril-disposition-check.test.mjs",
+          "source": "79d6b5b146c6e47aeeb23f95001671636312adf9",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "names": [
+        "claude/ghostpay-consolidation-9xhtxg-spec18"
+      ],
+      "scope_files": 36,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "names": [
+        "claude/ghostpay-lean-core-milestone-t5lwox"
+      ],
+      "scope_files": 14,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 4,
+      "candidate_exact_file_count": 4
+    },
+    {
+      "head": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "names": [
+        "claude/gifted-planck-115x2k"
+      ],
+      "scope_files": 10,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "names": [
+        "claude/happy-maxwell-onl4x5"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "scripts/audit/gen-audit24-report.py",
+          "source": "0f36232ad18705594ef7b4f947bab7b44052f0f8",
+          "main": "e27caa6145e42d9d37574ad323c53b9484c70c91",
+          "candidate": "e27caa6145e42d9d37574ad323c53b9484c70c91",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "scripts/tests/audit-report-paths.test.mjs",
+          "source": "7d085576051b837a5bd7b5b752f95d23ce9a3ef9",
+          "main": "88ec73720e28c4cdf15751d46f9458decc376869",
+          "candidate": "88ec73720e28c4cdf15751d46f9458decc376869",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+      "names": [
+        "claude/lucid-meitner-apalzc"
+      ],
+      "scope_files": 18,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 3
+    },
+    {
+      "head": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "names": [
+        "claude/vibrant-cori-scu18b"
+      ],
+      "scope_files": 24,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "names": [
+        "claude/vigilant-johnson-yjgq94"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "source": "05a7afe39153af64be7fd47bba1e06ccdfe05b5f",
+          "main": "f898ade764504ab8aee0024194afed15f35f92fb",
+          "candidate": "f898ade764504ab8aee0024194afed15f35f92fb",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "names": [
+        "codex/ghostpay-cloud-41868394956"
+      ],
+      "scope_files": 3,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 1,
+      "candidate_exact_file_count": 1,
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/schema.test.ts",
+          "source": "4efb57ce07ce1a63c4a4bafb4595325e1d874948",
+          "main": "d48560381e74c3649419ac08e3fb4ba5eed03986",
+          "candidate": "d48560381e74c3649419ac08e3fb4ba5eed03986",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.ts",
+          "source": "328c8c03e1aefe93407ec4382dbb18196b684fb7",
+          "main": "b6fae850aedfc3e6d35a32eb3c8b0a4ea217f544",
+          "candidate": "b6fae850aedfc3e6d35a32eb3c8b0a4ea217f544",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/invoice-schema/src/sign.test.ts",
+          "source": "d477fdb5d25c899e47f16a83c9b15d3d89bbe7f9",
+          "main": "d477fdb5d25c899e47f16a83c9b15d3d89bbe7f9",
+          "candidate": "d477fdb5d25c899e47f16a83c9b15d3d89bbe7f9",
+          "main_equal": true,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "73545f63112910d46002718354ab5e99f8652e1f",
+      "names": [
+        "codex/ghostpay-consolidation-followthrough-20261119"
+      ],
+      "scope_files": 238,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 4
+    },
+    {
+      "head": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+      "names": [
+        "codex/ghostpay-export-authorization-20261119"
+      ],
+      "scope_files": 239,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2
+    },
+    {
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "names": [
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "scope_files": 236,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2
+    },
+    {
+      "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "names": [
+        "codex/ghostpay-private-checkpoint-browser-20261119"
+      ],
+      "scope_files": 239,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2
+    },
+    {
+      "head": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "names": [
+        "codex/ghostpay-private-scan-lint-20261119"
+      ],
+      "scope_files": 236,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2
+    },
+    {
+      "head": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "names": [
+        "codex/ghostpay-recovered-lean-checkpoint-20261028"
+      ],
+      "scope_files": 167,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 27,
+      "candidate_exact_file_count": 25
+    },
+    {
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "names": [
+        "codex/ghostpay-security-audit-20261030"
+      ],
+      "scope_files": 12,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "names": [
+        "codex/network-isolation-complete-20261119"
+      ],
+      "scope_files": 158,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "names": [
+        "codex/setup-autonomous-agent-20261104"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/workflows/openai-agents.yml",
+          "source": "12bb438e78108c01ad024467889a088c5e161617",
+          "main": null,
+          "candidate": null,
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "names": [
+        "dependabot/github_actions/actions-b9ade1236b"
+      ],
+      "scope_files": 5,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "source": "30b27a594fba1eeeb7f17bcd38ed6337a118fc65",
+          "main": "3fb2f03dc8fa4f9bad1cac94bbdfe063662e58a7",
+          "candidate": "3fb2f03dc8fa4f9bad1cac94bbdfe063662e58a7",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/contract-analysis.yml",
+          "source": "b91991f15f1cc945dae2a7950e3d660fd90b2750",
+          "main": "ab4b881de3f586869d1efbaec32799d9082193fd",
+          "candidate": "ab4b881de3f586869d1efbaec32799d9082193fd",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": "eb80237502c74954d1af731cda2d436bd0cde843",
+          "main": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "candidate": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "source": "efc44c6f73b7ac1d31b9c6036dbd3fd3b7e230bc",
+          "main": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+          "candidate": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": ".github/workflows/nightly.yml",
+          "source": "29a4fe85f215706266d45aae95daaa446a8c4d18",
+          "main": "0616119e96c0e22a02105989bb6b2a95bfc270a1",
+          "candidate": "0616119e96c0e22a02105989bb6b2a95bfc270a1",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "names": [
+        "dependabot/npm_and_yarn/npm-major-1ddf9439d6"
+      ],
+      "scope_files": 69,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "names": [
+        "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c"
+      ],
+      "scope_files": 69,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "names": [
+        "evidence/ghostpay-completion-20261120"
+      ],
+      "scope_files": 273,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 23
+    },
+    {
+      "head": "6fe35de42587e8da06e2590983b584ffde93d40f",
+      "names": [
+        "evidence/ghostpay-remediation-20261120"
+      ],
+      "scope_files": 266,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "names": [
+        "feat/ghostpay-privacy-quick-hide-20261120"
+      ],
+      "scope_files": 294,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "names": [
+        "fix/ghostpay-cloud-api-secret-aliases-20261103"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "source": "be5e694fbd0c48960a2643c1df5d5e6e7c7bb629",
+          "main": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "candidate": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "names": [
+        "fix/ghostpay-format-validation-20261120"
+      ],
+      "scope_files": 275,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 25
+    },
+    {
+      "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "names": [
+        "fix/ghostpay-pages-integrity-gate-20261120"
+      ],
+      "scope_files": 266,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "172695efb41665a4e50d335029e54184bbb5b328",
+      "names": [
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7"
+      ],
+      "scope_files": 263,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "names": [
+        "fix/remediation-b16c7936-5ce634"
+      ],
+      "scope_files": 1,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "source": "67c9949a62e3df16766ac655ced5eda98042cd55",
+          "main": "043fb19af6e3ccf88224122185192829eed29c92",
+          "candidate": "043fb19af6e3ccf88224122185192829eed29c92",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "names": [
+        "fix/remediation-f95457fd-22ecf9"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0,
+      "files": [
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "source": "329f1963c82cb8f606e1989c05803868fcb7b6ce",
+          "main": "2d6e6e6a6afe4f066c4e23027366bf9dd9d57577",
+          "candidate": "2d6e6e6a6afe4f066c4e23027366bf9dd9d57577",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "source": "0cc9a6faf499a1ef56520190a2db57c7b4fe6636",
+          "main": "7058f958a66eafc4c6bc77156cb968e5bd23cc40",
+          "candidate": "7058f958a66eafc4c6bc77156cb968e5bd23cc40",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "names": [
+        "ghostpay-cloud-recovery-2026-10-26"
+      ],
+      "scope_files": 155,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 27,
+      "candidate_exact_file_count": 25
+    },
+    {
+      "head": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "names": [
+        "ghostpay-local-lean-boundary-20261027"
+      ],
+      "scope_files": 167,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 27,
+      "candidate_exact_file_count": 25
+    },
+    {
+      "head": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "names": [
+        "ghostpay-offline-deps-2026-10-27"
+      ],
+      "scope_files": 158,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 27,
+      "candidate_exact_file_count": 25
+    },
+    {
+      "head": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "names": [
+        "ghostpay-sbom-repro-2026-10-27"
+      ],
+      "scope_files": 160,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 27,
+      "candidate_exact_file_count": 25
+    },
+    {
+      "head": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+      "names": [
+        "integration/ghostpay-adapter-qualification-20261119"
+      ],
+      "scope_files": 9,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2
+    },
+    {
+      "head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "names": [
+        "integration/ghostpay-completion-20261120"
+      ],
+      "scope_files": 273,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 23
+    },
+    {
+      "head": "22af2074a086d9957a18e310ef8572b28d1facd0",
+      "names": [
+        "integration/ghostpay-historical-promotion-20261118"
+      ],
+      "scope_files": 7,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "packages/chain-adapters/src/deployments.test.ts",
+          "source": "251fdedabf2f2be66ce1a0b48946ee5721fe7691",
+          "main": "8ad8ca9c354435a2acf491bb4372a98e21e08738",
+          "candidate": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/deployments.ts",
+          "source": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+          "main": "a6d2aa4c10ec317cd3c91b0ac09447d755180425",
+          "candidate": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "source": "ab98c68605acba6a7d094e631ab1431ab88e2763",
+          "main": "a6348941fa36533ca408d8a10e059fcd52ed5884",
+          "candidate": "ab98c68605acba6a7d094e631ab1431ab88e2763",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "source": "7ba46b7e6b8c292ee32c85b3da9399348dcea3dd",
+          "main": "cbc9b3498b3411b2a8187ece3fc97f928bef6e13",
+          "candidate": "f7bb85cb0296ccae726859842b06c6f76b6974b8",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.ts",
+          "source": "2d631ed4a13c2794805ddf7162de75264bb5918c",
+          "main": "60b3505d3bc62089afd1ed4741bea29273ebea8a",
+          "candidate": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/tron-adapter/src/rpc.ts",
+          "source": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+          "main": "45983a55998d9ba820c00466f941670231cb445a",
+          "candidate": "45983a55998d9ba820c00466f941670231cb445a",
+          "main_equal": false,
+          "candidate_equal": false
+        },
+        {
+          "path": "packages/tron-adapter/src/scan.test.ts",
+          "source": "571666de60c6b6aec0dd80a94209e067a08f5a66",
+          "main": "a4ef47e515a184e9bf64db6a995c9503daf0ba0d",
+          "candidate": "a4ef47e515a184e9bf64db6a995c9503daf0ba0d",
+          "main_equal": false,
+          "candidate_equal": false
+        }
+      ]
+    },
+    {
+      "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "names": [
+        "integration/ghostpay-idle-session-completion-20261119"
+      ],
+      "scope_files": 16,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "885b9569e6fc99e43bf01d23305494275e10120e",
+      "names": [
+        "integration/ghostpay-main-unique-code-20261120"
+      ],
+      "scope_files": 10,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 8
+    },
+    {
+      "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "names": [
+        "integration/ghostpay-master-consolidation-20261118"
+      ],
+      "scope_files": 242,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "names": [
+        "integration/ghostpay-mythril-security-closure-20261118"
+      ],
+      "scope_files": 21,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "names": [
+        "integration/ghostpay-pages-completion-20261118"
+      ],
+      "scope_files": 131,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "names": [
+        "integration/ghostpay-recovery-reconciled-20261119"
+      ],
+      "scope_files": 137,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 6,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "1054daabc5cabe958466ec144582d76137b54910",
+      "names": [
+        "nodata/jolly-rubin-u4zd45"
+      ],
+      "scope_files": 33,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "names": [
+        "nodata/wonderful-darwin-kd1h22"
+      ],
+      "scope_files": 70,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "names": [
+        "privacy/hardening-recommendations"
+      ],
+      "scope_files": 92,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "names": [
+        "release/ghostpay-beta-qualification-20261119"
+      ],
+      "scope_files": 265,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    },
+    {
+      "head": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "names": [
+        "repair/ghostpay-270-policy-fixture-20261119"
+      ],
+      "scope_files": 238,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 4
+    },
+    {
+      "head": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+      "names": [
+        "repair/ghostpay-276-artifact-races-20261119"
+      ],
+      "scope_files": 2,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": true,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 2,
+      "files": [
+        {
+          "path": "scripts/pages/verify-pages-artifact.mjs",
+          "source": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+          "main": null,
+          "candidate": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+          "main_equal": false,
+          "candidate_equal": true
+        },
+        {
+          "path": "scripts/pages/verify-pages-artifact.test.mjs",
+          "source": "d827559a5db32969b955d4f299a65db420010824",
+          "main": null,
+          "candidate": "d827559a5db32969b955d4f299a65db420010824",
+          "main_equal": false,
+          "candidate_equal": true
+        }
+      ]
+    },
+    {
+      "head": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "names": [
+        "repair/ghostpay-analyzer-recovered-20261119"
+      ],
+      "scope_files": 246,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+      "names": [
+        "repair/ghostpay-final-lint-20261119"
+      ],
+      "scope_files": 248,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+      "names": [
+        "repair/ghostpay-native-fee-recovered-20261119"
+      ],
+      "scope_files": 247,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 6
+    },
+    {
+      "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "names": [
+        "repair/ghostpay-pr-87-20261119"
+      ],
+      "scope_files": 71,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 2,
+      "candidate_exact_file_count": 2
+    },
+    {
+      "head": "4085622463411d3ba27f4efb7b73a70575170535",
+      "names": [
+        "repair/ghostpay-pr-231-20261118"
+      ],
+      "scope_files": 14,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "names": [
+        "repair/ghostpay-qr-surrogates-20261119"
+      ],
+      "scope_files": 250,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 8
+    },
+    {
+      "head": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "names": [
+        "review/ghostpay-sweep-quote-lifecycle-20261119"
+      ],
+      "scope_files": 15,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "names": [
+        "security/mythril-full-remediation-20261118"
+      ],
+      "scope_files": 22,
+      "comparison_limited": false,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 0
+    },
+    {
+      "head": "d6819796a9542acc488b896786faffe83b913d9b",
+      "names": [
+        "snapshot/ghostpay-privacy-8be15289-20261120"
+      ],
+      "scope_files": 293,
+      "comparison_limited": true,
+      "all_scoped_files_exact_at_main": false,
+      "all_scoped_files_exact_at_candidate": false,
+      "main_exact_file_count": 0,
+      "candidate_exact_file_count": 14
+    }
+  ]
+}
