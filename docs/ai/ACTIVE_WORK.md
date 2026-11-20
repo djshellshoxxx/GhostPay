@@ -1,3 +1,15 @@
+# Browser amount parsing boundary — 2026-11-20T02:43Z (isolated cycle)
+
+Worker: one ChatGPT engineering worker acting sequentially (no independent native verifier available).
+Branch: `automation/20261120T0243Z/worker/format-units-validation`.
+Exact main base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; source blob `apps/web/src/lib/format.ts` `18dad7e4235c922bb7f197312317cc86557a12c2`.
+Owned paths: `apps/web/src/lib/format.ts`, `apps/web/src/lib/format.test.ts`, and a new task-specific handoff. The only shared file modified is this branch-local, additive claim.
+Problem: exported `parseUnits` returns a huge base-unit amount for unsupported decimals 37, and throws native RangeError/TypeError for fractional decimals or non-string inputs, contrary to its documented undefined-on-unexpected contract. Node 22.16 reproduced on an exact blob-matched local copy. Normal typed callers are not alleged to exploit this.
+Acceptance: bad runtime decimal parameters and non-string inputs return undefined; valid 0..36 decimal parsing remains byte-/value-compatible; tests committed before production fix, followed by focused execution and TypeScript checks when feasible. No amount-policy, transaction, wallet, cryptography, dependency, workflow, release or gate changes.
+Ownership: manual privacy coordinator owns issue #286 / PR293 and generation-6 repository lock; #278 is active broad integration. This lane touches neither and will not integrate into shared branches or main. Recheck owner/CI before any future integration.
+
+---
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
