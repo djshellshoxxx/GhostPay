@@ -1,0 +1,45 @@
+{
+  "source": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "node": "v24.22.3",
+  "amount": "1",
+  "maxAtomicBound": "1000",
+  "observations": [
+    {
+      "name": "zero",
+      "outcome": "value",
+      "mantissa": "1",
+      "scale": 0
+    },
+    {
+      "name": "integer",
+      "outcome": "value",
+      "mantissa": "1",
+      "scale": 0
+    },
+    {
+      "name": "negative",
+      "outcome": "error",
+      "nameOfError": "PaymentUriError",
+      "code": "INVALID_AMOUNT"
+    },
+    {
+      "name": "fractional",
+      "outcome": "error",
+      "nameOfError": "RangeError",
+      "code": null
+    },
+    {
+      "name": "NaN",
+      "outcome": "error",
+      "nameOfError": "RangeError",
+      "code": null
+    },
+    {
+      "name": "positive-infinity",
+      "outcome": "error",
+      "nameOfError": "RangeError",
+      "code": null
+    }
+  ],
+  "wrongErrorClass": 3
+}

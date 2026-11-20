@@ -1,0 +1,12 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../GhostPay-qa/apps/web/vite.config" without a file extension (../../../qa-browser/workflow.config.mts:1:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <QA_REPOSITORY>/apps/web
+
+ ✓ ../../../qa-browser/ledger-probes.test.tsx > ledger activation test synchronization > presence-only click can be ignored while preview readback is pending, but enabled-state click succeeds 1064ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  22:20:46
+   Duration  9.20s (transform 37%, environment 30%, import 21%, tests 12%)

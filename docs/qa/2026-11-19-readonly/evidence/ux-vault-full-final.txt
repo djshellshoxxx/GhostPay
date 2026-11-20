@@ -1,0 +1,98 @@
+
+ RUN  v5.0.5 <QA_REPOSITORY>/packages/ux-vault
+      Coverage enabled with v8
+
+ ✓ src/portable-parity.test.ts (148 tests) 196820ms
+   ✓ keystore (13)
+     ✓ round-trips and writes versioned JSON without plaintext keys 3641ms
+     ✓ uses the production cost by default 23483ms
+     ✓ produces different ciphertext each time (fresh salt and IV) 4175ms
+     ✓ rejects a wrong passphrase 3301ms
+     ✓ rejects tampered public metadata (it is authenticated) 3739ms
+     ✓ rejects tampered ciphertext 3811ms
+     ✓ validates structure strictly on import (no attacker-chosen cost) 2320ms
+     ✓ rejects unknown envelope, KDF and metadata fields before derivation 1376ms
+     ✓ rejects authenticated public metadata that differs from the decrypted keys 2647ms
+     ✓ rejects a decrypted body with malformed keys 2742ms
+   ✓ L1-06: guessable passphrases (5)
+     ✓ keeps accepted Unicode backups interoperable with their normalized passphrase 4693ms
+   ✓ encrypted reconciliation vault (28)
+     ✓ rejects duplicate envelope fields and handles a large bounded ciphertext without regex stack overflow 493ms
+     ✓ rejects malformed decrypted schemas, duplicate identities, foreign scope and record overflow without activating 862ms
+     ✓ accepts bounded record collections then refuses a new record past the cap atomically 4178ms
+     ✓ durably invalidates and becomes explicitly read-only when one reorg exceeds the tombstone cap 2528ms
+     ✓ persists a saturated cutoff across cumulative reorg observations at the capacity boundary 703ms
+     ✓ warns when individually writable backup histories would saturate the combined vault 670ms
+   ✓ encrypted invoice registration and local matching (19)
+     ✓ bounds registrations atomically 4820ms
+   ✓ encrypted backups with registrations and receipts (2)
+     ✓ refuses imports that would exceed the registration or archive bounds 1676ms
+   ✓ archive round trip (6)
+     ✓ exports and re-imports 1 tag(s) into a fresh profile 2301ms
+     ✓ exports and re-imports 1000 tag(s) into a fresh profile 6705ms
+     ✓ uses the production scrypt profile by default and records it in the header 12377ms
+     ✓ rejects weak passphrases and over-cap contents 557ms
+     ✓ carries scan-history vault texts in a combined backup 4764ms
+     ✓ matches an independent node:crypto implementation of the documented format 2871ms
+   ✓ archive failure modes (5)
+     ✓ wrong passphrase fails with no write 2828ms
+     ✓ every byte of the file is authenticated or bounds-checked: flipping any single bit is rejected, with no partial write 16676ms
+     ✓ rejects truncation, extension, empty input and oversize before any key derivation 3755ms
+     ✓ rejects hostile KDF parameters without allocating (N too large, r/p zero or huge) 1182ms
+     ✓ strict schema: authentic archives with unknown fields or extra keys are rejected 5485ms
+   ✓ import semantics (3)
+     ✓ merge keeps the newest updatedAt and reports conflicts; replace makes the local set equal to the archive 5010ms
+     ✓ rejects a stale preview after any change, lock or second apply, and a forged preview object 5962ms
+     ✓ a failing atomic commit leaves the store unchanged 2699ms
+   ✓ key rotation (5)
+     ✓ archives made before a rotation still import with their own passphrase 2875ms
+   ✓ locked vault and XSS-while-locked (3)
+     ✓ every read, export, import and rotation path refuses while locked 1445ms
+     ✓ script with full access to the vault object and the raw store while locked learns no plaintext or key material 1563ms
+   ✓ tag archive vectors (test-vectors/tags.json) (18)
+     ✓ tags-001 decodes to the documented contents 1742ms
+     ✓ tags-002 decodes to the documented contents 1545ms
+     ✓ tags-003 decodes to the documented contents 1573ms
+     ✓ tags-004 decodes to the documented contents 1425ms
+     ✓ tags-005 decodes to the documented contents 18112ms
+     ✓ tags-bad-001 is refused with the auth message 2786ms
+     ✓ tags-bad-002 is refused with the auth message 3011ms
+     ✓ tags-bad-003 is refused with the auth message 3082ms
+     ✓ tags-bad-004 is refused with the auth message 2837ms
+     ✓ tags-bad-005 is refused with the auth message 1288ms
+     ✓ tags-bad-010 is refused with the format message 1942ms
+     ✓ tags-bad-011 is refused with the version message 2805ms
+     ✓ tags-bad-012 is refused with the format message 2040ms
+ ✓ src/vault.test.ts (22 tests) 387ms
+ ✓ src/envelope.test.ts (12 tests) 492ms
+ ✓ src/schema.test.ts (39 tests) 225ms
+ ✓ src/reconciliation-amounts.test.ts (19 tests) 141ms
+ ✓ src/contacts.test.ts (24 tests) 48ms
+ ✓ src/confusables.test.ts (20 tests) 33ms
+
+ Test Files  7 passed (7)
+      Tests  284 passed (284)
+   Start at  22:17:11
+   Duration  206.16s (tests 98%, import 2%)
+
+JSON report written to <QA_WORKSPACE>/qa-logs/ux-vault-final-results.json
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   96.37 |     93.3 |   99.68 |   98.66 |
+ confusables.ts    |     100 |    98.14 |     100 |     100 | 168
+ contacts.ts       |     100 |    98.68 |     100 |     100 | 213
+ ...re-portable.ts |   97.71 |    94.33 |     100 |   98.71 | 385,433
+ ...on-portable.ts |   93.35 |    91.36 |   99.18 |   96.88 | ...1073,1093-1095
+ schema.ts         |     100 |    96.29 |     100 |     100 | 107,111
+ ...ve-portable.ts |   88.48 |    82.35 |     100 |      99 | 247
+ vault.ts          |     100 |    95.08 |     100 |     100 | 104,207,230
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 96.37% ( 1541/1599 )
+Branches     : 93.3% ( 1115/1195 )
+Functions    : 99.68% ( 317/318 )
+Lines        : 98.66% ( 1258/1275 )
+================================================================================

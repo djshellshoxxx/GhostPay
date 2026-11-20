@@ -1,0 +1,136 @@
+{
+  "review_date": "2026-11-19 America/Los_Angeles",
+  "recorded_at_utc": "2026-11-20T06:33:49.169836+00:00",
+  "tested_source": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "refreshed_main": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+  "branch": "audit/ghostpay-qa-stress-20261119",
+  "artifact_kind": "documentation and evidence only; no executable harnesses or product/test/configuration edits",
+  "files": [
+    {
+      "path": "BROWSER_QA.md",
+      "bytes": 17334,
+      "sha256": "629908492c4b3d208da613d7162da45d7937efed3763aeaf82f7b8c4cbee2a0f"
+    },
+    {
+      "path": "CORE_QA.md",
+      "bytes": 11862,
+      "sha256": "1bf032c22883240f3649c6d7350ed334ab1a813945714954e5c5fcdaa827442f"
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 6171,
+      "sha256": "e94184b139f1fa64256e32d33a384dcb518ceb9494432b231d0702377f5c18b8"
+    },
+    {
+      "path": "QC_REVIEW.md",
+      "bytes": 19816,
+      "sha256": "42ade23492935837cee445e225b3559a0ef9fa33f3c6f6f1d9869bc8fb6f468c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6703,
+      "sha256": "4b552d3805db82747364e8795e415c3f76237f8209782026661e1a87c7481dbe"
+    },
+    {
+      "path": "TEST_RESULTS.md",
+      "bytes": 10367,
+      "sha256": "69c69e2890a13f892ba1b3fbf645e858cb0c43301113c65aab542eefff73d92b"
+    },
+    {
+      "path": "VAULT_STRESS_REVIEW.md",
+      "bytes": 3006,
+      "sha256": "0038ffd9e6f836102aca20be52cf48106072a0aeb66cfc8110aea6e87889ff06"
+    },
+    {
+      "path": "evidence/backup-overlap-probes.txt",
+      "bytes": 3098,
+      "sha256": "f8b2eee24144cea1ae22a1ad71876f1f85741b627ce5807cc3ec3a8849e9f1bf"
+    },
+    {
+      "path": "evidence/core-commands.json",
+      "bytes": 4212,
+      "sha256": "1a07b91ff87cca3c5b167828d8abf45e7db3d36fa26289a64aef6605862fa144"
+    },
+    {
+      "path": "evidence/core-crypto-full.txt",
+      "bytes": 2353,
+      "sha256": "4efa2cde0e3f9403125624a89cf82dd11bd7fd5b93a902427ac3779351a5f648"
+    },
+    {
+      "path": "evidence/core-seeded-results.json",
+      "bytes": 3392,
+      "sha256": "93c97ca921c5fec8e4f5b2e9bc12f59f5ab05a80c64774b64310eaa805a75f40"
+    },
+    {
+      "path": "evidence/decimal-options-results.json",
+      "bytes": 878,
+      "sha256": "71bb273c9c7039b270f42688f1087fc2f572840d9a8ecf99658fc827753b718d"
+    },
+    {
+      "path": "evidence/hosted-ci-snapshot.json",
+      "bytes": 36986,
+      "sha256": "e8f1d7ec8617bb5198087072348ae827800665ca8974d1cefdd4eeadf5a63fe5"
+    },
+    {
+      "path": "evidence/lean-web-build.txt",
+      "bytes": 2468,
+      "sha256": "c3b582fdd9973ff06dfd99f06af2b63c254a92a717b0a2d59c0df9481c0e616d"
+    },
+    {
+      "path": "evidence/ledger-isolated.txt",
+      "bytes": 3173,
+      "sha256": "1e7f687cdd5c62c9ca402a5ea38390864a4e2253279dd00d8bd11635e7cda949"
+    },
+    {
+      "path": "evidence/ledger-timing-diagnostic.txt",
+      "bytes": 766,
+      "sha256": "b47ab241bf76dfe6374a1d756b2fc23d6e89ba6c43b22d2db0b9d40671b989ff"
+    },
+    {
+      "path": "evidence/payment-uri-full.txt",
+      "bytes": 1359,
+      "sha256": "247286cd692068a36c2a7688021f0f5c59667731b7c9cbfb95eb2f9bee306f26"
+    },
+    {
+      "path": "evidence/scanner-native.txt",
+      "bytes": 925,
+      "sha256": "4544affa50b6f631d4e74c7d96f28c5815dbea8e73ea2917643bf5313f367466"
+    },
+    {
+      "path": "evidence/source-identity.json",
+      "bytes": 9182,
+      "sha256": "a80ed7e30b31cb84c7ebc8108d97fd88b0953f91759768d983324746f9f6a314"
+    },
+    {
+      "path": "evidence/source-refresh.json",
+      "bytes": 43540,
+      "sha256": "d22c65bc445d2e98ee0c6e4b7788b2cbd5f2360bd0fb7818fd1707dc7c30c51d"
+    },
+    {
+      "path": "evidence/test-report-summaries.json",
+      "bytes": 25244,
+      "sha256": "7c4ab98b52e7cf577ed7378c27d3be98b5c185b279a3d9fc559d2a8225ffaf89"
+    },
+    {
+      "path": "evidence/ux-vault-full-final.txt",
+      "bytes": 6152,
+      "sha256": "1f586e72dd491de893fd0829b6fefd280071da9c10782954477d24d4a58d3c15"
+    },
+    {
+      "path": "evidence/ux-vault-initial-incomplete.txt",
+      "bytes": 3480,
+      "sha256": "502de20b3ff342c480d04df1ab12920c0feb57e74f8f8f1dce2b03880eb0d2b8"
+    },
+    {
+      "path": "evidence/ux-vault-isolated-parity.txt",
+      "bytes": 2949,
+      "sha256": "05c77b0b03c0964db669edd637b54083bac98419c8a30747b2a58fa0bd55e68f"
+    },
+    {
+      "path": "evidence/vault-consistency-results.json",
+      "bytes": 955,
+      "sha256": "13b300e6987c99cfbbdaf58c500537f08bd66e48f4fd1d6fbeb68ac1c48ce3ea"
+    }
+  ],
+  "text_normalization": "ANSI escapes removed from selected logs; workspace paths replaced by QA placeholders; trailing whitespace and extra final blank lines removed. Assertions, counts and outcomes preserved."
+}

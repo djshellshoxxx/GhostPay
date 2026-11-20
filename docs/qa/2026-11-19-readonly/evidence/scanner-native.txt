@@ -1,0 +1,12 @@
+{"kind":"start","node":"v24.22.3","seed":"0x47504d31","batches":200,"batchSize":5000,"source":"apps/web/src/lib/scannerCore.ts","baseline":"c977b5d6723f6822c3b5d86cd6b231712c53c395"}
+{"kind":"progress","scanned":100000,"elapsedMs":10786}
+{"kind":"progress","scanned":200000,"elapsedMs":24551}
+{"kind":"progress","scanned":300000,"elapsedMs":36838}
+{"kind":"progress","scanned":400000,"elapsedMs":48483}
+{"kind":"progress","scanned":500000,"elapsedMs":61092}
+{"kind":"progress","scanned":600000,"elapsedMs":73096}
+{"kind":"progress","scanned":700000,"elapsedMs":84835}
+{"kind":"progress","scanned":800000,"elapsedMs":94942}
+{"kind":"progress","scanned":900000,"elapsedMs":104819}
+{"kind":"progress","scanned":1000000,"elapsedMs":114979}
+{"kind":"result","status":"passed","scanned":1000000,"batches":200,"batchSize":5000,"seed":"0x47504d31","elapsedMs":114980,"sampledPeakHeapBytes":176276456,"sampledPeakRssBytes":318287872}

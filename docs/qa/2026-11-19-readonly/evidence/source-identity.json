@@ -1,0 +1,157 @@
+[
+  {
+    "name": "main",
+    "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    }
+  },
+  {
+    "name": "PR278",
+    "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    }
+  },
+  {
+    "name": "PR300",
+    "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    }
+  },
+  {
+    "name": "PR302",
+    "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    }
+  },
+  {
+    "name": "PR303",
+    "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    }
+  },
+  {
+    "name": "PR305",
+    "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "437c684af1fac0f759607bb3fe4f8e37238a3d89"
+    },
+    "provenance": "GitHub contents API fetched at exact head; decoded source hashed using Git blob framing; matches main SellerKeys blob. Other runtime paths not separately hashed on this head."
+  },
+  {
+    "name": "main-refreshed-20261120",
+    "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+    "tree": "09649ff5d549a447fc67957c91dd254e7a53bfbd",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    },
+    "provenance": "Complete recursive GitHub tree metadata; finding blobs equal pinned main. Handler digests inherited from identical blob, not a rerun.",
+    "sourceOnly": true,
+    "testsExecutedOnThisHead": false,
+    "unchangedSelectedScopeFiles": 347,
+    "selectedScopeChangedFiles": 0,
+    "evidence": "source-refresh-20261120.json"
+  },
+  {
+    "name": "PR306",
+    "sha": "885b9569e6fc99e43bf01d23305494275e10120e",
+    "tree": "1df6c1eb364fb5a1c2a152715923649cdf6385f8",
+    "blobs": {
+      "apps/web/src/views/SellerKeys.tsx": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+      "packages/payment-uri/src/bitcoin.ts": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+      "packages/payment-uri/src/solana.ts": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+      "packages/payment-uri/src/tron.ts": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+      "packages/payment-uri/src/query.ts": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+      "packages/payment-uri/src/text.ts": "800753ae31adf85864ad0803d0f6bae06d09783f",
+      "packages/payment-uri/src/decimal.ts": "8d8ceb070d29d511a1080861f878bbc6d367798f"
+    },
+    "seller_handlers_sha256": {
+      "const stopOperation": "35f0f5897758889b7446f4348b3a8851168c27284f92d1ffc34ffa165fe4161e",
+      "const startOperation": "7bc6761f8a5b7651a83a6cacd0abe55982c4a501c2efa53e2d9ba22787ce9e8c",
+      "const onExport": "035837e6d9b5c615b6864990f44bc7ba333741e9787add13c69695430da1e63c",
+      "const onVerifyBackup": "ecc79fe919f66703ac98f10fef7c233afec66613f69ae04374f86a5658117d01"
+    },
+    "provenance": "Complete recursive GitHub tree metadata; finding blobs equal pinned main. Handler digests inherited from identical blob, not a rerun.",
+    "sourceOnly": true,
+    "testsExecutedOnThisHead": false,
+    "unchangedSelectedScopeFiles": 347,
+    "selectedScopeChangedFiles": 0,
+    "evidence": "source-refresh-20261120.json"
+  }
+]

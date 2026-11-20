@@ -1,0 +1,47 @@
+
+ RUN  v5.0.5 <QA_REPOSITORY>/packages/ux-vault
+
+ ✓ src/portable-parity.test.ts (148 tests) 43896ms
+   ✓ keystore (13)
+     ✓ round-trips and writes versioned JSON without plaintext keys 471ms
+     ✓ uses the production cost by default 3782ms
+     ✓ produces different ciphertext each time (fresh salt and IV) 541ms
+     ✓ rejects a wrong passphrase 436ms
+     ✓ rejects tampered ciphertext 328ms
+     ✓ validates structure strictly on import (no attacker-chosen cost) 391ms
+     ✓ rejects authenticated public metadata that differs from the decrypted keys 487ms
+     ✓ rejects a decrypted body with malformed keys 447ms
+   ✓ L1-06: guessable passphrases (5)
+     ✓ keeps accepted Unicode backups interoperable with their normalized passphrase 939ms
+   ✓ encrypted reconciliation vault (28)
+     ✓ rejects malformed decrypted schemas, duplicate identities, foreign scope and record overflow without activating 565ms
+     ✓ accepts bounded record collections then refuses a new record past the cap atomically 2643ms
+     ✓ durably invalidates and becomes explicitly read-only when one reorg exceeds the tombstone cap 1215ms
+     ✓ persists a saturated cutoff across cumulative reorg observations at the capacity boundary 353ms
+     ✓ warns when individually writable backup histories would saturate the combined vault 379ms
+   ✓ encrypted invoice registration and local matching (19)
+     ✓ bounds registrations atomically 5536ms
+   ✓ encrypted backups with registrations and receipts (2)
+     ✓ refuses imports that would exceed the registration or archive bounds 1921ms
+   ✓ archive round trip (6)
+     ✓ exports and re-imports 1 tag(s) into a fresh profile 363ms
+     ✓ exports and re-imports 1000 tag(s) into a fresh profile 7094ms
+     ✓ uses the production scrypt profile by default and records it in the header 1261ms
+     ✓ carries scan-history vault texts in a combined backup 773ms
+     ✓ matches an independent node:crypto implementation of the documented format 636ms
+   ✓ archive failure modes (5)
+     ✓ every byte of the file is authenticated or bounds-checked: flipping any single bit is rejected, with no partial write 3277ms
+     ✓ strict schema: authentic archives with unknown fields or extra keys are rejected 521ms
+   ✓ import semantics (3)
+     ✓ merge keeps the newest updatedAt and reports conflicts; replace makes the local set equal to the archive 495ms
+     ✓ rejects a stale preview after any change, lock or second apply, and a forged preview object 957ms
+     ✓ a failing atomic commit leaves the store unchanged 426ms
+   ✓ tag archive vectors (test-vectors/tags.json) (18)
+     ✓ tags-005 decodes to the documented contents 1859ms
+
+ Test Files  1 passed (1)
+      Tests  148 passed (148)
+   Start at  22:15:19
+   Duration  49.61s (tests 89%, transform 8%, import 3%)
+
+JSON report written to <QA_WORKSPACE>/qa-logs/portable-parity-isolated.json

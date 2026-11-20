@@ -1,0 +1,27 @@
+
+ RUN  v5.0.5 <QA_REPOSITORY>/apps/web
+
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > requires unlock and saves only selected verified scan evidence as ciphertext 998ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > keeps legacy records explicitly untrusted and permits only read, export and delete 229ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > invalidates pending unlock and hides records after scope changes or unmount 54ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > previews encrypted backups without applying them and clears preview when text changes 142ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > exports encrypted backups, confirms deletion and retains ciphertext after locking 94ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > does not present an imported historical invoice association as fresh verified settlement evidence 236ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > activates only a previewed encrypted backup as imported untrusted history 151ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > words the preview count as what activating would mark invalid, not as a future reorg (A-R4) 109ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > rejects stale preview callbacks after encrypted input changes 120ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > clears decrypted rendered observations immediately on seller session cancellation 98ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > reports storage and malformed backup failures without saving plaintext or showing stale matches 120ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > supports bounded raw export and deletion of unreadable legacy data after explicit consent 97ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > refreshes invalidation from another tab using payload-free broadcasts and closes channels 78ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > refreshes after foreground focus when cross-tab channels are unavailable 48ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > refreshes only after returning to a visible document when broadcasts are unavailable 73ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > warns before activating an empty saturated backup and displays read-only state after later unlock 1193ms
+ ✓ src/components/ReconciliationLedger.test.tsx > encrypted reconciliation UI > does not let a delayed action read overwrite a newer reorg refresh 168ms
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  22:20:11
+   Duration  10.71s (tests 39%, environment 31%, import 23%, transform 7%)
+
+JSON report written to <QA_WORKSPACE>/qa-browser/ledger-original-isolated.json

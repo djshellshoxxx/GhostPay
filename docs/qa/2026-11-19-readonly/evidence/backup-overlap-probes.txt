@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../GhostPay-qa/apps/web/vite.config" without a file extension (../../../qa-browser/workflow.config.mts:1:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 <QA_REPOSITORY>/apps/web
+
+ × ../../../qa-browser/workflow-probes.test.tsx > ordinary backup form overlap > export followed by verification settles both form busy flags 849ms
+   → expected <button type="submit" …(2)></button> to have property "disabled" with value false
+ × ../../../qa-browser/workflow-probes.test.tsx > ordinary backup form overlap > verification followed by export settles both form busy flags 442ms
+   → expected <button type="button" …(1)></button> to be null
+ ✓ ../../../qa-browser/workflow-probes.test.tsx > ordinary backup form overlap > control: a single completed export restores its own busy flag 275ms
+ ✓ ../../../qa-browser/workflow-probes.test.tsx > ordinary backup form overlap > control: explicit cancellation restores verification usability 223ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../../../qa-browser/workflow-probes.test.tsx > ordinary backup form overlap > export followed by verification settles both form busy flags
+AssertionError: expected <button type="submit" …(2)></button> to have property "disabled" with value false
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ ../../../qa-browser/workflow-probes.test.tsx:69:81
+     67|     await act(async () => { exportGate.release(envelope); await Promis…
+     68|     // Both async operations settled; there should be no outstanding e…
+     69|     expect(screen.getByRole('button', { name: 'Download encrypted keys…
+       |                                                                                 ^
+     70|   });
+     71|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  ../../../qa-browser/workflow-probes.test.tsx > ordinary backup form overlap > verification followed by export settles both form busy flags
+AssertionError: expected <button type="button" …(1)></button> to be null
+
+- Expected:
+null
+
++ Received:
+<button
+  class="btn"
+  type="button"
+>
+  Cancel verification
+</button>
+
+ ❯ ../../../qa-browser/workflow-probes.test.tsx:86:75
+     84|     await act(async () => { verifyGate.release(); await Promise.resolv…
+     85|     // Both async operations settled; the pending-verification UI must…
+     86|     expect(screen.queryByRole('button', { name: 'Cancel verification' …
+       |                                                                           ^
+     87|     expect(screen.getByRole('button', { name: 'Verify backup' })).toHa…
+     88|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  22:08:14
+   Duration  9.75s (transform 56%, tests 19%, import 15%, environment 10%)

@@ -1,0 +1,39 @@
+{
+  "source": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "seed": 1196447297,
+  "maxContacts": 5000,
+  "maxConcurrentMutations": 16,
+  "results": [
+    {
+      "name": "full address-book capacity and serialization",
+      "pass": true,
+      "records": 5000
+    },
+    {
+      "name": "seeded contact-operation model",
+      "pass": true,
+      "adds": 981,
+      "updates": 980,
+      "removes": 1039,
+      "roundtrips": 100,
+      "searches": 100,
+      "finalContacts": 4942
+    },
+    {
+      "name": "normal 600-record merge and persistence roundtrip",
+      "pass": true,
+      "records": 600
+    },
+    {
+      "name": "serialized concurrent mutations and default-KDF backup restore",
+      "pass": true,
+      "mutations": 256,
+      "concurrency": 16,
+      "restoredContacts": 256,
+      "writes": 261,
+      "kdf": "unchanged production defaults (600000 PBKDF2 iterations)"
+    }
+  ],
+  "durationMs": 86871.55,
+  "peakRssBytes": 331415552
+}

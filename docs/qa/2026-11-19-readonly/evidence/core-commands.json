@@ -1,0 +1,73 @@
+{
+  "source": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "checkout": "/workspace/scratch/cba2a7a04ebf/GhostPay-qa",
+  "commonArguments": ["run", "--maxWorkers=1", "--coverage.enabled=false", "--reporter=json"],
+  "runner": "node ../../node_modules/vitest/vitest.mjs",
+  "selections": [
+    {
+      "cwd": "packages/payment-uri",
+      "files": ["src/fuzz.test.ts", "src/vectors.test.ts"],
+      "testNamePattern": "round trips|test vectors|vectors|EIP|BIP|Solana|TRON|invoice links|canonical",
+      "outputFile": "/workspace/scratch/cba2a7a04ebf/qa-core/payment-uri-original.json",
+      "exitCode": 0,
+      "passed": 23,
+      "failed": 0,
+      "unselected": 13
+    },
+    {
+      "cwd": "packages/qr-exchange",
+      "files": ["src/multipart.test.ts", "src/assembler.test.ts", "src/generate.test.ts", "src/camera.test.ts", "src/settings-exchange.test.ts", "src/seller.test.ts", "src/readers.test.ts"],
+      "testNamePattern": "round.trip|reassembles in any order|reports progress|single chunk|16 KiB|refreshes the idle timer|reports SESSION_EXPIRED|never expires a completed|matches the CRC|attaches the stream|maps errors|requests a specific|stops tracks if|late aborted|lists distinct|reads the active|delivers distinct|waits for the video|resolves on abort|tolerates transient|default wait|stopVideo survives|uses the default reader|platform reader|jsQR fallback|canvas grabber|decodes a real QR|honours abort|prefers the platform|accepts the raw meta|preserves the existing exact|lists the five|emits the byte-identical|parses v1 payloads|keeps the legacy|normalizes URLs|accepted export|decoder|UTF-8",
+      "outputFile": "/workspace/scratch/cba2a7a04ebf/qa-core/qr-original.json",
+      "exitCode": 0,
+      "passed": 47,
+      "failed": 0,
+      "unselected": 186
+    },
+    {
+      "cwd": "packages/invoice-schema",
+      "files": ["src/base64url.test.ts", "src/expiry.test.ts", "src/schema.test.ts", "src/sign.test.ts", "src/envelope.test.ts", "src/fuzz.test.ts"],
+      "testNamePattern": "matches Node|empty string is empty|fills v|nonces are unique|same seed|omits memo|validateInvoice accepts boundary values|times up to|empty line items and a null|returns a fresh object|canonical form is|independent of property insertion|digest is|NFC text is|produces a 64-byte|is deterministic|round trips|round-trips|works with no memo|independent-implementation-compatible|key and GCM nonce are unique|injected RNG|arbitrary valid memo|expiry",
+      "outputFile": "/workspace/scratch/cba2a7a04ebf/qa-core/invoice-original.json",
+      "exitCode": 0,
+      "passed": 27,
+      "failed": 0,
+      "unselected": 161
+    },
+    {
+      "cwd": "packages/tx-review",
+      "files": ["src/property.test.ts", "src/golden.test.ts"],
+      "testNamePattern": "router payments|approve|direct sweep|relayed sweep and permit|golden",
+      "outputFile": "/workspace/scratch/cba2a7a04ebf/qa-core/tx-review-original.json",
+      "exitCode": 0,
+      "passed": 11,
+      "failed": 0,
+      "unselected": 1
+    }
+  ],
+  "fullPackages": [
+    {
+      "cwd": "packages/payment-uri",
+      "command": "node --max-old-space-size=1024 ../../node_modules/vitest/vitest.mjs run --coverage --maxWorkers=1 --reporter=json --outputFile=/workspace/scratch/cba2a7a04ebf/qa-core/payment-uri-full.json",
+      "exitCode": 0,
+      "passed": 199,
+      "failed": 0,
+      "skipped": 0,
+      "coveragePercent": { "statements": 97.31, "branches": 96.53, "functions": 100, "lines": 99.08 },
+      "unchangedThresholdPercent": { "statements": 95, "branches": 90, "functions": 95, "lines": 95 },
+      "overlap": "Includes all 23 payment-uri cases from the initial focused run; count once for distinct test totals."
+    }
+  ],
+  "supplemental": [
+    {
+      "command": "node --max-old-space-size=512 /workspace/scratch/cba2a7a04ebf/qa-core/normal-roundtrip-stress.mjs",
+      "exitCode": 1,
+      "result": "10220 passing cases plus 3 confirmed aggregate URI-length boundary failures; one failed group"
+    },
+    {
+      "command": "node --max-old-space-size=128 /workspace/scratch/cba2a7a04ebf/qa-core/decimal-option-boundaries.mjs",
+      "exitCode": 1,
+      "result": "3 control cases passed, 3 wrong error classes"
+    }
+  ]
+}
