@@ -1193,3 +1193,25 @@ Immutable donor: PR #332 `71632fa389ae93824b2f42d265278a9bd0f6de59`, original ru
 Owned paths: this additive claim, `apps/web/src/components/ReceiptPanel.tsx`, new `ReceiptPanel.archive.regeneration.test.tsx` and `ReceiptPanel.archive.rejection.test.tsx`, source-pinned receipt handoff/evidence.
 Acceptance: completed, delayed-success and delayed-rejection archive outcomes for A must not mark or report for distinct signed B; retain immutable pending writes and serialize within a mounted panel. Preserve every existing receipt/print test and all four newer print-target hunks. No signature/archive format, protocol, dependency, config, threshold, authority, fee, contract, relayer or deployment changes.
 Status: completed locally on qualified source `a656c3e5dbc385a892e3efc9bd12389b214051b8`; RED 10 passing controls/3 expected failures, final 57/57 compatibility cases, original web type/lint/lean build/secret/whitespace gates passed. Independent runtime and test-correction reviews approved. Initial lint failure is retained; no assertions or rules weakened. Handoff: `docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_R2_20261120.md`; evidence: `docs/consolidation/receipt-identity-r2-20261120/`. Root owns publication and required hosted/browser/full-web gates; no main/shared-ref mutation.
+
+
+## Request-file passphrase completion synchronization — 2026-11-20 continuation R3
+
+Worker: `/root/r3_feature_completion`; root owns independent review, publication
+and integration. Branch: `fix/ghostpay-request-file-async-20261120-r3`.
+Exact base: PR #335 `e31a090501b3f5e77afcee812323e6f69e1fd565`.
+Owned paths: `apps/web/src/views/Pay.requestFile.test.tsx`, this additive claim,
+and `docs/consolidation/request-file-async-r3-20261120/**`.
+Acceptance: qualify and repair only the passphrase test's asynchronous completion
+observation after hosted job `136548344602` on PR #333 exhausted its 15-second
+DOM query while real scrypt was still opening the invoice. Observe the promise
+returned by the actual single submitted `openFragment` call, retaining the real
+KDF, all original assertions, the 15-second DOM query and 60-second configured
+test bound. Preserve the original hosted failure and both lighter local controls;
+no reproduced product defect is claimed. Add no extra decryption, precomputed
+result, retry, sleep, dependency, timeout, coverage, product or workflow change.
+Keep #333 backup ownership and #335 receipt identity/printing behavior intact.
+Run the complete request-file and relevant Pay compatibility tests, original web
+typecheck/lint/build, and record source/dependency provenance and limitations.
+No local browser/socket attempts, remote mutation, live transaction or deployment.
+Status: claim recorded before test changes; source confirmation granted by root.
