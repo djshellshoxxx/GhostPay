@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import { normalizeFeeRate } from './GhostPay-latest/packages/metadata-hardening/dist/btc.js';
+import { padPrivatePart } from './GhostPay-latest/packages/metadata-hardening/dist/invoice.js';
+
+// Pure functional checks only: no RPC, wallet, signing or transfer operations.
+const findings = [];
+const rejectedCandidates = [];
+const actualRate = normalizeFeeRate('testnet', 0.5, { minRate: 1, cap: 0.8 });
+try {
+  assert.ok(actualRate >= 1, 'a returned fee rate must respect the minimum');
+} catch (error) {
+  findings.push({ name: 'fee rate minimum', expected: 'reject incompatible minimum and cap', actual: actualRate, assertion: error.message });
+}
+
+let padded;
+try {
+  padded = padPrivatePart({}, JSON.stringify);
+  assert.equal(new TextEncoder().encode(JSON.stringify(padded)).length, 256);
+} catch (error) {
+  rejectedCandidates.push({ name: 'empty private part padding', actual: error.message, disposition: 'not a valid invoice private part; schema requires lineItems, so no product finding' });
+}
+
+const normal = padPrivatePart({ lineItems: [], memo: 'normal control' }, JSON.stringify);
+assert.equal(new TextEncoder().encode(JSON.stringify(normal)).length, 256);
+assert.equal(normalizeFeeRate('testnet', 0.5, { minRate: 1, cap: 2 }), 1);
+console.log(JSON.stringify({ sourceRevision: 'e22c1748a3de6eb02f5be3abe27d634b238c67c6', controls: '2 passed', findings, rejectedCandidates }, null, 2));
+assert.equal(findings.length, 1, 'the ordinary fee-rate API mismatch should be observed');

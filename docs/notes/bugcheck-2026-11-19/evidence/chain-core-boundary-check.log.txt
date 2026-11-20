@@ -1,0 +1,19 @@
+{
+  "sourceRevision": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "controls": "2 passed",
+  "findings": [
+    {
+      "name": "fee rate minimum",
+      "expected": "reject incompatible minimum and cap",
+      "actual": 0.8,
+      "assertion": "a returned fee rate must respect the minimum"
+    }
+  ],
+  "rejectedCandidates": [
+    {
+      "name": "empty private part padding",
+      "actual": "canonicalizer does not produce bucket-sized output",
+      "disposition": "not a valid invoice private part; schema requires lineItems, so no product finding"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+ RUN  v5.0.5 /workspace/scratch/72c433175c66/GhostPay-bugcheck/packages/address-safety
+
+
+ Test Files  4 passed (4)
+      Tests  76 passed (76)
+   Start at  22:11:45
+   Duration  3.06s (import 74%, transform 15%, tests 10%, worker 2%)
+
+    Isolate  4 workers spawned · ~484ms startup each (spawn + environment, per file)
+             at least ~484ms faster with isolate: false — reuses workers across files instead of one per file
+

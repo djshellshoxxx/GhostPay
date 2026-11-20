@@ -1,0 +1,50 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../GhostPay-latest/apps/web/vite.config" without a file extension (../multichain-qa/vitest.config.mts:1:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /workspace/scratch/72c433175c66/GhostPay-latest/apps/web
+
+ × ../../../multichain-qa/policy-state.test.tsx > retains two distinct seller records with the same policy terms 1913ms
+   → expected null not to be null
+ × ../../../multichain-qa/policy-state.test.tsx > invalidates pending payment send when the reviewed amount is edited 1795ms
+   → expected [ { …(2) } ] to have a length of +0 but got 1
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../../../multichain-qa/policy-state.test.tsx > retains two distinct seller records with the same policy terms
+AssertionError: expected null not to be null
+ ❯ ../../../multichain-qa/policy-state.test.tsx:33:63
+     31|   await user.paste(serializePolicyRecord(r));await user.click(screen.g…
+     32|  }
+     33|  expect(screen.queryByText(two.metaAddress,{exact:true})).not.toBeNull…
+       |                                                               ^
+     34| });
+     35| it('invalidates pending payment send when the reviewed amount is edite…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  ../../../multichain-qa/policy-state.test.tsx > invalidates pending payment send when the reviewed amount is edited
+AssertionError: expected [ { …(2) } ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ ../../../multichain-qa/policy-state.test.tsx:54:62
+     52|  await user.clear(screen.getByLabelText('Amount (base units)'));await …
+     53|  await act(async()=>{release();await new Promise(r=>setTimeout(r,200))…
+     54|  expect(w.calls.filter(c=>c.method==='eth_sendTransaction')).toHaveLen…
+       |                                                              ^
+     55| });
+     56|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  22:23:41
+   Duration  17.25s (transform 30%, import 26%, tests 23%, environment 22%)
+

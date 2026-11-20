@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../GhostPay-bugcheck/apps/web/vite.config" without a file extension (../qa-main/vitest.config.mts:1:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.5 /workspace/scratch/72c433175c66/GhostPay-bugcheck/apps/web
+
+ ✓ ../../../qa-main/bugcheck-ui.test.tsx > keeps an unrelated draft RPC when only preferences are imported 2313ms
+ × ../../../qa-main/bugcheck-ui.test.tsx > does not display tags from the previous selected chain 1505ms
+   → expected <span class="wrap"></span> to be null
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../../../qa-main/bugcheck-ui.test.tsx > does not display tags from the previous selected chain
+AssertionError: expected <span class="wrap"></span> to be null
+
+- Expected:
+null
+
++ Received:
+<span
+  class="wrap"
+>
+  Audit tag chain A
+</span>
+
+ ❯ ../../../qa-main/bugcheck-ui.test.tsx:60:51
+     58|   await user.selectOptions(screen.getByLabelText('Chain'), '11155111');
+     59|   expect((screen.getByLabelText('Chain') as HTMLSelectElement).value).…
+     60|   expect(screen.queryByText('Audit tag chain A')).toBeNull();
+       |                                                   ^
+     61| });
+     62|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  22:11:41
+   Duration  51.51s (transform 73%, import 12%, tests 8%, environment 7%)
+
