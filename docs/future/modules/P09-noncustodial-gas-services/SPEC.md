@@ -42,7 +42,8 @@ EIP-712 domain/schema, ERC-4337 EntryPoint/version and any EIP-7702 delegation a
 interface GasServiceQuoteV1 {
   version: 1; serviceId: string; chainId: string;
   intentDigest: string; protocolVersion: string;
-  quoteId: string; nonce: string; expiresAt: string;
+  quoteId: string; nonce: string;
+  expiresAt: string; // Canonical unsigned decimal UTC epoch milliseconds.
   maximumGasCostAtomic: string; feeQuoteDigest: string;
   recipientCommitment: string;
   supportedSubmission: 'direct-service' | 'private-port';
@@ -59,7 +60,7 @@ interface GasServiceProvider {
 }
 ```
 
-Bind scheme, chain, verifying contract, account, exact calls, asset, amount, nonce, deadlines, service fee recipient and maximum liability in the reviewed authorization. No JSON number for atomic amounts. Quote signatures authenticate the service's statement; they do not prove deployment correctness or chain inclusion.
+Bind scheme, chain, verifying contract, account, exact calls, asset, amount, nonce, deadlines, service fee recipient and maximum liability in the reviewed authorization. No JSON number for atomic amounts. `expiresAt` is canonical unsigned decimal UTC epoch milliseconds, with no exponent, sign, leading zeros or implicit date parsing; validate its bounded range before comparison. Protocols using UTC epoch seconds require an explicit exact conversion at their adapter boundary, with no rounding that extends authorization. Nonce is a protocol-defined counter/domain value, never a time surrogate. Recheck the earliest quote, user-consent and operation deadline immediately before signing/submission; detected clock rollback requires fresh review. Quote signatures authenticate the service's statement; they do not prove deployment correctness or chain inclusion.
 
 ## 5. Lifecycle and uncertain outcomes
 
@@ -106,6 +107,7 @@ Itemize base protocol fee, optional module fee, operator surcharge and network g
 - **P09-A08:** Unknown prices/recipients or absent fee consent prevent paid execution.
 - **P09-A09:** Reorg invalidates inclusion/finality and does not double-charge or duplicate submission.
 - **P09-A10:** Browser bundle excludes server entrypoints and secret traffic/logs remain absent.
+- **P09-A11:** Ambiguous/overflowing expiry, milliseconds/seconds confusion, nonexact adapter conversion and clock rollback cannot extend a quote or preserve stale fee consent.
 
 ## 10. Implementation slices and future checks
 
