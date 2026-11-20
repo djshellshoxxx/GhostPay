@@ -116,7 +116,11 @@ describe('included-payment proof presentation retention', () => {
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     const readBlob = (blob: Blob): Promise<string> => new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => { resolve(String(reader.result)); };
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result !== 'string') { reject(new Error('synthetic download unreadable')); return; }
+        resolve(result);
+      };
       reader.onerror = () => { reject(new Error('synthetic download unreadable')); };
       reader.readAsText(blob);
     });
