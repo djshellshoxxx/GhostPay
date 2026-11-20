@@ -1,3 +1,38 @@
+# SellerKeys preflight ownership continuation — 2026-11-20
+
+Worker: `/root/remaining_branches_r3`, delegated by the consolidation coordinator.
+Branch: `fix/ghostpay-backup-preflight-20261120-r2`; exact base: final idle
+`7417881ac7f243b50f7b5c1682c66a4e3f87c736` (runtime frozen at
+`1ca7105e050f7d76aee18fe3efee3cd02cd72cb4`).
+Donor: refreshed PR #314, `e6ed3ee64a786c33b1af06b5fc7a51d742eb6544`,
+runtime commit `49535f3bdbdda6f133e397097e56a8dde8413d94`.
+Owned paths: only operation ownership in `apps/web/src/views/SellerKeys.tsx`;
+new `apps/web/src/views/SellerKeys.ownership.test.tsx`;
+new `apps/web/e2e/backup-ownership.spec.ts`; this additive registry entry and
+`docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md`.
+Acceptance: a canceled or superseded recoverability preflight cannot begin a late
+unlock or display a stale replacement prompt; export must recheck operation and
+session ownership after authorization and before encryption; synchronous durable
+write ownership must refuse duplicate/colliding save/delete or unlock work while
+retaining busy state until the actual write settles. Preserve current separate
+`unlockBusy` / `vaultWriteBusy`, all five original operation regressions, idle
+suspension visibility, own-installation handling, and every PR #325/#307 safeguard.
+Record tests before runtime; recover the donor's 17 component regressions as an
+additional file and its two browser journeys without replacing current tests.
+Use bounded controlled RED followed by independent source review and applicable
+qualification. Root schedules processes, supplies linked existing dependencies,
+and owns remote publication/integration. No installs or dependency copies.
+Ownership: idle source and final docs are frozen. Parent explicitly authorized this
+continuation in the available backup worktree; original #314/#319, the previous
+backup branch, and idle/Sweep worktrees remain unchanged.
+Browser limit: original donor browser bodies did not execute because Chromium
+could not launch. The same local socket restriction remains; hosted full/lean
+browser acceptance is required and authored journeys are not passing evidence.
+Status: claim recorded before regression or runtime edits. No tests run for this
+continuation yet; no release, deployment, contracts, relayer or crypto changes.
+
+---
+
 # Sweep consent and review lifetime consolidation — 2026-11-20 (Pacific)
 
 Worker: `994a0d214fb9-root`; source triage: `branch_inventory`; independent resulting-tree review follows composition.
