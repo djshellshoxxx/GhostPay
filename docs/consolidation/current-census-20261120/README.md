@@ -1,38 +1,45 @@
-# GhostPay live branch census and continuation — 2026-11-20
+# GhostPay branch recovery: complete ancestry census and engineering handoff
 
-## Snapshot and scope
+Date: 2026-11-20. Repository: `djshellshoxxx/GhostPay`. Frozen comparison base: main `aa3df1cb37274fae73af0ca957183c15c51b62d3` (merged PR #311).
 
-- GitHub repository: `djshellshoxxx/GhostPay`.
-- Exact baseline main: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (merged #311).
-- Exhaustively paginated GitHub branch search until the final null cursor: **5 pages, 391 live branch names**. The earlier scan had 389; the two additional branches are the separately created GP-BUG-10 fix and this audit branch.
-- Machine-readable inventory: [CENSUS.json](CENSUS.json). It includes every enumerated branch, source-pinned per-ref compare values where checked, and an explicit pending state for all others.
-- **74** branches have recorded main-relative comparisons; **317** remain un-compared at this checkpoint. Among compared refs: **24** application-source candidates, **40** documentation/nonapplication-only diffs, and **10** ancestry-redundant (zero ahead). The latter classification is only an ancestry result, not a statement about deletable branches.
-- GitHub compare returns at most 300 changed-file rows for certain large donors. Counts of application-source paths are *lower bounds* on those donors, and ahead-by counts alone do **not** establish semantically unique changes.
+## What was actually completed
 
-## Notable verified comparison outcomes
+- Exhaustively paginated the GitHub branch search (five pages, final null cursor), originally **391** live refs. A later `git/matching-refs/heads` response returned **392**, including a newly published TRON-range qualification branch. All **392** are in [CENSUS.json](CENSUS.json), with observed head SHAs.
+- Executed main-relative GitHub commit/changed-path comparison for **391** refs. GitHub rejects comparison of the remaining `gh-pages` ref because its publication history has **no common ancestor** with main. This is normal for an independently constructed Pages tree and must not be merged as a source branch.
+- Classified the snapshot as **185 ancestry-redundant refs** (zero ahead), **68 docs/nonapplication-path diffs**, **138 application-source candidates requiring semantic review**, and **1 unrelated `gh-pages`**.
+- The census has **zero pending branch-name comparisons**. It does **not** mean 138 code candidates are independently qualified, functionally unique or safe to merge.
+- Captured all current branch head SHAs after the sweep, but earlier comparisons were made against **moving branch names**. The observed SHA may postdate a comparison on an actively updated branch. Recompare **exact head SHAs** before integration. GitHub compare may truncate changed-file results at 300; application path counts are lower bounds on large donors.
 
-1. Main-ahead integration candidate **#307** (`integration/ghostpay-main-recovered-fixes-20261120`): 67 ahead, zero behind; 193 changed paths, 77 application paths in the compare listing. Broad consolidation is still draft; exact-head CI and source review remain necessary.
-2. Sweep consent candidate **#325** (`integration/ghostpay-sweep-consent-20261120`): 84 ahead, zero behind; 211 paths, 89 application paths. Separate integration; do not overwrite independent Sweep ownership.
-3. Several old integration branches are now true ancestors of main: `integration/ghostpay-beta-consolidated-20261109`, `integration/ghostpay-accepted-20261102`, `integration/consolidated-2026-10-21`, `integration/consolidated-2026-11-14`, `integration/ghostpay-historical-security-promotion-20261119`, `integration/ghostpay-main-unique-code-20261120`, `integration/ghostpay-qualified-fixes-20261118`. Compare shows zero ahead. Do not recover their old snapshots wholesale.
-4. Four future feature branches contain actual application implementation ahead of current main: `future/f03-private-payment-links` (9 ahead; 20 application paths), `future/f04-merchant-dashboard` (15; 5), `future/f05-ghostproof` (14; 7), and `future/f10-private-recurring` (13; 7). Their draft PRs **#310, #322, #323, #324** need separate qualification; they are not finished or safe to release merely because mergeable.
-5. Remaining enumerated `future/` branches were checked against main and their current diff rows contain **no application-source paths**. They are primarily proposals/specifications, *not* implementable code donors yet. This does not mean their specifications or docs are worthless or already incorporated.
-6. The small TRON fix **#321** is 4 ahead, zero behind, changes only `packages/tron-adapter/src/scan.ts` and an independent cancellation regression among its two application paths. Hosted CI and independent review were outstanding when inspected; the coordination lock belongs to another integration worker.
-7. Focused bug fix **#328** now exists on `fix/ghostpay-vault-rekey-lock-revocation-20261120`: test-first commit `68c77b7f9f108d54de0dd1592f432bb27603838e`, source correction `f7bc60a1b704392e70fe5918766f70a4ab53fb78`, handoff `81598d93dd82cc440526c866d42b55be0657895b`. It corrects audit GP-BUG-10 without updating main. No local repo tests executed; exact-head hosted qualification required.
+## Distinct recovery and active engineering candidates
 
-## Active PR overlap and recovery guardrails
+| Candidate | Main-relative evidence | Action |
+| --- | --- | --- |
+| [#307](https://github.com/djshellshoxxx/GhostPay/pull/307), `integration/ghostpay-main-recovered-fixes-20261120` | 67 ahead, 0 behind; 193 changed paths, 77 application paths | Broad recovery candidate; inspect current CI and cross-feature conflicts before any merge |
+| [#325](https://github.com/djshellshoxxx/GhostPay/pull/325), `integration/ghostpay-sweep-consent-20261120` | 84 ahead, 0 behind; 211 changed paths, 89 application paths | This PR is stacked on #307, not an independent main-target donor; preserve parent ordering |
+| [#310](https://github.com/djshellshoxxx/GhostPay/pull/310), signed request files F03 | 9 ahead; 20 application paths | Reconcile with #307's overlapping invoice/owner registry work |
+| [#322](https://github.com/djshellshoxxx/GhostPay/pull/322), merchant projections F04 | 15 ahead; 5 application paths | Preserve evidence-qualified amounts; complete exact-head review/tests |
+| [#323](https://github.com/djshellshoxxx/GhostPay/pull/323), offline receipt assurance F05 | 14 ahead; 7 application paths | Preserve receipt trust vs settlement distinction; complete exact-head review/tests |
+| [#324](https://github.com/djshellshoxxx/GhostPay/pull/324), recurring previews F10 | 13 ahead; 7 application paths | Preview must not issue invoices or move funds; complete exact-head review/tests |
+| [#321](https://github.com/djshellshoxxx/GhostPay/pull/321), TRON cancellation | 4 ahead, 0 behind; `scan.ts` and separate regression test | Focused GP-BUG-13 fix; CI and independent review were not yet complete at last check |
+| `integration/ghostpay-tron-range-20261120-r2`, exact head `cff631b5c32a86adfa2d79c342e497e91a8573a5` | 9 ahead, 0 behind; 12 changed paths, 6 application paths | Compare with #321 before integrating; adds TRON RPC/scan and browser qualification work |
+| [#328](https://github.com/djshellshoxxx/GhostPay/pull/328), GP-BUG-10 vault lock | 3 ahead, 0 behind; `vault.ts`, new deterministic regression | New test-first code fix in this cycle; source-pinned handoff and awaiting exact-head CI |
 
-- **#314 / #319:** backup operation control owners overlap. #319 extends #314 to separate unlock cancellation from durable vault writes. Do not merge both changes independently or replace #319 with the earlier incomplete fix.
-- **#307 / #310:** overlap on signed invoice file and main ownership registry. #310's main reconciliation is distinct from #307's combined recovery candidate; compare runtime semantics and tests before combining.
-- **#326 / #327:** retention focus PR #327 is stacked on retention completion #326. Preserve stack order and respect v1.1 retention's mandatory sole-copy and pending-record exclusions.
-- **#278 / #302 / #264 / #262:** old broad feature consolidations have divergent ancestors and may include overlapping payment, recovery, contracts or CI behavior. Historical code and evidence are recoverable only selectively, not by merging old trees.
-- **#300 / #293 / #286:** privacy quick-hide and clipboard cleanup are partial/stacked pieces of the v1.0 privacy release gate, not completion of all five requirements.
-- **#287:** v1.1 privacy requirements are independent release gates (address reuse, minimized invoice metadata, external-wallet disclosure, retention). Neither v1.0 nor v1.1 should be marked qualified solely from open work branches.
+Historical integration refs including `integration/ghostpay-accepted-20261102`, `integration/ghostpay-beta-consolidated-20261109`, `integration/ghostpay-main-unique-code-20261120`, `integration/ghostpay-qualified-fixes-20261118`, and `integration/ghostpay-historical-security-promotion-20261119` are ancestors (zero ahead). Their older trees should not be bulk-merged. Most `future/` feature/spec refs currently differ only in documentation/nonapplication files, except implementation branches F03, F04, F05 and F10.
 
-## Continuing comparison and integration instructions
+## Integration and release constraints
 
-1. Resume from **317 pending branch compares** in [CENSUS.json](CENSUS.json). Compare refs to refreshed main; add ahead/behind, actual changed paths, and application-file evidence. Only after source content/patch equivalence review call a nonancestor branch a genuinely unique code donor.
-2. Prioritize newer `automation/`, `repair/`, `fix/`, `chatgpt/` and `codex/` source branches; group duplicate PR families and existing ancestry first. Preserve original branches. For large differences, split by directories because the standard compare result may truncate at 300 paths.
-3. Refresh the coordination lock, main, CI status and review threads before any integration. Selectively cherry-pick or port tested, non-overlapping application changes into a reviewed candidate; do not bulk merge branches with different base histories.
-4. Exact-head tests, strict security analysis, full/lean browser and Pages gates must pass as applicable. Keep the static, noncustodial, browser-only beta and recovery-material protections unchanged. No manual release/deploy, force push, branch deletion, fee or contract deployment authorized by this record.
+- [#314](https://github.com/djshellshoxxx/GhostPay/pull/314) and [#319](https://github.com/djshellshoxxx/GhostPay/pull/319) overlap on backup operation ownership. #319 extends #314 by separating unlock cancellation from durable vault writes: do not integrate both copies independently.
+- [#326](https://github.com/djshellshoxxx/GhostPay/pull/326) and [#327](https://github.com/djshellshoxxx/GhostPay/pull/327) are stacked retention changes. Preserve pending transactions, backups and sole-copy material under v1.1's deletion policy.
+- Broad historical [#278](https://github.com/djshellshoxxx/GhostPay/pull/278) remains a divergent candidate with documented failed strict Mythril and CodeQL High gates; the material is preserved for selective recovery, not a wholesale merge.
+- Privacy issues [#286](https://github.com/djshellshoxxx/GhostPay/issues/286) and [#287](https://github.com/djshellshoxxx/GhostPay/issues/287) are not complete. Clipboard and quick-hide are partial v1.0 elements; address reuse, invoice minimization, wallet disclosures and retention remain v1.1 acceptance requirements.
+- At last live CI inspection, #328's five workflows were queued; #321's Pages, beta acceptance and CLI workflow succeeded but its CI and hosting workflow remained queued; #307's CI/Pages were queued. No complete pass or independent review is inferred.
+- A separate coordinator owns the active integration lock; this audit and #328 did **not** merge to main, retarget someone else's PR, deploy, modify fees/contracts, or waive any gate.
 
-This snapshot is a **completed exhaustive branch-name census and a partial code-difference audit**, not a claim that all 391 branches have been semantically reviewed or that their remaining work has been merged.
+## Next engineering handoff
+
+1. Use [CENSUS.json](CENSUS.json) to select the **138** ahead-of-main application-path candidates. Group them by ancestry and overlapping PR family; prioritize current focused bug fixes, v1.0/v1.1 release requirements, then older unique functionality. The 300-file compare cap requires targeted source/blob comparisons for broad donors.
+2. Refresh main and fetch **exact candidate head SHAs** before semantic patch/content comparisons. Confirm whether another branch's behavior is already incorporated or superseded. A positive ahead count is not itself proof of unique behavior.
+3. Run tests and security checks on the *combined* candidate. Keep integration locks and owned paths intact. Merge only reviewed, verified, conflict-free code through approved PRs; preserve original branches and documentation provenance.
+4. Resume GP-BUG-10 via [#328](https://github.com/djshellshoxxx/GhostPay/pull/328): test-first commit `68c77b7f9f108d54de0dd1592f432bb27603838e`; guarded production assignment `f7bc60a1b704392e70fe5918766f70a4ab53fb78`; handoff `docs/handoffs/VAULT_REKEY_LOCK_20261120.md`. The current invocation could not install full repository dependencies or run the committed Vitest suite locally. Treat hosted CI and independent source review as outstanding.
+
+This is a completed **branch ancestry/changed-path census**, not a completed semantic code audit or a release-qualification certificate. No deployment or release is authorized.
