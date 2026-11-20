@@ -43,7 +43,9 @@ npm run typecheck --workspace @ghostpay/web
 npm run lint --workspace @ghostpay/web
 ```
 
-The [execution index](retention-focus-20261120/evidence.json) records exact argument arrays, sources, timestamps, counts, exit codes and hashes. The same directory preserves complete original JSON reporters and command output. No retry, assertion relaxation, suppression, threshold reduction or test/configuration exclusion was used.
+The [execution index](retention-focus-20261120/evidence.json) records exact argument arrays, sources, timestamps, counts, exit codes and hashes. The same directory preserves complete original JSON reporters and command output. Stdout artifacts use JSON text wrappers; decoding the `text` field as UTF-8 recovers every original byte, including trailing blank lines. The index distinguishes the original-output hash from the wrapper-file hash. No test retry, assertion relaxation, suppression, threshold reduction or test/configuration exclusion was used.
+
+Final evidence QA initially flagged the original npm stdout's trailing blank lines in two text artifacts. The files were wrapped without trimming their contents, and the full source-range whitespace check was repeated after that documentation-only correction. The initial exit 2 and exact diagnostics remain in the index; runtime qualification was not rerun or changed.
 
 ## Independent review and dependency basis
 
