@@ -56,7 +56,7 @@ describe('SellerKeys operation supersession', () => {
   it('reenables export when pending encryption is superseded by backup verification', async () => {
     const exportGate = deferred();
     const verifyGate = deferred();
-    const authorize = vi.spyOn(keyVault, 'authorizeKeyExport').mockImplementation(() => exportGate.promise);
+    const authorize = vi.spyOn(keyVault, 'authorizeKeyExport').mockImplementation(async () => { await exportGate.promise; return undefined; });
     const verify = vi.spyOn(session, 'verifyDownloadedBackup').mockImplementation(() => verifyGate.promise);
     const user = await open();
     try {
