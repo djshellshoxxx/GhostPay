@@ -507,9 +507,9 @@ describe('Pay: sending', () => {
     await screen.findByRole('button', { name: 'Prepare payment' });
     const settings = window.localStorage.getItem(SETTINGS_KEY);
     const banner = within(screen.getByRole('banner'));
-    await user.click(banner.getByRole('switch', { name: 'Privacy mode', exact: true }));
+    await user.click(banner.getByRole('switch', { name: 'Privacy mode' }));
     expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
-    await user.click(banner.getByRole('button', { name: 'Reveal details for 30 seconds', exact: true }));
+    await user.click(banner.getByRole('button', { name: 'Reveal details for 30 seconds' }));
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     expect(window.localStorage.getItem(SETTINGS_KEY)).toBe(settings);
