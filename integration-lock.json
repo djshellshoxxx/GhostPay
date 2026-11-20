@@ -1,13 +1,11 @@
 {
   "format": "ghostpay-integration-lock/1",
-  "status": "released",
-  "owner": "20261120T2305Z-ghostpay-census-330-integration",
-  "token": "ghp-330-53a33810-8c75581f",
-  "generation": 10,
-  "base_sha": "8c75581f0217dbc4ba6d052e54351594274e7b6e",
-  "acquired_at": "2026-11-20T23:04:41.445Z",
-  "heartbeat_at": "2026-11-20T23:04:41.445Z",
-  "expires_at": "2026-11-20T23:24:41.445Z",
-  "transport": "github-connector-expected-head-nonforce",
-  "released_at": "2026-11-20T23:05:09.722Z"
+  "status": "held",
+  "owner": "994a0d214fb9-root-r3",
+  "token": "c9ab2a7b-aa65-48cc-8e53-4e4363cf6198",
+  "generation": 11,
+  "base_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+  "acquired_at": "2026-11-20T23:16:57.174Z",
+  "heartbeat_at": "2026-11-20T23:16:57.174Z",
+  "expires_at": "2026-11-21T00:16:57.174Z"
 }
