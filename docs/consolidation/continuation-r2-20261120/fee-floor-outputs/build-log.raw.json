@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "build-log",
+  "original_path": "/workspace/scratch/994a0d214fb9/fee-floor-r2-build.log",
+  "original_bytes": 224,
+  "sha256": "209e74e40fb0cb3455b87dee66411ef680a8a411ceb3de42772129f4cf042bcf",
+  "encoding": "utf-8",
+  "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/metadata-hardening@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+}

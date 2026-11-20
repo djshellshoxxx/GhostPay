@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "coverage-log",
+  "original_path": "/workspace/scratch/994a0d214fb9/fee-floor-r2-coverage.log",
+  "original_bytes": 1327,
+  "sha256": "85a092396df838af943805a07760406d834ab79f2135c5873e56680dfc28f06e",
+  "encoding": "utf-8",
+  "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/metadata-hardening@0.1.0 test\n> vitest run --coverage --maxWorkers=1 --reporter=json --outputFile=/workspace/scratch/994a0d214fb9/fee-floor-r2-green.json\n\nJSON report written to /workspace/scratch/994a0d214fb9/fee-floor-r2-green.json\n % Coverage report from v8\n--------------|---------|----------|---------|---------|-------------------\nFile          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n--------------|---------|----------|---------|---------|-------------------\nAll files     |   99.48 |    98.85 |     100 |     100 |                   \n btc.ts       |   97.67 |    96.34 |     100 |     100 | 69-70,187         \n derive.ts    |   98.24 |    97.29 |     100 |     100 | 82                \n scan.ts      |     100 |    98.33 |     100 |     100 | 154               \n--------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.48% ( 585/588 )\nBranches     : 98.85% ( 431/436 )\nFunctions    : 100% ( 119/119 )\nLines        : 100% ( 485/485 )\n================================================================================\n"
+}

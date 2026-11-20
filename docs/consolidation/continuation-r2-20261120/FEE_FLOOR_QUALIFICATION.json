@@ -1,0 +1,650 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-20T19:32:35.944228+00:00",
+  "qualification_worker": "/root/fee_floor_qualification_r2",
+  "repository": "djshellshoxxx/GhostPay",
+  "pr": 334,
+  "pr_url": "https://github.com/djshellshoxxx/GhostPay/pull/334",
+  "status": "LOCAL_ORIGINAL_PACKAGE_GATES_PASS; INDEPENDENT_STATIC_REVIEW_APPROVE",
+  "evidence_branch": "evidence/ghostpay-fee-floor-qualification-20261120-r2",
+  "evidence_parent": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+  "source": {
+    "recorded_at_utc": "2026-11-20T19:26:37.905754+00:00",
+    "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "tests_only": "77200f560577294a305132ae5fbe8446f259497e",
+    "runtime": "00795f318c7975e5ca5bb98cf30a13e01876eabb",
+    "frozen_head": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+    "final_tree": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+    "source_clean_after_all_gates": true,
+    "workspace_dependency_dist_unchanged_after_all_gates": true,
+    "donor_delta": [
+      "docs/handoffs/BTC_FEE_FLOOR_CAP_20261120.md",
+      "packages/metadata-hardening/src/btc.fee-policy.test.ts",
+      "packages/metadata-hardening/src/btc.ts"
+    ],
+    "commits": [
+      {
+        "sha": "77200f560577294a305132ae5fbe8446f259497e",
+        "tree": "70a487e3da94ec9ffce2f5dd720b70a733b3d8f0",
+        "parents": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ],
+        "subject": "test(metadata-hardening): reproduce fee minimum/cap inconsistency (GP-BUG-12)",
+        "changed_paths": [
+          "packages/metadata-hardening/src/btc.fee-policy.test.ts"
+        ]
+      },
+      {
+        "sha": "00795f318c7975e5ca5bb98cf30a13e01876eabb",
+        "tree": "2f543e8f25ed17a38c477dbc182f2a66aac0dd1a",
+        "parents": [
+          "77200f560577294a305132ae5fbe8446f259497e"
+        ],
+        "subject": "fix(metadata-hardening): reject impossible or malformed BTC fee caps",
+        "changed_paths": [
+          "packages/metadata-hardening/src/btc.ts"
+        ]
+      },
+      {
+        "sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+        "tree": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+        "parents": [
+          "00795f318c7975e5ca5bb98cf30a13e01876eabb"
+        ],
+        "subject": "docs: pin GP-BUG-12 regression and safe-integration handoff",
+        "changed_paths": [
+          "docs/handoffs/BTC_FEE_FLOOR_CAP_20261120.md"
+        ]
+      }
+    ],
+    "files": [
+      {
+        "path": "docs/handoffs/BTC_FEE_FLOOR_CAP_20261120.md",
+        "blobs": {
+          "base": null,
+          "tests_only": null,
+          "runtime": null,
+          "final": "dfad1ec777b91bfb91377e41c379d292327e0b0d"
+        }
+      },
+      {
+        "path": "packages/metadata-hardening/src/btc.fee-policy.test.ts",
+        "blobs": {
+          "base": null,
+          "tests_only": "cd20187e69cb539651de65dc55d1deebd18c3147",
+          "runtime": "cd20187e69cb539651de65dc55d1deebd18c3147",
+          "final": "cd20187e69cb539651de65dc55d1deebd18c3147"
+        }
+      },
+      {
+        "path": "packages/metadata-hardening/src/btc.ts",
+        "blobs": {
+          "base": "6f89002a040cd4d35f506a09a42d2d1f50a93982",
+          "tests_only": "6f89002a040cd4d35f506a09a42d2d1f50a93982",
+          "runtime": "88baf602d4dc0f17425509ac6a050b74fd1cae24",
+          "final": "88baf602d4dc0f17425509ac6a050b74fd1cae24"
+        }
+      }
+    ]
+  },
+  "red": {
+    "run": {
+      "source": "77200f560577294a305132ae5fbe8446f259497e",
+      "tree": "70a487e3da94ec9ffce2f5dd720b70a733b3d8f0",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/btc.fee-policy.test.ts",
+        "src/btc.test.ts",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/fee-floor-r2-red.json"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-qualification/packages/metadata-hardening",
+      "NODE_OPTIONS": "--max-old-space-size=512",
+      "started_at": "2026-11-20T19:24:23.071898+00:00",
+      "status": "finished",
+      "log": "/workspace/scratch/994a0d214fb9/fee-floor-r2-red.log",
+      "exit_code": 1,
+      "elapsed_seconds": 1.129,
+      "source_after": "77200f560577294a305132ae5fbe8446f259497e",
+      "git_status_after": ""
+    },
+    "files": 2,
+    "total": 22,
+    "passed": 20,
+    "failed": 2,
+    "skipped": 0,
+    "original_btc_controls_passed": 19,
+    "new_valid_policy_control_passed": 1,
+    "failure_kind": "behavioral assertions; expected rejection did not occur",
+    "failure_loop_limit": "Each failing RED case stopped at its first assertion; later loop entries were not executed on RED.",
+    "retries": 0
+  },
+  "green": {
+    "original_gates": {
+      "source": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "tree": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-qualification",
+      "results": [
+        {
+          "name": "coverage",
+          "command": [
+            "npm",
+            "run",
+            "test",
+            "--workspace",
+            "@ghostpay/metadata-hardening",
+            "--",
+            "--maxWorkers=1",
+            "--reporter=json",
+            "--outputFile=/workspace/scratch/994a0d214fb9/fee-floor-r2-green.json"
+          ],
+          "NODE_OPTIONS": "--max-old-space-size=512",
+          "started_at": "2026-11-20T19:25:06.364027+00:00",
+          "status": "finished",
+          "log": "/workspace/scratch/994a0d214fb9/fee-floor-r2-coverage.log",
+          "exit_code": 0,
+          "elapsed_seconds": 4.764
+        },
+        {
+          "name": "typecheck",
+          "command": [
+            "npm",
+            "run",
+            "typecheck",
+            "--workspace",
+            "@ghostpay/metadata-hardening"
+          ],
+          "NODE_OPTIONS": "--max-old-space-size=1536",
+          "started_at": "2026-11-20T19:25:11.128553+00:00",
+          "status": "finished",
+          "log": "/workspace/scratch/994a0d214fb9/fee-floor-r2-typecheck.log",
+          "exit_code": 0,
+          "elapsed_seconds": 2.626
+        },
+        {
+          "name": "lint",
+          "command": [
+            "npm",
+            "run",
+            "lint",
+            "--workspace",
+            "@ghostpay/metadata-hardening"
+          ],
+          "NODE_OPTIONS": "--max-old-space-size=1536",
+          "started_at": "2026-11-20T19:25:13.755578+00:00",
+          "status": "finished",
+          "log": "/workspace/scratch/994a0d214fb9/fee-floor-r2-lint.log",
+          "exit_code": 0,
+          "elapsed_seconds": 4.41
+        },
+        {
+          "name": "build",
+          "command": [
+            "npm",
+            "run",
+            "build",
+            "--workspace",
+            "@ghostpay/metadata-hardening"
+          ],
+          "NODE_OPTIONS": "--max-old-space-size=1536",
+          "started_at": "2026-11-20T19:25:18.166868+00:00",
+          "status": "finished",
+          "log": "/workspace/scratch/994a0d214fb9/fee-floor-r2-build.log",
+          "exit_code": 0,
+          "elapsed_seconds": 2.444
+        }
+      ],
+      "fresh_install": false,
+      "browser_execution": false,
+      "live_network_or_transaction": false,
+      "source_after": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "source_unchanged_after": true
+    },
+    "files": 11,
+    "vitest_suite_nodes": 41,
+    "total": 118,
+    "passed": 118,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "files_and_counts": [
+      {
+        "file": "amounts.test.ts",
+        "status": "passed",
+        "cases": 14
+      },
+      {
+        "file": "btc.fee-policy.test.ts",
+        "status": "passed",
+        "cases": 3
+      },
+      {
+        "file": "btc.test.ts",
+        "status": "passed",
+        "cases": 19
+      },
+      {
+        "file": "catalogue.test.ts",
+        "status": "passed",
+        "cases": 10
+      },
+      {
+        "file": "derive.test.ts",
+        "status": "passed",
+        "cases": 13
+      },
+      {
+        "file": "direct.test.ts",
+        "status": "passed",
+        "cases": 5
+      },
+      {
+        "file": "invoice.test.ts",
+        "status": "passed",
+        "cases": 8
+      },
+      {
+        "file": "release.test.ts",
+        "status": "passed",
+        "cases": 15
+      },
+      {
+        "file": "scan.test.ts",
+        "status": "passed",
+        "cases": 12
+      },
+      {
+        "file": "tags.test.ts",
+        "status": "passed",
+        "cases": 11
+      },
+      {
+        "file": "web.test.ts",
+        "status": "passed",
+        "cases": 8
+      }
+    ],
+    "coverage": {
+      "statements": {
+        "covered": 585,
+        "total": 588,
+        "percent": 99.48,
+        "threshold": 95
+      },
+      "branches": {
+        "covered": 431,
+        "total": 436,
+        "percent": 98.85,
+        "threshold": 90
+      },
+      "functions": {
+        "covered": 119,
+        "total": 119,
+        "percent": 100,
+        "threshold": 95
+      },
+      "lines": {
+        "covered": 485,
+        "total": 485,
+        "percent": 100,
+        "threshold": 95
+      }
+    },
+    "coverage_counters_cross_checked_against_json_map_and_original_text_report": true,
+    "test_retries": 0,
+    "assertions_or_thresholds_changed": false,
+    "original_complete_package_selection": true
+  },
+  "dependency_provenance": {
+    "recorded_at_utc": "2026-11-20T19:24:09.061807+00:00",
+    "target": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+    "target_tree": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+    "tests_only": "77200f560577294a305132ae5fbe8446f259497e",
+    "dependency_installation_origin": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "third_party_installation_path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/node_modules",
+    "identity_checked_paths": [
+      {
+        "path": "package.json",
+        "blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670"
+      },
+      {
+        "path": "package-lock.json",
+        "blob": "8ce2a5bb315cd84f45d3351131de0914337224ae"
+      },
+      {
+        "path": "tsconfig.base.json",
+        "blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797"
+      },
+      {
+        "path": "eslint.config.js",
+        "blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee"
+      },
+      {
+        "path": "packages/metadata-hardening/package.json",
+        "blob": "bd3edf83c9ea4db2e31532bfb17ae55153b9a62f"
+      },
+      {
+        "path": "packages/metadata-hardening/vitest.config.ts",
+        "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f"
+      },
+      {
+        "path": "packages/metadata-hardening/tsconfig.json",
+        "blob": "b993144d440999a587dd0c2a9bbb35510742dcc3"
+      },
+      {
+        "path": "packages/metadata-hardening/tsconfig.build.json",
+        "blob": "e2f2e9c3808a4726ccb530e67be1d21e888a2439"
+      }
+    ],
+    "workspace_dependency_closure": [
+      {
+        "name": "@ghostpay/core-crypto",
+        "path": "packages/core-crypto",
+        "tree": "b3f6aecdb564c6565b39372cf523f34fa86326bd",
+        "matching_built_source": "bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272",
+        "workspace_link": "/workspace/scratch/994a0d214fb9/GhostPay-qualification/packages/core-crypto",
+        "dist_files": [
+          {
+            "path": "packages/core-crypto/dist/errors.d.ts",
+            "bytes": 856,
+            "sha256": "7c98fd35ea65f2d9a635cad9369d734c1205e95b35308a9d9c1b7e2804965298"
+          },
+          {
+            "path": "packages/core-crypto/dist/errors.js",
+            "bytes": 1407,
+            "sha256": "d8a6befaedca843950b7e0688f069b03b69bf8a54443b1950dac1be20cbf584c"
+          },
+          {
+            "path": "packages/core-crypto/dist/errors.js.map",
+            "bytes": 845,
+            "sha256": "2a61a80025850241dc04a887ee75f6d656b8b1514f76b16e1514eab697d1d352"
+          },
+          {
+            "path": "packages/core-crypto/dist/hex.d.ts",
+            "bytes": 495,
+            "sha256": "c7ea379f5de1750c05b0e7213649b5e0ddf5cf90c4e1e443477317002d2bdef7"
+          },
+          {
+            "path": "packages/core-crypto/dist/hex.js",
+            "bytes": 657,
+            "sha256": "f1465a67de2be6e6f9f02a3f585380c640beda3728cf8626b51c15a4742a1061"
+          },
+          {
+            "path": "packages/core-crypto/dist/hex.js.map",
+            "bytes": 701,
+            "sha256": "1faace0411aca99ab431ad6fdfcfa0b02d56f58745f4cee24a5889aa41036d46"
+          },
+          {
+            "path": "packages/core-crypto/dist/index.d.ts",
+            "bytes": 977,
+            "sha256": "cbd89a752fbc1edc8adc498cb19586d636a4ec9ffc038416b1611d580172a9bc"
+          },
+          {
+            "path": "packages/core-crypto/dist/index.js",
+            "bytes": 588,
+            "sha256": "e6a7ed0e0601f6745e9d19b59f6d13ba143911eac9307b2406bf34bc083bb8e3"
+          },
+          {
+            "path": "packages/core-crypto/dist/index.js.map",
+            "bytes": 521,
+            "sha256": "0314325625b56684f99e9cea01d32506f78e5dad48f0b284520146bf4771daee"
+          },
+          {
+            "path": "packages/core-crypto/dist/keys.d.ts",
+            "bytes": 2764,
+            "sha256": "ad3d9ea6f22e60d8e749dd233201efe3c9fae2ff81fa30421f177036761218c9"
+          },
+          {
+            "path": "packages/core-crypto/dist/keys.js",
+            "bytes": 3551,
+            "sha256": "046d9ddf6ebe7c6b44561c8063764018abc5dc91b909d8e293b2dcb0786b29a9"
+          },
+          {
+            "path": "packages/core-crypto/dist/keys.js.map",
+            "bytes": 1923,
+            "sha256": "57749666a6b6864798b809a132e2e0ae8e6523f8ed5b31390b3622d079d417c0"
+          },
+          {
+            "path": "packages/core-crypto/dist/metadata.d.ts",
+            "bytes": 2758,
+            "sha256": "3bc4494596c0728fc136c444e0f5e83783b4d4265664fcbdb8b5f3f6118c0fa8"
+          },
+          {
+            "path": "packages/core-crypto/dist/metadata.js",
+            "bytes": 4598,
+            "sha256": "e4b6b3addf8e66c4c97902c7f38867965d9d8609f9c11327b15685e854135248"
+          },
+          {
+            "path": "packages/core-crypto/dist/metadata.js.map",
+            "bytes": 3084,
+            "sha256": "c8e5dbc26eb12e5de8c3ffcf00eced92face72203ea25883ea8dc58cb6a3e978"
+          },
+          {
+            "path": "packages/core-crypto/dist/rng.d.ts",
+            "bytes": 1020,
+            "sha256": "3238c9778b28b0a1dd5a31c548f85d5be9a0ba60d2a91ffd77822002e19067b4"
+          },
+          {
+            "path": "packages/core-crypto/dist/rng.js",
+            "bytes": 1535,
+            "sha256": "b828f5145fcb982897b081ccf62649da7f86ed97589b13503f041376a3c87b9b"
+          },
+          {
+            "path": "packages/core-crypto/dist/rng.js.map",
+            "bytes": 1021,
+            "sha256": "34a41f212306466e92d92071838dce73e05ec79736edd6d40f4199d5b53138df"
+          },
+          {
+            "path": "packages/core-crypto/dist/secret.d.ts",
+            "bytes": 3408,
+            "sha256": "e010ba7967c243c5c84fccf738fa5ff4ece9c18b4329116f4acd9daa6adf9130"
+          },
+          {
+            "path": "packages/core-crypto/dist/secret.js",
+            "bytes": 4519,
+            "sha256": "10c734d6ed21c742607255e6e2502520b38bbbd5f6b7e382c7b0397aa6f352dd"
+          },
+          {
+            "path": "packages/core-crypto/dist/secret.js.map",
+            "bytes": 2546,
+            "sha256": "0baf78261622eed5fd2413dc1de5eddca3c782d1b9b771f958a69907818d11ed"
+          },
+          {
+            "path": "packages/core-crypto/dist/stealth.d.ts",
+            "bytes": 5380,
+            "sha256": "85f5847ba6685604680d0fc040985ca9f1d20e2566266d776f9c89450458c659"
+          },
+          {
+            "path": "packages/core-crypto/dist/stealth.js",
+            "bytes": 8234,
+            "sha256": "b0e14125052ae90e9049781d10dd4faad08cd70cba3630c6f9aa489cf2c7acc4"
+          },
+          {
+            "path": "packages/core-crypto/dist/stealth.js.map",
+            "bytes": 5057,
+            "sha256": "4d5683f92c11bb0312441421076050b47df5f6f283c0e2c2ff13d7e9423d2e24"
+          }
+        ]
+      }
+    ],
+    "package_runtime_dependencies": {
+      "@noble/hashes": "2.4.0",
+      "viem": "2.57.13",
+      "@ghostpay/core-crypto": "0.1.0"
+    },
+    "fresh_install": false,
+    "dependency_copy": false,
+    "workspace_libraries_rebuilt": false,
+    "own_cache_directories": true,
+    "node": "v24.22.3",
+    "npm": "11.19.1"
+  },
+  "independent_review": {
+    "reviewer": "independent child agent /root/fee_floor_review_r2",
+    "decision": "APPROVE",
+    "reviewed_head": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+    "blocking_findings": [],
+    "nonblocking_findings": [
+      {
+        "id": "FF-R2-01",
+        "severity": "P3",
+        "blocking": false,
+        "title": "Document and cover the additional arithmetic-overflow rejection",
+        "path": "packages/metadata-hardening/src/btc.ts",
+        "line": 71,
+        "evidence_kind": "static source reasoning; not executed",
+        "description": "The added finite-result guard runs before finite cap fallback. With rate=1, step=Number.MIN_VALUE, minRate=1 and cap=2, division can overflow even though supplied parameters are finite and compatible. The old source reaches the cap fallback; the new source rejects the nonfinite intermediate. This is consistent with fail-closed intent, but all-finite-input compatibility would be an overly broad claim.",
+        "recommendation": "Add explicit capped and uncapped overflow-policy tests when extending this patch; describe rejection of nonrepresentable normalized results. Limit preservation claims to valid defaults and normal finite rounding/cap behavior.",
+        "impact": "Optional testnet helper edge case and regression precision; no identified lean Pages fund-loss effect."
+      }
+    ],
+    "reviewer_executed_repository_tests": false
+  },
+  "artifact_encoding": "Each raw.json is a lossless UTF-8 or deterministic gzip+base64 wrapper; original SHA-256 and bytes are recorded.",
+  "artifacts": [
+    {
+      "role": "red-run",
+      "path": "fee-floor-outputs/red-run.raw.json",
+      "original_bytes": 791,
+      "original_sha256": "88aa53f1925aa304f5ad79dd4b93d60af79e91fef4b29dba750476da8aa2a508",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "red-results",
+      "path": "fee-floor-outputs/red-results.raw.json",
+      "original_bytes": 9884,
+      "original_sha256": "5afcf92ab5de77b7cddb6a6409e49d89375cd5818683dd7072bf06e85004cdf7",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "red-log",
+      "path": "fee-floor-outputs/red-log.raw.json",
+      "original_bytes": 77,
+      "original_sha256": "3a3e5ed1d2c5db28cad4cd00497a6542ee6511be8a6e8f5b46c7bf5cb77dc945",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "original-gates",
+      "path": "fee-floor-outputs/original-gates.raw.json",
+      "original_bytes": 2278,
+      "original_sha256": "46164a6c10cd1da1854a98be6d368fe1b606791cc864ea09236677f1c23289bf",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "green-results",
+      "path": "fee-floor-outputs/green-results.raw.json",
+      "original_bytes": 188757,
+      "original_sha256": "3bca5dd318d5d104bdf64ca1d3b7c80d7212d8e48218258d2be45804797618ba",
+      "encoding": "gzip+base64"
+    },
+    {
+      "role": "coverage-log",
+      "path": "fee-floor-outputs/coverage-log.raw.json",
+      "original_bytes": 1327,
+      "original_sha256": "85a092396df838af943805a07760406d834ab79f2135c5873e56680dfc28f06e",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "typecheck-log",
+      "path": "fee-floor-outputs/typecheck-log.raw.json",
+      "original_bytes": 231,
+      "original_sha256": "cf1786b8be285bcd2f9eb5cf9023bfe6c3f10975c3d7ebb5dadd7e69be9821af",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "lint-log",
+      "path": "fee-floor-outputs/lint-log.raw.json",
+      "original_bytes": 239,
+      "original_sha256": "db428e0b753100326c4d2b2239a86ef4983875d6e1560fed6e0c64b2e4604ef3",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "build-log",
+      "path": "fee-floor-outputs/build-log.raw.json",
+      "original_bytes": 224,
+      "original_sha256": "209e74e40fb0cb3455b87dee66411ef680a8a411ceb3de42772129f4cf042bcf",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "dependency-provenance",
+      "path": "fee-floor-outputs/dependency-provenance.raw.json",
+      "original_bytes": 6665,
+      "original_sha256": "f91e5eb7bd18f962d0a893e052feb756e97c71c533997f582eca2a9f728d6d3f",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "source-provenance",
+      "path": "fee-floor-outputs/source-provenance.raw.json",
+      "original_bytes": 2726,
+      "original_sha256": "5dcb89df8b5ae874a84951d32b95cec7df4a7e483a12a73dc9439e276525c753",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "lcov",
+      "path": "fee-floor-outputs/lcov.raw.json",
+      "original_bytes": 17549,
+      "original_sha256": "7dd5f38c13f73fa4aef52cf7b0fcea0d3ed5bf90f8758697c71d71b1c9634341",
+      "encoding": "gzip+base64"
+    },
+    {
+      "role": "independent-review-markdown",
+      "path": "fee-floor-outputs/independent-review-markdown.raw.json",
+      "original_bytes": 6722,
+      "original_sha256": "89512cf97fcb714bd21bb9dcd3cc9e8d64035833ada9d82334066c4d472341de",
+      "encoding": "utf-8"
+    },
+    {
+      "role": "independent-review-json",
+      "path": "fee-floor-outputs/independent-review-json.raw.json",
+      "original_bytes": 4671,
+      "original_sha256": "eac78304f0f7cb14e7a25b0c0e577504db75e177ed0ac439ddf848feb27f1ab3",
+      "encoding": "utf-8"
+    }
+  ],
+  "artifact_count": 14,
+  "artifact_integrity_verified_against_original_files": true,
+  "documentation_checks": {
+    "status": "PASS",
+    "checks": [
+      {
+        "command": [
+          "npm",
+          "run",
+          "ci:scan-secrets"
+        ],
+        "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-qualification",
+        "started_at": "2026-11-20T19:32:58.628203+00:00",
+        "elapsed_seconds": 0.279,
+        "exit_code": 0,
+        "output": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> ghostpay@0.1.0 ci:scan-secrets\n> bash scripts/scan-secrets.sh\n\nOK: no committed env files or key material found.\n"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--cached",
+          "--check"
+        ],
+        "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-qualification",
+        "started_at": "2026-11-20T19:32:58.907195+00:00",
+        "elapsed_seconds": 0.005,
+        "exit_code": 0,
+        "output": ""
+      }
+    ],
+    "original_secret_scan_scope": "The repository script retains its original exclusions, including docs; no scanner configuration changed.",
+    "artifact_integrity": "14 of 14 wrappers decode to byte-identical originals and matching SHA-256/length.",
+    "source_integrity": "All three donor paths retain their exact frozen final blobs.",
+    "scope": "17 documentation paths only, including one additive ownership claim."
+  },
+  "limits": [
+    "Local Node v24.22.3 and npm 11.19.1 with reused matching third-party dependencies; no fresh installation claimed.",
+    "Source-scoped optional testnet helper qualification only; no complete web or browser qualification.",
+    "Extreme finite-input arithmetic-overflow rejection is a separately recorded P3 boundary-test gap; no all-finite-input compatibility claim.",
+    "Hosted CI, current integration head/overlap recheck, main merge, deployment, wallet or live-fee/funds operations remain outside this evidence.",
+    "Bounded RED cases overlap the complete GREEN package suite and must not be added to its 118 passing cases."
+  ]
+}

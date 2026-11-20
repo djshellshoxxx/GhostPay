@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "typecheck-log",
+  "original_path": "/workspace/scratch/994a0d214fb9/fee-floor-r2-typecheck.log",
+  "original_bytes": 231,
+  "sha256": "cf1786b8be285bcd2f9eb5cf9023bfe6c3f10975c3d7ebb5dadd7e69be9821af",
+  "encoding": "utf-8",
+  "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/metadata-hardening@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+}

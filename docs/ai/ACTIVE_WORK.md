@@ -734,3 +734,23 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
 - Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
 - Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
+
+
+## PR #334 fee-floor qualification evidence — 2026-11-20 continuation R2
+
+Worker: `/root/fee_floor_qualification_r2`; independent source reviewer:
+`/root/fee_floor_review_r2`. Branch:
+`evidence/ghostpay-fee-floor-qualification-20261120-r2`.
+Base and frozen donor: `9dcd2d88ff32060e519ef18e2d8753691b56abc1`.
+Owned paths: this additive claim;
+`docs/consolidation/continuation-r2-20261120/FEE_FLOOR_QUALIFICATION.md`,
+`docs/consolidation/continuation-r2-20261120/FEE_FLOOR_QUALIFICATION.json`, and
+`docs/consolidation/continuation-r2-20261120/fee-floor-outputs/**`.
+Acceptance: preserve the bounded tests-only behavioral RED and complete original
+metadata-hardening coverage/typecheck/lint/build results at the frozen donor,
+record exact source/dependency provenance, retain lossless outputs and independent
+review including limitations, and verify a documentation-only evidence delta.
+Root owns publication and integration. Donor source/tests/configuration and all
+existing ownership entries are immutable; no install, dependency copy, browser,
+wallet, live-fee action, main merge, deployment or hosted mutation is authorized
+for this evidence worker.

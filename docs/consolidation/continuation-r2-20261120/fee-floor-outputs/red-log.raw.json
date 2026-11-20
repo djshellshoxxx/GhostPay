@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "red-log",
+  "original_path": "/workspace/scratch/994a0d214fb9/fee-floor-r2-red.log",
+  "original_bytes": 77,
+  "sha256": "3a3e5ed1d2c5db28cad4cd00497a6542ee6511be8a6e8f5b46c7bf5cb77dc945",
+  "encoding": "utf-8",
+  "content": "JSON report written to /workspace/scratch/994a0d214fb9/fee-floor-r2-red.json\n"
+}

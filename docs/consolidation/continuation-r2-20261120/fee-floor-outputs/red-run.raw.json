@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "red-run",
+  "original_path": "/workspace/scratch/994a0d214fb9/fee-floor-r2-red-run.json",
+  "original_bytes": 791,
+  "sha256": "88aa53f1925aa304f5ad79dd4b93d60af79e91fef4b29dba750476da8aa2a508",
+  "encoding": "utf-8",
+  "content": "{\n  \"source\": \"77200f560577294a305132ae5fbe8446f259497e\",\n  \"tree\": \"70a487e3da94ec9ffce2f5dd720b70a733b3d8f0\",\n  \"command\": [\n    \"node\",\n    \"../../node_modules/vitest/vitest.mjs\",\n    \"run\",\n    \"src/btc.fee-policy.test.ts\",\n    \"src/btc.test.ts\",\n    \"--maxWorkers=1\",\n    \"--reporter=json\",\n    \"--outputFile=/workspace/scratch/994a0d214fb9/fee-floor-r2-red.json\"\n  ],\n  \"cwd\": \"/workspace/scratch/994a0d214fb9/GhostPay-qualification/packages/metadata-hardening\",\n  \"NODE_OPTIONS\": \"--max-old-space-size=512\",\n  \"started_at\": \"2026-11-20T19:24:23.071898+00:00\",\n  \"status\": \"finished\",\n  \"log\": \"/workspace/scratch/994a0d214fb9/fee-floor-r2-red.log\",\n  \"exit_code\": 1,\n  \"elapsed_seconds\": 1.129,\n  \"source_after\": \"77200f560577294a305132ae5fbe8446f259497e\",\n  \"git_status_after\": \"\"\n}\n"
+}

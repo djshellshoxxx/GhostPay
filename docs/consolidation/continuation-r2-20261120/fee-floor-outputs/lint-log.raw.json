@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "lint-log",
+  "original_path": "/workspace/scratch/994a0d214fb9/fee-floor-r2-lint.log",
+  "original_bytes": 239,
+  "sha256": "db428e0b753100326c4d2b2239a86ef4983875d6e1560fed6e0c64b2e4604ef3",
+  "encoding": "utf-8",
+  "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/metadata-hardening@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n"
+}
