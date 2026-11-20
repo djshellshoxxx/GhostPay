@@ -1,0 +1,70 @@
+{
+  "schema": "ghostpay-generation4-tooling-checks/1",
+  "recorded_at_utc": "2026-11-20T00:00:23.543765+00:00",
+  "source_commit": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "source_tree": "7a7b189be05b802d3545e8823230076125d7bbf6",
+  "review_claim": "6c259361dd34445a4cbe5d81c2b37f211d3af2cd",
+  "worktree": "/workspace/scratch/0a7bc3583588/GhostPay-integration-review-gen4",
+  "branch": "review/ghostpay-combined-gen4-20261119",
+  "node_path": "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+  "node_version": "v22.23.4",
+  "git_version": "git version 2.56.1",
+  "dependency_directory": "/workspace/scratch/0a7bc3583588/GhostPay/node_modules",
+  "dependency_provenance": "Shared coordinator install and compiled workspace dependencies; not independently rebuilt by this reviewer. Original tracked inputs unchanged.",
+  "pages_test_files": [
+    "scripts/pages/pages-hosting.test.mjs",
+    "scripts/pages/serve-pages.test.mjs",
+    "scripts/pages/smoke-render-errors.test.mjs",
+    "scripts/pages/smoke-url.test.mjs",
+    "scripts/pages/smoke-walk.test.mjs",
+    "scripts/pages/verify-pages-artifact.test.mjs",
+    "scripts/pages/verify-pages-site.test.mjs"
+  ],
+  "runs": [
+    {
+      "id": "pages-tests",
+      "shell_command": "node --test scripts/pages/*.test.mjs",
+      "command_note": "The Pages glob expands in the shell to all seven unchanged *.test.mjs files.",
+      "exit_code": 0,
+      "counts": {
+        "tests": 112,
+        "suites": 4,
+        "pass": 112,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "duration_ms": 2323.617203,
+      "log_mtime_utc": "2026-11-19T23:57:11.822330+00:00",
+      "evidence": "pages-tests.log.gz",
+      "raw_sha256": "1bd6747b286a9e117f97c137128574cb8d3539f1d339b9fd9f9dfb21a76e8a48",
+      "compressed_sha256": "fecce8629e121f8a645c9514dffff76e21ad9def3db345bddff0c2e6f56810a2"
+    },
+    {
+      "id": "lock-tests",
+      "shell_command": "node --test scripts/tests/integration-lock.test.mjs",
+      "command_note": "The Pages glob expands in the shell to all seven unchanged *.test.mjs files.",
+      "exit_code": 0,
+      "counts": {
+        "tests": 10,
+        "suites": 0,
+        "pass": 10,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "duration_ms": 3113.276128,
+      "log_mtime_utc": "2026-11-19T23:57:14.994329+00:00",
+      "evidence": "lock-tests.log.gz",
+      "raw_sha256": "7cbdd733438f6c4bf7c7694d8332a7dd3bac2aa03bc6e13df77ae2065c601be9",
+      "compressed_sha256": "a75282d1e9150170fe1c7cd75fcd02914176cc7ce6b20e5f64641258084e8800"
+    }
+  ],
+  "limits": [
+    "These runs establish tooling/native HTTP behavior, not browser scenario acceptance.",
+    "Full workspace, coverage, application build, native analyzer and external security results are owned by other lanes.",
+    "No remote mutation or live integration-lease transition performed."
+  ]
+}
