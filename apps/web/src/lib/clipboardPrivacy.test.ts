@@ -27,7 +27,7 @@ describe('opt-in clipboard cleanup', () => {
     await vi.advanceTimersByTimeAsync(29_999);
     expect(c.read).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(1);
-    expect(c.read).toHaveBeenCalledOnce();
+    expect(c.read).toHaveBeenCalledTimes(2);
     expect(c.write).toHaveBeenCalledExactlyOnceWith('');
     expect(c.value()).toBe('');
   });
@@ -41,6 +41,24 @@ describe('opt-in clipboard cleanup', () => {
     expect(c.read).toHaveBeenCalledOnce();
     expect(c.write).not.toHaveBeenCalled();
     expect(c.value()).toBe('new text from another app');
+  });
+
+  it('rechecks after a stale asynchronous read before clearing a newer clipboard value', async () => {
+    vi.useFakeTimers();
+    let value = 'private';
+    let reads = 0;
+    const port: ClipboardPort = {
+      readText: vi.fn(async () => {
+        reads += 1;
+        if (reads === 1) { value = 'newer external text'; return 'private'; }
+        return value;
+      }),
+      writeText: vi.fn(async (_text: string) => { throw new Error('Must not overwrite newer clipboard content'); }),
+    };
+    recordClipboardCopy('private', port, 30_000);
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(reads).toBe(2);
+    expect(port.writeText).not.toHaveBeenCalled();
   });
 
   it('supersedes older timers, even when the user recopies the same text', async () => {
