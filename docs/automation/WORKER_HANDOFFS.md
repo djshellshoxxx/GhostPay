@@ -1,5 +1,32 @@
 # Worker handoffs
 
+## Current cycle — 20261120T0035Z
+
+Actual concurrency: maximum four native ChatGPT workers including the coordinator; roles rotated.
+No paid external agents/APIs or Codex jobs. Native review is not a required GitHub approval.
+
+| Worker | Actual role | Independent evidence |
+|---|---|---|
+| /root | Discovery, real package verification, deduplication, checkpoint and publication | Never overwrote another active owner's branch |
+| /root/standards_security_review | Independent original standards/security review and new QR source review | Original base64url 5/5 and initial repaired QR 23/23; separate from author |
+| /root/spec_verification_review | Initial spec review, then QR implementation and final supplement | Author; not its own independent reviewer |
+| /root/ci_and_consolidation_audit | CI/logs, initial 73-PR ownership census, ancestry/blob audit, first concurrency comparison | Read-only source-pinned audit in data/ |
+| /root/final_independent_review | Fresh final regression review | Final 954152e2 compared to ec546311; independent 54/54, no blocking scoped finding |
+| /root/final_checkpoint_review | Fresh documentation/evidence QA | Historical-byte preservation, original handoffs, links, test provenance and concurrency |
+
+The original five-case supplement at 74040060 passed 44/44 but was superseded as #290 absorbed its
+overlap. Only final #295's one additional test and strengthened eight-combination matrix remain.
+Original #291 author/reviewer/build/Pages results remain historical and cannot qualify #295.
+
+Five recovered handoffs retain their exact original bytes. Original #289's eight runtime inputs
+include five formerly accepted values, two formerly wrong error classes and one existing rejection;
+its historical seven-failure statement is correct. This cycle adds real repository qualification.
+
+Wiki owner branches remain active, with both guide links preserved. The separate #278 owner retains
+the browser/merchant follow-up and its new 417f7c71 qualification. No live Wiki publication by this cycle.
+
+## Historical worker rotation
+
 Cycle `20261119T073600Z` uses the root coordinator and three native workers concurrently. Branch
 review then rotates into independent lock verification; the camera author and security reviewer remain
 separate. No paid external agent, Codex CLI/cloud job or external API model call was launched.

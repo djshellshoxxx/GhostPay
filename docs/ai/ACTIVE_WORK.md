@@ -515,7 +515,7 @@ Branch: `automation/20261120T0035Z/coordinator/cycle-checkpoint`.
 Exact branch base: `61f2b3729fa4b78c90d43a1ecd8c351e9c22f577` (existing ledger PR #261).
 Observed application main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
 Owned paths: additive updates to the nine existing `docs/automation/` ledgers, one source-pinned
-evidence snapshot under its existing `data/` directory, this ownership claim, and the existing
+evidence snapshots and preserved execution logs under its existing `data/` directory, this ownership claim, and the existing
 `docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md`. Preserve every historical record.
 Dependencies: read-only PR #289 `856b2d60`, #285 `89942105`, #278 `d74af79e`, and #261 `61f2b372`.
 The existing owners retain their source branches; the QR repair is separately claimed by
@@ -533,6 +533,19 @@ Preserve their exact bytes and original source pins; do not rewrite historical t
 Expected checks: Markdown target validation, source/commit identity checks, `git diff --check`,
 independent documentation review, and exact-head hosted qualification after draft publication.
 No application, workflow, dependency, production configuration, release, or deployment changes.
-Acquire and revalidate the durable integration lock before shared ledger publication; no main merge
-without visible required protections and all mandatory independent/security qualification.
+Acquire and revalidate the durable integration lock before any shared branch update; a newly created
+isolated draft checkpoint does not update #261, #278 or main. Another coordinator acquired generation 5
+during this cycle, so shared integration is deferred. No main merge without visible required protections
+and all mandatory independent/security qualification. Preserve this cycle's own QR handoff and the
+independent concurrency reconciliation: #291 is closed but its branch survives; #290 supplies the
+equivalent production guards and a separate test-only supplement preserves the unique coverage.
 
+
+Final reconciliation status (2026-11-20 01:04 UTC): final independent coverage is published as
+PR #295 at 4493793ad2c438fcc0f45f96851eac8967cb607a, branch
+automation/20261120T0035Z/worker/qr-flag-coverage, based on #290 ec546311.
+The earlier five-case supplement is superseded and archived; only one additional regression and
+the existing eight-flag-combination mapping test remain. Checkpoint scope includes the exact
+QR_FLAG_COVERAGE_20261120.md handoff and final source/CI/provenance snapshots under the already
+owned data/ directory. External lock generation 5 was released by its owner; this cycle never owned it.
+The isolated checkpoint changes no shared branch, application, workflow, dependency or production setting.

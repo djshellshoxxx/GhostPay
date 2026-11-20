@@ -1,0 +1,42 @@
+{
+  "cycle": "20261120T0035Z",
+  "reviewer": "/root/final_independent_review",
+  "mode": "Independent native read-only refresh; no new tests, edits, integration or remote mutations",
+  "previous_integration": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "refreshed_integration": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "previous_is_ancestor": true,
+  "requested_candidate_source_paths_compared": 22,
+  "all_compared_blobs_identical": true,
+  "dispositions_preserved": [
+    258,
+    261,
+    265,
+    268,
+    274,
+    279,
+    280,
+    281,
+    282,
+    285,
+    289
+  ],
+  "qr_followup": {
+    "pr": 290,
+    "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "mergeable": false,
+    "mergeable_state": "dirty",
+    "merge_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "conflicting_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "runtime_conflicts": [],
+    "integration_runtime_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "integration_test_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+    "runtime_guards_still_outstanding_for_integration": true
+  },
+  "limitations": [
+    "Source preservation is not qualification of new integration head.",
+    "Independent final 54/54 review remains pinned to 954152e2 / published 7309524b.",
+    "Existing owner must reconcile ownership record and obtain fresh required qualification."
+  ]
+}

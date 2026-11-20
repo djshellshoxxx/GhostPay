@@ -1,5 +1,31 @@
 # Merge queue
 
+## Current dependency queue — 20261120T0035Z
+
+1. Preserve original branches and handoffs. All eleven requested source fixes were already found in
+   #278 d74af79e; do not import duplicate implementations.
+2. The #278 owner has published 417f7c71. Require new exact-head original CI/browser/security
+   evidence; old d74af79e CI failed and Contract analysis was cancelled.
+3. The #290 owner must reconcile its reported conflict with advanced #278, preserving its primitive
+   guards and existing regressions. No overwrite or rebase by this cycle.
+4. Final #295 at 4493793a is stacked on #290 ec546311. It contains only two distinct coverage
+   improvements; 54/54 local and fresh independent tests pass. Required hosted CI is still pending.
+5. This documentation-only checkpoint is stacked on #261 61f2b372. It preserves the canonical
+   ledgers and historical evidence; it does not authorize #261's older application tree for integration.
+6. Before any shared update/merge, refresh source/target SHAs, reviews, effective branch requirements,
+   downstream workflow triggers and the metadata lock. Another owner released generation 5 at
+   c8517beb; this cycle never held it and does not claim the next generation. Protections remain unreadable (403).
+
+Original #289 856b2d60 is red on lint, with the repair already in #278. Original #285 89942105
+has five successful PR workflows plus dynamic CodeQL and Snyk; it still needs #290's runtime guards.
+Prior standalone Node tests were not substituted for this cycle's real repository Vitest evidence.
+
+Observed Pages publishing requires explicit main dispatch with deploy=true; release publishing uses
+version tags. Neither was invoked and no workflow/production configuration changed. No main merge,
+release, branch deletion, force push, security-gate waiver or real-funds operation.
+
+## Historical queue
+
 Snapshot baseline: `e454de6abfefda70d82784fafc1d8949b277c334`. Re-read every head and check before action.
 No candidate listed below is approved for merge solely by this table.
 

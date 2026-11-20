@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-qr-supplement/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  54 passed (54)
+   Start at  16:57:43
+   Duration  949ms (transform 82%, tests 11%, import 6%, worker 1%)
+

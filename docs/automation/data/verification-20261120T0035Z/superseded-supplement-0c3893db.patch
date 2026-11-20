@@ -1,0 +1,157 @@
+diff --git a/apps/web/src/lib/qrKinds.test.ts b/apps/web/src/lib/qrKinds.test.ts
+index b0ceb8bb..dd69cd6f 100644
+--- a/apps/web/src/lib/qrKinds.test.ts
++++ b/apps/web/src/lib/qrKinds.test.ts
+@@ -1,7 +1,7 @@
+ import { readFileSync } from 'node:fs';
+ import { describe, expect, it, vi } from 'vitest';
+ import { contrastRatio, deltaE, type Cvd } from './qrContrast';
+-import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrPalette } from './qrKinds';
++import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrKind, type QrPalette, type QrPayloadType } from './qrKinds';
+ 
+ const css = readFileSync(new URL('../styles/qr.css', import.meta.url), 'utf8');
+ 
+@@ -59,10 +59,13 @@ describe('taxonomy', () => {
+   });
+   it.each(nonStringKeys('invoice-link'))('rejects a non-string payload type: %s', (label, raw) => {
+     const type = raw as Parameters<typeof kindForPayload>[0];
++    expect(() => kindForPayload(type), label).toThrow(TypeError);
+     expect(() => kindForPayload(type), label).toThrowError(new TypeError('unknown QR payload type'));
++    expect(() => kindForPayload(type, { unverified: true }), label).toThrow(TypeError);
+     expect(() => kindForPayload(type, { unverified: true }), label).toThrowError(new TypeError('unknown QR payload type'));
+   });
+   it.each(nonStringKeys('secret'))('rejects a non-string frame kind: %s', (label, raw) => {
++    expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0]), label).toThrow(TypeError);
+     expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0]), label).toThrowError(new TypeError('unknown QR kind'));
+   });
+   it('rejects payload objects without invoking a changing conversion hook', () => {
+@@ -77,6 +80,42 @@ describe('taxonomy', () => {
+     expect(() => qrKindClass(kind)).toThrowError(new TypeError('unknown QR kind'));
+     expect(convert).not.toHaveBeenCalled();
+   });
++  it('rejects unverified payload objects without invoking a changing conversion hook', () => {
++    const convert = vi.fn().mockReturnValueOnce('spend-key').mockReturnValue('invoice-link');
++    const type = { [Symbol.toPrimitive]: convert } as unknown as QrPayloadType;
++    expect(() => kindForPayload(type, { unverified: true })).toThrow(TypeError);
++    expect(() => kindForPayload(type, { unverified: true })).toThrowError(new TypeError('unknown QR payload type'));
++    expect(convert).not.toHaveBeenCalled();
++  });
++  it.each([
++    ['payload', (value: unknown) => kindForPayload(value as QrPayloadType), 'unknown QR payload type'],
++    ['unverified payload', (value: unknown) => kindForPayload(value as QrPayloadType, { unverified: true }), 'unknown QR payload type'],
++    ['frame', (value: unknown) => qrKindClass(value as QrKind), 'unknown QR kind'],
++  ] as const)('rejects a hostile %s key without reading its conversion getter', (_name, classify, message) => {
++    const inspect = vi.fn(() => { throw new Error('private input must not escape'); });
++    const input = Object.defineProperty({}, Symbol.toPrimitive, { get: inspect });
++    expect(() => classify(input)).toThrow(TypeError);
++    expect(() => classify(input)).toThrowError(new TypeError(message));
++    expect(inspect).not.toHaveBeenCalled();
++  });
++  it('preserves every declared payload mapping, flag combination and frame class', () => {
++    const mappings: Readonly<Record<QrPayloadType, QrKind>> = {
++      'keystore-backup': 'secret', 'recovery-data': 'secret', 'spend-key': 'secret',
++      'invoice-link': 'shareable', 'invoice-link-passphrase': 'shareable',
++      'stealth-meta-address': 'shareable', 'payment-request': 'shareable', 'registry-entry': 'shareable',
++      'invoice-link-with-key': 'bearer', settings: 'device', 'rpc-list': 'device', 'pinned-signers': 'device',
++      receipt: 'proof', 'payment-proof': 'proof', 'signed-manifest': 'proof', fingerprint: 'proof',
++    };
++    for (const [key, kind] of Object.entries(mappings)) {
++      const type = key as QrPayloadType;
++      expect(kindForPayload(type)).toBe(kind);
++      for (let mask = 0; mask < 8; mask++) {
++        const flags = { testnet: (mask & 1) !== 0, unsigned: (mask & 2) !== 0, unverified: (mask & 4) !== 0 };
++        expect(kindForPayload(type, flags)).toBe(kind === 'secret' || kind === 'bearer' || mask === 0 ? kind : 'caution');
++      }
++    }
++    for (const kind of QR_KIND_ORDER) expect(qrKindClass(kind)).toBe(`qr-kind-${kind}`);
++  });
+   it('maps payloads to kinds; secret is never downgraded', () => {
+     expect(kindForPayload('keystore-backup')).toBe('secret');
+     expect(kindForPayload('keystore-backup', { testnet: true })).toBe('secret');
+diff --git a/docs/ai/ACTIVE_WORK.md b/docs/ai/ACTIVE_WORK.md
+index 32ade12d..29ec80d6 100644
+--- a/docs/ai/ACTIVE_WORK.md
++++ b/docs/ai/ACTIVE_WORK.md
+@@ -1,3 +1,15 @@
++# QR review regression supplement — cycle 20261120T0035Z
++
++- Worker: native ChatGPT `/root/spec_verification_review`, delegated by coordinator `/root`.
++- Branch: `automation/20261120T0035Z/worker/qr-review-supplement`; exact base is external PR #290 `aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da`.
++- Owned paths: `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_REVIEW_SUPPLEMENT_20261120.md`, and this additive ownership claim only. Preserve #290 production source, full design documentation, existing malformed-input matrix and stateful conversion tests.
++- Reconciliation: #290 published the same primitive-string production correction independently; the coordinator closed our overlapping PR #291 while preserving its branch and historical evidence. This branch adds only regressions absent from #290, not another runtime implementation.
++- Acceptance: add three hostile conversion-getter cases, one unverified stateful conversion case, exhaustive declared mapping/flag/frame controls, and explicit TypeError-class assertions alongside #290's fixed-message malformed-input expectations. Run repository Vitest and scoped lint, record actual source/environment/results, and obtain separate review before qualification.
++- Dependencies: coordinator-provided locked dependencies and matching web build prerequisites. Prior #291 tests/review/Pages artifact at `2df03bde3883439e7514a02c871db66ccffd83fd` are historical only and do not qualify this different #290 baseline.
++- Restrictions: no product, design-guide, configuration, dependency, gate, contract, deployment or remote changes; no integration-lock acquisition. Coordinator owns publication, hosted checks, central tracking and integration.
++
++---
++
+ # Isolated consolidation follow-through — 2026-11-19
+ 
+ Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
+diff --git a/docs/handoffs/QR_REVIEW_SUPPLEMENT_20261120.md b/docs/handoffs/QR_REVIEW_SUPPLEMENT_20261120.md
+new file mode 100644
+index 00000000..aaea45de
+--- /dev/null
++++ b/docs/handoffs/QR_REVIEW_SUPPLEMENT_20261120.md
+@@ -0,0 +1,61 @@
++# QR review supplement and duplicate reconciliation — cycle 20261120T0035Z
++
++## Source and ownership
++
++- Author: native worker `/root/spec_verification_review`, delegated by coordinator `/root`.
++- Branch: `automation/20261120T0035Z/worker/qr-review-supplement`.
++- Exact base: [PR #290](https://github.com/djshellshoxxx/GhostPay/pull/290), `aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da`.
++- Ownership claim committed before edits: `52773553a17bf92585118a78af96cd2d60338eb2`.
++- Final test-source commit: `74040060d14eff2a35c23d3614c09d9709bd440e`; test blob `dd69cd6f48341d2d6139b7aa54cbbca59951bedc`.
++- Owned files: `apps/web/src/lib/qrKinds.test.ts`, this handoff and the additive `docs/ai/ACTIVE_WORK.md` claim. This final handoff changes documentation only; the coordinator must record the final published branch head and its hosted checks.
++
++## Reconciliation and unique work
++
++The concurrent [PR #290](https://github.com/djshellshoxxx/GhostPay/pull/290) had already published the primitive-string runtime correction and a fuller design explanation. The coordinator closed our overlapping [PR #291](https://github.com/djshellshoxxx/GhostPay/pull/291) as superseded while preserving its branch and source-pinned evidence. This supplement starts from #290 and introduces **no additional production implementation**.
++
++The following remain byte-identical to exact #290:
++
++| Path | Git blob |
++| --- | --- |
++| `apps/web/src/lib/qrKinds.ts` | `a85e1011cdface74c87683146ff7428654b7830d` |
++| `docs/design/qr-colors.md` | `43544e9fbff8c7caf887085c5cf4af6546ceb5a1` |
++
++The existing twelve-category malformed-input matrix, both original stateful conversion regressions, unknown/inherited-name tests and other assertions are preserved. Only five additional test cases were added:
++
++1. Three hostile `Symbol.toPrimitive` **getter** cases: ordinary payload, unverified payload and frame. Rejection must not even read the getter or propagate its private error text.
++2. One stateful conversion case with `unverified: true`, verifying that the caution path cannot touch the conversion hook.
++3. One exhaustive mapping/control case: all sixteen declared payload types, absent flags, all eight boolean flag combinations, and all declared frame classes. `secret` and `bearer` retain precedence.
++
++Separate `toThrow(TypeError)` expectations were added alongside #290's fixed-message expectations in its existing malformed-input matrix. An error with the right message but the wrong constructor can no longer satisfy that coverage. No duplicate generic input matrix, guard, dependency, protocol, contract or policy change was introduced.
++
++## Actual execution on this source
++
++Environment: Linux native execution, Node **24.22.3**, npm **11.19.1**. Installed Vitest **5.1.0**, TypeScript **5.9.3** and ESLint **10.15.0** were checked against this base's lockfile and match its entries. Lockfile SHA-256: `1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517`.
++
++At exact `74040060d14eff2a35c23d3614c09d9709bd440e`, from `apps/web`:
++
++```sh
++../../node_modules/.bin/vitest run src/lib/qrKinds.test.ts --maxWorkers=1
++NODE_OPTIONS=--max-old-space-size=1536 ../../node_modules/.bin/eslint \
++  --config ../../eslint.config.js src/lib/qrKinds.test.ts
++```
++
++- Repository Vitest: **1 file, 44/44 tests passed, zero skips, exit 0**.
++- Scoped typed ESLint: **exit 0**, no output.
++- `git diff --check`: **exit 0**.
++- Runtime/design preservation check against `aaa8a7e2`: **exit 0**, no differences.
++- Vitest log SHA-256: `8965bcef2c738d34ecd14f137a9237caa803cbdff2588684c9eba8e2af78c72f`.
++
++The coordinator completed dependency copying and supplied build prerequisites. Its attempted complete web-target build lost its execution session without a terminal status; **no full build pass is asserted**. This worker did not repeat broad builds, run full web typechecking, browser acceptance, a new Pages build or security scanners on this new baseline. Those remain separate qualification work.
++
++## Fresh independent verification
++
++Separate native worker **`/root/final_independent_review`** independently inspected the supplement at exact `74040060d14eff2a35c23d3614c09d9709bd440e` and ran the same repository Vitest command: **44/44 passed, zero skips, exit 0**, under Node 24.22.3 / Vitest 5.1.0. The reviewer verified the unchanged test blob during execution, byte-identical #290 runtime/design files, preservation of the existing matrix, and the five unique cases. No blocking scoped finding was reported. This is separate native-worker review, not GitHub-required approval or an external security audit.
++
++## Historical evidence and remaining gates
++
++Our earlier #291 source `2df03bde3883439e7514a02c871db66ccffd83fd` had 9-RED-to-23-GREEN regression evidence, 97 passing related tests, full web TypeScript, scoped lint, library builds, a separate review and a verified 16-file payments-disabled Pages development artifact. Its handoff head was `b89476fd27a5dd827ee08ec03be1bc952522520f`. **Every one of those results and that artifact is historical evidence for that source only. They do not qualify #290 or this supplement**, which use a different baseline and lockfile. No new RED run or artifact identity is fabricated here.
++
++Coordinator next actions: publish this isolated supplement as a draft stacked on #290, refresh both exact heads and main, inspect fresh hosted checks and review requirements, and reconcile only the unique test/documentation delta under valid integration ownership. Preserve #290's runtime and fuller design documentation and keep the original #291 branch available for its evidence. Final hosted CI has not been observed by this worker.
++
++No remote mutation, main/shared integration, lock acquisition/release, deployment, release, transaction, paid API, external agent, Codex execution, security-gate waiver or schedule change was performed by this worker.

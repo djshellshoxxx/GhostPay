@@ -1,0 +1,30 @@
+failed to load config from /workspace/scratch/a13b43b0f3c9/GhostPay-qr/apps/web/vite.config.ts
+
+⎯⎯⎯⎯⎯⎯⎯ Startup Error ⎯⎯⎯⎯⎯⎯⎯⎯
+Error: Build failed with 1 error:
+
+[plugin externalize-deps]
+Error: Failed to resolve entry for package "@ghostpay/chain-adapters". The package may have incorrect main/module/exports specified in its package.json.
+    at packageEntryFailure (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:29607:30)
+    at resolvePackageEntry (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:29604:2)
+    at tryNodeResolve (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:29503:70)
+    at nodeResolveWithVite (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:29765:9)
+    at PluginContextImpl.handler (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:38153:19)
+    at plugin (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/rolldown/dist/shared/bindingify-input-options-UCGox0BH.mjs:1650:30)
+    at file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/rolldown/dist/shared/bindingify-input-options-UCGox0BH.mjs:2122:21
+    at plugin.<computed> (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/rolldown/dist/shared/bindingify-input-options-UCGox0BH.mjs:2320:18)
+    at aggregateBindingErrorsIntoJsError (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/rolldown/dist/shared/error-CBG33oNV.mjs:49:18)
+    at unwrapBindingResult (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/rolldown/dist/shared/error-CBG33oNV.mjs:19:128)
+    at #build (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/rolldown/dist/shared/rolldown-BYX6bV3R.mjs:146:34)
+    at async bundleConfigFile (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:38209:12)
+    at async bundleAndLoadConfigFile (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:38105:18)
+    at async loadConfigFromFile (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:38066:42)
+    at async resolveConfig (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vite/dist/node/chunks/node.js:37668:22)
+    at async resolveConfig (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vitest/dist/chunks/index.1TqnEahn.js:9269:25)
+    at async createVitest (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vitest/dist/chunks/cli-api.De07GUeT.js:13392:17)
+    at async prepareVitest (file:///workspace/scratch/a13b43b0f3c9/GhostPay-qr/node_modules/vitest/dist/chunks/cli-api.De07GUeT.js:13787:14) {
+  errors: [Getter/Setter]
+}
+
+
+

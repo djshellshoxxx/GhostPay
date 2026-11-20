@@ -1,0 +1,74 @@
+
+ RUN  v5.0.5 /workspace/scratch/a13b43b0f3c9/GhostPay-qr/apps/web
+
+ ❯ src/lib/qrKinds.test.ts (23 tests | 9 failed) 60ms
+   ❯ taxonomy (15)
+     × rejects non-string payload inputs with the fixed error 4ms
+     × rejects non-string unverified payload inputs with the fixed error 2ms
+     × rejects non-string frame inputs with the fixed error 3ms
+     × does not coerce a stateful payload key before rejecting it 8ms
+     × does not coerce a stateful unverified payload key before rejecting it 1ms
+     × does not coerce a stateful frame key before rejecting it 0ms
+     × does not inspect a hostile payload coercion hook 2ms
+     × does not inspect a hostile unverified payload coercion hook 1ms
+     × does not inspect a hostile frame coercion hook 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > rejects non-string payload inputs with the fixed error
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > rejects non-string unverified payload inputs with the fixed error
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > rejects non-string frame inputs with the fixed error
+AssertionError: expected function to throw an error, but it didn't
+ ❯ src/lib/qrKinds.test.ts:54:37
+     52|     ];
+     53|     for (const input of inputs) {
+     54|       expect(() => classify(input)).toThrow(TypeError);
+       |                                     ^
+     55|       expect(() => classify(input)).toThrow(new TypeError(message));
+     56|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > does not coerce a stateful payload key before rejecting it
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > does not coerce a stateful unverified payload key before rejecting it
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > does not coerce a stateful frame key before rejecting it
+AssertionError: expected function to throw an error, but it didn't
+ ❯ src/lib/qrKinds.test.ts:61:35
+     59|     const coerce = vi.fn().mockReturnValueOnce(knownKey).mockReturnVal…
+     60|     const input = { [Symbol.toPrimitive]: coerce };
+     61|     expect(() => classify(input)).toThrow(TypeError);
+       |                                   ^
+     62|     expect(() => classify(input)).toThrow(new TypeError(message));
+     63|     expect(coerce).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > does not inspect a hostile payload coercion hook
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > does not inspect a hostile unverified payload coercion hook
+ FAIL  src/lib/qrKinds.test.ts > taxonomy > does not inspect a hostile frame coercion hook
+AssertionError: expected error to be instance of TypeError
+
+- Expected:
+[Function TypeError]
+
++ Received:
+Error {
+  "message": "private input must not escape",
+}
+
+ ❯ src/lib/qrKinds.test.ts:68:35
+     66|     const inspect = vi.fn(() => { throw new Error('private input must …
+     67|     const input = Object.defineProperty({}, Symbol.toPrimitive, { get:…
+     68|     expect(() => classify(input)).toThrow(TypeError);
+       |                                   ^
+     69|     expect(() => classify(input)).toThrow(new TypeError(message));
+     70|     expect(inspect).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 14 passed (23)
+   Start at  16:39:37
+   Duration  515ms (transform 54%, tests 28%, import 17%, worker 2%)
+

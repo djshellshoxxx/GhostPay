@@ -1,0 +1,33 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.0.5 /workspace/scratch/a13b43b0f3c9/GhostPay-pr289/packages/invoice-schema
+      Coverage enabled with v8
+
+
+ Test Files  13 passed (13)
+      Tests  729 passed (729)
+   Start at  16:53:06
+   Duration  310.17s (tests 99%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   98.09 |    97.74 |     100 |   99.26 |                   
+ envelope.ts       |   98.57 |    97.52 |     100 |   99.44 | 545               
+ ...hantProfile.ts |   89.36 |    91.66 |     100 |   97.22 | 170,178           
+ receipts.ts       |   99.03 |    98.96 |     100 |   98.63 | 96                
+ schema.ts         |   99.37 |    99.21 |     100 |     100 | 361               
+ sign.ts           |   94.44 |      100 |     100 |   93.75 | 110               
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.09% ( 824/840 )
+Branches     : 97.74% ( 564/577 )
+Functions    : 100% ( 110/110 )
+Lines        : 99.26% ( 673/678 )
+================================================================================

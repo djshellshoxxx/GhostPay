@@ -1,5 +1,26 @@
 # Missing implementation review
 
+## Current reconciliation — 20261120T0035Z
+
+Integration-lock implementation is already present in audited #278: the exact #261 script/test blobs
+match and the metadata control ref exists. Sixteen canonical #261 automation files were absent from
+that candidate, so this checkpoint preserves the existing lineage. Five unique source-pinned handoffs
+for #280/#281/#282/#285/#289 are copied byte-for-byte. Main's newer continuation history through
+rotation 207 is preserved before adding this cycle. Larger #262/#264 document inventories stay with
+their existing owners.
+
+The original #285 guide omitted bearer-warning preservation; #278/#290 already corrected it.
+The new primitive-key rejection was implemented and independently verified, then deduplicated
+against #290. Only genuinely additional regression coverage remains in #295, not a second runtime fix.
+
+Recovery/keypair export, session, signing, payment and mobile/accessibility requirements are not
+declared complete by this bounded audit. #278's newer 417f7c71 needs its own complete browser,
+security, external acceptance and source-matched qualification. No placeholder/test bypass substitutes.
+Active Wiki guide owners retain Home/Sidebar and both prominent guide sections; live publication
+is not claimed and owner reconciliation of stale status prose remains unfinished.
+
+## Historical missing-implementation analysis
+
 ## AUTO-001 — no shared integration lock or durable cycle tracking
 
 The baseline source and all current refs contain no `scripts/automation/` implementation, no

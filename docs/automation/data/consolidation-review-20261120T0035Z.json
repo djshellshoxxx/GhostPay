@@ -1,0 +1,2133 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "targets": {
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "pr262": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+    "pr264": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "pr278": "d74af79ebabdc8cead843361c3497b46d8c421f9"
+  },
+  "method": [
+    "git merge-base --is-ancestor exact full SHAs",
+    "git rev-parse SHA:path exact blob comparison",
+    "git diff merge-base(base,head)...head changed paths",
+    "Different documentation blobs are retained pending semantic reconciliation, not labeled entirely unique by content hash alone."
+  ],
+  "full_blob_evidence": {
+    "included": false,
+    "reason": "Optional exhaustive scratch map omitted. Compact comparisons and missing-documentation path lists used by this checkpoint are retained here and can be regenerated from the pinned SHAs."
+  },
+  "candidates": [
+    {
+      "number": 278,
+      "head_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "head_ref": "release/ghostpay-beta-qualification-20261119",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-20T00:28:53Z",
+      "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 1380,
+      "source_counts": {
+        "identical": 492,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 888,
+        "different": 0,
+        "absent": 0
+      },
+      "nonidentical_source_paths": [],
+      "nonidentical_documentation_paths": []
+    },
+    {
+      "number": 289,
+      "head_sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "head_ref": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T22:47:59Z",
+      "title": "fix(invoice-schema): reject non-string runtime base64url decoder inputs",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 1,
+        "different": 1,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 0,
+        "different": 1,
+        "absent": 1
+      },
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "d85459047ccaa9b35505d1f04eb4ce3b3070904b",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/BASE64URL_INPUT_TYPE_20261119.md",
+          "candidate_blob": "3cdc74337ddf46fe4a11ce8f4ab76f75d87b4b8c",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "packages/invoice-schema/src/base64url.test.ts",
+          "candidate_blob": "8d32596d0fa34f6ebc40f3ccae11f1d9d620e8e5",
+          "target_blobs": {
+            "main": "ef5f6d46556e658bbca154eb70d9f3be713e7712",
+            "pr262": "ef5f6d46556e658bbca154eb70d9f3be713e7712",
+            "pr264": "ef5f6d46556e658bbca154eb70d9f3be713e7712",
+            "pr278": "8d959c2b144182d0d0f576214dc7b761b7166c47"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        },
+        {
+          "path": "packages/invoice-schema/src/base64url.ts",
+          "candidate_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+          "target_blobs": {
+            "main": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+            "pr262": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+            "pr264": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+            "pr278": "5466ee0b99925dedd23e753636ae7ab3f6f48234"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        }
+      ]
+    },
+    {
+      "number": 285,
+      "head_sha": "89942105c48df03b9351f777278b6a992e35a95e",
+      "head_ref": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T20:53:52Z",
+      "title": "fix(web): reject unclassified QR payload and frame kinds",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 0,
+        "different": 1,
+        "absent": 1
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "candidate_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+          "target_blobs": {
+            "main": "990d723ee8877c6de7f9f604a3e7e183bb6ff358",
+            "pr262": "990d723ee8877c6de7f9f604a3e7e183bb6ff358",
+            "pr264": "990d723ee8877c6de7f9f604a3e7e183bb6ff358",
+            "pr278": "e918e36848f4e01322afbdf41cf561b3222cc14a"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "candidate_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+          "target_blobs": {
+            "main": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+            "pr262": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+            "pr264": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+            "pr278": "68de6518783cc57bd7f3a66d0588d530e27d21b6"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "9a68965f68d2126403f4a1913eae07574f2e3d0f",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/QR_KIND_FAILCLOSED_20261119.md",
+          "candidate_blob": "5201c6a3899f4c608cba81fb1d0d089ca06789f0",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        }
+      ]
+    },
+    {
+      "number": 282,
+      "head_sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+      "head_ref": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T18:42:24Z",
+      "title": "fix(web): reject ambiguous duplicate JSON fields in saved merchant signer pins",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 0,
+        "different": 1,
+        "absent": 1
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/merchantIdentity.test.ts",
+          "candidate_blob": "957027808890f366f337c375e52b5c081206dae7",
+          "target_blobs": {
+            "main": "c26773145f2fdc22ff05871157c34b7021a644f4",
+            "pr262": "c26773145f2fdc22ff05871157c34b7021a644f4",
+            "pr264": "c26773145f2fdc22ff05871157c34b7021a644f4",
+            "pr278": "957027808890f366f337c375e52b5c081206dae7"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/merchantIdentity.ts",
+          "candidate_blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+          "target_blobs": {
+            "main": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+            "pr262": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+            "pr264": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+            "pr278": "183a8fbc588cb1c66e5ec480e572849b803761db"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "0c4ca449e7c07cbb84153efc3863e9fcfc3f04a3",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md",
+          "candidate_blob": "7f23de46f6c1b747e749f0955dcdce62b54dca4d",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        }
+      ]
+    },
+    {
+      "number": 281,
+      "head_sha": "0041514a630398c89693498d9b5e44ef562d9c61",
+      "head_ref": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T16:44:29Z",
+      "title": "fix(privacy): warn when the 30-day anonymity-set history is incomplete",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 0,
+        "different": 1,
+        "absent": 1
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+          "candidate_blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "ceeba44eb5156581c4fa9c65b3104109306bff1e"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "candidate_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "target_blobs": {
+            "main": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+            "pr262": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+            "pr264": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+            "pr278": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "a04dda7bd52ef6c732eee4ee06aa6aceeb1eed2b",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md",
+          "candidate_blob": "07ab7a5be99c0eae79510ab4fea10edd1c6f7a21",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        }
+      ]
+    },
+    {
+      "number": 280,
+      "head_sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+      "head_ref": "automation/20261119-c977/bug/build-profile-failclosed",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T14:48:12Z",
+      "title": "fix(web): fail closed on unknown runtime build-profile values",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 0,
+        "different": 1,
+        "absent": 1
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/buildProfile.test.ts",
+          "candidate_blob": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477",
+          "target_blobs": {
+            "main": "34530f5260e2b9ea52713d09b9229218ccf39b73",
+            "pr262": "34530f5260e2b9ea52713d09b9229218ccf39b73",
+            "pr264": "34530f5260e2b9ea52713d09b9229218ccf39b73",
+            "pr278": "315e4cc3fd4cdaa60b965bcf552aa9e3ce5b3477"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/buildProfile.ts",
+          "candidate_blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+          "target_blobs": {
+            "main": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+            "pr262": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+            "pr264": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+            "pr278": "001fbf1105e1d28768624df6c47ccfdb16957d1a"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "b66ef5bffb0af16b4e9193f04795f9a3afaf6fb1",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md",
+          "candidate_blob": "250006d79e02bec971dba50c247c077455efd5e8",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        }
+      ]
+    },
+    {
+      "number": 262,
+      "head_sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "head_ref": "codex/ghostpay-feature-consolidation-20261119",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T13:23:18Z",
+      "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": true,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 1173,
+      "source_counts": {
+        "identical": 415,
+        "different": 35,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 563,
+        "different": 5,
+        "absent": 155
+      },
+      "nonidentical_source_paths": [
+        "apps/web/e2e/core-journey.spec.ts",
+        "apps/web/e2e/devnet-journey.spec.ts",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/e2e/pages-devnet.spec.ts",
+        "apps/web/e2e/privacy-settings.spec.ts",
+        "apps/web/e2e/private-scan-checkpoints.spec.ts",
+        "apps/web/e2e/stealth-export.spec.ts",
+        "apps/web/e2e/stealthExportFixtures.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/package.json",
+        "apps/web/src/components/StealthExportCommon.tsx",
+        "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+        "apps/web/src/lib/defaultServices.test.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "apps/web/src/lib/privateScanLifecycle.test.ts",
+        "apps/web/src/lib/scanClient.test.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/Settings.test.tsx",
+        "apps/web/src/views/Sweep.test.tsx",
+        "apps/web/src/views/Sweep.tsx",
+        "package-lock.json",
+        "package.json",
+        "packages/invoice-schema/src/json.test.ts",
+        "packages/invoice-schema/src/json.ts"
+      ],
+      "nonidentical_documentation_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md",
+        "docs/consolidation/feature-completion-20261119/INDEPENDENT_REVIEWS.md",
+        "docs/consolidation/feature-completion-20261119/QUALIFICATION.json",
+        "docs/consolidation/feature-completion-20261119/RESULTS.md",
+        "docs/consolidation/feature-completion-20261119/build-input-review.json",
+        "docs/consolidation/feature-completion-20261119/evidence-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/audit-all.json",
+        "docs/consolidation/feature-completion-20261119/evidence/audit-production.json",
+        "docs/consolidation/feature-completion-20261119/evidence/cancellation-integration-tests.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/cancellation-lint-after.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-artifact-tests.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-btc-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-final-web-typecheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-full-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-full-web-tests.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-lean-boundary.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-lean-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-pool-helpers.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-repaired-web-unit.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-socks-harness.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-web-nocov.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/combined-web-typecheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/complete-web-coverage-replay.txt.gz",
+        "docs/consolidation/feature-completion-20261119/evidence/complete-web-unit-baseline.txt.gz",
+        "docs/consolidation/feature-completion-20261119/evidence/coverage-directory-lock.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-actions-pins.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-canonical-invoice-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-canonical-invoice-node22-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-chain-adapters-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-egress-refresh.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-full-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-fuzz-resource-replay.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-inventory-and-closure.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-invoice-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-lean-boundary.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-lean-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-merchant-invoice-node22-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-package-tooling.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-reconciled-web-typecheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-secret-scan.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-serial-web-lint.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-serial-web-typecheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-actions-pins.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-artifact-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-build.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-csp.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-csp.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-scan.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/full-scan.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/hosting-kit.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/hosting-kit.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-artifact-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-boundary.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-boundary.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-build.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-csp.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-csp.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-module-report.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-scan.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/lean-scan.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/run-final-source-checks.py",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-nocov.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-nocov.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-typecheck.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-9b8e5024/web-typecheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-checks-harness-review.json",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-secret-scan.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-source-tx-origin.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-tooling-recheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-tooling.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-tx-origin.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-ux-vault-build.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/final-web-dependencies.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/full-artifact-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/lean-artifact-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/lean-module-report.json",
+        "docs/consolidation/feature-completion-20261119/evidence/pir-integration-tests.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/privacy-artifact-node.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/privacy-independent-csp-review.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/qualified-web-lint.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/qualified-web-typecheck.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/scanner-integration-tests.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-files.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-manifest.mjs",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partition-plan.md",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/INDEPENDENT_REVIEW.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/aggregate.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/driver.lock",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/final-serial-web-lint.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/receipt.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/started.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/stderr.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/partition-003/stdout.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/run-web-lint-partitions.py",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/session.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-files.txt",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-manifest.json",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-manifest.mjs",
+        "docs/consolidation/feature-completion-20261119/evidence/web-lint-partitions-3ab/web-lint-partition-plan.md",
+        "docs/consolidation/feature-completion-20261119/final-build-input-review.json",
+        "docs/consolidation/feature-completion-20261119/final-canonical-source-review.json",
+        "docs/consolidation/feature-completion-20261119/final-concurrent-pr-review.json",
+        "docs/consolidation/feature-completion-20261119/final-coverage-behavior-review.json",
+        "docs/consolidation/feature-completion-20261119/final-gate-snapshot.json",
+        "docs/consolidation/feature-completion-20261119/final-main-reconciliation-review.json",
+        "docs/consolidation/feature-completion-20261119/final-merchant-source-review.json",
+        "docs/consolidation/feature-completion-20261119/final-pr-status.json",
+        "docs/consolidation/feature-completion-20261119/final-report-review.json",
+        "docs/consolidation/feature-completion-20261119/final-source-review.json",
+        "docs/consolidation/feature-completion-20261119/hosted-ci-review.json",
+        "docs/consolidation/feature-completion-20261119/hosted-hosting-review/README.md",
+        "docs/consolidation/feature-completion-20261119/hosted-hosting-review/hosting-kit-workflow.txt",
+        "docs/consolidation/feature-completion-20261119/hosted-hosting-review/kit-job-135468723862.txt.gz",
+        "docs/consolidation/feature-completion-20261119/hosted-hosting-review/native-metadata.json",
+        "docs/consolidation/feature-completion-20261119/hosted-hosting-review/qualify-web-job-135468724333.txt.gz",
+        "docs/consolidation/feature-completion-20261119/hosted-hosting-review/receipt.json",
+        "docs/consolidation/feature-completion-20261119/main-257-promotion-review.json",
+        "docs/consolidation/feature-completion-20261119/main-266-promotion-review.json",
+        "docs/consolidation/feature-completion-20261119/packet-publication-check.json",
+        "docs/consolidation/feature-completion-20261119/publication-map.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/REVIEW.md",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/artifact-discovery.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-actions-job-135432925356.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-javascript-job-135432925616.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-log-transfer.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-python-job-135432925095.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-review.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/codeql-run-metadata.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-14509646188.zip",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/metadata.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayPolicyRouter.completeness.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayPolicyRouter.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayRouter.completeness.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPayRouter.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPaySweepRelayer.completeness.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/GhostPaySweepRelayer.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccount.completeness.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccount.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccountFactory.completeness.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/PolicyAccountFactory.stderr.log",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/config.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-extracted/mythril-evidence/manifest.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-findings.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-source-bindings.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/mythril-validation.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions.json",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/TIMING_ASSUMPTIONS.md",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/mythril-14290880802-expiry-dispositions.md",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/mythril-14290880802-factory-dispositions.md",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/prior-dispositions/mythril-closure-factory-20261118.md",
+        "docs/consolidation/feature-completion-20261119/security-artifact-review/receipt.json",
+        "docs/consolidation/feature-completion-20261119/superseded-security-pr-review.json",
+        "docs/consolidation/feature-completion-20261119/test-reconciliation-review.json",
+        "docs/pages/README.md",
+        "docs/privacy/network-egress-inventory.json",
+        "docs/user/sweep-and-gas-privacy.md"
+      ]
+    },
+    {
+      "number": 279,
+      "head_sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "head_ref": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T12:50:43Z",
+      "title": "fix(web): reject lossy Unicode when building multipart QR codes",
+      "comparison_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 1,
+        "different": 1,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrMultipart.test.ts",
+          "candidate_blob": "45992f537d1f226dd20e57d96a246c6f18419395",
+          "target_blobs": {
+            "main": "4fd6b1e458b8d79a4828254f7b21982bf245a01e",
+            "pr262": "4fd6b1e458b8d79a4828254f7b21982bf245a01e",
+            "pr264": "4fd6b1e458b8d79a4828254f7b21982bf245a01e",
+            "pr278": "45992f537d1f226dd20e57d96a246c6f18419395"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/qrMultipart.ts",
+          "candidate_blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+          "target_blobs": {
+            "main": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+            "pr262": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+            "pr264": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+            "pr278": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "30304012504261d7e79a607a47cd70f80bc66f68",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md",
+          "candidate_blob": "fe3c0da8a695d1cabec0faef7e1742a5a297cf69",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "fe3c0da8a695d1cabec0faef7e1742a5a297cf69"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        }
+      ]
+    },
+    {
+      "number": 270,
+      "head_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+      "head_ref": "codex/ghostpay-consolidation-followthrough-20261119",
+      "base_sha": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "base_ref": "codex/ghostpay-feature-consolidation-20261119",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T11:09:55Z",
+      "title": "Harden canonical arrays and skip unsupported scanner schemes",
+      "comparison_base": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 9,
+      "source_counts": {
+        "identical": 3,
+        "different": 1,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 4,
+        "different": 1,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/scannerCore.test.ts",
+          "candidate_blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+          "target_blobs": {
+            "main": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+            "pr262": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+            "pr264": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+            "pr278": "64d9d0d95a66da023f2968faa7bd97c7dbe66605"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/scannerCore.ts",
+          "candidate_blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+          "target_blobs": {
+            "main": "3d22991c284bc58ef0abe27671785ef768546259",
+            "pr262": "3d22991c284bc58ef0abe27671785ef768546259",
+            "pr264": "3d22991c284bc58ef0abe27671785ef768546259",
+            "pr278": "3ad466bae0d7d19187260e0696c0d29fb6a71293"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "90bbe34cb19493406c4db1f08da82d47c4b06eda",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/consolidation/followthrough-20261119/EXECUTION_EVIDENCE.md",
+          "candidate_blob": "e27b13363e0e005168f3aead68c55eea0bc5c43d",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "e27b13363e0e005168f3aead68c55eea0bc5c43d"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/consolidation/followthrough-20261119/HANDOFF.md",
+          "candidate_blob": "b5534b7676adcf8471c965a035532c0ec55c13df",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "b5534b7676adcf8471c965a035532c0ec55c13df"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/consolidation/followthrough-20261119/canonical-source-probes.json",
+          "candidate_blob": "96391f61390e142bde6422ea9a9880858188c0f8",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "96391f61390e142bde6422ea9a9880858188c0f8"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/consolidation/followthrough-20261119/receipt.json",
+          "candidate_blob": "1cb32b7ef618c71f04d8d90814757e622ceb0282",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "1cb32b7ef618c71f04d8d90814757e622ceb0282"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "packages/invoice-schema/src/json.test.ts",
+          "candidate_blob": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+          "target_blobs": {
+            "main": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+            "pr262": "f2b5ff6804784df1f153a60b0488f4b9b2c98f5f",
+            "pr264": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+            "pr278": "2ffdfe70a8814762b14721ac640fc82cab0b9e54"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        },
+        {
+          "path": "packages/invoice-schema/src/json.ts",
+          "candidate_blob": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+          "target_blobs": {
+            "main": "b7a34bb5176ec72daf0026a59991863421bdb341",
+            "pr262": "63e02aa59219f5ba4732c6cc0198e9c0466eaa48",
+            "pr264": "b7a34bb5176ec72daf0026a59991863421bdb341",
+            "pr278": "8ed01592d487c356a72d51e240e5cc63fb470a3a"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        }
+      ]
+    },
+    {
+      "number": 274,
+      "head_sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "head_ref": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "base_sha": "8f56376427c96881f49590920ff0bf8543ec81b4",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T10:57:36Z",
+      "title": "fix(web): keep jittered invoice expiry monotonic across clock rollback",
+      "comparison_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 1,
+        "different": 1,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/lib/jitter.test.ts",
+          "candidate_blob": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+          "target_blobs": {
+            "main": "7790a713ce6fb5434b06370638d2f364b4f9f3f9",
+            "pr262": "7790a713ce6fb5434b06370638d2f364b4f9f3f9",
+            "pr264": "7790a713ce6fb5434b06370638d2f364b4f9f3f9",
+            "pr278": "ff652c1d81720c9e45157479058e6b7b0edcaad2"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/jitter.ts",
+          "candidate_blob": "9845576adfb522c17db145b1772276f66523180c",
+          "target_blobs": {
+            "main": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+            "pr262": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+            "pr264": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+            "pr278": "9845576adfb522c17db145b1772276f66523180c"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "dbe6338044a6f283c55c4df2e713bf82b126dad9",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md",
+          "candidate_blob": "22c2b05a13200102c4e6442d202c13fda12a67f6",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "22c2b05a13200102c4e6442d202c13fda12a67f6"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        }
+      ]
+    },
+    {
+      "number": 269,
+      "head_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "head_ref": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "base_sha": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+      "base_ref": "codex/ghostpay-feature-consolidation-20261119",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T10:39:25Z",
+      "title": "fix(web): complete payment-key exports and consolidate private-scan repairs",
+      "comparison_base": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 17,
+      "source_counts": {
+        "identical": 9,
+        "different": 3,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 3,
+        "different": 2,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+          "candidate_blob": "e46026f905b73f5f9c43a366db7737118983d62c",
+          "target_blobs": {
+            "main": null,
+            "pr262": "db9e79a1337f1d8bcc423d0fc28c51e36975ee23",
+            "pr264": "db9e79a1337f1d8bcc423d0fc28c51e36975ee23",
+            "pr278": "e46026f905b73f5f9c43a366db7737118983d62c"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.test.ts",
+          "candidate_blob": "b356257117dcd00d45767af1bc72531bb936fd29",
+          "target_blobs": {
+            "main": null,
+            "pr262": "149ab988c86c568a85d42b4b15b0373a60c30751",
+            "pr264": "a4a31ae2621053d5f55c28deff2d4c9b390c0244",
+            "pr278": "4fda284ea68de5ddbf68b5608d0a06491875153d"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.ts",
+          "candidate_blob": "e0ef1c6790a838376bb5adfd683bc8b8ddcb1f05",
+          "target_blobs": {
+            "main": null,
+            "pr262": "bc220c1c3300cf9856a8bc326b55201b9ddf62e9",
+            "pr264": "e7eeeaa0b172d7ab6fea01abbcd6e58ea9dbf475",
+            "pr278": "04defade63f86886f12a6299f19f46a2e562b680"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        },
+        {
+          "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+          "candidate_blob": "8aadf1028cfcc92e1eb42371f6dcbe17c2085719",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "8aadf1028cfcc92e1eb42371f6dcbe17c2085719"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/paymentExportRpc.ts",
+          "candidate_blob": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "78a2122759db2b1245b74cd965c4c4f20b539a15"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "candidate_blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+          "target_blobs": {
+            "main": null,
+            "pr262": "28a8271a7fe8ad825ecc7d709f7206d55976bc5c",
+            "pr264": "eb21473822afb6d01b0304bd44017fa3c21450e2",
+            "pr278": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+          "candidate_blob": "8d8f2e22bdff1be59721a9ce1a7b8ad29eaeb4ad",
+          "target_blobs": {
+            "main": null,
+            "pr262": "cd82b22abedb6cccccff65dc66a1a59e678e11eb",
+            "pr264": "cd82b22abedb6cccccff65dc66a1a59e678e11eb",
+            "pr278": "8d8f2e22bdff1be59721a9ce1a7b8ad29eaeb4ad"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "candidate_blob": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5",
+          "target_blobs": {
+            "main": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+            "pr262": "fc57dc3a5e76d05baf6fe0dea735119e58e62160",
+            "pr264": "fc57dc3a5e76d05baf6fe0dea735119e58e62160",
+            "pr278": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "candidate_blob": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11",
+          "target_blobs": {
+            "main": "043fb19af6e3ccf88224122185192829eed29c92",
+            "pr262": "f272f747894e66dc9251fac3ebbfa2e6d5f92a75",
+            "pr264": "f272f747894e66dc9251fac3ebbfa2e6d5f92a75",
+            "pr278": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+          "candidate_blob": "08b2caae251d724db002e0aa769cc02f85342e6d",
+          "target_blobs": {
+            "main": null,
+            "pr262": "42868e87524229175e098fce626ae2f75d84e418",
+            "pr264": "7efa7e2f2ef00e8cc7c058c99f00946529ceaeba",
+            "pr278": "a704ec91667f26d087cb732e273873a2b8514560"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+          "candidate_blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "576a2c5ff4bc13b61181d554c7a59135070d1cb9"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "candidate_blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+          "target_blobs": {
+            "main": "eed9daf882711659720a577138b3e08554ce9fe9",
+            "pr262": "aca307916e809c69ddb02bb57a8749e9d965f4a5",
+            "pr264": "ff362cf4f740373a3575465ef1349040d62d9421",
+            "pr278": "d92f0f2df98b2452a9285c5d4e4687d4096a0834"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "bef948b246f19b4525ec755617775efadc0d73a7",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/PAGES_CONTINUATION_20261119.md",
+          "candidate_blob": "f7b84ef47dfa3526bc31917da17e58c1bd36add1",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "f7b84ef47dfa3526bc31917da17e58c1bd36add1"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/handoffs/PRIVATE_CHECKPOINT_BROWSER_20261119.md",
+          "candidate_blob": "1214128035260ca5868770af97f3bd8aa262d159",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "1214128035260ca5868770af97f3bd8aa262d159"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/handoffs/payment-export-authorization-20261119/QUALIFICATION.md",
+          "candidate_blob": "ed21304101356a0d218f2d26aa9f22770db8f85f",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "ed21304101356a0d218f2d26aa9f22770db8f85f"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/privacy/network-egress-inventory.json",
+          "candidate_blob": "01e3952f65893242a18a0754f783500935339c18",
+          "target_blobs": {
+            "main": "94a7010b23d3bf92403ae7f5ed2092db1228a3d4",
+            "pr262": "62163e876d640c9b4e994f100411f32905ff1cb7",
+            "pr264": "9b796af6c163713acad9fb22a7c8492e21d048d6",
+            "pr278": "5b4f13aead42cf0f5a4842ce78a2ddbfe77fc7b7"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        }
+      ]
+    },
+    {
+      "number": 268,
+      "head_sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+      "head_ref": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T09:58:53Z",
+      "title": "fix(invoice-schema): reject invalid merchant profile verification clocks",
+      "comparison_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "ancestor_of": {
+        "main": false,
+        "pr262": true,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 1,
+        "different": 1,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "04b41101cdb2b9407fadd05a8fa0df073ffb1e03",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/MERCHANT_PROFILE_CLOCK_20261119.md",
+          "candidate_blob": "920bd1853f5c641350533e41006a283569fabbbe",
+          "target_blobs": {
+            "main": null,
+            "pr262": "920bd1853f5c641350533e41006a283569fabbbe",
+            "pr264": null,
+            "pr278": "920bd1853f5c641350533e41006a283569fabbbe"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "candidate_blob": "a1299d9ceedefeefb5784d287d556008531af02f",
+          "target_blobs": {
+            "main": "0ee33da251a01df95d7aafae9d3118feb1fd9d82",
+            "pr262": "a1299d9ceedefeefb5784d287d556008531af02f",
+            "pr264": "0ee33da251a01df95d7aafae9d3118feb1fd9d82",
+            "pr278": "a1299d9ceedefeefb5784d287d556008531af02f"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "candidate_blob": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+          "target_blobs": {
+            "main": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+            "pr262": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+            "pr264": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+            "pr278": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        }
+      ]
+    },
+    {
+      "number": 264,
+      "head_sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "head_ref": "integration/ghostpay-master-consolidation-20261118",
+      "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T09:35:13Z",
+      "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+      "comparison_base": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": true,
+        "pr278": false
+      },
+      "changed_file_count": 1062,
+      "source_counts": {
+        "identical": 365,
+        "different": 110,
+        "absent": 12
+      },
+      "documentation_counts": {
+        "identical": 462,
+        "different": 17,
+        "absent": 96
+      },
+      "nonidentical_source_paths": [
+        ".github/workflows/nightly.yml",
+        "apps/web/e2e/btc-spent-consent.spec.ts",
+        "apps/web/e2e/btc-spentness.spec.ts",
+        "apps/web/e2e/btc-worker.spec.ts",
+        "apps/web/e2e/core-journey.spec.ts",
+        "apps/web/e2e/devnet-journey.spec.ts",
+        "apps/web/e2e/focus-scope.spec.ts",
+        "apps/web/e2e/network-authorization.spec.ts",
+        "apps/web/e2e/pages-devnet.spec.ts",
+        "apps/web/e2e/privacy-settings.spec.ts",
+        "apps/web/e2e/private-scan-checkpoints.spec.ts",
+        "apps/web/e2e/stealth-export.spec.ts",
+        "apps/web/e2e/stealthExportFixtures.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/package.json",
+        "apps/web/scripts/apply-csp.d.mts",
+        "apps/web/scripts/apply-csp.mjs",
+        "apps/web/scripts/scan-bundle.d.mts",
+        "apps/web/scripts/scan-bundle.mjs",
+        "apps/web/src/AppShell.idleClock.test.tsx",
+        "apps/web/src/components/StealthExportCommon.tsx",
+        "apps/web/src/features/btc/BtcView.oracle.test.tsx",
+        "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+        "apps/web/src/features/btc/BtcView.spentConsent.test.tsx",
+        "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+        "apps/web/src/features/btc/BtcView.test.tsx",
+        "apps/web/src/features/btc/BtcView.tsx",
+        "apps/web/src/features/btc/esplora.isolation.test.ts",
+        "apps/web/src/features/btc/esplora.test.ts",
+        "apps/web/src/features/btc/esplora.ts",
+        "apps/web/src/features/btc/fixtures.testutil.ts",
+        "apps/web/src/features/btc/headers.test.ts",
+        "apps/web/src/features/btc/headers.ts",
+        "apps/web/src/features/btc/oracleWorker.test.ts",
+        "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+        "apps/web/src/features/btc/scan.localSpends.test.ts",
+        "apps/web/src/features/btc/scan.spends.test.ts",
+        "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+        "apps/web/src/features/btc/scan.ts",
+        "apps/web/src/features/btc/scanWorker.test.ts",
+        "apps/web/src/features/btc/scanWorkerClient.ts",
+        "apps/web/src/features/btc/scanWorkerMessages.ts",
+        "apps/web/src/features/btc/scanWorkerProtocol.ts",
+        "apps/web/src/features/btc/scanWorkerSource.test.ts",
+        "apps/web/src/features/btc/scanWorkerSource.ts",
+        "apps/web/src/features/btc/verification.ts",
+        "apps/web/src/features/policy/PolicyAssetCoverage.test.tsx",
+        "apps/web/src/features/policy/PolicyCreate.tsx",
+        "apps/web/src/features/policy/PolicyPay.authority.test.tsx",
+        "apps/web/src/features/policy/PolicyPay.tsx",
+        "apps/web/src/features/policy/create.ts",
+        "apps/web/src/features/policy/pay.ts",
+        "apps/web/src/features/policy/policy.logic.test.ts",
+        "apps/web/src/features/tron/chain.hardening.test.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+        "apps/web/src/lib/defaultServices.test.ts",
+        "apps/web/src/lib/manifest.test.ts",
+        "apps/web/src/lib/networkAuthorization.test.ts",
+        "apps/web/src/lib/networkAuthorization.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "apps/web/src/lib/privateScanLifecycle.test.ts",
+        "apps/web/src/lib/scanClient.test.ts",
+        "apps/web/src/lib/scanClient.ts",
+        "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+        "apps/web/src/lib/session.idleLock.test.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/views/Home.tsx",
+        "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/Settings.test.tsx",
+        "apps/web/src/views/Settings.tsx",
+        "apps/web/src/views/Sweep.test.tsx",
+        "apps/web/src/views/Sweep.tsx",
+        "deploy/.env.example",
+        "deploy/docker-compose.yml",
+        "deploy/nginx/security-headers.conf",
+        "deploy/selftest.sh",
+        "deploy/tor/Dockerfile",
+        "package-lock.json",
+        "package.json",
+        "packages/btc-silent-payments/src/scan/scanner.test.ts",
+        "packages/chain-solana/scripts/gen-meta-address-sol-tron-vectors.mjs",
+        "packages/chain-solana/src/adapter.test.ts",
+        "packages/chain-solana/src/adapter.ts",
+        "packages/chain-solana/src/announcement.test.ts",
+        "packages/chain-solana/src/announcement.ts",
+        "packages/chain-solana/src/errors.ts",
+        "packages/chain-solana/src/hash.ts",
+        "packages/chain-solana/src/index.ts",
+        "packages/chain-solana/src/interop.test.ts",
+        "packages/chain-solana/src/keys.test.ts",
+        "packages/chain-solana/src/keys.ts",
+        "packages/chain-solana/src/properties.test.ts",
+        "packages/chain-solana/src/reference.testutil.ts",
+        "packages/chain-solana/src/stealth.test.ts",
+        "packages/chain-solana/src/stealth.ts",
+        "packages/chain-solana/src/vectors.test.ts",
+        "packages/chain-solana/test-vectors/self-generated-v1.json",
+        "packages/chain-tron/src/adapter.test.ts",
+        "packages/chain-tron/src/adapter.ts",
+        "packages/chain-tron/src/errors.ts",
+        "packages/chain-tron/src/index.ts",
+        "packages/chain-tron/src/interop.test.ts",
+        "packages/chain-tron/src/meta.test.ts",
+        "packages/chain-tron/src/meta.ts",
+        "packages/chain-tron/src/stealth.test.ts",
+        "packages/chain-tron/src/stealth.ts",
+        "packages/cli/src/chain-commands.test.ts",
+        "packages/cli/src/commands/chain.ts",
+        "packages/cli/src/payment-context.ts",
+        "packages/policy-scheme/src/client.test.ts",
+        "packages/policy-scheme/src/index.ts",
+        "packages/policy-scheme/src/record.ts",
+        "scripts/recovery/stealth-export-recover.test.mjs",
+        "scripts/tests/lean-core-reachability.test.mjs",
+        "scripts/tests/nightly-workflow.test.mjs",
+        "test-vectors/meta-address-sol-tron-v1.json"
+      ],
+      "nonidentical_documentation_paths": [
+        "apps/web/DEVIATIONS.md",
+        "deploy/README.md",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/audits/08-completion-gates.md",
+        "docs/consolidation/NETWORK_SELECTION_REPAIR_2026-11-19.md",
+        "docs/consolidation/POLICY_ASSET_RECOVERY_2026-11-19.md",
+        "docs/consolidation/POLICY_RECORD_AUTHORITY_2026-11-19.md",
+        "docs/consolidation/master-20261118/COMBINED_BROWSER_AUTHORITY_REVIEW.md",
+        "docs/consolidation/master-20261118/COMBINED_RUNTIME_QUALIFICATION.md",
+        "docs/consolidation/master-20261118/COORDINATOR_AUTHORITY_ACCEPTANCE.md",
+        "docs/consolidation/master-20261118/ESPLORA_ABORT_TYPE_REPAIR.md",
+        "docs/consolidation/master-20261118/G5_MULTICHAIN_INDEPENDENT_REVIEW.md",
+        "docs/consolidation/master-20261118/NON_EVM_CALLER_REVIEW.md",
+        "docs/consolidation/master-20261118/combined-32573/01-networkAuthorization.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/02-networkAuthorization.adapters.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/03-defaultServices.networkGuard.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/04-networkOperation.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/05-boundedRequest.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/06-session.idleLock.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/07-scanCursorSlot.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/08-PolicyPay.authority.test.tsx.txt",
+        "docs/consolidation/master-20261118/combined-32573/09-PolicyAssetCoverage.test.tsx.txt",
+        "docs/consolidation/master-20261118/combined-32573/10-esplora.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/11-scanWorker.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/12-scan.localSpends.test.ts.txt",
+        "docs/consolidation/master-20261118/combined-32573/13-BtcView.spentConsent.test.tsx.txt",
+        "docs/consolidation/master-20261118/combined-32573/14-Pay.signer.test.tsx.txt",
+        "docs/consolidation/master-20261118/combined-32573/15-Scan.privacy.test.tsx.txt",
+        "docs/consolidation/master-20261118/combined-32573/16-Scan.privateCheckpoint.test.tsx.txt",
+        "docs/consolidation/master-20261118/combined-32573/local-spends-rerun-462cfa87.txt",
+        "docs/consolidation/master-20261118/combined-32573/results.json",
+        "docs/consolidation/master-20261118/combined-browser-authority-blobs.json",
+        "docs/consolidation/master-20261118/esplora-narrowing-green.ts.txt",
+        "docs/consolidation/master-20261118/esplora-narrowing-green.txt",
+        "docs/consolidation/master-20261118/esplora-narrowing-probe.ts.txt",
+        "docs/consolidation/master-20261118/esplora-narrowing-red.txt",
+        "docs/consolidation/master-20261118/g5-multichain-independent-blobs.json",
+        "docs/consolidation/master-20261118/initial-multifile-killed.txt",
+        "docs/consolidation/master-20261118/initial-multifile-metadata.json",
+        "docs/consolidation/master-20261118/non-evm-caller-review.json",
+        "docs/consolidation/master-20261118/tooling-bd77-green.txt",
+        "docs/consolidation/network-selection-green.txt",
+        "docs/consolidation/network-selection-red.txt",
+        "docs/consolidation/network-selection-repair-2026-11-19.json",
+        "docs/consolidation/policy-assets-recovery-2026-11-19.json",
+        "docs/consolidation/policy-record-authority-2026-11-19.json",
+        "docs/consolidation/policy-record-authority-green.txt",
+        "docs/consolidation/policy-record-authority-layout-green.txt",
+        "docs/consolidation/policy-record-authority-red.txt",
+        "docs/consolidation/tooling-recovery-20261119/README.md",
+        "docs/consolidation/tooling-recovery-20261119/container-registry/library_debian-pin.json",
+        "docs/consolidation/tooling-recovery-20261119/container-registry/library_debian-tag.json",
+        "docs/consolidation/tooling-recovery-20261119/container-registry/nginxinc_nginx-unprivileged-pin.json",
+        "docs/consolidation/tooling-recovery-20261119/container-registry/nginxinc_nginx-unprivileged-tag.json",
+        "docs/consolidation/tooling-recovery-20261119/container-registry/verification.json",
+        "docs/consolidation/tooling-recovery-20261119/history-tooling-independent-review.json",
+        "docs/consolidation/tooling-recovery-20261119/history-tooling-independent-review.md",
+        "docs/consolidation/tooling-recovery-20261119/selection.json",
+        "docs/consolidation/tooling-recovery-20261119/tooling-action-pins.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-headers.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-nightly-green.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-nightly-red.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-secrets.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-selfhost-green.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-selfhost-red.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-shell-syntax.log",
+        "docs/consolidation/tooling-recovery-20261119/tooling-short-checks.json",
+        "docs/consolidation/tooling-recovery-20261119/tooling-workflow-adjacent-timeout.log",
+        "docs/developer/api/policy-scheme.md",
+        "docs/guides/bitcoin-silent-payments.md",
+        "docs/handoffs/btc-consolidation-20261119/README.md",
+        "docs/handoffs/btc-consolidation-20261119/selection.json",
+        "docs/handoffs/btc-spent-20261118/ACCEPTANCE_MATRIX.md",
+        "docs/handoffs/btc-spent-20261118/FILE_MAP.md",
+        "docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md",
+        "docs/handoffs/btc-spent-20261118/README.md",
+        "docs/handoffs/btc-spent-20261118/VALIDATION.md",
+        "docs/handoffs/btc-spent-20261118/benchmark.mjs",
+        "docs/handoffs/btc-spent-20261118/evidence/benchmark-before-measurement.json",
+        "docs/handoffs/btc-spent-20261118/evidence/benchmark-final.json",
+        "docs/handoffs/btc-spent-20261118/evidence/btc-node22-final-report.json",
+        "docs/handoffs/btc-spent-20261118/evidence/commit-transport.json",
+        "docs/handoffs/btc-spent-20261118/evidence/hosted-ci.json",
+        "docs/handoffs/btc-spent-20261118/evidence/hosted-integration.json",
+        "docs/handoffs/btc-spent-20261118/evidence/hosted-pages-browser.json",
+        "docs/handoffs/btc-spent-20261118/evidence/hosted-pages.json",
+        "docs/handoffs/btc-spent-20261118/evidence/independent-tests.json",
+        "docs/handoffs/btc-spent-20261118/evidence/local-build-attempt.json",
+        "docs/handoffs/btc-spent-20261118/evidence/local-check-logs.json",
+        "docs/handoffs/btc-spent-20261118/evidence/previous-btc-node24-report.json",
+        "docs/handoffs/btc-spent-20261118/evidence/small-checks.json",
+        "docs/handoffs/btc-spent-20261118/evidence/source-pins.json",
+        "docs/handoffs/btc-spent-20261118/evidence/worker-typing-fix.json",
+        "docs/handoffs/multichain-recovery-20261119/README.md",
+        "docs/handoffs/multichain-recovery-20261119/g5-multichain-independent-blobs.json",
+        "docs/handoffs/multichain-recovery-20261119/g5-multichain-independent-review.md",
+        "docs/handoffs/multichain-recovery-20261119/history-g5-cli.log",
+        "docs/handoffs/multichain-recovery-20261119/history-g5-dependency-versions.json",
+        "docs/handoffs/multichain-recovery-20261119/history-g5-solana.log",
+        "docs/handoffs/multichain-recovery-20261119/history-g5-tron.log",
+        "docs/handoffs/multichain-recovery-20261119/history-g5.vitest.config.mts",
+        "docs/handoffs/multichain-recovery-20261119/selection.json",
+        "docs/pages/README.md",
+        "docs/privacy/network-egress-inventory.json",
+        "docs/specs/12-bip352-light-client-scanning.md",
+        "docs/user/bitcoin-silent-payments.md",
+        "docs/user/sweep-and-gas-privacy.md",
+        "packages/btc-silent-payments/README.md",
+        "packages/chain-solana/DEVIATIONS.md",
+        "packages/chain-solana/README.md",
+        "packages/chain-tron/DEVIATIONS.md",
+        "packages/chain-tron/README.md",
+        "packages/solana-stealth/README.md"
+      ]
+    },
+    {
+      "number": 265,
+      "head_sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "head_ref": "automation/20261119T083600Z/bug/json-canonical-array",
+      "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T08:45:58Z",
+      "title": "fix(invoice-schema): reject sparse or decorated arrays during canonical JSON encoding",
+      "comparison_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "ancestor_of": {
+        "main": false,
+        "pr262": true,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 0,
+        "different": 2,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 1,
+        "different": 1,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "5146598b50599b3fe7a0bee130ebc371482313c9",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/JSON_CANONICAL_ARRAY_20261119.md",
+          "candidate_blob": "dd9a4c05c371692ab2b0a4a4cf5f286e45483b62",
+          "target_blobs": {
+            "main": null,
+            "pr262": "dd9a4c05c371692ab2b0a4a4cf5f286e45483b62",
+            "pr264": null,
+            "pr278": "dd9a4c05c371692ab2b0a4a4cf5f286e45483b62"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        },
+        {
+          "path": "packages/invoice-schema/src/json.test.ts",
+          "candidate_blob": "37a29eb627a76d9531bd0bbd549167481720af9d",
+          "target_blobs": {
+            "main": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+            "pr262": "f2b5ff6804784df1f153a60b0488f4b9b2c98f5f",
+            "pr264": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+            "pr278": "2ffdfe70a8814762b14721ac640fc82cab0b9e54"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        },
+        {
+          "path": "packages/invoice-schema/src/json.ts",
+          "candidate_blob": "8b2481cb117334b779ec6c77a0a8dac22bce27dc",
+          "target_blobs": {
+            "main": "b7a34bb5176ec72daf0026a59991863421bdb341",
+            "pr262": "63e02aa59219f5ba4732c6cc0198e9c0466eaa48",
+            "pr264": "b7a34bb5176ec72daf0026a59991863421bdb341",
+            "pr278": "8ed01592d487c356a72d51e240e5cc63fb470a3a"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": false,
+          "target278_state": "different"
+        }
+      ]
+    },
+    {
+      "number": 258,
+      "head_sha": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "head_ref": "automation/20261119T073600Z/bug/camera-visibility",
+      "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T08:16:49Z",
+      "title": "fix(web): cancel QR imports when the page becomes hidden",
+      "comparison_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "ancestor_of": {
+        "main": false,
+        "pr262": true,
+        "pr264": false,
+        "pr278": true
+      },
+      "changed_file_count": 4,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 1,
+        "different": 1,
+        "absent": 0
+      },
+      "files": [
+        {
+          "path": "apps/web/src/components/CameraImporter.tsx",
+          "candidate_blob": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+          "target_blobs": {
+            "main": "f592f573581511d7287608c3da068aae432f5738",
+            "pr262": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+            "pr264": "f592f573581511d7287608c3da068aae432f5738",
+            "pr278": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "candidate_blob": "591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11",
+          "target_blobs": {
+            "main": null,
+            "pr262": "591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11",
+            "pr264": null,
+            "pr278": "591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "21de487149774239317e636ae96ee263ffe17012",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md",
+          "candidate_blob": "da00bc7fc5c81cdcdea78150c75822a401b28287",
+          "target_blobs": {
+            "main": null,
+            "pr262": "da00bc7fc5c81cdcdea78150c75822a401b28287",
+            "pr264": null,
+            "pr278": "da00bc7fc5c81cdcdea78150c75822a401b28287"
+          },
+          "same_as_candidate": [
+            "pr262",
+            "pr278"
+          ],
+          "documentation_or_evidence": true,
+          "target278_state": "identical"
+        }
+      ]
+    },
+    {
+      "number": 261,
+      "head_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "head_ref": "automation/20261119T073600Z/coordinator/integration-lock",
+      "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+      "base_ref": "main",
+      "author": "djshellshoxxx",
+      "updated_at": "2026-11-19T08:14:19Z",
+      "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+      "comparison_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "ancestor_of": {
+        "main": false,
+        "pr262": false,
+        "pr264": false,
+        "pr278": false
+      },
+      "changed_file_count": 19,
+      "source_counts": {
+        "identical": 2,
+        "different": 0,
+        "absent": 0
+      },
+      "documentation_counts": {
+        "identical": 0,
+        "different": 1,
+        "absent": 16
+      },
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "candidate_blob": "ed4c1e01d963309e7896c820902985b9ba7b91a1",
+          "target_blobs": {
+            "main": "2e14c48a66293275d967dd485cb6648969927193",
+            "pr262": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+            "pr264": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+            "pr278": "1cf7dd1a18344156b94dd4b90409f2aa46de54cf"
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "different"
+        },
+        {
+          "path": "docs/automation/BRANCH_INVENTORY.md",
+          "candidate_blob": "4298d35436f87604c49be09fabea59436a685e6c",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/BUG_BACKLOG.md",
+          "candidate_blob": "630a3d73a4e450562b1a800b26c554bb75936733",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/CYCLE_HISTORY.md",
+          "candidate_blob": "8249d86f30fc8707996f2894f0edf3675a28f117",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/FEATURE_BACKLOG.md",
+          "candidate_blob": "817e7116a3784aca3a4fc9436f91258915fb667e",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/MASTER_STATUS.md",
+          "candidate_blob": "9db2bd8b7ee71fed0fd23b9566a9aa232bea26f7",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/MERGE_QUEUE.md",
+          "candidate_blob": "9a0f4babbde40e361ff92e1ece91dc8c3bb06955",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/MISSING_IMPLEMENTATIONS.md",
+          "candidate_blob": "98335bfd64ecdc3a7c2f2c9ba3c44c7ef4ef6040",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/README.md",
+          "candidate_blob": "fe6c31fad4d0147abd88ba9e68d080032d6d2722",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/SECURITY_FINDINGS.md",
+          "candidate_blob": "f413af3407248b13d0f41feca96448bb640511c8",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/WORKER_HANDOFFS.md",
+          "candidate_blob": "670f161ed00b2bf6612829ddd46ebba23c91b96c",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/data/branch-census-20261119T0742Z.json",
+          "candidate_blob": "b75eea569fdbbe5963fd52203ad6edef7a33f621",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/data/consolidation-review-20261119T0742Z.json",
+          "candidate_blob": "1da9656586fbca78df1ff7296509610227aed321",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/data/ghostpay-lock-review-9e28830b.md",
+          "candidate_blob": "068f238ef7bd0974f46e916ad026c073e3aa0659",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/data/ghostpay-lock-review-d3749e45.md",
+          "candidate_blob": "0e7382777b19350fffe9a39d71b7b80f5a33b306",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/data/open-pr-paths-20261119T0742Z.json",
+          "candidate_blob": "cc13b5963ddcb4c087e42a127bf06caa2ebcba0f",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "docs/automation/data/pr-ancestry-20261119T0742Z.json",
+          "candidate_blob": "49446787f911e2bd9e313db3cef5dd588191e114",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": null
+          },
+          "same_as_candidate": [],
+          "documentation_or_evidence": true,
+          "target278_state": "absent"
+        },
+        {
+          "path": "scripts/automation/integration-lock.mjs",
+          "candidate_blob": "47a7411628f7775228e15f88b120c3684b461249",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "47a7411628f7775228e15f88b120c3684b461249"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        },
+        {
+          "path": "scripts/tests/integration-lock.test.mjs",
+          "candidate_blob": "f2ef3e9ac3425ad6296a878526c68d69afac04c7",
+          "target_blobs": {
+            "main": null,
+            "pr262": null,
+            "pr264": null,
+            "pr278": "f2ef3e9ac3425ad6296a878526c68d69afac04c7"
+          },
+          "same_as_candidate": [
+            "pr278"
+          ],
+          "documentation_or_evidence": false,
+          "target278_state": "identical"
+        }
+      ]
+    }
+  ]
+}
