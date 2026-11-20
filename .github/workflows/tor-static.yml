@@ -8,6 +8,11 @@ on:
       - 'tools/portable-hosting-kit/**'
       - 'apps/web/**'
       - 'packages/**/src/**'
+      - 'packages/**/package.json'
+      - 'packages/**/tsconfig*.json'
+      - 'package.json'
+      - 'tsconfig.base.json'
+      - 'scripts/build-workspaces.mjs'
       - 'package-lock.json'
       - '.github/workflows/tor-static.yml'
   push:
@@ -18,6 +23,11 @@ on:
       - 'tools/portable-hosting-kit/**'
       - 'apps/web/**'
       - 'packages/**/src/**'
+      - 'packages/**/package.json'
+      - 'packages/**/tsconfig*.json'
+      - 'package.json'
+      - 'tsconfig.base.json'
+      - 'scripts/build-workspaces.mjs'
       - 'package-lock.json'
       - '.github/workflows/tor-static.yml'
   workflow_dispatch:
