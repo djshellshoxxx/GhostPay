@@ -1923,3 +1923,11 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+# Continuous generation 6 merchant-ledger review — 2026-11-19
+
+Worker: `/root/merchant_review_gen6`, independent of remaining-uniqueness implementer.
+Branch: `review/ghostpay-merchant-gen6-20261119`; base `3dc86fbc49e919e664230b63dae372ff79430fc5`.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/`; temporary independent test probes may execute only in this isolated checkout and are preserved as evidence.
+Acceptance: independently reproduce nonzero invoices becoming paid solely through large tolerance; inspect zero-due/positive-payment/expiry/rejected-observation semantics; verify the exact final extracted source against baseline and original package tests, coverage, typecheck, lint and build. Identify actual consumers and scope, preserve configuration/gates, report actual source-pinned results.
+Boundaries: no remote writes, dependency/fee/feature activation or broad beta approval. Root owns integration and the existing hosted candidate; implementing worker owns the production patch.
