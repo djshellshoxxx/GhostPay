@@ -1,0 +1,58 @@
+[
+  {
+    "name": "deployments",
+    "state": "baseline",
+    "commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "command": [
+      "node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/deployments.test.ts",
+      "--maxWorkers=1"
+    ],
+    "cwd": "packages/chain-adapters",
+    "exitCode": 0,
+    "log": "codeql-baseline-deployments.log.gz"
+  },
+  {
+    "name": "privacy-csp",
+    "state": "baseline",
+    "commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "command": [
+      "node",
+      "--test",
+      "scripts/tests/privacy-csp-bundle.test.mjs"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "codeql-baseline-privacy-csp.log.gz"
+  },
+  {
+    "name": "deployments",
+    "state": "fixed",
+    "commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+    "command": [
+      "node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/deployments.test.ts",
+      "--maxWorkers=1"
+    ],
+    "cwd": "packages/chain-adapters",
+    "exitCode": 0,
+    "log": "codeql-fixed-deployments.log.gz"
+  },
+  {
+    "name": "privacy-csp",
+    "state": "fixed",
+    "commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+    "command": [
+      "node",
+      "--test",
+      "scripts/tests/privacy-csp-bundle.test.mjs"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "codeql-fixed-privacy-csp.log.gz"
+  }
+]

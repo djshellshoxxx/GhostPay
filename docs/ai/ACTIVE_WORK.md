@@ -1957,3 +1957,13 @@ Acceptance: retrieve exact-source run/job evidence, classify the current failure
 Coordination: the earlier continuous coordinator owns the active invoice-replacement browser observation repair and merchant-ledger correction in separate `0a7bc3583588` worktrees. This audit does not duplicate either implementation. The remediation coordinator owns Pages artifact gate integration; the independent artifact reviewer owns its verification.
 
 Coordinator-authorized follow-up: this worker additionally owns exactly `packages/chain-adapters/src/deployments.test.ts` and `scripts/tests/privacy-csp-bundle.test.mjs` to express the two intentionally malformed fixed fixtures directly. Preserve byte-for-byte generated inputs and every existing assertion, run the unchanged fixture suites before and after, record independent equivalence evidence, and obtain a separate source review plus fresh hosted CodeQL. This is test-fixture clarification, not a demonstrated runtime vulnerability repair or an alert dismissal. All production, workflow and analyzer-policy files remain outside this claim.
+
+# Independent artifact security review — 2026-11-19 Vancouver
+
+Worker: `/root/artifact_security_review`; branch `review/ghostpay-artifact-remediation-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/artifact-review/` only.
+Acceptance: execute current verifier tests, independently challenge manifest/file/source identity assumptions, verify a fresh payments-disabled artifact when the coordinator's dependencies are prepared, and preserve exact evidence.
+Boundaries: read-only product, tests and workflows until an independently observed defect is reported and scoped with the coordinator. No remote mutation, integration, release-policy change, signing, deployment or funds.
+
+Additional coordinator-authorized independent review: exact CodeQL fixture correction `008ccdcf05b703cea51ffc4fdaa42fc279281d81`. Read-only source inspection, AST-derived byte-equivalence proof and original focused test replay; no production or test changes authored by this reviewer. Review and evidence remain in the owned artifact-review directory.
