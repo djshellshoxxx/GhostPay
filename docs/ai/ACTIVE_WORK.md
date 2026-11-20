@@ -1905,3 +1905,13 @@ Acceptance: source-pinned RED/GREEN, service replacement/cancellation checks, ex
 
 - Worker `qa_review_gen3` independently reviewed exact `95f28a04` and follow-up `45a5dcf7` on isolated branch `review/ghostpay-qa-gen3-20261119`. No product blocker found; baseline hook comparison is 3 RED / 1 existing PASS, fixed 4 GREEN; independent lifecycle plus supplied cases 8 GREEN, existing Pay 66 GREEN, web typecheck exit 0.
 - Source-pinned report, raw receipts, and reviewer probe are retained in `docs/engineering-handoffs/continuous-20261119/generation-3-qa-review/`. Temporary probe removed and fixed runtime restored. No remote mutation. Hosted lean/full browser acceptance remains required on final combined source.
+
+
+# Continuous engineering generation 4 — independent combined-source verification
+
+Worker: `/root/integration_review_gen4`, fresh independent verifier.
+Branch: `review/ghostpay-combined-gen4-20261119`.
+Base: `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`, tree `7a7b189be05b802d3545e8823230076125d7bbf6`.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-integration-review/` only.
+Acceptance: independently compare final combined product/test blobs to reviewed upstream, security, QA, lint and lock extractions; inspect integration boundaries and unchanged configurations/architecture; execute the original Pages tooling and integration-lock guard tests with actual counts and source pins. Root owns heavy combined coverage/type/lint/build and publication; another reviewer owns contract findings.
+Boundaries: no product, test, contract, dependency, threshold, workflow, remote-ref, deployment or release changes. This review does not confer external security approval or substitute for hosted browser acceptance.
