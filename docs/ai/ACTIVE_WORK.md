@@ -1923,3 +1923,43 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+# Bounded continuation 20261120T003500Z — QR runtime keys and qualification
+
+Worker: ChatGPT native coordinator `/root`, workspace `fc8b0b472d30`.
+Independent native workers: `/root/base64_review`, `/root/qr_security_review`,
+and `/root/ci_reconcile`; maximum concurrency is four including the coordinator.
+Branch: `automation/20261120T003500Z/coordinator/qr-runtime-qualification`.
+Exact base: published PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`;
+observed main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+
+Owned implementation: `apps/web/src/lib/qrKinds.ts` and `qrKinds.test.ts`.
+Owned documentation: this additive claim, `docs/design/qr-colors.md`, and the
+cycle-specific evidence under `docs/engineering-handoffs/continuous-20261119/`.
+Canonical handoff/ledger updates are proposals on this isolated branch only.
+No ownership of the existing release branch, browser follow-up, merchant-ledger,
+dependency, contract, or other source-owner work is claimed.
+
+Independent review confirmed that PR #285's own-key check still coerces array,
+boxed-string, and object keys. A stateful conversion can select different keys
+between validation and lookup. This is a low-severity API correctness defect;
+no reachable external-input exploit has been demonstrated.
+Acceptance: first reproduce failures through repository Vitest, reject every
+non-primitive-string payload/frame kind with the existing TypeError messages,
+never invoke conversion hooks, and preserve declared mappings, flags, warnings,
+print rules, and frame UI behavior. Run focused regression/component checks,
+applicable typecheck/lint/build and obtain separate exact-source review.
+
+Dependencies and reconciliation: #285's production/test blobs already exist in
+#278; #289's production blob also exists there and its unused test parameter is
+already removed. Do not duplicate those repairs. Recheck upstream heads and
+active local follow-ups before publication. Invoice-schema verification belongs
+to the separate reviewer; those production/test files remain unchanged here.
+Expected checks include base64url Vitest, invoice package qualification, QR
+taxonomy/frame/classification tests, web typecheck/lint and static build checks.
+
+Integration lock observed at `d6839d7c48edf5e71ddd35d3e87446b69c196b04`,
+released generation 4. This cycle has not acquired or modified it. Any shared
+integration requires a fresh valid lease and all other gates; isolated review
+work may proceed. No deployment, release, funds, paid agents, workflow changes,
+force-pushes, or security-gate waiver is authorized.
