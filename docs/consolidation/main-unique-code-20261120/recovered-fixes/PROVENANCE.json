@@ -1,0 +1,366 @@
+{
+  "base": "885b9569e6fc99e43bf01d23305494275e10120e",
+  "source_head": "e9d9331d2a04cb721610b1a25e157ed08eed64d7",
+  "local_execution": "unavailable; not run",
+  "hosted_combined": "pending",
+  "independent_verification": "combined_verify: all 31 blobs/modes, no unexpected leaf changes, no blocking source findings",
+  "modules": [
+    {
+      "id": "camera",
+      "description": "cancel pending QR imports when the page becomes hidden",
+      "source_prs": [
+        258
+      ],
+      "commit": "1a4b5fe265aedb587341a2fc7e4ddca3ba77366c",
+      "files": [
+        {
+          "path": "apps/web/src/components/CameraImporter.tsx",
+          "mode": "100644",
+          "sha": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "f592f573581511d7287608c3da068aae432f5738"
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "mode": "100644",
+          "sha": "591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": null
+        }
+      ]
+    },
+    {
+      "id": "json",
+      "description": "preserve canonical JSON array invariants",
+      "source_prs": [
+        265,
+        270,
+        278
+      ],
+      "commit": "74210f9b957a68bb1567219039b094ac90ce7118",
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/json.ts",
+          "mode": "100644",
+          "sha": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "b7a34bb5176ec72daf0026a59991863421bdb341"
+        },
+        {
+          "path": "packages/invoice-schema/src/json.test.ts",
+          "mode": "100644",
+          "sha": "2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36"
+        }
+      ]
+    },
+    {
+      "id": "scanner",
+      "description": "skip explicitly unsupported announcement schemes",
+      "source_prs": [
+        270,
+        278
+      ],
+      "commit": "ac293b6e5dfac59df739077568e1bb03c5363816",
+      "files": [
+        {
+          "path": "apps/web/src/lib/scannerCore.ts",
+          "mode": "100644",
+          "sha": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "3d22991c284bc58ef0abe27671785ef768546259"
+        },
+        {
+          "path": "apps/web/src/lib/scannerCore.test.ts",
+          "mode": "100644",
+          "sha": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "902cb6d07492fc8b08131d17b94d7d3fbc70c826"
+        }
+      ]
+    },
+    {
+      "id": "calendar",
+      "description": "reject impossible deployment calendar dates",
+      "source_prs": [
+        271,
+        292
+      ],
+      "commit": "2e61af277030d76f765b320b9f3e0e81e1a6cddd",
+      "files": [
+        {
+          "path": "packages/chain-adapters/src/deployments.ts",
+          "mode": "100644",
+          "sha": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "a6d2aa4c10ec317cd3c91b0ac09447d755180425"
+        },
+        {
+          "path": "packages/chain-adapters/src/deployments.test.ts",
+          "mode": "100644",
+          "sha": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+          "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+          "before": "8ad8ca9c354435a2acf491bb4372a98e21e08738"
+        }
+      ]
+    },
+    {
+      "id": "rpc",
+      "description": "bound retries and suppress ambient RPC credentials",
+      "source_prs": [
+        271,
+        278
+      ],
+      "commit": "1bf1ac709a1147395d2f47dcdc5eab6a5ffc517b",
+      "files": [
+        {
+          "path": "packages/chain-adapters/src/rpc.ts",
+          "mode": "100644",
+          "sha": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "60b3505d3bc62089afd1ed4741bea29273ebea8a"
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "mode": "100644",
+          "sha": "f7bb85cb0296ccae726859842b06c6f76b6974b8",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "cbc9b3498b3411b2a8187ece3fc97f928bef6e13"
+        }
+      ]
+    },
+    {
+      "id": "merchant_clock",
+      "description": "reject invalid merchant verification clocks",
+      "source_prs": [
+        268
+      ],
+      "commit": "8730f6e09e0077e081c930adec122b7335bd0851",
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "mode": "100644",
+          "sha": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "a75124bb35d2c319e6936097ef6b4048ac59ec76"
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "mode": "100644",
+          "sha": "a1299d9ceedefeefb5784d287d556008531af02f",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "0ee33da251a01df95d7aafae9d3118feb1fd9d82"
+        }
+      ]
+    },
+    {
+      "id": "jitter",
+      "description": "preserve invoice expiry across clock rollback",
+      "source_prs": [
+        274
+      ],
+      "commit": "9105f160c06cb3532ef346196a02a988100c6dc6",
+      "files": [
+        {
+          "path": "apps/web/src/lib/jitter.ts",
+          "mode": "100644",
+          "sha": "9845576adfb522c17db145b1772276f66523180c",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "f4d6fefe892130d70bfa9cea5113f611ccea8b02"
+        },
+        {
+          "path": "apps/web/src/lib/jitter.test.ts",
+          "mode": "100644",
+          "sha": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "7790a713ce6fb5434b06370638d2f364b4f9f3f9"
+        }
+      ]
+    },
+    {
+      "id": "base64",
+      "description": "reject non-string base64url inputs with qualified regression tests",
+      "source_prs": [
+        289,
+        278
+      ],
+      "commit": "31c34319aeaa9dbc211b8ccc6bdf65fc3e755ea2",
+      "files": [
+        {
+          "path": "packages/invoice-schema/src/base64url.ts",
+          "mode": "100644",
+          "sha": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb"
+        },
+        {
+          "path": "packages/invoice-schema/src/base64url.test.ts",
+          "mode": "100644",
+          "sha": "8d959c2b144182d0d0f576214dc7b761b7166c47",
+          "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "before": "ef5f6d46556e658bbca154eb70d9f3be713e7712"
+        }
+      ]
+    },
+    {
+      "id": "qr_keys",
+      "description": "reject non-primitive QR keys and preserve warning coverage",
+      "source_prs": [
+        290,
+        295,
+        302
+      ],
+      "commit": "7d2212d3c099aefaef3915c85f0fb0929a441fe1",
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "mode": "100644",
+          "sha": "a85e1011cdface74c87683146ff7428654b7830d",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "68de6518783cc57bd7f3a66d0588d530e27d21b6"
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "mode": "100644",
+          "sha": "257b634250f033ddec042b67941fec23ffba1323",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "e918e36848f4e01322afbdf41cf561b3222cc14a"
+        }
+      ]
+    },
+    {
+      "id": "assembler",
+      "description": "preserve QR idle deadline after rejected conflicts",
+      "source_prs": [
+        294
+      ],
+      "commit": "3f135bc46b46d232ddea3258c1b19a27c3ded346",
+      "files": [
+        {
+          "path": "packages/qr-exchange/src/assembler.ts",
+          "mode": "100644",
+          "sha": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "8e8d12e447265e682597edf2887e5a2f6afd55db"
+        },
+        {
+          "path": "packages/qr-exchange/src/assembler.test.ts",
+          "mode": "100644",
+          "sha": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "a92fec814ce83710aea14c4b0e0ededb3398f742"
+        }
+      ]
+    },
+    {
+      "id": "receipts",
+      "description": "bind wallet receipts to submitted hashes and align consumer fixtures",
+      "source_prs": [
+        298,
+        302
+      ],
+      "commit": "54d224c78d4af7a84d6cfaaf2e2380990c93eeb7",
+      "files": [
+        {
+          "path": "apps/web/src/lib/wallet.ts",
+          "mode": "100644",
+          "sha": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "fb1d864f3223ce007e35d81c19a308df88657121"
+        },
+        {
+          "path": "apps/web/src/lib/wallet.test.ts",
+          "mode": "100644",
+          "sha": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "6416192e15102bf6725eac9b945ff45681d021ff"
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "mode": "100644",
+          "sha": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "3554a2315bfffd0116d2ec2abaaf73f7b0dbc2cd"
+        },
+        {
+          "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "mode": "100644",
+          "sha": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "4dded28d0f6c9521b07c07557cf2df589ba4fdba"
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "mode": "100644",
+          "sha": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "7ef3db702caa56538a7fd4e82e63eafb895debd5"
+        },
+        {
+          "path": "apps/web/e2e/flowMocks.ts",
+          "mode": "100644",
+          "sha": "a9081deadbfac984619299d39de77c0fba3370cc",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "e887522e69348c3a52f4ba137b0f3bad242d9fd6"
+        },
+        {
+          "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "mode": "100644",
+          "sha": "6db098624324846c7a6f577a90bd35b01c80f200",
+          "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "before": "5237abb184401270ac2cb96f75fb9507969f32df"
+        }
+      ]
+    },
+    {
+      "id": "format",
+      "description": "validate runtime amount text and precision",
+      "source_prs": [
+        301,
+        303
+      ],
+      "commit": "8644147aee370381806bb394931534a9fd553d4f",
+      "files": [
+        {
+          "path": "apps/web/src/lib/format.ts",
+          "mode": "100644",
+          "sha": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+          "source": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "before": "18dad7e4235c922bb7f197312317cc86557a12c2"
+        },
+        {
+          "path": "apps/web/src/lib/format.test.ts",
+          "mode": "100644",
+          "sha": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+          "source": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "before": "3d6a9f5fade916452bc64fe98a3c9abb64add101"
+        }
+      ]
+    },
+    {
+      "id": "boolean",
+      "description": "validate canonical ERC-20 simulation Boolean results",
+      "source_prs": [
+        305
+      ],
+      "commit": "e9d9331d2a04cb721610b1a25e157ed08eed64d7",
+      "files": [
+        {
+          "path": "apps/web/src/lib/txGuard.ts",
+          "mode": "100644",
+          "sha": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+          "source": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "before": "abba792709126a191cbd589f2023351a7b9e1c66"
+        },
+        {
+          "path": "apps/web/src/lib/txGuard.test.ts",
+          "mode": "100644",
+          "sha": "1f1749730b2af7483bacdeecc29f2fbda5490de3",
+          "source": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "before": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d"
+        }
+      ]
+    }
+  ]
+}
