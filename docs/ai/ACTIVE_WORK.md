@@ -1,3 +1,13 @@
+# GP-BUG-06 — session destination-reuse warnings on all enabled EVM testnets (2026-11-20)
+
+Cycle/worker: `20261120T2234Z` / single sequential automation coordinator, no native subworkers or independent verifier available.
+Isolated branch: `automation/20261120T2234Z/bug/sweep-ledger-seven-testnets`; base: PR #307 exact head `2876b7db580e47a880d5951ce9e62941bcf76fdf` (stacked; no edits to its branch or protected targets).
+Owned paths: `packages/hygiene/src/ledger.ts`, new `packages/hygiene/src/ledger.browser-chains.test.ts`, additive claim here, and `docs/handoffs/SWEEP_LEDGER_SEVEN_TESTNETS_20261120.md`.
+Finding/dependency: GP-BUG-06 / CC-01 from source-pinned audit PR #312. In PR #307's browser sweep helper, `DestLedger` refuses five of seven enabled EVM testnets, causing session-only reuse warnings to disappear. This branch depends on #307's sweep advisory and must be integrated only through its current owner after exact-head validation. PR #339 modifies `packages/hygiene/src/verify.ts` (not these owned files); other active PRs are respected. Old #230 documented session-only history, which this fix preserves.
+Acceptance: all seven testnet configurations marked enabled in `CHAINS` can record, retrieve, strictly deserialize and detect destination reuse; preserve Anvil and mainnet/unknown rejection; do **not** widen `assertTestnetChain` for other experimental hygiene helpers or change any transaction behavior. Deterministic test-first regressions, no network/keys/deployment/contract/fee changes. Exact-head CI, independent verification and coordinator integration remain gates. Integration lock `automation/ghostpay-integration-lock/integration-lock.json` read released generation 9; not acquired, and no merge authorized by this claim.
+
+---
+
 # Consolidation continuation and completion — 2026-11-20 (Pacific)
 
 Worker: `994a0d214fb9-root`, with independent `branch_inventory`, `invoice_file_completion`, and `backup_completion` workers.
