@@ -86,7 +86,8 @@ describe('invoice signer verification lifecycle', () => {
     fireEvent.change(screen.getByLabelText('Expected seller (optional)'), { target: { value: 'Bob' } });
     await screen.findByText(MISMATCH);
     expect(screen.queryByText(PINNED)).toBeNull();
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+    expect((await screen.findByRole<HTMLButtonElement>('button', { name: 'Continue' })).disabled).toBe(true);
+    expect(screen.getByText(MISMATCH)).toBeTruthy();
     expect(services.createRpc).not.toHaveBeenCalled();
     expect(services.discoverWallets).not.toHaveBeenCalled();
   });
