@@ -2263,3 +2263,13 @@ Acceptance: freshly verify each live ref, all best merge bases and current/sourc
 Boundaries: source-only comparison; no tests, builds, package installation, product/test/configuration changes, remote mutations, branch closure/deletion or deployment. Existing original privacy implementation remains actively owned and is not modified or duplicated. Root owns integration and full qualification.
 
 Status: Complete on 2026-11-20. All three selected scopes were compared at frozen 53f4253b; no required runtime gap was established. Report: docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REPORT.md. Fresh archive-recovery worker /root/archive_recovery_gen6 received the seven PR #259 historical artifact paths and the unverified section-overlap boundary.
+
+
+## Fresh format parser candidate port and review — generation 10, 2026-11-20
+
+Worker: `/root/format_review_gen10`. Branch: `review/ghostpay-format-candidate-gen10-20261120`.
+Base: published candidate `e22c1748a3de6eb02f5be3abe27d634b238c67c6`; original proposal PR #301 at `7523da612ba365451f1d5c2dbc01d0bdeedbe8c7`.
+Owned writes: `apps/web/src/lib/format.ts`, `apps/web/src/lib/format.test.ts`, this additive claim, and `docs/engineering-handoffs/format-review-gen10-20261120/`.
+Scope: independently review and port the original proposal's exact two production/test blobs onto the current candidate. Preserve original attribution. Commit the original regressions first on unchanged candidate runtime; then port the exact one-line guard after the original-config RED run. This separate port does not modify the original PR, the frozen candidate or a shared integration branch.
+Acceptance: independently review the parseUnits runtime guard, supported precision domain, original regressions and current caller compatibility; execute bounded original-config focused RED/GREEN and scoped lint only in the coordinator's exclusive window; retain exact source/config/dependency identity and every failed or incomplete result. The PR301 main-based lock differs from the current candidate lock, so this run qualifies the isolated current-candidate port rather than claiming original-PR-lock execution.
+Boundaries: no original/shared ref mutation, remote write, automatic integration, broad tests, unrelated source expansion, dependency upgrade, assertion/gate changes, contract/fee/deployment/real-funds action, or interference with active privacy ownership. Root owns final integration and publication.
