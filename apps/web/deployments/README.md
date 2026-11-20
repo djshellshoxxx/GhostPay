@@ -36,6 +36,12 @@ in the root README.
    and the removed `--copy-web` option refuses with this guidance rather than placing an unsigned file in the app.
 4. Run `GHOSTPAY_RELEASE_PUBKEYS=<pinned-key> npm run validate:deployments -w @ghostpay/web`, then commit both reviewed
    copies in a pull request. An unsigned manifest intentionally fails the web build.
+   The script runs `apps/web/scripts/validate-deployments.mjs`, the same check as the Vite build hook, always against
+   this directory (it ignores `GHOSTPAY_DEPLOYMENTS_DIR`, which only the Vite build reads). It prints `deployments/: ok`
+   and exits 0 when every `<chainId>.json` here verifies against one of the configured keys, or when no manifest is
+   present (payments then stay disabled). It exits 1 for a manifest with no configured key, a missing or wrong
+   signature, an invalid manifest or an unexpected file name, and stops with an error for a malformed key. CLI
+   behaviour is pinned by `src/validateDeploymentsScript.test.ts`.
 
 `e2e/fixtures/84532.json` is an obviously fake manifest used only by the Playwright build
 (`GHOSTPAY_DEPLOYMENTS_DIR=e2e/fixtures`); never copy it here.
