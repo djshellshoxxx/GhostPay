@@ -10,7 +10,7 @@ import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, tokensForChain, type Hex } f
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { getAddress, keccak256, parseTransaction, recoverTransactionAddress, toHex, type Address } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
-import { generateKeys, openFresh } from './helpers';
+import { approveWalletDisclosure, generateKeys, openFresh } from './helpers';
 import { tamperInvoiceLink } from './devnet/invoiceTamper';
 import { ANVIL_ACCOUNTS, APP_RPC, Anvil, loadDevnet, type DevnetState } from './devnet/chain';
 import { identityOf, keysView, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
@@ -363,12 +363,13 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const feeBefore = await anvil.balance(dn.feeRecipient);
     await openFresh(p, link);
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
-    // Nothing reaches the wallet or the chain before the explicit send click.
+    // No transaction reaches the wallet or chain before the send and disclosure decisions.
     expect(payer.wallet.sends).toHaveLength(0);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce);
 
     await anvil.automine(false);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect.poll(() => payer.wallet.hashes.length).toBe(1);
     payHash = payer.wallet.hashes[0] as Hex;
     await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
@@ -413,9 +414,11 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ACCOUNTS.payer)).toBe(payerNonce + 1);
@@ -772,6 +775,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       expect(payer.wallet.sends).toHaveLength(0);
       await anvil.automine(false);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect.poll(() => payer.wallet.hashes.length).toBe(1);
       const original = payer.wallet.hashes[0]!;
       await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
@@ -813,6 +817,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(1);
       expect(await anvil.nonce(ACCOUNTS.rejectPayer)).toBe(nonce + 1);
@@ -993,6 +998,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       payer.wallet.rejectSends = true;
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect(p.getByRole('alert').filter({ hasText: 'You rejected the request in your wallet.' })).toBeVisible({ timeout: 30_000 });
       expect(payer.wallet.rejected).toHaveLength(1);
       expect(payer.wallet.hashes).toHaveLength(0);
@@ -1005,6 +1011,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await openFresh(p, invoice);
       await reviewToFinalCheck(p, dn.router, payer.wallet.name);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+      await approveWalletDisclosure(p, 'eth_sendTransaction');
       await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
       expect(payer.wallet.sends).toHaveLength(0);
       expect(payer.wallet.hashes).toHaveLength(0);
@@ -1048,6 +1055,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       await p.clock.setSystemTime(past);
       await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await expect(p.getByText('This invoice has expired. Nothing was sent.', { exact: false }).first()).toBeVisible({ timeout: 30_000 });
+      await expect(p.getByRole('dialog', { name: 'Review wallet disclosure', exact: true })).toHaveCount(0);
       expect(payer.wallet.requests.filter((m) => m === 'eth_sendTransaction')).toHaveLength(0);
 
       // 2. Opened after expiry: the review itself blocks the payment.
@@ -1075,6 +1083,7 @@ test.describe('GitHub Pages artifact: refusals', () => {
       const callsBefore = net.calls.length;
       await q.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
       await expect(q.page.getByRole('alert').filter({ hasText: 'Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.' })).toBeVisible({ timeout: 30_000 });
+      await expect(q.page.getByRole('dialog', { name: 'Review wallet disclosure', exact: true })).toHaveCount(0);
       await expect(q.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
       expect(q.wallet.sends).toHaveLength(0);
       expect(q.wallet.hashes).toHaveLength(0);
