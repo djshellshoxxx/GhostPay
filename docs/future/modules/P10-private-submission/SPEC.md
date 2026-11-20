@@ -43,7 +43,8 @@ interface PrivateSubmissionPolicyV1 {
   version: 1; serviceId: string; endpointPolicyRevision: string;
   chainId: string; adapterVersion: string;
   requiredMode: 'private-only';
-  expiryBlock?: string; expiryTime?: string;
+  expiryBlock?: string; // Canonical unsigned decimal block height for this chain.
+  expiryTime?: string; // Canonical unsigned decimal UTC epoch milliseconds.
 }
 interface SubmissionAttemptV1 {
   version: 1; attemptId: string; intentDigest: string;
@@ -64,6 +65,8 @@ interface PrivateSubmissionProvider {
 ```
 
 The authorized payload binds exact signed bytes, expected hash, chain and prior user consent. It is not a raw key or a new signing request. Store only minimal public attempt metadata; never persist raw signed payloads by default. Adapter acknowledgement is not receipt or settlement evidence.
+
+`expiryTime` is canonical unsigned decimal UTC epoch milliseconds with strict bounded integer parsing, never an ISO string or inferred seconds value. `expiryBlock` is a canonical unsigned decimal height bound to the selected chain/genesis identity, not a timestamp. If both are present, the earlier reached limit stops new dispatch; the operation deadline also applies. Unknown/stale block evidence cannot establish that a block-limited request remains eligible. Any protocol conversion to epoch seconds must be explicit and cannot extend validity. Clock rollback requires fresh review. These local dispatch limits do not revoke already signed bytes unless the independently reviewed protocol enforces that expiry.
 
 ## 5. Lifecycle and failure rules
 
@@ -110,6 +113,7 @@ Local inspection and cancellation UI have no GhostPay charge. Optional service c
 - **P10-A08:** Duplicate nonce attempts are blocked until an explicit reviewed replacement decision.
 - **P10-A09:** Traces show only the chosen endpoint; logs/storage contain no signed payload or invoice plaintext.
 - **P10-A10:** Service outage preserves independent user recovery and explicit alternative choices.
+- **P10-A11:** Time/block unit confusion, unknown block freshness, either expired limit, and clock rollback prevent new dispatch without claiming already signed transactions became invalid.
 
 ## 10. Slices and future verification
 
