@@ -62,6 +62,25 @@ describe('chain-scoped encrypted tag display (GP-BUG-03)', () => {
     expect(list.mock.calls.filter(([chain]) => chain === 84532).length).toBeGreaterThanOrEqual(2);
   });
 
+  it('does not inherit displayed tags after a seller-session replacement on the same chain', async () => {
+    generateSession();
+    const services = makeServices();
+    controlledVault(services);
+    let owner = 'Original seller tag';
+    const list = vi.spyOn(services.vault, 'list').mockImplementation(() => Promise.resolve([tag(owner)]));
+    await openTags(services);
+    expect(await screen.findByText('Original seller tag')).toBeTruthy();
+
+    act(() => {
+      owner = 'Replacement seller tag';
+      clearSession();
+      generateSession();
+    });
+    expect(screen.queryByText('Original seller tag')).toBeNull();
+    expect(await screen.findByText('Replacement seller tag')).toBeTruthy();
+    expect(list.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
+
   it('ignores an obsolete chain readback even when it finishes after the new chain', async () => {
     generateSession();
     const services = makeServices();
