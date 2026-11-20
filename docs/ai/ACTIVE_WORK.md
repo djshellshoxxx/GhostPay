@@ -758,3 +758,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Ownership reconciliation: #271/#250 and broad #278/#262/#264 remain preserved donors. Root explicitly assigned this isolated recovery after current source/PR inspection. No existing donor branch is mutated. #321 owns `scan.ts` and its new cancellation test; those files remain unchanged. Other workers own retention and current CI triage. Root owns publication, shared refs, merge decisions and coordination metadata.
 - Sequence: save full live branch census and this claim; commit recovered tests/fixture before runtime; execute controlled RED checkpoint through coordinator scheduling; restore only the missing range check; run applicable qualification and independent review. No dependency installation/copy or broad workflow rerun is part of this worker's initial scope.
 - Evidence at claim: #271 has 36 successful hosted checks, three deployment-only skips and one beta failure during browser OS-package installation (Ubuntu mirror connection/resource failures, apt exit100). No beta assertions ran. Its prior successful source tests do not qualify this new composition. #321 current checks remain incomplete.
+
+
+## TRON range completeness independent qualification — 2026-11-20
+
+- Worker: `/root/range_qualification_r2`; coordinator: `/root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`. Frozen application/test input: `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272`, tree `46c186bfb4f7e15b384c9a0ba361790d8c7e6876`.
+- Owned changes: additive qualification status here and `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}` only. Product source and previous ownership records are immutable inputs.
+- Acceptance: read the independent source approval; verify the supplied RED evidence; rebuild matching libraries; execute original package coverage/typecheck/lint/build, all web TRON test files, full web TypeScript/typed lint, and the full-profile production build with original postbuild scan. Record exact commands, source, dependency reuse, results, limits and hashes. Preserve every original threshold and assertion.
+- State at claim: source review approved by `/root/ci_triage_r2`; original library build is running in a separate clean detached qualification worktree. No GREEN or complete qualification result is asserted by this claim.
+- Boundaries: no source/dependency/workflow changes, browser attempt, live RPC/funds, deployment, remote publication or shared-ref/lease mutation. Root owns publication and promotion.
