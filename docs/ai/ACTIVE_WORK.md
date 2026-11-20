@@ -636,3 +636,19 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## F05 offline receipt assurance continuation — 2026-11-20
+
+Worker: future_features/f05_ghostproof, coordinated by ChatGPT root.
+Branch: `future/f05-ghostproof`; specification head `a241d0a5556c23bf2670f6ba17e7c928b41d7eb4`.
+Main input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/ghostproof/**`, F05 specification and
+handoff, minimal web dependency declaration and matching lock entry if needed.
+Acceptance: bounded offline receipt import using the existing digest and signed
+receipt providers; accurate assurance, trust, binding and unknown finality labels;
+immutable disclosure preview; rejection of unsupported claims; stale/session/abort
+lifecycle protection; deterministic tests with real signed receipts.
+Keep the feature outside production routes and the lean artifact. No provider
+cryptography, existing receipt-core changes, network access, automatic export,
+wallet access, production activation, release, main merge or remote writes.
+Status: ownership recorded before code; current-main reconciliation follows.
