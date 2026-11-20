@@ -46,7 +46,7 @@ describe('parseDecimal precision-option error contract (QA-03)', () => {
   it('preserves decimal roundtrips throughout the shared supported precision domain (0–77)', () => {
     for (let scale = 0; scale <= 77; scale++) {
       const input = scale === 0 ? '1' : scale === 1 ? '1.2' : '1.25';
-      const value = parseDecimal(input, scale, 10n ** 77n);
+      const value = parseDecimal(input, scale, 2n * 10n ** 77n);
       const units = toAtomic(value, scale);
       expect(formatAtomic(units, scale)).toBe(input);
     }
