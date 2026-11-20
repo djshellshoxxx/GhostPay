@@ -100,10 +100,11 @@ function boundTransferLogs(raw: readonly unknown[], token: Address, from: bigint
     const height = parseQty(value['blockNumber']);
     if (height === undefined || height < from || height > to) continue;
     const index = parseQty(value['logIndex']);
-    if (index === undefined || !isHash32(value['blockHash'])) continue;
+    const blockHash = value['blockHash'];
+    if (index === undefined || !isHash32(blockHash)) continue;
     const parsed = parseTransferLogs([entry])[0];
     if (parsed === undefined) continue;
-    const id = `${value['blockHash'].toLowerCase()}:${index.toString()}`;
+    const id = `${blockHash.toLowerCase()}:${index.toString()}`;
     if (!byEvent.has(id)) {
       byEvent.set(id, parsed);
       continue;
