@@ -16,5 +16,7 @@
   },
   "target_execution": false,
   "application_changes": false,
-  "publication": "blocked-by-automatic-approval-review; local notes only"
+  "publication": "published-to-djshellshoxxx/GhostPay:audit/ghostpay-blue-team-20261119",
+  "published_audit_snapshot_commit": "8e9bfd22076165f9f60a5ce13f7b64f1462070cc",
+  "published_audit_snapshot_tree": "334d3c88f5b7ee94cb8aae2e92ad8fffe347eb5a"
 }

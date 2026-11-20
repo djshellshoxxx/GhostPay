@@ -27,4 +27,4 @@ The English baseline is covered by disjoint root/successor ranges totaling 2,530
 
 The audit changes only `docs/audits/blue-team-2026-11-19/**` and its own entry in `docs/ai/ACTIVE_WORK.md`. Source review used immutable Git objects. No application/test/configuration/dependency edits, target test/build execution, servers, probes, wallet actions or transactions were performed.
 
-The branch publication attempt was rejected by automatic approval review and was not retried or bypassed. The completed local notes branch is the reviewable publication artifact. No release, main-branch merge or deployment was performed.
+The completed notes were published on 2026-11-20 after the repository owner authorized continuation. [Publication and verification](publication.md) records the initial published commit, exact Git-tree equivalence and the historical approval interruption. The independent validation records retain their original snapshot identities and input hashes; the subsequent changes affect publication metadata only. No release, main-branch merge or deployment was performed.
