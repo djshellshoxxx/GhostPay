@@ -13,6 +13,7 @@ import { LOCAL_POLICY_PROFILE, ROUTER, SEPOLIA, account, accountCalls, accountLo
 import { policyAccountAbi, ghostPayPolicyRouterAbi, ZERO_ADDRESS } from '@ghostpay/policy-scheme';
 import { decodeFunctionData } from 'viem/utils';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import type { WalletInfo } from '../../lib/wallet';
 import { preparePolicyPayment } from './pay';
 
@@ -208,6 +209,7 @@ describe('policy view flows', () => {
     await screen.findByLabelText('Verified policy deployment');
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     expect(await screen.findByText(/Connected:/)).toBeTruthy();
 
     // Pay through the router.
@@ -216,6 +218,7 @@ describe('policy view flows', () => {
     await user.type(screen.getByLabelText('Amount (base units)'), '1000000');
     await user.click(screen.getByRole('button', { name: 'Review payment' }));
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Payment submitted/)).toBeTruthy();
     expect(decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: w.sent?.['data'] as `0x${string}` }).functionName).toBe('payNative');
 
@@ -231,6 +234,7 @@ describe('policy view flows', () => {
     expect(within(screen.getByLabelText('Withdrawal limits')).getByText('900000000000000000')).toBeTruthy();
 
     await user.click(screen.getByRole('button', { name: 'Cancel it' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Cancel submitted/)).toBeTruthy();
     const cancel = decodeFunctionData({ abi: policyAccountAbi, data: w.sent?.['data'] as `0x${string}` });
     expect(cancel.functionName).toBe('cancel');
@@ -243,6 +247,7 @@ describe('policy view flows', () => {
     await user.clear(screen.getByLabelText('Amount to withdraw (base units)'));
     await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
     await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Withdrawal request submitted/)).toBeTruthy();
     const req = decodeFunctionData({ abi: policyAccountAbi, data: w.sent?.['data'] as `0x${string}` });
     expect(req.functionName).toBe('requestWithdraw');
@@ -251,6 +256,7 @@ describe('policy view flows', () => {
     expect(screen.queryByRole('button', { name: 'Execute withdrawal' })).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Check account' }));
     await user.click(await screen.findByRole('button', { name: 'Execute withdrawal' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Execution submitted/)).toBeTruthy();
     expect(decodeFunctionData({ abi: policyAccountAbi, data: w.sent?.['data'] as `0x${string}` }).functionName).toBe('executeWithdraw');
   });

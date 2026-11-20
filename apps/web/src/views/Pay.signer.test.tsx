@@ -14,6 +14,7 @@ import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { mockRpc } from '../test/mockRpc';
 import { MockWallet } from '../test/mockWallet';
 import { makeServices, renderWith, setHash } from '../test/render';
+import { approveWalletDisclosure } from '../test/walletDisclosure';
 
 const ORDER = ['home', 'pay'] as const;
 beforeEach(() => {
@@ -189,6 +190,7 @@ describe('invoice signer verification lifecycle', () => {
     await waitFor(() => { expect(proceed.disabled).toBe(false); });
     await user.click(proceed);
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await waitFor(() => { expect(preparation).toHaveBeenCalled(); });
     changeStoredPins([{ label: 'Alice', signer: other.parsed.invoice.signer }]);
@@ -217,6 +219,7 @@ describe('invoice signer verification lifecycle', () => {
     await waitFor(() => { expect(proceed.disabled).toBe(false); });
     await user.click(proceed);
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     let release: (value: unknown) => void = () => { throw new Error('not initialized'); };
@@ -228,6 +231,7 @@ describe('invoice signer verification lifecycle', () => {
       return original(request);
     });
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await waitFor(() => { expect(waiting).toBe(true); });
     // Deliberately do not send the browser's queued event yet. The final guard must reread storage itself.
     storedPins([{ label: 'Alice', signer: other.parsed.invoice.signer }], 2);

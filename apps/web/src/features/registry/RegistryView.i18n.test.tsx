@@ -12,6 +12,7 @@ import { SETTINGS_KEY } from '../../lib/settings';
 import { generateWaivedSession } from '../../test/keys';
 import { mockRpc } from '../../test/mockRpc';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { makeServices, renderWith } from '../../test/render';
 import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
@@ -64,8 +65,10 @@ describe('registry publication outcomes retain semantic parts until render', () 
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Locale Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: action === 'publish' ? 'Review publish transaction' : 'Review clear transaction' }));
     await user.click(screen.getByRole('button', { name: action === 'publish' ? 'Publish to registry' : 'Clear registry entry' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await waitFor(() => { expect(release).toBeTypeOf('function'); });
     const bytes = JSON.stringify(wallet.sent);
     await user.click(screen.getByRole('button', { name: 'Test Spanish' }));

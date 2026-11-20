@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import * as payExec from '../lib/payExec';
@@ -35,6 +36,7 @@ async function connected() {
   const user = userEvent.setup();
   await user.click(await screen.findByRole('button', { name: 'Continue' }));
   await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+  await approveWalletDisclosure(user, 'eth_requestAccounts');
   await screen.findByRole('button', { name: 'Prepare payment' });
   return { wallet, requests, user };
 }
@@ -67,6 +69,7 @@ describe('Pay presentation privacy and prepared authority', () => {
     expect(localStorage.getItem(SETTINGS_KEY)).toBe(settings);
     expect(wallet.sent).toBeUndefined();
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByRole('heading', { name: 'Submitted' });
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
     expect(wallet.sent).toMatchObject({ to: prepared.tx.to, data: prepared.tx.data, value: `0x${prepared.tx.value.toString(16)}` });

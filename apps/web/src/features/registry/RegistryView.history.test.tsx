@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { ATTEMPT_JOURNAL_KEY, beginAttempt, finishAttempt } from '../../lib/duplicateAttemptJournal';
 import { clearSession } from '../../lib/session';
@@ -39,6 +40,7 @@ it('binds registry history to the connected account and chain, then conceals it 
   await user.click(screen.getByRole('checkbox'));
   await user.click(screen.getByRole('button', { name: 'Find wallets' }));
   await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+  await approveWalletDisclosure(user, 'eth_requestAccounts');
   await screen.findByRole('button', { name: 'Review publish transaction' });
   expect(within(journal).getByText(wallet.account)).toBeTruthy();
   expect(within(journal).getByText(hash)).toBeTruthy();

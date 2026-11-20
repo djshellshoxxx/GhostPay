@@ -6,6 +6,7 @@ import {
 } from '@ghostpay/net-transport/browser';
 import { CameraImporter } from '../components/CameraImporter';
 import { ClipboardPrivacyControls } from '../components/ClipboardPrivacyControls';
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
 import { PrivacyControls } from '../components/PrivacyControls';
 import { SensitiveContent } from '../components/SensitiveContent';
 import { QrFrame } from '../components/QrFrame';
@@ -172,6 +173,7 @@ export function Settings(): ReactNode {
       <h2 id="set-h">{t('settings.title')}</h2>
       <PrivacyControls />
       <ClipboardPrivacyControls />
+      <MetadataRetentionControls />
       {i18n !== undefined && <LanguagePicker />}
       <Notice kind="info">
         {t('settings.notice.plaintext')}

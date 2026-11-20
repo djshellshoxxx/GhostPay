@@ -31,7 +31,8 @@ export async function auditAccessibility(page: Page, state: string): Promise<voi
   });
   const summary: AuditSummary = {
     version: result.testEngine.version, profile: process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full',
-    route: (await page.getByRole('navigation').locator('[aria-current="page"]').textContent()) ?? '',
+    // A real modal makes its background inert; the route is metadata, not an accessibility assertion.
+    route: (await page.getByRole('navigation', { includeHidden: true }).locator('[aria-current="page"]').textContent()) ?? '',
     state, rules: 'all default enabled axe rules; no exclusions', passes: result.passes.length,
     violations: result.violations.map((v) => ({ id: v.id, impact: v.impact ?? null, helpUrl: v.helpUrl })),
     incomplete: result.incomplete.map((v) => v.id),

@@ -1,5 +1,7 @@
 # Required privacy features: v1.0 and v1.1
 
+Current implementation, acceptance evidence and remaining work: [STATUS.md](STATUS.md). Eight features are implemented with focused acceptance; retention is partial and complete original release qualification remains open.
+
 This plan covers exactly [#286](https://github.com/djshellshoxxx/GhostPay/issues/286) and [#287](https://github.com/djshellshoxxx/GhostPay/issues/287). Future #283/#284/#288 are excluded.
 
 Nine specs were first committed locally as 3a6c064b on candidate c83b4526 before any implementation. The workspace was then cleared following disk exhaustion; neither unpublished object is available on GitHub. This restored specification set uses published immutable baseline 137628961463fc5abd8b7927b2efe6b18a0a206a. Prior 482-test evidence is historical and does not qualify this new source. No source or test result is fabricated from missing files.

@@ -1,3 +1,5 @@
+import { MetadataRetentionControls } from '../components/MetadataRetentionControls';
+import { useInvoicePreviewRetention } from '../lib/useInvoicePreviewRetention';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
@@ -11,6 +13,7 @@ import { formatUnits } from '../lib/format';
 import { MAX_BUFFER_WEI } from '../lib/pay';
 import { multipartIfNeeded } from '../lib/qrMultipart';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
+import type { InvoiceMetadataMode } from '../lib/invoiceMetadata';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase } from '../lib/keystore';
 import { registrationFromInvoice } from '../lib/reconciliationMatch';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
@@ -71,6 +74,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
   const [quoteMinutes, setQuoteMinutes] = useState(15);
   const [slippage, setSlippage] = useState(50);
   const [memo, setMemo] = useState('');
+  const [metadataMode, setMetadataMode] = useState<InvoiceMetadataMode>('standard');
   const [bufferMode, setBufferMode] = useState<BufferMode>('off');
   const [bufferMin, setBufferMin] = useState('');
   const [bufferMax, setBufferMax] = useState('');
@@ -83,6 +87,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
   const [passphraseAgain, setPassphraseAgain] = useState('');
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
+  useInvoicePreviewRetention(created, () => { setCreated((current) => current === created ? undefined : current); });
   // Opt-in, off by default: keeps minimized invoice fields in the encrypted reconciliation vault for local matching.
   const [registerForMatching, setRegisterForMatching] = useState(false);
   const [registration, setRegistration] = useState<{ readonly kind: 'busy' | 'ok' } | { readonly kind: 'error'; readonly message: DisplayMessage } | undefined>(undefined);
@@ -181,6 +186,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
       quoteTtlMinutes: quoteMinutes,
       maxSlippageBps: slippage,
       memo,
+      metadataMode,
       encrypt,
       ...(protectWithPassphrase ? { passphrase } : {}),
       ...(bufferPolicy === undefined ? {} : { bufferPolicy }),
@@ -215,6 +221,16 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
 
   const setItem = (i: number, patch: Partial<LineItemInput>): void => {
     setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
+  };
+
+  const changeMetadataMode = (mode: InvoiceMetadataMode): void => {
+    setMetadataMode(mode);
+    // An older link must not remain shareable under a newly selected metadata policy, including late builds.
+    submissionRun.current++;
+    registrationRun.current++;
+    setCreated(undefined);
+    setRegistration(undefined);
+    setError(undefined);
   };
 
   return (
@@ -292,9 +308,14 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
 
         <fieldset>
           <legend>{t('create.items.legend')}</legend>
+          <div className="check">
+            <input id="invoice-minimal-metadata" aria-describedby="invoice-metadata-help" type="checkbox" checked={metadataMode === 'minimal'} onChange={(e) => { changeMetadataMode(e.target.checked ? 'minimal' : 'standard'); }} />
+            <label htmlFor="invoice-minimal-metadata">{t('invoice.metadata.minimal')}</label>
+          </div>
+          <p id="invoice-metadata-help" className="hint">{t('invoice.metadata.hint')} {t('invoice.metadata.limits')}</p>
           {items.map((it, i) => (
             <div className="row" key={i}>
-              <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
+              <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} disabled={metadataMode === 'minimal'} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
               <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
               <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
@@ -336,7 +357,7 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
               <Notice kind="info">{t('create.buffer.v2Notice')}</Notice>
             </>
           )}
-          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
+          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} disabled={metadataMode === 'minimal'} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
           <div className="check">
             <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
             <label htmlFor="enc">{t('create.encrypt')}</label>
@@ -380,6 +401,8 @@ function InvoiceForm({ supportedOnly }: { readonly supportedOnly: boolean }): Re
       {visibleCreated !== undefined && (
         <div className="result" aria-live="polite">
           <h3>{t('create.result.title')}</h3>
+          {metadataMode === 'minimal' && <Notice kind="info">{t('invoice.metadata.result')}</Notice>}
+          <MetadataRetentionControls />
           <Notice kind="warn" title={t('create.bearer.title')}>
             {t('create.bearer.lead')} {visibleCreated.passphraseProtected ? t('create.bearer.passphrase') : visibleCreated.encrypted ? t('create.bearer.encrypted') : t('create.bearer.plain')} {t('create.bearer.copies')}
           </Notice>

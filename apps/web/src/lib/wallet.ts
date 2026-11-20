@@ -3,6 +3,7 @@ import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
 import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
+import { prepareWalletChainSwitch, prepareWalletConnection, prepareWalletSignature, prepareWalletTransaction, type WalletDisclosureApproval, type WalletDisclosureGate, type WalletDisclosureRequest } from './walletDisclosure';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR } from '../i18n/source';
 import type { Translator } from '../i18n/translator';
@@ -151,6 +152,8 @@ export interface WalletSession {
   readonly wallet: WalletInfo;
   readonly account: Address;
   readonly chainId: number;
+  /** Application sessions retain the required disclosure boundary for later signatures and sends. */
+  readonly disclosure?: WalletDisclosureGate;
 }
 
 async function call(p: Eip1193Provider, method: string, params?: readonly unknown[]): Promise<unknown> {
@@ -228,7 +231,9 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
  * Connects and verifies a wallet: account lists from `eth_requestAccounts` and `eth_accounts` must agree and the chain
  * must equal the invoice chain (one switch request is offered). Any inconsistency refuses the connection.
  */
-export async function connectWallet(wallet: WalletInfo, expectedChainId: number, assertCurrent?: () => void, signal?: AbortSignal): Promise<WalletSession> {
+export async function connectWallet(wallet: WalletInfo, expectedChainId: number, assertCurrent?: () => void, signal?: AbortSignal, options?: { readonly disclosure: WalletDisclosureGate }): Promise<WalletSession> {
+  const disclosure = options?.disclosure;
+  let approval: WalletDisclosureApproval | undefined;
   const provider = wallet.provider;
   let changed = false;
   let accountResolved = false;
@@ -239,6 +244,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
     if (changed || signal?.aborted === true || wallet.provider !== provider) {
       throw new UserFacingError({ key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' });
     }
+    approval?.assertCurrent();
   };
   const abort = (): void => { changed = true; stop(); };
   try {
@@ -251,6 +257,8 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
       if (event === 'disconnect' || (accountResolved && !(event === 'chainChanged' && switching))) changed = true;
     });
     check();
+    if (disclosure !== undefined) approval = await reviewConnection(provider, disclosure, prepareWalletConnection(expectedChainId).disclosure, check, signal);
+    check();
     const requested = firstAccount(await call(provider, 'eth_requestAccounts'));
     accountResolved = true;
     check();
@@ -260,9 +268,16 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
     let chainId = await readChainId(provider, check);
     check();
     if (chainId !== expectedChainId) {
+      const request = prepareWalletChainSwitch(expectedChainId, requested);
+      if (disclosure !== undefined) {
+        // A switch needs its own approval; the account-access grant cannot authorize it.
+        approval = undefined;
+        approval = await reviewConnection(provider, disclosure, request.disclosure, check, signal);
+      }
+      check();
       try {
         switching = true;
-        await call(provider, 'wallet_switchEthereumChain', [{ chainId: `0x${expectedChainId.toString(16)}` }]);
+        await call(provider, request.method, request.params);
       } catch (e) {
         check();
         if (e instanceof UserFacingError) throw e;
@@ -277,7 +292,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number,
     const finalAccount = firstAccount(await call(provider, 'eth_accounts'));
     check();
     if (finalAccount !== requested) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
-    return { wallet, account: requested, chainId };
+    return { wallet, account: requested, chainId, ...(disclosure === undefined ? {} : { disclosure }) };
   } finally {
     stop();
     signal?.removeEventListener('abort', abort);
@@ -312,6 +327,28 @@ export function observeWalletLifecycle(provider: Eip1193Provider, changed: (even
   } catch {
     dispose();
     throw new UserFacingError({ key: 'error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork' });
+  }
+}
+
+/** Before account access, no provider event is expected: a change cancels the still-local disclosure. */
+async function reviewConnection(provider: Eip1193Provider, disclose: WalletDisclosureGate, request: WalletDisclosureRequest, check: () => void, signal?: AbortSignal): Promise<WalletDisclosureApproval> {
+  const operation = new AbortController();
+  const abort = (): void => { operation.abort(); };
+  let stop = (): void => undefined;
+  try {
+    check();
+    if (signal?.aborted === true) operation.abort();
+    signal?.addEventListener('abort', abort, { once: true });
+    stop = observeWalletLifecycle(provider, abort);
+    if (operation.signal.aborted) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
+    const approval = await disclose(request, operation.signal);
+    check();
+    if (operation.signal.aborted) throw new UserFacingError({ key: 'wallet.disclosure.cancelled' });
+    approval.assertCurrent();
+    return approval;
+  } finally {
+    signal?.removeEventListener('abort', abort);
+    stop();
   }
 }
 
@@ -383,24 +420,19 @@ export class WalletSubmissionUnknownError extends TransactionOutcomeError {
     this.name = 'WalletSubmissionUnknownError';
   }
 }
-function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert: () => void; dispose: () => void } {
+function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert: () => void; dispose: () => void; signal: AbortSignal } {
   const provider = s.wallet.provider;
   const account = s.account;
   const chainId = s.chainId;
   let changed = false;
-  const onChanged = (): void => { changed = true; };
-  const events = ['accountsChanged', 'chainChanged', 'disconnect'];
+  const operation = new AbortController();
+  const onChanged = (): void => { changed = true; operation.abort(); };
+  const stop = observeWalletLifecycle(provider, onChanged);
   const dispose = (): void => {
-    for (const event of events) {
-      try { provider.removeListener?.(event, onChanged); } catch { /* Provider cleanup cannot erase a returned hash. */ }
-    }
+    // Retained provider callbacks must be inert before untrusted removal can reenter them.
+    stop();
+    operation.abort();
   };
-  if (provider.on !== undefined && provider.removeListener !== undefined) {
-    try { for (const event of events) provider.on(event, onChanged); } catch {
-      dispose();
-      throw new UserFacingError({ key: 'error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork' });
-    }
-  }
   return {
     assert: () => {
       assertCurrent?.();
@@ -409,25 +441,33 @@ function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert
       }
     },
     dispose,
+    signal: operation.signal,
   };
 }
 /** Sends one transaction through the wallet. An initiated wallet request cannot be cancelled by this page. */
 export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurrent?: () => void, options?: WalletAttemptOptions): Promise<Hex> {
+  // Capture once, before any await: caller edits cannot change what an approved disclosure will submit.
+  const captured = Object.freeze({ to: tx.to, data: tx.data, value: tx.value });
+  const attemptOptions = options === undefined ? undefined : Object.freeze({ ...options });
+  const request = prepareWalletTransaction(s.chainId, s.account, captured);
+  const disclose = s.disclosure;
   const authority = walletAuthority(s, assertCurrent);
   try {
-    await recheckWallet(s, authority.assert);
     authority.assert();
-    const storage = options?.storage ?? browserAttemptStorage();
+    const approval = disclose === undefined ? undefined : await disclose(request.disclosure, authority.signal);
+    const check = (): void => { authority.assert(); approval?.assertCurrent(); };
+    check();
+    await recheckWallet(s, check);
+    check();
+    const storage = attemptOptions?.storage ?? browserAttemptStorage();
     const attempt = storage === undefined ? undefined : beginAttempt({
-      key: walletAttemptKey(s, tx, options), chainId: s.chainId, account: s.account.toLowerCase(), kind: options?.kind ?? 'transaction',
+      key: walletAttemptKey(s, captured, attemptOptions), chainId: s.chainId, account: s.account.toLowerCase(), kind: attemptOptions?.kind ?? 'transaction',
     }, storage);
     // No await between this final authority check, the journal write, and provider invocation.
-    authority.assert();
+    check();
     let hash: unknown;
     try {
-      hash = await call(s.wallet.provider, 'eth_sendTransaction', [
-        { from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` },
-      ]);
+      hash = await call(s.wallet.provider, request.method, request.params);
     } catch (e) {
       if (e instanceof UserFacingError) throw e;
       throw new WalletSubmissionUnknownError(e instanceof WalletCallError ? e.rpcCode : undefined);
@@ -439,21 +479,25 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
     }
     return normalized;
   } finally { authority.dispose(); }
-
 }
 
 /** `eth_signTypedData_v4`; the caller verifies the recovered signer. */
 export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: string, assertCurrent?: () => void): Promise<Hex> {
+  const disclose = s.disclosure;
+  const request = disclose === undefined ? undefined : prepareWalletSignature(s.chainId, s.account, typedDataJson);
   const authority = walletAuthority(s, assertCurrent);
   try {
-    await recheckWallet(s, authority.assert);
     authority.assert();
-    const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', [s.account, typedDataJson]);
-    authority.assert();
+    const approval = disclose === undefined || request === undefined ? undefined : await disclose(request.disclosure, authority.signal);
+    const check = (): void => { authority.assert(); approval?.assertCurrent(); };
+    check();
+    await recheckWallet(s, check);
+    check();
+    const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', request?.params ?? [s.account, typedDataJson]);
+    check();
     if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidSignature' });
     return sig as Hex;
   } finally { authority.dispose(); }
-
 }
 
 /** Raised when the transaction the network saw differs from the one that was previewed. */

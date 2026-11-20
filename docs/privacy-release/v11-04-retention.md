@@ -18,6 +18,18 @@ Under `apps/web/src/`: new lib/metadataRetention.ts, tests, dedicated settings p
 
 M1 typed planner/executor and safe real presentation-metadata adapter if proven, with protection/race/clock/failure tests. M2 individually justified persistent adapters, reload/concurrency and browser review. Existing journals do not have proven final settlement; do not invent TTL eligibility.
 
+## Generation 3 bounded adapter acceptance
+
+The next eligible copy is the **completed MerchantTemplateIssuer screen result**. Reuse the existing invoice-preview registry, identity guard, controls and active-page timer; do not create a new store or planner. This continues implementation and does not satisfy the separate M3 release-qualification gate below.
+
+1. Register only the current generated result whose captured seller session still matches the current session. The adapter receives object identity and a state callback, never invoice storage or journal handles.
+2. Reuse count-only preview, cancellation and explicit confirmation. Clearing removes the current generated link/Copy presentation only; token/amount/fee selections, immutable signed profile, seller keys/custody and independently saved records remain unchanged. Already shared signed links remain valid.
+3. Register no pending generation. Replacing a result invalidates its previous confirmation plan, and a previous result's age cannot expire the replacement. Clearing must not cancel, restart or authorize generation.
+4. Unmount/session replacement withdraws the registration. Late asynchronous completion must obey the existing generation/session guards and cannot restore a closed preview.
+5. Execute actual issuer integration regressions, including manual preview/cancel/confirm, replacement/expiry/pending work, preserved security state and unmount. Preserve full original checks as separate open gates until executed on the combined source.
+
+The separate merchant metadata-minimization mode is reconciled by the coordinator. This adapter must preserve that mode and its pending-generation guards when combined. Persistent transaction/invoice retention and terminal-transaction cleanup remain outside this bounded adapter until a positive nonessentialness proof exists.
+
 ## Architecture and quality
 
 Static, browser-only, non-custodial Pages scope. No contract, fee, dependency, network, deployment or future-suite changes. Preserve all security gates. Policy modules separate from side effects; bounded inputs/collections; neutral errors; explicit cancellation; accessible UI and existing localization conventions. Pure helpers must be wired before claiming feature completion.

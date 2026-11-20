@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { approveWalletDisclosure } from '../test/walletDisclosure';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notifyAppLock } from '../lib/appLock';
 import { readAttempts } from '../lib/duplicateAttemptJournal';
@@ -57,6 +58,7 @@ async function open(route: Route, wallet: EventWallet, overrides: Partial<Servic
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
   }
   await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
+  await approveWalletDisclosure(user, 'eth_requestAccounts');
   return user;
 }
 
@@ -74,6 +76,7 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     const find = screen.queryByRole('button', { name: 'Find wallets' });
     if (find !== null) await user.click(find);
     await user.click(await screen.findByRole('button', { name: /Connect Lifecycle Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     expect(await screen.findByText(MOCK_ACCOUNT, { exact: true })).toBeTruthy();
   });
 
@@ -109,6 +112,7 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     };
     const user = await open(route, wallet);
     await user.click(screen.getByRole('button', { name: /Connect Lifecycle Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await screen.findByText(replacement, { exact: true });
     const reads = wallet.calls.length;
     await act(async () => { release([MOCK_ACCOUNT]); await held; await Promise.resolve(); });
@@ -116,7 +120,8 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
     expect(screen.queryByText(MOCK_ACCOUNT, { exact: true })).toBeNull();
     expect(wallet.calls).toHaveLength(reads);
     expect(permissions).toBe(2);
-    expect([...wallet.listeners.values()].reduce((sum, set) => sum + set.size, 0)).toBe(3);
+    // Pay also retains three account-scoped local reuse listeners; neither path retains the obsolete connection.
+    expect([...wallet.listeners.values()].reduce((sum, set) => sum + set.size, 0)).toBe(route === 'Pay' ? 6 : 3);
   });
 
   it.each([
@@ -163,6 +168,7 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
       return original(args);
     };
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(sent).toBe(1); });
     const active = records.at(-1);
     if (active === undefined) throw new Error('Expected captured send RPC scope');
@@ -211,6 +217,7 @@ describe('required wallet lifecycle privacy in real EVM views', () => {
       return original(args);
     };
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(sent).toBe(1); });
     expect(readAttempts()).toMatchObject([{ status: 'unknown', kind: 'payment', account: MOCK_ACCOUNT }]);
     act(() => { notifyAppLock('manual'); });

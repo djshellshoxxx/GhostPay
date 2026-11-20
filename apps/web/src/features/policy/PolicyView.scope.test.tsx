@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
 import * as chainModule from './chain';
@@ -111,6 +112,7 @@ describe('policy deployment scope', () => {
     await screen.findByLabelText('Verified policy deployment');
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await screen.findByText(/Connected:/);
     await user.click(screen.getByLabelText(/Payee policy meta-address/));
     await user.paste(account('acct-001').metaAddress);
@@ -124,6 +126,7 @@ describe('policy deployment scope', () => {
       return original(args);
     };
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(waiting).toBe(true); });
     await user.clear(screen.getByLabelText('GhostPayPolicyRouter address'));
     await act(async () => { gate.resolve(await original({ method: 'eth_accounts' })); await gate.promise; });

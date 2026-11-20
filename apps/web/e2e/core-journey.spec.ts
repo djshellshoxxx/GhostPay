@@ -7,7 +7,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { encodeAbiParameters, keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER } from '../src/test/fakeManifest';
 import { verifyReceipt } from '../src/lib/receipts';
-import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
+import { ORIGIN, approveWalletDisclosure, createInvoice, generateKeys, openFresh } from './helpers';
 import { DESTINATION, readSweepJournal } from './sweep-network';
 
 /*
@@ -385,13 +385,14 @@ async function createShortInvoice(page: Page, hours: number): Promise<string> {
   return box.inputValue();
 }
 
-/** Payer: review -> explicit consent steps -> final check. Nothing reaches the wallet before the send click. */
+/** Payer: review -> explicit consent steps -> final check. No transaction is submitted before the send decision. */
 async function reviewToFinalCheck(payer: Page, sim: ChainSim, link: string): Promise<void> {
   await openFresh(payer, link);
   await expect(payer.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(payer.getByText(FAKE_ROUTER).first()).toBeVisible();
   await payer.getByRole('button', { name: 'Continue' }).click();
   await payer.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+  await approveWalletDisclosure(payer, 'eth_requestAccounts');
   await payer.getByRole('button', { name: 'Prepare payment' }).click();
   await expect(payer.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible();
   await expect(payer.getByText('payNative')).toBeVisible();
@@ -401,6 +402,7 @@ async function reviewToFinalCheck(payer: Page, sim: ChainSim, link: string): Pro
 async function payThroughCheckout(payer: Page, sim: ChainSim, link: string): Promise<MinedPayment> {
   await reviewToFinalCheck(payer, sim, link);
   await payer.getByRole('button', { name: 'Send payment in my wallet' }).click();
+  await approveWalletDisclosure(payer, 'eth_sendTransaction');
   await expect(payer.getByRole('heading', { name: 'Submitted' })).toBeVisible();
   await expect(payer.getByText(/Independently verified on your RPC/)).toBeVisible();
   await expect(payer.getByText(`Status: included in block ${String(sim.mineAt)} (not necessarily final yet).`)).toBeVisible();
@@ -615,6 +617,7 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
     await payer.context.clock.setSystemTime(new Date((invoice.expiresAt + 30) * 1000));
     await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(payer.page.getByText('This invoice has expired. Nothing was sent.')).toBeVisible();
+    await expect(payer.page.getByRole('dialog', { name: 'Review wallet disclosure', exact: true })).toHaveCount(0);
     await expect(payer.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
     expect(sim.walletTxs).toHaveLength(0);
     expect(await walletJournal(payer.page)).toEqual([]);
@@ -742,6 +745,7 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
     sim.lookups = 'reset';
     sim.mineAt = 480; // Will land in a recent block: 21 of Base Sepolia's 100 confirmations.
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toBeVisible({ timeout: 45_000 });
     const payment = sim.payments[0];
     if (payment === undefined) throw new Error('payment expected');

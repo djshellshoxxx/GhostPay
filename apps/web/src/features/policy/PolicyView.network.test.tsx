@@ -7,6 +7,7 @@ import type { Services } from '../../lib/services';
 import { clearSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { makeServices, renderApp } from '../../test/render';
 import * as chainModule from './chain';
 import { POLICY_FLAG } from './flag';
@@ -74,6 +75,7 @@ async function verify(user: ReturnType<typeof userEvent.setup>): Promise<void> {
 async function connect(user: ReturnType<typeof userEvent.setup>): Promise<void> {
   await user.click(screen.getByRole('button', { name: 'Find wallets' }));
   await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+  await approveWalletDisclosure(user, 'eth_requestAccounts');
   await screen.findByText(/Connected:/);
 }
 
@@ -125,6 +127,7 @@ describe('policy UI network authority revocation', () => {
       return original(args);
     };
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(waiting).toBe(true); });
     const clients = h.createRpc.mock.calls.length;
     const grants = h.authorize.mock.calls.length;

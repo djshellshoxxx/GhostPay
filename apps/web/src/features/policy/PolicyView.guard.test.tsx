@@ -7,6 +7,7 @@ import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
 import { ATTEMPT_JOURNAL_KEY } from '../../lib/duplicateAttemptJournal';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
 import * as chainModule from './chain';
@@ -55,6 +56,7 @@ async function open(services: ReturnType<typeof makeServices>): Promise<ReturnTy
 async function connect(user: ReturnType<typeof userEvent.setup>): Promise<void> {
   await user.click(screen.getByRole('button', { name: 'Find wallets' }));
   await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+  await approveWalletDisclosure(user, 'eth_requestAccounts');
   await screen.findByText(/Connected:/);
 }
 
@@ -86,6 +88,7 @@ describe('policy view: session guard before the wallet request', () => {
     await connect(user);
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Payment submitted/)).toBeTruthy();
     expect(walletSends(w)).toBe(1);
   });
@@ -119,6 +122,7 @@ describe('policy view: session guard before the wallet request', () => {
       return orig(args);
     };
     await user.click(deploy);
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     // Re-importing hides the old session's account and action state immediately.
     await vi.waitFor(() => { expect(screen.queryByRole('button', { name: 'Deploy account' })).toBeNull(); });
     expect(armed).toBe(false);
@@ -157,6 +161,7 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
     await connect(user);
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/could not be compared with the preview/)).toBeTruthy();
     expect(walletSends(w)).toBe(1);
     expect(screen.queryByRole('button', { name: 'Send payment' })).toBeNull();
@@ -180,6 +185,7 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
     await connect(user);
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/unknown outcome and may already have been submitted/)).toBeTruthy();
     expect(asked).toBe(1);
     await reviewPay(user, 'native', '1000');
@@ -200,6 +206,7 @@ describe('policy pay: a verified repeat stays blocked until cleared (by design)'
     await connect(user);
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     // Verified on the RPC and confirmed by a successful receipt.
     expect(await screen.findByText(/Payment submitted: 0x9{64} \(confirmed\)/)).toBeTruthy();
     expect(walletSends(w)).toBe(1);
@@ -233,6 +240,8 @@ describe('policy pay: a verified repeat stays blocked until cleared (by design)'
     await connect(user);
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Payment submitted: 0x9{64} \(confirmed\)/)).toBeTruthy();
     expect(sent).toEqual([TOKEN.toLowerCase(), ROUTER.toLowerCase()]);
     await reviewPay(user, TOKEN, '5000');
@@ -249,11 +258,13 @@ describe('policy pay: a verified repeat stays blocked until cleared (by design)'
     await connect(user);
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(/Payment submitted/);
     await user.click(within(journal()).getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
     expect(screen.queryByRole('region', { name: 'Wallet attempt journal' })).toBeNull();
     await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(walletSends(w)).toBe(2); });
   });
 
@@ -309,6 +320,8 @@ describe('policy pay: ERC-20 repeats and the attempt journal', () => {
     const { user, asked } = await erc20Fixture({ loseFirstPaymentReply: true });
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/unknown outcome and may already have been submitted/)).toBeTruthy();
     expect(asked).toEqual([TOKEN.toLowerCase(), ROUTER.toLowerCase()]);
     await clearRecord(user, 'approval');
@@ -323,6 +336,8 @@ describe('policy pay: ERC-20 repeats and the attempt journal', () => {
     const { user, asked } = await erc20Fixture();
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(/Payment submitted: 0x9{64} \(confirmed\)/);
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
@@ -332,6 +347,8 @@ describe('policy pay: ERC-20 repeats and the attempt journal', () => {
     await clearRecord(user, 'approval');
     await reviewPay(user, TOKEN, '5000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(asked).toEqual([TOKEN.toLowerCase(), ROUTER.toLowerCase(), TOKEN.toLowerCase(), ROUTER.toLowerCase()]); });
   });
 });
@@ -376,6 +393,7 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
     if (action === 'execute') {
       await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
       await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
+      await approveWalletDisclosure(user, 'eth_sendTransaction');
       expect(await screen.findByText(/Withdrawal request submitted/)).toBeTruthy();
       sends = 1;
       await user.click(screen.getByRole('button', { name: 'Check account' }));
@@ -386,6 +404,7 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
     armed = true;
     const actionName = action === 'cancel' ? 'Cancel it' : action === 'request' ? 'Sign and send withdrawal request' : 'Execute withdrawal';
     await user.click(screen.getByRole('button', { name: actionName }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await vi.waitFor(() => { expect(screen.queryByRole('button', { name: 'Check account' })).toBeNull(); });
     expect(armed).toBe(false);
     expect(walletSends(w)).toBe(sends);

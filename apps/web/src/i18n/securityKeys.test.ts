@@ -22,8 +22,63 @@ describe('critical translation native-review boundary (IN-3)', () => {
     expect(SECURITY_KEYS.size).toBe(critical.length);
   });
 
+  it('provides explicit draft entries for every wallet disclosure consent key', () => {
+    for (const draft of drafts) {
+      const messages = draft.messages as Readonly<Record<string, unknown>>;
+      for (const key of SECURITY_KEY_GROUPS.walletDisclosure) expect(typeof messages[key]).toBe('string');
+    }
+  });
+
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'address.reuse.title',
+      'address.reuse.detected',
+      'address.reuse.retry',
+      'address.reuse.deliberate',
+      'address.reuse.limit',
+      'address.reuse.unavailable',
+      'address.reuse.scope',
+      'retention.title',
+      'retention.label',
+      'retention.scope',
+      'retention.off',
+      'retention.minutes5',
+      'retention.minutes15',
+      'retention.hour1',
+      'retention.preview',
+      'retention.confirmTitle',
+      'retention.count',
+      'retention.preserved',
+      'retention.confirm',
+      'retention.cancel',
+      'retention.saved',
+      'retention.storage',
+      'retention.cleared',
+      'retention.stale',
+      'retention.failed',
+      'wallet.disclosure.title',
+      'wallet.disclosure.intro',
+      'wallet.disclosure.accountAccess',
+      'wallet.disclosure.method',
+      'wallet.disclosure.chain',
+      'wallet.disclosure.domainChain',
+      'wallet.disclosure.account',
+      'wallet.disclosure.destination',
+      'wallet.disclosure.nativeValue',
+      'wallet.disclosure.typedAmount',
+      'wallet.disclosure.typedRecipient',
+      'wallet.disclosure.primaryType',
+      'wallet.disclosure.unknown',
+      'wallet.disclosure.details',
+      'wallet.disclosure.contractEffects',
+      'wallet.disclosure.payloadHint',
+      'wallet.disclosure.continue',
+      'wallet.disclosure.cancel',
+      'wallet.disclosure.invalid',
+      'wallet.disclosure.cancelled',
+      'wallet.disclosure.unavailable',
+      'wallet.disclosure.busy',
+      'wallet.disclosure.expiry',
       'walletAttempts.privateWarning',
       'walletAttempts.connectToReveal',
       'settings.clipboard.label',

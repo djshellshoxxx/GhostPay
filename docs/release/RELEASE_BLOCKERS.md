@@ -1,5 +1,9 @@
 # Release blocker queue
 
+## Required v1.0/v1.1 privacy checkpoint
+
+The [required privacy checkpoint](../privacy-release/STATUS.md) records nine specs, separate feature branches, fresh successor reviews and the current combined generation 4 source. Eight features have implemented behavior with focused acceptance; persistent metadata retention remains partial. Complete original type/lint/coverage/build/browser/hosted qualification remains open. This isolated development checkpoint does not supersede the unrelated release requirements or historical evidence below, and authorizes no main merge, deployment or release.
+
 ## Latest engineering follow-up — 2026-11-20 UTC
 
 The [current handoff](../engineering-handoffs/continuous-20261119/README.md) and [follow-up qualification receipt](../engineering-handoffs/continuous-20261119/FOLLOWUP_QUALIFICATION.json) supersede earlier status below. Eight demonstrated runtime defects are repaired, including the independently verified pure merchant-ledger guard. Existing composite-action discovery is recovered without changing update cadence or action versions. Six fresh generations and explicitly reused independent follow-up reviewers contributed.

@@ -1,0 +1,8 @@
+
+ RUN  v5.1.0 /workspace/scratch/dc1ef37f4621/privacy-disclosure/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 64 skipped (66)
+   Start at  22:26:49
+   Duration  9.78s (transform 41%, import 31%, environment 14%, tests 13%)

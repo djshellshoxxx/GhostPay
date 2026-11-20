@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
@@ -53,6 +54,7 @@ function CallPreview(props: { readonly call: RegistryCall; readonly chainName: s
 export function RegistryView(): ReactNode {
   const app = useApp();
   const services = useServices();
+  const disclosure = useWalletDisclosure();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const tRef = useRef(t);
@@ -170,7 +172,7 @@ export function RegistryView(): ReactNode {
     const authority = captureAuthority();
     const guard = (): void => { privacyScope.assertCurrent(); authority(); };
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId, guard, privacyScope.signal).then(
+    connectWallet(w, chainId, guard, AbortSignal.any([privacyScope.signal, operation.current.signal]), { disclosure }).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);

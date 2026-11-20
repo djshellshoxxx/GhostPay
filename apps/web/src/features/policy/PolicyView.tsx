@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
 import { useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { connectWallet, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
@@ -29,6 +30,7 @@ export interface PolicyCtx {
 
 function WalletPicker(props: { readonly chainId: number; readonly assertCurrent: () => void; readonly onConnected: (w: WalletSession) => void }): ReactNode {
   const services = useServices();
+  const disclosure = useWalletDisclosure();
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -50,7 +52,7 @@ function WalletPicker(props: { readonly chainId: number; readonly assertCurrent:
     const scope = privacy.begin();
     const guard = (): void => { scope.assertCurrent(); props.assertCurrent(); };
     setErr(undefined);
-    void connectWallet(selected, props.chainId, guard, scope.signal).then((connected) => {
+    void connectWallet(selected, props.chainId, guard, scope.signal, { disclosure }).then((connected) => {
       try { guard(); } catch { return; }
       props.onConnected(connected);
     }, (e: unknown) => {

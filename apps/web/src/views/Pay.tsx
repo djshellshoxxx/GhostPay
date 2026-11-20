@@ -12,6 +12,8 @@ import { useWalletPrivacy } from '../lib/useWalletPrivacy';
 import { loadSettings, SETTINGS_KEY } from '../lib/settings';
 import { sameExecutionSettings } from '../lib/executionSettings';
 import { WalletAttempts } from '../components/WalletAttempts';
+import { AddressReuseNotice } from '../components/AddressReuseNotice';
+import { useAddressReuse } from '../lib/useAddressReuse';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { clearFragment, extractFragment } from '../lib/fragment';
@@ -43,6 +45,7 @@ import { useServices } from '../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageValues, Part } from '../i18n/message';
 import type { Translator } from '../i18n/translator';
+import { useWalletDisclosure } from '../components/WalletDisclosure';
 import { connectWallet, walletAttemptKey, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 import { notifyEmbedDone } from '../lib/embedHost';
@@ -147,9 +150,11 @@ function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boole
 export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const disclosure = useWalletDisclosure();
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  const addressReuse = useAddressReuse();
   // Presentation-only choices preserve the reviewed request and pending preparation. Every other setting,
   // including replaced endpoint/signer references and future fields, still creates fresh execution authority.
   const executionSettingsRef = useRef(app.settings);
@@ -847,9 +852,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     };
     setError(undefined);
     setStatus({ key: 'pay.status.walletWaiting' });
-    connectWallet(w, chainId, guard, privacyScope.signal).then(
+    connectWallet(w, chainId, guard, AbortSignal.any([privacyScope.signal, currentNetworkSignal()]), { disclosure }).then(
       (s) => {
         try { guard(); } catch { return; }
+        addressReuse.bind(s);
         setWallet(s);
         setStatus('');
         announce({ key: 'pay.announce.connected' });
@@ -972,6 +978,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           requestedThisAttempt = true;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
+        addressReuse.observeSubmission(wallet, { destination: built.preview.stealth, paymentId: bytesToHex(invoiceDigest(invoice)) });
         if (!isCurrent()) {
           setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
           announce({ key: 'pay.announce.previous' });
@@ -986,6 +993,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         catch { /* The exact hash and verification result remain visible and available for export here. */ }
         announce({ key: 'pay.announce.submitted' });
       } catch (e) {
+        if (e instanceof PostBroadcastError && stage === 'payment') {
+          addressReuse.observeSubmission(wallet, { destination: built.preview.stealth, paymentId: bytesToHex(invoiceDigest(invoice)) });
+        }
         if (!isCurrent()) {
           if (e instanceof PostBroadcastError) {
             setPreviousBroadcast({ hash: e.hash, kind: stage });
@@ -1412,7 +1422,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {wallet !== undefined && built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
+        <>
+        <AddressReuseNotice status={wallet === undefined ? 'unavailable' : addressReuse.inspect(wallet, { destination: built.preview.stealth, paymentId: bytesToHex(invoiceDigest(parsed.invoice)) })} />
         <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
+        </>
       )}
 
       {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}

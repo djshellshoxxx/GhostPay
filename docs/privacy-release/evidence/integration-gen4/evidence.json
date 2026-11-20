@@ -1,0 +1,141 @@
+{
+  "feature": "required-v1-plus-v11-privacy-integration",
+  "generation": 4,
+  "branch": "work/ghostpay-required-v11-candidate-20261120",
+  "base": "806ed96cde92237ce97533411e22c111a629f685",
+  "ownership_claim": "13cec0d7672f3c2bdb1bcc450acf56bbd9c6a828",
+  "released_v1_parent": "573901ee1c66624e57143526571a3fd76f52f264",
+  "source": "85dd647cfd439a18e4885ab5ff9a9bf3a3bbad5c",
+  "tree": "78001180019ef9e3b6716217e2a35a41b1426d20",
+  "application_delta": [
+    "apps/web/src/views/Pay.tsx",
+    "apps/web/src/views/WalletPrivacy.lifecycle.test.tsx"
+  ],
+  "composition": "Exact v1 parent merged by ancestry. Pay binds acquired read authority to the captured wallet plus network lifetimes. New lifecycle cases use real per-request disclosure. Existing browser reconnect fixture and combined merchant retention/minimization source are unchanged.",
+  "independent_review": {
+    "worker": "/root/v11_qualification_gen4/consent_merge_review",
+    "inputs": [
+      "806ed96cde92237ce97533411e22c111a629f685",
+      "573901ee1c66624e57143526571a3fd76f52f264"
+    ],
+    "source": "85dd647cfd439a18e4885ab5ff9a9bf3a3bbad5c",
+    "tree": "78001180019ef9e3b6716217e2a35a41b1426d20",
+    "kind": "Read-only immutable-source review; no writes or execution checks.",
+    "result": "No additional blocker in narrow lifecycle consent, browser reconnection, unchanged merchant/retention composition or captured Pay runtime scope."
+  },
+  "runs": [
+    {
+      "id": "focused-combined",
+      "source": "85dd647cfd439a18e4885ab5ff9a9bf3a3bbad5c",
+      "tree": "78001180019ef9e3b6716217e2a35a41b1426d20",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/WalletPrivacy.lifecycle.test.tsx src/views/Pay.test.tsx src/views/Pay.network.test.tsx src/views/Pay.signer.test.tsx src/views/Pay.preflightCompletion.test.tsx src/lib/payExec.test.ts src/lib/payExec.acceptance.test.ts src/lib/walletJournal.test.ts src/lib/networkAuthorization.test.ts src/lib/networkAuthorization.adapters.test.ts src/lib/useWalletPrivacy.test.tsx src/components/MetadataRetentionControls.test.tsx src/components/MerchantTemplateIssuer.metadata.test.tsx src/components/MerchantTemplateIssuer.retention.test.tsx --coverage=false --maxWorkers=1",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1024"
+      },
+      "selection": [
+        "src/views/WalletPrivacy.lifecycle.test.tsx",
+        "src/views/Pay.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/views/Pay.signer.test.tsx",
+        "src/views/Pay.preflightCompletion.test.tsx",
+        "src/lib/payExec.test.ts",
+        "src/lib/payExec.acceptance.test.ts",
+        "src/lib/walletJournal.test.ts",
+        "src/lib/networkAuthorization.test.ts",
+        "src/lib/networkAuthorization.adapters.test.ts",
+        "src/lib/useWalletPrivacy.test.tsx",
+        "src/components/MetadataRetentionControls.test.tsx",
+        "src/components/MerchantTemplateIssuer.metadata.test.tsx",
+        "src/components/MerchantTemplateIssuer.retention.test.tsx"
+      ],
+      "started_utc": "2026-11-20T07:27:07Z",
+      "exit": 0,
+      "wall_seconds": 55.21,
+      "ended_utc": "2026-11-20T07:28:02Z",
+      "raw_sha256": "451b9bf0d944964e3ab1f60014994896f5e17314bbec06fded875ff590d09dca",
+      "raw_bytes": 433,
+      "argv": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/views/WalletPrivacy.lifecycle.test.tsx",
+        "src/views/Pay.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/views/Pay.signer.test.tsx",
+        "src/views/Pay.preflightCompletion.test.tsx",
+        "src/lib/payExec.test.ts",
+        "src/lib/payExec.acceptance.test.ts",
+        "src/lib/walletJournal.test.ts",
+        "src/lib/networkAuthorization.test.ts",
+        "src/lib/networkAuthorization.adapters.test.ts",
+        "src/lib/useWalletPrivacy.test.tsx",
+        "src/components/MetadataRetentionControls.test.tsx",
+        "src/components/MerchantTemplateIssuer.metadata.test.tsx",
+        "src/components/MerchantTemplateIssuer.retention.test.tsx",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "log": "focused-combined.log.gz",
+      "compressed_sha256": "0129beb12678f756f1924f841131c1b9a1fe72ba0708ebc6ac24c08fd868ea75",
+      "files": 14,
+      "passed": 301,
+      "failed": 0,
+      "skipped": 0,
+      "vitest_seconds": 54.59,
+      "kind": "Bounded full-file selection with coverage disabled; not the complete coverage gate."
+    },
+    {
+      "id": "secret-scan",
+      "source": "85dd647cfd439a18e4885ab5ff9a9bf3a3bbad5c",
+      "tree": "78001180019ef9e3b6716217e2a35a41b1426d20",
+      "command": "bash scripts/scan-secrets.sh",
+      "cwd": ".",
+      "exit": 0,
+      "raw_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "raw_bytes": 50,
+      "argv": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "log": "secret-scan.log.gz",
+      "compressed_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3"
+    },
+    {
+      "id": "whitespace",
+      "source": "85dd647cfd439a18e4885ab5ff9a9bf3a3bbad5c",
+      "tree": "78001180019ef9e3b6716217e2a35a41b1426d20",
+      "command": "git diff bbcf71b79d4efd00892948faa833cb7d8f471406 HEAD --check",
+      "cwd": ".",
+      "exit": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0,
+      "argv": [
+        "git",
+        "diff",
+        "bbcf71b79d4efd00892948faa833cb7d8f471406",
+        "HEAD",
+        "--check"
+      ],
+      "log": "whitespace.log.gz",
+      "compressed_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    }
+  ],
+  "counting": "The 301 cases are one current-source 14-file invocation. Predecessor and standalone-v1 results are separate and are not added to this total.",
+  "reuse": "Existing repository wallet lifetime, network authority and strict disclosure primitives; no new external copied code or dependency.",
+  "browser": "Original helper, flows/core-journey and dedicated disclosure fixtures are authored but unexecuted in this lane. No browser acceptance claim.",
+  "unqualified": [
+    "complete original typecheck",
+    "complete typed lint",
+    "complete unit coverage and separate original nocov pass",
+    "original build/CSP/bundle checks",
+    "built-browser journeys",
+    "hosted gates"
+  ],
+  "limits": [
+    "Lifecycle proof uses actual App/Pay and NetworkAuthority with a controlled authorized injected RPC recorder; it is not HTTP-wire or real-extension evidence.",
+    "Retention eligibility remains completed generated screen previews; persistent financial, security and recovery records are protected.",
+    "Masking is presentation-only, local reuse observes current-wallet intended destinations, and draft catalogs are not reviewed translations."
+  ],
+  "process_state": "The sole focused Vitest process completed normally with exit 0. No test, type, lint, build or browser process remains in this lane.",
+  "remote_mutation": false
+}

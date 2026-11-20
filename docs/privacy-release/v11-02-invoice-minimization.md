@@ -12,7 +12,7 @@ Offer explicit minimal mode before signing. Omit optional memo and neutralize li
 
 ## Module ownership
 
-Under `apps/web/src/`: new lib/invoiceMetadata.ts; lib/invoiceCreate.ts; views/CreateInvoice.tsx and tests.
+Under `apps/web/src/`: new lib/invoiceMetadata.ts; lib/invoiceCreate.ts; views/CreateInvoice.tsx and tests. Merchant compatibility owns lib/merchantTemplate.ts and components/MerchantTemplateIssuer.tsx with focused tests; the verified signed profile remains immutable, and the metadata choice is captured before custody awaits. The merchant issuer must revoke prior/pending links on mode changes and return to standard mode for a new seller session.
 
 ## Acceptance and reuse
 

@@ -1,6 +1,15 @@
 import { expect, type Page } from '@playwright/test';
+import type { WalletDisclosureMethod } from '../src/lib/walletDisclosure';
 
 export const ORIGIN = 'http://localhost:4173';
+
+/** One deliberate decision for a named request; never approve an unexpected or future wallet prompt. */
+export async function approveWalletDisclosure(page: Page, method: WalletDisclosureMethod): Promise<void> {
+  const dialog = page.getByRole('dialog', { name: 'Review wallet disclosure', exact: true });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(method, { exact: true })).toBeVisible();
+  await dialog.getByRole('button', { name: 'Continue to wallet', exact: true }).click();
+}
 
 /**
  * Opens the app, generates seller keys in memory and returns the public meta-address. Fresh keys have no backup, so the

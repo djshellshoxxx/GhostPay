@@ -13,6 +13,7 @@ import type { Services } from './lib/services';
 import { backedManifest, withManifestChain } from './test/manifestChain';
 import { MockWallet } from './test/mockWallet';
 import { mockRpc } from './test/mockRpc';
+import { approveWalletDisclosure } from './test/walletDisclosure';
 import { useApp, type AppState } from './state';
 
 beforeEach(() => {
@@ -140,6 +141,7 @@ describe('required global privacy masking', () => {
       await screen.findByText('Seller receives (net)');
       await user.click(screen.getByRole('button', { name: 'Continue' }));
       await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+      await approveWalletDisclosure(user, 'eth_requestAccounts');
       await screen.findByRole('button', { name: 'Prepare payment' });
       expect(grants).toHaveLength(2);
       const active = grants.at(-1)!;

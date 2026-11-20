@@ -23,6 +23,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { PrivacyControls } from './components/PrivacyControls';
 import { ClipboardPrivacySync } from './components/ClipboardPrivacySync';
 import { PrivacyQuickHide } from './components/PrivacyQuickHide';
+import { WalletDisclosureProvider } from './components/WalletDisclosure';
 import { SensitiveContent } from './components/SensitiveContent';
 import { PrivacyProvider } from './lib/privacyMode';
 import { notifyAppLock, subscribeAppLock } from './lib/appLock';
@@ -141,6 +142,11 @@ export function AppShell(props: AppShellProps): ReactNode {
   // Consent for one invoice or sweep target must not reveal a replacement on the same route. Keep the grant's
   // identity opaque instead of copying invoice text or seller details into the reveal model.
   const privacyScope = useMemo(() => ({}), [view, fragment, sweepTarget, session, suspended]);
+  // Visual privacy preferences revoke the displayed approval but must not strand an established wallet's gate.
+  // Every execution-setting field (including future fields) retains the existing conservative scope comparison.
+  const disclosureSettings = useRef(settings);
+  if (!sameExecutionSettings(disclosureSettings.current, settings)) disclosureSettings.current = settings;
+  const walletDisclosureScope = useMemo(() => ({}), [privacyScope, disclosureSettings.current, networkRevision]);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -487,6 +493,7 @@ export function AppShell(props: AppShellProps): ReactNode {
     <AppContext.Provider value={state}>
       <ClipboardPrivacySync />
       <PrivacyProvider enabled={settings.privacyMode} scope={privacyScope}>
+      <WalletDisclosureProvider scope={walletDisclosureScope}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
         <h1>GhostPay</h1>
@@ -552,6 +559,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
       </footer>
+      </WalletDisclosureProvider>
       </PrivacyProvider>
     </AppContext.Provider>
   );

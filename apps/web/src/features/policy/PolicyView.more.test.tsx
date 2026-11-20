@@ -8,6 +8,7 @@ import { clearSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
 import { installPolicyTestLocks } from './withdrawal.testutil';
@@ -80,6 +81,8 @@ describe('policy view: wallet and network', () => {
     expect(await screen.findByText('Something went wrong. Nothing was sent.')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
+    await approveWalletDisclosure(user, 'wallet_switchEthereumChain');
     expect(await screen.findByRole('alert')).toBeTruthy();
     expect(screen.queryByText(/Connected:/)).toBeNull();
   });
@@ -162,6 +165,7 @@ describe('policy view: pay and receive errors', () => {
     await verify(user);
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await screen.findByText(/Connected:/);
     await user.click(screen.getByLabelText(/Payee policy meta-address/));
     await user.paste(a1.metaAddress);
@@ -172,6 +176,7 @@ describe('policy view: pay and receive errors', () => {
     await user.type(screen.getByLabelText('Amount (base units)'), '1000');
     await user.click(screen.getByRole('button', { name: 'Review payment' }));
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText('You rejected the request in your wallet.')).toBeTruthy();
   });
   it('deploys a scanned account through the factory and reports scan failures', async () => {
@@ -208,8 +213,10 @@ describe('policy view: pay and receive errors', () => {
     expect(await screen.findByText(/Connect a wallet on this network to relay/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await screen.findByText(/Connected:/);
     await user.click(screen.getByRole('button', { name: 'Deploy account' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Deployment submitted/)).toBeTruthy();
     const d = decodeFunctionData({ abi: policyAccountFactoryAbi, data: w.sent?.['data'] as `0x${string}` });
     expect(d.functionName).toBe('deploy');
