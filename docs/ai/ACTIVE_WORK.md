@@ -20,6 +20,11 @@ memo and absence assertions that the earlier failures prevented from executing. 
 review, typed lint/typecheck/test collection, then actual full/lean browser execution at the repair
 head. Retain existing assertions, guards and thresholds. Record actual outcomes and remaining
 gates. No unrelated branch integration, main merge or deployment.
+Repair milestone: local `95493e10281f0307c225b088ed29884b857ad168`, published exact-tree
+equivalent `9dedda1ded9511922a9faa5ee617a01cba245095`, test blob
+`c6f9bfcb6af548ba7eb99c6fa053d4575fd8641c`. Fresh review reports no actionable finding.
+Typed lint, bounded whole-web typecheck and six-case collection per profile pass. Native browser
+rerun is required at the actual new PR head; see the F03 `round2` reports and continuation record.
 
 # F03 payment request interchange — 2026-11-19
 

@@ -1,5 +1,26 @@
 # F03 successor-worker handoff
 
+## Continuation checkpoint — 2026-11-20
+
+Read [round2/QUALIFICATION.md](round2/QUALIFICATION.md) and its two independent review records
+first. Original hosted full/lean execution is now established: each ran all six F03 cases, with
+two passed and four stopped by incorrect bare exact memo assertions. Hash-verified failure
+snapshots show the correct labeled memo in every failed context. The renderer is unchanged.
+
+The reviewed test-only correction is published as `9dedda1ded9511922a9faa5ee617a01cba245095`,
+equivalent to local `95493e10281f0307c225b088ed29884b857ad168`, tree
+`fa99439152a436bfc473c1a448c584fd9003d95b`. Its test blob is
+`c6f9bfcb6af548ba7eb99c6fa053d4575fd8641c`. Exact full memo matching is scoped to payment review;
+memo confidentiality checks now inspect page text. Typed lint, whole-web typecheck and six-case
+collection per profile pass. Product source, dependencies, configuration and workflows are unchanged.
+
+At this documentation checkpoint, repaired-head native browser qualification is the remaining
+gate. Consult the actual current PR head and workflow results for subsequent outcomes. Do not
+repeat the old failing locator or count an earlier partial fixture as a complete pass. The
+continuation record provides source maps, concrete criteria and known environment limits.
+
+## Original implementation and audit handoff
+
 Feature implementation and the fresh-worker source audit are complete for signed-invoice
 request-file interchange. Continue branch `future/f03-private-payment-links`, draft
 [PR #310](https://github.com/djshellshoxxx/GhostPay/pull/310). Do not restart the implementation or

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "180s",
+    "node",
+    "--max-old-space-size=1024",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "apps/web/tsconfig.json",
+    "--noEmit"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 27.02,
+  "max_child_rss_kib": 1145628,
+  "base_commit": "976d26ee791836c176431c8a5d0b825486f78caf",
+  "test_file_blob": "c6f9bfcb6af548ba7eb99c6fa053d4575fd8641c"
+}

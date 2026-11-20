@@ -1,0 +1,20 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "180s",
+    "node",
+    "../../node_modules/@playwright/test/cli.js",
+    "test",
+    "e2e/payment-request-file.spec.ts",
+    "--list"
+  ],
+  "cwd": "apps/web",
+  "environment_overrides": {
+    "GHOSTPAY_LOCAL_BUILD_PROFILE": "full"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 4.61,
+  "base_commit": "976d26ee791836c176431c8a5d0b825486f78caf",
+  "test_file_blob": "c6f9bfcb6af548ba7eb99c6fa053d4575fd8641c"
+}
