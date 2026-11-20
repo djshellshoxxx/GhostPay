@@ -1,0 +1,24 @@
+[
+  {
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/npm/bin/npm-cli.js",
+      "explain",
+      "elliptic",
+      "--json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay",
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/npm/bin/npm-cli.js",
+      "explain",
+      "cookie",
+      "--json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay",
+    "exit_code": 0
+  }
+]
