@@ -33,7 +33,7 @@ The delta is authenticated device membership, bounded encrypted change bundles, 
 
 Own a pure sync planner, signed/encrypted bundle validation and optional transport adapters. P05 performs atomic durable merges; P06 authenticates devices. Product F11 owns team permissions, and F06 owns recovery presentation. P07 must not import these consumers or infer team spending authority from a device record.
 
-Default selected scope is nonsecret preferences and encrypted metadata only. Keys, pending transaction authorizations and recovery-critical state require separately approved scope and explicit preview. No plaintext secrets, witness material, bearer invoices or contact aliases enter object names, request headers or URLs.
+Version 1 permits only nonsecret preferences and encrypted non-recovery metadata. Keys, pending transaction authorizations and recovery-critical state are unavailable in this version, even inside an encrypted archive; enabling their transport requires a separately specified, versioned and owner-approved capability rather than merely another preview. No plaintext secrets, witness material, bearer invoices or contact aliases enter object names, request headers or URLs.
 
 ## 4. Proposed data and API
 
@@ -49,18 +49,33 @@ interface SyncSelectionV1 {
   recordKinds: readonly string[];
   includeRecoveryMaterial: false;
 }
+interface SyncMergePreview {
+  version: 1; previewId: string; baseRevision: string;
+  planDigest: string; channelId: string; deviceEpoch: string;
+  sessionEpoch: number; added: number; conflicts: number;
+  expiresAt: string; // Canonical unsigned decimal UTC epoch milliseconds.
+}
+declare const syncPlanBrand: unique symbol;
+interface SyncPlanHandle { readonly [syncPlanBrand]: true }
 interface EncryptedSyncProvider {
   export(selection: SyncSelectionV1, device: SecretHandle,
     ctx: OperationContext): Promise<ModuleResult<SyncEnvelopeV1>>;
   preview(envelopes: readonly SyncEnvelopeV1[], ctx: OperationContext):
-    Promise<ModuleResult<SyncMergePreview>>;
+    Promise<ModuleResult<{ preview: SyncMergePreview; plan: SyncPlanHandle }>>;
+  approveMerge(plan: SyncPlanHandle, approvedDigest: string,
+    ctx: OperationContext): ModuleResult<SyncPlanHandle>;
   commit(plan: SyncPlanHandle, ctx: OperationContext):
     Promise<ModuleResult<SyncRevision>>;
+  revokePlan(plan: SyncPlanHandle): void;
   capability(): CapabilityDescriptorV1;
 }
 ```
 
 Use independent opaque channel/device identifiers; never reuse public wallet addresses as storage identifiers. Bind version, channel, device epoch, sequence, payload digest and previous digest to device authentication and encryption AAD. Exact cryptographic suite/rotation requires an accepted ADR; no custom cryptography is specified here.
+
+`preview` validates and stages immutable bundle candidates without changing durable records or sync high-water marks. Its opaque provider-registered plan binds bundle digests, channel/membership/device epoch, permitted record classes, local base revision, operation/session epoch and expiry. `approveMerge` requires an explicit review of the exact plan digest; `commit` accepts only an approved, current plan and delegates one atomic revision-bound mutation to P05. Consume the plan before/with that commit so repeated callers cannot replay it. A changed bundle, membership, revision, selection or epoch requires a new preview. `revokePlan` discards staging without altering source records.
+
+`expiresAt` is canonical unsigned decimal UTC epoch milliseconds with strict bounded parsing; initial merge preview lifetime is at most five minutes and no later than the operation deadline. Clock rollback, lock, revocation, cancellation or expiry invalidates approval. `deviceEpoch` and `sequence` are authenticated counters, not timestamps. Unknown storage completion must be reconciled from P05 revision/evidence before a new plan is considered.
 
 ## 5. Lifecycle, concurrency and failures
 
@@ -68,7 +83,7 @@ Use independent opaque channel/device identifiers; never reuse public wallet add
 2. Preview selected scope; encrypt locally using reviewed P05 primitives and authenticate with P06 device role.
 3. Save/export a bounded bundle, or send through a separately consented transport. Provider account credentials are outside the bundle.
 4. Download only after consent; validate size, membership, epoch, signature and sequence before decrypting/previewing.
-5. Show conflicts and trust-policy changes. Apply a P05 revision-bound atomic merge only after approval.
+5. Show conflicts, exact plan digest and trust-policy changes. Call `approveMerge` only after explicit review, then apply a single P05 revision-bound atomic merge. Preview alone grants no write authority.
 6. Forked histories and conflicting tombstones require explicit resolution; latest wall-clock timestamp never wins sensitive conflicts automatically.
 7. Lock, cancellation, device removal or session change discards pending plaintext and late merges.
 
@@ -107,6 +122,9 @@ Manual encrypted exchange and local merge remain free. Optional third-party stor
 - **P07-A08:** Malformed or oversized bundles refuse atomically; storage quota does not destroy originals.
 - **P07-A09:** Imported endpoint/trust changes require renewed disclosure and consent.
 - **P07-A10:** Provider outage leaves local records, manual export and canonical recovery usable.
+- **P07-A11:** Preview alone or a forged/serialized/unapproved plan cannot change records, membership or high-water marks.
+- **P07-A12:** Mutated bundles, wrong reviewed digest, expired preview, device/session epoch changes and clock rollback invalidate the plan before P05 commit.
+- **P07-A13:** Concurrent/repeated commit attempts apply one plan at most once; interruption requires revision reconciliation rather than replaying an uncertain merge.
 
 ## 10. Slices and future checks
 
