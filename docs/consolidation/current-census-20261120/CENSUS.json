@@ -1557,71 +1557,173 @@
     },
     {
       "name": "claude/ar-a4-btc-headersync",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1267,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-a5-announcer-budget",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1272,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-a6-combined-backup",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1266,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-a7-policy-send-guard",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1269,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-b1-core-journey",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1270,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-b2-lean-bound-receipts",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1271,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-b3-sweep-permit-states",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1244,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-b5-testnet-feeds",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1274,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c1-reconciliation-adr",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1271,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c2-qr-pairing",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1269,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c4-i18n-create-b4-buffer-ui",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1254,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c4-i18n-pay",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1272,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c4-i18n-scan",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1266,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c5-device-matrix",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1272,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ar-c7-embed-iframe-e2e",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1271,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/consolidation-2026-11-04",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1142,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/cool-albattani-xopr89",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1519,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/cw-c2",
