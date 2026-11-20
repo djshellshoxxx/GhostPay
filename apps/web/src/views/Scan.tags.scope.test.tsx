@@ -77,6 +77,10 @@ describe('chain-scoped encrypted tag display (GP-BUG-03)', () => {
       generateSession();
     });
     expect(screen.queryByText('Original seller tag')).toBeNull();
+    // A new seller session must require fresh authorization before exposing its tags.
+    expect(screen.queryByText('Replacement seller tag')).toBeNull();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
     expect(await screen.findByText('Replacement seller tag')).toBeTruthy();
     expect(list.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
@@ -97,7 +101,7 @@ describe('chain-scoped encrypted tag display (GP-BUG-03)', () => {
 
     await user.selectOptions(screen.getByLabelText('Chain'), '11155111');
     expect(await screen.findByText('Current Sepolia tag')).toBeTruthy();
-    await act(async () => { completeBase([tag('Obsolete Base tag')]); });
+    await act(async () => { completeBase([tag('Obsolete Base tag')]); await pendingBase; });
     expect(screen.queryByText('Obsolete Base tag')).toBeNull();
     expect(screen.getByText('Current Sepolia tag')).toBeTruthy();
 
