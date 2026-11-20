@@ -1897,71 +1897,173 @@
     },
     {
       "name": "claude/ghostpay-autonomous-completion-y4sk2h",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1293,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ghostpay-autonomous-prompt-scpgun",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1598,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ghostpay-completion-audit-ot5jjm",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 24,
+        "behind_by": 106,
+        "changed_files_returned": 45,
+        "application_paths_returned": 32
+      }
     },
     {
       "name": "claude/ghostpay-consolidation-9xhtxg",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 104,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ghostpay-consolidation-9xhtxg-feeguard",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 106,
+        "changed_files_returned": 7,
+        "application_paths_returned": 6
+      }
     },
     {
       "name": "claude/ghostpay-consolidation-9xhtxg-security",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 106,
+        "changed_files_returned": 14,
+        "application_paths_returned": 5
+      }
     },
     {
       "name": "claude/ghostpay-consolidation-9xhtxg-spec18",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 107,
+        "changed_files_returned": 41,
+        "application_paths_returned": 33
+      }
     },
     {
       "name": "claude/ghostpay-github-pages-up6cj6",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 702,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/ghostpay-lean-core-milestone-t5lwox",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 8,
+        "behind_by": 1596,
+        "changed_files_returned": 15,
+        "application_paths_returned": 12
+      }
     },
     {
       "name": "claude/gifted-planck-115x2k",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 1299,
+        "changed_files_returned": 12,
+        "application_paths_returned": 10
+      }
     },
     {
       "name": "claude/gracious-heisenberg-97ji6q",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1574,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/haiku-wave-2-handoff-qepfoe",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 1286,
+        "changed_files_returned": 3,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/happy-maxwell-onl4x5",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 1286,
+        "changed_files_returned": 2,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "claude/hopeful-bardeen-8ch6l8",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1595,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/inspiring-fermat-vxv689",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 2286,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/kind-faraday-8qzf6e",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 995,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/laughing-bardeen-4t20ys",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 2126,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "claude/lucid-meitner-apalzc",
