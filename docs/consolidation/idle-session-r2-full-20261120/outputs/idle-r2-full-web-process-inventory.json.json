@@ -1,0 +1,9 @@
+{
+  "format": "ghostpay-evidence-bytes/1",
+  "original_name": "idle-r2-full-web-process-inventory.json",
+  "encoding": "gzip+base64",
+  "original_bytes": 1011,
+  "original_sha256": "8366d7ff8cb300b514c35bfe18cbc4c275e1d0ebf89270c7157f4c350e647491",
+  "gzip_sha256": "0bd9062812e535a7d2190547abd7a4acbd8b21e593207715969d850c7e122c79",
+  "gzip_base64": "H4sIAAAAAAACA7VTy27kIBC8z1cgXzMPjPED7ynSSqvc5rB7iiKEcXtMYoMFzEtR/n2xPTNRlDnuXozcVHcVRfG+QCiyII2toebC872XUYkigkm2iuMVwb/joqS0pHjN0rjA8QPGJcbRcmwcVM216MENQsLYFgrlMw29aUJomr3MMKUPoL2xZ+6kGSbgY9ehwRoJzoFDB+VU1QHyrTX7XRtW5RCcQO69Mhp5Yzq0ffqJblw/kDbIwSCs8IBa4/zqqGq4jlzdGNHj9gmFYeIgVCcCx3qWdGHkNw1B1HPYQOh9+s6HC8V4ef2Xpu9H6dLUcIo+y8cRFm2Oxr5N2jZOBlWy3TBGBa5JTJuKbX6NIrfivHJHgCGauj+W9xjJN8ZKuPY/EqbfCIezb43+N5Th+zJZ3o8NSu+43WsNlhvLD8qD818vYQYbq3ZKi47fsjlmjRIOJ+X8CGxE52BOoVVh1hgXHma4kBg+mK4bFf/Rb9oc9TUXSNUoxUWczCGQ5gBW7IB3ZhfQsy1RdfaTEoITxmYLItcKkmbjRCBSpqxJipzFSS4JpNCQtElpnSe0YSTGmawaCqzIMpIXTcYaWYelwgwXMskupka9Vz3cf21JVtJ8TUmRJ+Ty2haXu/uU3EzuvLpw2DuWhJLnzgu/d3xy4Lq7+Fj8Bbns06LzAwAA"
+}

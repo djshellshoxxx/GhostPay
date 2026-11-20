@@ -1,0 +1,9 @@
+{
+  "format": "ghostpay-evidence-bytes/1",
+  "original_name": "idle-r2-full-web-attempt2-nocov-exit.json",
+  "encoding": "gzip+base64",
+  "original_bytes": 175,
+  "original_sha256": "246db3afa4134296a6cea099bd2f321c0115b52132f3ab2de32306d412749691",
+  "gzip_sha256": "4f7288aded076c7ba9dc93d7687c120a0d9b4292219e1885bd3987ce8a8038e2",
+  "gzip_base64": "H4sIAAAAAAACAyXLQQ6CMBBA0T2nIN0qZmag09pzuG/KtCiJsQSLMTHeXYHty/+fqq7VnCTPMUUfil+KKFcrAuIGsSG44NkhOuQTMjHpA4ADUMd1fJZwTWv+yJJfu8ltvEc/jfHvxNpsmN5j8ZLjGsO+5mWW7TUdGmsxiBmoa3sNg+m1IFsS5tCldrBGTMuq+lY/ZJk22q8AAAA="
+}

@@ -1,0 +1,9 @@
+{
+  "format": "ghostpay-evidence-bytes/1",
+  "original_name": "build-info.json",
+  "encoding": "gzip+base64",
+  "original_bytes": 178,
+  "original_sha256": "8da1983fece504a7689f180146d1729adaa817206ee6d62596c230261d1977f9",
+  "gzip_sha256": "23d55d0f3d16fe7259caed57b332d44dda67640e4c30fdd8b12b27327fb102a6",
+  "gzip_base64": "H4sIAAAAAAACAw3LSw7CMAwA0T3HyBoqO07cwDU4gePatIt+RCsQQtydbN9ovkG2LdzCY1z3Y5PP5W01nMPLnvu0Li1Ahx000XWep6OBZ4MkBHXIVGoeqnCEWErWYqikapXQhdozyzK57cd+HyVmbnNKSNxizpW4L4KYWAZk761wuto1eU2uEd36RoSgwOCMKuJeJPxOf6bMfMyyAAAA"
+}

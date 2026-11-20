@@ -1,0 +1,9 @@
+{
+  "format": "ghostpay-evidence-bytes/1",
+  "original_name": "idle-r2-full-web-attempt2-coverage-exit.json",
+  "encoding": "gzip+base64",
+  "original_bytes": 176,
+  "original_sha256": "47326143af326db85d2ee4b9787ad3206c91724afee11929185e01f7919c7d44",
+  "gzip_sha256": "a6a8a5d163cabbffbf4de77e6a39edec452254e281ec1b4f6fde695c1a88b0d7",
+  "gzip_base64": "H4sIAAAAAAACAyWLQQ7CIBBF9z1Fw1ZrZoAOyDncEzpQbWJCg9SYGO+u1N3P+++9u74XJXEuMUUfqt8qC9cLCZIGxEHCBc8OwWk6KRq1VQcAByCOLXzUcE1N5/xMpe0d8225R78u8XdpuaP0WqrnHJsN/zZvhffYaDTWYmAzS62mEWYzjYxkJRMFndRsDRtFovt0X4VPocuwAAAA"
+}

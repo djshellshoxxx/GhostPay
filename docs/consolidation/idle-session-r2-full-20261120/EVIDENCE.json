@@ -1,0 +1,1045 @@
+{
+  "format": "ghostpay-idle-session-full-qualification/1",
+  "recorded_at_utc": "2026-11-20T19:16:29.112098+00:00",
+  "candidate": {
+    "pr": 331,
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/331",
+    "tested_local_head": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+    "published_head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+    "shared_tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+    "product_review_head": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+    "published_product_review_equivalent": "86d41bf7eeb6aa5a46ba199df442fa99e7db1c63",
+    "source_branch_unchanged": true
+  },
+  "evidence_branch": "evidence/ghostpay-idle-session-r2-20261120",
+  "results": {
+    "complete_original_web_gate": "passed",
+    "tests_passed": 3155,
+    "tests_failed": 0,
+    "tests_skipped": 13,
+    "tests_total": 3168,
+    "test_files_passed": 214,
+    "test_files_skipped": 2,
+    "test_files_total": 216,
+    "focused_575_tests": "Separate overlapping focused run; not added to complete gate counts.",
+    "lean_production_build": "passed",
+    "original_postbuild_scan": "passed",
+    "browser_assertions_executed_locally": 0
+  },
+  "publication_equivalence": {
+    "verified_at_utc": "2026-11-20T18:42:01.360797+00:00",
+    "pr": 331,
+    "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "public_head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+    "donor_ancestry_preserved": true,
+    "commits": [
+      {
+        "local": "178c09317c6f456b9f819fa15631595c31cacd37",
+        "public": "e0cd4887a96d870b8ab96aadad60cc67396d9f8a",
+        "tree": "218e6cbb8aa85f4a4bde74351b2e6ec8a0a86e1b",
+        "additional_parents": [],
+        "fetched_tree": "218e6cbb8aa85f4a4bde74351b2e6ec8a0a86e1b",
+        "fetched_parents": [
+          "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a"
+        ],
+        "verified": true
+      },
+      {
+        "local": "c13ee784410771dc56d818fd96ac684deba2ccc3",
+        "public": "06d19d8ab7736d9f4b707737ce7e36dd8d5d0af0",
+        "tree": "7516385a230ac599bdee995dd57fea7c43fba938",
+        "additional_parents": [],
+        "fetched_tree": "7516385a230ac599bdee995dd57fea7c43fba938",
+        "fetched_parents": [
+          "e0cd4887a96d870b8ab96aadad60cc67396d9f8a"
+        ],
+        "verified": true
+      },
+      {
+        "local": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+        "public": "86d41bf7eeb6aa5a46ba199df442fa99e7db1c63",
+        "tree": "a349e60b012bff674530933088ed16196d701d22",
+        "additional_parents": [
+          "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+        ],
+        "fetched_tree": "a349e60b012bff674530933088ed16196d701d22",
+        "fetched_parents": [
+          "06d19d8ab7736d9f4b707737ce7e36dd8d5d0af0",
+          "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+        ],
+        "verified": true
+      },
+      {
+        "local": "2605e1bf7a8528b0ccbf66161a17fcdf7298e541",
+        "public": "685cde324fbe5e8afae56439a2676cf80fcb3004",
+        "tree": "32aa893aa811a4d6c9fc546023e915643e212465",
+        "additional_parents": [],
+        "fetched_tree": "32aa893aa811a4d6c9fc546023e915643e212465",
+        "fetched_parents": [
+          "86d41bf7eeb6aa5a46ba199df442fa99e7db1c63"
+        ],
+        "verified": true
+      },
+      {
+        "local": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+        "public": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+        "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+        "additional_parents": [],
+        "fetched_tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+        "fetched_parents": [
+          "685cde324fbe5e8afae56439a2676cf80fcb3004"
+        ],
+        "verified": true
+      }
+    ]
+  },
+  "full_gate": {
+    "format": "ghostpay-idle-session-full-web/1",
+    "attempt": 2,
+    "prior_attempt": "Incomplete runtime-interrupted attempt1; no final report or exit status, no test verdict, no partial counts carried forward.",
+    "prior_attempt_artifacts": [
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web.json",
+        "bytes": 4259,
+        "sha256": "0dd92355c256fb92c55fe4d55ab7eca1d509b29dc64e9a6be1953c0f4231825e"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-coverage.log",
+        "bytes": 20399,
+        "sha256": "e2cc59f3879137c2e5ef25f54d734f92106cbf4e9866278f69fcd8f6b0908c36"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-interruption.json",
+        "bytes": 2514,
+        "sha256": "731776ff471492de063468945a7b9f42fb2a132c2d0218140cfa0ea3fe46ff73"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-process-inventory.json",
+        "bytes": 1011,
+        "sha256": "8366d7ff8cb300b514c35bfe18cbc4c275e1d0ebf89270c7157f4c350e647491"
+      }
+    ],
+    "publication_equivalence": {
+      "path": "/workspace/scratch/994a0d214fb9/r2-idle-publication-verification.json",
+      "bytes": 2343,
+      "sha256": "6401c02180cbfc3298c443acf07ea69e8ff1085f9fa58d76d102c7cf168463c4"
+    },
+    "public_equivalent": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+    "supervisor": {
+      "pid": 2,
+      "pid_namespace": "pid:[4026532456]",
+      "heartbeat_seconds": 10
+    },
+    "recorded_at_utc": "2026-11-20T18:46:06.017673+00:00",
+    "scope": "Complete original @ghostpay/web test gate on frozen idle-session recovery source; equivalent direct sequential stages, unchanged configuration and thresholds.",
+    "source": {
+      "repository": "djshellshoxxx/GhostPay",
+      "worktree": "/workspace/scratch/994a0d214fb9/GhostPay-sweep",
+      "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "git_status_porcelain": ""
+    },
+    "runtime": {
+      "node": "v24.22.3",
+      "npm": "11.19.1"
+    },
+    "original_npm_script": "vitest run --coverage && vitest run --config vitest.nocov.config.ts",
+    "configuration_artifacts": [
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/package.json",
+        "bytes": 1426,
+        "sha256": "1347a088f21c3e8fe182d05271bff716f325cda70cf7e2700cee1a3bb37025f4"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/package-lock.json",
+        "bytes": 387892,
+        "sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/package.json",
+        "bytes": 1797,
+        "sha256": "766ebac733fe942d55be72643beb308aa451e713bbd9d1299cd06f2a6d627ab5"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/vite.config.ts",
+        "bytes": 5634,
+        "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/vitest.nocov.config.ts",
+        "bytes": 551,
+        "sha256": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/tsconfig.json",
+        "bytes": 268,
+        "sha256": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/tsconfig.base.json",
+        "bytes": 495,
+        "sha256": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/eslint.config.js",
+        "bytes": 2740,
+        "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476"
+      }
+    ],
+    "packages_source_tree": "431df584223bbec5f165b6f97e75855de8c540f3",
+    "dependency_reuse_record": {
+      "path": "/workspace/scratch/994a0d214fb9/idle-r2-dependency-reuse.json",
+      "bytes": 1747,
+      "sha256": "ecffc8f360f78f9334efa05538fdf28f7f31ff079f6bfaa46869db5947525192"
+    },
+    "run_notes": [
+      "Complete second attempt expressly authorized after execution-session loss; original complete coverage stage must pass before original no-coverage stage starts.",
+      "Only resource limits NODE_OPTIONS=--max-old-space-size=512 and --maxWorkers=1 plus JSON reporting are added.",
+      "No retries, changed source/configuration, added skips or assertion changes.",
+      "The 575 focused tests are a separate overlapping qualification and are not added to these counts.",
+      "No browser execution or hosted qualification is claimed."
+    ],
+    "original_thresholds": {
+      "statements": 90,
+      "branches": 85,
+      "functions": 90,
+      "lines": 90
+    },
+    "stages": [
+      {
+        "stage": "coverage",
+        "command": [
+          "node",
+          "../../node_modules/vitest/vitest.mjs",
+          "run",
+          "--coverage",
+          "--maxWorkers=1",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-coverage.json"
+        ],
+        "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web",
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "started_at": "2026-11-20T18:46:06.176919+00:00",
+        "status": "passed",
+        "log": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-coverage.log",
+        "json_report": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-coverage.json",
+        "source_before": {
+          "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+          "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+          "git_status_porcelain": ""
+        },
+        "pid": 42,
+        "heartbeat": {
+          "at": "2026-11-20T19:10:36.980687+00:00",
+          "stage": "coverage",
+          "child_pid": 42,
+          "child_alive_via_poll": true,
+          "child_proc_exists": true,
+          "child_proc_state": "S",
+          "log_bytes": 111493,
+          "log_mtime_utc": "2026-11-20T19:10:36.208035+00:00",
+          "completed_file_lines": 207,
+          "last_completed_files": [
+            "\u2713 src/components/WalletAttempts.test.tsx (1 test) 158ms",
+            "\u2713 src/lib/registry.test.ts (1 test) 7ms"
+          ]
+        },
+        "exit_status_artifact": {
+          "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-coverage-exit.json",
+          "bytes": 176,
+          "sha256": "47326143af326db85d2ee4b9787ad3206c91724afee11929185e01f7919c7d44"
+        },
+        "exit_code": 0,
+        "seconds": 1480.189,
+        "finished_at": "2026-11-20T19:10:46.367117+00:00",
+        "source_after": {
+          "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+          "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+          "git_status_porcelain": ""
+        },
+        "log_artifact": {
+          "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-coverage.log",
+          "bytes": 123453,
+          "sha256": "cc2754a70bc8b262fc21e2cadafdc397d155a27c952c6415ac7143fbfdc489fe"
+        },
+        "json_report_artifact": {
+          "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-coverage.json",
+          "bytes": 4884302,
+          "sha256": "4ac0bddaaa844fc4ae66abed943f74dda945be0d56bd2f38495b09fad4b22c0c"
+        },
+        "test_summary": {
+          "success": true,
+          "numTotalTests": 3165,
+          "numPassedTests": 3152,
+          "numFailedTests": 0,
+          "numPendingTests": 13,
+          "numTodoTests": 0
+        },
+        "test_file_count": 213,
+        "nonpassing_files": [],
+        "runner_summary": [
+          "Test Files  211 passed | 2 skipped (213)",
+          "Tests  3152 passed | 13 skipped (3165)",
+          "Start at  10:46:06",
+          "Duration  1479.22s (tests 85%, import 10%, environment 5%, transform 1%)",
+          "All files          |   93.38 |    89.76 |   94.99 |   97.07 |"
+        ],
+        "source_unchanged": true
+      },
+      {
+        "stage": "nocov",
+        "command": [
+          "node",
+          "../../node_modules/vitest/vitest.mjs",
+          "run",
+          "--config",
+          "vitest.nocov.config.ts",
+          "--maxWorkers=1",
+          "--reporter=default",
+          "--reporter=json",
+          "--outputFile.json=/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-nocov.json"
+        ],
+        "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web",
+        "NODE_OPTIONS": "--max-old-space-size=512",
+        "started_at": "2026-11-20T19:10:46.634678+00:00",
+        "status": "passed",
+        "log": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-nocov.log",
+        "json_report": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-nocov.json",
+        "source_before": {
+          "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+          "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+          "git_status_porcelain": ""
+        },
+        "pid": 2657,
+        "heartbeat": {
+          "at": "2026-11-20T19:11:06.658818+00:00",
+          "stage": "nocov",
+          "child_pid": 2657,
+          "child_alive_via_poll": true,
+          "child_proc_exists": true,
+          "child_proc_state": "S",
+          "log_bytes": 848,
+          "log_mtime_utc": "2026-11-20T19:11:05.276884+00:00",
+          "completed_file_lines": 1,
+          "last_completed_files": [
+            "\u2713 src/lib/scannerCore.spam.nocov.test.ts (1 test) 13702ms"
+          ]
+        },
+        "exit_status_artifact": {
+          "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-nocov-exit.json",
+          "bytes": 175,
+          "sha256": "246db3afa4134296a6cea099bd2f321c0115b52132f3ab2de32306d412749691"
+        },
+        "exit_code": 0,
+        "seconds": 29.528,
+        "finished_at": "2026-11-20T19:11:16.163605+00:00",
+        "source_after": {
+          "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+          "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+          "git_status_porcelain": ""
+        },
+        "log_artifact": {
+          "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-nocov.log",
+          "bytes": 1544,
+          "sha256": "7eb90b949e0bd71d355c14d7752434b650b0de3ac91cc77ac10b7e64327c8c96"
+        },
+        "json_report_artifact": {
+          "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-nocov.json",
+          "bytes": 2600,
+          "sha256": "07c9d58d387f86a8ea4c1e36a18fe9deda01e11c9de7cad8389d072a361a4f51"
+        },
+        "test_summary": {
+          "success": true,
+          "numTotalTests": 3,
+          "numPassedTests": 3,
+          "numFailedTests": 0,
+          "numPendingTests": 0,
+          "numTodoTests": 0
+        },
+        "test_file_count": 3,
+        "nonpassing_files": [],
+        "runner_summary": [
+          "Test Files  3 passed (3)",
+          "Tests  3 passed (3)",
+          "Start at  11:10:46",
+          "Duration  29.12s (tests 91%, transform 5%, import 4%)"
+        ],
+        "source_unchanged": true
+      }
+    ],
+    "all_stage_processes_finished": true,
+    "status": "passed",
+    "prior_attempt_artifacts_preserved": true,
+    "finished_at_utc": "2026-11-20T19:11:16.219868+00:00",
+    "source_after": {
+      "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "git_status_porcelain": ""
+    },
+    "totals": {
+      "numTotalTests": 3168,
+      "numPassedTests": 3155,
+      "numFailedTests": 0,
+      "numPendingTests": 13,
+      "numTodoTests": 0,
+      "test_file_count": 216,
+      "seconds": 1509.717
+    }
+  },
+  "full_gate_validation": {
+    "recorded_at_utc": "2026-11-20T19:11:54.989844+00:00",
+    "source": {
+      "local": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "public": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "clean": true
+    },
+    "complete_attempt": 2,
+    "full_gate_passed": true,
+    "result_artifact_hashes_verified": true,
+    "original_configuration_hashes_verified": true,
+    "prior_attempt_artifacts_unchanged": true,
+    "full_gate_totals": {
+      "numTotalTests": 3168,
+      "numPassedTests": 3155,
+      "numFailedTests": 0,
+      "numPendingTests": 13,
+      "numTodoTests": 0,
+      "test_file_count": 216,
+      "seconds": 1509.717
+    },
+    "skips": {
+      "comparison_source": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "baseline_artifact": {
+        "path": "/workspace/scratch/994a0d214fb9/qualification-web-coverage.json",
+        "bytes": 4770482,
+        "sha256": "a445fbc247ffab1e3021c52b9074227643c04fc7dd91afb6119da68d3c5534f2"
+      },
+      "count": 13,
+      "exact_ids_unchanged": true,
+      "cases": [
+        {
+          "file": "src/features/btc/regtest.e2e.test.ts",
+          "fullName": "regtest end to end (live bitcoind) detects the silent payment, sweeps it, and sees it spent afterwards",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/policy/paymentEvidence.anvil.test.ts",
+          "fullName": "scheme-2 evidence on real local contracts authenticates runtime code and verifies a direct canonical payment (ERC20=false)",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/policy/paymentEvidence.anvil.test.ts",
+          "fullName": "scheme-2 evidence on real local contracts authenticates runtime code and verifies a direct canonical payment (ERC20=true)",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/policy/paymentEvidence.anvil.test.ts",
+          "fullName": "scheme-2 evidence on real local contracts recovers real requests across reload, competing requests, execution and a reorg",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/policy/paymentEvidence.anvil.test.ts",
+          "fullName": "scheme-2 evidence on real local contracts rejects changed getter-compatible runtime on a real local deployment",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil executes ERC-1271 opaque authorization (0x), rejects replay and invalidation",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil executes ERC-1271 opaque authorization (0x1234abcd), rejects replay and invalidation",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil executes ERC-1271 opaque authorization (0xababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab), rejects replay and invalidation",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil executes delegated registration, rejects replay and invalidates outstanding authorizations",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil fails closed before the registry exists",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil refuses wrong EOA chain, nonce, keys and registrant without consuming authorization",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil register then look up round-trips through the reference contract",
+          "status": "skipped"
+        },
+        {
+          "file": "src/features/registry/registry.anvil.test.ts",
+          "fullName": "ERC-6538 helpers vs reference registry (anvil) on anvil rejects a malformed value the registry happily stores",
+          "status": "skipped"
+        }
+      ]
+    },
+    "qualification_artifacts": [
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2.json",
+        "bytes": 11313,
+        "sha256": "34e63e5c299de3a9e100df87a17e478f873b5059407f9f5aec5c363857421ddd"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2-heartbeats.jsonl",
+        "bytes": 61411,
+        "sha256": "97df4ff154b79159c56a9fb64bb2debdbe40a54ddf85b7433f3f6d86bb50edf5"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-run-full-web-attempt2.py",
+        "bytes": 8765,
+        "sha256": "2736e62938084322be154123da4e6bec050d84d54ed71809c321d50971940eb1"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/r2-idle-publication-verification.json",
+        "bytes": 2343,
+        "sha256": "6401c02180cbfc3298c443acf07ea69e8ff1085f9fa58d76d102c7cf168463c4"
+      }
+    ]
+  },
+  "coverage": {
+    "recorded_at_utc": "2026-11-20T19:12:24.910623+00:00",
+    "source": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+    "method": "Sum coverageMap statement/function counters and branch arms; for line counts take the maximum statement hit count per starting line per file. Truncate percentages to two decimal places and cross-check each against the original Vitest text reporter. No dependency installation or test rerun.",
+    "coverage": {
+      "statements": {
+        "covered": 13543,
+        "total": 14503,
+        "percent": 93.38
+      },
+      "branches": {
+        "covered": 9525,
+        "total": 10611,
+        "percent": 89.76
+      },
+      "functions": {
+        "covered": 2696,
+        "total": 2838,
+        "percent": 94.99
+      },
+      "lines": {
+        "covered": 10928,
+        "total": 11257,
+        "percent": 97.07
+      }
+    },
+    "original_thresholds": {
+      "statements": 90,
+      "branches": 85,
+      "functions": 90,
+      "lines": 90
+    },
+    "original_reporter_percentages": {
+      "statements": 93.38,
+      "branches": 89.76,
+      "functions": 94.99,
+      "lines": 97.07
+    },
+    "all_percentages_match_original_reporter": true,
+    "all_original_thresholds_pass": true,
+    "file_count": 150
+  },
+  "lean_build": {
+    "format": "ghostpay-idle-session-lean-build/1",
+    "source": {
+      "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "git_status_porcelain": ""
+    },
+    "public_equivalent": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+    "source_tree_equivalence_verified": true,
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=1536",
+      "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+      "GP_COMMIT": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3"
+    },
+    "original_build_script": "tsc -p tsconfig.json --noEmit && vite build",
+    "original_postbuild_script": "node scripts/scan-bundle.mjs",
+    "full_web_gate_prerequisite": {
+      "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-attempt2.json",
+      "bytes": 11313,
+      "sha256": "34e63e5c299de3a9e100df87a17e478f873b5059407f9f5aec5c363857421ddd"
+    },
+    "publication_equivalence": {
+      "path": "/workspace/scratch/994a0d214fb9/r2-idle-publication-verification.json",
+      "bytes": 2343,
+      "sha256": "6401c02180cbfc3298c443acf07ea69e8ff1085f9fa58d76d102c7cf168463c4"
+    },
+    "started_at": "2026-11-20T19:13:36.200068+00:00",
+    "status": "passed",
+    "log": "/workspace/scratch/994a0d214fb9/idle-r2-lean-build.log",
+    "runtime": {
+      "node": "v24.22.3",
+      "npm": "11.19.1"
+    },
+    "pid": 31,
+    "heartbeat": {
+      "at": "2026-11-20T19:13:46.312802+00:00",
+      "child_pid": 31,
+      "child_alive_via_poll": true,
+      "proc_exists": true,
+      "log_bytes": 226
+    },
+    "exit_code": 0,
+    "seconds": 19.628,
+    "finished_at": "2026-11-20T19:13:55.939776+00:00",
+    "source_after": {
+      "commit": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "git_status_porcelain": ""
+    },
+    "log_artifact": {
+      "path": "/workspace/scratch/994a0d214fb9/idle-r2-lean-build.log",
+      "bytes": 2509,
+      "sha256": "c4ba8be45cdc03fbf0546c51bad817bd8508a3f12b77f1ec9d42b22e69d69151"
+    },
+    "exit_status_artifact": {
+      "path": "/workspace/scratch/994a0d214fb9/idle-r2-lean-build-exit.json",
+      "bytes": 180,
+      "sha256": "d6b9560f0585c3328156cb03c1e165378e7329ce6a9af4555443a70d152fa093"
+    },
+    "source_unchanged": true,
+    "build_info": {
+      "app": "ghostpay-web",
+      "version": "0.1.0",
+      "commit": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    "build_info_artifact": {
+      "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/build-info.json",
+      "bytes": 178,
+      "sha256": "8da1983fece504a7689f180146d1729adaa817206ee6d62596c230261d1977f9"
+    },
+    "postbuild_scan_summary": [
+      "Bundle scan passed: 17 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON."
+    ],
+    "output_artifacts": [
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/_headers",
+        "bytes": 1761,
+        "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/ar-95zXR6fS.js",
+        "bytes": 307018,
+        "sha256": "e5f9952535fd90c1b5547c932fe6cf2812fdba6549da0d50ea7d0e05ba050c7a"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/es-WiftYO7y.js",
+        "bytes": 253485,
+        "sha256": "624dcddf7692419789c069276dcba7b3793f02515a753047298bd31fa5a4cb8b"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/index-YHEZHpxK.js",
+        "bytes": 1292396,
+        "sha256": "519c2b5373234a1f3f031489d1885364d6ef13185683b0b65bc9c9b33964da63"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/ja-C67A-DnB.js",
+        "bytes": 300359,
+        "sha256": "76dea40798727e60ed3d1ac42894521736e1e38414c10d7d9c6a9487f3e0e20b"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/jsQR-Ct1FLwmy.js",
+        "bytes": 129988,
+        "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/rolldown-runtime-XKyaHtl9.js",
+        "bytes": 726,
+        "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/scanner.worker-k6gTvtBx.js",
+        "bytes": 62202,
+        "sha256": "4e2d5eb463bb7e379cba83fedd952078bb17fbfbb4466897fc39ee5e13f4dc16"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/assets/style-CF4XsaTc.css",
+        "bytes": 11888,
+        "sha256": "e49301963aa3230db49475ca90ac300577214eba0dd095a49210a33670d8201d"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/build-info.json",
+        "bytes": 178,
+        "sha256": "8da1983fece504a7689f180146d1729adaa817206ee6d62596c230261d1977f9"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/deployments/README.md",
+        "bytes": 861,
+        "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/favicon.svg",
+        "bytes": 332,
+        "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/ghostpay-lean-build.json",
+        "bytes": 99421,
+        "sha256": "090385491c87e2d01dfbcabbebf25c6ef92d3c2d02cd5bcb1853d4b690a691ed"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/help.css",
+        "bytes": 3283,
+        "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/help.html",
+        "bytes": 16886,
+        "sha256": "e76fe9fd5cb3479b605e00aa4641f2f50f42028dda82bd80196bec3e5842b81b"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/index.html",
+        "bytes": 3402,
+        "sha256": "16cf876a30150444b67b8bc86c1eb0fce839546572fa27d3dbf534156ae8d2a5"
+      },
+      {
+        "path": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web/dist/privacy.html",
+        "bytes": 8062,
+        "sha256": "ee03000832d4be5e69d00556c971394f7699846c57377922a53af65838984efb"
+      }
+    ],
+    "output_file_count": 17,
+    "output_bytes": 2492248,
+    "warnings": [
+      "(!) Some chunks are larger than 1200 kB after minification. Consider:",
+      "- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit."
+    ],
+    "all_processes_finished": true
+  },
+  "attempt1": {
+    "verdict": "incomplete; no test pass/fail verdict or exit status",
+    "interruption": {
+      "recorded_at_utc": "2026-11-20T18:43:32.506466+00:00",
+      "status": "incomplete_execution_session_unavailable",
+      "source": {
+        "local_head": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+        "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+        "git_status_porcelain": "",
+        "verified_public_equivalent": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3"
+      },
+      "exec_session_id": 50813,
+      "poll_error": "write_stdin failed: Unknown process id 50813",
+      "last_recorded_state": {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web.json",
+        "bytes": 4259,
+        "sha256": "0dd92355c256fb92c55fe4d55ab7eca1d509b29dc64e9a6be1953c0f4231825e",
+        "modified_at_utc": "2026-11-20T18:31:19.917505+00:00"
+      },
+      "partial_log": {
+        "path": "/workspace/scratch/994a0d214fb9/idle-r2-full-web-coverage.log",
+        "bytes": 20399,
+        "sha256": "e2cc59f3879137c2e5ef25f54d734f92106cbf4e9866278f69fcd8f6b0908c36",
+        "modified_at_utc": "2026-11-20T18:36:47.428732+00:00"
+      },
+      "partial_completed_files": [
+        "\u2713 src/lib/scanClient.test.ts (90 tests) 4506ms",
+        "\u2713 src/views/Pay.test.tsx (66 tests) 55569ms",
+        "\u2713 src/lib/payExec.test.ts (68 tests) 2689ms",
+        "\u2713 src/views/Sweep.test.tsx (55 tests) 40323ms",
+        "\u2713 src/views/SellerKeys.test.tsx (39 tests) 106795ms",
+        "\u2713 src/views/Scan.test.tsx (31 tests) 6839ms",
+        "\u2713 src/features/btc/BtcView.headers.test.tsx (34 tests) 40731ms",
+        "\u2713 src/features/btc/esplora.test.ts (33 tests) 12047ms",
+        "\u2713 src/lib/pay.test.ts (55 tests) 1479ms",
+        "\u2713 src/lib/session.test.ts (25 tests) 28497ms",
+        "\u2713 src/lib/scanPrivacy.test.ts (32 tests) 211ms",
+        "\u2713 src/lib/reconciliationVault.invoices.test.ts (24 tests) 6191ms"
+      ],
+      "partial_completed_file_count": 12,
+      "final_coverage_json_exists": false,
+      "exit_code": null,
+      "qualification_claim": "No completed coverage, nocov or build result. Partial passing files do not establish the full gate.",
+      "actions": [
+        "Preserved frozen source and original partial artifacts.",
+        "Did not restart or duplicate the test invocation.",
+        "Reported the unavailable execution session and stale manifest to coordinator; waiting for explicit rescheduling direction under no-retry rule."
+      ],
+      "limits": [
+        "Tool-session availability is observed; the underlying termination cause and exit status are not known.",
+        "The original manifest is the runner last-known state and must not be interpreted as proof the process is still active."
+      ]
+    },
+    "available_process_inventory_before_attempt2": {
+      "recorded_at_utc": "2026-11-20T18:44:40.951801+00:00",
+      "pid_namespace": "pid:[4026532456]",
+      "inventory_scope": "All processes visible through this execution tool PID namespace; no separate host-wide process-inventory API is available.",
+      "visible_processes": [
+        {
+          "pid": 1,
+          "comm": "codex",
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep"
+        },
+        {
+          "pid": 2,
+          "comm": "bash",
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep"
+        },
+        {
+          "pid": 5,
+          "comm": "python",
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep"
+        }
+      ],
+      "matching_runner_or_vitest_processes": [],
+      "original_recorded_pid_42_exists": false,
+      "prior_exec_session_poll": "Unknown process id 50813",
+      "coverage_log": {
+        "bytes": 20399,
+        "sha256": "e2cc59f3879137c2e5ef25f54d734f92106cbf4e9866278f69fcd8f6b0908c36",
+        "mtime_utc": "2026-11-20T18:36:47.428732+00:00"
+      },
+      "coverage_final_json_exists": false,
+      "exit_status_known": false
+    },
+    "counts_included_in_complete_gate": false,
+    "preservation": "Original manifest/log and first supervisor bytes preserved. Pre-attempt2 coverage-directory snapshot retained without claiming it is a completed report."
+  },
+  "prior_focused_qualification": {
+    "source": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+    "report": "docs/consolidation/idle-session-r2-20261120/REPORT.md",
+    "passed": 575,
+    "files": 26,
+    "failed": 0,
+    "skipped": 0,
+    "full_web_typecheck": "passed",
+    "full_web_typed_lint": "passed",
+    "source_review": "approved before GREEN",
+    "application_test_config_bytes_equal_final_local_source": true
+  },
+  "artifact_encoding": {
+    "method": "gzip with deterministic mtime=0, then base64 within JSON; every decoded artifact was byte-for-byte verified.",
+    "wrapper_count": 25,
+    "all_round_trips_verified": true
+  },
+  "raw_artifacts": [
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web.json.json",
+      "original_name": "idle-r2-full-web.json",
+      "original_bytes": 4259,
+      "original_sha256": "0dd92355c256fb92c55fe4d55ab7eca1d509b29dc64e9a6be1953c0f4231825e",
+      "wrapper_bytes": 2502,
+      "wrapper_sha256": "699824d13bc65cbc0206500bb67bb9628ce41f0f4607407589fc01d79b0f93b0"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-coverage.log.json",
+      "original_name": "idle-r2-full-web-coverage.log",
+      "original_bytes": 20399,
+      "original_sha256": "e2cc59f3879137c2e5ef25f54d734f92106cbf4e9866278f69fcd8f6b0908c36",
+      "wrapper_bytes": 9627,
+      "wrapper_sha256": "0be20461b79b3bb0e10949d8b8665ff1ed08b2d3efe790cfdf1ff1e0bd46aa90"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-run-full-web.py.json",
+      "original_name": "idle-r2-run-full-web.py",
+      "original_bytes": 5770,
+      "original_sha256": "e6e8e1cab0b56c80ef614b3a374b4de6386b63997787d69e484bcd08f8387cc9",
+      "wrapper_bytes": 3536,
+      "wrapper_sha256": "7a8a05516a9adfd946bd5f40d699992d3ea304b31908b2a3f57b0dfeba84618f"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-interruption.json.json",
+      "original_name": "idle-r2-full-web-interruption.json",
+      "original_bytes": 2514,
+      "original_sha256": "731776ff471492de063468945a7b9f42fb2a132c2d0218140cfa0ea3fe46ff73",
+      "wrapper_bytes": 1923,
+      "wrapper_sha256": "e9c42c9ccc0d182f16de97ec8a51e47c79793f7d9af2e1eccc9d02d56ff33954"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-process-inventory.json.json",
+      "original_name": "idle-r2-full-web-process-inventory.json",
+      "original_bytes": 1011,
+      "original_sha256": "8366d7ff8cb300b514c35bfe18cbc4c275e1d0ebf89270c7157f4c350e647491",
+      "wrapper_bytes": 1036,
+      "wrapper_sha256": "6486031f0f1e66e4d40fad14563098db72657b4c7b987e53cc87b16d692eefc4"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt1-coverage-snapshot.json.json",
+      "original_name": "idle-r2-full-web-attempt1-coverage-snapshot.json",
+      "original_bytes": 397,
+      "original_sha256": "200ccb3f566ec9fa110e35b8bb14e47e33356acc1107f0b3cc615d7dae482a58",
+      "wrapper_bytes": 756,
+      "wrapper_sha256": "33e68048d26c65570fe6988b84db92ef468bebdb29f2bb7e910535dc1dca1e6c"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt1-coverage-directory.tar.gz.json",
+      "original_name": "idle-r2-full-web-attempt1-coverage-directory.tar.gz",
+      "original_bytes": 545013,
+      "original_sha256": "e231786c2df9e3468b605f8cc778d7fdb78c0d25f034601d457654111665b18c",
+      "wrapper_bytes": 727258,
+      "wrapper_sha256": "226ceb6949b4bf45990da80acef0f40e4c7e525031440c4ffba14d023e5eff7e"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2.json.json",
+      "original_name": "idle-r2-full-web-attempt2.json",
+      "original_bytes": 11313,
+      "original_sha256": "34e63e5c299de3a9e100df87a17e478f873b5059407f9f5aec5c363857421ddd",
+      "wrapper_bytes": 4632,
+      "wrapper_sha256": "adc48952a636c19179d71a8cc446b30146a91afabac5057965d6aebb4b88f5c1"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-heartbeats.jsonl.json",
+      "original_name": "idle-r2-full-web-attempt2-heartbeats.jsonl",
+      "original_bytes": 61411,
+      "original_sha256": "97df4ff154b79159c56a9fb64bb2debdbe40a54ddf85b7433f3f6d86bb50edf5",
+      "wrapper_bytes": 6884,
+      "wrapper_sha256": "0c4b497c2cbecc712eea493361c31e9bb213f953ea15bfe4d801a10d4336f900"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-coverage.json.json",
+      "original_name": "idle-r2-full-web-attempt2-coverage.json",
+      "original_bytes": 4884302,
+      "original_sha256": "4ac0bddaaa844fc4ae66abed943f74dda945be0d56bd2f38495b09fad4b22c0c",
+      "wrapper_bytes": 995511,
+      "wrapper_sha256": "e70a28ef2eac96fa3515fd71ff5d58e23886d0cb5c6d431a7dee4179631105ff"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-coverage.log.json",
+      "original_name": "idle-r2-full-web-attempt2-coverage.log",
+      "original_bytes": 123453,
+      "original_sha256": "cc2754a70bc8b262fc21e2cadafdc397d155a27c952c6415ac7143fbfdc489fe",
+      "wrapper_bytes": 38733,
+      "wrapper_sha256": "77477d2b239af823301a5c05772cd8b98359025cf0d20cd937274317b414395d"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-coverage-exit.json.json",
+      "original_name": "idle-r2-full-web-attempt2-coverage-exit.json",
+      "original_bytes": 176,
+      "original_sha256": "47326143af326db85d2ee4b9787ad3206c91724afee11929185e01f7919c7d44",
+      "wrapper_bytes": 568,
+      "wrapper_sha256": "7e2cbf0bae2efbf4986d9ff2ed6ac9869f93fd064cd3b73f9dd9ee0801f78738"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-nocov.json.json",
+      "original_name": "idle-r2-full-web-attempt2-nocov.json",
+      "original_bytes": 2600,
+      "original_sha256": "07c9d58d387f86a8ea4c1e36a18fe9deda01e11c9de7cad8389d072a361a4f51",
+      "wrapper_bytes": 1453,
+      "wrapper_sha256": "9ae28a18e8f46d7993a94acbaa77bfddf19837f217c34d0ea5599d589ce72601"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-nocov.log.json",
+      "original_name": "idle-r2-full-web-attempt2-nocov.log",
+      "original_bytes": 1544,
+      "original_sha256": "7eb90b949e0bd71d355c14d7752434b650b0de3ac91cc77ac10b7e64327c8c96",
+      "wrapper_bytes": 1552,
+      "wrapper_sha256": "c4a22aab3e600f942966aa18a7d85e1a343cd90e0e4f102947846d428117b153"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-attempt2-nocov-exit.json.json",
+      "original_name": "idle-r2-full-web-attempt2-nocov-exit.json",
+      "original_bytes": 175,
+      "original_sha256": "246db3afa4134296a6cea099bd2f321c0115b52132f3ab2de32306d412749691",
+      "wrapper_bytes": 565,
+      "wrapper_sha256": "5b211813819b63d62396eaac404baf186b27d77ba83ceb5d4000591d22b29440"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-run-full-web-attempt2.py.json",
+      "original_name": "idle-r2-run-full-web-attempt2.py",
+      "original_bytes": 8765,
+      "original_sha256": "2736e62938084322be154123da4e6bec050d84d54ed71809c321d50971940eb1",
+      "wrapper_bytes": 4909,
+      "wrapper_sha256": "6d0e20869b6cb20c3016b0720b54ff193cc6ca7d4a0144363d0600abf7dbcfaa"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-verified.json.json",
+      "original_name": "idle-r2-full-web-verified.json",
+      "original_bytes": 5355,
+      "original_sha256": "6a74a0ccce2af301ff16f56ad23a8f13800d042d791443e9ded9362d28509a21",
+      "wrapper_bytes": 2267,
+      "wrapper_sha256": "f26ec1be9a0ffd4ad8c8a637ccf5525edf9deb467f56d97bb203972e3edf3663"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-full-web-coverage-summary.json.json",
+      "original_name": "idle-r2-full-web-coverage-summary.json",
+      "original_bytes": 1171,
+      "original_sha256": "df1ea0c3ecfce796e2e12c98e4b08621ff37a8022d13ec92a51485db1f577613",
+      "wrapper_bytes": 1035,
+      "wrapper_sha256": "43162f574efb4676041e734beb5cc2af7a5595bde40aee60a135afa91323e4b3"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-lean-build.json.json",
+      "original_name": "idle-r2-lean-build.json",
+      "original_bytes": 6904,
+      "original_sha256": "3e4550c964076a861163f61c56117bc988bf088a3995957e9cb7938cda2c982e",
+      "wrapper_bytes": 3576,
+      "wrapper_sha256": "5c01d358b6c783d47704c8cb6efb13e07a5e639070ee5cb401bb1b2141c85c64"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-lean-build.log.json",
+      "original_name": "idle-r2-lean-build.log",
+      "original_bytes": 2509,
+      "original_sha256": "c4ba8be45cdc03fbf0546c51bad817bd8508a3f12b77f1ec9d42b22e69d69151",
+      "wrapper_bytes": 1999,
+      "wrapper_sha256": "89be43cdf89313138a91eaa6f46e9b2587dddc4d91ca29649f9bcf11f77aa874"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-lean-build-exit.json.json",
+      "original_name": "idle-r2-lean-build-exit.json",
+      "original_bytes": 180,
+      "original_sha256": "d6b9560f0585c3328156cb03c1e165378e7329ce6a9af4555443a70d152fa093",
+      "wrapper_bytes": 568,
+      "wrapper_sha256": "0ba11747e7c013afce77c69fa75ee5c0b53b6865f86614bfd016c94b7b600ab9"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-run-lean-build.py.json",
+      "original_name": "idle-r2-run-lean-build.py",
+      "original_bytes": 4884,
+      "original_sha256": "09310faf3f184d2b4ad9bead278da9b43771954622a81b9da89bfe50c1d74a4a",
+      "wrapper_bytes": 3186,
+      "wrapper_sha256": "b6a9e23c39f85d1f926896b679ad106b34433f97ecff36a7608ce4e80f6556e2"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/r2-idle-publication-verification.json.json",
+      "original_name": "r2-idle-publication-verification.json",
+      "original_bytes": 2343,
+      "original_sha256": "6401c02180cbfc3298c443acf07ea69e8ff1085f9fa58d76d102c7cf168463c4",
+      "wrapper_bytes": 1322,
+      "wrapper_sha256": "6420f95aa37c0eeceae47d17a7d538283b4eb6acc9a545f9156107f962a6f084"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/idle-r2-dependency-reuse.json.json",
+      "original_name": "idle-r2-dependency-reuse.json",
+      "original_bytes": 1747,
+      "original_sha256": "ecffc8f360f78f9334efa05538fdf28f7f31ff079f6bfaa46869db5947525192",
+      "wrapper_bytes": 1354,
+      "wrapper_sha256": "66143b96f606d3805ca7592f192644f080033680dadae67d395ef38af3c7c94e"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-full-20261120/outputs/build-info.json.json",
+      "original_name": "build-info.json",
+      "original_bytes": 178,
+      "original_sha256": "8da1983fece504a7689f180146d1729adaa817206ee6d62596c230261d1977f9",
+      "wrapper_bytes": 543,
+      "wrapper_sha256": "872cb4d1a9450fd30acf0ab20185493e00b42593d91d12eb83c296463bc4a6d4"
+    }
+  ],
+  "limits": [
+    "Qualification is specific to local 7417881a / published f5e04a30, shared tree 9cf5006b; later application changes require their own qualification.",
+    "Attempt 1 is incomplete and contributes no counts. Attempt 2 is a complete, separately authorized run after execution-session loss, with no individual stage or test retry.",
+    "Original configurations, thresholds and skip IDs remain unchanged; no dependency installation, copying or removal.",
+    "Local runtime: Node 24.22.3 / npm 11.19.1. These artifacts assert no hosted Node 22, browser, Pages, analyzer, deployment, release or main-merge result.",
+    "The lean build retained the existing 1,200 kB chunk-size warning threshold; one size advisory was emitted and preserved."
+  ]
+}
