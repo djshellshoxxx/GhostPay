@@ -61,7 +61,7 @@ describe('shared presentation helpers', () => {
     expect(value).toBe('sensitive value');
     await act(async () => { await vi.advanceTimersByTimeAsync(30_000); });
     expect(value).toBe('');
-    expect(readText).toHaveBeenCalledOnce();
+    expect(readText).toHaveBeenCalledTimes(2);
 
     rerender(<CopyButton text="another value" label="Copy ordinary" />);
     fireEvent.click(screen.getByRole('button', { name: 'Copy ordinary' }));
