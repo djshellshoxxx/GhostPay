@@ -1,3 +1,13 @@
+# Cycle 2026-11-20T04:34Z — ERC-20 simulation return-value validation
+
+- Coordinator/worker: ChatGPT scheduled engineering cycle, sequential bug implementation/audit; no independent verifier asserted.
+- Branch: `automation/20261120T0434Z/bug/erc20-simulation-result`, base/main `c977b5d6723f6822c3b5d86cd6b231712c53c395`, owned paths: `apps/web/src/lib/txGuard.ts`, `apps/web/src/lib/txGuard.test.ts`, `docs/handoffs/ERC20_SIMULATION_RESULT_20261120.md` and this additive claim.
+- Existing dependencies: draft PR #278 (consolidation), PR #302 (QR/receipt fixes), PR #293 (privacy); none of their inspected changed-file inventories touches `txGuard.ts` or its test. Recheck heads before any integration.
+- Context: external coordinator holds integration lock generation 6 (ref `automation/ghostpay-integration-lock`, observed SHA `2b4f3327fdcda482e919c0c68595e32f345d0dba`). This cycle must not alter integration/main or the metadata-only lock.
+- Finding: `simulateCall(..., expectBool=true)` treats an arbitrary even-length hexadecimal return or noncanonical ABI Boolean (e.g. 32-byte word 2) as successful. The API promises 'unavailable' for unrecognized responses and a fixed error for canonical encoded false.
+- Acceptance: failing regression for noncanonical Boolean payloads; preserve canonical false refusal, canonical true success and legacy empty response acceptance; scope limited to advisory dry-run result classification, no payment policy/contract changes; targeted checks and independent approval still required for merge.
+- Status: task branch created before implementation; integration/deployment prohibited.
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
