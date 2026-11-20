@@ -1,0 +1,1844 @@
+[
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/public/ghostpay-embed-v1.js",
+    "blob": "6bfb4e99876a66308a2f0befc73b3719e2d03ed1",
+    "status": "reviewed",
+    "notes": "Full source reviewed: bounded same-origin invoice link, DOM text rendering, noopener/noreferrer popup. No distinct new defect established; shared-origin limitations documented."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/public/ghostpay-embed-v2.js",
+    "blob": "0186bb1364fd6de19e1bec241ac9c5b074033bc7",
+    "status": "reviewed",
+    "notes": "Full source reviewed: schema/nonce/origin/source checks, explicit profile URL load, bounded handshake and no trusted HTML insertion. Completion is submitted-only, not settlement proof. No distinct new defect established."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/validate-deployments.mjs",
+    "blob": "d64a04674ef09a8adff4ee3469694c893edb3e48",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Main accepts public fixture verification keys as release configuration; known SEC-44/E-21 fixed in newer source."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/scripts/validate-deployments.mjs",
+    "blob": "76a6132fcc692a18e657c3880427c8f60739c6b8",
+    "status": "reviewed",
+    "notes": "Full source reviewed: public fixture key exclusion when release build is identified. Empty manifests remain payments-disabled. Release-mode behavior requires build-script review."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/index.html",
+    "blob": "15804d1deb7013314f68d359e4ef9ab04dbbbc1e",
+    "status": "reviewed",
+    "notes": "Full source reviewed. No inline executable content or HTML injection sink. CSP connect-src initially permits HTTPS/WSS; newer build rewrites policy. Pages header limits are documented and require app frame-control review."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/vite.config.ts",
+    "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+    "status": "reviewed",
+    "notes": "Full source reviewed: manifest validation before build, same-origin hashed assets and source aliases. CSP development removal is serve-only; public bundle exclusion requires localBuildProfile review."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/pages.yml",
+    "blob": "5ef7f8f55035f852da2e1398ae39fc6455a91ebb",
+    "status": "reviewed",
+    "notes": "Full source reviewed: explicit main-only publication, fresh workspace library builds, immutable action references, minimum per-job permissions, release jobs as deploy dependencies. Newer candidate integrity gate to review separately."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/csp.mjs",
+    "blob": "6cae62f1117c8cd9b23ded19c8bd8f341456704d",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Main interpolates URL-accepted origins without rejecting policy/HTML punctuation; compare known CSP hardening in newer candidate."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/scripts/csp.mjs",
+    "blob": "6657fd5eb74278a37355c56847d47e6affb92c7e",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict origins, no credentials/wildcards/policy syntax, exact enforced connect-src verification."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/scripts/apply-csp.mjs",
+    "blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+    "status": "reviewed",
+    "notes": "Full source reviewed: inert JSDOM parse, direct enforced head meta, duplicate attribute/source-range checks, global header policy, fail-closed tight CSP setting. No additional confirmed defect."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/embed-sri.mjs",
+    "blob": "f2d06c4b66110545d343e7e6da788a543f943ae5",
+    "status": "reviewed",
+    "notes": "Full source reviewed: local build artifact hashing and content-addressed alias, explicit cross-origin embed resource policy. No user input interpolated into script."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/build-workspaces.mjs",
+    "blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+    "status": "reviewed",
+    "notes": "Full source reviewed: workspace cycle detection, argument-array spawn without shell, explicit workspace names. Repository source/scripts remain trusted build inputs."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/actions/setup-node-libs/action.yml",
+    "blob": "ebebe8c5a8a5edf6ba749dea76aeffdc02a23fe8",
+    "status": "reviewed",
+    "notes": "Full source reviewed: frozen install with scripts disabled, build cache includes source/build inputs, untrusted-agent mode restore-only. Pages publication independently avoids dist cache."
+  },
+  {
+    "ref": "HEAD",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/actions/setup-forge/action.yml",
+    "blob": "20f6075460d8cecf1a7969ce23750266d7cb66d4",
+    "status": "reviewed",
+    "notes": "Full source reviewed: cached compiler lacks independent checksum check; known F-3 mitigation present in newer candidate."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": ".github/actions/setup-forge/action.yml",
+    "blob": "3015f5ef9122e72d2452b1e78de960c970910618",
+    "status": "reviewed",
+    "notes": "Full source reviewed: cached solc paths validated against pinned expected SHA-256. Did not independently download/verify official compiler binary."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/pages/build-pages.sh",
+    "blob": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+    "status": "reviewed",
+    "notes": "Full current source and complete main/release diffs reviewed: clean source and source identity, private generated staging, testnet-only manifests, explicit fixture-key/origin checks in new code, integrity verification before promotion in consolidation. No newly confirmed defect."
+  },
+  {
+    "ref": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "scripts/pages/build-pages.sh",
+    "blob": "087d5ee32ed8f3724b4cce635e2e9702d959068c",
+    "status": "reviewed",
+    "notes": "Full current source and complete main/release diffs reviewed: clean source and source identity, private generated staging, testnet-only manifests, explicit fixture-key/origin checks in new code, integrity verification before promotion in consolidation. No newly confirmed defect."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "scripts/pages/build-pages.sh",
+    "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+    "status": "reviewed",
+    "notes": "Full current source and complete main/release diffs reviewed: clean source and source identity, private generated staging, testnet-only manifests, explicit fixture-key/origin checks in new code, integrity verification before promotion in consolidation. No newly confirmed defect."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "scripts/pages/verify-pages-artifact.mjs",
+    "blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+    "status": "reviewed",
+    "notes": "Full source reviewed: safe canonical inventory, no-follow regular-file reads, stable metadata snapshots and verified bytes reused for build-info, exact file/manifest coverage. Stable private ancestors remain an explicit limitation; no exploit/atomic-snapshot claim."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/check-actions-pinned.sh",
+    "blob": "074938de1bafc04777f63bc295ab837cb5c95d1d",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/check-tx-origin.mjs",
+    "blob": "ce2d2da9ce558c20aeb5c3fb16e3843dc8420296",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/check-tx-origin.sh",
+    "blob": "86d31fc4bffc7053ffab852c812b6329f6e39fba",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/scan-secrets.sh",
+    "blob": "2f4a14cd9ed1ff05d60885ad056335d6b0bf0793",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/actions/release-verify/action.yml",
+    "blob": "b06b6ef7ce0a49dc50baf88faecf60c818e2ff13",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/actions/release-verify/verify.sh",
+    "blob": "8025ddf6a7c4d92d0c05f8fe591b5ede01ffeb63",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/actions/release-verify/selftest.sh",
+    "blob": "46c1bbcbc5f3c0eab80345bfd721b46b3d1f0538",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Static guards or artifact consistency checks; untrusted input passed as data, constrained names and strict manifest parsing, integrity distinguished from authentication. Selftest read only. Existing action-pin/tx.origin/secret-pattern checks ran successfully as recorded separately."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/ci.yml",
+    "blob": "3fb2f03dc8fa4f9bad1cac94bbdfe063662e58a7",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete candidate diffs reviewed: read-only PR jobs, fails-closed changed-file census and aggregator, separate publication credentials, manual main-only Pages deploy, candidate attestation dependency. Tests in workflow not run by this audit."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": ".github/workflows/ci.yml",
+    "blob": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete candidate diffs reviewed: read-only PR jobs, fails-closed changed-file census and aggregator, separate publication credentials, manual main-only Pages deploy, candidate attestation dependency. Tests in workflow not run by this audit."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": ".github/workflows/pages.yml",
+    "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete candidate diffs reviewed: read-only PR jobs, fails-closed changed-file census and aggregator, separate publication credentials, manual main-only Pages deploy, candidate attestation dependency. Tests in workflow not run by this audit."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/beta-acceptance.yml",
+    "blob": "8b343c410018decc4a46ad142e46bcb58dc7f3a7",
+    "status": "reviewed",
+    "notes": "Full source reviewed: read-only hosted qualification jobs; input suites passed through quoted environment, production audit gating, expected intentionally paused/non-Pages dependencies do not grant release approval. No newly confirmed finding."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/cli-operator.yml",
+    "blob": "6b9f8b8e33fc569c8ac15d7e8c71dee1efe06a2f",
+    "status": "reviewed",
+    "notes": "Full source reviewed: read-only hosted qualification jobs; input suites passed through quoted environment, production audit gating, expected intentionally paused/non-Pages dependencies do not grant release approval. No newly confirmed finding."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/contract-analysis.yml",
+    "blob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+    "status": "reviewed",
+    "notes": "Full source reviewed: read-only hosted qualification jobs; input suites passed through quoted environment, production audit gating, expected intentionally paused/non-Pages dependencies do not grant release approval. No newly confirmed finding."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/hosting-kit.yml",
+    "blob": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+    "status": "reviewed",
+    "notes": "Full source reviewed: read-only hosted qualification jobs; input suites passed through quoted environment, production audit gating, expected intentionally paused/non-Pages dependencies do not grant release approval. No newly confirmed finding."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/integration.yml",
+    "blob": "35fb7c033111bcc5670f056507cfca1847a8b763",
+    "status": "reviewed",
+    "notes": "Full source reviewed: read-only hosted qualification jobs; input suites passed through quoted environment, production audit gating, expected intentionally paused/non-Pages dependencies do not grant release approval. No newly confirmed finding."
+  },
+  {
+    "ref": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/nightly.yml",
+    "blob": "0616119e96c0e22a02105989bb6b2a95bfc270a1",
+    "status": "reviewed",
+    "notes": "Full source reviewed: read-only hosted qualification jobs; input suites passed through quoted environment, production audit gating, expected intentionally paused/non-Pages dependencies do not grant release approval. No newly confirmed finding."
+  },
+  {
+    "ref": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": ".github/workflows/contract-analysis.yml",
+    "blob": "efcb5a9b743002e82df01f2169dbd74b215da461",
+    "status": "reviewed",
+    "notes": "Full baseline and complete latest diff reviewed; candidate preserves Mythril evidence without weakening analyzer exit propagation. No dynamic analyzer run claimed."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/ghostpay-codex-cloud.yml",
+    "blob": "e3bd3923920f4ab13280c0cf6565ed863d8e4276",
+    "status": "reviewed",
+    "notes": "Full source or completely read baseline plus full diff reviewed. Build and agent-publication trust boundaries examined; documented known main-to-candidate guard improvements separately.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/ghostpay-parallel-review.yml",
+    "blob": "9e47f63c52a2fde4b26b00820cd2064afbdba847",
+    "status": "reviewed",
+    "notes": "Full source or completely read baseline plus full diff reviewed. Build and agent-publication trust boundaries examined; documented known main-to-candidate guard improvements separately.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/localBuildProfile.mjs",
+    "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+    "status": "reviewed",
+    "notes": "Full source or completely read baseline plus full diff reviewed. Build and agent-publication trust boundaries examined; documented known main-to-candidate guard improvements separately.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/scan-bundle.mjs",
+    "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+    "status": "reviewed",
+    "notes": "Full source or completely read baseline plus full diff reviewed. Build and agent-publication trust boundaries examined; documented known main-to-candidate guard improvements separately.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": ".github/workflows/ghostpay-codex-cloud.yml",
+    "blob": "5cdda9261404abc06d2b4b827033d0614dcea04c",
+    "status": "reviewed",
+    "notes": "Full source or completely read baseline plus full diff reviewed. Build and agent-publication trust boundaries examined; documented known main-to-candidate guard improvements separately.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/scripts/scan-bundle.mjs",
+    "blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d",
+    "status": "reviewed",
+    "notes": "Full source or completely read baseline plus full diff reviewed. Build and agent-publication trust boundaries examined; documented known main-to-candidate guard improvements separately.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": ".github/workflows/release.yml",
+    "blob": "3c1c276cb45d5b7a337372733ac51ad7ce57158b",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/help.html",
+    "blob": "0eb8abf2b927cfb4214d7dff327e1ebcff36caf8",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/privacy.html",
+    "blob": "e1526988365cb0ac2b6f10e341298ba18ac4058e",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/beta/browser-devnet.sh",
+    "blob": "ebd42c4a450df16c6a655861e3afe2fe12a713f0",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/pages/smoke-url.mjs",
+    "blob": "344b9e2aadf0605da6f49a9779238a336bcb4449",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/release-build.sh",
+    "blob": "8d1698fbf0cbe5ca9a1720b9f942607b69c95e62",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/verify-release.sh",
+    "blob": "27c0734b8ceb55b909f3a3633161ff7155c1f874",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/verify-tag.sh",
+    "blob": "a85a4c2805e5c39cf08b6c4bfbf1e7f98fc47701",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": ".github/workflows/ghostpay-parallel-review.yml",
+    "blob": "c0b8aaeb2ebd8b6f2751b5931de5743d16708d41",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "scripts/pages/lean-exclusions.mjs",
+    "blob": "3eb88a297c4aaf5bb620a60e4b5503862a1daef4",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Trust-root verification, artifact consistency, dependency gating, static-page privacy statements and fixture-only controls examined as relevant.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/pages/serve-pages.mjs",
+    "blob": "760aa9b7f5cf21664dc8a6b55291c4ec6c836431",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/pages/smoke.mjs",
+    "blob": "c8e1c672a6fbf5beea8e47b5a6071f6c28625bd6",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "scripts/pages/verify-pages-site.mjs",
+    "blob": "30fbe84911c51c484a966a604351ed4a395dd18e",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "scripts/pages/smoke-url.mjs",
+    "blob": "ddb9f17a688368c2f0f45197d7af6638f80ec0a8",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "scripts/pages/smoke-walk.mjs",
+    "blob": "c0f3ca90f5c76da840542904cdeeb870e08ac437",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "scripts/pages/smoke.mjs",
+    "blob": "68c722f8c8ec68f844dce85e366059f88550eef3",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "scripts/pages/verify-pages-site.mjs",
+    "blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+    "status": "reviewed",
+    "notes": "Full source or fully read baseline plus complete diff reviewed. Local-only server, read-only smoke limits, site checksum/HTML/module checks examined. No independent new defect established; guards are not a proof of absence of arbitrary malicious source.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+    "blob": "a0eacf06b3427ea2e6199759b89cf596760008bb",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+    "blob": "06203fa1f518055e6f96dc75cc915e81d246f758",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/scripts/test-tags-concurrency.mjs",
+    "blob": "5b50650f09a61442a7a5c74e053f34cafad468a2",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/LanguagePicker.tsx",
+    "blob": "8d44d6e4fc813baded510922e48d93258b7b7b94",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/Trans.tsx",
+    "blob": "eacb1e188fd4b3336e738e2f7df1e838773a394f",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/catalog.ts",
+    "blob": "ee4e176ad1f666b14b9fdb645b36b597431bd237",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/index.ts",
+    "blob": "3ecdcd45bf4f8d829375636357dcd77c6387affe",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/source.ts",
+    "blob": "9dce3c11a7c17d30a197e521965b5e5056bc80e8",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/sourceCatalog.ts",
+    "blob": "6927de4a82487d7a3dcf801d707b478e1628c155",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/storage.ts",
+    "blob": "acaeb89ff166a35845fa7fa36bcbb894af034d10",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+    "blob": "c0d9374077be489078390e53d27f488da427de3e",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+    "blob": "601d982e2a7cf865b1a6a301f983b2fa458b6a36",
+    "status": "reviewed",
+    "notes": "Full source or complete baseline plus diff reviewed. Supporting tests inspected only, not executed. Translation text enters React text nodes; locale imports constrained to bundled catalogs.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/context.tsx",
+    "blob": "c8709538e3b04aa8c5ef333ce6f57d393a9be362",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/languages.ts",
+    "blob": "3339adebd736a89ea3517f46d2199258d637e778",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/message.ts",
+    "blob": "53a1c3f90af103df6e40f6d86f515b7e9ca7b988",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/translator.ts",
+    "blob": "837ddfa467ca45bd8b5becffa35e0824f84367be",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/styles/app.css",
+    "blob": "a1951f57c00346323b6306c3af46867dae6d6262",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/styles/print.css",
+    "blob": "5c803193b91431c4dd96f6421ae41b5e92740046",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/styles/qr.css",
+    "blob": "bc3e17953c0e3befee673fe40e0bba120d048ce7",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Trusted bundled catalog grammar, escaped rich-text rendering, reviewed-locale allowlist, source fallback, locale lifecycle, no CSS network resources, and print/secret-QR styling examined. No distinct confirmed security defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/i18n/securityKeys.ts",
+    "blob": "4a94633e89b8aa6b3455191a953e008a6399c546",
+    "status": "reviewed",
+    "notes": "Entire main classification source read in contiguous segments 1-220,221-1100,1101-2099,2100-2335; complete main-to-release and release-to-privacy diffs reviewed. Neutral list is the only unreviewed-translation allowance; future keys fall back to reviewed/source text. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/i18n/securityKeys.ts",
+    "blob": "41ef8337e09f6835e50a5c53e7f5f386971bf534",
+    "status": "reviewed",
+    "notes": "Entire main classification source read in contiguous segments 1-220,221-1100,1101-2099,2100-2335; complete main-to-release and release-to-privacy diffs reviewed. Neutral list is the only unreviewed-translation allowance; future keys fall back to reviewed/source text. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "privacy-snapshot",
+    "commit": "d6819796a9542acc488b896786faffe83b913d9b",
+    "path": "apps/web/src/i18n/securityKeys.ts",
+    "blob": "2fea63c60bd21e4146d0f180b9acd718eb35921d",
+    "status": "reviewed",
+    "notes": "Entire main classification source read in contiguous segments 1-220,221-1100,1101-2099,2100-2335; complete main-to-release and release-to-privacy diffs reviewed. Neutral list is the only unreviewed-translation allowance; future keys fall back to reviewed/source text. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      }
+    ]
+  }
+]

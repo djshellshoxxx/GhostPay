@@ -1,0 +1,81 @@
+{
+  "status": "complete-for-pinned-scope",
+  "source_cutoff_utc": "2026-11-20T06:29:30.589769+00:00",
+  "ref_count": 12,
+  "paths": 546,
+  "unique_path_blob_versions": 670,
+  "source_appearances": 6218,
+  "source_bytes_across_distinct_path_versions": 6178751,
+  "source_lines_across_distinct_path_versions": 131253,
+  "raw_ledger_rows": 673,
+  "overlapping_review_rows": 3,
+  "pending": 0,
+  "missing": [],
+  "unexpected": [],
+  "domains": {
+    "build-hosting": {
+      "paths": 48,
+      "versions": 64,
+      "appearances": 552,
+      "reviewed": 64,
+      "pending": 0
+    },
+    "chain-adapters": {
+      "paths": 31,
+      "versions": 34,
+      "appearances": 372,
+      "reviewed": 34,
+      "pending": 0
+    },
+    "contracts": {
+      "paths": 10,
+      "versions": 10,
+      "appearances": 120,
+      "reviewed": 10,
+      "pending": 0
+    },
+    "crypto-schema": {
+      "paths": 65,
+      "versions": 78,
+      "appearances": 774,
+      "reviewed": 78,
+      "pending": 0
+    },
+    "hosting-feature": {
+      "paths": 40,
+      "versions": 44,
+      "appearances": 392,
+      "reviewed": 44,
+      "pending": 0
+    },
+    "multichain": {
+      "paths": 59,
+      "versions": 63,
+      "appearances": 708,
+      "reviewed": 63,
+      "pending": 0
+    },
+    "network-privacy-exchange": {
+      "paths": 108,
+      "versions": 116,
+      "appearances": 1284,
+      "reviewed": 116,
+      "pending": 0
+    },
+    "web-libs": {
+      "paths": 107,
+      "versions": 145,
+      "appearances": 1080,
+      "reviewed": 145,
+      "pending": 0
+    },
+    "web-views": {
+      "paths": 78,
+      "versions": 116,
+      "appearances": 936,
+      "reviewed": 116,
+      "pending": 0
+    }
+  },
+  "identity_validation": "Every final ref/path/blob/size alias matched git ls-tree; every blob SHA-1 recomputed from exact bytes; each unique version has one or more reviewed domain-ledger rows. Counts do not assert executed tests or complete third-party review."
+}

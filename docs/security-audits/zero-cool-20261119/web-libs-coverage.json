@@ -1,0 +1,3970 @@
+[
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/BackupPanel.tsx",
+    "blob": "83f0e937414b1fdd129aa0ff70b5f109e7bb73e9",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/CameraImporter.tsx",
+    "blob": "f592f573581511d7287608c3da068aae432f5738",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and candidate delta read. Camera, paste, image, multipart and scope cancellation reviewed; newer version also revokes local imports on document hide. QR consent is bound to exact payload; auto-hide, print policy and export narrowing reviewed.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/Common.tsx",
+    "blob": "71b607b3e92f583b6bc784c7ec929567dd6f75da",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/ContextHelp.tsx",
+    "blob": "585e403e043292496a117c174873d2b3575dd2e5",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/Disclosure.tsx",
+    "blob": "0e822a192a2afd04bc5a1a9408ef919b066b7d08",
+    "status": "reviewed",
+    "notes": "Root continuation: full source and complete newer delta read. Manifest freshness repair noted; merchant issuer is keyed by profile signature/template/amount in its caller. Payment proof has an explicit local-record disclaimer; fixed amounts and bearer-print disclosures preserved.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/ErrorBoundary.tsx",
+    "blob": "cd9d3e0699d7e4a1758a99736bc232dc666adb0b",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/InvoicePaymentSummary.tsx",
+    "blob": "7d73d645f829d14179a44c952bde2cfb62f5224c",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/ManifestBanner.tsx",
+    "blob": "1fd6d16562422c7383dd53059026a12aaa3d9e48",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/MerchantProfileNotice.tsx",
+    "blob": "6eaafad55dbb913f96a1d9bcd50cc8e2d3294534",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+    "blob": "ecba9e7a460b2698ea9f70f4a62edc482e9cfd60",
+    "status": "reviewed",
+    "notes": "Full source read: verified profiles revalidated after fetch and before pin acceptance; mounted/scope guards and cancellation.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/MerchantTemplateIssuer.tsx",
+    "blob": "f3f3cee46e379f423fcbc2fa04512a4d96f8e85e",
+    "status": "reviewed",
+    "notes": "Root continuation: full source and complete newer delta read. Manifest freshness repair noted; merchant issuer is keyed by profile signature/template/amount in its caller. Payment proof has an explicit local-record disclaimer; fixed amounts and bearer-print disclosures preserved.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/PaymentRequestQr.tsx",
+    "blob": "3fbf35a0bc17650ae04f574fe74a00f1825c0a67",
+    "status": "reviewed",
+    "notes": "Root continuation: full source and complete newer delta read. Manifest freshness repair noted; merchant issuer is keyed by profile signature/template/amount in its caller. Payment proof has an explicit local-record disclaimer; fixed amounts and bearer-print disclosures preserved.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/PrintableBill.tsx",
+    "blob": "64ba221722b1c88adb74c6c68960e95e48855c98",
+    "status": "reviewed",
+    "notes": "Root continuation: full source and complete newer delta read. Manifest freshness repair noted; merchant issuer is keyed by profile signature/template/amount in its caller. Payment proof has an explicit local-record disclaimer; fixed amounts and bearer-print disclosures preserved.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/QrFrame.tsx",
+    "blob": "9554db0ddd1cf4e3fcd780a99ca5598907e77249",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and candidate delta read. Camera, paste, image, multipart and scope cancellation reviewed; newer version also revokes local imports on document hide. QR consent is bound to exact payload; auto-hide, print policy and export narrowing reviewed.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/QrView.tsx",
+    "blob": "fb4091495cf34107ae15fc11e72a6c11ec307285",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/ReceiptPanel.tsx",
+    "blob": "b81b4868434aae0891c5cd4a664ac48aecf3f947",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer deltas reviewed. Local history remains untrusted after import; exact scope/session/scan guards and consent/export limits inspected. Receipt minimal-address semantics corroborate CRYPTO-01. Multi-store tag imports explicitly retain partial/unknown outcomes and do not promise rollback.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/ReconciliationLedger.tsx",
+    "blob": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer deltas reviewed. Local history remains untrusted after import; exact scope/session/scan guards and consent/export limits inspected. Receipt minimal-address semantics corroborate CRYPTO-01. Multi-store tag imports explicitly retain partial/unknown outcomes and do not promise rollback.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/RichText.tsx",
+    "blob": "844aded5b4b601d98fb41f100f3e0e0a7b62e0de",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/SecretBackup.tsx",
+    "blob": "c86f77de050b838204e3f4222cd796ca6e54337a",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer diff reviewed. Secret reveal/hide, async copy ownership and confirmation lifetimes examined. Main-family clipboard clearing is unconditional; newer privacy version compares digest and shared ownership. Pin writes bind exact expected/current signer and scope.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/TagArchive.tsx",
+    "blob": "4f4ce4036ccc4e7e931074a872e54cf9a4cfbc21",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer deltas reviewed. Local history remains untrusted after import; exact scope/session/scan guards and consent/export limits inspected. Receipt minimal-address semantics corroborate CRYPTO-01. Multi-store tag imports explicitly retain partial/unknown outcomes and do not promise rollback.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/components/WalletAttempts.tsx",
+    "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source reviewed. Text-only rendering, bounded QR construction, outcome wording, tab-local journal confirmation and key-backup status boundaries examined; no distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/appLock.ts",
+    "blob": "918ea520b4867d69dbb575c0c9a14a8e336c5a2e",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/buildProfile.ts",
+    "blob": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/bundledManifests.ts",
+    "blob": "cd77e6a2b698c5307d1e0229f1fce6793fec1200",
+    "status": "reviewed",
+    "notes": "Full source read: compiled bundled manifest imports.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/defaultServices.ts",
+    "blob": "49158fb4ffec9b1d1eb55bcce21f081dbc9c8d4d",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/deployment.ts",
+    "blob": "6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/displayText.ts",
+    "blob": "2202f8e612c74efa1cd4150f53f247fbc3e5c726",
+    "status": "reviewed",
+    "notes": "Full source read: display normalization and bounded UI text.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+    "blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/embedHost.ts",
+    "blob": "cb59058a852bb3d4a204089ab46221ec3089419f",
+    "status": "reviewed",
+    "notes": "Full source read: origin/source/nonce validation, signed profile expiry checks, same-origin policy and bounded fetch.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/embedProtocol.ts",
+    "blob": "098f39cee84b4463b7f4a44aaf6bd11a91000d7b",
+    "status": "reviewed",
+    "notes": "Full source read: bounded embed message schema and permitted result fields.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/errors.ts",
+    "blob": "c3be00ac752cebd8f0234dbfb6f275e9741bb527",
+    "status": "reviewed",
+    "notes": "Full source read: typed error descriptors and sanitization; external invoice error paths confirmed fixed schema paths by crypto/schema reviewer.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/format.ts",
+    "blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+    "status": "reviewed",
+    "notes": "Full source read: decimal parsing/formatting. Missing runtime argument guard recorded as known robustness item; later format candidate adds it.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/fragment.ts",
+    "blob": "9f361be2be54403f1980999bb64937299760e719",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/idbStore.ts",
+    "blob": "c6944c59a52a069f1856bb7ecdcfe971d03c593e",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/invoiceCreate.ts",
+    "blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Allowlisted chain/token, bounded quantity/expiry/quote/slippage, integer totals and schema signing before async encoding. Consumer freshness is a caller duty reviewed separately.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/jitter.ts",
+    "blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+    "status": "reviewed",
+    "notes": "Full main source and complete recent delta reviewed. Known main wall-clock rollback expiry weakness is repaired by monotonic elapsed-time floor and invalid-clock refusal in the newer version; scheduling is not transaction submission.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/keyVault.ts",
+    "blob": "46bc24df04ce940d0880199e2f4f0ac522787c43",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/keystore.ts",
+    "blob": "5df27bcc439bcde961e0ea191923c89534ea090a",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/manifest.ts",
+    "blob": "9ac0bdf0eb093554c8d7c74440732fca4bfebd22",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/merchantIdentity.ts",
+    "blob": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+    "status": "reviewed",
+    "notes": "Full source read: local pin schema and advisory signer identity; later candidate uses strict JSON.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/merchantTemplate.ts",
+    "blob": "045efb594a73a610662e8f5d45a6b270de0e589e",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Verified owned profile snapshot, signer equality, allowlisted signed assets, amount policy, backup custody and current-profile/session revalidation after awaits.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/opStackFee.ts",
+    "blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Strict uint256 oracle return shape; OP Stack reserve calculated locally; only typed execution-revert indicates pre-upgrade operator-fee absence. Configured RPC remains trusted observation.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/pay.ts",
+    "blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+    "status": "reviewed",
+    "notes": "Full source reviewed, including source lines obscured by the first tool-output wrapper and reread separately. Review gates bind amounts/chain/router and built object identity; invoice/buffer deadlines, allowance shape and signer recovery present. No distinct additional defect established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/payExec.ts",
+    "blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Per-await authorization before signing/sending, durable returned hashes and conservative post-broadcast diagnostics; inherited receipt-validation finding remains in wallet helper. No separate confirmed defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/qr.ts",
+    "blob": "fbdc330a993b4cc8459a5d9455217c08652503fa",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/qrClassify.ts",
+    "blob": "973c7831c4c3d81da9d99c620fd758a03e62a118",
+    "status": "reviewed",
+    "notes": "Fully read all classifiers, caps, strict JSON/envelope checks, ambiguous-family refusal, kind/screen mapping. No action/navigation side effects; validated:false deliberately requires owning parser.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/qrContrast.ts",
+    "blob": "e8ef8e977fc593ea45d4f352057722f720652bb8",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "blob": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+    "status": "reviewed",
+    "notes": "Fully read main table and all release/consolidation deltas. Newer runtime own-key/type checks noted; callsites use internal enums. No untrusted runtime-type path established.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/qrMultipart.ts",
+    "blob": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+    "status": "reviewed",
+    "notes": "Fully read main and complete newer diff. Older lone-surrogate substitution is corrected on candidate; bounded codec owns payload limits. No security-impacting parser bypass established.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/qrPayload.ts",
+    "blob": "8b4cc2446b61adff4c5ba87bd454d10d2bdf72ce",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/receipts.ts",
+    "blob": "cf880e0b9ee40a1d30c76a15e08e1c06674d71c1",
+    "status": "reviewed",
+    "notes": "Fully read main and complete diff. Invoice signature/key/payment/amount binding verified. Optional recipient receipt issue is shared ZC-CRYPTO-01/WV-02 and is not counted again.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/reconciliationLedger.ts",
+    "blob": "d68324f2944fc6ec00cec8ea541020a09f8a23a7",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/reconciliationMatch.ts",
+    "blob": "d85d06572fa49df91f09e40ccc5336356415ad29",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/reconciliationVault.ts",
+    "blob": "b9be19c98c20fb904d7ca149f2e89af302f00a97",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/registry.ts",
+    "blob": "6dcd24ced090ac1009b7949f4707a3d8e1a5f8ea",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/relayerClient.ts",
+    "blob": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/release.ts",
+    "blob": "49ef9237bd75259bb829d0d64cbc404e51ec9533",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/releaseKeys.ts",
+    "blob": "333de0d81e36a86d6bbdd99c8afbbac3524911df",
+    "status": "reviewed",
+    "notes": "Full source inspected; control-flow and trust boundaries assessed.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/sanitize.ts",
+    "blob": "e5c281aa7f8105b71ef93ea407e8dfa454892317",
+    "status": "reviewed",
+    "notes": "Full source read: diagnostic sanitization.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scanClient.ts",
+    "blob": "043fb19af6e3ccf88224122185192829eed29c92",
+    "status": "reviewed",
+    "notes": "Fully read main and complete consolidation diff. Worker lifetime, bounds, two-provider/reorg evidence, finality replay, atomic discovery checkpoint, cancellation dispatch guard and opt-in bulk evidence inspected.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scanCursorSlot.ts",
+    "blob": "d33c6f6e4099fb386016289cc8aa560b1380ffa8",
+    "status": "reviewed",
+    "notes": "Fully read main and diff. HKDF private names, session-token cache, legacy deletion and newer suspension/deadline check inspected.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scanMatches.ts",
+    "blob": "48da43b4c870fc9d3debaf46b00e19951d012ba5",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scanPrivacy.ts",
+    "blob": "31dd6847ed088206afb7080873a2520c2201c393",
+    "status": "reviewed",
+    "notes": "Fully read main and complete consolidation diff. Required private-route planning, direct secondary suppression, endpoint validation, window caches/bounds/cancellation, indexer transport and authorization wrappers inspected; baseline lacks newer dispatch cancellation/request budgets, noted as release gap.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scanSpam.ts",
+    "blob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+    "status": "reviewed",
+    "notes": "Fully read main and diff. Advisory scoring and transfer estimates do not authorize payment; newer snapshot corrects partial-coverage flag from 7-day to 30-day horizon.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scanner.worker.ts",
+    "blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/scannerCore.ts",
+    "blob": "3d22991c284bc58ef0abe27671785ef768546259",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/sellerPairing.ts",
+    "blob": "7fd1578738e869f77c06e3822d6dcb17257f9ac1",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/services.ts",
+    "blob": "283d87dbbd410235d2e5cbbdcd58d941b774e27d",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/session.ts",
+    "blob": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/settings.ts",
+    "blob": "24b906e163e6bd314c73f172d95332dce4340233",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/settingsExchange.ts",
+    "blob": "8ab2753690b4bb99621278db22c04b25a00791f2",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/sweep.ts",
+    "blob": "ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a",
+    "status": "reviewed",
+    "notes": "Fully read main and complete consolidation diff. Exact receipt/hash, finalized nonce/order resolution, same-nonce locks, fee reserves, pre-handoff journal, newer native review binding and caller freshness checked. Corroborates views main stale-review and native-amount findings; derived one-time secret lifetime evaluated separately.",
+    "also_present_at": [
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/sweepAttemptJournal.ts",
+    "blob": "18d67fec4a925411374482f1ae803eee03fd53f6",
+    "status": "reviewed",
+    "notes": "Fully read production source and any inventoried variant diff; reviewed input validation, data boundaries and failure behavior. No distinct new security issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/tagArchive.ts",
+    "blob": "9400fce95a499d0ea2f0df1aa7238364470fffa9",
+    "status": "reviewed",
+    "notes": "Fully read wrapper orchestration, verification, snapshot/export and preview import. Crypto codec covered by crypto/schema domain; vault/UI continuations reviewed with tags and component owners.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/tags.ts",
+    "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+    "status": "reviewed",
+    "notes": "Fully read all TagVault and store code. AEAD record binding, HMAC lookup, source-key consumption, guarded CAS/import/rotation and revision/tombstone behavior inspected; read-continuation guards depend on caller/session scope. No new active-path vulnerability established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/transactionOutcome.ts",
+    "blob": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/txGuard.ts",
+    "blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/wallet.ts",
+    "blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/lib/workerFactory.ts",
+    "blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/CameraImporter.tsx",
+    "blob": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and candidate delta read. Camera, paste, image, multipart and scope cancellation reviewed; newer version also revokes local imports on document hide. QR consent is bound to exact payload; auto-hide, print policy and export narrowing reviewed.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/Disclosure.tsx",
+    "blob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+    "status": "reviewed",
+    "notes": "Root continuation: full source and complete newer delta read. Manifest freshness repair noted; merchant issuer is keyed by profile signature/template/amount in its caller. Payment proof has an explicit local-record disclaimer; fixed amounts and bearer-print disclosures preserved.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+    "blob": "9cb9a8af0d806cb3ac7c33d396113d4e8ecd787a",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer diff reviewed. Secret reveal/hide, async copy ownership and confirmation lifetimes examined. Main-family clipboard clearing is unconditional; newer privacy version compares digest and shared ownership. Pin writes bind exact expected/current signer and scope.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+    "blob": "18f0c7ea5772b028f4d1af6abb8d12322c00909e",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete version diff read: per-action network grant, revocation subscription, abort and disposal.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/ReceiptPanel.tsx",
+    "blob": "b6cc91507f78283db57a7bb5f99b28f27711fffc",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer deltas reviewed. Local history remains untrusted after import; exact scope/session/scan guards and consent/export limits inspected. Receipt minimal-address semantics corroborate CRYPTO-01. Multi-store tag imports explicitly retain partial/unknown outcomes and do not promise rollback.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/StealthExportArchive.tsx",
+    "blob": "b4ba62a90797295349725dbc0e991d83da576826",
+    "status": "reviewed",
+    "notes": "Root continuation: full source reviewed. Exact input/scope and session-deadline operation guards, independent credential proof, separate raw-export confirmation, bounded ASCII imports, disposal of obsolete recovered keys, exact saved-file verification, and fresh key-replacement consent examined. No distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/StealthExportCommon.tsx",
+    "blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+    "status": "reviewed",
+    "notes": "Root continuation: full source reviewed. Exact input/scope and session-deadline operation guards, independent credential proof, separate raw-export confirmation, bounded ASCII imports, disposal of obsolete recovered keys, exact saved-file verification, and fresh key-replacement consent examined. No distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/StealthExportMaster.tsx",
+    "blob": "c703b8a853f9b8613db64d78892bce49484872dc",
+    "status": "reviewed",
+    "notes": "Root continuation: full source reviewed. Exact input/scope and session-deadline operation guards, independent credential proof, separate raw-export confirmation, bounded ASCII imports, disposal of obsolete recovered keys, exact saved-file verification, and fresh key-replacement consent examined. No distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/StealthExportPayment.tsx",
+    "blob": "8db65de1837b1bf70dff72a4be1e0e30a5d27006",
+    "status": "reviewed",
+    "notes": "Root continuation: full source reviewed. Exact input/scope and session-deadline operation guards, independent credential proof, separate raw-export confirmation, bounded ASCII imports, disposal of obsolete recovered keys, exact saved-file verification, and fresh key-replacement consent examined. No distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/StealthExportRecovery.tsx",
+    "blob": "fda705e782c147702ebcbac125ddb30ffee94910",
+    "status": "reviewed",
+    "notes": "Root continuation: full source reviewed. Exact input/scope and session-deadline operation guards, independent credential proof, separate raw-export confirmation, bounded ASCII imports, disposal of obsolete recovered keys, exact saved-file verification, and fresh key-replacement consent examined. No distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/components/StealthExportVerification.tsx",
+    "blob": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8",
+    "status": "reviewed",
+    "notes": "Root continuation: full source reviewed. Exact input/scope and session-deadline operation guards, independent credential proof, separate raw-export confirmation, bounded ASCII imports, disposal of obsolete recovered keys, exact saved-file verification, and fresh key-replacement consent examined. No distinct new defect.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/boundedRequest.ts",
+    "blob": "1867f9ad6b8913a135489ab715812851b7258f79",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/buildProfile.ts",
+    "blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/defaultServices.ts",
+    "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/errors.ts",
+    "blob": "a1fb55a8eb9ec0270491fa4d5b2f071200d08142",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete version diff read: fixed invoice-verification error classification keys.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/frameGuard.ts",
+    "blob": "e1f2279c35ca58966f3a4aa270378da48b78ee94",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/invoiceSignerPins.ts",
+    "blob": "9f870bed002dac0b809ab00f82c2b66c032f197c",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/invoiceVerification.ts",
+    "blob": "6256d5b234db85f4f7b0dfac40c4d5f55957e4ea",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/jitter.ts",
+    "blob": "9845576adfb522c17db145b1772276f66523180c",
+    "status": "reviewed",
+    "notes": "Full main source and complete recent delta reviewed. Known main wall-clock rollback expiry weakness is repaired by monotonic elapsed-time floor and invalid-clock refusal in the newer version; scheduling is not transaction submission.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/keyVault.ts",
+    "blob": "000be25182a877bbab96cc3b6a0e5ac9038790ca",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/manifest.ts",
+    "blob": "a9565d96c42e35b57f62e7235a13aa6729c886b9",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/merchantIdentity.ts",
+    "blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete version diff read: strict JSON parser rejects duplicate keys.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/networkAuthorization.ts",
+    "blob": "04defade63f86886f12a6299f19f46a2e562b680",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/networkOperation.ts",
+    "blob": "e0cae13f36927b031b74ab2d98c1233f015a95db",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/networkSelection.ts",
+    "blob": "cd5803357898b84863f7885c9fb827b28ff2693a",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/paymentExportRpc.ts",
+    "blob": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/paymentKeyExport.ts",
+    "blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+    "status": "reviewed",
+    "notes": "Fully read new module, reviewed SecretBox.copyOf ownership transfer contract. Session/operation guard, chain/EOA checks, export reauthentication, boxed recovery, dispose and atomic replacement paths inspected. No additional authentication bypass established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/privateScanLifecycle.ts",
+    "blob": "4a8b9e954c6f11be7438b0d6b7a14519e4ff3c63",
+    "status": "reviewed",
+    "notes": "Fully read new lifecycle integration. Seller-vault/session/generation guard, post-journal vault check, tombstone namespace invalidation and no-data broadcasts inspected.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/privateScanStore.ts",
+    "blob": "7d0651782bdd49927bf40630035fa8e717ea6afd",
+    "status": "reviewed",
+    "notes": "Fully read new encrypted cursor/discovery vault. Canonical scope, bounded records, mandatory non-authoritative receipt labels, secret-derived slots, AEAD AAD, guarded CAS and random tombstones inspected.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "blob": "a85e1011cdface74c87683146ff7428654b7830d",
+    "status": "reviewed",
+    "notes": "Fully read main table and all release/consolidation deltas. Newer runtime own-key/type checks noted; callsites use internal enums. No untrusted runtime-type path established.",
+    "also_present_at": [
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/qrMultipart.ts",
+    "blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+    "status": "reviewed",
+    "notes": "Fully read main and complete newer diff. Older lone-surrogate substitution is corrected on candidate; bounded codec owns payload limits. No security-impacting parser bypass established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/receipts.ts",
+    "blob": "a9b42e29afa652c552d17823f3d77b8eeb07cdcd",
+    "status": "reviewed",
+    "notes": "Fully read main and complete diff. Invoice signature/key/payment/amount binding verified. Optional recipient receipt issue is shared ZC-CRYPTO-01/WV-02 and is not counted again.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/reconciliationVault.ts",
+    "blob": "f71adf00f68e3ad64e612f66ff57d9f89bceab93",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/relayerClient.ts",
+    "blob": "419e5624c35dde3b5b1c4e94d2a1d09638d7b31f",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/scanClient.ts",
+    "blob": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11",
+    "status": "reviewed",
+    "notes": "Fully read main and complete consolidation diff. Worker lifetime, bounds, two-provider/reorg evidence, finality replay, atomic discovery checkpoint, cancellation dispatch guard and opt-in bulk evidence inspected.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/scanCursorSlot.ts",
+    "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+    "status": "reviewed",
+    "notes": "Fully read main and diff. HKDF private names, session-token cache, legacy deletion and newer suspension/deadline check inspected.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/scanPrivacy.ts",
+    "blob": "4dae49b9eb15d99fb5ecb34e84b76f6ac0a95c59",
+    "status": "reviewed",
+    "notes": "Fully read main and complete consolidation diff. Required private-route planning, direct secondary suppression, endpoint validation, window caches/bounds/cancellation, indexer transport and authorization wrappers inspected; baseline lacks newer dispatch cancellation/request budgets, noted as release gap.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/scanSpam.ts",
+    "blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+    "status": "reviewed",
+    "notes": "Fully read main and diff. Advisory scoring and transfer estimates do not authorize payment; newer snapshot corrects partial-coverage flag from 7-day to 30-day horizon.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/scannerCore.ts",
+    "blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+    "status": "reviewed",
+    "notes": "Fully read source and complete inventoried variant diff; input bounds, cleanup and data-integrity boundaries inspected. No distinct new issue established.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/services.ts",
+    "blob": "fcaf46383e7fb88d2d6042af1b260713c783a432",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/session.ts",
+    "blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/settings.ts",
+    "blob": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/settingsExchange.ts",
+    "blob": "e9d632142c41d51b0850ff4d16a7308f3115012a",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/stealthExport.ts",
+    "blob": "abfaf722906562156ca976ad88b1e84af64b7433",
+    "status": "reviewed",
+    "notes": "Fully read codec adapter; implementation delegated to portable ux-vault reviewed by crypto/schema domain.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/sweep.ts",
+    "blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+    "status": "reviewed",
+    "notes": "Fully read main and complete consolidation diff. Exact receipt/hash, finalized nonce/order resolution, same-nonce locks, fee reserves, pre-handoff journal, newer native review binding and caller freshness checked. Corroborates views main stale-review and native-amount findings; derived one-time secret lifetime evaluated separately.",
+    "also_present_at": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "apps/web/src/lib/wallet.ts",
+    "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "status": "reviewed",
+    "notes": "Fully read main table and all release/consolidation deltas. Newer runtime own-key/type checks noted; callsites use internal enums. No untrusted runtime-type path established.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      }
+    ],
+    "reviewer": "/root/web_libs_review_gen2"
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/ClipboardPrivacyControls.tsx",
+    "blob": "b9e3a56bc77a731e4302063dfe07a122ad226340",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/ClipboardPrivacySync.tsx",
+    "blob": "f0d0138c6cc30f181110a65d32d317345e52139b",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/Common.tsx",
+    "blob": "acee66019d29abb5844982c6da13d205f5cca440",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/PrivacyControls.tsx",
+    "blob": "590b40b5ed2f984870122cbbaff9da47f651d4d6",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/PrivacyQuickHide.tsx",
+    "blob": "7e855836d25e8e70ed17430161efd12116794d52",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": []
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/PrivateHistory.tsx",
+    "blob": "1919f8a37f42fe5994450713c86c8f3fc276fb35",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/ReconciliationLedger.tsx",
+    "blob": "07e736bb80b10e16b49e9e09b2aff9d3085a2a82",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer deltas reviewed. Local history remains untrusted after import; exact scope/session/scan guards and consent/export limits inspected. Receipt minimal-address semantics corroborate CRYPTO-01. Multi-store tag imports explicitly retain partial/unknown outcomes and do not promise rollback.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/SecretBackup.tsx",
+    "blob": "c92bd4951f23325c854cdd8ca37f1ca1aa1a91b6",
+    "status": "reviewed",
+    "notes": "Root continuation: complete source and newer diff reviewed. Secret reveal/hide, async copy ownership and confirmation lifetimes examined. Main-family clipboard clearing is unconditional; newer privacy version compares digest and shared ownership. Pin writes bind exact expected/current signer and scope.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/SensitiveContent.tsx",
+    "blob": "e4b64ba4f3312c3392e2498ca5c6b306fd0871d5",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/components/WalletAttempts.tsx",
+    "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/lib/clipboardPrivacy.ts",
+    "blob": "cfb9e13bb3548d48f65b2578a76d2888553a0b35",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/lib/executionSettings.ts",
+    "blob": "eb5354fd199e4c7e5edbb89b04742e25946a67f2",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/lib/privacyMode.tsx",
+    "blob": "1ab179b7a39c6e5c4f54fb114d21e70f83f6effa",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/lib/settings.ts",
+    "blob": "666aff245eac46a61633b74257bc65c39fb6093e",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/lib/settingsExchange.ts",
+    "blob": "94b41f3c5cbd8dd3bc60c4efc8701464f969b690",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "clipboard",
+    "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+    "path": "apps/web/src/components/Common.tsx",
+    "blob": "6d83d05d31ce3812f3ac9faebdea994a491bf188",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": []
+  },
+  {
+    "ref": "clipboard",
+    "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+    "path": "apps/web/src/lib/clipboardPrivacy.ts",
+    "blob": "5e55f2ca693ef3112e8d12409572b29d96ef86a8",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries assessed. See review notes for findings and limitations.",
+    "also_present_at": []
+  },
+  {
+    "ref": "format",
+    "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+    "path": "apps/web/src/lib/format.ts",
+    "blob": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete version diff read: runtime type and decimal precision validation.",
+    "also_present_at": []
+  },
+  {
+    "ref": "erc20-simulation",
+    "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+    "path": "apps/web/src/lib/txGuard.ts",
+    "blob": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+    "status": "reviewed",
+    "notes": "Full source inspected, or full baseline with complete candidate diff; trust boundaries and callers assessed. See review notes for findings and limitations.",
+    "also_present_at": []
+  }
+]

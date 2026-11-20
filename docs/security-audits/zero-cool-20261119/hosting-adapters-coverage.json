@@ -1,0 +1,544 @@
+[
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/i2p-i2pd.mjs",
+    "blob": "81eee0e1b99bfa44ad6078834e41ccaf9a34bb95",
+    "size": 3663,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 79-line blob read. Pure INI generation; fixed identity/header/tunnel settings and operator-facing compatibility/permission limits. Inputs are validated by generateI2pProfile. No distinct confirmed defect."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/i2p-java.mjs",
+    "blob": "520868c1fea883b5f9fd3879bac2e3c5786decb7",
+    "size": 4803,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 102-line blob read. Pure split-properties generation; disabled startOnLoad, sanitized inputs from caller, visitor-mapping/inproxy/stream-limit settings, explicit lack of runtime verification. No distinct confirmed defect."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/i2p.mjs",
+    "blob": "03bd1640f26322927519c7ebb7033e16f1549c37",
+    "size": 10009,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 226-line blob read. Reviewed router-relative key restrictions, directory overlap warning/check, TCP-only target handling, management-port guardrails, final renderer-value checks and topology warning. Lexical/stable-directory limits retained as assumptions."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+    "blob": "0105435acbeb2a19bbf9b00564a0848846e2a60a",
+    "size": 27064,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 569-line baseline read. Reviewed pure renderers, path/port/topology validation, identity separation, dedicated/container outputs, PoW and stream defaults. Shape-only raw-adapter onion check and virtual-port/origin mismatch are corrected only in the later Tor blob; baseline CLI already checksum-validates config. No confirmed critical/high/medium issue."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+    "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+    "size": 27411,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Complete baseline plus complete untruncated diff reviewed; changed functions reread at latest commit. Added shared checksum-aware canonical onion validator and rejects non-80 virtualPort when publicOrigin configured. All unchanged source covered by full baseline. No new issue introduced by this delta."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+    "blob": "267551801dfebc4f71622a4d7aa8d9019196870a",
+    "size": 11350,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 261-line baseline read. Reviewed fixed config keys, public/trust separation, v3 onion checksum/version, transport origin rules, loopback/unix listener rules, path/label bounds and canonical output. Older normalization/nondefault-port acceptance is tightened by the later Tor blob; not treated as a runtime identity proof."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+    "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+    "size": 11788,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Complete baseline plus complete untruncated diff reviewed; validateOnionOrigin reread at latest commit. New exact canonical-origin and no-port checks retain checksum/version checks. All unchanged source covered by full baseline. No confirmed high-impact regression."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/privacy/external-refs.mjs",
+    "blob": "7a0616b95dd7e3510895e427b298b532cfc04fa8",
+    "size": 12490,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 259-line blob read. Literal and protocol-relative scans, bounded context classification, URL deduplication, heuristics, advisory findings and privacy claims reviewed. No local read-size cap: caller must enforce bounds/stable input. Does not establish no-egress or wallet-network isolation; known limitations recorded."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/profiles/container.mjs",
+    "blob": "4ab2205f98233904ff02233a92987cd6daec6b8f",
+    "size": 7512,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 169-line blob read. Reviewed exact loopback publication, fixed topology, digest pin, user/capabilities/read-only/tmpfs/resource limits, health command, config reuse, and non-NAT publishing bridge. No distinct confirmed defect; disabled masquerading is not a complete egress firewall guarantee."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/profiles/nginx.mjs",
+    "blob": "c932bdfb392f83fec6ff10517db40235ddbf3a4a",
+    "size": 18815,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 428-line blob read. Reviewed quotation/interpolation boundaries, request guards, header map chains/defaults/server-level always emission, MIME/symlink/redirect settings, policy gate and output structure. Host validation is syntactic; document-root freshness/stability is required. No confirmed high-impact defect."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/serve/preview.mjs",
+    "blob": "07d074f2a42993380714752ca01d5d6e77e8701b",
+    "size": 20499,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full 450-line blob read. Reviewed loopback binding, request/Host checks, conditionals, file opening, normal/raw response writers, parser errors and lifecycle. H-AD-01: conditional low-priority raw-header hardening when optional programmatic onionLocation is enabled; default CLI caller omits hostConfig. Stable/private-tree and whole-file buffering limitations recorded."
+  }
+]

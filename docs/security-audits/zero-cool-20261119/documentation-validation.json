@@ -1,0 +1,18 @@
+{
+  "checked_at_utc": "2026-11-20T06:45:23.198294+00:00",
+  "branch": "audit/zero-cool-core-20261119",
+  "production_baseline": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "json_parse": "passed",
+  "json_files_before_this_record": 29,
+  "markdown_files": 26,
+  "relative_links_checked": 81,
+  "broken_relative_links": [],
+  "markdown_fences": "balanced",
+  "staged_whitespace_check_exit_code": 0,
+  "changes_limited_to_authorized_notes_and_own_work_claim": true,
+  "production_changes": [],
+  "coverage_summary": "coverage-summary.json",
+  "publication_attempted_during_finalization": false,
+  "source_review_pending": 0,
+  "notes": "Documentation consistency only. No application test, exploit, runtime or deployment qualification. Local commit may follow; no public publication is authorized."
+}

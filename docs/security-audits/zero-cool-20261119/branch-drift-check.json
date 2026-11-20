@@ -1,0 +1,60 @@
+{
+  "checked_at_utc": "2026-11-20T06:24:29.030245+00:00",
+  "remote_head_count": 359,
+  "new": {
+    "audit/ghostpay-core-latest-security-20261119": "b6e484c252723fc3293c7106ce2c46069c2668a8",
+    "docs/ghostpay-future-module-specs-20261119": "524aa18bdcd307a3129bbb7a6b7e74838819331e",
+    "future/f01-ghosttips": "fb355abbab86de4f9d2fc3936b6dcbbd4e888e1d",
+    "future/f02-ghoststore": "d1ab7dca735276dd60fba1459575ca63c8a949e8",
+    "future/f03-private-payment-links": "dd665344d6290c109d2292093e01903e4770adff",
+    "future/f03-private-payment-links-spec": "d473c6b2f37fc846a435e4f2c773c016d9090730",
+    "future/f04-merchant-dashboard": "ae874d7d097696b0c203fb123f720501cf146941",
+    "future/f05-ghostproof": "ea51653016b34597fd48e3efc01a1101e054c4b9",
+    "future/f06-encrypted-backups": "689c8057ae182178d244079bffb3493b0d41f58a",
+    "future/f07-ghostpayouts": "60dab991976ea50fc36590a08dcd6f368c385ad8",
+    "future/f08-ghostid": "c66197e12179febda7d5be63e99aafc77631cb71",
+    "future/f09-ghostpos": "342973b55d00bcde8c3193baaef7e858dd95998d",
+    "future/f10-private-recurring": "481d10d1c704a519f0f684e7ccfd1add7fef4423",
+    "future/f11-ghostteams": "240997c718884e2277c3d559b6eb4e1e3889d510",
+    "future/f12-ghostbridge": "fea6fe13b0ee332df94a5bf3a544d638e17947de",
+    "future/f13-fiat-conversion": "d1ea8f383ac950a478ec2140e3f819b010bb538a",
+    "future/f14-multichain-routing": "c40b07655e2d4ddb0c5c7b1dc051b9c3cf428c46",
+    "future/f15-private-rpc": "f8f01a81abefb60dadc248acf02206a0da945462",
+    "future/f16-per-client-identities": "88c6890a01b18892b34593fe020d18b4beb39aa8",
+    "future/f17-private-funds": "574936925b54a0cb62eed5607420e8f587bb6219",
+    "future/f18-privacy-modes": "5f1760470657843825dc44d72b424b03cc55e2a1",
+    "future/p01-tor-onion-hosting": "65124550f4a940498a29baa09c597577a08f3fa2",
+    "future/p02-rpc-policy": "d6b515d5813935c98d580bf4cfa85f1a04e44b52",
+    "future/p03-local-stealth-scanning": "4dd26ee82990373bc3ac1ee8514accf411ebb9ae",
+    "future/p04-encrypted-offline-invoices": "b194ed31d753dcba6083b512bb6c48c12a09a597",
+    "future/p05-encrypted-local-state": "49e6c2003afb5347f5a66a19c147133ba1e64d3a",
+    "future/p06-key-role-separation": "95d33f38fccad3a16408b9f818e3c2d87dfa9b02",
+    "future/p07-encrypted-device-sync": "1e46202bd26586c5d7b3c1badd25bdd97caa1c23",
+    "future/p08-linkability-analysis": "24136a7eba6337838568dc2416c3dcecfb466929",
+    "future/p09-noncustodial-gas-services": "caa085f37a8f4f40fb3d020d7e3d18154d18184d",
+    "future/p10-private-submission": "b6a25c61b537144033cc36b2a61ad830e6e66614",
+    "future/p11-metadata-timing-policy": "09f3c9643b027b471fde9ed7438a5fff5f7b2cba",
+    "future/p12-selective-disclosure-proofs": "64d9f4f3bd8302b697461c485699fb6b6f9eaf4c",
+    "future/p13-confidential-amounts": "1ad40079e6c2668a4bb4fb25ed7a0d437abe86ce",
+    "future/p14-shielded-payments": "b31a2f8dc43f001ff9b7b6d2d25ce58f8b3b1b0f",
+    "future/p15-anonymous-withdrawals": "1ad267501958767b920993344f556b1130d8abf8",
+    "future/p16-shielded-cross-chain": "069c9ec313154d486f07fd35d4a7bd3c3ebc7a8a",
+    "future/p17-private-fee-outputs": "374abe0a4d7829a792dc884096ae046d71dcfa1e",
+    "future/p18-telemetry-release-integrity": "b0e9c4ba11e9305e089b95cef93c51464afd3ae4",
+    "integration/ghostpay-main-recovered-fixes-20261120": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c",
+    "integration/ghostpay-main-unique-code-20261120": "885b9569e6fc99e43bf01d23305494275e10120e"
+  },
+  "changed": {
+    "automation/ghostpay-integration-lock": {
+      "previous": "2b4f3327fdcda482e919c0c68595e32f345d0dba",
+      "current": "69cdc36f2b1a4f0e032dde8bde5d472eab2327c7"
+    },
+    "main": {
+      "previous": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "current": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+    }
+  },
+  "deleted_since_clone": [],
+  "publication_branch_exists": false,
+  "comparison_note": "The first comparison accidentally treated the local symbolic origin tracking alias as a branch; it has been removed from the deletion list. See branch-drift-final.json for the authoritative comparison against branch-inventory.json."
+}

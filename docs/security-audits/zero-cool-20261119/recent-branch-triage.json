@@ -1,0 +1,477 @@
+[
+  {
+    "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+    "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+    "committed_at": "2026-11-19T20:40:44-08:00",
+    "subject": "docs: checkpoint ERC-20 dry-run return classification and qualification gaps",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "evidence/ghostpay-completion-20261120",
+    "commit": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+    "committed_at": "2026-11-19T19:24:39-08:00",
+    "subject": "docs: preserve final qualification, historical recovery and worker handoffs",
+    "changed_in_scope_paths": 129,
+    "covered_blob_changes": 129,
+    "other_versions": []
+  },
+  {
+    "branch": "fix/ghostpay-format-validation-20261120",
+    "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+    "committed_at": "2026-11-19T19:21:16-08:00",
+    "subject": "docs: preserve independent amount parser qualification",
+    "changed_in_scope_paths": 130,
+    "covered_blob_changes": 130,
+    "other_versions": []
+  },
+  {
+    "branch": "integration/ghostpay-completion-20261120",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "committed_at": "2026-11-19T19:06:39-08:00",
+    "subject": "fix: consolidate QR, receipt and Pages validation repairs",
+    "changed_in_scope_paths": 129,
+    "covered_blob_changes": 129,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0243Z/worker/format-units-validation",
+    "commit": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+    "committed_at": "2026-11-19T18:45:47-08:00",
+    "subject": "docs(handoff): source-pin amount parser guard and qualification limits",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "committed_at": "2026-11-19T18:43:14-08:00",
+    "subject": "feat(web): add one-way privacy quick hide with keyboard and accessible button",
+    "changed_in_scope_paths": 140,
+    "covered_blob_changes": 140,
+    "other_versions": []
+  },
+  {
+    "branch": "snapshot/ghostpay-privacy-8be15289-20261120",
+    "commit": "d6819796a9542acc488b896786faffe83b913d9b",
+    "committed_at": "2026-11-19T18:43:12-08:00",
+    "subject": "snapshot: preserve existing privacy dependency for independent quick-hide review",
+    "changed_in_scope_paths": 139,
+    "covered_blob_changes": 139,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/ghostpay-integration-lock",
+    "commit": "2b4f3327fdcda482e919c0c68595e32f345d0dba",
+    "committed_at": "2026-11-19T18:22:33-08:00",
+    "subject": "chore: acquire generation-six integration lease for required privacy qualification",
+    "changed_in_scope_paths": 471,
+    "covered_blob_changes": 0,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+    "commit": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+    "committed_at": "2026-11-19T17:48:37-08:00",
+    "subject": "docs: record independent checkpoint review and failed CodeQL gate",
+    "changed_in_scope_paths": 0,
+    "covered_blob_changes": 0,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+    "commit": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+    "committed_at": "2026-11-19T17:34:58-08:00",
+    "subject": "docs: preserve verified receipt hash repair handoff",
+    "changed_in_scope_paths": 128,
+    "covered_blob_changes": 127,
+    "other_versions": [
+      {
+        "path": "apps/web/src/lib/wallet.ts",
+        "blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9"
+      }
+    ]
+  },
+  {
+    "branch": "evidence/ghostpay-remediation-20261120",
+    "commit": "6fe35de42587e8da06e2590983b584ffde93d40f",
+    "committed_at": "2026-11-19T17:32:16-08:00",
+    "subject": "docs: record final current-source CLI success and pending gates",
+    "changed_in_scope_paths": 127,
+    "covered_blob_changes": 127,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+    "commit": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+    "committed_at": "2026-11-19T17:27:34-08:00",
+    "subject": "docs: preserve clipboard regression qualification and limits",
+    "changed_in_scope_paths": 129,
+    "covered_blob_changes": 129,
+    "other_versions": []
+  },
+  {
+    "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+    "commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "committed_at": "2026-11-19T17:13:08-08:00",
+    "subject": "merge: refresh scoped remediation against reviewed canonical successor",
+    "changed_in_scope_paths": 127,
+    "covered_blob_changes": 127,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+    "commit": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+    "committed_at": "2026-11-19T17:10:38-08:00",
+    "subject": "docs: record independent checkpoint verification",
+    "changed_in_scope_paths": 0,
+    "covered_blob_changes": 0,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T003500Z/coordinator/qualification-evidence",
+    "commit": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+    "committed_at": "2026-11-19T17:08:36-08:00",
+    "subject": "docs: reconcile final owner publication and unique follow-up candidates",
+    "changed_in_scope_paths": 127,
+    "covered_blob_changes": 127,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0035Z/worker/qr-flag-coverage",
+    "commit": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+    "committed_at": "2026-11-19T17:00:26-08:00",
+    "subject": "docs: checkpoint final unique QR flag coverage",
+    "changed_in_scope_paths": 127,
+    "covered_blob_changes": 127,
+    "other_versions": []
+  },
+  {
+    "branch": "release/ghostpay-beta-qualification-20261119",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "committed_at": "2026-11-19T16:57:21-08:00",
+    "subject": "docs: freeze reviewed followup and preserve actual qualification failures",
+    "changed_in_scope_paths": 127,
+    "covered_blob_changes": 127,
+    "other_versions": []
+  },
+  {
+    "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+    "commit": "172695efb41665a4e50d335029e54184bbb5b328",
+    "committed_at": "2026-11-19T16:55:33-08:00",
+    "subject": "docs(qr-exchange): record verified GitHub publication mapping",
+    "changed_in_scope_paths": 128,
+    "covered_blob_changes": 128,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+    "commit": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "committed_at": "2026-11-19T16:51:48-08:00",
+    "subject": "test(web): retain explicit QR error-class regressions",
+    "changed_in_scope_paths": 127,
+    "covered_blob_changes": 127,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+    "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+    "committed_at": "2026-11-19T16:50:51-08:00",
+    "subject": "docs(handoff): pin clipboard guard reproduction, test scope and release blockers",
+    "changed_in_scope_paths": 129,
+    "covered_blob_changes": 129,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261120T0035Z/worker/qr-kind-primitives",
+    "commit": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+    "committed_at": "2026-11-19T16:45:01-08:00",
+    "subject": "docs: record verified QR primitive validation handoff",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 0,
+    "other_versions": [
+      {
+        "path": "apps/web/src/lib/qrKinds.ts",
+        "blob": "1a4beffc898c7854f6183aac5a7e6f74f8228d63"
+      }
+    ]
+  },
+  {
+    "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+    "commit": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+    "committed_at": "2026-11-19T14:47:41-08:00",
+    "subject": "docs(handoff): pin base64url input guard evidence and integration blockers",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+    "commit": "89942105c48df03b9351f777278b6a992e35a95e",
+    "committed_at": "2026-11-19T12:52:48-08:00",
+    "subject": "docs(handoff): preserve source-pinned QR kind repair, audit and gate evidence",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+    "commit": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+    "committed_at": "2026-11-19T10:42:08-08:00",
+    "subject": "docs(handoff): source-pin merchant signer pin JSON hardening and validation limits",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+    "commit": "0041514a630398c89693498d9b5e44ef562d9c61",
+    "committed_at": "2026-11-19T08:43:42-08:00",
+    "subject": "docs(handoff): record source-pinned 30-day privacy coverage fix and qualification gaps",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "automation/20261119-c977/bug/build-profile-failclosed",
+    "commit": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+    "committed_at": "2026-11-19T06:47:50-08:00",
+    "subject": "docs(handoff): pin build-profile regression, exact-source checks and audit coverage",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "repair/ghostpay-analyzer-recovered-20261119",
+    "commit": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+    "committed_at": "2026-11-19T06:02:32-08:00",
+    "subject": "docs: preserve failed full Echidna campaign and independent analyzer reviews",
+    "changed_in_scope_paths": 120,
+    "covered_blob_changes": 115,
+    "other_versions": [
+      {
+        "path": "apps/web/src/components/StealthExportCommon.tsx",
+        "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+      },
+      {
+        "path": "apps/web/src/i18n/securityKeys.ts",
+        "blob": "45c84668e9fb4c185655f8d73dc3f6c58914ffb7"
+      },
+      {
+        "path": "apps/web/src/lib/sweep.ts",
+        "blob": "6d14435b315f38646c30d6406ae358a73210d715"
+      },
+      {
+        "path": "apps/web/src/views/Sweep.tsx",
+        "blob": "2b04af66b8d6b46898ba2a504527e70f9dd510df"
+      },
+      {
+        "path": "scripts/pages/verify-pages-artifact.mjs",
+        "blob": "b13870688d722fe5928ed192499ae76be55554ee"
+      }
+    ]
+  },
+  {
+    "branch": "repair/ghostpay-final-lint-20261119",
+    "commit": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+    "committed_at": "2026-11-19T05:57:39-08:00",
+    "subject": "docs(qa): record complete lint repair qualification and review",
+    "changed_in_scope_paths": 120,
+    "covered_blob_changes": 119,
+    "other_versions": [
+      {
+        "path": "apps/web/src/components/StealthExportCommon.tsx",
+        "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+      }
+    ]
+  },
+  {
+    "branch": "repair/ghostpay-qr-surrogates-20261119",
+    "commit": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+    "committed_at": "2026-11-19T05:25:02-08:00",
+    "subject": "docs(qr): preserve independent regression and full package qualification",
+    "changed_in_scope_paths": 121,
+    "covered_blob_changes": 119,
+    "other_versions": [
+      {
+        "path": "apps/web/src/components/StealthExportCommon.tsx",
+        "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+      },
+      {
+        "path": "apps/web/src/lib/sweep.ts",
+        "blob": "3710a28fe7e90c618d0b57da1aeed9f2a9adf599"
+      }
+    ]
+  },
+  {
+    "branch": "repair/ghostpay-native-fee-recovered-20261119",
+    "commit": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+    "committed_at": "2026-11-19T05:10:33-08:00",
+    "subject": "docs(sweep): preserve recovered source and fresh 384-test evidence",
+    "changed_in_scope_paths": 119,
+    "covered_blob_changes": 116,
+    "other_versions": [
+      {
+        "path": "apps/web/src/components/StealthExportCommon.tsx",
+        "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+      },
+      {
+        "path": "apps/web/src/lib/sweep.ts",
+        "blob": "3710a28fe7e90c618d0b57da1aeed9f2a9adf599"
+      },
+      {
+        "path": "scripts/pages/verify-pages-artifact.mjs",
+        "blob": "b13870688d722fe5928ed192499ae76be55554ee"
+      }
+    ]
+  },
+  {
+    "branch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+    "commit": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+    "committed_at": "2026-11-19T04:50:07-08:00",
+    "subject": "docs(handoff): pin QR Unicode integrity repair, audit and exact verification limits",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "codex/ghostpay-consolidation-records-20261119",
+    "commit": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+    "committed_at": "2026-11-19T03:47:31-08:00",
+    "subject": "docs: record final verifier repair, source census, CI gates and released lease",
+    "changed_in_scope_paths": 0,
+    "covered_blob_changes": 0,
+    "other_versions": []
+  },
+  {
+    "branch": "repair/ghostpay-276-artifact-races-20261119",
+    "commit": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+    "committed_at": "2026-11-19T03:38:09-08:00",
+    "subject": "fix(pages): bind artifact verification to checked bytes and file identities",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 1,
+    "other_versions": []
+  },
+  {
+    "branch": "codex/ghostpay-hosting-timestamp-main-20261119",
+    "commit": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+    "committed_at": "2026-11-19T03:30:23-08:00",
+    "subject": "docs(hosting): record current-main reconciliation provenance",
+    "changed_in_scope_paths": 0,
+    "covered_blob_changes": 0,
+    "other_versions": []
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+    "commit": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+    "committed_at": "2026-11-19T03:23:31-08:00",
+    "subject": "docs(pages): pin expanded CLI verification evidence",
+    "changed_in_scope_paths": 1,
+    "covered_blob_changes": 0,
+    "other_versions": [
+      {
+        "path": "scripts/pages/verify-pages-artifact.mjs",
+        "blob": "b13870688d722fe5928ed192499ae76be55554ee"
+      }
+    ]
+  },
+  {
+    "branch": "codex/ghostpay-feature-consolidation-20261119",
+    "commit": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+    "committed_at": "2026-11-19T03:22:49-08:00",
+    "subject": "docs: retain exact raw security logs referenced by the evidence manifest",
+    "changed_in_scope_paths": 115,
+    "covered_blob_changes": 106,
+    "other_versions": [
+      {
+        "path": "apps/web/src/components/StealthExportCommon.tsx",
+        "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+      },
+      {
+        "path": "apps/web/src/i18n/securityKeys.ts",
+        "blob": "45c84668e9fb4c185655f8d73dc3f6c58914ffb7"
+      },
+      {
+        "path": "apps/web/src/lib/networkAuthorization.ts",
+        "blob": "bc220c1c3300cf9856a8bc326b55201b9ddf62e9"
+      },
+      {
+        "path": "apps/web/src/lib/paymentKeyExport.ts",
+        "blob": "28a8271a7fe8ad825ecc7d709f7206d55976bc5c"
+      },
+      {
+        "path": "apps/web/src/lib/scanClient.ts",
+        "blob": "f272f747894e66dc9251fac3ebbfa2e6d5f92a75"
+      },
+      {
+        "path": "apps/web/src/lib/sweep.ts",
+        "blob": "3967341575c4501ad138a8c6a096c4e017e016b8"
+      },
+      {
+        "path": "apps/web/src/views/Scan.tsx",
+        "blob": "aca307916e809c69ddb02bb57a8749e9d965f4a5"
+      },
+      {
+        "path": "apps/web/src/views/Sweep.tsx",
+        "blob": "e1e547d907f5c028065d2c55342125131d006e51"
+      },
+      {
+        "path": "packages/invoice-schema/src/json.ts",
+        "blob": "63e02aa59219f5ba4732c6cc0198e9c0466eaa48"
+      }
+    ]
+  },
+  {
+    "branch": "repair/ghostpay-270-policy-fixture-20261119",
+    "commit": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+    "committed_at": "2026-11-19T03:16:21-08:00",
+    "subject": "test(policy-scheme): restore leaf-binding Anvil negative check",
+    "changed_in_scope_paths": 116,
+    "covered_blob_changes": 108,
+    "other_versions": [
+      {
+        "path": "apps/web/src/components/StealthExportCommon.tsx",
+        "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+      },
+      {
+        "path": "apps/web/src/i18n/securityKeys.ts",
+        "blob": "45c84668e9fb4c185655f8d73dc3f6c58914ffb7"
+      },
+      {
+        "path": "apps/web/src/lib/networkAuthorization.ts",
+        "blob": "bc220c1c3300cf9856a8bc326b55201b9ddf62e9"
+      },
+      {
+        "path": "apps/web/src/lib/paymentKeyExport.ts",
+        "blob": "28a8271a7fe8ad825ecc7d709f7206d55976bc5c"
+      },
+      {
+        "path": "apps/web/src/lib/scanClient.ts",
+        "blob": "f272f747894e66dc9251fac3ebbfa2e6d5f92a75"
+      },
+      {
+        "path": "apps/web/src/lib/sweep.ts",
+        "blob": "3967341575c4501ad138a8c6a096c4e017e016b8"
+      },
+      {
+        "path": "apps/web/src/views/Scan.tsx",
+        "blob": "aca307916e809c69ddb02bb57a8749e9d965f4a5"
+      },
+      {
+        "path": "apps/web/src/views/Sweep.tsx",
+        "blob": "e1e547d907f5c028065d2c55342125131d006e51"
+      }
+    ]
+  },
+  {
+    "branch": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "committed_at": "2026-11-19T03:16:01-08:00",
+    "subject": "Merge pull request #266: source-pinned merchant clock audit",
+    "changed_in_scope_paths": 0,
+    "covered_blob_changes": 0,
+    "other_versions": []
+  }
+]

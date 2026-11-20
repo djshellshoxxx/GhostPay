@@ -1,0 +1,21 @@
+[
+  "apps/web",
+  "packages/address-safety",
+  "packages/btc-silent-payments",
+  "packages/chain-adapters",
+  "packages/core-crypto",
+  "packages/hygiene",
+  "packages/invoice-schema",
+  "packages/metadata-hardening",
+  "packages/net-transport",
+  "packages/payment-uri",
+  "packages/pir-two-server",
+  "packages/policy-scheme",
+  "packages/qr-exchange",
+  "packages/scan-source",
+  "packages/secret-box",
+  "packages/solana-stealth",
+  "packages/tron-adapter",
+  "packages/tx-review",
+  "packages/ux-vault"
+]

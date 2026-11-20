@@ -1,0 +1,1058 @@
+[
+  {
+    "path": "tools/portable-hosting-kit/src/cli.mjs",
+    "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1",
+    "size": 51974,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 946,
+    "reviewed_line_ranges": [
+      [
+        1,
+        946
+      ]
+    ],
+    "notes": "Complete source read: strict options/expectations, local Git provenance subprocess, validation callbacks, license inputs, private verified copies, preview lifetime, output replacement authority, profile glue and wizard/demo commands. ZC-HC-H01 records local mutable-input hardening; subpath gate limits ZC-HC-DOC-01. External module internals have separate reviewers."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/atomic.mjs",
+    "blob": "d6099cdbaffc8767c13de1532d399b0f1d4eec46",
+    "size": 10356,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 328,
+    "reviewed_line_ranges": [
+      [
+        1,
+        328
+      ]
+    ],
+    "notes": "Complete source read: exclusive temporary writes, file/sidecar staging, backups and rollback, no-replace extraction destination, directory replacement and Windows claim fallback. ZC-HC-O01 records deletion of a backup after a failed restore; not classified as a remote vulnerability. Parent-directory ownership/concurrency assumptions retained."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/canonical-json.mjs",
+    "blob": "c3ca8a92e1178ae50befb81583276f2f042e48cf",
+    "size": 2537,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 73,
+    "reviewed_line_ranges": [
+      [
+        1,
+        73
+      ]
+    ],
+    "notes": "Complete source read: safe-integer/string subset, lone-surrogate refusal, depth bound, plain-object handling and UTF-16 key sorting. Used with validated manifest records; no new finding established."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/hash.mjs",
+    "blob": "3d9613977e76c984329b7e3068291b8a65ee85f0",
+    "size": 5344,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 144,
+    "reviewed_line_ranges": [
+      [
+        1,
+        144
+      ]
+    ],
+    "notes": "Complete source read: SHA-256, no-follow/nonblocking regular-file opens, handle-level inventory identity checks, exact-size reads, EOF probe and bounded prefix reads. Does not provide a transactional snapshot against a process mutating an already-open inode; no remote vulnerability inferred from that local assumption."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/inventory.mjs",
+    "blob": "28b1c41bd4ea5494c772706839073087d31d88d2",
+    "size": 10946,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 283,
+    "reviewed_line_ranges": [
+      [
+        1,
+        283
+      ]
+    ],
+    "notes": "Complete source read: bounded directory iteration, symlink/special-file refusal, portable paths/collisions, BigInt identity records, parent-chain checks and guarded read integration. Global traversal limits abort; no new finding established in the assigned walk/guard boundary."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/manifest.mjs",
+    "blob": "463341978463b1f4f4b4405d8ead98123dcb6143",
+    "size": 15951,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 378,
+    "reviewed_line_ranges": [
+      [
+        1,
+        378
+      ]
+    ],
+    "notes": "Complete source read: canonical site digest, exact schema/fields/types, portable unique file lists, counts/limits, provenance and metadata checks, exact serialized-form comparison. Site digest intentionally excludes provenance/metadata; caller limits are independently applied by verifier. No new finding established."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/package.mjs",
+    "blob": "cd7207c96ed47f9c3b1effae9997eedbecab2d6b",
+    "size": 9625,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 182,
+    "reviewed_line_ranges": [
+      [
+        1,
+        182
+      ]
+    ],
+    "notes": "Complete source read: report provenance/entry identity checks, output/site separation, extra-file namespace and bounds, exact-buffer secret scan/hash/store, in-memory archive self-verification and paired output commit. Atomic recovery observation is owned at core/atomic.mjs; no independent authenticity or path escape found."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/paths.mjs",
+    "blob": "8077026c02dd422a34fd4c38aa577179786bb4a6",
+    "size": 6409,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 137,
+    "reviewed_line_ranges": [
+      [
+        1,
+        137
+      ]
+    ],
+    "notes": "Complete source read: canonical relative paths, controls/bidi/URL/Windows hazards, bounds, safe error quoting, lexical containment and explicitly approximate Unicode/case collision keys. No new path-traversal finding established; no dynamic filesystem qualification claimed."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/validate.mjs",
+    "blob": "9a9d6f655fba74d08177af0e9ae0baeed15edcc3",
+    "size": 8383,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 189,
+    "reviewed_line_ranges": [
+      [
+        1,
+        189
+      ]
+    ],
+    "notes": "Complete source read: policy integration, guarded text/prefix scanning, known-secret heuristics, trust-config hints, entrypoint checks and changed-during-validation errors. Heuristics are not proof that arbitrary content is safe. Complete policy table itself is separately owned."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/verify.mjs",
+    "blob": "c006df5aacaf9669d5f7cf400cfa24c8feb385eb",
+    "size": 19212,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 396,
+    "reviewed_line_ranges": [
+      [
+        1,
+        396
+      ]
+    ],
+    "notes": "Complete source read: archive/container limits, checksum parser, manifest/tree/hash consistency, caller expectations and authenticity states, bounded archive reads, directory verification, verified-buffer extraction and exclusive destination publication. Truncated initial lines 24-29 were reread as part of lines 1-45. No expected-digest bypass or archive path escape established."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/zip.mjs",
+    "blob": "fde2f1c7c7a45a20c5820718239e564bc467de32",
+    "size": 20974,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 469,
+    "reviewed_line_ranges": [
+      [
+        1,
+        469
+      ]
+    ],
+    "notes": "Complete source read: deterministic writer, strict EOCD/central/local record checks, safe names and file types, overlap/gap rejection, declared-size/aggregate bounds, bounded decompression, complete deflate consumption, size and CRC checks. No new archive parsing or extraction finding established."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+    "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+    "size": 7288,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 161,
+    "reviewed_line_ranges": [
+      [
+        1,
+        161
+      ]
+    ],
+    "notes": "Complete source read including every generated HTML/JS/CSS/header string: fixed local assets, textContent rendering of fragment data, same-origin JSON fetch, CSP demo and exclusive file creation in an empty destination. No additional active network client or dynamic HTML injection found."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/overlay/mirror.mjs",
+    "blob": "dcb33bd5b7238b12e50a71268a996f3522f8638d",
+    "size": 2210,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 47,
+    "reviewed_line_ranges": [
+      [
+        1,
+        47
+      ]
+    ],
+    "notes": "Complete source read: fixed reserved overlay path, JSON serialization, public metadata only and explicit non-authenticity text. Overlay data does not replace an independently obtained expected digest. No new finding established."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/package-docs.mjs",
+    "blob": "edcbcdb2aa709a8cc3b12ddcde0925dc8e6320a8",
+    "size": 4443,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 72,
+    "reviewed_line_ranges": [
+      [
+        1,
+        72
+      ]
+    ],
+    "notes": "Complete source read: generated operator guide and kit notice, provenance/authenticity descriptions, activation boundary and mirror guidance. ZC-HC-DOC-01 is the Low incorrect subpath-isolation statement at lines 52-53; CLI default subpath refusal remains intact."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/version.mjs",
+    "blob": "29920000142c3aaa39de04b185e447b0255f78f1",
+    "size": 372,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 7,
+    "reviewed_line_ranges": [
+      [
+        1,
+        7
+      ]
+    ],
+    "notes": "Complete source read: fixed kit and schema version constants; no executable trust-boundary logic or new finding."
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/wizard.mjs",
+    "blob": "a6630c1762e213d650d9ab8b611d410a8912911d",
+    "size": 5455,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "review_method": "complete-source",
+    "line_count": 123,
+    "reviewed_line_ranges": [
+      [
+        1,
+        123
+      ]
+    ],
+    "notes": "Complete source read: defaults/answer conversion, bounded attempts, immediate and final shared-parser validation, EOF/error handling and readline cleanup. It returns public configuration only; writes are performed by the reviewed CLI. Host-config parser itself is separately reviewed."
+  }
+]

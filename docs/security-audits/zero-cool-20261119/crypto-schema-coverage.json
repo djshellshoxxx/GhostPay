@@ -1,0 +1,626 @@
+[
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/errors.ts",
+    "blob": "547e2b1ae57cd0e07c9d401cbcd178d5dda4d1fd",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/hex.ts",
+    "blob": "d3f3b19fca0728651afd339ab8987e7cdc4c21e4",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/index.ts",
+    "blob": "ebf3777b7db44a1c7a51c915b09058f5ede91e4a",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/keys.ts",
+    "blob": "086e80c73f79107c33dcc036f60577874cb7c279",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary. Known generateKeySet exception cleanup I-02 remains; existing equal-key rejection wipes both scalars. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/metadata.ts",
+    "blob": "fa8a9c3d6f0bf33ebf2cb05f80557b34717d1a16",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/rng.ts",
+    "blob": "d5a9a34a65c7c9eba2710055601487acf6073cea",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/secret.ts",
+    "blob": "214a10bf4453e453ed3101b10f362b9eef52dcaf",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/core-crypto/src/stealth.ts",
+    "blob": "6a5c51b87d0d9e8044442884c45476b0eef97d60",
+    "status": "reviewed",
+    "notes": "Reviewed scalar/RNG/point validation, stealth ECDH and address binding, metadata boundaries, ownership and exceptional cleanup. SecretScalar is a documented guardrail, not a same-realm secrecy boundary.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/base64url.ts",
+    "blob": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/envelope.ts",
+    "blob": "9e6f5d8b80405d634252bf0b65a50d8610325f58",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Reviewed normal and passphrase envelope paths; residual normal-AES byte cleanup is hardening H01. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/errors.ts",
+    "blob": "a2fded81b112dc570571566e1c87bb6d78e292d4",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/expiry.ts",
+    "blob": "51b0f6238f0ddd27a6b00a50b705b2372cff1548",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/index.ts",
+    "blob": "f93afefe76b28ed39a45e6e8d726931e865f4c5f",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/json.ts",
+    "blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Main read in full; newer descriptor-based dense-array canonicalization reviewed as repaired guard. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/merchantProfile.ts",
+    "blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Main invalid-clock guard repaired in newer blob; signature remains distinct from merchant identity. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/passphrase.ts",
+    "blob": "3844a9951dcad85559e823cac9abfc6fe8ece3b7",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/receipts.ts",
+    "blob": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Compared optional-recipient behavior; see ZC-CRYPTO-01 cross-layer assurance finding and WV-02 corroboration. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/schema.ts",
+    "blob": "b6fae850aedfc3e6d35a32eb3c8b0a4ea217f544",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/invoice-schema/src/sign.ts",
+    "blob": "55dffe55c71c6daaf18342e05ae403ab71bb496c",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/abi/policyAccount.ts",
+    "blob": "8c9bb216c1cf31f513c7fc71548446d98426eefb",
+    "status": "reviewed",
+    "notes": "Data-only constant ABI: every entry and nested parameter reviewed by structural enumeration; no executable body. Deployed contract equivalence is outside this file review. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/abi/policyAccountFactory.ts",
+    "blob": "f968f69c06933b37a1962b14868f324f1bebd857",
+    "status": "reviewed",
+    "notes": "Data-only constant ABI: every entry and nested parameter reviewed by structural enumeration; no executable body. Deployed contract equivalence is outside this file review. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/abi/policyRouter.ts",
+    "blob": "9ab31d3aa8f722a90f7c4743569eb1e3bcce1868",
+    "status": "reviewed",
+    "notes": "Data-only constant ABI: every entry and nested parameter reviewed by structural enumeration; no executable body. Deployed contract equivalence is outside this file review. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/calldata.ts",
+    "blob": "0fba86ad98995cda744ed1b80860362206ec40d9",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/derive.ts",
+    "blob": "d70af630f3dfe38100f4714b1e8f5c38ab4d4e89",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Newer secret-copy lifetime moves after public validation; derivation and CREATE2 boundaries reviewed. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/eip712.ts",
+    "blob": "5a300009bf3bd95e3c0bc808acffaa00ac366f36",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Main and newer signer restriction/leaf binding changes reviewed. Newer digest rebuilt from canonical policy schema. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/errors.ts",
+    "blob": "6efc5ed94bc10828ba0813ff3ec5fa74ef231538",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/index.ts",
+    "blob": "25f3fd86983a045a24d364b99b08d4df7807829d",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/limits.ts",
+    "blob": "b25c1fa2a7b50ccb800c5eedfca2f927c33697a9",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Main/newer leaf-field proof consistency reviewed; newer isLimitLeaf checks own token/limit/window fields. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/meta.ts",
+    "blob": "3886fbf2205dcb185317ce48f49ab8ae55d496f8",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/policy.ts",
+    "blob": "7eddd3ef29e0f05e01497982656d9b66128a048f",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/record.ts",
+    "blob": "b6b3a7b25d3f5b436a5a87da5b46ad6f7295db08",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/router.ts",
+    "blob": "3e1af8ed068229466ec14478a39aa07bc5aaccb1",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Main/newer decoder consistency checks reviewed; whole-payee authenticity remains caller responsibility. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/types.ts",
+    "blob": "da4810435206725a10e21e1f618219c5a7160a5e",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/policy-scheme/src/window.ts",
+    "blob": "90637e7c917673553a950640b1e6c74cf47018d7",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/builder.ts",
+    "blob": "133d46be510da2ff055b91d6f5f734281fa44760",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/client.ts",
+    "blob": "709009277df82cf6a6eec9d795c74468e3cacbfc",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/errors.ts",
+    "blob": "0782599cf4267b758afba36b6ab506d48e1c9800",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/events.ts",
+    "blob": "5f198713b86d39836e87dd1d17d3861aea3948be",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/index.ts",
+    "blob": "e0c69a405a8644c4ada0ce0d3630578b0ad458b8",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/merchant.ts",
+    "blob": "17e7eb97c6820fd176f180f57a849e2460a8d664",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path. O01: self-hosted API response acceptance cap follows res.text; no default deadline. No active Pages consumer established. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/react.ts",
+    "blob": "7c27a3b5416487eb30de413be553ddcc5c8855da",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/schemas.ts",
+    "blob": "56a430c9c6f7e41a141bf636cfc7e9dd4251bb0d",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/sdk/src/verify.ts",
+    "blob": "2d1d365025b289af2d9a4ae62dee41d91aa4b0d2",
+    "status": "reviewed",
+    "notes": "Reviewed public API wrapping, validation and error/event privacy. Self-hosted merchant API is distinct from the active browser path.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/secret-box/src/index.ts",
+    "blob": "7e5ba1878b3ec08fa333e920d0eef254662241d3",
+    "status": "reviewed",
+    "notes": "Reviewed byte ownership, WeakMap storage, guarded serialization, borrowed-copy wiping, scope cleanup and traversal limits.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/secret-box/src/scope.ts",
+    "blob": "5f6ad71c2253b7ad1d806a2a110d599ca08bd207",
+    "status": "reviewed",
+    "notes": "Reviewed byte ownership, WeakMap storage, guarded serialization, borrowed-copy wiping, scope cleanup and traversal limits.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/secret-box/src/secretBox.ts",
+    "blob": "14d0fb8cfd21c4b6e96d94c1e7e88c1461aa1daf",
+    "status": "reviewed",
+    "notes": "Reviewed byte ownership, WeakMap storage, guarded serialization, borrowed-copy wiping, scope cleanup and traversal limits.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/backup.ts",
+    "blob": "41258fed58ceae289772d3fa072683da31fe6ade",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/bytes.ts",
+    "blob": "9226a2d55abaf930c9d5a358e348f4d69944f479",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/confusables.ts",
+    "blob": "98d53a5d14138399769d361d9f8eb4ea99ef8c97",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/contacts.ts",
+    "blob": "f27397d1e880ee0b53308db6c8c4d7408601ba3a",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/envelope.ts",
+    "blob": "c3084a8c76bb0254e26abfaf1d6e8d7a0a91bb2b",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/errors.ts",
+    "blob": "2f57fff99485eeca67622fa2356915c4a99f0356",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/index.ts",
+    "blob": "ec95a35f7bf81bd6272cb15c1187235ce9ad1ea3",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/keystore-portable.ts",
+    "blob": "59e998e772e26be386aea4b8369d5240222ea1f9",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. KDF/keystore schema, scalar/public-key matching, phrase generator and full word list read. Newer password-byte cleanup reviewed. Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/merge.ts",
+    "blob": "9d0640ddfa384dbca1aaacb6de3fa7734941b839",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/portable-errors.ts",
+    "blob": "467ad1e8c606865d90947c07cfc6a13bd0d882be",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/portable.ts",
+    "blob": "a0cfff7cbfbf2a3166c03c0bf81bffacda71cde2",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/reconciliation-amounts.ts",
+    "blob": "a1fd812a9b40d2c11dd1b551013062bc6eace5d4",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. Validated record deduplication, conflict fail-closed behavior, live evidence filtering and invoice/asset indexing. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/reconciliation-portable.ts",
+    "blob": "78d7b8ec843514d3446b69fa22b84e35b178a694",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. All 1146 lines reviewed: imported provenance, scope, revision/CAS guards, reorg cutoffs/tombstones, receipt separation and proposal matching. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/schema.ts",
+    "blob": "951303c1098834ad6d680f063c7d15453f90c811",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/search.ts",
+    "blob": "568db97dc1400374b24d3418fbd0f5f173224bc3",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/seller-scope.ts",
+    "blob": "cdc16b0f13e5f583b49eac06005d4157a22397ca",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/tag-archive-portable.ts",
+    "blob": "c6ff5f13cfc286921cd06f7aa036579747dd943e",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. Full GPA1 schema, AAD and import bounds read; H01 unowned KDF password bytes remain. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/ux-vault/src/vault.ts",
+    "blob": "2cb0dbee41ab47e4bba5dcb3c2246d5547af8bdb",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. ZC-CRYPTO-02 rekey continuation can restore context after lock; no production createVault consumer found. H01 ignored verification plaintext. Identical blob in selected refs: main, release, consolidation, privacy-snapshot, quick-hide, clipboard, format, erc20-simulation."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/invoice-schema/src/base64url.ts",
+    "blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/invoice-schema/src/envelope.ts",
+    "blob": "cc6b9dd6fc20fb93ecb22b00e8391338bfd6a0e4",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Reviewed normal and passphrase envelope paths; residual normal-AES byte cleanup is hardening H01. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/invoice-schema/src/errors.ts",
+    "blob": "903641f49f24629b21a225b2724c58cf2db402d2",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior.  Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/invoice-schema/src/json.ts",
+    "blob": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Main read in full; newer descriptor-based dense-array canonicalization reviewed as repaired guard. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/invoice-schema/src/merchantProfile.ts",
+    "blob": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Main invalid-clock guard repaired in newer blob; signature remains distinct from merchant identity. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/invoice-schema/src/receipts.ts",
+    "blob": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+    "status": "reviewed",
+    "notes": "Reviewed strict parsing/canonicalization, bounded formats, schema normalization, signature and trust semantics, encryption/AAD and error behavior. Compared optional-recipient behavior; see ZC-CRYPTO-01 cross-layer assurance finding and WV-02 corroboration. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/policy-scheme/src/derive.ts",
+    "blob": "ce4be42c09dec5e77b34f185c2af717687143330",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Newer secret-copy lifetime moves after public validation; derivation and CREATE2 boundaries reviewed. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/policy-scheme/src/eip712.ts",
+    "blob": "2f7679ede1e91ad43690fbe3f6fbfc4ab65910d7",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Main and newer signer restriction/leaf binding changes reviewed. Newer digest rebuilt from canonical policy schema. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/policy-scheme/src/limits.ts",
+    "blob": "2836251024e902ab3bbfd203b90f6ebacd42a9db",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Main/newer leaf-field proof consistency reviewed; newer isLimitLeaf checks own token/limit/window fields. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/policy-scheme/src/router.ts",
+    "blob": "35f20d3f07e02f42fac244552f4b50bce292402f",
+    "status": "reviewed",
+    "notes": "Reviewed deterministic derivation, policy/limit commitments, typed-data domains, calldata binding and caller trust boundaries. Main/newer decoder consistency checks reviewed; whole-payee authenticity remains caller responsibility. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/ux-vault/src/keystore-portable.ts",
+    "blob": "330cebb6652fa6e54a10536eec7292af5cde129d",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. KDF/keystore schema, scalar/public-key matching, phrase generator and full word list read. Newer password-byte cleanup reviewed. Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/ux-vault/src/portable-errors.ts",
+    "blob": "d4526d7fddc13250167595918b0179ce7462fd92",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/ux-vault/src/portable.ts",
+    "blob": "56d5d87931cb3d508eb224565b7e60c970de3783",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior.  Newer version reviewed through its full delta against the fully read main implementation. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/ux-vault/src/stealth-export-portable.ts",
+    "blob": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+    "status": "reviewed",
+    "notes": "Reviewed untrusted import/schema and KDF bounds, authenticated encryption, ownership/cleanup, scope and asynchronous state behavior. All 855 lines reviewed: fixed schemas/bounds, domain-separated header AAD, public/secret binding, atomic import cleanup and explicit raw export. Existing maximum-size test read; no filesize finding. Identical blob in selected refs: release, consolidation, privacy-snapshot, quick-hide, clipboard, format."
+  }
+]

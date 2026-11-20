@@ -1,0 +1,4602 @@
+[
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/address-safety/src/address.ts",
+    "blob": "2824fb62c01a283b76b50afc8fb5241d042f229d",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict address/checksum/token handling; bounded display text and fingerprint/trust helpers. Display classification is advisory and does not replace transaction authorization. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/address-safety/src/errors.ts",
+    "blob": "c69208ed57a50b5d0ca14b166613423f4fc7d7cf",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict address/checksum/token handling; bounded display text and fingerprint/trust helpers. Display classification is advisory and does not replace transaction authorization. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/address-safety/src/index.ts",
+    "blob": "26262d3b42570ed925a9f5bd04312d705fd9274a",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict address/checksum/token handling; bounded display text and fingerprint/trust helpers. Display classification is advisory and does not replace transaction authorization. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/address-safety/src/meta.ts",
+    "blob": "dd5230c5a4416bd0f2d5a3a7e79e982eca38487f",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict address/checksum/token handling; bounded display text and fingerprint/trust helpers. Display classification is advisory and does not replace transaction authorization. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/address-safety/src/text.ts",
+    "blob": "ad259833a631448c638c0389fca3ded7f2540f07",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict address/checksum/token handling; bounded display text and fingerprint/trust helpers. Display classification is advisory and does not replace transaction authorization. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/address-safety/src/token.ts",
+    "blob": "7c8d9a59624e7074d59a17c8dfacb8ca7783c1bb",
+    "status": "reviewed",
+    "notes": "Full source reviewed: strict address/checksum/token handling; bounded display text and fingerprint/trust helpers. Display classification is advisory and does not replace transaction authorization. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/addr.ts",
+    "blob": "367a652dd0aa368a338de5d0d546f33fc20e117a",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/buffer.ts",
+    "blob": "b315a0c8feb0325bf16bd495b764f5c559da4494",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/consolidation.ts",
+    "blob": "5ab0df2417788351b2178941bf52b533099bdf61",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/destination.ts",
+    "blob": "bcf7487353406e81653c8b3e22261bee026d8be9",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/errors.ts",
+    "blob": "bd65796a7d14831d16aadd57f7009428b5d8bfef",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/guard.ts",
+    "blob": "f13b8e96965b950268b38f117ec2f2a0e15c9f1b",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/hop-source.ts",
+    "blob": "ef87f0b90184425d67bfc99cda05cf51da0e8324",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/index.ts",
+    "blob": "c8d8141024eead713960d7212a8de4577022d2ce",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/ledger.ts",
+    "blob": "05d7f8eb0cb723266eac7a9a644053e29c2d653c",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/options.ts",
+    "blob": "1edb3f0571204628340584332a6ca208d2daed91",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/testnet.ts",
+    "blob": "d20f046b8a61f8882e776e9c020eb49efbcb006a",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/hygiene/src/verify.ts",
+    "blob": "7bbcbe44b385053f5308e1cfa380e2655eef95d1",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Destination derivation/secret disposal, ledger invariants, address-free query construction, decoy assumptions, rounding and local funding/consolidation guards checked. Recent browser imports DestLedger/fundingGuard; verification helpers remain RPC-trusting utilities and are not current browser consumers. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/amounts.ts",
+    "blob": "518529ac783fc30e071a272c74c9e3c59c787a33",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/btc.ts",
+    "blob": "6f89002a040cd4d35f506a09a42d2d1f50a93982",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/catalogue.ts",
+    "blob": "13514c0dc8152ca028cd495d0c7458a09823ee0d",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/derive.ts",
+    "blob": "23a84a35b492088d687657434ca98960368321c1",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/direct.ts",
+    "blob": "12c49780ec6ae8cfb0e1701328ad1b24e2fc221f",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/gas.ts",
+    "blob": "3007b52461b0066bf501ebb4d3d26cb464669ba5",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/guard.ts",
+    "blob": "64f2e1046aacfcda72f28c3288f55b3f2e15547d",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/index.ts",
+    "blob": "7f0fc16c8edb14096727692376fba5872129e2ff",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/invoice.ts",
+    "blob": "3bb832739b6ca5e96de8d7b0042f3aa2d43d1bd2",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/release.ts",
+    "blob": "6faa694b2d6c4f21880b1d3097e871fbe00fc2ba",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/scan.ts",
+    "blob": "7d5b5cf8d50d6408b6b6e8f5012c401533cb47ae",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/tags.ts",
+    "blob": "449fd1b23134e28a276aee3b0cd623a8e4ea995e",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/metadata-hardening/src/web.ts",
+    "blob": "5f5f856cf51541fb2935a883c77ed2197e390604",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Amount/gas rounding, padding, deterministic derivation, view tags, scan separation, endpoint checks, relayer choices, testnet guards and privacy claim limits checked. Recent browser imports padBody; other exported helpers are not assumed active merely because the package is in the dependency inventory. No distinct confirmed current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/bhttp.ts",
+    "blob": "3b5365b89c55cbad54dd550b40a168e5f2708709",
+    "status": "reviewed",
+    "notes": "Full source reviewed: known-length binary HTTP framing, bounded decoded fields/sections, strict UTF-8, final status checks, trailers and zero padding. Length decoding is bounded by available input. Encoders assume typed caller values; OHTTP is outside the selected browser path. RFC vectors and actual encryption were not verified.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/browser.ts",
+    "blob": "0d6b095f9392bb597b92866e7e7b2b293a0732a7",
+    "status": "reviewed",
+    "notes": "Full source reviewed: browser entry exposes URL/onion checks, hardened fetch transport/adapter and labels without Node proxy or OHTTP factories. Main and erc20-simulation browser consumer imports only this subpath. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/claims.ts",
+    "blob": "7d691700c884e376d65a66ef9d44ad2da447ecbb",
+    "status": "reviewed",
+    "notes": "Full source reviewed: per-profile labels disclose content, timing, wallet-RPC, operator and Tor-browser limits; experimental/secondary designations are explicit. These labels do not establish actual Tor use, service ownership, non-collusion or production qualification. No distinct active-browser defect established.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/credentials.ts",
+    "blob": "62717fdb082420fd7a47ad3725e01170b3d0f7e1",
+    "status": "reviewed",
+    "notes": "Full source reviewed: credential creation uses a CSPRNG by default, validates injected output size, separates request purposes, and caches only designated session-scoped purposes. Isolation policy and purpose values are checked. A configured random source and local proxy remain trust boundaries; no distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/errors.ts",
+    "blob": "476785444bf2521c7303961d96ab98a50a6a4a70",
+    "status": "reviewed",
+    "notes": "Full source reviewed: stable typed errors and fixed-message convention; class identity alone is not a sanitation guarantee. The current fetch transport exposes only errors it constructed in the request. No distinct confirmed defect in this definition.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/fetchAdapter.ts",
+    "blob": "977ace28e04bc6dca12fb67d1b3275ae72f9a700",
+    "status": "reviewed",
+    "notes": "Full source reviewed: explicit POST/string body, Request/init signal inheritance, pre-dispatch abort refusal, cancellation race, fixed abort message, listener cleanup and HTTP-status conversion. Cancellation refuses the result but cannot recall dispatched work because RpcTransport lacks a signal. Supporting isolation test source was read, not run.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/fetchTransport.ts",
+    "blob": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8",
+    "status": "reviewed",
+    "notes": "Full source reviewed: validates finite positive request budgets and HTTP(S) destination, forbids redirects, omits credentials/referrers, streams with a byte cap, races fetch/body against a deadline, discards late results, and normalizes untrusted SDK/stream errors by request-local identity. Browser consumers and full isolation test source were inspected; no new current-browser defect or runtime qualification claimed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/guard.ts",
+    "blob": "bc153b65a4fb8fca9edbf19bc4de725fddb9a117",
+    "status": "reviewed",
+    "notes": "Full source reviewed: fixed allowlists constrain the declared EVM/BTC network reference and reject unknown shapes/values. This validates configuration, not the actual identity or honesty of an endpoint. No distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/httpConnect.ts",
+    "blob": "efeba6d6c2faf23ec47fb0bddaeb0e7f9be22c8b",
+    "status": "reviewed",
+    "notes": "Full source reviewed: CONNECT authority control-character/port checks, finite response-head budget, status validation, handshake reader deadline and socket cleanup. Profile construction supplies a validated proxy endpoint. Node-only helper has no selected browser caller; no distinct current-browser finding.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/index.ts",
+    "blob": "46f16980dc831e930cc83ca21fef4a4524d1f816",
+    "status": "reviewed",
+    "notes": "Full source reviewed: package-root export graph includes Node proxy and experimental OHTTP helpers. Current browser imports use the separate browser subpath; existence of an exported factory does not establish an active browser route. No independent behavior in this barrel.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/ohttp.ts",
+    "blob": "bf0b5dde6738bd4ee8b612e1cad1c4de31000a92",
+    "status": "reviewed",
+    "notes": "Full source reviewed in contiguous chunks: bounded key-config parsing, duplicate-key refusal, offered-suite selection, request/response context framing and generic decapsulation errors. HPKE, randomness and AEAD are injected; no implementation or RFC vectors were qualified. Relay/gateway comparison is explicitly a heuristic, not non-collusion evidence. No selected browser OHTTP consumer.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/onion.ts",
+    "blob": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+    "status": "reviewed",
+    "notes": "Full source reviewed: bounded v3 host format, checksum/version comparison, raw-authority canonical checks, scheme and userinfo/fragment rejection. An accepted address establishes well-formedness only, not ownership, reachability or the intended service. No distinct confirmed defect; Tor protocol interoperability was not dynamically verified.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/profile.ts",
+    "blob": "7fca676d1261e2a6b1ef99599bbc6406bae11c7e",
+    "status": "reviewed",
+    "notes": "Full source reviewed: profile ids, claims, probe options, self-test result and no-fallback/failed-test gate contracts. Tor-browser and direct claims are intentionally empty. Types do not attest to proxy behavior or endpoint truthfulness.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/profiles.ts",
+    "blob": "1549e1d6ce45263576f1aef5c3fbe699258dd64c",
+    "status": "reviewed",
+    "notes": "Full source reviewed in contiguous chunks: profile dispatch, configuration guards, purpose isolation, no direct fallback, self-test gating, optional probe and OHTTP target-origin boundary. Current browser does not import these factories. Informational API limitation: OHTTP only aborts its controller at the timeout and awaits injected HPKE/relay promises without a rejecting deadline race; see report. No runtime/proxy/crypto qualification claimed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/proxyUrl.ts",
+    "blob": "72b6a598b178cc8d355a6e20216890065e05d68d",
+    "status": "reviewed",
+    "notes": "Full source reviewed: explicit remote-DNS SOCKS schemes, rejection of proxy credentials/path/query/fragment, IP-literal proxy selection, localhost mapping and loopback default. Explicit non-loopback opt-in changes the proxy trust boundary. No distinct confirmed defect in the profile construction path.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/request.ts",
+    "blob": "dc219d33362d36a2a596e6d028fdb413777034f3",
+    "status": "reviewed",
+    "notes": "Full source reviewed: Node request over supplied tunnel socket, TLS wrapping, overall timer, late-tunnel disposal, no redirect following, declared and streamed response-size checks, and cleanup of ended/failed connections. This is outside the selected browser entry. Real proxy/TLS behavior and arbitrary injected tunnel implementations were not dynamically qualified.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/settings.ts",
+    "blob": "8348f3cfe1f7af811c2b212169cf4629243cd544",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Browser selection restricted to direct/Tor-browser and single/own-node with acknowledgement; experimental/profile/environment gates and endpoint policies analyzed. Generic quorum mode checks at least two hostnames, not every URL distinct; no browser selectable quorum path. Remaining network transport source and integration review delegated to fresh worker.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/socketReader.ts",
+    "blob": "9f9eb6471472fbaec5be4ebae366d599bdd6fe3f",
+    "status": "reviewed",
+    "notes": "Full source reviewed: bounded caller-directed handshake reads, one deadline, fixed connection errors, waiter notification, header delimiter cap and paused socket handoff with leftover bytes. SOCKS/CONNECT callers were read in full; no selected browser runtime caller or distinct current-browser defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/socks5.ts",
+    "blob": "93549b383f9733d1b1e360f5a31614984985a815",
+    "status": "reviewed",
+    "notes": "Full source reviewed: destination domain/IP encoding, port/name bounds, exactly one offered authentication method, strict negotiation/reply checks, reader deadline and socket disposal. Credentials cannot silently downgrade to no-auth in this handshake. Actual Tor isolation still depends on the configured proxy; no real-network qualification or browser exposure claimed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/net-transport/src/url.ts",
+    "blob": "69aeeea72a8f507bee4bc1d26b3114a8efef2a43",
+    "status": "reviewed",
+    "notes": "Full source reviewed: URL-parser-based host/scheme/port/path handling, userinfo/fragment refusal and explicit plaintext HTTP opt-in. Errors do not echo destinations. Node/experimental profile caller restrictions were inspected; no distinct confirmed defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/addresses.ts",
+    "blob": "d27fca5da1755b8835da84785d25e553167d33eb",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/bitcoin.ts",
+    "blob": "8fdbbacaefe656aefd75f5f76073b1d6020c2e79",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/decimal.ts",
+    "blob": "8d8ceb070d29d511a1080861f878bbc6d367798f",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/eip3770.ts",
+    "blob": "8bbf5214d1131ee99865220c262b3a7c7073a109",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/eip681.ts",
+    "blob": "b347505b3a581ec4de83eea415f86c3f65a9349d",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/errors.ts",
+    "blob": "d15b8aa324042627c3c7d172a5b291f8d718cf46",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/index.ts",
+    "blob": "13a163e7509922b9ee1f7a3d34add92ccba6353c",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/invoice-link.ts",
+    "blob": "fc95d5a2745021debc728d0c2c634e5476cc1d03",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/parse.ts",
+    "blob": "0d26b10db92cce9711c7263dab6deae2a08b8dc2",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/query.ts",
+    "blob": "80de3effdd263a1db7ecc26bd7360025f12e6112",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/recipient.ts",
+    "blob": "2ee1bf9a5e9f5bf229d4dd9fe186a73fef175574",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/solana.ts",
+    "blob": "788de919c7d3cbdc6412aa381928e6233c0ffe45",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/text.ts",
+    "blob": "800753ae31adf85864ad0803d0f6bae06d09783f",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/payment-uri/src/tron.ts",
+    "blob": "551be6bfce45a9de93622e2438965f629cdb5cf1",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Exact amounts, checksum/network/chain validation, strict URI and query decoding, display-text sanitation and origin/fragment handling checked. Optional unverified Lightning and silent-payment payloads are explicitly parsed only, not authenticated or sent here; no distinct confirmed boundary defect.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/client.ts",
+    "blob": "68366c29b50a17b1e4160cfcd4e04ab656ce716b",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/errors.ts",
+    "blob": "72c5c481456d4b1517f5e732c36beb1881aae03f",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/guard.ts",
+    "blob": "50e0db3d4eba3820ad9111ce71e5a11818a65ad0",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/honesty.ts",
+    "blob": "8e6de106c42425779248785241b05e5699e727d8",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/http.ts",
+    "blob": "5c6faad78a8163342d36a34c0eb66bd236c1d252",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/index.ts",
+    "blob": "a1959304ff1ec02f77ccf20f2455c42a719f5fcd",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/manifest.ts",
+    "blob": "a85721ae0feeef446cc2e3850b6d6e233e30f8a7",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/pages.ts",
+    "blob": "f0e36aca6399ed092fa16af3cc1dc500be9a50ea",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/rand.ts",
+    "blob": "52c228a57325280824ece74dc03b838327791a44",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/server.ts",
+    "blob": "0716489a0c3f7a2ae99a5f728372c3a557cb88e8",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/testutil.ts",
+    "blob": "1017b5a4240c6dcaca7c7ef32b57910e895c95c1",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/pir-two-server/src/xor.ts",
+    "blob": "f2c1a6ea882ff1a5a12db5e1a7beea27529bb33e",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/assembler.ts",
+    "blob": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete consolidation diff reviewed. Known conflict-chunk idle refresh issue remains on old blob, fixed in consolidation/format; see NPE-01.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/base64url.ts",
+    "blob": "9c8140f8b528de844a792269ee97bb54eef4cc2b",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/camera.ts",
+    "blob": "d849dfa89a64837e9ede9eca2c03fa3064cafcf5",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/errors.ts",
+    "blob": "60b18daf6a7319f1dc8fe11272474181a9fb40ae",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/generate.ts",
+    "blob": "87c7b111242706aae34756bfe2d7f4bcb059d10c",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/index.ts",
+    "blob": "1141b06d7055f09e5d539725b4f332bfcb5786e8",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/multipart.ts",
+    "blob": "c0f6cd1fd5b3805a741a308eb426cec07be95d14",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/readers.ts",
+    "blob": "caea9b8a3bbfeb9e626814e5db3882e22e568921",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/seller.ts",
+    "blob": "bb4bfb49fd0eeedf9b814d367304e92fe899d47e",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/qr-exchange/src/settings-exchange.ts",
+    "blob": "03db64a49273df7c3d4f25106f6c18f6b6c57661",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Bounded QR parsing, input text/image budgets, cancellation/stream ownership, public pairing and explicit settings-section validation checked. No additional confirmed security defect; image pre-decode dimension checks intentionally cover only named raster formats.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/claims.ts",
+    "blob": "9e921b5e15654ca19291513040b07ca50e02b98b",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/create.ts",
+    "blob": "6e39bd1b5f06a0d04a7a1593dc28cf846d0ba9c5",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/errors.ts",
+    "blob": "ab1128c4ec74b06dc1177d759f691685510e9490",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/guard.ts",
+    "blob": "0b10a14f704fc40b1ca212169a5fad0aa2bac2cc",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/index.ts",
+    "blob": "cf649d20aafbd4f88e23db1a3d3e43b70c5ad78d",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/indexer.ts",
+    "blob": "c4f85a42d17c6661792cf45f10aff391074823a3",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/light.ts",
+    "blob": "23fda11871aaeddaf27bb0648456f8bc06cf5ddf",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/pir2.ts",
+    "blob": "53964c79fbe9b8f80eb6bfbee0224fa6e2d9f764",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/quorum.ts",
+    "blob": "460c15891229418a56b3e9ee712ecab351f36f3a",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/range.ts",
+    "blob": "e19a64da351e6ab0b18957af280595eb48777510",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/testutil.ts",
+    "blob": "80abc5dffb35c837bb0d3ee6e793636d56bfedeb",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/types.ts",
+    "blob": "8f7e359a3b7b5c9783657f68fc25da7d57714c06",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/validate.ts",
+    "blob": "1c3b1b76495868a0b4f7d2df4e4fa7b48e05ab5d",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/scan-source/src/window.ts",
+    "blob": "f9819ad9d5b3cc3deba7cf439252d01335751827",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/tx-review/src/decode.ts",
+    "blob": "ac87d665d0fa50510f40dc17c037589b60a957ec",
+    "status": "reviewed",
+    "notes": "Full source reviewed: exact calldata re-encoding, closed selector/type set, independent expected-intent comparison, deadlines/fee/token/contract policy. Typed helper APIs can throw on programmer-shape errors but reviewed paths fail closed; no distinct actionable boundary defect established.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/tx-review/src/errors.ts",
+    "blob": "40fbc9d044ce7c0aded26f294f8f7d0d528c83e2",
+    "status": "reviewed",
+    "notes": "Full source reviewed: exact calldata re-encoding, closed selector/type set, independent expected-intent comparison, deadlines/fee/token/contract policy. Typed helper APIs can throw on programmer-shape errors but reviewed paths fail closed; no distinct actionable boundary defect established.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/tx-review/src/index.ts",
+    "blob": "22b07eefdc9b79b41f7e8c1e6776d2332708dd5b",
+    "status": "reviewed",
+    "notes": "Full source reviewed: exact calldata re-encoding, closed selector/type set, independent expected-intent comparison, deadlines/fee/token/contract policy. Typed helper APIs can throw on programmer-shape errors but reviewed paths fail closed; no distinct actionable boundary defect established.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/tx-review/src/review.ts",
+    "blob": "584996185bee03a25bea873b4e7211d61bd1b38d",
+    "status": "reviewed",
+    "notes": "Full source reviewed: exact calldata re-encoding, closed selector/type set, independent expected-intent comparison, deadlines/fee/token/contract policy. Typed helper APIs can throw on programmer-shape errors but reviewed paths fail closed; no distinct actionable boundary defect established.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "packages/tx-review/src/types.ts",
+    "blob": "8e2ad73078ab875ad647b0c18c4a7378b02d3a78",
+    "status": "reviewed",
+    "notes": "Full source reviewed: exact calldata re-encoding, closed selector/type set, independent expected-intent comparison, deadlines/fee/token/contract policy. Typed helper APIs can throw on programmer-shape errors but reviewed paths fail closed; no distinct actionable boundary defect established.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/net-transport/src/browser.ts",
+    "blob": "53d2a27c97b13edeee79682ca33ed788bf01903f",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete release diff reviewed: adds explicit verification notices and previously reviewed browser selection helpers while retaining the separate browser-only entry. No Node proxy/OHTTP factory export added. Source aliases preserved.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/net-transport/src/claims.ts",
+    "blob": "28dd639c01b126ee64abf6e85c262fceeacecdbe",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete release diff reviewed: adds per-profile verification labels, an unverified notice and explicit unverified titles for ambient/experimental overlays. These are limitations, not actual overlay attestation; the audit did not rerun historical loopback evidence. Source aliases preserved.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/net-transport/src/index.ts",
+    "blob": "c1fd39a536e71b4ee993d3b008627ad943d1898d",
+    "status": "reviewed",
+    "notes": "Full baseline plus complete release diff reviewed: re-exports verification labels and browser selection helpers; no new executable transport behavior. Browser routing remains on the browser subpath. Source aliases preserved.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/net-transport/src/selection.ts",
+    "blob": "5a48aa55720e2b4bb4f66791daf01e630142e921",
+    "status": "reviewed",
+    "notes": "Full source reviewed. Browser selection restricted to direct/Tor-browser and single/own-node with acknowledgement; experimental/profile/environment gates and endpoint policies analyzed. Generic quorum mode checks at least two hostnames, not every URL distinct; no browser selectable quorum path. Remaining network transport source and integration review delegated to fresh worker.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/pir-two-server/src/client.ts",
+    "blob": "3f465628e6a5d08d746d187ab9e26bae737d77e0",
+    "status": "reviewed",
+    "notes": "Full baseline source plus complete release client diff reviewed. Two-server non-collusion, manifest equality/head-check limits, leaf verification, canonical query/page encoding, padding, resource bounds and reference server behavior analyzed. Known unbounded URL suffix-regex issue is removed on recent blobs; no live-browser PIR consumer established. See handoff for deferred host-normalization integration question.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/scan-source/src/index.ts",
+    "blob": "39959ec1f6f60cef0caeb1c789138f9f97bcaa7a",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/scan-source/src/padded.ts",
+    "blob": "bb3e2371f3831fb28d3ec5c76b9e738f64453689",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/scan-source/src/pir2.ts",
+    "blob": "4d63e1f3c193fc9e7d37c249466e435dbaf55023",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "packages/scan-source/src/range.ts",
+    "blob": "a95eb11f224eca996191d211ec78681e9790f778",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete release diffs/new padded helper reviewed. Request padding/budgets, cancellation changes, strict record shape, quorum/light-client trust, independent indexer block identity checks, PIR opt-in and test-only utilities analyzed. Indexer URL suffix normalization retains unbounded quadratic regex in an active browser path; see NPE-02. Light proof labeling and quorum all-head comparison are inactive helper correctness observations.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "consolidation",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "path": "packages/qr-exchange/src/assembler.ts",
+    "blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+    "status": "reviewed",
+    "notes": "Full baseline source and complete consolidation diff reviewed. Known conflict-chunk idle refresh issue remains on old blob, fixed in consolidation/format; see NPE-01.",
+    "sources": [
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  }
+]

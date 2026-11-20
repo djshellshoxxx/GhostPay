@@ -1,0 +1,1922 @@
+[
+  {
+    "path": ".github/workflows/tor-static.yml",
+    "blob": "92d3df1d4bc54a0755e947fb379d4a1ef99c517f",
+    "size": 5186,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "deploy/tor-static/.dockerignore",
+    "blob": "2465bc7364814b57d1b8f484e3c67148615edc08",
+    "size": 148,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "deploy/tor-static/Dockerfile",
+    "blob": "8d593b9a0e419661c59a6d85d8b57ac6f498b29c",
+    "size": 1975,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "deploy/tor-static/host.example.json",
+    "blob": "bff0f3e674f504e966cfeb7523d97048f356170c",
+    "size": 218,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "deploy/tor-static/prepare.mjs",
+    "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+    "size": 9403,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "deploy/tor-static/runtime-check.sh",
+    "blob": "8dddbffac95e7aeb2cca04260fa0a02cd7565dc3",
+    "size": 979,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "deploy/tor-static/tor-start.sh",
+    "blob": "811be5b8949748d34b39edd0ffa05eb82711e809",
+    "size": 937,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "scripts/tor/browser-acceptance.mjs",
+    "blob": "1f57b2d5a102f398cfc111e349dfc2684d498518",
+    "size": 7030,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/bin/ghostpay-host.mjs",
+    "blob": "b2f6082dcf9788efad1d882ae797639ed6341709",
+    "size": 544,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/i2p-i2pd.mjs",
+    "blob": "81eee0e1b99bfa44ad6078834e41ccaf9a34bb95",
+    "size": 3663,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/i2p-java.mjs",
+    "blob": "520868c1fea883b5f9fd3879bac2e3c5786decb7",
+    "size": 4803,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/i2p.mjs",
+    "blob": "03bd1640f26322927519c7ebb7033e16f1549c37",
+    "size": 10009,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+    "blob": "0105435acbeb2a19bbf9b00564a0848846e2a60a",
+    "size": 27064,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+    "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+    "size": 27411,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/cli.mjs",
+    "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1",
+    "size": 51974,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+    "blob": "267551801dfebc4f71622a4d7aa8d9019196870a",
+    "size": 11350,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+    "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+    "size": 11788,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/atomic.mjs",
+    "blob": "d6099cdbaffc8767c13de1532d399b0f1d4eec46",
+    "size": 10356,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/canonical-json.mjs",
+    "blob": "c3ca8a92e1178ae50befb81583276f2f042e48cf",
+    "size": 2537,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/hash.mjs",
+    "blob": "3d9613977e76c984329b7e3068291b8a65ee85f0",
+    "size": 5344,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/inventory.mjs",
+    "blob": "28b1c41bd4ea5494c772706839073087d31d88d2",
+    "size": 10946,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/manifest.mjs",
+    "blob": "463341978463b1f4f4b4405d8ead98123dcb6143",
+    "size": 15951,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/package.mjs",
+    "blob": "cd7207c96ed47f9c3b1effae9997eedbecab2d6b",
+    "size": 9625,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/paths.mjs",
+    "blob": "8077026c02dd422a34fd4c38aa577179786bb4a6",
+    "size": 6409,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/validate.mjs",
+    "blob": "9a9d6f655fba74d08177af0e9ae0baeed15edcc3",
+    "size": 8383,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/verify.mjs",
+    "blob": "c006df5aacaf9669d5f7cf400cfa24c8feb385eb",
+    "size": 19212,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/core/zip.mjs",
+    "blob": "fde2f1c7c7a45a20c5820718239e564bc467de32",
+    "size": 20974,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+    "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+    "size": 7288,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/errors.mjs",
+    "blob": "80d71210dd00b6f03a03a41943656fc41091741c",
+    "size": 2115,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/overlay/mirror.mjs",
+    "blob": "dcb33bd5b7238b12e50a71268a996f3522f8638d",
+    "size": 2210,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/package-docs.mjs",
+    "blob": "edcbcdb2aa709a8cc3b12ddcde0925dc8e6320a8",
+    "size": 4443,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/policy.mjs",
+    "blob": "4f13b17785cb53213f7dc6abce3902b34ca1fa5e",
+    "size": 10561,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/privacy/external-refs.mjs",
+    "blob": "7a0616b95dd7e3510895e427b298b532cfc04fa8",
+    "size": 12490,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/profiles/container.mjs",
+    "blob": "4ab2205f98233904ff02233a92987cd6daec6b8f",
+    "size": 7512,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/profiles/nginx.mjs",
+    "blob": "c932bdfb392f83fec6ff10517db40235ddbf3a4a",
+    "size": 18815,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+    "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+    "size": 7110,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+    "blob": "f72bf8517d82f1fb7a34a6a687c403d105cff144",
+    "size": 6913,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+    "blob": "ae6571b9784a49dce019cf9776cd7f2d4b47cbc7",
+    "size": 22004,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+    "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+    "size": 21782,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/serve/preview.mjs",
+    "blob": "07d074f2a42993380714752ca01d5d6e77e8701b",
+    "size": 20499,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/serve/routing.mjs",
+    "blob": "b02f9ef440c4404d0ece1480531f54efef08fe30",
+    "size": 8528,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/types.mjs",
+    "blob": "cc9c73bd51da2342eb14a71d592fcf416c577dfe",
+    "size": 5707,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/version.mjs",
+    "blob": "29920000142c3aaa39de04b185e447b0255f78f1",
+    "size": 372,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  },
+  {
+    "path": "tools/portable-hosting-kit/src/wizard.mjs",
+    "blob": "a6630c1762e213d650d9ab8b611d410a8912911d",
+    "size": 5455,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+# Hosting adapters review handoff
+
+- Worker: `/root/hosting_adapters_review`.
+- Worktree: `/workspace/scratch/95717c2024fa/GhostPay-audit`; existing root audit branch `audit/zero-cool-core-20261119`, HEAD observed `aa3385e6de8e93ba9cb0dc5d0dc081329663a491`.
+- Owned source scope: exactly the nine paths selected in `hosting-adapters-coverage.json`; two paths have two versions. All source reads were pinned to inventory blob/commit IDs.
+- Completed: 9 full baseline files plus the complete latest Tor/config diffs and changed-function rereads; **9 paths / 11 path-blob versions / 155,404 bytes / 108 path-ref associations / 12 pinned refs**. Every inventory size and commit/path/blob mapping reconciled locally.
+- Latest refs relevant to this closure: main-final `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; tor-completion `14a7526842b3cb055452b721d237a7e68813ff0c`.
+- Result: no confirmed critical/high/medium issue. **H-AD-01** is conditional low-priority raw-header hardening in the optional programmatic preview `hostConfig.onionLocation` path. Manual `sendRaw` lacks a final header-validation boundary for a request target derived from `clientError.rawPacket`; the reviewed CLI omits hostConfig, so default CLI/deployed impact is not established. No payload or reproduction was produced.
+- Latest Tor delta: checksum-aware shared onion-origin validation, canonical/no-port origin enforcement and virtual-port/origin consistency. Baseline latest-main behavior is not silently attributed to Tor completion.
+- Important limitations retained as non-findings: private/stable tree assumptions; lexical identity-directory checks; finite management-port guardrails; syntactic Host validation; advisory external-reference scanner; no broad egress-firewall guarantee from disabled NAT; actual router/package/identity verification remains an installation concern.
+- Cross-worker check: `hosting_feature_review` confirmed `transportHeaders` forwards the appended request target unchanged and the Tor delta only strengthened origin validation. `hosting_core_review` was informed that external-refs reads whole callback bytes and relies on caller limits/stable input; no new remote input-tree exploit was asserted.
+- Deliverables: `hosting-adapters-review.md`, `hosting-adapters-coverage.json`, `hosting-adapters-handoff.md` only. No production changes, tests, reproductions, probes, network calls, routers, containers, installs, transactions, commits, pushes, PRs or third-party messages.
+- Publication restriction: prior automatic review rejected public GitHub publication of audit notes. No publication was attempted; the restriction remains in effect.
+- Next action for root: merge the 11 coverage rows into the aggregate ledger, retain the conditional disposition of H-AD-01, and link this report for the explicit assumptions and non-findings. No blocker remains for this assigned static closure.

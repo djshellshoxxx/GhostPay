@@ -612,3 +612,17 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## Read-only core and recent-feature security audit — 2026-11-19 (America/Los_Angeles)
+
+- Coordinator: ChatGPT root; reviewers crypto_schema_review, web_libs_review, web_views_review and fresh successors.
+- Branch: `audit/zero-cool-core-20261119`.
+- Base: `c977b5d6723f6822c3b5d86cd6b231712c53c395` (`main`, verified live).
+- Owned paths: `docs/security-audits/zero-cool-20261119/**` and this appended claim only.
+- Scope: core static browser application, its current first-party dependency closure, core on-chain contracts, and unique code in recent feature/release branches. Historical/future-only implementations are excluded and recorded in the inventory.
+- Acceptance: every included production source blob has an explicit review disposition; findings identify exact source, confidence, prerequisites, impact, remediation and regression guidance; duplicates and fixes on pending branches are distinguished.
+- Restrictions: source review only; no production-code fixes, exploitation, third-party probing, deployment, transactions, merges or security-gate changes. Existing benign local checks may validate audit evidence.
+- Reviewer outputs: complete named review notes, consolidated findings and JSON coverage manifests under the owned audit directory. Root integrates and commits documentation-only changes locally.
+- Completion: all 546 paths / 670 unique source versions across 12 pinned snapshots reviewed, with zero pending coverage; cutoff 2026-11-19 22:29:30 America/Los_Angeles. Current hosting/Tor source was included when it appeared during the review.
+- Publication: automatic approval review rejected the earlier public GitHub push and the November 20 continuation's exact-commit push; it did not accept “continue” as explicit authorization for public disclosure. No remote write succeeded and no alternate route was attempted. The complete local notes still require explicit authorization to publish them publicly; see the owned audit directory's PUBLICATION_STATUS.md.

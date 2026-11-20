@@ -1,0 +1,1910 @@
+[
+  {
+    "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+    "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+    "committed_at": "2026-11-19T20:40:44-08:00",
+    "subject": "docs: checkpoint ERC-20 dry-run return classification and qualification gaps"
+  },
+  {
+    "branch": "evidence/ghostpay-completion-20261120",
+    "commit": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+    "committed_at": "2026-11-19T19:24:39-08:00",
+    "subject": "docs: preserve final qualification, historical recovery and worker handoffs"
+  },
+  {
+    "branch": "fix/ghostpay-format-validation-20261120",
+    "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+    "committed_at": "2026-11-19T19:21:16-08:00",
+    "subject": "docs: preserve independent amount parser qualification"
+  },
+  {
+    "branch": "integration/ghostpay-completion-20261120",
+    "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "committed_at": "2026-11-19T19:06:39-08:00",
+    "subject": "fix: consolidate QR, receipt and Pages validation repairs"
+  },
+  {
+    "branch": "automation/20261120T0243Z/worker/format-units-validation",
+    "commit": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+    "committed_at": "2026-11-19T18:45:47-08:00",
+    "subject": "docs(handoff): source-pin amount parser guard and qualification limits"
+  },
+  {
+    "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "committed_at": "2026-11-19T18:43:14-08:00",
+    "subject": "feat(web): add one-way privacy quick hide with keyboard and accessible button"
+  },
+  {
+    "branch": "snapshot/ghostpay-privacy-8be15289-20261120",
+    "commit": "d6819796a9542acc488b896786faffe83b913d9b",
+    "committed_at": "2026-11-19T18:43:12-08:00",
+    "subject": "snapshot: preserve existing privacy dependency for independent quick-hide review"
+  },
+  {
+    "branch": "automation/ghostpay-integration-lock",
+    "commit": "2b4f3327fdcda482e919c0c68595e32f345d0dba",
+    "committed_at": "2026-11-19T18:22:33-08:00",
+    "subject": "chore: acquire generation-six integration lease for required privacy qualification"
+  },
+  {
+    "branch": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+    "commit": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+    "committed_at": "2026-11-19T17:48:37-08:00",
+    "subject": "docs: record independent checkpoint review and failed CodeQL gate"
+  },
+  {
+    "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+    "commit": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+    "committed_at": "2026-11-19T17:34:58-08:00",
+    "subject": "docs: preserve verified receipt hash repair handoff"
+  },
+  {
+    "branch": "evidence/ghostpay-remediation-20261120",
+    "commit": "6fe35de42587e8da06e2590983b584ffde93d40f",
+    "committed_at": "2026-11-19T17:32:16-08:00",
+    "subject": "docs: record final current-source CLI success and pending gates"
+  },
+  {
+    "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+    "commit": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+    "committed_at": "2026-11-19T17:27:34-08:00",
+    "subject": "docs: preserve clipboard regression qualification and limits"
+  },
+  {
+    "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+    "commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "committed_at": "2026-11-19T17:13:08-08:00",
+    "subject": "merge: refresh scoped remediation against reviewed canonical successor"
+  },
+  {
+    "branch": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+    "commit": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+    "committed_at": "2026-11-19T17:10:38-08:00",
+    "subject": "docs: record independent checkpoint verification"
+  },
+  {
+    "branch": "automation/20261120T003500Z/coordinator/qualification-evidence",
+    "commit": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+    "committed_at": "2026-11-19T17:08:36-08:00",
+    "subject": "docs: reconcile final owner publication and unique follow-up candidates"
+  },
+  {
+    "branch": "automation/20261120T0035Z/worker/qr-flag-coverage",
+    "commit": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+    "committed_at": "2026-11-19T17:00:26-08:00",
+    "subject": "docs: checkpoint final unique QR flag coverage"
+  },
+  {
+    "branch": "release/ghostpay-beta-qualification-20261119",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "committed_at": "2026-11-19T16:57:21-08:00",
+    "subject": "docs: freeze reviewed followup and preserve actual qualification failures"
+  },
+  {
+    "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+    "commit": "172695efb41665a4e50d335029e54184bbb5b328",
+    "committed_at": "2026-11-19T16:55:33-08:00",
+    "subject": "docs(qr-exchange): record verified GitHub publication mapping"
+  },
+  {
+    "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+    "commit": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "committed_at": "2026-11-19T16:51:48-08:00",
+    "subject": "test(web): retain explicit QR error-class regressions"
+  },
+  {
+    "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+    "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+    "committed_at": "2026-11-19T16:50:51-08:00",
+    "subject": "docs(handoff): pin clipboard guard reproduction, test scope and release blockers"
+  },
+  {
+    "branch": "automation/20261120T0035Z/worker/qr-kind-primitives",
+    "commit": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+    "committed_at": "2026-11-19T16:45:01-08:00",
+    "subject": "docs: record verified QR primitive validation handoff"
+  },
+  {
+    "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+    "commit": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+    "committed_at": "2026-11-19T14:47:41-08:00",
+    "subject": "docs(handoff): pin base64url input guard evidence and integration blockers"
+  },
+  {
+    "branch": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+    "commit": "89942105c48df03b9351f777278b6a992e35a95e",
+    "committed_at": "2026-11-19T12:52:48-08:00",
+    "subject": "docs(handoff): preserve source-pinned QR kind repair, audit and gate evidence"
+  },
+  {
+    "branch": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+    "commit": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+    "committed_at": "2026-11-19T10:42:08-08:00",
+    "subject": "docs(handoff): source-pin merchant signer pin JSON hardening and validation limits"
+  },
+  {
+    "branch": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+    "commit": "0041514a630398c89693498d9b5e44ef562d9c61",
+    "committed_at": "2026-11-19T08:43:42-08:00",
+    "subject": "docs(handoff): record source-pinned 30-day privacy coverage fix and qualification gaps"
+  },
+  {
+    "branch": "automation/20261119-c977/bug/build-profile-failclosed",
+    "commit": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+    "committed_at": "2026-11-19T06:47:50-08:00",
+    "subject": "docs(handoff): pin build-profile regression, exact-source checks and audit coverage"
+  },
+  {
+    "branch": "repair/ghostpay-analyzer-recovered-20261119",
+    "commit": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+    "committed_at": "2026-11-19T06:02:32-08:00",
+    "subject": "docs: preserve failed full Echidna campaign and independent analyzer reviews"
+  },
+  {
+    "branch": "repair/ghostpay-final-lint-20261119",
+    "commit": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+    "committed_at": "2026-11-19T05:57:39-08:00",
+    "subject": "docs(qa): record complete lint repair qualification and review"
+  },
+  {
+    "branch": "repair/ghostpay-qr-surrogates-20261119",
+    "commit": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+    "committed_at": "2026-11-19T05:25:02-08:00",
+    "subject": "docs(qr): preserve independent regression and full package qualification"
+  },
+  {
+    "branch": "repair/ghostpay-native-fee-recovered-20261119",
+    "commit": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+    "committed_at": "2026-11-19T05:10:33-08:00",
+    "subject": "docs(sweep): preserve recovered source and fresh 384-test evidence"
+  },
+  {
+    "branch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+    "commit": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+    "committed_at": "2026-11-19T04:50:07-08:00",
+    "subject": "docs(handoff): pin QR Unicode integrity repair, audit and exact verification limits"
+  },
+  {
+    "branch": "codex/ghostpay-consolidation-records-20261119",
+    "commit": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+    "committed_at": "2026-11-19T03:47:31-08:00",
+    "subject": "docs: record final verifier repair, source census, CI gates and released lease"
+  },
+  {
+    "branch": "repair/ghostpay-276-artifact-races-20261119",
+    "commit": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+    "committed_at": "2026-11-19T03:38:09-08:00",
+    "subject": "fix(pages): bind artifact verification to checked bytes and file identities"
+  },
+  {
+    "branch": "codex/ghostpay-hosting-timestamp-main-20261119",
+    "commit": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+    "committed_at": "2026-11-19T03:30:23-08:00",
+    "subject": "docs(hosting): record current-main reconciliation provenance"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+    "commit": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+    "committed_at": "2026-11-19T03:23:31-08:00",
+    "subject": "docs(pages): pin expanded CLI verification evidence"
+  },
+  {
+    "branch": "codex/ghostpay-feature-consolidation-20261119",
+    "commit": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+    "committed_at": "2026-11-19T03:22:49-08:00",
+    "subject": "docs: retain exact raw security logs referenced by the evidence manifest"
+  },
+  {
+    "branch": "repair/ghostpay-270-policy-fixture-20261119",
+    "commit": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+    "committed_at": "2026-11-19T03:16:21-08:00",
+    "subject": "test(policy-scheme): restore leaf-binding Anvil negative check"
+  },
+  {
+    "branch": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "committed_at": "2026-11-19T03:16:01-08:00",
+    "subject": "Merge pull request #266: source-pinned merchant clock audit"
+  },
+  {
+    "branch": "codex/ghostpay-consolidation-followthrough-20261119",
+    "commit": "73545f63112910d46002718354ab5e99f8652e1f",
+    "committed_at": "2026-11-19T03:08:56-08:00",
+    "subject": "merge: preserve coordinator merchant policy and qualify JSON/scanner repairs"
+  },
+  {
+    "branch": "review/ghostpay-sweep-quote-lifecycle-20261119",
+    "commit": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+    "committed_at": "2026-11-19T02:58:21-08:00",
+    "subject": "Merge qualified main into sweep candidate; preserve all ownership claims"
+  },
+  {
+    "branch": "integration/ghostpay-adapter-qualification-20261119",
+    "commit": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+    "committed_at": "2026-11-19T02:58:18-08:00",
+    "subject": "Merge qualified main into adapter candidate; preserve all ownership claims"
+  },
+  {
+    "branch": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+    "commit": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+    "committed_at": "2026-11-19T02:55:47-08:00",
+    "subject": "chore(ai): mark isolated jitter repair implemented but unqualified"
+  },
+  {
+    "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+    "commit": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+    "committed_at": "2026-11-19T02:36:50-08:00",
+    "subject": "fix(web): consolidate independent payment exports and private scan repairs"
+  },
+  {
+    "branch": "codex/ghostpay-export-authorization-20261119",
+    "commit": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+    "committed_at": "2026-11-19T02:33:39-08:00",
+    "subject": "fix: authorize explicit payment export independently of scans"
+  },
+  {
+    "branch": "codex/ghostpay-private-scan-lint-20261119",
+    "commit": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+    "committed_at": "2026-11-19T02:31:57-08:00",
+    "subject": "fix(web): normalize scan failures while preserving cancellation"
+  },
+  {
+    "branch": "automation/20261119T095600Z/bug/merchant-profile-clock",
+    "commit": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+    "committed_at": "2026-11-19T01:58:37-08:00",
+    "subject": "docs(handoff): pin merchant-profile expiry fix and verification limits"
+  },
+  {
+    "branch": "chatgpt/btc-spent-qualification-20261119",
+    "commit": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+    "committed_at": "2026-11-19T01:35:07-08:00",
+    "subject": "docs(btc): pin current supplemental qualification and review"
+  },
+  {
+    "branch": "chatgpt/ghostpay-remaining-work-20261119",
+    "commit": "509a800439f2feb6173b20d2543746c3d74e9a42",
+    "committed_at": "2026-11-19T01:27:45-08:00",
+    "subject": "Complete remaining-work candidate with reviewed ledger and evidence"
+  },
+  {
+    "branch": "chatgpt/btc-spentness-private-scan-20261118",
+    "commit": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+    "committed_at": "2026-11-19T01:00:33-08:00",
+    "subject": "docs(bitcoin): retain lint correction qualification evidence"
+  },
+  {
+    "branch": "integration/ghostpay-idle-session-completion-20261119",
+    "commit": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+    "committed_at": "2026-11-19T00:58:37-08:00",
+    "subject": "test(web): preserve archive cleanup checks under idle suspension"
+  },
+  {
+    "branch": "automation/20261119T083600Z/bug/json-canonical-array",
+    "commit": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+    "committed_at": "2026-11-19T00:45:34-08:00",
+    "subject": "docs(handoff): record exact audit, wiki and hosted qualification checkpoints"
+  },
+  {
+    "branch": "automation/20261119T083600Z/audit/merchant-clock",
+    "commit": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+    "committed_at": "2026-11-19T00:43:11-08:00",
+    "subject": "docs(audit): record source-backed merchant-profile expiry clock finding in rotation 208"
+  },
+  {
+    "branch": "maintenance/ghostpay-branch-audit-20261119",
+    "commit": "55e7799574d9ab978c24e48addf6792f84e76a56",
+    "committed_at": "2026-11-19T00:31:12-08:00",
+    "subject": "docs: pin final branch census and concrete integration blockers"
+  },
+  {
+    "branch": "integration/ghostpay-master-consolidation-20261118",
+    "commit": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "committed_at": "2026-11-19T00:20:33-08:00",
+    "subject": "Preserve combined runtime results and independent caller acceptance"
+  },
+  {
+    "branch": "chatgpt/btc-spent-private-scan-20261118",
+    "commit": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+    "committed_at": "2026-11-19T00:19:07-08:00",
+    "subject": "fix(btc): bind provider result labels to scan consent"
+  },
+  {
+    "branch": "integration/ghostpay-recovery-reconciled-20261119",
+    "commit": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+    "committed_at": "2026-11-19T00:10:13-08:00",
+    "subject": "docs(recovery): record reconciled source and five red-green regressions"
+  },
+  {
+    "branch": "automation/20261119T073600Z/coordinator/integration-lock",
+    "commit": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+    "committed_at": "2026-11-19T00:09:46-08:00",
+    "subject": "docs(automation): reconcile final review and published checkpoints"
+  },
+  {
+    "branch": "integration/ghostpay-docs-recovery-20261119",
+    "commit": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+    "committed_at": "2026-11-19T00:00:16-08:00",
+    "subject": "docs: record verified remote publication provenance"
+  },
+  {
+    "branch": "automation/20261119T073600Z/bug/camera-visibility",
+    "commit": "84398a79e18673f3e371a405931bc464e1cca99a",
+    "committed_at": "2026-11-18T23:56:56-08:00",
+    "subject": "fix(web): cancel QR imports when the page becomes hidden"
+  },
+  {
+    "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+    "commit": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+    "committed_at": "2026-11-18T23:48:37-08:00",
+    "subject": "Merge current main into reviewed minor and patch dependency candidate"
+  },
+  {
+    "branch": "chatgpt/ghostpay-tm-hardening-20261118",
+    "commit": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+    "committed_at": "2026-11-18T23:44:50-08:00",
+    "subject": "fix(csp): preserve configured policy origins in bundle validation"
+  },
+  {
+    "branch": "chatgpt/ghostpay-private-scan-completion-20261119",
+    "commit": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+    "committed_at": "2026-11-18T23:36:02-08:00",
+    "subject": "fix(web): pause private scanning on app lock and integrate qualified main"
+  },
+  {
+    "branch": "integration/ghostpay-historical-security-promotion-20261119",
+    "commit": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+    "committed_at": "2026-11-18T23:30:42-08:00",
+    "subject": "docs: pin focused historical security promotion and validation receipt"
+  },
+  {
+    "branch": "codex/network-isolation-complete-20261119",
+    "commit": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+    "committed_at": "2026-11-18T23:28:25-08:00",
+    "subject": "docs(privacy): hand off verified source and pending hosted gates"
+  },
+  {
+    "branch": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+    "commit": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+    "committed_at": "2026-11-18T23:09:55-08:00",
+    "subject": "fix(web): revoke cached checkpoint access when idle authority expires"
+  },
+  {
+    "branch": "repair/ghostpay-pr-87-20261119",
+    "commit": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+    "committed_at": "2026-11-18T23:06:01-08:00",
+    "subject": "docs: record bounded compiler blocker on PR 87 repair"
+  },
+  {
+    "branch": "repair/ghostpay-history-scanner-20261118",
+    "commit": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+    "committed_at": "2026-11-18T23:03:36-08:00",
+    "subject": "Merge main e454de6a into historical scanner repair"
+  },
+  {
+    "branch": "repair/ghostpay-history-pool-values-20261118",
+    "commit": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+    "committed_at": "2026-11-18T23:03:29-08:00",
+    "subject": "Merge main e454de6a into historical pool repair"
+  },
+  {
+    "branch": "repair/ghostpay-pr-231-20261118",
+    "commit": "4085622463411d3ba27f4efb7b73a70575170535",
+    "committed_at": "2026-11-18T23:00:06-08:00",
+    "subject": "docs: record Sweep validation after qualified main merge"
+  },
+  {
+    "branch": "integration/ghostpay-mythril-security-closure-20261118",
+    "commit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "committed_at": "2026-11-18T22:58:19-08:00",
+    "subject": "integrate: preserve current main before Mythril security qualification"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+    "commit": "276aed60f19671cc6fa551be616b61041cb45b50",
+    "committed_at": "2026-11-18T22:56:35-08:00",
+    "subject": "docs: clarify offline idle-lock test authority"
+  },
+  {
+    "branch": "chatgpt/ghostpay-idle-lifecycle-20261119",
+    "commit": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+    "committed_at": "2026-11-18T22:43:58-08:00",
+    "subject": "fix(web): revoke expired sessions across sleep and clock changes"
+  },
+  {
+    "branch": "integration/ghostpay-historical-promotion-20261118",
+    "commit": "22af2074a086d9957a18e310ef8572b28d1facd0",
+    "committed_at": "2026-11-18T22:42:19-08:00",
+    "subject": "Recover historical adapter date, retry and TRON completeness safeguards"
+  },
+  {
+    "branch": "integration/ghostpay-qualified-fixes-20261118",
+    "commit": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+    "committed_at": "2026-11-18T22:20:18-08:00",
+    "subject": "integrate: refresh qualified candidate after concurrent beta log merge"
+  },
+  {
+    "branch": "chatgpt/zero-codex/handoff-postmerge-20261118",
+    "commit": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+    "committed_at": "2026-11-18T21:42:50-08:00",
+    "subject": "docs(handoff): source-pin Pages audit and docs rotation 207"
+  },
+  {
+    "branch": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+    "commit": "362dfa999a96dc615a1d146b4f37f8325268a595",
+    "committed_at": "2026-11-18T21:42:02-08:00",
+    "subject": "docs(handoff): record Pages trust model and Wiki link checks rotation 207"
+  },
+  {
+    "branch": "chatgpt/zero-codex/audit-main-20261118-r185",
+    "commit": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+    "committed_at": "2026-11-18T21:40:41-08:00",
+    "subject": "docs(audit): review invoice-schema public export boundary rotation 207"
+  },
+  {
+    "branch": "chatgpt/spec18-recovery-completion-20261118",
+    "commit": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+    "committed_at": "2026-11-18T16:39:50-08:00",
+    "subject": "docs: record Spec 18 completion and executed recovery evidence"
+  },
+  {
+    "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+    "commit": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+    "committed_at": "2026-11-18T16:08:26-08:00",
+    "subject": "docs(recovery): record Spec 18 qualification and recovery guidance"
+  },
+  {
+    "branch": "codex/ghostpay-browser-isolation-20261118",
+    "commit": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+    "committed_at": "2026-11-18T15:52:30-08:00",
+    "subject": "fix(privacy): satisfy typed lint and refresh isolation evidence"
+  },
+  {
+    "branch": "integration/ghostpay-pages-completion-20261118",
+    "commit": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "committed_at": "2026-11-18T07:59:28-08:00",
+    "subject": "docs(handoff): finalize Pages qualification evidence and remaining gates"
+  },
+  {
+    "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
+    "commit": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+    "committed_at": "2026-11-18T05:55:42-08:00",
+    "subject": "docs: retain final beta fixture failure and CI follow-up"
+  },
+  {
+    "branch": "chatgpt/ghostpay-beta-log-artifact-20261118",
+    "commit": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+    "committed_at": "2026-11-18T05:28:44-08:00",
+    "subject": "fix(ci): retain beta logs from their hidden state directory"
+  },
+  {
+    "branch": "chatgpt/ghostpay-viem-alignment-20261118",
+    "commit": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+    "committed_at": "2026-11-18T05:12:08-08:00",
+    "subject": "fix(deps): align viem and restore coverage provider resolution"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+    "commit": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+    "committed_at": "2026-11-18T05:05:53-08:00",
+    "subject": "fix(web): bind scan checkpoints to private v4 seller slots"
+  },
+  {
+    "branch": "chatgpt/ghostpay-invoice-validation-20261118",
+    "commit": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+    "committed_at": "2026-11-18T04:55:05-08:00",
+    "subject": "feat(invoice-schema): restore opt-in pinned signer validation"
+  },
+  {
+    "branch": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+    "commit": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+    "committed_at": "2026-11-18T04:28:08-08:00",
+    "subject": "test(e2e): preserve privacy defaults in Pages receipt and invoice fixtures"
+  },
+  {
+    "branch": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+    "commit": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+    "committed_at": "2026-11-18T03:49:28-08:00",
+    "subject": "fix(web): require explicit consent for each sweep balance lookup"
+  },
+  {
+    "branch": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+    "commit": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+    "committed_at": "2026-11-18T03:35:59-08:00",
+    "subject": "fix(privacy): keep sweep address linkage in session memory only"
+  },
+  {
+    "branch": "chatgpt/ghostpay-recovery-review-20261118",
+    "commit": "18110015e99efbeb4f23d47cd88bd6f917010108",
+    "committed_at": "2026-11-18T03:30:44-08:00",
+    "subject": "fix(recovery): bind import consent and clarify key export boundaries"
+  },
+  {
+    "branch": "chatgpt/ghostpay-own-node-guard-20261118",
+    "commit": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+    "committed_at": "2026-11-18T03:28:48-08:00",
+    "subject": "fix(web): enforce own-node policy before every RPC dispatch"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-idle-clock-20261118",
+    "commit": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+    "committed_at": "2026-11-18T03:25:47-08:00",
+    "subject": "fix(web): enforce idle lock across wall-clock rollback"
+  },
+  {
+    "branch": "chatgpt/ghostpay-sonar-review-20261118",
+    "commit": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+    "committed_at": "2026-11-18T03:24:14-08:00",
+    "subject": "fix(audit): contain static-server paths and request failures"
+  },
+  {
+    "branch": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+    "commit": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+    "committed_at": "2026-11-18T03:20:03-08:00",
+    "subject": "fix(security): reject runner failures in unwired Mythril checker"
+  },
+  {
+    "branch": "claude/ghostpay-completion-audit-ot5jjm",
+    "commit": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+    "committed_at": "2026-11-18T09:50:15Z",
+    "subject": "Integrate lane A: qr-colors bearer hunk, seller-vault R1-R3 harness, Phase-0 PR census"
+  },
+  {
+    "branch": "nodata/jolly-rubin-u4zd45",
+    "commit": "1054daabc5cabe958466ec144582d76137b54910",
+    "committed_at": "2026-11-18T09:49:24Z",
+    "subject": "docs: SonarCloud triage of all 107 open findings; D03/AUD24-01 decision packet"
+  },
+  {
+    "branch": "privacy/hardening-recommendations",
+    "commit": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "committed_at": "2026-11-18T09:48:47Z",
+    "subject": "fix(cli): type receipt parity test for optional stealthAddress"
+  },
+  {
+    "branch": "nodata/doc-sweep-20261118",
+    "commit": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+    "committed_at": "2026-11-18T09:45:03Z",
+    "subject": "docs: sync docs with current code"
+  },
+  {
+    "branch": "nodata/wonderful-darwin-kd1h22",
+    "commit": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+    "committed_at": "2026-11-18T09:43:48Z",
+    "subject": "Record the web unit and full-profile browser rerun at f2f35909"
+  },
+  {
+    "branch": "claude/exciting-brown-7v69cr",
+    "commit": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+    "committed_at": "2026-11-18T09:18:52Z",
+    "subject": "fix(ux-core): mirror the two new invoice error codes and document the option"
+  },
+  {
+    "branch": "claude/lucid-meitner-apalzc",
+    "commit": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+    "committed_at": "2026-11-18T09:01:18Z",
+    "subject": "docs: bring final ledger change table up to date"
+  },
+  {
+    "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+    "commit": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+    "committed_at": "2026-11-18T08:44:06Z",
+    "subject": "Add spec 18 Playwright e2e for stealth key export"
+  },
+  {
+    "branch": "nodata/zealous-hopper-lr0nxe",
+    "commit": "b2604949ae3cfae493bcfb0213d390a213e63037",
+    "committed_at": "2026-11-18T08:43:15Z",
+    "subject": "docs(audit): finalize post-consolidation completion package after independent review"
+  },
+  {
+    "branch": "nodata/wizardly-allen-qwol6u",
+    "commit": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+    "committed_at": "2026-11-18T08:40:15Z",
+    "subject": "Record PR retirement and the owner branch-protection script"
+  },
+  {
+    "branch": "security/mythril-full-remediation-20261118",
+    "commit": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+    "committed_at": "2026-11-18T08:32:40Z",
+    "subject": "docs(audit): update remediation report with independent review G outcomes"
+  },
+  {
+    "branch": "claude/vibrant-cori-scu18b",
+    "commit": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+    "committed_at": "2026-11-18T08:27:39Z",
+    "subject": "feat(btc): recognise spent outputs locally from scanned blocks; provider outpoint query becomes opt-in (spec 12)"
+  },
+  {
+    "branch": "claude/friendly-turing-1ui0on",
+    "commit": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+    "committed_at": "2026-11-18T08:04:45Z",
+    "subject": "Merge origin/main into claude/friendly-turing-1ui0on (rebase-free sync before the scan recheck port)"
+  },
+  {
+    "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+    "commit": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+    "committed_at": "2026-11-18T07:52:37Z",
+    "subject": "Refuse fee-charging policy factories without a token-specific freeze acknowledgement"
+  },
+  {
+    "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+    "commit": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+    "committed_at": "2026-11-18T07:42:02Z",
+    "subject": "docs: apply verified critic corrections to the 2026-11-18 security documents"
+  },
+  {
+    "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+    "commit": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+    "committed_at": "2026-11-18T07:23:32Z",
+    "subject": "deps: bump the npm-major group across 1 directory with 11 updates"
+  },
+  {
+    "branch": "claude/admiring-albattani-6kydor",
+    "commit": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+    "committed_at": "2026-11-18T07:07:42Z",
+    "subject": "docs(handoff): cooperative completion, audit and security-closure execution prompt"
+  },
+  {
+    "branch": "dependabot/github_actions/actions-b9ade1236b",
+    "commit": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+    "committed_at": "2026-11-18T07:01:56Z",
+    "subject": "ci: bump the actions group across 1 directory with 2 updates"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+    "commit": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+    "committed_at": "2026-11-17T22:46:21-08:00",
+    "subject": "docs(handoff): rotation 184 owner gates audit and Wiki source qualification"
+  },
+  {
+    "branch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+    "commit": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+    "committed_at": "2026-11-17T22:45:27-08:00",
+    "subject": "docs(wiki): refresh exact-head qualification and blocked release gates"
+  },
+  {
+    "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
+    "commit": "364b01f847391cd02b3aecb74e18ddd047096c97",
+    "committed_at": "2026-11-17T22:43:34-08:00",
+    "subject": "docs(audit): rotation 184 reconciliation matching source review"
+  },
+  {
+    "branch": "claude/ghostpay-consolidation-9xhtxg",
+    "commit": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+    "committed_at": "2026-11-18T06:32:05Z",
+    "subject": "Merge #204 agent tooling into the consolidated tree"
+  },
+  {
+    "branch": "nodata/eager-babbage-0w6sf6",
+    "commit": "2693b08ed4b1dae35fad604a2324b790f1eee5dc",
+    "committed_at": "2026-11-18T02:31:26Z",
+    "subject": "Fix CodeQL findings in package-map table escaping"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+    "commit": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+    "committed_at": "2026-11-17T17:39:41-08:00",
+    "subject": "test(pages): control verified keystore reimport without pending sweep"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+    "commit": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+    "committed_at": "2026-11-17T16:41:57-07:00",
+    "subject": "fix(pages): focus main on same-view incoming invoice (RED regression)"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+    "commit": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+    "committed_at": "2026-11-17T14:45:41-07:00",
+    "subject": "test(pages): verify keyboard focus after late invoice hash navigation"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+    "commit": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+    "committed_at": "2026-11-17T13:44:00-07:00",
+    "subject": "test(pages): cover anchor navigation and delayed invoice opt-out"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+    "commit": "9732adb949cc7191beddcb986dff76e9f9534537",
+    "committed_at": "2026-11-17T11:46:20-07:00",
+    "subject": "fix(pages): clear retained invoice URL when privacy setting is enabled"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+    "commit": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+    "committed_at": "2026-11-17T08:43:22-07:00",
+    "subject": "fix(pages): retain navigation history state while clearing invoice fragments"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+    "commit": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+    "committed_at": "2026-11-17T06:40:53-07:00",
+    "subject": "test(pages): cover lean-shell invoice fragment removal and user preference"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+    "commit": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+    "committed_at": "2026-11-17T04:45:00-07:00",
+    "subject": "test(pages): cover signed bundled manifest and RPC fail-closed gates"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+    "commit": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+    "committed_at": "2026-11-17T02:44:40-07:00",
+    "subject": "fix(pages): reject inherited Pay rich-tag renderers after verified regression"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+    "commit": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+    "committed_at": "2026-11-16T22:43:36-07:00",
+    "subject": "test(pages): reproduce blocked TagArchive download cleanup leak"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+    "commit": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+    "committed_at": "2026-11-16T21:42:46-07:00",
+    "subject": "fix(pages): ignore inherited renderer names in RichText"
+  },
+  {
+    "branch": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+    "commit": "e05044d4209de7e9cc242c8a83e5fc2264663174",
+    "committed_at": "2026-11-16T20:31:56-07:00",
+    "subject": "docs(privacy): specify future browser-only privacy requirements 5a\u20135l"
+  },
+  {
+    "branch": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+    "commit": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+    "committed_at": "2026-11-16T20:22:30-07:00",
+    "subject": "docs(specs): add requirement 3q to feature requirements index"
+  },
+  {
+    "branch": "consolidation/six-verified-boundaries-20261116",
+    "commit": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+    "committed_at": "2026-11-16T16:49:48-07:00",
+    "subject": "Recover six historical CLI, merchant, transport and UX changes"
+  },
+  {
+    "branch": "consolidation/ops-monitor-bounded-streams-20261116",
+    "commit": "d2e8689b038034233d6587cfca547bff3321fcde",
+    "committed_at": "2026-11-16T16:47:13-07:00",
+    "subject": "Backport bounded release-asset streaming and cancellation to the ops monitor"
+  },
+  {
+    "branch": "codex/ghostpay-unified-completion",
+    "commit": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+    "committed_at": "2026-11-16T16:39:43-07:00",
+    "subject": "Disambiguate injected oracle request from ambient fetch in privacy check"
+  },
+  {
+    "branch": "codex/ghostpay-observability-20261116",
+    "commit": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+    "committed_at": "2026-11-16T13:50:55-07:00",
+    "subject": "feat(relayer): add private metrics listener and signed alerts"
+  },
+  {
+    "branch": "codex/ghostpay-canonical-time-20261116",
+    "commit": "27852ba898968a08f7d7c448fac8b19058189281",
+    "committed_at": "2026-11-16T13:50:49-07:00",
+    "subject": "feat(reconciliation): use canonical block timestamps"
+  },
+  {
+    "branch": "codex/ghostpay-caveman-completion-20261116",
+    "commit": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+    "committed_at": "2026-11-16T13:37:52-07:00",
+    "subject": "fix(i18n): classify merchant identity disclosures"
+  },
+  {
+    "branch": "codex/ghostpay-ops-response-cap-20261116",
+    "commit": "73371b57040c61bdb480e724e8593313d95c6781",
+    "committed_at": "2026-11-16T13:31:01-07:00",
+    "subject": "fix(ops-monitor): cancel capped release streams"
+  },
+  {
+    "branch": "codex/ghostpay-caveman-followup-20261116",
+    "commit": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+    "committed_at": "2026-11-16T13:21:24-07:00",
+    "subject": "fix(i18n): restore full merchant security catalogs"
+  },
+  {
+    "branch": "codex/ghostpay-spec09-matrix-20261116",
+    "commit": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+    "committed_at": "2026-11-16T13:21:24-07:00",
+    "subject": "fix(i18n): restore full merchant security catalogs"
+  },
+  {
+    "branch": "codex/recovery-spec02-unqualified-20261116",
+    "commit": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+    "committed_at": "2026-11-16T03:39:56-07:00",
+    "subject": "UNQUALIFIED recovery: record precise partial backup, review blocker and unfinished validation"
+  },
+  {
+    "branch": "codex/ghostpay-registry-recovery-20261116",
+    "commit": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+    "committed_at": "2026-11-16T03:31:02-07:00",
+    "subject": "Recover pure ERC-6538 delegation helpers and scoped specification audit"
+  },
+  {
+    "branch": "codex/ghostpay-mythril-recovery-20261116",
+    "commit": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+    "committed_at": "2026-11-16T03:30:29-07:00",
+    "subject": "fix(contracts): recover reviewed Mythril output gate and regression fixtures"
+  },
+  {
+    "branch": "codex/ghostpay-completion-20261116",
+    "commit": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+    "committed_at": "2026-11-16T03:06:20-07:00",
+    "subject": "Close audit coverage gaps and record combined qualification evidence"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+    "commit": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+    "committed_at": "2026-11-16T03:04:33-07:00",
+    "subject": "fix(pages): clean up Blob URL and anchor when download click throws"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+    "commit": "17f681915f25441f5c38326ad718b8082495d52a",
+    "committed_at": "2026-11-15T22:44:56-07:00",
+    "subject": "fix(pages): reopen tag vault after unexpected IndexedDB connection close"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+    "commit": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+    "committed_at": "2026-11-15T18:40:31-07:00",
+    "subject": "test(pages): require live provenance before imported invoice status is verified"
+  },
+  {
+    "branch": "chatgpt/ghostpay-historical-consolidation-20261115",
+    "commit": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+    "committed_at": "2026-11-15T18:12:27-07:00",
+    "subject": "test(pages): preserve out-of-order invoice completion regression"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+    "commit": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+    "committed_at": "2026-11-15T17:42:47-07:00",
+    "subject": "fix(pages): distinguish imported invoice annotations from live verified observations"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+    "commit": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+    "committed_at": "2026-11-15T12:44:27-07:00",
+    "subject": "fix(pages): ignore out-of-order invoice build callbacks (RED\u2192GREEN follow-up)"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+    "commit": "433307b869acf2d81b2d12b415631076a89f7213",
+    "committed_at": "2026-11-15T08:44:56-07:00",
+    "subject": "test(pages): require backup verification in unit and devnet acceptance"
+  },
+  {
+    "branch": "chatgpt/ghostpay-top-down-audit-20261115",
+    "commit": "775756931be4683f47e8af6b2ecf26f9458897d7",
+    "committed_at": "2026-11-15T05:36:01-07:00",
+    "subject": "docs(audit): add top-down architecture security review"
+  },
+  {
+    "branch": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+    "commit": "97a617b5b95f04a1e736c5c730c587ef0824d05a",
+    "committed_at": "2026-11-15T05:30:21-07:00",
+    "subject": "docs(audit): record fourth-pass sensitive-surface review"
+  },
+  {
+    "branch": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+    "commit": "90a145740a163a9515e5c70e79be33610b67b293",
+    "committed_at": "2026-11-15T05:25:20-07:00",
+    "subject": "docs(audit): record sensitive-surface third-pass review"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+    "commit": "cf6a8d69620af6271e573a8b20fe1562e89ef81c",
+    "committed_at": "2026-11-15T04:59:17-07:00",
+    "subject": "docs(audit): record Pages beta second-pass finding"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-client-hardening-20261115",
+    "commit": "f3872e90eb255b46a773d78f4f5adb6239db2b4f",
+    "committed_at": "2026-11-15T04:45:48-07:00",
+    "subject": "test(pages): reject oversized streamed client responses"
+  },
+  {
+    "branch": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+    "commit": "9b3a3070499a2a6d70349d540f7aaaed006426e9",
+    "committed_at": "2026-11-15T04:40:51-07:00",
+    "subject": "test(pages): align idle-lock assertion with verified backup states"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+    "commit": "cf5e876ce164e63d535fb6e40319573798b746e1",
+    "committed_at": "2026-11-15T00:41:54-07:00",
+    "subject": "fix(pages): reject off-filter Transfer logs after owner-head RED regression"
+  },
+  {
+    "branch": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+    "commit": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+    "committed_at": "2026-11-14T23:21:35-07:00",
+    "subject": "fix(scan): reject off-filter RPC logs in privacy estimate"
+  },
+  {
+    "branch": "claude/vigilant-johnson-yjgq94",
+    "commit": "4403d3703cd1dff893e1984e98505691267f8a20",
+    "committed_at": "2026-11-15T05:13:13Z",
+    "subject": "test(web): pin the idle-lock hint to the unverified-download wording (GP-PAGES-02)"
+  },
+  {
+    "branch": "integration/consolidated-2026-11-14",
+    "commit": "a89a2e948321314acf97db435e9776d9322a9461",
+    "committed_at": "2026-11-15T05:12:52Z",
+    "subject": "Merge branch 'worker/ci-red-157' into integration/consolidated-2026-11-14"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+    "commit": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+    "committed_at": "2026-11-14T20:37:15-07:00",
+    "subject": "fix(pages): preserve bearer QR classification under caution flags (RED\u2192GREEN)"
+  },
+  {
+    "branch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+    "commit": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+    "committed_at": "2026-11-14T18:23:39-07:00",
+    "subject": "docs(ai): pin combined Pages fix sources and verification gates"
+  },
+  {
+    "branch": "chatgpt/pages-browser-fixes-combined-20261114",
+    "commit": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+    "committed_at": "2026-11-14T18:23:39-07:00",
+    "subject": "docs(ai): pin combined Pages fix sources and verification gates"
+  },
+  {
+    "branch": "chatgpt/pages-release-gate-audit-20261114",
+    "commit": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+    "committed_at": "2026-11-14T18:22:23-07:00",
+    "subject": "docs(ai): register isolated Pages qualification ownership"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+    "commit": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+    "committed_at": "2026-11-14T17:38:31-07:00",
+    "subject": "fix(pages): reject off-filter token and block logs in transfer estimate"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+    "commit": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+    "committed_at": "2026-11-14T11:46:02-07:00",
+    "subject": "fix(pages): reject oversized relayer replies while streaming"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+    "commit": "81fd4c032e29a87ce509236a0398468022c23012",
+    "committed_at": "2026-11-14T08:41:59-07:00",
+    "subject": "fix(pages): retain bearer QR privacy warning under caution flags"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+    "commit": "9bdc9cbade90995e3207b72535a7818f909c2684",
+    "committed_at": "2026-11-14T03:37:49-07:00",
+    "subject": "fix(pages): render negative fiat minor units with one leading sign"
+  },
+  {
+    "branch": "claude/hopeful-bardeen-8ch6l8",
+    "commit": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+    "committed_at": "2026-11-14T10:07:10Z",
+    "subject": "docs(handoff): ultracode prompt for consolidation and hard lanes"
+  },
+  {
+    "branch": "ai/agent-harness-20261113",
+    "commit": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
+    "committed_at": "2026-11-13T22:47:20-07:00",
+    "subject": "docs(ai): add coordinated agent workflow"
+  },
+  {
+    "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+    "commit": "2527d6b9367887508d7d8f678a18564132652a03",
+    "committed_at": "2026-11-14T05:01:22Z",
+    "subject": "test(scope): lock lean-core reachability of deferred code"
+  },
+  {
+    "branch": "haiku/l1-i18n-20261114",
+    "commit": "c6a9033449cd9717d022f1c37913f951b1baaa6e",
+    "committed_at": "2026-11-14T04:49:26Z",
+    "subject": "i18n(es,ja,ar): keep scanPrivacyDisclosure keys in source English"
+  },
+  {
+    "branch": "haiku/l3-ledger-20261114",
+    "commit": "8c91051b449248bfc822a6578a3815b3c9d83ce3",
+    "committed_at": "2026-11-14T04:36:03Z",
+    "subject": "docs(consolidation): Haiku PR ledger #107-#134 vs Pages base c8d4c42"
+  },
+  {
+    "branch": "haiku/l2-pkg-20261114",
+    "commit": "0c8b111cbe899a49b3cb03dc32c375b36ca9768d",
+    "committed_at": "2026-11-14T04:33:56Z",
+    "subject": "fix(merchant-ledger): never count NaN-timed payment as on time"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+    "commit": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+    "committed_at": "2026-11-13T20:46:17-07:00",
+    "subject": "docs(handoff): qualify Pages #145 exact head and record audit/docs coordination"
+  },
+  {
+    "branch": "chatgpt/consolidation-reconciliation-20261113",
+    "commit": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c",
+    "committed_at": "2026-11-13T20:16:59-07:00",
+    "subject": "docs(consolidation): pin Pages ancestry and safe integration gates"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+    "commit": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+    "committed_at": "2026-11-13T15:42:09-07:00",
+    "subject": "docs(pages): reconcile exact-head CI and isolate audit/wiki rotation 82"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+    "commit": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+    "committed_at": "2026-11-13T07:44:34-07:00",
+    "subject": "docs(handoff): record completed Pages #143 exact-head qualification"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+    "commit": "eece5aff554255ca6c02e53849403f66123b8e40",
+    "committed_at": "2026-11-13T00:50:12-07:00",
+    "subject": "docs(handoff): record exact-head Pages smoke boundary CI success"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+    "commit": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+    "committed_at": "2026-11-12T22:45:54-07:00",
+    "subject": "docs(handoff): pin verified Pages RPC red and isolated correction"
+  },
+  {
+    "branch": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+    "commit": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+    "committed_at": "2026-11-12T20:49:50-07:00",
+    "subject": "docs(handoff): pin Pages verifier regression, source SHA and qualification gates"
+  },
+  {
+    "branch": "claude/ghostpay-github-pages-up6cj6",
+    "commit": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+    "committed_at": "2026-11-12T22:07:10Z",
+    "subject": "docs(pages): complete, copy-ready owner checklist; record hosted Pages runs"
+  },
+  {
+    "branch": "chatgpt/ghostpay-beta-qualification-20261112",
+    "commit": "c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa",
+    "committed_at": "2026-11-12T13:30:03-07:00",
+    "subject": "docs: pin GhostPay combined beta qualification gates and outstanding security decisions"
+  },
+  {
+    "branch": "chatgpt/ghostpay-six-fixes-combined-20261112",
+    "commit": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+    "committed_at": "2026-11-12T12:22:44-07:00",
+    "subject": "consolidate(beta): port packages/ux-schedule/src/scheduled.ts from qualified-source candidate"
+  },
+  {
+    "branch": "chatgpt/ghostpay-onion-canonical-port-20261112",
+    "commit": "8277879eeaa003c31fd76b4f840b9628f4b02cf7",
+    "committed_at": "2026-11-12T12:22:17-07:00",
+    "subject": "fix(net-transport): reject noncanonical percent-encoded onion authority"
+  },
+  {
+    "branch": "chatgpt/ghostpay-ux-guide-port-20261112",
+    "commit": "f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b",
+    "committed_at": "2026-11-12T12:21:58-07:00",
+    "subject": "fix(ux-guide): reject non-plain and inherited questionnaire answers"
+  },
+  {
+    "branch": "chatgpt/ghostpay-ux-clock-port-20261112",
+    "commit": "c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df",
+    "committed_at": "2026-11-12T12:21:26-07:00",
+    "subject": "fix(ux-schedule): bind expiry and confirmation to one clock sample"
+  },
+  {
+    "branch": "chatgpt/ghostpay-merchant-csv-port-20261112",
+    "commit": "bbc7dda4ce275613296609a5001bac36c888229e",
+    "committed_at": "2026-11-12T12:21:10-07:00",
+    "subject": "test(merchant-billing): port #124 CSV formula export regressions"
+  },
+  {
+    "branch": "chatgpt/ghostpay-billing-horizon-port-20261112",
+    "commit": "eb21d57c8ad1550481d5d674fa6356ac98f146f0",
+    "committed_at": "2026-11-12T12:20:22-07:00",
+    "subject": "test(merchant-billing): port #123 terminal period boundary regression"
+  },
+  {
+    "branch": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+    "commit": "3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9",
+    "committed_at": "2026-11-12T12:20:04-07:00",
+    "subject": "fix(cli): preserve -- sentinel when consuming option values (#125 port)"
+  },
+  {
+    "branch": "chatgpt/ghostpay-integration-matrix-20261112",
+    "commit": "1a5e815d8446f00a63f98de261081910c9c78ce6",
+    "committed_at": "2026-11-12T12:19:25-07:00",
+    "subject": "docs(consolidation): source-pin incoming beta PR integration matrix"
+  },
+  {
+    "branch": "chatgpt/zero-codex/qualify-98-20261110",
+    "commit": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+    "committed_at": "2026-11-11T13:45:15-07:00",
+    "subject": "docs(handoff): record checkpoint 33 #127 lint failure and isolated candidate follow-up"
+  },
+  {
+    "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+    "commit": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+    "committed_at": "2026-11-11T13:44:25-07:00",
+    "subject": "fix(ux-guide): type prototype inspection as unknown for strict lint"
+  },
+  {
+    "branch": "chatgpt/zero-codex/docs-wiki-20261110",
+    "commit": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+    "committed_at": "2026-11-11T13:42:54-07:00",
+    "subject": "docs(handoff): capture #127 lint block and wiki source checks in maintenance ledger"
+  },
+  {
+    "branch": "chatgpt/zero-codex/audit-secret-box-20261110",
+    "commit": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+    "committed_at": "2026-11-11T13:41:57-07:00",
+    "subject": "docs(audit): record rotation 33 privacy-profile rule and trust-boundary review"
+  },
+  {
+    "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+    "commit": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+    "committed_at": "2026-11-11T10:40:15-07:00",
+    "subject": "fix(ux-schedule): use one validated clock instant for confirmation"
+  },
+  {
+    "branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+    "commit": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+    "committed_at": "2026-11-11T07:42:30-07:00",
+    "subject": "fix(cli): reserve bare -- delimiter when an option value is required"
+  },
+  {
+    "branch": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+    "commit": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+    "committed_at": "2026-11-11T05:45:30-07:00",
+    "subject": "test(merchant-billing): correct literal control and row delimiter assertions"
+  },
+  {
+    "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+    "commit": "7cdc6b32ecafd73636136c852542fddd42213848",
+    "committed_at": "2026-11-11T04:47:47-07:00",
+    "subject": "test(merchant-billing): pin terminal schedule sentinel and last billable period"
+  },
+  {
+    "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+    "commit": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+    "committed_at": "2026-11-11T03:37:32-07:00",
+    "subject": "fix(net-transport): reject raw onion authority escapes before URL parsing"
+  },
+  {
+    "branch": "claude/wonderful-thompson-ir89i9",
+    "commit": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+    "committed_at": "2026-11-11T05:23:16Z",
+    "subject": "test(relayer): concurrent sweep flood with the state journal"
+  },
+  {
+    "branch": "claude/gallant-hamilton-4wzkyn",
+    "commit": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+    "committed_at": "2026-11-11T05:07:46Z",
+    "subject": "Merge remote-tracking branch 'origin/research/privacy-evidence-matrix-20261110' into claude/gallant-hamilton-4wzkyn"
+  },
+  {
+    "branch": "haiku/ghostpay-h01-inventory-20261111",
+    "commit": "747239db1a9b641d761736062c64bfb766d363ed",
+    "committed_at": "2026-11-11T04:06:49Z",
+    "subject": "docs(consolidation): add PR inventory and Haiku workstream ledger"
+  },
+  {
+    "branch": "claude/gracious-heisenberg-97ji6q",
+    "commit": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+    "committed_at": "2026-11-11T02:54:23Z",
+    "subject": "docs: record local qualification results of the final tree"
+  },
+  {
+    "branch": "claude/kind-faraday-8qzf6e",
+    "commit": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+    "committed_at": "2026-11-11T02:41:15Z",
+    "subject": "fix(security): confirm imported RPC endpoints and weaker preferences; pre-check image headers"
+  },
+  {
+    "branch": "claude/nice-ritchie-8vivls",
+    "commit": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+    "committed_at": "2026-11-11T02:37:19Z",
+    "subject": "fix(cli): reconcile accepts distinct router payments sharing (S, E); review follow-ups"
+  },
+  {
+    "branch": "research/privacy-evidence-matrix-20261110",
+    "commit": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e",
+    "committed_at": "2026-11-10T18:40:27-07:00",
+    "subject": "docs(privacy): add source-grounded network/query/authenticity/completeness evidence matrix"
+  },
+  {
+    "branch": "claude/docs-screenshots",
+    "commit": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+    "committed_at": "2026-11-11T01:09:14Z",
+    "subject": "docs: add screenshots, refresh README package map and in-repo wiki"
+  },
+  {
+    "branch": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+    "commit": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+    "committed_at": "2026-11-10T17:46:26-07:00",
+    "subject": "fix(cli): preserve final partial-byte read with concurrent reservations"
+  },
+  {
+    "branch": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+    "commit": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+    "committed_at": "2026-11-10T14:46:45-07:00",
+    "subject": "test(chain-evm-extra): echo request IDs in existing success and malformed-result fixtures"
+  },
+  {
+    "branch": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+    "commit": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+    "committed_at": "2026-11-10T12:45:20-07:00",
+    "subject": "test(cli): preserve fixed recovery-case tuple types in strict TS"
+  },
+  {
+    "branch": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+    "commit": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+    "committed_at": "2026-11-10T10:42:13-07:00",
+    "subject": "test(cli): qualify signed receipt lifecycle across encrypted offline recovery"
+  },
+  {
+    "branch": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+    "commit": "0ab175e552485032672c59d9b38c733545c7c50f",
+    "committed_at": "2026-11-10T09:42:52-07:00",
+    "subject": "test(cli): signed receipts cannot replace fresh RPC evidence"
+  },
+  {
+    "branch": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+    "commit": "5280569b7eaad9b4d996861410211cd40d005fdb",
+    "committed_at": "2026-11-10T08:45:11-07:00",
+    "subject": "fix(ops-monitor): address exact-head ESLint errors in streaming regression"
+  },
+  {
+    "branch": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+    "commit": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+    "committed_at": "2026-11-10T06:38:53-07:00",
+    "subject": "test(cli): cover signed receipt invoice-binding and expectation rejection"
+  },
+  {
+    "branch": "chatgpt/zero-codex-continuation-spec-20261109",
+    "commit": "d15921981ecfe8342886c27c52af43c22c1c6205",
+    "committed_at": "2026-11-09T21:07:56-07:00",
+    "subject": "docs: define ChatGPT-only zero-Codex continuation lane"
+  },
+  {
+    "branch": "codex/ghostpay-approval-gated-auto-integration-20261109",
+    "commit": "e36786bce4e752cb79d60bdca4b640e36ad45753",
+    "committed_at": "2026-11-09T19:04:34-07:00",
+    "subject": "test(ci): match workflow basename in legacy fragment inventory"
+  },
+  {
+    "branch": "docs/future-privacy-feature-specs-20261109",
+    "commit": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+    "committed_at": "2026-11-09T18:50:10-07:00",
+    "subject": "docs: index future-only privacy feature catalog"
+  },
+  {
+    "branch": "integration/ghostpay-beta-consolidated-20261109",
+    "commit": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+    "committed_at": "2026-11-09T18:15:16-07:00",
+    "subject": "Merge GhostPay beta specification and release verifier safety into consolidated integration"
+  },
+  {
+    "branch": "gpt/ghostpay-beta-spec-20261109",
+    "commit": "6697390ff482ba18985de075412ba542e38040ab",
+    "committed_at": "2026-11-09T18:06:48-07:00",
+    "subject": "docs(beta): record first-increment results and qualification limits"
+  },
+  {
+    "branch": "codex/ghostpay-integrate-product-cli-20261109",
+    "commit": "3ec039c554f7052b859975facb2b634a1763d5cf",
+    "committed_at": "2026-11-09T17:58:46-07:00",
+    "subject": "fix(qr): encode exact UTF-8 bytes, enforce byte bounds and matrix validity"
+  },
+  {
+    "branch": "gpt/ghostpay-product-completion-20261109",
+    "commit": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+    "committed_at": "2026-11-09T17:07:24-07:00",
+    "subject": "docs: finalize product acceptance with exact hosted evidence"
+  },
+  {
+    "branch": "gpt/ghostpay-cli-completion-20261109",
+    "commit": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+    "committed_at": "2026-11-09T17:00:54-07:00",
+    "subject": "Record completed CLI parity and exact-source hosted acceptance"
+  },
+  {
+    "branch": "fix/ghostpay-reconciliation-saturated-state-20261109",
+    "commit": "a864949d9ee48cb48a43710f5dbd382032ab8db9",
+    "committed_at": "2026-11-09T16:42:54-07:00",
+    "subject": "test(web): await saturated backup activation and verify durable read-only state"
+  },
+  {
+    "branch": "codex/ghostpay-companion-merchant-20261109",
+    "commit": "b748ecdce06d2dfa911144814161c31a46a09e9b",
+    "committed_at": "2026-11-09T05:30:50-07:00",
+    "subject": "docs(merchant): record integrated acceptance and storage-port guarantees"
+  },
+  {
+    "branch": "codex/ghostpay-policy-localization-20261109",
+    "commit": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+    "committed_at": "2026-11-09T03:59:49-07:00",
+    "subject": "docs: record policy and localization delivery with qualified source evidence"
+  },
+  {
+    "branch": "codex/ghostpay-product-20261109",
+    "commit": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+    "committed_at": "2026-11-09T02:01:05-07:00",
+    "subject": "docs: record product continuation and exact-head qualification"
+  },
+  {
+    "branch": "codex/ghostpay-continuation-20261109",
+    "commit": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40",
+    "committed_at": "2026-11-09T01:14:29-07:00",
+    "subject": "i18n: expose dynamic notice keys to catalog extraction"
+  },
+  {
+    "branch": "codex/ghostpay-consolidation-audit-20261104",
+    "commit": "e2ac398c2c8943a244239b9d6ffa2181e13e7782",
+    "committed_at": "2026-11-04T14:30:08-07:00",
+    "subject": "docs: audit GhostPay branch overlap and integration gates"
+  },
+  {
+    "branch": "codex/setup-autonomous-agent-20261104",
+    "commit": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+    "committed_at": "2026-11-04T14:19:35-07:00",
+    "subject": "fix: install complete manual autonomous agent workflow"
+  },
+  {
+    "branch": "codex/ghostpay-cloud-41868394956",
+    "commit": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+    "committed_at": "2026-11-04T16:46:31Z",
+    "subject": "fix: GhostPay API-funded cloud engineering checkpoint"
+  },
+  {
+    "branch": "claude/ar-a6-combined-backup",
+    "commit": "f5d219851a4715cb947eb224976f97a7bec49380",
+    "committed_at": "2026-11-04T09:06:53Z",
+    "subject": "refactor(web): tag item states facts, never Done; drop the live re-read"
+  },
+  {
+    "branch": "fix/remediation-f95457fd-22ecf9",
+    "commit": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+    "committed_at": "2026-11-04T09:06:08Z",
+    "subject": "fix: Block legacy payment attempts before wallet requests"
+  },
+  {
+    "branch": "claude/consolidation-2026-11-04",
+    "commit": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+    "committed_at": "2026-11-04T09:02:01Z",
+    "subject": "docs(handoff): final ledger dispositions, integration log and owner questions"
+  },
+  {
+    "branch": "claude/cw-w10",
+    "commit": "391454b2609b97dd9e98f65df470dfb880e16142",
+    "committed_at": "2026-11-04T08:55:36Z",
+    "subject": "test(relayer): anvil e2e for front-run permit fallback and owner-drains-first loss"
+  },
+  {
+    "branch": "claude/cw-w11",
+    "commit": "764020c208c144e165437e244b6a1bc43673dc5f",
+    "committed_at": "2026-11-04T08:44:43Z",
+    "subject": "test(web): prove sweep session invalidation before handoff"
+  },
+  {
+    "branch": "claude/ar-a4-btc-headersync",
+    "commit": "27d1580c5c535cef5ea44491716d0d86712df841",
+    "committed_at": "2026-11-04T08:42:44Z",
+    "subject": "test(web-btc): dedupe header-chain view test setup into local helpers"
+  },
+  {
+    "branch": "claude/cw-w7",
+    "commit": "a4ee36ee4328d80fa30d10b4a81af6b1865b2edd",
+    "committed_at": "2026-11-04T08:07:50Z",
+    "subject": "ci: qualify the hosted web artifact for app-only changes"
+  },
+  {
+    "branch": "claude/cw-w9",
+    "commit": "8303c8c6a79ca2aeac1789161ba091fa6772e3aa",
+    "committed_at": "2026-11-04T08:02:49Z",
+    "subject": "fix(relayer): keep budget and nonce held when a send outcome is unknown"
+  },
+  {
+    "branch": "claude/cw-w5",
+    "commit": "f030376a331445f5059061f24238acb5cf867b29",
+    "committed_at": "2026-11-04T07:53:06Z",
+    "subject": "feat(web): finish i18n of shared components and Solana/TRON views"
+  },
+  {
+    "branch": "claude/ar-b3-sweep-permit-states",
+    "commit": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+    "committed_at": "2026-11-04T07:42:54Z",
+    "subject": "fix(web-sweep): word the client-side sig_invalid permit state without the relayer"
+  },
+  {
+    "branch": "claude/cw-w8",
+    "commit": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+    "committed_at": "2026-11-04T07:40:58Z",
+    "subject": "ci: harden the API-funded agent workflows' merge gate, path policy and cache"
+  },
+  {
+    "branch": "claude/cw-w6",
+    "commit": "16cddc21931775fc17ade3a8f37361aed4ae90bf",
+    "committed_at": "2026-11-04T07:25:06Z",
+    "subject": "test(web): move no-feed cases to OP Sepolia now that Base Sepolia has feeds"
+  },
+  {
+    "branch": "claude/ar-c5-device-matrix",
+    "commit": "92af349a2e877d6cf94e7ed95a6466163a205089",
+    "committed_at": "2026-11-04T07:19:25Z",
+    "subject": "test(web-e2e): identify each rendered view by its own heading in device checks"
+  },
+  {
+    "branch": "fix/remediation-b16c7936-5ce634",
+    "commit": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+    "committed_at": "2026-11-04T07:07:01Z",
+    "subject": "fix: Replay unverified router claims on resume"
+  },
+  {
+    "branch": "claude/cw-c5",
+    "commit": "99d80dcd0e18ca3c6ec41fcb1333ff99e9075275",
+    "committed_at": "2026-11-04T06:38:24Z",
+    "subject": "chore(deps): bump follow-redirects 1.16.1 -> 1.16.2"
+  },
+  {
+    "branch": "claude/cw-c4",
+    "commit": "511c23bd925504b02d329e1c82bc30593d3ac496",
+    "committed_at": "2026-11-04T06:28:21Z",
+    "subject": "docs: bring in research and handoff docs from nine source branches"
+  },
+  {
+    "branch": "claude/cw-c2",
+    "commit": "b9cba0978cade31e15faa4067adae448e4dcbc04",
+    "committed_at": "2026-11-04T06:27:51Z",
+    "subject": "docs(chain-adapters): document the executionReverted flag and -32003"
+  },
+  {
+    "branch": "claude/ar-a7-policy-send-guard",
+    "commit": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+    "committed_at": "2026-11-04T06:24:13Z",
+    "subject": "fix(web-policy): refuse any journaled policy payment before the approval"
+  },
+  {
+    "branch": "claude/cw-w1",
+    "commit": "704e268bfa7df57964175f820f67400834bdce43",
+    "committed_at": "2026-11-04T06:14:55Z",
+    "subject": "ci: run typecheck, lint and build as parallel jobs"
+  },
+  {
+    "branch": "claude/ar-c7-embed-iframe-e2e",
+    "commit": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+    "committed_at": "2026-11-04T06:00:59Z",
+    "subject": "test(embed): deterministic interval-driven unit tests; honest reload comment"
+  },
+  {
+    "branch": "claude/wizardly-babbage-mfsdrl",
+    "commit": "ade77362de33156de849989e26206126f978bb8f",
+    "committed_at": "2026-11-04T05:38:43Z",
+    "subject": "docs(handoff): add parallel consolidation and build prompt"
+  },
+  {
+    "branch": "claude/ar-c2-qr-pairing",
+    "commit": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+    "committed_at": "2026-11-04T05:38:12Z",
+    "subject": "fix(web): name the real cause of a pairing export failure and test chain-id ordering"
+  },
+  {
+    "branch": "claude/ar-c4-i18n-create-b4-buffer-ui",
+    "commit": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+    "committed_at": "2026-11-04T04:49:13Z",
+    "subject": "Merge claude/ar-c4-i18n-scan into claude/ar-c4-i18n-create-b4-buffer-ui (Arabic scan/clear label fix)"
+  },
+  {
+    "branch": "claude/ar-c4-i18n-scan",
+    "commit": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+    "committed_at": "2026-11-04T04:49:12Z",
+    "subject": "Merge claude/ar-c4-i18n-pay into claude/ar-c4-i18n-scan (Arabic scan/clear label fix)"
+  },
+  {
+    "branch": "claude/ar-c4-i18n-pay",
+    "commit": "e02d04c7540607624e4bf4627566a5e605242fe1",
+    "committed_at": "2026-11-04T04:48:53Z",
+    "subject": "fix(i18n): distinguish Arabic invoice-QR scan and clear labels"
+  },
+  {
+    "branch": "claude/ar-c1-reconciliation-adr",
+    "commit": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+    "committed_at": "2026-11-04T04:22:44Z",
+    "subject": "docs(adr): record that the reconciliation vault writes document version 3"
+  },
+  {
+    "branch": "claude/ar-a5-announcer-budget",
+    "commit": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+    "committed_at": "2026-11-04T04:15:01Z",
+    "subject": "fix(web-scan): corroborate the page-end checkpoint anchor with both providers"
+  },
+  {
+    "branch": "claude/ar-b1-core-journey",
+    "commit": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+    "committed_at": "2026-11-04T04:13:50Z",
+    "subject": "test(web-e2e): trigger the core-journey reorg by scan progress, not a read height"
+  },
+  {
+    "branch": "docs/ghostpay-deep-research-20261103",
+    "commit": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+    "committed_at": "2026-11-03T19:51:06-07:00",
+    "subject": "docs: add deep GhostPay research and Claude handoff"
+  },
+  {
+    "branch": "claude/ar-b2-lean-bound-receipts",
+    "commit": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+    "committed_at": "2026-11-04T02:43:00Z",
+    "subject": "fix(web): make the receipt profile narrow-only and test its resolution"
+  },
+  {
+    "branch": "claude/ar-b5-testnet-feeds",
+    "commit": "76199cdac3ee336e2751995d511111467141d943",
+    "committed_at": "2026-11-04T01:51:19Z",
+    "subject": "docs(chains): record blocked primary-source fetch for testnet feeds"
+  },
+  {
+    "branch": "claude/ar-a0-pr47-green",
+    "commit": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+    "committed_at": "2026-11-04T01:31:49Z",
+    "subject": "fix(web-e2e): type axe page global via unknown and fail if injection is missing"
+  },
+  {
+    "branch": "claude/ghostpay-autonomous-prompt-scpgun",
+    "commit": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+    "committed_at": "2026-11-04T01:14:17Z",
+    "subject": "docs(handoff): add autonomous completion prompt and launch recommendations"
+  },
+  {
+    "branch": "codex/ghostpay-research-release-qualification-41750257638",
+    "commit": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+    "committed_at": "2026-11-04T01:01:34Z",
+    "subject": "docs: GhostPay independent release-qualification research"
+  },
+  {
+    "branch": "codex/ghostpay-research-documentation-ux-41750257638",
+    "commit": "96fc22c42a704d1c590d56d624fff15a945c8231",
+    "committed_at": "2026-11-04T01:01:33Z",
+    "subject": "docs: GhostPay independent documentation-ux research"
+  },
+  {
+    "branch": "codex/ghostpay-research-acceptance-tests-41750257638",
+    "commit": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+    "committed_at": "2026-11-04T01:01:32Z",
+    "subject": "docs: GhostPay independent acceptance-tests research"
+  },
+  {
+    "branch": "codex/ghostpay-research-security-review-41750257638",
+    "commit": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+    "committed_at": "2026-11-04T01:01:32Z",
+    "subject": "docs: GhostPay independent security-review research"
+  },
+  {
+    "branch": "automation/ghostpay-parallel-review-wave-20261103",
+    "commit": "03a3f5701c89e19667f309bb5f01bd36793a5474",
+    "committed_at": "2026-11-03T17:51:23-07:00",
+    "subject": "docs: describe research wave coordination, costs and verification"
+  },
+  {
+    "branch": "automation/ghostpay-parallel-four-agents-20261103",
+    "commit": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+    "committed_at": "2026-11-03T17:34:54-07:00",
+    "subject": "fix(ci): publish only lane-owned files, excluding downloaded patch artifacts"
+  },
+  {
+    "branch": "automation/ghostpay-recurrent-backlog-20261103",
+    "commit": "5835736c12968231ac7b3152e394077bee453622",
+    "committed_at": "2026-11-03T17:19:12-07:00",
+    "subject": "fix(ci): trust only owned GhostPay cloud PRs and pin merge head"
+  },
+  {
+    "branch": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+    "commit": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+    "committed_at": "2026-11-03T11:50:53-07:00",
+    "subject": "Recognize alternative OpenAI API key secret names in GhostPay cloud workflow"
+  },
+  {
+    "branch": "automation/api-funded-ghostpay-cloud-20261103",
+    "commit": "29ce481d2d4a964f0acc42cc5233eb2d9c3e9482",
+    "committed_at": "2026-11-03T11:39:26-07:00",
+    "subject": "Introduce scheduled API-funded GhostPay development and persistent PR integration"
+  },
+  {
+    "branch": "integration/ghostpay-accepted-20261102",
+    "commit": "f8193502e602c99bb24ff956f142671750b744a0",
+    "committed_at": "2026-11-02T12:50:47-07:00",
+    "subject": "Qualify supported views and payment states with pinned accessibility audits"
+  },
+  {
+    "branch": "checkpoint/ghostpay-recovery-20261102",
+    "commit": "1dffa5a366fc88a4428823634f43247913048915",
+    "committed_at": "2026-11-02T08:45:20-07:00",
+    "subject": "docs: pin recovered public source and unresolved release gates"
+  },
+  {
+    "branch": "checkpoint/ghostpay-source-reconciliation-20261101",
+    "commit": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+    "committed_at": "2026-10-31T23:31:26-07:00",
+    "subject": "docs: clarify approved handoff publication result"
+  },
+  {
+    "branch": "claude/happy-maxwell-onl4x5",
+    "commit": "fd710eb367eff8bbc250024f5a4317875930736b",
+    "committed_at": "2026-10-30T13:32:11Z",
+    "subject": "fix(audit): keep report file mode when regenerating audit 24 report"
+  },
+  {
+    "branch": "claude/haiku-wave-2-handoff-qepfoe",
+    "commit": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+    "committed_at": "2026-10-30T13:26:29Z",
+    "subject": "docs: add wave 2 report for frontier 70d8bf6"
+  },
+  {
+    "branch": "claude/sharp-bohr-uigfgh",
+    "commit": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+    "committed_at": "2026-10-30T13:05:21Z",
+    "subject": "docs(handoff): self-driving Haiku wave 2 prompt"
+  },
+  {
+    "branch": "codex/ghostpay-consolidation-20261030",
+    "commit": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+    "committed_at": "2026-10-30T04:20:17-07:00",
+    "subject": "fix(operations): constrain audit paths and harden reviewed shell checks"
+  },
+  {
+    "branch": "claude/ghostpay-autonomous-completion-y4sk2h",
+    "commit": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+    "committed_at": "2026-10-30T01:22:37-07:00",
+    "subject": "docs: map published checkpoint to verified local trees"
+  },
+  {
+    "branch": "codex/ghostpay-security-audit-20261030",
+    "commit": "63994db6cff8b3b3ca698427eee9e95904230546",
+    "committed_at": "2026-10-30T00:57:13-07:00",
+    "subject": "fix(relayer): bind secret validation and reads to one file descriptor"
+  },
+  {
+    "branch": "claude/gifted-planck-115x2k",
+    "commit": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+    "committed_at": "2026-10-29T05:21:32Z",
+    "subject": "docs(handoff): record the D3, AR2 and B2R fixes; match the halt texts of the verified client"
+  },
+  {
+    "branch": "backup/codex-observed-pr37-915d710-20261028",
+    "commit": "915d71053e2335dfff638b729b160f9df3200c22",
+    "committed_at": "2026-10-28T17:33:25Z",
+    "subject": "test(deploy): give the selftest's release fixture real file modes (fixes CI secrets-and-egress)"
+  },
+  {
+    "branch": "codex/ghostpay-resume-20261028",
+    "commit": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+    "committed_at": "2026-10-28T16:35:54Z",
+    "subject": "docs: preserve branch restart state and qualification limits"
+  },
+  {
+    "branch": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+    "commit": "371d235c3e5926014c00e027196b6aa567ea1b82",
+    "committed_at": "2026-10-28T16:35:53Z",
+    "subject": "docs: preserve branch restart state and qualification limits"
+  },
+  {
+    "branch": "ghostpay-cloud-recovery-2026-10-26",
+    "commit": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+    "committed_at": "2026-10-28T16:35:53Z",
+    "subject": "docs: preserve branch restart state and qualification limits"
+  },
+  {
+    "branch": "ghostpay-local-lean-boundary-20261027",
+    "commit": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+    "committed_at": "2026-10-28T16:35:53Z",
+    "subject": "docs: preserve branch restart state and qualification limits"
+  },
+  {
+    "branch": "ghostpay-offline-deps-2026-10-27",
+    "commit": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+    "committed_at": "2026-10-28T16:35:53Z",
+    "subject": "docs: preserve branch restart state and qualification limits"
+  },
+  {
+    "branch": "ghostpay-sbom-repro-2026-10-27",
+    "commit": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+    "committed_at": "2026-10-28T16:35:53Z",
+    "subject": "docs: preserve branch restart state and qualification limits"
+  },
+  {
+    "branch": "claude/portable-hosting-kit",
+    "commit": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+    "committed_at": "2026-10-27T23:25:17Z",
+    "subject": "chore(hosting-kit): reconcile with recovered GhostPay tree a1478b2c; HK_WEB_DIST; EPIPE-safe CLI"
+  },
+  {
+    "branch": "claude/cool-albattani-xopr89",
+    "commit": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+    "committed_at": "2026-10-25T18:17:02Z",
+    "subject": "docs(handoff): CI and Integration green on 643d1ed with all lean fixes"
+  },
+  {
+    "branch": "backup/pr30-before-consolidation-20261025",
+    "commit": "356fe5e44d42db1731d6b35794c6474afcc23037",
+    "committed_at": "2026-10-25T00:27:05Z",
+    "subject": "Merge worker/chain-data: sourced Sepolia ETH/USD feed, token annotations, Tron genesis pins"
+  },
+  {
+    "branch": "backup/pr31-before-consolidation-20261025",
+    "commit": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+    "committed_at": "2026-10-25T00:20:12Z",
+    "subject": "test(devnet): native receipt must verify; unregistered devnet tokens stay unverified"
+  },
+  {
+    "branch": "claude/adoring-wozniak-850ue6",
+    "commit": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+    "committed_at": "2026-10-25T00:20:12Z",
+    "subject": "test(devnet): native receipt must verify; unregistered devnet tokens stay unverified"
+  },
+  {
+    "branch": "work/ghostpay-consolidation-review-20261025",
+    "commit": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+    "committed_at": "2026-10-25T00:20:12Z",
+    "subject": "test(devnet): native receipt must verify; unregistered devnet tokens stay unverified"
+  },
+  {
+    "branch": "docs/lean-release-handoff-2026-10-24",
+    "commit": "2b032d77fef95d5eaa446a72fda2eef46e83bbcd",
+    "committed_at": "2026-10-24T15:00:15-07:00",
+    "subject": "docs: prioritize one EVM lean core and preserve restart evidence"
+  },
+  {
+    "branch": "work/ghostpay-pr26-qa-2026-10-24",
+    "commit": "77e7d7b6dd21da1995259c8950141db0d34bcb6e",
+    "committed_at": "2026-10-24T15:19:26Z",
+    "subject": "docs: checkpoint PR26 safety fixes and exact QA failure handoff"
+  },
+  {
+    "branch": "work/local-reconstruction-2026-10-24",
+    "commit": "bd320d530c725c0edc820b496ea298d741c7ba9e",
+    "committed_at": "2026-10-24T01:24:48Z",
+    "subject": "feat: review invoice QR imports and bound hostile wallet discovery"
+  },
+  {
+    "branch": "codex/seller-ledger-receipt-qr",
+    "commit": "bb011134c1bf9cd0e75090fec75d85235d637281",
+    "committed_at": "2026-10-22T04:53:57-07:00",
+    "subject": "feat(web): add scoped seller ledger and signed receipt QR exchange"
+  },
+  {
+    "branch": "integration/consolidated-2026-10-21",
+    "commit": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+    "committed_at": "2026-10-22T04:10:48-07:00",
+    "subject": "Exercise storage and UI failure paths and scope required integration fixtures"
+  },
+  {
+    "branch": "claude/laughing-bardeen-4t20ys",
+    "commit": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+    "committed_at": "2026-10-21T21:15:35-07:00",
+    "subject": "test(relayer): reject query strings on HTTP API routes"
+  },
+  {
+    "branch": "claude/remote-extensions-4",
+    "commit": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+    "committed_at": "2026-10-21T22:59:06Z",
+    "subject": "fix(web,chain-adapters,btc): scan liveness/reorg/chainId, token allowlist, signTransactionHash, bidi marking, linear regexes, keystore import hardening, tag report, hostile-head checks, opt-in verifiers; round 4b report"
+  },
+  {
+    "branch": "claude/remote-extensions-5",
+    "commit": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+    "committed_at": "2026-10-21T21:46:39Z",
+    "subject": "test: adopt Stryker killer tests into packages (7 files, test-only)"
+  },
+  {
+    "branch": "claude/remote-extensions-1",
+    "commit": "39cce4663d98c7da06775441a301040af51907ed",
+    "committed_at": "2026-10-21T21:36:59Z",
+    "subject": "docs(remote): assurance round 2 reports (stryker, static analysis, differential, red team, fuzz, chaos, repro build)"
+  },
+  {
+    "branch": "claude/remote-extensions-3",
+    "commit": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+    "committed_at": "2026-10-21T19:19:52Z",
+    "subject": "docs(remote): qa-report re-run after merge and round-3b fixes"
+  },
+  {
+    "branch": "claude/remote-extensions-10",
+    "commit": "698404ca488c87347858105bda66be21bf428303",
+    "committed_at": "2026-10-21T18:03:39Z",
+    "subject": "chore(deps): override ws and underscore to patched versions so npm audit --omit=dev passes"
+  },
+  {
+    "branch": "claude/remote-extensions-9",
+    "commit": "f09decc278c2052c90dfa209a7098888c8d9877a",
+    "committed_at": "2026-10-21T17:42:19Z",
+    "subject": "fix(net-harness): move TLS test fixture under src/test/ (secret scan skips test dirs by design)"
+  },
+  {
+    "branch": "claude/remote-extensions-8",
+    "commit": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+    "committed_at": "2026-10-21T16:47:07Z",
+    "subject": "fix(cli): build config must not map sibling packages to source"
+  },
+  {
+    "branch": "claude/remote-extensions-7",
+    "commit": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+    "committed_at": "2026-10-21T16:36:57Z",
+    "subject": "Merge origin/claude/remote-extensions-1 into claude/remote-extensions-7"
+  },
+  {
+    "branch": "claude/remote-extensions-6",
+    "commit": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+    "committed_at": "2026-10-21T16:36:54Z",
+    "subject": "docs(chain-ports): verdict summary and third-party note"
+  },
+  {
+    "branch": "gh-pages",
+    "commit": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+    "committed_at": "2026-10-21T16:36:35Z",
+    "subject": "Publish GhostPay build with help, why, privacy options and how-it-works pages"
+  },
+  {
+    "branch": "claude/pages-site-1",
+    "commit": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+    "committed_at": "2026-10-21T16:36:32Z",
+    "subject": "Add Pages help, manifesto, privacy options and how-it-works site sources"
+  },
+  {
+    "branch": "claude/docs-snapshot-2",
+    "commit": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+    "committed_at": "2026-10-21T16:25:41Z",
+    "subject": "docs(remote): reports snapshot (audits, stress, qa, assurance, specs; partial/unverified)"
+  },
+  {
+    "branch": "claude/docs-snapshot-1",
+    "commit": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+    "committed_at": "2026-10-21T16:24:30Z",
+    "subject": "docs(remote): growth feature research and remaining reports snapshot (partial/unverified)"
+  },
+  {
+    "branch": "claude/remote-extensions-2",
+    "commit": "df150cbdb58203789f5afc3050e75d92c655fa49",
+    "committed_at": "2026-10-21T12:51:37Z",
+    "subject": "test(mutation): gambit run over 4 contracts, killer tests, Mythril on PolicyRouter, results and docs"
+  },
+  {
+    "branch": "claude/inspiring-fermat-vxv689",
+    "commit": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+    "committed_at": "2026-10-21T11:31:11Z",
+    "subject": "feat: core-crypto ignoreViewTag option, schema rejects hidden Unicode, deep scan reuses core-crypto"
+  },
+  {
+    "branch": "docs/readme-and-wiki",
+    "commit": "ab2b61687210f79fa5401c8a25fa9a96bcb1ca61",
+    "committed_at": "2026-10-21T09:21:43Z",
+    "subject": "Rewrite README to reflect design-only status; add wiki pages"
+  }
+]

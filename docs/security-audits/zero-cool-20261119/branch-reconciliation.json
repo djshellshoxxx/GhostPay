@@ -1,0 +1,42 @@
+{
+  "source_cutoff_utc": "2026-11-20T06:29:30.589769+00:00",
+  "source_cutoff_local": "2026-11-19 22:29:30 America/Los_Angeles",
+  "ref_count": 12,
+  "initial_unique_core_versions": 626,
+  "initial_core_paths": 506,
+  "supplemental_hosting_versions": 44,
+  "supplemental_hosting_paths": 40,
+  "final_unique_versions": 670,
+  "final_paths": 546,
+  "appearances": 6218,
+  "per_ref_paths": {
+    "main": 503,
+    "release": 529,
+    "consolidation": 529,
+    "privacy-snapshot": 537,
+    "quick-hide": 538,
+    "clipboard": 530,
+    "format": 529,
+    "erc20-simulation": 503,
+    "main-final": 503,
+    "recovered-fixes": 503,
+    "unique-code": 503,
+    "tor-completion": 511
+  },
+  "unknown_existing_path_versions": [],
+  "unaccounted_production_source_paths": {
+    "main": [],
+    "release": [],
+    "consolidation": [],
+    "privacy-snapshot": [],
+    "quick-hide": [],
+    "clipboard": [],
+    "format": [],
+    "erc20-simulation": [],
+    "main-final": [],
+    "recovered-fixes": [],
+    "unique-code": [],
+    "tor-completion": []
+  },
+  "method": "Exact git ls-tree object comparison across all final pins, plus complete selected src-root path census excluding test/testutil/spec/fixtures and static data; hosting inventory adds the entire current hosting source closure, bin entry point and newest Tor deployment/workflow sources."
+}

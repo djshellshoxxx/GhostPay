@@ -1,0 +1,3008 @@
+[
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/App.tsx",
+    "blob": "14d318dc3abc774a06e05e33ac03d2a7645afe6e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/AppLean.tsx",
+    "blob": "b9bbdfe053510ba13ef5ebac4488411a04f6770e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/AppShell.tsx",
+    "blob": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/BtcView.tsx",
+    "blob": "eb13c2fe7fae588698aa92127efb9511c2cce49a",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/esplora.ts",
+    "blob": "f5375aac78bbd9fe358c43581505929b55b78bfd",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/headers.ts",
+    "blob": "d6549834a10a5e95c89a122a6a81a0cb9bd8e472",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/inclusion.ts",
+    "blob": "d6aac89cfacb8ae89a083b73cc4e76aa55f6d5e7",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/network.ts",
+    "blob": "d51a12efb255baa9f515d4b46a7d3b160497449c",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/oracleBridge.ts",
+    "blob": "ac5566de26b501c0f519ac929cdf6649119c9d57",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/oracleSource.ts",
+    "blob": "433bf23e9272b6834105d15badb5a8bdd2593299",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scan.ts",
+    "blob": "225c60b88048668f544c3ef2550a5e667298f58b",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scan.worker.ts",
+    "blob": "cb2c6aa478ef09ebd52f74c0a6cf791c2449464b",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scanStore.ts",
+    "blob": "55684eda3b6878b396d538032a733c912c597ffc",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+    "blob": "ff4c4d357c170f07745c64a3126d93142b4a0c28",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+    "blob": "085eaa971fa903372c684d9e6635ba5fae90c9fa",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+    "blob": "9dd46486193cd64eb937bb38664725aa6d664d9b",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/scanWorkerSource.ts",
+    "blob": "e8389dd3042ac451dc31b874a33d3098c29ccbf4",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/sweep.ts",
+    "blob": "f3e6c645a170422781b6ebca616b8cd022ebded6",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/verification.ts",
+    "blob": "9405f498163dc89804917baeadf28e595f5e6cb2",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/btc/wallet.ts",
+    "blob": "88481172a4750b87299388960d18d73d62c20548",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+    "blob": "2798b82ef3d1fa095e8c487847a1c98702607bb9",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/PolicyPay.tsx",
+    "blob": "4fa15f2aa20e428f70d789ec9186c6d36377ccc6",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+    "blob": "995bca7d3607da0a4e9e2628ac8ae9f161ff6320",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/PolicyView.tsx",
+    "blob": "92b02eb63315b9afd01e653b268a5a6de9b59d64",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/chain.ts",
+    "blob": "758e19ef20d5f1ad2d3388979fb2d59e9db6578c",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/create.ts",
+    "blob": "b37fbba06cfdebda896debeb1eb7fddd8dc32be4",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/deploymentEvidence.ts",
+    "blob": "21b6f4f009532bb2dc40979f2e8186cec3cf67ff",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/flag.ts",
+    "blob": "0102c120e4a94724919e6e5ea7e097f04d60e802",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/guard.ts",
+    "blob": "f54e0106f38e3f7c882667999e683ea2e47492ec",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/pay.ts",
+    "blob": "26e0609e4b4554e6dce06f8949895e9fdf8f5bfb",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/paymentEvidence.ts",
+    "blob": "9716b25ad550c7593a6cf4077b174798a5aedeae",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/policyTime.ts",
+    "blob": "6b0f6a6c876addcb3dcac31474b9c89f0345423e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/scan2.ts",
+    "blob": "406f8540269ff0b6e335888c5b24840c3cf7d3e6",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/send.ts",
+    "blob": "7058f958a66eafc4c6bc77156cb968e5bd23cc40",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/withdraw.ts",
+    "blob": "292f043fa2966470785cb1a5119af0faac655fc3",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/withdrawalJournal.ts",
+    "blob": "54b669d2bd377ed2818f8b39fb09884fbb8851eb",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/policy/withdrawalState.ts",
+    "blob": "0099a75e9fcb4bba204c4b920926f564e0198e39",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/registry/RegistryView.tsx",
+    "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/registry/ref/ERC6538Registry.sol",
+    "blob": "8a0ac539be5741106a004b7f20643371bf4c8091",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/solana/SolanaView.tsx",
+    "blob": "71eab57cf7ff65433d04f22fb4ec84574ddef17e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/solana/network.ts",
+    "blob": "bef2d08f8d9b5a0d993d20e5a89c505cb0f6bdf7",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/solana/rpc.ts",
+    "blob": "7d42e740e67c7d63998845b4718dc77eff7cf7cf",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/solana/scan.ts",
+    "blob": "240d1cc62e08b8daa9d58a5b724884e343faaaa6",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/solana/sweep.ts",
+    "blob": "139043f238bbde201126c44d16568334ca399d56",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/solana/wallet.ts",
+    "blob": "cfc84c9563d30081f0af3479b22fc61966a03f6f",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/tron/TronView.tsx",
+    "blob": "90872e1a235eaac9355405d1cdc37bfb5b24a752",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/tron/network.ts",
+    "blob": "80d9e33e0f70a34e93a41d8b1e3f940b61717595",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/tron/rpc.ts",
+    "blob": "d7c04cbad5e1f2815aa6c5094806c0a50753ff23",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/tron/scan.ts",
+    "blob": "5168b896d295e19e12df3b2e3984b40666b164e1",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/tron/sweep.ts",
+    "blob": "5589e68b7bf7b6399937fe783fd6ddb888dbe65c",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/features/tron/wallet.ts",
+    "blob": "3b7646ca11818d5743dfc3f169d29237d6e26412",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/main.tsx",
+    "blob": "5531434b522b3bf288fefe97545673c3ca8362a6",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/state.tsx",
+    "blob": "0a8c106cf9f67357a4af5304f652612076d7d3da",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/About.tsx",
+    "blob": "8a67d3c1a175c13e12195f72c3c18d3b080c5c4d",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/CreateInvoice.tsx",
+    "blob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/Home.tsx",
+    "blob": "d7d58aa33587391118c78bac04b81ebf123ed3f1",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/Pay.tsx",
+    "blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/Scan.tsx",
+    "blob": "eed9daf882711659720a577138b3e08554ce9fe9",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/SellerKeys.tsx",
+    "blob": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/SellerPairing.tsx",
+    "blob": "4e325d81f2adb73dc10a1dc0f02522286889db22",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/Settings.tsx",
+    "blob": "05179dfa993616e1cf59f19717a1263d61f6c31e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/views/Sweep.tsx",
+    "blob": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "path": "apps/web/src/vite-env.d.ts",
+    "blob": "11f02fe2a0061d6e6e1f271b21da95423b448b32",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/AppShell.tsx",
+    "blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/BtcView.tsx",
+    "blob": "640097f71621009a82c2f3f81d4bf831506b5121",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/esplora.ts",
+    "blob": "fd92ea66e4345de7f90dd6711ae3a02cfef24128",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/headers.ts",
+    "blob": "4aa79bb2064e1854f663a485856ff79508839600",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/oracleSource.ts",
+    "blob": "dbbd9003c66f9ff6f2a9960c2b83257be21eb90d",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/scan.ts",
+    "blob": "4f9128f1665873c12447e85d4cc0295cc8930abc",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+    "blob": "c6e54ccce2cc2e2b432ddf22dc0294370870d238",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+    "blob": "72a1cfc7a9434c342fbbf5c12abf1fa2bf9bca45",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+    "blob": "52fb26c62a85c44ddafac2c1e549a29b143a1a61",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/scanWorkerSource.ts",
+    "blob": "91b1fb2a24657eeaa1698616a6899750e79ecc47",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/btc/verification.ts",
+    "blob": "37c3c4e87b0ee9b901358c5de3c12eb9c20745cd",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/policy/PolicyPay.tsx",
+    "blob": "2c29b545732754997b4ac0c3fb93096f125ee511",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+    "blob": "642364b7da1d9a086655aef8d4f04ec055563dce",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/policy/PolicyView.tsx",
+    "blob": "18af8fbd66ba4257139ad4b7a55823cce6df6423",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/policy/pay.ts",
+    "blob": "1da6869e3d9322004d29ede85ac20923f31d1777",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/policy/send.ts",
+    "blob": "04ac08be009c2942b394f35975171325738ce12a",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/registry/RegistryView.tsx",
+    "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/solana/SolanaView.tsx",
+    "blob": "f9de347e9fac5ce8e370f00e479e6a9d1c785a92",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/solana/scan.ts",
+    "blob": "205fa989319ef3ed7acc6983a32fe28629e94251",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/solana/sweep.ts",
+    "blob": "df4691faeab16a7f55f033ef6b77c27183b0facd",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/tron/TronView.tsx",
+    "blob": "bc28c9d2d442e92da89328121da5be24c332ad18",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/tron/scan.ts",
+    "blob": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/features/tron/sweep.ts",
+    "blob": "63d2672803485593f9c31566d585b8d2ea99e1aa",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/main.tsx",
+    "blob": "290ba486b19ad7a36139b8559130fd6c6b498e1e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/state.tsx",
+    "blob": "68f481926a20ee6d528edea74773047194c434d9",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/CreateInvoice.tsx",
+    "blob": "5d562426908fbffc8b9aecb4c8e4a223a3a174f2",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/Home.tsx",
+    "blob": "550ebea73f6626d4f71d2479b055b9581d344cea",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/Pay.tsx",
+    "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/Scan.tsx",
+    "blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/SellerKeys.tsx",
+    "blob": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/Settings.tsx",
+    "blob": "fb144d734ef2e05825735e01aaeb3243d43085f7",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "path": "apps/web/src/views/Sweep.tsx",
+    "blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      }
+    ]
+  },
+  {
+    "ref": "privacy-snapshot",
+    "commit": "d6819796a9542acc488b896786faffe83b913d9b",
+    "path": "apps/web/src/AppShell.tsx",
+    "blob": "14dcf7c9fa149e95dce531a81afe8493f2123452",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      }
+    ]
+  },
+  {
+    "ref": "privacy-snapshot",
+    "commit": "d6819796a9542acc488b896786faffe83b913d9b",
+    "path": "apps/web/src/views/Scan.tsx",
+    "blob": "ad2bc9f8ef82de6151b8d769ad468d0761a9026e",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      }
+    ]
+  },
+  {
+    "ref": "privacy-snapshot",
+    "commit": "d6819796a9542acc488b896786faffe83b913d9b",
+    "path": "apps/web/src/views/Settings.tsx",
+    "blob": "83a8148de6a30fe4e34a287af19d72e2a7dd05fc",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      }
+    ]
+  },
+  {
+    "ref": "quick-hide",
+    "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "path": "apps/web/src/AppShell.tsx",
+    "blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+    "status": "reviewed",
+    "notes": "Complete main source read; each unique newer variant read directly or through its complete diff against an already-read version. Identical hashes across the listed sources share this source review. No runtime/security tests executed.",
+    "sources": [
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      }
+    ]
+  }
+]

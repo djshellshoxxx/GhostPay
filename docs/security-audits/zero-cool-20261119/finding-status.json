@@ -1,0 +1,626 @@
+{
+  "meaning": "Source status only; corrected does not mean executed tests or deployed. Original main and main-final retained separately. WV-06/MC-03 is one family; remaining TRON token path persists in every snapshot.",
+  "findings": [
+    {
+      "id": "WEB-LIB-01",
+      "severity": "Medium",
+      "scope": "browser",
+      "title": "RPC receipt identity/status validation",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "corrected",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "corrected",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WV-03",
+      "severity": "Medium",
+      "scope": "browser",
+      "title": "Idle lock retains ordinary authority for an unbacked session",
+      "status_by_ref": {
+        "main": "present",
+        "release": "corrected",
+        "consolidation": "corrected",
+        "privacy-snapshot": "corrected",
+        "quick-hide": "corrected",
+        "clipboard": "corrected",
+        "format": "corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WEB-LIB-03",
+      "severity": "Medium",
+      "scope": "browser",
+      "title": "Async wrapper-owned key copies outlive session revocation",
+      "status_by_ref": {
+        "main": "present",
+        "release": "corrected",
+        "consolidation": "corrected",
+        "privacy-snapshot": "corrected",
+        "quick-hide": "corrected",
+        "clipboard": "corrected",
+        "format": "corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WV-04",
+      "severity": "Medium",
+      "scope": "browser",
+      "title": "Pending sweep does not invalidate edited review context",
+      "status_by_ref": {
+        "main": "present",
+        "release": "corrected",
+        "consolidation": "corrected",
+        "privacy-snapshot": "corrected",
+        "quick-hide": "corrected",
+        "clipboard": "corrected",
+        "format": "corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WV-01",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Wallet connection continues after app consent becomes stale",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "ZC-CRYPTO-01",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Receipt guidance overstates omitted recipient binding",
+      "status_by_ref": {
+        "main": "not-applicable",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "not-applicable",
+        "main-final": "not-applicable",
+        "recovered-fixes": "not-applicable",
+        "unique-code": "not-applicable",
+        "tor-completion": "not-applicable"
+      }
+    },
+    {
+      "id": "WV-05",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Selected TRON testnet is not bound to node genesis",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WV-06/MC-03",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Match-conditioned non-EVM scan requests disclose matching payments",
+      "status_by_ref": {
+        "main": "present",
+        "release": "partially-corrected",
+        "consolidation": "partially-corrected",
+        "privacy-snapshot": "partially-corrected",
+        "quick-hide": "partially-corrected",
+        "clipboard": "partially-corrected",
+        "format": "partially-corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WEB-LIB-02",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Malformed ERC-20 simulation boolean is classified successful",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "corrected",
+        "main-final": "present",
+        "recovered-fixes": "corrected",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "NPE-01",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Rejected multipart conflicts extend the idle deadline",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "corrected",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "corrected",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "NPE-02",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Configured indexer URL normalization has no work budget",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "MC-02",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "TRON scan accepts incomplete block ranges",
+      "status_by_ref": {
+        "main": "present",
+        "release": "corrected",
+        "consolidation": "corrected",
+        "privacy-snapshot": "corrected",
+        "quick-hide": "corrected",
+        "clipboard": "corrected",
+        "format": "corrected",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "WEB-LIB-04",
+      "severity": "Low",
+      "scope": "browser",
+      "title": "Backup cleanup can overwrite newer unrelated clipboard content",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "corrected",
+        "quick-hide": "corrected",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      }
+    },
+    {
+      "id": "MC-01",
+      "severity": "Low",
+      "scope": "supporting-api",
+      "title": "Software Bitcoin signer can finish after abort/disposal",
+      "status_by_ref": {
+        "main": "present-supporting-api",
+        "release": "present-supporting-api",
+        "consolidation": "present-supporting-api",
+        "privacy-snapshot": "present-supporting-api",
+        "quick-hide": "present-supporting-api",
+        "clipboard": "present-supporting-api",
+        "format": "present-supporting-api",
+        "erc20-simulation": "present-supporting-api",
+        "main-final": "present-supporting-api",
+        "recovered-fixes": "present-supporting-api",
+        "unique-code": "present-supporting-api",
+        "tor-completion": "present-supporting-api"
+      }
+    },
+    {
+      "id": "ZC-CRYPTO-02",
+      "severity": "Low",
+      "scope": "supporting-api",
+      "title": "Legacy vault rekey can restore context after lock",
+      "status_by_ref": {
+        "main": "present-supporting-api",
+        "release": "present-supporting-api",
+        "consolidation": "present-supporting-api",
+        "privacy-snapshot": "present-supporting-api",
+        "quick-hide": "present-supporting-api",
+        "clipboard": "present-supporting-api",
+        "format": "present-supporting-api",
+        "erc20-simulation": "present-supporting-api",
+        "main-final": "present-supporting-api",
+        "recovered-fixes": "present-supporting-api",
+        "unique-code": "present-supporting-api",
+        "tor-completion": "present-supporting-api"
+      }
+    },
+    {
+      "id": "ZC-CHAIN-01",
+      "severity": "Low",
+      "scope": "gated-contract-api",
+      "title": "Policy-account native buffer can be stranded",
+      "status_by_ref": {
+        "main": "present-gated-api",
+        "release": "present-gated-api",
+        "consolidation": "present-gated-api",
+        "privacy-snapshot": "present-gated-api",
+        "quick-hide": "present-gated-api",
+        "clipboard": "present-gated-api",
+        "format": "present-gated-api",
+        "erc20-simulation": "present-gated-api",
+        "main-final": "present-gated-api",
+        "recovered-fixes": "present-gated-api",
+        "unique-code": "present-gated-api",
+        "tor-completion": "present-gated-api"
+      }
+    }
+  ],
+  "source_blobs": {
+    "main": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "shell": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "sweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "receipt": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "45983a55998d9ba820c00466f941670231cb445a",
+      "tronscan": "5168b896d295e19e12df3b2e3984b40666b164e1"
+    },
+    "release": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "shell": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "sweep": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "receipt": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "tronscan": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15"
+    },
+    "consolidation": {
+      "wallet": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "shell": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "sweep": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "receipt": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "tronrpc": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "tronscan": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15"
+    },
+    "privacy-snapshot": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "shell": "14dcf7c9fa149e95dce531a81afe8493f2123452",
+      "sweep": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "receipt": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "clipboard": "c92bd4951f23325c854cdd8ca37f1ca1aa1a91b6",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "tronscan": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15"
+    },
+    "quick-hide": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "shell": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+      "sweep": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "receipt": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "clipboard": "c92bd4951f23325c854cdd8ca37f1ca1aa1a91b6",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "tronscan": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15"
+    },
+    "clipboard": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "shell": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "sweep": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "receipt": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "tronscan": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15"
+    },
+    "format": {
+      "wallet": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "shell": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "sweep": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "receipt": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "tronrpc": "d0a921bb15848c23db3338fa1c96e18146cbda88",
+      "tronscan": "96780c2894ec6fd93bd6c7c081632ab8b3a6bf15"
+    },
+    "erc20-simulation": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+      "session": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "shell": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "sweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "receipt": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "45983a55998d9ba820c00466f941670231cb445a",
+      "tronscan": "5168b896d295e19e12df3b2e3984b40666b164e1"
+    },
+    "main-final": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "shell": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "sweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "receipt": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "45983a55998d9ba820c00466f941670231cb445a",
+      "tronscan": "5168b896d295e19e12df3b2e3984b40666b164e1"
+    },
+    "recovered-fixes": {
+      "wallet": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "simulation": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+      "session": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "shell": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "sweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "receipt": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "tronrpc": "45983a55998d9ba820c00466f941670231cb445a",
+      "tronscan": "5168b896d295e19e12df3b2e3984b40666b164e1"
+    },
+    "unique-code": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "shell": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "sweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "receipt": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "45983a55998d9ba820c00466f941670231cb445a",
+      "tronscan": "5168b896d295e19e12df3b2e3984b40666b164e1"
+    },
+    "tor-completion": {
+      "wallet": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "simulation": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "session": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "shell": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "sweep": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "receipt": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "clipboard": "c86f77de050b838204e3f4222cd796ca6e54337a",
+      "assembler": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "tronrpc": "45983a55998d9ba820c00466f941670231cb445a",
+      "tronscan": "5168b896d295e19e12df3b2e3984b40666b164e1"
+    }
+  },
+  "source_paths": {
+    "wallet": "apps/web/src/lib/wallet.ts",
+    "simulation": "apps/web/src/lib/txGuard.ts",
+    "session": "apps/web/src/lib/session.ts",
+    "shell": "apps/web/src/AppShell.tsx",
+    "sweep": "apps/web/src/views/Sweep.tsx",
+    "receipt": "packages/invoice-schema/src/receipts.ts",
+    "clipboard": "apps/web/src/components/SecretBackup.tsx",
+    "assembler": "packages/qr-exchange/src/assembler.ts",
+    "tronrpc": "packages/tron-adapter/src/rpc.ts",
+    "tronscan": "apps/web/src/features/tron/scan.ts"
+  },
+  "supplemental_hosting": [
+    {
+      "id": "ZC-HC-DOC-01",
+      "severity": "Low",
+      "category": "documentation assurance",
+      "status_by_ref": {
+        "main": "present",
+        "release": "present",
+        "consolidation": "present",
+        "privacy-snapshot": "present",
+        "quick-hide": "present",
+        "clipboard": "present",
+        "format": "present",
+        "erc20-simulation": "present",
+        "main-final": "present",
+        "recovered-fixes": "present",
+        "unique-code": "present",
+        "tor-completion": "present"
+      },
+      "evidence": "hosting-core-review.md; hosting-finding-quality-review.md"
+    },
+    {
+      "id": "HF-01",
+      "severity": "Low operational; informational security",
+      "category": "local containment and conditional original-input loss",
+      "status_by_ref": {
+        "main": "present-local",
+        "release": "present-local",
+        "consolidation": "present-local",
+        "privacy-snapshot": "present-local",
+        "quick-hide": "present-local",
+        "clipboard": "present-local",
+        "format": "present-local",
+        "erc20-simulation": "present-local",
+        "main-final": "present-local",
+        "recovered-fixes": "present-local",
+        "unique-code": "present-local",
+        "tor-completion": "present-local"
+      },
+      "evidence": "hosting-feature-review.md; hosting-finding-quality-review.md"
+    },
+    {
+      "id": "ZC-HC-O01",
+      "severity": "Low operational; informational security",
+      "category": "local recovery backup cleanup",
+      "status_by_ref": {
+        "main": "present-local",
+        "release": "present-local",
+        "consolidation": "present-local",
+        "privacy-snapshot": "present-local",
+        "quick-hide": "present-local",
+        "clipboard": "present-local",
+        "format": "present-local",
+        "erc20-simulation": "present-local",
+        "main-final": "present-local",
+        "recovered-fixes": "present-local",
+        "unique-code": "present-local",
+        "tor-completion": "present-local"
+      },
+      "evidence": "hosting-core-review.md; hosting-finding-quality-review.md"
+    },
+    {
+      "id": "H-AD-01",
+      "severity": "Informational",
+      "priority": "Low",
+      "category": "conditional raw header library hardening",
+      "status_by_ref": {
+        "main": "present-no-enabling-production-caller",
+        "release": "present-no-enabling-production-caller",
+        "consolidation": "present-no-enabling-production-caller",
+        "privacy-snapshot": "present-no-enabling-production-caller",
+        "quick-hide": "present-no-enabling-production-caller",
+        "clipboard": "present-no-enabling-production-caller",
+        "format": "present-no-enabling-production-caller",
+        "erc20-simulation": "present-no-enabling-production-caller",
+        "main-final": "present-no-enabling-production-caller",
+        "recovered-fixes": "present-no-enabling-production-caller",
+        "unique-code": "present-no-enabling-production-caller",
+        "tor-completion": "present-no-enabling-production-caller"
+      },
+      "evidence": "hosting-adapters-review.md; hosting-finding-quality-review.md"
+    },
+    {
+      "id": "HF-N01",
+      "severity": "Informational",
+      "category": "direct MIME lookup contract",
+      "status_by_ref": {
+        "main": "present-direct-api",
+        "release": "present-direct-api",
+        "consolidation": "present-direct-api",
+        "privacy-snapshot": "present-direct-api",
+        "quick-hide": "present-direct-api",
+        "clipboard": "present-direct-api",
+        "format": "present-direct-api",
+        "erc20-simulation": "present-direct-api",
+        "main-final": "present-direct-api",
+        "recovered-fixes": "present-direct-api",
+        "unique-code": "present-direct-api",
+        "tor-completion": "present-direct-api"
+      },
+      "evidence": "hosting-feature-review.md; hosting-finding-quality-review.md"
+    },
+    {
+      "id": "ZC-HC-H01",
+      "severity": "Informational",
+      "category": "concurrently mutable local validation input",
+      "status_by_ref": {
+        "main": "present-local-precondition",
+        "release": "present-local-precondition",
+        "consolidation": "present-local-precondition",
+        "privacy-snapshot": "present-local-precondition",
+        "quick-hide": "present-local-precondition",
+        "clipboard": "present-local-precondition",
+        "format": "present-local-precondition",
+        "erc20-simulation": "present-local-precondition",
+        "main-final": "present-local-precondition",
+        "recovered-fixes": "present-local-precondition",
+        "unique-code": "present-local-precondition",
+        "tor-completion": "present-local-precondition"
+      },
+      "evidence": "hosting-core-review.md"
+    },
+    {
+      "id": "HF-N02",
+      "severity": "Trust boundary",
+      "category": "stable private filesystem ancestry assumption",
+      "status_by_ref": {
+        "main": "documented-assumption",
+        "release": "documented-assumption",
+        "consolidation": "documented-assumption",
+        "privacy-snapshot": "documented-assumption",
+        "quick-hide": "documented-assumption",
+        "clipboard": "documented-assumption",
+        "format": "documented-assumption",
+        "erc20-simulation": "documented-assumption",
+        "main-final": "documented-assumption",
+        "recovered-fixes": "documented-assumption",
+        "unique-code": "documented-assumption",
+        "tor-completion": "documented-assumption"
+      },
+      "evidence": "hosting-feature-review.md"
+    }
+  ]
+}

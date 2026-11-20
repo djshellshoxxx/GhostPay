@@ -1,0 +1,172 @@
+[
+  {
+    "path": ".github/workflows/tor-static.yml",
+    "blob": "92d3df1d4bc54a0755e947fb379d4a1ef99c517f",
+    "size": 5186,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Read-only validation credentials, pinned actions, frozen script-disabled install, offline configuration checks and ephemeral fixture cleanup. The workflow was not executed."
+  },
+  {
+    "path": "deploy/tor-static/.dockerignore",
+    "blob": "2465bc7364814b57d1b8f484e3c67148615edc08",
+    "size": 148,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Context allowlists only build/startup source; onion identity and site files excluded."
+  },
+  {
+    "path": "deploy/tor-static/Dockerfile",
+    "blob": "8d593b9a0e419661c59a6d85d8b57ac6f498b29c",
+    "size": 1975,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Exact Tor source checksum before extraction/build, default digest-pinned base, unprivileged runtime and startup checks. Distribution dependencies remain dynamic; no image build or signed-checksum verification performed."
+  },
+  {
+    "path": "deploy/tor-static/host.example.json",
+    "blob": "bff0f3e674f504e966cfeb7523d97048f356170c",
+    "size": 218,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full configuration read. Onion transport, unset public origin, root path, loopback preview listener; no claimed owned hostname."
+  },
+  {
+    "path": "deploy/tor-static/prepare.mjs",
+    "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+    "size": 9403,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Independent expected archive digest required and rechecked for generation; required header policy, private staging, fresh output and no service activation. Parent directory remains operator-trusted."
+  },
+  {
+    "path": "deploy/tor-static/runtime-check.sh",
+    "blob": "8dddbffac95e7aeb2cca04260fa0a02cd7565dc3",
+    "size": 979,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Stable numeric version floor and PoW/GPL module report checks; no Tor execution performed."
+  },
+  {
+    "path": "deploy/tor-static/tor-start.sh",
+    "blob": "811be5b8949748d34b39edd0ffa05eb82711e809",
+    "size": 937,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Fixed option allowlist, private non-root volume checks, explicit torrc verification and exec; no identity opened or network started."
+  },
+  {
+    "path": "scripts/tor/browser-acceptance.mjs",
+    "blob": "1f57b2d5a102f398cfc111e349dfc2684d498518",
+    "size": 7030,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full support-script source read only. Distinct loopback origins, request/WebSocket interception, synthetic browser state and explicit lack of live Tor qualification. No browser test run."
+  },
+  {
+    "path": "tools/portable-hosting-kit/bin/ghostpay-host.mjs",
+    "blob": "b2f6082dcf9788efad1d882ae797639ed6341709",
+    "size": 544,
+    "domain": "hosting-feature",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "status": "reviewed",
+    "notes": "Full source read. Argument-array forwarding to reviewed CLI, no shell interpolation; closed-output EPIPE handling."
+  }
+]

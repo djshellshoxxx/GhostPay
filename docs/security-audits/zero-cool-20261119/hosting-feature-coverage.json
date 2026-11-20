@@ -1,0 +1,635 @@
+[
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+    "blob": "267551801dfebc4f71622a4d7aa8d9019196870a",
+    "size": 11350,
+    "lines": 261,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ],
+    "in_feature_closure_sources": [],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read. Compared against tor-completion canonical-onion validation delta. Reviewed strict host keys, origin parsing, base paths, listener restrictions, onion checksum/version and deterministic serialization. Comparative baseline: this file is not imported by static-export closure in these eleven snapshots; it becomes a transitive import only in tor-completion. No distinct new security finding established."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+    "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+    "size": 11788,
+    "lines": 264,
+    "ref": "tor-completion",
+    "commit": "14a7526842b3cb055452b721d237a7e68813ff0c",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read plus complete delta against baseline. New transitive runtime dependency from headers.mjs. Canonical HTTP onion origin validation binds raw input to URL.origin, prohibits explicit/default/non-default ports and rejects invalid checksum/version. Reviewed entire module, not only the new helper branch. No distinct new security finding established."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/errors.mjs",
+    "blob": "80d71210dd00b6f03a03a41943656fc41091741c",
+    "size": 2115,
+    "lines": 55,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "main",
+      "release",
+      "consolidation",
+      "privacy-snapshot",
+      "quick-hide",
+      "clipboard",
+      "format",
+      "erc20-simulation",
+      "main-final",
+      "recovered-fixes",
+      "unique-code",
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read. Error code enumeration, KitError construction and type guard; no runtime imports, I/O or independent authority boundary. No distinct new defect established."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/policy.mjs",
+    "blob": "4f13b17785cb53213f7dc6abce3902b34ca1fa5e",
+    "size": 10561,
+    "lines": 232,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "main",
+      "release",
+      "consolidation",
+      "privacy-snapshot",
+      "quick-hide",
+      "clipboard",
+      "format",
+      "erc20-simulation",
+      "main-final",
+      "recovered-fixes",
+      "unique-code",
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read. Inclusion constants, deny/secret heuristics, default header policy, extension parsing and MIME mapping. HF-N01: contentTypeFor uses inherited-property lookup, a direct-caller hardening issue; core policyFinding uses Object.hasOwn and rejects off-list extensions. Secret scanning is documented heuristic, not proof of absence."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+    "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+    "size": 7110,
+    "lines": 149,
+    "ref": "release",
+    "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "sources": [
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "release",
+      "consolidation",
+      "privacy-snapshot",
+      "quick-hide",
+      "clipboard",
+      "format",
+      "main-final",
+      "recovered-fixes",
+      "unique-code",
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read plus complete delta from original. mtimeMs is converted to string seconds for utimes; overlay metadata remains unset. File selection, overlay collision checks, header assertion, exclusive writes, cleanup and final rename are otherwise unchanged. HF-01 remains; HF-N02 records private input/output ancestry assumptions. No distinct new security regression in timestamp change established."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+    "blob": "f72bf8517d82f1fb7a34a6a687c403d105cff144",
+    "size": 6913,
+    "lines": 145,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "main",
+      "erc20-simulation"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read plus full change comparison. Original Date-based timestamp transfer; latest export change is absent in main and erc20-simulation only. HF-01: within treats every relative name beginning with two dots as outside, so some actual nested local paths escape the input/output overlap check. HF-N02: path-based no-follow checks assume non-hostile concurrent filesystem writers; no remote attack path established."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+    "blob": "ae6571b9784a49dce019cf9776cd7f2d4b47cbc7",
+    "size": 22004,
+    "lines": 459,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "main",
+      "release",
+      "consolidation",
+      "privacy-snapshot",
+      "quick-hide",
+      "clipboard",
+      "format",
+      "erc20-simulation",
+      "main-final",
+      "recovered-fixes",
+      "unique-code"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read (459 lines). Reviewed header grammar, pattern escaping, detach/join semantics, script-source minimums, nosniff/referrer checks, transport defaults and onion origin shape gate. No distinct new medium/high issue established. The older onionOrigin helper is a shape-only gate; tor-completion consolidates it with stronger host configuration validation."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+    "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+    "size": 21782,
+    "lines": 455,
+    "ref": "tor-completion",
+    "commit": "14a7526842b3cb055452b721d237a7e68813ff0c",
+    "sources": [
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_baseline_and_complete_delta",
+    "notes": "Reviewed full ae6571b9784a49dce019cf9776cd7f2d4b47cbc7 baseline and the complete tor-completion diff. The only behavioral change replaces onionOrigin shape validation with validateOnionOrigin and adds its import; complete new first-party closure (host-config.mjs and version.mjs) read. Header parsing and policy minimums unchanged."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/serve/routing.mjs",
+    "blob": "b02f9ef440c4404d0ece1480531f54efef08fe30",
+    "size": 8528,
+    "lines": 230,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "main",
+      "release",
+      "consolidation",
+      "privacy-snapshot",
+      "quick-hide",
+      "clipboard",
+      "format",
+      "erc20-simulation",
+      "main-final",
+      "recovered-fixes",
+      "unique-code",
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read. Validated base-path grammar, listed-file filtering, hidden/non-served names, one-pass request decoding, malformed/control/backslash/dot-segment rejection, explicit routes and SPA fallback. No distinct remote traversal or redirect issue established. Direct-call MIME guard relies on contentTypeFor; see HF-N01."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/types.mjs",
+    "blob": "cc9c73bd51da2342eb14a71d592fcf416c577dfe",
+    "size": 5707,
+    "lines": 121,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "main",
+      "release",
+      "consolidation",
+      "privacy-snapshot",
+      "quick-hide",
+      "clipboard",
+      "format",
+      "erc20-simulation",
+      "main-final",
+      "recovered-fixes",
+      "unique-code",
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read. JSDoc-only shared types and empty export; type references lead only to errors.mjs. Contracts distinguish validated inventory, public host configuration, header rules and route results."
+  },
+  {
+    "domain": "hosting-feature",
+    "path": "tools/portable-hosting-kit/src/version.mjs",
+    "blob": "29920000142c3aaa39de04b185e447b0255f78f1",
+    "size": 372,
+    "lines": 7,
+    "ref": "main",
+    "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "sources": [
+      {
+        "ref": "main",
+        "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "ref": "release",
+        "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "ref": "consolidation",
+        "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      },
+      {
+        "ref": "privacy-snapshot",
+        "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+      },
+      {
+        "ref": "quick-hide",
+        "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      },
+      {
+        "ref": "clipboard",
+        "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+      },
+      {
+        "ref": "format",
+        "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      {
+        "ref": "erc20-simulation",
+        "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      {
+        "ref": "main-final",
+        "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      },
+      {
+        "ref": "recovered-fixes",
+        "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+      },
+      {
+        "ref": "unique-code",
+        "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+      },
+      {
+        "ref": "tor-completion",
+        "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+      }
+    ],
+    "in_feature_closure_sources": [
+      "tor-completion"
+    ],
+    "status": "reviewed",
+    "read_method": "complete_source",
+    "notes": "Complete source read. Constant-only identity/schema module, no additional imports. This path enters the actual feature import closure only through host-config.mjs in tor-completion; identical earlier snapshots retained for union-path identity comparison."
+  }
+]

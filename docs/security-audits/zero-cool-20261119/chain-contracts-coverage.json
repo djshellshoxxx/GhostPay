@@ -1,0 +1,1768 @@
+{
+  "reviewer": "chain_contracts_review",
+  "scope": "chain-adapters and core contracts",
+  "entries": [
+    {
+      "path": "packages/chain-adapters/src/abi/announcer.ts",
+      "blob": "4f23c31640ddd1c488862bcaf1fbb912d34eef6f",
+      "size": 1455,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/chainlinkAggregator.ts",
+      "blob": "a54cdaba41c9c4bde0e2d549b488d66b54f333d9",
+      "size": 2245,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/erc20.ts",
+      "blob": "9a6220772e30ee5696e7e5d4659b1dfc35fd4407",
+      "size": 3486,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/erc20Metadata.ts",
+      "blob": "465b77c6bee8bc1b634034fc21fa196840c8ac1d",
+      "size": 4166,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/erc2612.ts",
+      "blob": "d5d33127b4c30182257e103be4f5bf3f47a46cdd",
+      "size": 1528,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/erc6538Registry.ts",
+      "blob": "e9f0cacf529165193fd32bb14ae685f3586a47af",
+      "size": 3448,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/router.ts",
+      "blob": "e880f474779750d0941c34e3b6da5417e981543b",
+      "size": 7237,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/abi/sweepRelayer.ts",
+      "blob": "80d20a9cc78248064591c338fd5ddeedd4937481",
+      "size": 8033,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/adapter.ts",
+      "blob": "74bbb5e19755280fc5da29e4b12352ecd0a8b749",
+      "size": 12407,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/config/chains.ts",
+      "blob": "d9e78d0c2420ccfdd33f2bcdb29c0e5515b81f5d",
+      "size": 4944,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/config/tokens.ts",
+      "blob": "7abb737bb8ab184788d56b9f48f75712b6cf8d0b",
+      "size": 4239,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/deepscan.ts",
+      "blob": "2d8a656c0e0625789a68d82f71f2f07f42730e73",
+      "size": 1633,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "blob": "a6d2aa4c10ec317cd3c91b0ac09447d755180425",
+      "size": 8791,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Full baseline source read and complete diff"
+    },
+    {
+      "path": "packages/chain-adapters/src/deploymentsSignature.ts",
+      "blob": "cf6a6587d79631e0e9d69cdab1c60f429642a6e5",
+      "size": 4601,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/deploymentsVerify.ts",
+      "blob": "0f958f28cf9c8a496a6068f3d1a423f47973a037",
+      "size": 3670,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/errors.ts",
+      "blob": "3b2cb127f6bbe1f4d46987206039e06554d33038",
+      "size": 1775,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/fees.ts",
+      "blob": "4008c66a0ecf84b59c656bf0607734e9c5d3be07",
+      "size": 8506,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/index.ts",
+      "blob": "dfa32775befe9a3d96addc5bc9294174025d2ad2",
+      "size": 1585,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/logs.ts",
+      "blob": "4801b9589043c0d003cf1d002e745451239f6b21",
+      "size": 27555,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/payments.ts",
+      "blob": "c910b8cceb25c308fdd9a93204be1022a611ae02",
+      "size": 24637,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Full baseline source read and complete diff"
+    },
+    {
+      "path": "packages/chain-adapters/src/permit.ts",
+      "blob": "03839deab45622f38b33c6ccf787eca4b55767ad",
+      "size": 10106,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/quote.ts",
+      "blob": "5e9d933b4ea06e3944c514057e7014b9eb28fa3c",
+      "size": 15205,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/registry.ts",
+      "blob": "6f55257e7f8f92c856f9808860feca48f57d8e65",
+      "size": 11276,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/registryDelegation.ts",
+      "blob": "3b1a7fd45059ebf1f165ff4e2d074937f9f5fda5",
+      "size": 7425,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/registryEns.ts",
+      "blob": "7f113d6fdc75f6818b4eceabf7dd6c445573327b",
+      "size": 4021,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/router.ts",
+      "blob": "2ee7bbdb7832797ce128b71ee31030620e04fabb",
+      "size": 17856,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "blob": "60b3505d3bc62089afd1ed4741bea29273ebea8a",
+      "size": 21012,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Full baseline source read and complete diff"
+    },
+    {
+      "path": "packages/chain-adapters/src/scanVerify.ts",
+      "blob": "b2a7c6420c9c6cff49974c41d881b8a3f5646d28",
+      "size": 9125,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/sweep.ts",
+      "blob": "8a8004d1a19be56426e8d19663d438ce69516077",
+      "size": 12934,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/types.ts",
+      "blob": "0a3c2aabaa9f3fbceb6ddb9863ddf859a2fd8ca0",
+      "size": 321,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/verify.ts",
+      "blob": "4c2355a55efd4f747d363b92cb8ad90525da496e",
+      "size": 12189,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/GhostPayPolicyRouter.sol",
+      "blob": "56f5ef6ef90c6441812f3695da55916ecce352c4",
+      "size": 14465,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+      "size": 11355,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "size": 7419,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/PolicyAccount.sol",
+      "blob": "1e5eeadfe7ba6e2a68f64e95ef1ca84afe12cbf4",
+      "size": 18878,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/PolicyAccountFactory.sol",
+      "blob": "d456eec25c744e1e992ca786b2f21eefdbdf81a7",
+      "size": 10013,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IERC5564Announcer.sol",
+      "blob": "f7e6b9e8088215cbebf9c36a98b05e3493e1cc0e",
+      "size": 2409,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayPolicyRouter.sol",
+      "blob": "42aa7c79aa7981ca0b239822062f43f74d8e0612",
+      "size": 8094,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+      "blob": "1ecd181745e4feae9ec3cd4b7b7d59a7806ddaff",
+      "size": 6159,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+      "blob": "09b5605c6dfea8cd63310f0366a7e800c54e99ea",
+      "size": 4003,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IPolicyAccount.sol",
+      "blob": "bff24644056dacffa240f220144e36d688eeb6cb",
+      "size": 9866,
+      "domain": "contracts",
+      "sources": [
+        {
+          "ref": "main",
+          "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        },
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        },
+        {
+          "ref": "erc20-simulation",
+          "commit": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Complete source read"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "blob": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+      "size": 9190,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Full baseline source read and complete diff"
+    },
+    {
+      "path": "packages/chain-adapters/src/payments.ts",
+      "blob": "c57c9a2dc3bcb45c2b66df17e8be26d0a1dcbbcc",
+      "size": 33091,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Full baseline source read and complete diff"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "blob": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "size": 21404,
+      "domain": "chain-adapters",
+      "sources": [
+        {
+          "ref": "release",
+          "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "ref": "consolidation",
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "ref": "privacy-snapshot",
+          "commit": "d6819796a9542acc488b896786faffe83b913d9b"
+        },
+        {
+          "ref": "quick-hide",
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        },
+        {
+          "ref": "clipboard",
+          "commit": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+        },
+        {
+          "ref": "format",
+          "commit": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        }
+      ],
+      "status": "reviewed",
+      "method": "Full baseline source read and complete diff"
+    }
+  ],
+  "status": "complete",
+  "summary": {
+    "unique_paths": 41,
+    "unique_path_blob_versions": 44,
+    "path_ref_instances": 328,
+    "reviewed_versions": 44,
+    "pending_versions": 0,
+    "tests_executed": false,
+    "live_probes": false
+  }
+}
