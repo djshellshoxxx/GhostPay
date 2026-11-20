@@ -1,0 +1,7 @@
+--- a/apps/web/src/views/Pay.preflightCompletion.test.tsx
++++ b/apps/web/src/views/Pay.preflightCompletion.test.tsx
+@@ -137,3 +137,3 @@
+   expect(completedChainChecks).toBe(2);
+-  const beforeOldRelease = requests.length;
++  const beforeOldRelease = beforeContextReady;
+   const completedRequests = [...requests];
