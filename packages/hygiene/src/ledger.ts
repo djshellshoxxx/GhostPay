@@ -1,4 +1,4 @@
-import { assertTestnetChain } from './testnet.js';
+import { findChain } from '@ghostpay/chain-adapters';
 import { normAddress, type Address } from './addr.js';
 import { fail } from './errors.js';
 
@@ -21,6 +21,20 @@ export type CanUse =
 const MAX_U32 = 0xffff_ffff;
 const ZERO = '0x0000000000000000000000000000000000000000';
 const ROW_KEYS = new Set(['chainId', 'destination', 'sources', 'index']);
+
+/**
+ * The session-only sweep reuse ledger serves every enabled browser EVM testnet,
+ * plus local Anvil. Other hygiene PoC helpers deliberately retain their smaller
+ * `assertTestnetChain` allowlist; widening it could enable unreviewed RPC paths.
+ * Derive this policy from the browser's authoritative chain table, not a
+ * second independently maintained list.
+ */
+function assertLedgerChain(chainId: number): void {
+  const chain = Number.isSafeInteger(chainId) ? findChain(chainId) : undefined;
+  if (chainId !== 31337 && (chain === undefined || !chain.testnet || !chain.enabled)) {
+    fail('CHAIN_NOT_ALLOWED', 'testnet-only: chain id not allowed');
+  }
+}
 
 /**
  * Local destination ledger (HY-CON): one destination receives from one source address only.
@@ -56,7 +70,7 @@ export class DestLedger {
 
   /** Sources already swept to `destination` on `chainId` (empty if none). */
   public linkedSources(chainId: number, destination: string): readonly Address[] {
-    assertTestnetChain(chainId);
+    assertLedgerChain(chainId);
     const r = this.rows.get(DestLedger.key(chainId, normAddress(destination)));
     return r === undefined ? [] : [...r.sources];
   }
@@ -68,7 +82,7 @@ export class DestLedger {
    * @throws {HygieneError} `CHAIN_NOT_ALLOWED`, `INVALID_ADDRESS`.
    */
   public canUse(chainId: number, destination: string, source: string): CanUse {
-    assertTestnetChain(chainId);
+    assertLedgerChain(chainId);
     const d = normAddress(destination);
     const s = normAddress(source);
     if (d === ZERO || this.protocol.has(d)) return { ok: false, reason: 'DEST_IS_PROTOCOL' };
@@ -99,7 +113,7 @@ export class DestLedger {
    * @throws {HygieneError} `DEST_REUSE`, `INVALID_LEDGER`.
    */
   public recordAcknowledgedReuse(chainId: number, destination: string, source: string): void {
-    assertTestnetChain(chainId);
+    assertLedgerChain(chainId);
     const d = normAddress(destination);
     const s = normAddress(source);
     const v = this.canUse(chainId, d, s);
@@ -160,7 +174,7 @@ export class DestLedger {
       const { chainId, destination, sources, index } = o;
       if (typeof chainId !== 'number') return fail('INVALID_LEDGER', 'bad chainId');
       try {
-        assertTestnetChain(chainId);
+        assertLedgerChain(chainId);
       } catch {
         return fail('INVALID_LEDGER', 'bad chainId');
       }
