@@ -229,6 +229,8 @@ test('keyboard: skip link and navigation are reachable, focus moves to the new v
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   await page.keyboard.press('Tab');
+  await expect(page.getByRole('banner').getByRole('switch', { name: 'Privacy mode', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Home' }).first()).toBeFocused();
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Settings' }).focus();
   await page.keyboard.press('Enter');

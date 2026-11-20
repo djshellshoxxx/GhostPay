@@ -2511,7 +2511,7 @@
     },
     "apps/web/src/views/Pay.tsx": {
       "call:getRpc": 3,
-      "reference:getRpc": 6
+      "reference:getRpc": 7
     },
     "apps/web/src/views/Scan.tsx": {
       "call:authorize": 2,

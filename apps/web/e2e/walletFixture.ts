@@ -57,7 +57,8 @@ export async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls
           case 'net_version':
             if (controls.changeAccountOnRecheck) {
               controls.changeAccountOnRecheck = false;
-              controls.changeAccount();
+              // Exercise the final account reread, independently of event-driven invalidation.
+              account = '0x6666666666666666666666666666666666666666';
             }
             return '84532';
           case 'eth_sendTransaction': {

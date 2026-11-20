@@ -409,12 +409,15 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(new URL(p.url()).pathname).toBe(PAGES_BASE);
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).not.toContainText(payHash);
+    await expect.poll(() => walletJournal(p)).toMatchObject([{ hash: payHash, chainId: 84532, kind: 'payment' }]);
     await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
     await approveWalletDisclosure(p, 'eth_requestAccounts');
+    // Persisted attempts are visible only after reconnecting the matching account and chain.
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();

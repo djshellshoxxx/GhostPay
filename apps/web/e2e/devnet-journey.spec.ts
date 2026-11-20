@@ -137,14 +137,18 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await p.reload();
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).not.toContainText(payHash);
+    await expect.poll(() => walletJournal(p)).toMatchObject([{ hash: payHash, chainId: 84532, kind: 'payment' }]);
     await openFresh(p, link);
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).not.toContainText(payHash);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
     await approveWalletDisclosure(p, 'eth_requestAccounts');
+    // A reload keeps the journal but drops the wallet authority required to reveal it.
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Prepare payment' }).click();
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
@@ -268,13 +272,14 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     // Reload mid-flow: the transaction is still only in the mempool.
     await p.reload();
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).not.toContainText(hash);
     await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash }]);
     await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
     await approveWalletDisclosure(p, 'eth_requestAccounts');
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
