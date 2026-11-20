@@ -1183,3 +1183,13 @@ Additional owned path: only the two key-loss/retained-key rows in `docs/guides/t
 Acceptance: resolve independent review finding IDLE-R2-DOC-01 by matching the already-recovered user troubleshooting guidance: a download requires verification before it counts as a surviving copy; idle-retained keys remain suspended for encrypted recovery until normal import/unlock. Preserve every application/test/configuration byte and request source-only review of the narrow documentation diff. Coordinator authorized this follow-up after runtime qualification.
 
 Status at source freeze: product `1ca7105e050f7d76aee18fe3efee3cd02cd72cb4` passed fresh independent source review, 575 focused tests across 26 complete files, original full web typecheck and typed lint, secret scan and whitespace checks. The coordinator approved the two-row guidance correction at `2605e1bf`, with its relative session-security link corrected in this documentation checkpoint. Application, test and configuration bytes remain frozen at the reviewed product. Complete original web coverage/no-coverage and lean build qualification run next on the final source tree; later evidence belongs on a separate evidence branch. Hosted browser/security/Pages promotion gates remain open. Source-pinned local evidence: `docs/consolidation/idle-session-r2-20261120/`.
+
+
+## Receipt archive identity recovery R2 — 2026-11-20
+
+Worker: `/root/receipt_identity_completion_r2`; coordinator owns publication; independent review: `/root/backup_independent_review_r2`.
+Branch: `fix/ghostpay-receipt-archive-identity-20261120-r2`; base PR #333 `3172a93ceb8fce5a4343a93b453dcc0e68f09d87`.
+Immutable donor: PR #332 `71632fa389ae93824b2f42d265278a9bd0f6de59`, original runtime `8e8dbedec71106b4417eada0579aee1d342fa449`; preserve its source branch/ownership.
+Owned paths: this additive claim, `apps/web/src/components/ReceiptPanel.tsx`, new `ReceiptPanel.archive.regeneration.test.tsx` and `ReceiptPanel.archive.rejection.test.tsx`, source-pinned receipt handoff/evidence.
+Acceptance: completed, delayed-success and delayed-rejection archive outcomes for A must not mark or report for distinct signed B; retain immutable pending writes and serialize within a mounted panel. Preserve every existing receipt/print test and all four newer print-target hunks. No signature/archive format, protocol, dependency, config, threshold, authority, fee, contract, relayer or deployment changes.
+Status: exact source review confirms missing behavior. Regression recovery and bounded RED precede runtime; independent review precedes GREEN. Root owns original web/hosted/browser gates. No main/shared-ref mutation.
