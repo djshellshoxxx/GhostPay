@@ -88,6 +88,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [vaultUnlockPass, setVaultUnlockPass] = useState('');
   // Unlock cancellation must not complete a durable save/delete, including across seller-session changes.
   const [unlockBusy, setUnlockBusy] = useState(false);
+  const vaultWrite = useRef<symbol | null>(null);
   const [vaultWriteBusy, setVaultWriteBusy] = useState(false);
   const vaultBusy = unlockBusy || vaultWriteBusy;
   // Step-up passphrases of the vault the loaded keys are tied to (L1-02), and the delete confirmation's passphrase.
@@ -101,7 +102,6 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   // The exact ciphertext shown when deletion was requested; Confirm deletes only this record. Never plaintext keys.
   const [deleteExpected, setDeleteExpected] = useState<string | undefined>(undefined);
   const confirmVaultDelete = deleteExpected !== undefined;
-  const saveOperation = useRef(0);
 
   // Read again for every key change: a saved vault for the keys loaded now arms their step-up (L1-02).
   useEffect(() => {
@@ -182,6 +182,25 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     const controller = new AbortController(); operation.current = controller; operationKind.current = kind; return controller;
   };
   const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current === controller && !controller.signal.aborted;
+  const finishUnlockPreflight = (controller: AbortController): void => {
+    if (operation.current !== controller) return;
+    operation.current = null;
+    operationKind.current = undefined;
+    if (mounted.current) setUnlockBusy(false);
+  };
+  const startVaultWrite = (): symbol | undefined => {
+    if (vaultWrite.current !== null || operationKind.current === 'unlock') return undefined;
+    const owner = Symbol('vault-write');
+    vaultWrite.current = owner;
+    setVaultWriteBusy(true);
+    return owner;
+  };
+  const currentVaultWrite = (owner: symbol): boolean => mounted.current && vaultWrite.current === owner;
+  const finishVaultWrite = (owner: symbol): void => {
+    if (vaultWrite.current !== owner) return;
+    vaultWrite.current = null;
+    if (mounted.current) setVaultWriteBusy(false);
+  };
   // Installing our own keys triggers the session effect above. Only explicit cancellation, edits or another operation
   // revoke this completion; a new session, even with identical public keys, has a different summary object.
   const ownCompletion = (id: number, installed: SessionPublic): boolean =>
@@ -231,10 +250,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     void (async () => {
       // Keys tied to a vault leave this tab only with that vault's passphrase (L1-02).
       await authorizeKeyExport(stepUp);
+      if (!currentOperation(controller)) return undefined;
+      unchanged();
       return exportKeystore(pass);
     })().then(
       (text) => {
-        if (!currentOperation(controller)) return;
+        if (!currentOperation(controller) || text === undefined) return;
         try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }
         try {
           downloadText('ghostpay-keystore.json', text, 'application/json');
@@ -321,51 +342,64 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     const problem = passphraseProblemMessage(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
     if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: { key: 'sellerKeys.passphrasesDiffer' } }); return; }
-    const id = ++saveOperation.current;
+    const owner = startVaultWrite();
+    if (owner === undefined) return;
     const unchanged = captureSessionVersionGuard();
     // Only the initiating save may report; it may claim success only for the keys that were loaded when it started.
-    const current = (): boolean => mounted.current && saveOperation.current === id;
-    setVaultWriteBusy(true);
     const stepUp = saveStepUp;
     void saveEncryptedVault(vaultSavePass, {}, undefined, stepUp).then(
       () => {
-        if (!current()) return;
+        if (!currentVaultWrite(owner)) return;
         setVaultSavePass('');
         setVaultSavePass2('');
         setSaveStepUp('');
         setVaultState('saved');
-        setVaultWriteBusy(false);
         try { unchanged(); } catch { fail(new VaultSavedForPreviousKeysError()); return; }
         refreshVault();
         done({ key: 'sellerKeys.vaultSaved' });
       },
       (err: unknown) => {
-        if (!current()) return;
-        setVaultWriteBusy(false);
+        if (!currentVaultWrite(owner)) return;
         setSaveStepUp('');
         if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
         refreshVault();
         fail(err);
       },
-    );
+    ).finally(() => { finishVaultWrite(owner); });
   };
 
   const onUnlockVault = (e: FormEvent): void => {
     e.preventDefault();
+    if (vaultWrite.current !== null) return;
+    // The recoverability read and decryption share one cancellable owner.
+    const controller = startOperation('unlock');
+    setUnlockBusy(true);
+    setConfirmReplace(false);
     // Unlocking replaces the loaded keys; keys with no backup would be lost with every payment to them (L1-01). As for a
     // wipe, a vault copy is looked up in storage first, because another tab may have deleted or replaced it since this page
     // last read it (C-R12). A key change during that read drops the request.
-    if (getSessionBackup() === undefined || sessionHasExternalCopy()) { unlockVault(false); return; }
+    if (getSessionBackup() === undefined || sessionHasExternalCopy()) { unlockVault(false, controller); return; }
     const unchanged = captureSessionVersionGuard();
-    void loadedKeysRecoverable().then((recoverable) => {
-      if (!mounted.current) return;
-      try { unchanged(); } catch { return; }
-      if (recoverable) unlockVault(false); else setConfirmReplace(true);
-    });
+    void loadedKeysRecoverable().then(
+      (recoverable) => {
+        if (!currentOperation(controller)) return;
+        try { unchanged(); } catch { finishUnlockPreflight(controller); return; }
+        if (recoverable) unlockVault(false, controller);
+        else { finishUnlockPreflight(controller); setConfirmReplace(true); }
+      },
+      (error: unknown) => {
+        if (!currentOperation(controller)) return;
+        try { unchanged(); } catch { finishUnlockPreflight(controller); return; }
+        finishUnlockPreflight(controller);
+        fail(error);
+      },
+    );
   };
 
-  const unlockVault = (replaceUnsavedKeys: boolean): void => {
-    const controller = startOperation('unlock');
+  const unlockVault = (replaceUnsavedKeys: boolean, pending?: AbortController): void => {
+    if (vaultWrite.current !== null) return;
+    const controller = pending ?? startOperation('unlock');
+    if (!currentOperation(controller)) return;
     const id = generation.current;
     setConfirmReplace(false);
     setUnlockBusy(true);
@@ -429,26 +463,25 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const onDeleteVault = (): void => {
     const expected = deleteExpected;
     if (expected === undefined) return;
+    const owner = startVaultWrite();
+    if (owner === undefined) return;
     const passphrase = deletePass;
-    setVaultWriteBusy(true);
     void deleteEncryptedVault(expected, undefined, passphrase).then(
       () => {
-        if (!mounted.current) return;
+        if (!currentVaultWrite(owner)) return;
         setDeleteExpected(undefined);
         setDeletePass('');
         setVaultState('empty');
-        setVaultWriteBusy(false);
         refreshVault();
         done({ key: 'sellerKeys.vaultDeleted' });
       },
       (err: unknown) => {
-        if (!mounted.current) return;
-        setVaultWriteBusy(false);
+        if (!currentVaultWrite(owner)) return;
         setDeletePass('');
         if (err instanceof VaultChangedError) { setDeleteExpected(undefined); refreshVault(); }
         fail(err);
       },
-    );
+    ).finally(() => { finishVaultWrite(owner); });
   };
 
   const s = app.session;
