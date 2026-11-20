@@ -715,3 +715,19 @@ validators and their malformed-format tests. Require full-input matching,
 preserve valid inputs, rerun focused tests and scoped strict TypeScript/typed
 ESLint under the shared validation lock. The independent reviewer's report is
 owned separately and must not be staged by this worker.
+
+
+## F04 independent milestone review — 2026-11-20
+
+Worker: `f04_independent_review`, delegated by the future-feature coordinator.
+Branch: `future/f04-merchant-dashboard`; starting documentation head
+`b2dcc7a843dfc89bed6fc8926b3d904d7b365920`.
+Original product: `be37f79df4d60e2d87cd845fbf8e6f0fa117b135`; canonical-format
+correction: `966f415e520298310efd1f03883ea69844ea5eed`.
+Owned edits: this additive record and
+`docs/future/modules/F04-merchant-dashboard/INDEPENDENT_REVIEW.md` only.
+Acceptance: independently inspect all introduced source/tests, review the narrow
+format correction, replay existing focused tests, and record exact results and
+remaining provider/browser/release limits. Product source stays read-only.
+No remote mutation, deployment, exploit tooling, full-web typed-lint retry,
+or change to qualification gates.
