@@ -1,0 +1,55 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-integration/packages/invoice-schema
+      Coverage enabled with v8
+
+ ❯ src/passphrase.test.ts (26 tests | 2 failed) 344089ms
+   ❯ passphrase-protected links (A256GCM-PW, ADR-0020) (21)
+     × tampering any authenticated field gives the same WrongPassphraseError (no oracle) 60040ms
+     × authentic but malformed plaintext gives typed errors (reachable only with the passphrase) 60423ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > tampering any authenticated field gives the same WrongPassphraseError (no oracle)
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/passphrase.test.ts:198:3
+    196|   });
+    197|
+    198|   it('tampering any authenticated field gives the same WrongPassphrase…
+       |   ^
+    199|     const s = sampleSigned();
+    200|     const f = await pwEncode(s);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/passphrase.test.ts > passphrase-protected links (A256GCM-PW, ADR-0020) > authentic but malformed plaintext gives typed errors (reachable only with the passphrase)
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/passphrase.test.ts:330:3
+    328|   });
+    329|
+    330|   it('authentic but malformed plaintext gives typed errors (reachable …
+       |   ^
+    331|     const s = sampleSigned();
+    332|     const body = { inv: s.invoice, sig: s.signature };
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 13 passed (14)
+      Tests  2 failed | 802 passed (804)
+   Start at  16:33:53
+   Duration  644.32s (tests 100%)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /workspace/scratch/a13b43b0f3c9/GhostPay-integration/packages/invoice-schema
+npm error workspace @ghostpay/invoice-schema@0.1.0
+npm error location /workspace/scratch/a13b43b0f3c9/GhostPay-integration/packages/invoice-schema
+npm error command failed
+npm error command sh -c vitest run --coverage --maxWorkers=1

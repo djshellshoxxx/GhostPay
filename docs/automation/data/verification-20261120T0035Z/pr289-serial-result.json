@@ -1,0 +1,7 @@
+{
+  "source": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+  "command": "npm test -w packages/invoice-schema -- --maxWorkers=1",
+  "exit_code": 0,
+  "duration_seconds": 310.98,
+  "reason": "One serialized retry after concurrent coverage/KDF timeout; no timeout or coverage threshold changed."
+}

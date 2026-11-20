@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-integration/packages/invoice-schema
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 24 skipped (26)
+   Start at  16:46:32
+   Duration  7.81s (tests 98%, import 2%, transform 1%)
+

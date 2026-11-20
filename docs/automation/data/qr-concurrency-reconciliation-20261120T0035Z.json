@@ -1,0 +1,73 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "scope": "Independent read-only concurrency reconciliation; neither source branch altered",
+  "canonical": {
+    "pr": 290,
+    "head": "aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da",
+    "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+    "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "base_pr": 278,
+    "source_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+    "test_blob": "b0ceb8bbf584ead9f610471c57a3e7bc768a1c64",
+    "doc_blob": "43544e9fbff8c7caf887085c5cf4af6546ceb5a1"
+  },
+  "overlapping": {
+    "pr": 291,
+    "head": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+    "branch": "automation/20261120T0035Z/worker/qr-kind-primitives",
+    "base": "89942105c48df03b9351f777278b6a992e35a95e",
+    "base_pr": 285,
+    "reviewed_local_source": "2df03bde3883439e7514a02c871db66ccffd83fd",
+    "source_blob": "1a4beffc898c7854f6183aac5a7e6f74f8228d63",
+    "test_blob": "3eaea811d82c9a1913313fc1c0d587147b68fd16",
+    "handoff_blob": "a5fb6d2980e43d82475d2712c8d3dd5e9fadec4d"
+  },
+  "duplicate_runtime": {
+    "equivalent": true,
+    "proof": "Both full qrKinds.ts strings are exactly equal after removing their respective one-line explanatory comment. All executable source, exported types, error class/messages and tables are byte-identical.",
+    "recommended_disposition": "Do not merge or cherry-pick PR291 runtime guard into PR290/278. Preserve branch and provenance; PR291 can be retired as duplicate after unique test/evidence preservation."
+  },
+  "unique_supplementary_tests": [
+    {
+      "name": "hostile Symbol.toPrimitive getter is never inspected",
+      "variants": [
+        "normal payload",
+        "unverified payload",
+        "frame"
+      ],
+      "why": "PR290 verifies conversion functions are not called, but does not cover a throwing accessor that runs when a conversion hook is read.",
+      "existing_at290": false
+    },
+    {
+      "name": "all16 payload mappings and flags remain stable",
+      "variants": [
+        "unflagged",
+        "testnet",
+        "unsigned",
+        "unverified",
+        "combined flags",
+        "all frame classes"
+      ],
+      "why": "PR290 retains selected prior valid controls; PR291 adds an exhaustive declared-map table and every warning combination.",
+      "existing_at290": false
+    },
+    {
+      "name": "unverified payload does not invoke a stateful conversion hook",
+      "variants": [
+        "unverified payload"
+      ],
+      "why": "PR290 tests stateful conversion only for unflagged payload and frame; its unverified malformed-key matrix does not assert hook noninvocation.",
+      "existing_at290": false
+    }
+  ],
+  "overlapping_tests": "Both malformed-value matrices cover the same basic runtime type boundary. PR290 additionally tests null-prototype and ordinary toString objects; preserve those. Do not replace PR290's matrix with PR291's.",
+  "redundant_documentation": "PR291 changes qr-colors.md to preserve bearer warning and reject nonstrings. PR278 already has the bearer correction; PR290 adds fuller runtime contract documentation. No guide-text import is needed.",
+  "unique_evidence": "PR291 handoff records its own test-first commits, independent review, environment, commands, failures and disabled static build. Preserve it as historical source-pinned evidence with a new concurrency-reconciliation addendum; do not transfer its old-head test/build results to the supplementary head.",
+  "stale_claims_to_disposition": [
+    "PR291 ACTIVE_WORK says no existing available ref had primitive guard at claim time; retain time scope, never assert still unique.",
+    "PR291 handoff final section says follow-up is unique and port its delta; now superseded by live PR290 and must receive a clear addendum.",
+    "Cycle ledgers should identify the concurrency collision and unique-test-only supplementary scope; no new runtime feature completion claim."
+  ],
+  "qualification": "New supplementary branch should be rooted at fresh verified PR290 head, modify only genuinely additional regressions/ownership/handoff evidence, and receive original repository test/lint/type qualification plus independent review. Keep no-merge restriction while external generation5 lock held and required CI/protection unavailable.",
+  "reviewer": "/root/ci_and_consolidation_audit"
+}

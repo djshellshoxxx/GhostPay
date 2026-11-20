@@ -1,0 +1,1039 @@
+[
+  {
+    "number": 278,
+    "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+    "head_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "head_ref": "release/ghostpay-beta-qualification-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-20T00:28:53Z",
+    "matching_claim_sections": [
+      "## 2026-11-19 \u2014 isolated final Pages qualification (246ff268d20d)\n\n- Coordinator: ChatGPT root; branch `release/ghostpay-beta-qualification-20261119`.\n- Base: PR #270 `73545f63112910d46002718354ab5e99f8652e1f`, retaining PR #262 and main `8f56376427c96881f49590920ff0bf8543ec81b4`.\n- Scope: isolated reconciliation of compatible #269, #272, and #274 changes; exact-source Pages qualification; `docs/release/` evidence and branch disposition ledger. Independent workers own separate worktrees and explicitly assigned files.\n- Acceptance: preserve source provenance, fail-closed session/network authority, private backup recovery, disabled demonstration payments, original test assertions and coverage gates. Run focused regressions and applicable builds/browser/security checks.\n- Shared integration lock is held by `20261119T105500Z-0bed53303053-root`, generation 3. This branch does not acquire, supersede, or mutate that lease. Shared branch/main promotion remains blocked until the existing coordinator releases ownership and required checks pass.\n- No edits to other checkouts, source branches, deployments, published tags, fee recipients, guardians, mainnet configuration, dependency versions, or security thresholds. Release/deployment remains conditional on ADR-0029, origin isolation and actual qualification.\n\n",
+      "## Final Pages environment recovery \u2014 2026-11-19\n\n- Worker: final release integration coordinator, with isolated native sweep, analyzer and QA workers.\n- Branch: `release/ghostpay-beta-qualification-20261119`; recovered published base `7b4c1554382b05ac3fab48527aadf596d6b1ff7b`, tree `fe5b4c98d0b39c0d3ab88018efcc1ba600309c98`.\n- Scope: recover the already reviewed PR #277 and #275 integrations, beta metadata, narrowly selected PR #255 analyzer changes, native fee-review work, and release evidence. Root owns integration, metadata and release documents; workers own their explicitly recorded source paths on separate branches.\n- The replacement environment did not retain the previous temporary filesystem. Published history is intact. Unpublished local commits and missing logs remain historical identifiers until actual bytes are recovered. Reconstructed code requires fresh verification; old passing results do not qualify a different source tree.\n- Acceptance: preserve existing and original PR ancestry; compare recovered source identities where recorded; obtain fresh tests and independent review; publish recoverable source checkpoints promptly. Do not weaken assertions, coverage thresholds, analyzer policy, deployment approvals or external review requirements. No main merge, public deployment, tag or release before all applicable gates pass.\n"
+    ],
+    "wiki_paths": [
+      "docs/wiki/Verification-and-Release-Gates.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 289,
+    "title": "fix(invoice-schema): reject non-string runtime base64url decoder inputs",
+    "head_sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+    "head_ref": "automation/20261119T2243Z/bug/base64url-runtime-input",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T22:47:59Z",
+    "matching_claim_sections": [
+      "# Automation cycle 20261119T2243Z \u2014 strict base64url decoder runtime input\n\n- Worker: one ChatGPT operator (development, separate read-only audit and integration review sequentially; no independent subagent).\n- Isolated branch: `automation/20261119T2243Z/bug/base64url-runtime-input`; baseline `main` `c977b5d6723f6822c3b5d86cd6b231712c53c395`.\n- Owned paths: `packages/invoice-schema/src/base64url.ts`, `packages/invoice-schema/src/base64url.test.ts`, and `docs/handoffs/BASE64URL_INPUT_TYPE_20261119.md`; this claim is appended to `docs/ai/ACTIVE_WORK.md` on this branch only.\n- Reproduction: public strict decoder accepts a numeric value as empty bytes (and array-like objects can supply length/charCodeAt); non-string input is outside its contract. A null value raises a native TypeError rather than fixed Base64UrlError.\n- Acceptance: all non-primitive-string values fail with `Base64UrlError`, including number, undefined/null, arrays, boxed strings and array-like objects; canonical valid inputs and existing test vectors unchanged. No secret-bearing error messages or protocol change.\n- Ownership: sampled open #238/#262/#264/#265/#268/#269/#270/#278/#285; none list direct modification of base64url files. Recheck live heads before integration. Never edit other workers' branches.\n- Dependencies: existing invoice schema test package, no new dependency. Full exact-head hosted CI and independent review required; no shared integration lock acquired, no main merge.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 285,
+    "title": "fix(web): reject unclassified QR payload and frame kinds",
+    "head_sha": "89942105c48df03b9351f777278b6a992e35a95e",
+    "head_ref": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T20:53:52Z",
+    "matching_claim_sections": [
+      "# QR kind handling fail-closed \u2014 2026-11-19 cycle 20261119T204728Z\n\n- Worker: one ChatGPT coordinator, sequential implementation and read-only audit phases (no independent subagent; not independently approved).\n- Task branch: `automation/20261119T204728Z/bug/qr-kind-failclosed`; exact base main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.\n- Owned paths: `apps/web/src/lib/qrKinds.ts`, `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_KIND_FAILCLOSED_20261119.md`, and this additive ownership claim only.\n- Evidence: `kindForPayload` looks up a runtime key in a regular JavaScript object; for unknown keys it can return `undefined` or inherited properties such as `constructor`, while `unverified: true` can classify an unknown payload as caution. `qrKindClass` constructs arbitrary classes for unknown kinds.\n- Acceptance: reject unrecognized runtime payload types and frame kinds before returning handling policies or CSS; preserve all valid QR kind/rule behaviors and print policy; commit a failing regression first, then fix; execute bounded Node proof and report exact CI and independent review gaps.\n- Ownership: core active PRs #238/#243/#246/#251/#252/#255/#258/#261/#262/#264/#265/#268/#270/#274/#278/#279/#280/#281/#282 were inspected for these files; no direct overlap observed. Recheck at merge. No other branch or shared integration updates.\n- Status: claimed; no merge, deployment, release, or production change authorized from this isolated worker.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 282,
+    "title": "fix(web): reject ambiguous duplicate JSON fields in saved merchant signer pins",
+    "head_sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+    "head_ref": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T18:42:24Z",
+    "matching_claim_sections": [
+      "# Merchant key-pin strict JSON hardening \u2014 2026-11-19 cycle 20261119T183817Z\n\n- Worker: one ChatGPT operator (sequential source, test, and audit phases; no independent subordinate).\n- Task branch: `automation/20261119T183817Z/bug/merchant-pin-duplicate-json`.\n- Base `main` SHA: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.\n- Owned files: `apps/web/src/lib/merchantIdentity.ts`, `apps/web/src/lib/merchantIdentity.test.ts` and an isolated handoff `docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md`.\n- Finding: ambiguous persisted signer-pin JSON (duplicate `v` or `signer` members) is accepted by `JSON.parse` as its final key value, despite the trusted-pin fail-closed contract. This is defensive local-storage validation; no remote compromise or fund-loss exploit claimed.\n- Acceptance: reject duplicate-key and forbidden-key pin records as `unavailable`, never silently treat them as `absent`; valid persisted pins continue to be read, saved and removed; regression committed before source repair.\n- Dependencies: reuse existing exported `parseStrictJson` (invoice-schema), no protocol/schema changes.\n- Ownership check: open PRs including #238, #246, #262, #264, #278 and all current work listed through #281 inspected for these two files; none claimed them. Recheck heads before integration.\n- Integration metadata ref remains outside this branch. No shared ledger or protected-branch update authorized from this worker.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 281,
+    "title": "fix(privacy): warn when the 30-day anonymity-set history is incomplete",
+    "head_sha": "0041514a630398c89693498d9b5e44ef562d9c61",
+    "head_ref": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T16:44:29Z",
+    "matching_claim_sections": [
+      "# Run 20261119T1640Z \u2014 privacy-set 30-day coverage correctness\n\nWorker: one ChatGPT coordinator, with sequential implementation and audit phases; no independent subagent.\nBase: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; isolated branch: `automation/20261119T1640Z/bug/scan-privacy-partial-30d`.\nOwned paths: `apps/web/src/lib/scanSpam.ts`, new `apps/web/src/lib/scanSpam.partial.test.ts`, and `docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md`. The claim is recorded here before source edits.\nFinding: `anonymitySet()` reports 7-day and 30-day public announcement counts but calculates `partial` from only the 7-day lower bound. If a scan began ten days ago, the 30-day displayed count is incomplete yet the warning is absent.\nAcceptance: a test that fails on baseline for incomplete 30-day coverage; 7-day/30-day counts remain unchanged; the `partial` flag marks incomplete 30-day history and gaps to head, but does not spuriously mark full available genesis history incomplete. Run available focused checks and report exact limits; avoid changing privacy policy, protocol, network access or real funds.\nDependencies/ownership: checked active #278/#264/#246/#238/#244/#251/#248/#249/#222/#219/#250/#269/#270/#279/#280 changed-file inventories; none owns `scanSpam.ts` or new focused test. Recheck before PR. The metadata integration lock was last observed released generation 3; no protected integration requested.\nStatus: claimed; implementation pending.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 280,
+    "title": "fix(web): fail closed on unknown runtime build-profile values",
+    "head_sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+    "head_ref": "automation/20261119-c977/bug/build-profile-failclosed",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T14:48:12Z",
+    "matching_claim_sections": [
+      "# 2026-11-19 \u00b7 Fail-closed runtime build profile guard (isolated)\n\nCoordinator and implementer: one ChatGPT assistant, sequential phases; no independent verifier spawned.\nCycle: `20261119-c977`; isolated branch: `automation/20261119-c977/bug/build-profile-failclosed`.\nBase observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.\nOwned paths: `apps/web/src/lib/buildProfile.ts`, `apps/web/src/lib/buildProfile.test.ts`, this append-only claim, and isolated `docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md`.\nDependency/ownership: active consolidation PRs #246/#262/#264/#278 and QR #279 checked; none changes the two source/test paths as of branch creation. Existing metadata integration lock is released generation 3. The external GhostPay automation has a concurrently in-progress run; no integration or shared-ledger writes authorized for this branch.\nFinding: `resolveProfile` narrows when exactly `lean`, but unexpected runtime values (outside the TypeScript union) are treated as `full` when all other values are `full`. This differs from the fail-closed `profileFromDefine` logic. No real-world exploit established.\nAcceptance: test first; invalid explicit/shell/build values must resolve to lean, normal 3-source truth table unchanged; no feature widening, dependencies, workflows or build setting changes; record actual test execution and CI constraints; independent verification needed before merge.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 262,
+    "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+    "head_sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+    "head_ref": "codex/ghostpay-feature-consolidation-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T13:23:18Z",
+    "matching_claim_sections": [
+      "## Feature completion and consolidation \u2014 2026-11-19\n\nWorker: ChatGPT root coordinator with independent privacy, recovery, and branch-review workers.\nBranch: `codex/ghostpay-feature-consolidation-20261119`.\nBase: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (verified live main at task start).\nOwned paths: semantic integration of existing PRs; `packages/chain-adapters/src/payments.bulkCancellation.test.ts`;\n`.claude/skills/ghostpay-package-map/PACKAGE_MAP.md` and dependency-closure guard data if supported by actual emitted-source evidence;\n`apps/web/e2e/app.spec.ts` browser lifecycle fixture; scoped regression tests and\n`docs/consolidation/feature-completion-20261119/**`. Privacy and recovery workers claim their own isolated paths.\nAcceptance: retain original feature ancestry and main fixes, repair reproducible integration failures without\nweaker assertions or gates, independently review combined source, run applicable validation, and merge only\nqualified work under current repository protections. No mainnet deployment, release publication, branch deletion,\nshared-branch rewrite, or finding suppression. External live writers remain read-only inputs until rechecked.\n\n\n"
+    ],
+    "wiki_paths": [
+      "docs/wiki/Verification-and-Release-Gates.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 279,
+    "title": "fix(web): reject lossy Unicode when building multipart QR codes",
+    "head_sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+    "head_ref": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T12:50:43Z",
+    "matching_claim_sections": [
+      "# Pages multipart QR malformed Unicode guard \u2014 2026-11-19\n\n- Cycle/worker: `20261119T124337Z` / single ChatGPT coordinator with sequential bug, audit and documentation phases; no parallel or independent verifier available.\n- Branch: `automation/20261119T124337Z/bug/qr-utf8-surrogate-guard`; base `c977b5d6723f6822c3b5d86cd6b231712c53c395`.\n- Owned paths: `apps/web/src/lib/qrMultipart.ts`, `apps/web/src/lib/qrMultipart.test.ts`, this isolated claim and `docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md`.\n- Discovery: single QR `makeQr` rejects unpaired UTF-16 surrogates, but multipart `TextEncoder` silently replaces them with UTF-8 U+FFFD. Node 22 reproduction: `\\uD800` encodes as `EF BF BD` while valid astral pairs round-trip unchanged.\n- Acceptance: test-first rejection of isolated high/low surrogates and mixed strings by `toMultipart` and `multipartIfNeeded`; valid paired Unicode text still encodes and decodes; no QR/format/protocol change for valid payloads; no dependencies added; exact-head CI and separate review before merge.\n- Coordination: inspected changed-file inventories of active PRs #238, #240, #243, #244, #246, #249\u2013#252, #254\u2013#256, #258, #260\u2013#262, #264\u2013#265, #267\u2013#278; neither owned QR file appeared (bounded sample, not an exhaustive review of all open PRs). Broad #278 and recovery integration remain externally owned. Metadata lock generation 3 observed released at `6408563f55081ee941c2036086c025ebf63d2c96`; no shared lock acquired, no merge planned.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 277,
+    "title": "fix(pages): bind artifact checks to verified bytes and file identities",
+    "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+    "head_ref": "repair/ghostpay-276-artifact-races-20261119",
+    "base_ref": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:49:25Z",
+    "matching_claim_sections": [
+      "# Pages artifact verifier race repair \u2014 2026-11-19\n\nWorker: `clock_hosting_review`, assigned by the consolidation coordinator.\nBranch: `repair/ghostpay-276-artifact-races-20261119`.\nParent: PR #276 `f39a9dd36c09f8b02d937c5f3d19676d334976d6`.\nOwned paths: `scripts/pages/verify-pages-artifact.mjs`, its original test file,\nthis additive claim, and `docs/handoffs/agents/PAGES_ARTIFACT_RACE_REPAIR_20261119.md`.\nThe original PR #276 branch remains read-only. This isolated follow-up retains\nall six parent test groups and its original producer/workflow behavior.\nAcceptance: reproduce the commit-read and symlink-swap false successes before\nrepair; parse commit metadata from the bytes whose hash passed; reject observed\nfile/inventory changes with validated regular-file descriptors and no-follow\nopens; verify failure cleanup and the documented stable-input/platform boundary.\nCoordinator-authorized review extension: reject directory-entry and manifest\nbytes that do not round-trip through UTF-8, retaining valid Unicode filenames.\nRun only dependency-free Node tests and source checks, obtain independent review,\nand publish a draft with exact source/test pins. No real artifact, hosted CI,\ndeployment, main integration, or arbitrary concurrent-filesystem immunity claim.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 275,
+    "title": "test(policy-scheme): repair mismatched-leaf Anvil fixture",
+    "head_sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+    "head_ref": "repair/ghostpay-270-policy-fixture-20261119",
+    "base_ref": "codex/ghostpay-consolidation-followthrough-20261119",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:49:24Z",
+    "matching_claim_sections": [
+      "## Policy Anvil fixture reconciliation \u2014 2026-11-19\n\nWorker: ChatGPT strict_json_review, delegated by the main consolidation coordinator.\nBranch: `repair/ghostpay-270-policy-fixture-20261119`.\nBase: `73545f63112910d46002718354ab5e99f8652e1f` (current PR #270).\nOriginal source input `fefcd57fb2397685a361dcbb9b9cf705efbfc17b` is its\nverified direct parent; the policy fixture blob is unchanged across that refresh.\nOwned paths: `packages/policy-scheme/src/anvil.test.ts`, this additive claim and\n`docs/handoffs/agents/POLICY_ANVIL_FIXTURE_20261119.md`.\nAcceptance: recover only the eight-line historical fixture hunk from\n`cd4539d2b7f3f14c63227c74d88c032e1e1f360d`, whose parent is\n`95d2480a6e2bacf16fe3c142c38a2538758bd102`; retain strict builder and encoder\nleaf/token binding and the intentionally malformed order's on-chain revert.\nDo not copy the historical whole file or its earlier salt-only ABI changes.\nRun bounded existing policy tests, typecheck and lint with source/dependency\nprovenance; require real Anvil and contract artifacts for an Anvil pass.\nObtain independent review, publish only this owned draft and preserve the parent.\n\nFresh overlap check before edits: private-scan lint branch\n`1b010ec910d04df105fd662cc360629cb0a2f5dd` and export-authorization branch\n`b0abb726c138ad1df2f03b7b102c9bd9de318887` own the remaining observed web lint\nwork; both retain the same unrepaired policy fixture blob as this base. This\nworker makes no web/runtime/lint-site, dependency, threshold, workflow, contract,\nmain, lease, #264/#270/#272 or other-owner branch changes. The root coordinator\nowns later integration and qualification.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 272,
+    "title": "Prevent stale Sweep quotes and signing handoffs; preserve explicit balance consent",
+    "head_sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+    "head_ref": "review/ghostpay-sweep-quote-lifecycle-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:49:23Z",
+    "matching_claim_sections": [
+      "## Sweep quote and signing lifecycle correction \u2014 2026-11-19\n\nWorker: independent ChatGPT review agent, coordinated by the main consolidation agent.\nBranch: `review/ghostpay-sweep-quote-lifecycle-20261119`; draft PR #272.\nBase: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).\nOwned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,\nand `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.\nAcceptance: prevent stale quotes and stale relayed, direct and same-nonce\nreplacement handoffs after balance, recipient, payment, provider, session, mode,\nmanifest or transport changes; retain submitted and uncertain-outcome evidence,\nprior replacement hashes and journal compare-and-swap; preserve explicit balance\nconsent and existing vault, session and fee guards.\n\nInitial quote/relayed head: `9e4ec2da024ef9a706e9d6cefa988d0a5dd9f7ac`.\nRoot coordinator approved the direct/replacement extension after reviewing that\nhead. This scope extension was recorded before source edits. Original #231/#252\nand broad #262/#264 remain unchanged; main integration belongs to the coordinator.\n\nFinal source/test blobs: `2b832d371229385a2a1228e16320aceb9a64ee59` /\n`41baa63e14fad5ea0dcf54c202b2ef3b0faa5476`.\nEvidence: initial parent RED 28 failed/6 controls; quote/relayed GREEN 106/106;\nextension RED 30 failed/40 controls at the initial head; final GREEN 142/142,\nzero skipped; scoped type-aware lint, secret scan and diff check pass. Independent\nsource review approves both final blobs and unchanged post-handoff handling.\nPrior full web build attempts were environment-limited (heap OOM 134, killed137);\nfinal full typecheck/build, browser acceptance and exact-head hosted gates remain.\nSee the source-pinned handoff for commands and limits. Candidate remains draft.\nNo deployment, release or real transaction is authorized by this worker claim.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 271,
+    "title": "Repair historical adapter qualification without weakening TRON completeness",
+    "head_sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+    "head_ref": "integration/ghostpay-adapter-qualification-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:49:22Z",
+    "matching_claim_sections": [
+      "# Historical adapter qualification \u2014 2026-11-19\n\nWorker: ChatGPT integration coordinator, with independent branch and security reviewers.\nBranch: `integration/ghostpay-adapter-qualification-20261119`.\nBase: `14ded337a10c140d7a9f9a9238ec038587d925bb` (verified live main).\nOwned paths: integration of PR #250, its historical adapter source and tests, the shared\nTRON browser fixture and its hardening tests, and a scoped qualification handoff.\nAcceptance: preserve the strict contiguous-block response validation and all original\nregression assertions; recover the already implemented fixture repair from `a3442053`;\nprove the failing TRON browser tests pass against the combined source; run relevant\nadapter tests, typecheck, lint, and hosted qualification before any merge into main.\nThe original #250 and #262 branches are read-only inputs and remain intact. No\ndeployment, release, dependency update, or security-gate change belongs to this task.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 273,
+    "title": "Preserve complete consolidation records and recovered documentation history",
+    "head_sha": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+    "head_ref": "codex/ghostpay-consolidation-records-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:48:48Z",
+    "matching_claim_sections": [
+      "# Consolidation records and branch census \u2014 2026-11-19\n\nOwner: ChatGPT root coordinator; initial census writer: branch_scout (Caveman investigator).\nBranch: `codex/ghostpay-consolidation-records-20261119`.\nBase: `14ded337a10c140d7a9f9a9238ec038587d925bb` (main; reread 2026-11-19 10:32 UTC).\n\nOwned paths: `docs/consolidation/BRANCH_INVENTORY.md`,\n`docs/consolidation/20261119-branch-census.json`, `docs/consolidation/PR-census.json`\n(initial branch_scout phase), followed by coordinator-owned\n`docs/consolidation/FEATURE_MATRIX.md`, `RECOVERED_WORK.md`, `SECURITY_AUDIT.md`,\n`TEST_RESULTS.md`, `MAIN_MERGE_LOG.md`, `REMAINING_WORK.md`, and `HANDOFF.md`;\nthis claim only in `docs/ai/ACTIVE_WORK.md`. All seven abbreviated filenames are under\n`docs/consolidation/`.\n\nAcceptance: preserve the observed 278-branch / 267-PR census with exact source heads and explicit\ndispositions; distinguish later observations, verified ancestry, inherited source review and unrun gates;\nrecord independent recovery and candidate findings without turning them into release qualification;\npublish reviewable documentation from the pinned main tree. The local environment became temporarily unavailable during the task, then resumed. The original\ncensus JSON was successfully reread and cross-checked with GitHub metadata before publication. Retained\nconnector responses and source-pinned repository evidence remain explicit provenance; no missing data is invented. No application, dependency, workflow,\nsecurity-gate, deployment or integration-lock mutation belongs to this branch.\n\nWrite ownership is sequential: branch_scout publishes the census, then ceases all writes and supplies\nits exact head to root; root may append the seven records only with an expected-head guard. Existing\nclaims and source candidates remain read-only inputs. The separate active main integration lease stays\nuntouched. Source-only fixes remain on their dedicated PRs. A documentation PR is not permission to\nmerge, release, deploy, delete branches or close unmerged source work.\n\nStatus: claim recorded before census edits. Root owns final review, subsequent documentation and handoff.\n\n",
+      "## Consolidation checkpoint completion and documentation recovery \u2014 2026-11-19\n\nOwner: ChatGPT root integration coordinator, after explicit branch handoff from branch_scout.\nBranch: `codex/ghostpay-consolidation-records-20261119`; prior head `b60be096fb32ab63f51ea3868892db21728fbdb1`.\nCurrent main: `8f56376427c96881f49590920ff0bf8543ec81b4`, after independently reviewed and fully qualified PR #257.\nExpanded owned scope: reconcile current main and the complete documentation-only PR #259\n(`4ff80733a3b36019e2f12fc21a8448e7666b6049`) while retaining both histories and every ownership\nclaim; its changed `docs/design`, `docs/wiki`, and `docs/handoffs/docs-recovery-20261119` paths\nand the two dated continuation ledgers are included. Correct the demonstrably stale inventory\nstatements in `packages/chain-adapters/TODO-VERIFY.md` from the existing token/feed source and\nsaved primary-source evidence. Complete the seven already claimed consolidation records.\nAcceptance: historical material stays dated; current status is pinned to actual main and candidate\nheads; archive provenance and all source text are retained; insertion-only ownership conflicts\npreserve every parent section; new main runtime blobs stay unchanged. Verify Markdown links,\nJSON/count consistency, source identities, exact current checks and the resulting publication tree.\nNo application, dependency, workflow, contract, security threshold, deployment or release change.\nOriginal #259 and other workers' source branches remain read-only. Root holds verified cooperative\nlease generation 3 for shared integration actions; that metadata-only control history is never merged.\nThis scope expansion is recorded before the recovery and corrective documentation edits.\n\n",
+      "## Consolidation checkpoint evidence continuation \u2014 2026-11-19\n\nOwner: the same root coordinator for `codex/ghostpay-consolidation-records-20261119`.\nPrior verified checkpoint: `64e192916d66500db8a47a251b4ab17c4d756906`; tree `8923964e4dd7aeab68fc92c722cdd23d0e9a40fa`.\nAdditional owned paths, registered before repository edits:\n`docs/consolidation/20261119-eligibility-snapshot-1134.json`,\n`docs/consolidation/20261119-eligibility-snapshot-1134.md`,\n`docs/consolidation/20261119-security-gates-264.json`, and\n`docs/consolidation/20261119-final-observations.json`.\nPurpose: preserve the final source-bound CI inventory, current #264 analyzer evidence,\nlate branch/source dispositions, and this coordinator's verified lease handoff.\nAcceptance: retain historical snapshots unchanged; separate pending, failed and completed\nchecks; keep original artifact hashes and exact heads; preserve every other claim and\nall application/dependency/workflow blobs. The already owned eight consolidation records\nwill be updated to reference this evidence. No test, runtime or security threshold changes.\n\nFinal status for this coordinator's consolidation claim: all eight records and recovered\ndocumentation history are published and read back; the final evidence follow-up records\nreviewed PR277, the288-ref snapshot, pending CI and unresolved security/test gates.\nGeneration3 integration ownership was explicitly released at6408563f55081ee941c2036086c025ebf63d2c96.\nNo future background execution is promised. Source branches retain their existing owners;\nfuture integration must re-read live heads and acquire ownership before shared writes.\n"
+    ],
+    "wiki_paths": [
+      "docs/wiki/Architecture-and-Design-Rationale.md",
+      "docs/wiki/Codebase-Map.md",
+      "docs/wiki/Current-Status.md",
+      "docs/wiki/Developer-Guide.md",
+      "docs/wiki/Home.md",
+      "docs/wiki/QR-and-Devices.md",
+      "docs/wiki/User-Guide.md",
+      "docs/wiki/Verification-and-Release-Gates.md",
+      "docs/wiki/_Sidebar.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 267,
+    "title": "Fix static-export timestamp precision and HTTP validator parity",
+    "head_sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+    "head_ref": "codex/ghostpay-hosting-timestamp-main-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:31:13Z",
+    "matching_claim_sections": [
+      "# Focused hosting timestamp promotion \u2014 2026-11-19\n\nWorker: `branch_recon`, delegated by the feature-consolidation coordinator.\nBranch: `codex/ghostpay-hosting-timestamp-main-20261119`.\nBase: `14ded337a10c140d7a9f9a9238ec038587d925bb`, independently verified as GitHub main.\nOwned paths: the three reviewed source/test files from\n`38fe7fdaf151ef433be9721af8fea7cbcdea89c4` under `tools/portable-hosting-kit/`,\nthe unchanged historical evidence in `docs/consolidation/hosting-timestamp-20261119/`,\nnew provenance in `docs/consolidation/hosting-timestamp-main-20261119/`, and this\nadditive claim. Acceptance: cherry-pick the exact reviewed fix without importing\nfeature-candidate ancestry; verify all three blobs and the complete kit tree match\nthe tested product; preserve every prior main claim; identify differences in root\nconfiguration/lockfiles and record evidence limits honestly. Obtain independent\nrecovery-worker review. No other runtime, dependency, workflow, threshold, deployment\nor remote changes. The coordinator owns publication and hosted qualification.\nStatus: exact `-x` cherry-pick product `f4464e57bc6743800c2564ddb71bb5b06f64eb35`;\ncomplete kit tree and three product blobs equal the reviewed original. Historical\nevidence copied byte-for-byte; root lock differences remain explicit. Recovery-worker\nsource review found no introduced blocker. No new runtime replay is claimed.\nProvenance: `docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md`.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 276,
+    "title": "feat(pages): independently verify release artifact integrity before promotion",
+    "head_sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+    "head_ref": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:26:14Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 270,
+    "title": "Harden canonical arrays and skip unsupported scanner schemes",
+    "head_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+    "head_ref": "codex/ghostpay-consolidation-followthrough-20261119",
+    "base_ref": "codex/ghostpay-feature-consolidation-20261119",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T11:09:55Z",
+    "matching_claim_sections": [
+      "# Isolated consolidation follow-through \u2014 2026-11-19\n\nWorker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.\nBranch: `codex/ghostpay-consolidation-followthrough-20261119`.\nOriginal base: PR #262 `c40b7581b9b996f33612186bc91960c65273cb64`; first refresh `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.\nQualification base: `155d009160a6e5b2c24a91705c72fc8cca6ce815`; publication base: PR #262 `c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a` (identical tree).\nAll incoming claims and evidence are retained.\nOwned product paths: `packages/invoice-schema/src/json{,.test}.ts` and\n`apps/web/src/lib/scannerCore{,.test}.ts`; this own registry entry and\n`docs/consolidation/followthrough-20261119/`.\nScope: finish #265 array rejection with descriptor snapshots and avoid redundant crypto for unsupported scanner schemes.\nThe current base already integrates merchant-clock handling from #268. Preserve its two merchant files exactly;\nthe former #246 alternative and its 63-case result are superseded, historical evidence only.\nAcceptance: regression-backed correction, ordinary JSON byte stability, valid-scan/replay/cancellation/progress behavior,\nand the unchanged million-log corpus/180-second limit. Run original applicable tests, coverage, typecheck and lint.\nAnother coordinator owns shared integration. This branch remains isolated staging; shared tracking,\nprotected integration/main, active source branches, deployment, contracts, fees and recovery policy are unchanged.\nIndependent source reviews found no introduced blocker. The source-pinned handoff records actual execution:\nfocused scanner and million-log passes, full invoice-suite failures, and remaining hosted/browser qualification.\nNo repository-wide acceptance is inferred from focused checks.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 274,
+    "title": "fix(web): keep jittered invoice expiry monotonic across clock rollback",
+    "head_sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+    "head_ref": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T10:57:36Z",
+    "matching_claim_sections": [
+      "# Cycle 20261119T104800Z \u2014 browser jitter expiry clock rollback (isolated)\n\nCoordinator: ChatGPT direct GitHub connector; execution one sequential assistant, no second independent reviewer/subagent.\nWorker/role: bug repair and regression author.\nBranch: `automation/20261119T104800Z/bug/jitter-expiry-rollback` (base main `14ded337a10c140d7a9f9a9238ec038587d925bb`).\nOwned paths: `apps/web/src/lib/jitter.ts`, `apps/web/src/lib/jitter.test.ts`, `docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md`; claim on this branch only.\nDependencies: current `main`; #246/#262/#264 and recent focused #269\u2013#272 inspected for modified-path overlap (none of these touched jitter source/tests). No other active worker's branch will be edited.\nAcceptance: a scheduled invoice must not become ready solely because the system wall clock moves backward while a monotonic delay elapses; normal waiting/ready/expired/cancel behavior and sendNow behavior preserved. Commit regression test first, then minimal implementation; report actual checks and exact-head hosted gates.\nOut of scope: money movement, backend, contracts, relayer, production deployment, UI policy or product decisions. No shared integration/ref update/merge without valid lock ownership and required independent verification.\nStatus: regression committed first at `2b7cedbd`, repaired at `dbe6e975`, and source-blob-identity Node verification passed (two RED-on-base/GREEN-on-fix scenarios, seven existing controls); isolated source TypeScript check passed. Repository Vitest/lint/build, exact-head hosted CI and independent verification remain pending. See `docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md` (handoff commit `3503075a`).\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 252,
+    "title": "fix(web): repair standalone Sweep consent disclosure and reconcile main",
+    "head_sha": "4085622463411d3ba27f4efb7b73a70575170535",
+    "head_ref": "repair/ghostpay-pr-231-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T10:53:24Z",
+    "matching_claim_sections": [
+      "## PR 231 standalone pre-merge disclosure repair \u2014 2026-11-18\n\nWorker: ChatGPT pre-merge lead; independent CI/privacy review by ci_inventory.\nBranch: `repair/ghostpay-pr-231-20261118`.\nSource: #231 `d9ff386807de724eb1a1c4d400c882df0fc20bb7` (full head verified in the handoff).\nTarget: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).\nOwned paths: `apps/web/src/lib/scanPrivacy.ts`, its existing `scanPrivacy.test.ts`\nregressions, `docs/consolidation/merge-readiness/PR231.md` and this claim.\nAcceptance: reproduce the two exact hosted disclosure-equivalence failures;\nextract only the scanPrivacy correction from `d6016a822f3bf238506ea5b426380bceb9d1ee83`;\nretain every balance-consent/session guard and disclosure assertion; verify the\nactual combined main/source tree. #222/#238 and their active source branches\nare read-only. All source commits remain ancestors. Both sides of the only\nmerge conflict (independent ACTIVE_WORK claims) are retained. No contract,\ndependency, cryptographic or gate changes.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 269,
+    "title": "fix(web): complete payment-key exports and consolidate private-scan repairs",
+    "head_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+    "head_ref": "codex/ghostpay-private-checkpoint-browser-20261119",
+    "base_ref": "codex/ghostpay-feature-consolidation-20261119",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T10:39:25Z",
+    "matching_claim_sections": [
+      "# Pages continuation integration \u2014 2026-11-19\n\nWorker: current ChatGPT consolidation coordinator (workspace 11e5ddb9da60).\nBranch: `codex/ghostpay-private-checkpoint-browser-20261119` (PR #269).\nInitial base: `c40b7581b9b996f33612186bc91960c65273cb64`.\nObserved principal update: `cb7cfc9ec4f6c051e99805a25132c9458beb7af0`.\nOwned work: integrate the existing private-checkpoint browser correction with the\ndelegated private-scan error/lint repair and reauthenticated payment-key export\nauthorization repair; preserve the principal update and all ordered source parents.\nShared-file resolution is limited to additive ACTIVE_WORK claims. Runtime paths\nremain with their delegated owners until their frozen source is independently reviewed.\nAcceptance: preserve existing assertions, scoped network authorization, current-session\nchecks, endpoint binding, cancellation, and original qualification gates. Verify\npublished contents and provenance. Record baseline failures, partial observations,\ninterrupted checks, and unavailable execution separately; no passing-suite claim\nwithout a completed result. The execution environment became unavailable during this\ncycle, so reconstruct and review exact owned patches through the authorized connector.\nDo not overwrite #262, main, another worker's branch, workflows, dependencies or gates.\nIntegration lock owner: `20261119T100000Z-11e5ddb9da60-root`; release after publication.\nStatus: source integrated for PR #269; applicable exact-source checks remain required.\n\n",
+      "# Private checkpoint browser assertion repair \u2014 2026-11-19\n\nWorker: current ChatGPT consolidation coordinator, independently reviewed by the integration reviewer.\nBranch: `codex/ghostpay-private-checkpoint-browser-20261119`.\nBase: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).\nOwned paths: `apps/web/e2e/private-scan-checkpoints.spec.ts`, this additive claim,\nand `docs/handoffs/PRIVATE_CHECKPOINT_BROWSER_20261119.md`.\nAcceptance: preserve the original discovery, one-payment, no-payment-before-revalidation,\nencrypted-storage, independent-profile, and concurrent-writer assertions while selecting\npayment rows instead of every repeated rendering of the address. The unchanged browser\nfile (blob `db9e79a1337f1d8bcc423d0fc28c51e36975ee23`) already failed both full and lean\nhosted browser jobs for PR #248 because the receipt repeats the payment address.\nObtain independent review and execute the available browser checks; record unavailable\nor interrupted execution honestly. No runtime, storage, dependency, workflow or threshold changes.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 268,
+    "title": "fix(invoice-schema): reject invalid merchant profile verification clocks",
+    "head_sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+    "head_ref": "automation/20261119T095600Z/bug/merchant-profile-clock",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:58:53Z",
+    "matching_claim_sections": [
+      "# Automation cycle 20261119T095600Z \u2014 merchant profile clock validation\n\nWorker: single ChatGPT implementation phase (no parallel independent verifier).\nBranch: `automation/20261119T095600Z/bug/merchant-profile-clock`.\nBase main SHA: `14ded337a10c140d7a9f9a9238ec038587d925bb`.\nOwned source: `packages/invoice-schema/src/merchantProfile.ts`, `packages/invoice-schema/src/merchantProfile.test.ts`; cycle-specific handoff only.\nFinding: GP-AUD-208-01 in draft PR #266; signed profile may bypass expiry when caller provides NaN/undefined.\nAcceptance: valid signed profile rejects invalid clocks deterministically; finite valid clocks preserve existing expiry boundaries; test is committed before implementation; run available checks and report unexecuted checks. Do not alter cryptographic signature or invoice formats.\nDependencies: audit #266; PR #265 owns separate json canonicalization. No shared integration lock acquired or merges authorized from this worker.\n\n---\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 244,
+    "title": "Complete Bitcoin spent-output detection and private scan consent",
+    "head_sha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+    "head_ref": "chatgpt/btc-spent-private-scan-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:39:50Z",
+    "matching_claim_sections": [
+      "# Bitcoin spent-output/private-scan completion \u2014 2026-11-18\n\nWorker: ChatGPT coordinator and three independent engineering/review lanes.\nBranch: `chatgpt/btc-spent-private-scan-20261118`.\nBase: initial main `dfc75ef2087fa6463ae59e0818abec01796c578d`, combined with unchanged PR #219\n`9617e8572f9bc414410bd937b0e7718d0c5bd55c` at `e27ce7f60fb0e21788f09df0f188b3b3490bcad2`.\nIntegrated main `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` after independent compatibility\nreview; only this registry overlapped, and both ownership records are preserved.\nUser explicitly authorizes continuation of #219 only; PR #238 overlaps BTC paths and remains a read-only\ncomparison/dependency. PR #235 seller checkpoint architecture and other feature owners are out of scope.\n\n| Lane | Owned paths | Acceptance |\n| --- | --- | --- |\n| btc_state | `apps/web/src/features/btc/scan.ts`, Bitcoin scan/state regressions; `packages/btc-silent-payments/src/scan/{scanner,state,resume}*` as needed | Reproduce/fix incomplete evidence, historical, persisted-match and reorg defects; preserve status contract and bounded local scans; no provider checks without consent. |\n| btc_ui | `apps/web/src/features/btc/BtcView*`, `scanWorker*`, `scan.worker.ts`, Bitcoin e2e; BTC-only locale/security-key additions | Explicit/revocable consent, light-mode constraint, stale-session rejection, accurate unknown/incomplete UI and deterministic browser acceptance. |\n| btc_review | Read-only scanner/source/worker/privacy audit; `docs/handoffs/btc-spent-20261118/INDEPENDENT_REVIEW.md` | Independently identify/reproduce source defects and review final fixes, source-pin evidence; no external-audit claim. |\n| coordinator | Bitcoin Esplora/oracle/header source safeguards and regressions; `docs/ai/ACTIVE_WORK.md`, `docs/handoffs/btc-spent-20261118/*`, Spec 12/BTC deviations/user docs | Acceptance matrix, preserve #219 work, qualified integration, bounded validation and performance evidence, reviewable PR. |\n\nNo main merge, deployment, publication, transaction signing/construction changes, unrelated dependencies,\ncontracts, general checkpoint architecture, or broad consolidation. Tests retain all release gates.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 264,
+    "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+    "head_sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "head_ref": "integration/ghostpay-master-consolidation-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:35:13Z",
+    "matching_claim_sections": [
+      "# Master repository reconciliation \u2014 2026-11-18\n\nWorker: ChatGPT integration coordinator. Branch: `integration/ghostpay-master-consolidation-20261118`.\nBase: PR #238, `198aa5baff22272453733a0f3dcfcac0e0994eec`; initial main: `dfc75ef2087fa6463ae59e0818abec01796c578d`.\nOwned paths: integration conflicts; branch/PR census and evidence in `docs/consolidation/master-20261118/`;\n`scripts/tests/lean-core-reachability.test.mjs`, generated package map, `packages/chain-adapters/src/payments.bulkCancellation.test.ts`,\n`apps/web/e2e/app.spec.ts`, and the export-cancellation regression only if still required after recovery reconciliation.\nIndependent workers own recovery reconciliation, CodeQL repairs and selected historical correctness fixes in separate worktrees.\nAcceptance: evidence-backed disposition for every branch; preserve source provenance and security invariants; fix reproduced integration\nfailures; execute focused and combined qualification; merge only qualified groups under the user's master consolidation authorization.\nDo not delete branches, force-push shared history, deploy, publish releases or weaken security requirements.\n\n\n"
+    ],
+    "wiki_paths": [
+      "docs/wiki/Verification-and-Release-Gates.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 210,
+    "title": "deps: bump the npm-minor-patch group across 1 directory with 9 updates",
+    "head_sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+    "head_ref": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+    "base_ref": "main",
+    "author": "dependabot[bot]",
+    "updated_at": "2026-11-19T09:35:12Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 246,
+    "title": "Complete remaining GhostPay fixes and reviewed completion ledger",
+    "head_sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+    "head_ref": "chatgpt/ghostpay-remaining-work-20261119",
+    "base_ref": "integration/ghostpay-pages-completion-20261118",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:35:11Z",
+    "matching_claim_sections": [
+      "# Remaining-work browser qualification \u2014 2026-11-18\n\nWorker: ChatGPT root, branch `chatgpt/ghostpay-remaining-work-20261119`, source\n`264cf86b`. Owned path: `apps/web/e2e/app.spec.ts` hostile-text test only.\nThe live #233 file list does not claim this test. Its global dialog handler\ndismisses the legitimate SEC-40 beforeunload prompt, aborting `openFresh()`.\nAcceptance: accept only beforeunload in this synthetic-key test; continue to\nrecord/dismiss every script dialog and preserve every inert-DOM assertion.\nNo application, privacy, recovery, timeout, or assertion relaxation.\n\n",
+      "# Remaining unassigned work \u2014 2026-11-18 (client date)\n\nCoordinator: ChatGPT root; branch `chatgpt/ghostpay-remaining-work-20261119`.\nBase main: `dfc75ef2087fa6463ae59e0818abec01796c578d`; integration source:\n`198aa5baff22272453733a0f3dcfcac0e0994eec` (#238).\nOwned paths: `docs/completion/remaining-work-20261118/`, integration of the isolated\npolicy, historical CLI/relayer, and CI qualification lanes, and this registry.\nAcceptance: source-pin every task and source PR; recover only existing requirements\nor confirmed defects; obtain failing/passing regression evidence and independent\nreview; consolidate verified commits; use actual GitHub merge confirmations.\nThe seven separately assigned feature streams remain read-only inputs. Their\ndefects are referred to their owners. Strict Mythril policy remains unchanged.\nNo deployment, production release, branch deletion, force-push, or paid-agent\nworkflow activation. Existing branch heads are rechecked before integration.\n\n",
+      "## Remaining SDK and registry documentation \u2014 2026-11-19\n\nWorker: root; branch `chatgpt/ghostpay-remaining-work-20261119`, base `dfdc5d51`.\nSources: F-PROTO-12 missing SDK README, F-CTR-04 stale ADR-0018, F-WEB-18 embed header path,\nand current quote/RPC source. Owned paths: `packages/sdk/README.md`, `docs/adr/ADR-0018-erc6538.md`,\n`packages/chain-adapters/README.md`, comment in `apps/web/src/lib/embedHost.ts`.\nAcceptance: document actual exports and verdict semantics without changing payment authorization,\nstate current delegated/ENS support and deployment-verification limits, correct source paths,\nand validate relative links. No protocol, authority, deployment, release or runtime behavior change.\n\n",
+      "## Remaining GitHub Action runtime maintenance \u2014 2026-11-19\n\nWorker: root; branch `chatgpt/ghostpay-remaining-work-20261119`, base `5e753eb9`.\nSource: unassigned dependency PR #207, independently reviewed at\n`199ab7ef1e80e6368fdc17c09b94c87a62871861`, and GitHub's Node 20 action-runtime retirement.\nOwned paths: the two `peter-evans/create-pull-request` pins in\n`.github/workflows/ghostpay-codex-cloud.yml` and\n`.github/workflows/ghostpay-parallel-review.yml`, this claim and the review evidence.\nAcceptance: adopt the reviewed Node 24 action while preserving every trigger,\npermission, input, output consumer and paid-workflow activation condition; run\nthe existing automation hardening/workflow tests and action-pin checks; obtain\nindependent source review. No workflow dispatch or paid-agent activation.\nThe unrelated setup-python v7 upgrade remains optional maintenance.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 238,
+    "title": "Consolidate Pages beta security, privacy, and recovery",
+    "head_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "head_ref": "integration/ghostpay-pages-completion-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:30:31Z",
+    "matching_claim_sections": [
+      "# Pages beta consolidation continuation \u2014 2026-11-18\n\nWorker: ChatGPT coordinator, with independent branch archaeology, recovery/security and CI reviewers.\nBranch: `integration/ghostpay-pages-completion-20261118`.\nBase: `dfc75ef2087fa6463ae59e0818abec01796c578d`.\nOwned paths: consolidation conflicts and Pages security/privacy integration, focused regression tests,\nthis registry, and `docs/handoffs/pages-completion-20261118/`.\nFollow-up: the coordinator owns the legacy portable keystore's temporary passphrase-byte lifetime and its focused\nregression in `packages/ux-vault/src/keystore-portable*`; archaeology independently reviews the change.\nRecovery, dependency and security-tooling implementation use separate worktrees and branches.\nExisting remote PRs are read-only source inputs. The #209 extraction includes Pages hosting protections,\nroot error reporting and backup navigation; release-test relaxation and unrelated workflow updates are excluded.\nAcceptance: preserve non-custodial client-side key handling and testnet restrictions; integrate only reviewed changes;\nexecute focused and combined tests; obtain independent review; record source and evidence before any main merge.\nNo deployment, release, branch deletion, force-push, or paid agent workflow activation is authorized.\nThis restores the coordinator claim first committed in `b828b44e`, dropped during registry reconciliation.\nQualification update: the full `npm test` command completed at `e8c77e7e8699dd16b86b7a1ff90b834594d07105`\nwith exit 0 on Node 22.23.5/npm 11.21.2. The identical runtime tree was published as draft PR #238 at\n`9bad95e5cc0ee73f5adb8d2c587161074b21e080`. Documentation integration `e033855b` changes no runtime/test input.\nThe coordinator owns final result/diagnostic reconciliation in the completion packet and the Pages README's\nHTTP/CSP reachability clarification. Subsequent published-runtime full/lean builds, Pages static/loopback checks,\ndevelopment release build and two-clean-clone reproducibility passed. The final isolated web lint retry exited 137;\nactual browser attempts failed before application assertions. Strict Mythril, full dependency audit and final\ncandidate hosted/security gates remain unresolved. Completed execution and independent evidence review are in\n[the completion packet](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md); the PR body carries the final\ndocumentation head, transport mapping and refreshed CI observation. No main merge or release is qualified.\n\n"
+    ],
+    "wiki_paths": [
+      "docs/wiki/Verification-and-Release-Gates.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 254,
+    "title": "Spec 12: complete Bitcoin spentness evidence and private scan consent",
+    "head_sha": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+    "head_ref": "chatgpt/btc-spentness-private-scan-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:15:11Z",
+    "matching_claim_sections": [
+      "## Bitcoin spent-output privacy completion \u2014 2026-11-18\n\nCoordinator: ChatGPT `/root`, Caveman investigate-first. Branch:\n`chatgpt/btc-spentness-private-scan-20261118`.\nBase: main `dfc75ef2087fa6463ae59e0818abec01796c578d`; preserve PR #219\n`9617e8572f9bc414410bd937b0e7718d0c5bd55c` through an explicit integration commit.\nOwned paths: Bitcoin scan source/state and focused tests under\n`packages/btc-silent-payments/src/scan/` and `apps/web/src/features/btc/`, Bitcoin\nbrowser acceptance, existing Bitcoin English disclosures/fallback security keys,\nBitcoin documentation/DEVIATIONS, this claim, and a feature-specific qualification report.\nAcceptance: local input matching, conservative unknown status, explicit provider\nconsent through worker dispatch/retry, encrypted resumption, reorg-safe spend\nevidence, historical migration and deterministic regression/browser coverage.\nIndependent reviewer `spentness_review` reads all feature code without modifying it\nand owns `docs/handoffs/btc-spentness-20261118/INDEPENDENT_REVIEW.md`.\nImplementation worker `state_engine` owns the library's scan state/scanner source\nand tests. `ui_consent` owns Bitcoin view/worker consent and browser tests.\nThe coordinator owns Esplora parsing, the web scan wrapper, header-result\ninvalidation, disclosures, documentation and combined qualification. These disjoint\npaths are reviewed before integration.\nPR #235 seller checkpoints, Spec 18 recovery, EVM, general network isolation,\ncontracts/Mythril, dependency upgrades and general consolidation are excluded.\nNo main merge, branch deletion, force-push, deployment or release publication.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 243,
+    "title": "feat(web): complete selected invoice signer pin validation",
+    "head_sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+    "head_ref": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+    "base_ref": "integration/ghostpay-pages-completion-20261118",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T09:08:03Z",
+    "matching_claim_sections": [
+      "# Pinned invoice signer completion \u2014 2026-11-18\n\nWorker: ChatGPT coordinator, protocol_validation, pin_management, and independent integration/security reviewers.\nBranch: `chatgpt/ghostpay-pinned-signer-completion-20261119`.\nBase: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238; includes PR #234 at `5e9e7be70399a9818579cf87bd494e013e25d4f9`).\nOwned paths: invoice-schema validation/error regressions; Pay inspection and focused lifecycle tests;\nnew invoice signer pin store/component and tests; additive signer i18n entries; dedicated browser acceptance;\nuser/developer signer documentation and this task's source-pinned qualification report.\nAcceptance: preserve canonical secp256k1 signatures and all existing envelope formats; explicit local seller-key\npins and confirmed replacement; accurately separate signature validity from selected-key trust; invalid/missing/\nunsupported/malformed/unavailable states; no stale asynchronous trust, cross-seller substitution or new network\nrequests; execute focused and full applicable qualification, and obtain independent security review.\nPR #239/#240 recovery, #241 network isolation, session key lifecycles, unrelated lint/dependency gates and Mythril\nfindings remain separately owned. No smart-contract changes, main merge, deployment or release.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 256,
+    "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+    "head_sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+    "head_ref": "integration/ghostpay-idle-session-completion-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:58:40Z",
+    "matching_claim_sections": [
+      "# Sleep-aware session security completion \u2014 2026-11-19 UTC (ACTIVE)\n\nWorker: ChatGPT coordinator with independent clock/lifecycle, vault/session and integration reviewers.\nBranch: `chatgpt/ghostpay-idle-lifecycle-qualified-20261119`.\nQualified source base: PR #242, `ab4e0da2cfe2a18adac0424896fba0b40fac81a8`, subsequently merged\nby another workstream as main `e454de6abfefda70d82784fafc1d8949b277c334` with an identical source tree.\nSuccessor integration target: `integration/ghostpay-idle-session-completion-20261119`, from that main.\nPR #227 `613667be4eeb132c7d21ccd06c627f9a7144d85b` is already an ancestor.\nOwned paths: `apps/web/src/AppShell*`; idle-specific session/key-vault lifecycle changes and tests;\nthe idle-authority token in `apps/web/src/lib/scanCursorSlot.ts` and its regression tests;\n`apps/web/e2e/idle-session.spec.ts`; directly required lock-state locale/security-key entries;\n`apps/web/DEVIATIONS.md`; session-security guidance and `docs/handoffs/idle-session-20261119/`.\nAcceptance: fail closed on expired/invalid clocks before activity; retire old timer/session generations;\nsynchronously revoke protected key operations at expiry; preserve sole-copy keys for the existing encrypted\nbackup/recovery path; qualify full/lean lifecycle behavior; independently review and integrate into the successor candidate.\nNo wallet encryption/KDF redesign, Spec 18 feature work, contract/analyzer remediation, network-isolation\nredesign, dependency upgrade, deployment, release, force push or protection bypass. Other source branches\nremain read-only; #238 and its recovery/privacy follow-ups continue independently outside this focused port.\nInitial defects and exact acceptance evidence are tracked in the task handoff directory.\n\nProvenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,\npreserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.\nThe broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 265,
+    "title": "fix(invoice-schema): reject sparse or decorated arrays during canonical JSON encoding",
+    "head_sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+    "head_ref": "automation/20261119T083600Z/bug/json-canonical-array",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:45:58Z",
+    "matching_claim_sections": [
+      "## 2026-11-19T08:36Z \u2014 isolated JSON canonicalization correctness repair\n\n- Worker: ChatGPT single sequential development/audit phase, cycle `20261119T083600Z`; no concurrent subagent and no independent review claimed.\n- Branch: `automation/20261119T083600Z/bug/json-canonical-array`, exact base `14ded337a10c140d7a9f9a9238ec038587d925bb` (main observed at branch creation).\n- Owned paths: `packages/invoice-schema/src/json.ts`, `packages/invoice-schema/src/json.test.ts`, and this own-branch claim only. Other owners' heads, docs/automation ledgers, contract, CLI and deployment code remain untouched.\n- Finding: the exported `canonicalize` array code uses `Array.map` (which skips holes); a sparse array can silently canonicalize to a different array or invalid JSON. Reject unsupported sparse/extra-property array input rather than returning unrepresentative signed/serialized bytes.\n- Acceptance: failing regression against baseline for holes and non-index/symbol own properties; minimal dense-array-preserving validation; regressions green, existing tests and TypeScript/lint when feasible; exact-head hosted CI, independent reviewer and lock-aware integration required before any merge.\n- Conflicts/dependencies: PR #262/#264 touch `receipts.ts` but not the two owned `json*.ts` files at inspected heads; those large candidates remain active. PR #258/#261 CI is pending. Integration lock ref is released at observed `3ae60de55add2763aa7d7a44033d11b96df13adb`; no shared integration authorized by this task.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 251,
+    "title": "feat(privacy): enforce browser network authorization and cancellation",
+    "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+    "head_ref": "codex/network-isolation-complete-20261119",
+    "base_ref": "integration/ghostpay-pages-completion-20261118",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:42:29Z",
+    "matching_claim_sections": [
+      "# Browser network isolation completion \u2014 2026-11-19 UTC\n\nWorker: ChatGPT lead, bounded-transport implementer, policy/adapter implementer, independent review.\nBranch: `codex/network-isolation-complete-20261119`.\nPinned inputs: main `dfc75ef2087fa6463ae59e0818abec01796c578d`; #238\n`198aa5baff22272453733a0f3dcfcac0e0994eec`; #241\n`e8857bfa1ec93fafa9ff83f63f7430ef26a362c2`. This isolated integration preserves\nboth input histories; source branches remain read-only. The stacked PR targets\n`integration/ghostpay-pages-completion-20261118`.\nOwned additions: central browser authorization/lifetime module and focused tests; bounded\nEsplora/indexer/relayer follow-up and tests; per-dispatch service/scan authorization integration;\nnetwork-specific settings/Sweep/chain-view integration as required; browser/native regression\nfixtures; network inventory, acceptance matrix, documentation and source-pinned evidence.\nUnrelated session/key-export/recovery/signing behavior and all contracts/security gates are\noutside this work. Recheck active source heads before publication; retain concurrent fixes.\nQualification update (2026-11-19 UTC): implementation and independent bounded source review are recorded in draft [PR #251](https://github.com/djshellshoxxx/GhostPay/pull/251). Main was rechecked at `e454de6abfefda70d82784fafc1d8949b277c334`: #241, #237 and #242 were merged externally, and their exact product inputs already exist in this branch through the pinned inputs. #238 remains at the unchanged draft head. Local authorization 108/108, existing flows 138/138, AppShell/Settings 58/58 and final native/lifecycle composition 10/10 passed; package suites passed 1,073 cases with 22 existing conditional skips. Full local web coverage remains incomplete, and Chromium cannot start because native socket creation is denied. Final hosted web, full/lean browser, Pages and security/integration qualification remains pending; keep the PR draft. Source pins, scoped commands, inherited failures and platform limits are recorded in [the acceptance ledger](../privacy/network-isolation-acceptance.md), [the validation receipt](../privacy/evidence/network-isolation-completion-validation.json) and the PR body. No whole-feature or release-completion claim is made while those gates remain unqualified.\nAcceptance: fail closed on revoked or stale authorization/settings, preserve the exact selected\nendpoint without fallback, bound non-cooperative fetch/reads/cleanup, invalidate old sessions and\ncross-tab settings, action-scope Sweep consent, preserve offline actions and prove actual\noutbound destinations in browser/native fixtures. No merge, deployment or release claim.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 263,
+    "title": "Record current branch audit, recovery evidence and consolidation checkpoint",
+    "head_sha": "55e7799574d9ab978c24e48addf6792f84e76a56",
+    "head_ref": "maintenance/ghostpay-branch-audit-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:32:51Z",
+    "matching_claim_sections": [
+      "# Comprehensive branch audit and consolidation \u2014 2026-11-19 UTC\n\nWorker: ChatGPT root coordinator with independent security, consolidation and recovery reviewers.\nBranch: `maintenance/ghostpay-branch-audit-20261119`.\nBase: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (main after the qualified historical audit merge #214).\nOwned paths: new `docs/maintenance/**`, this claim and focused integration-conflict resolution only.\nAcceptance: inventory every advertised remote branch and accessible PR, pin ancestry/patch/merge evidence,\nrecord dependencies and remaining release gates, verify every merge through the established PR workflow,\nand preserve active source owners. Recovery and Wiki repair work use separate claimed worktrees.\nNo deployment, branch deletion, fee-recipient decision, guardian recovery or weakening of security gates.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 249,
+    "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+    "head_sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+    "head_ref": "chatgpt/ghostpay-tm-hardening-20261118",
+    "base_ref": "integration/ghostpay-pages-completion-20261118",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:17:58Z",
+    "matching_claim_sections": [
+      "# TM1\u2013TM15 hardening completion \u2014 2026-11-18\n\nCoordinator: ChatGPT root; reviewers: browser_privacy, metadata_privacy, relayer_chain_privacy, acceptance_review.\nBranch: `chatgpt/ghostpay-tm-hardening-20261118`.\nBase: `198aa5baff22272453733a0f3dcfcac0e0994eec` (PR #238), which already contains\nmain `dfc75ef2087fa6463ae59e0818abec01796c578d` and PR #222\n`2bc2098298d90928eb1acafad969f28316bb05fc` as ancestors. [PR #249](https://github.com/djshellshoxxx/GhostPay/pull/249) is stacked\non #238 so only the TM-specific continuation is proposed; existing integration is\nan input, not repeated repository consolidation.\n\n| Worker | Owned paths | TM acceptance |\n|---|---|---|\n| browser_privacy | `apps/web/src/lib/settings*.ts`, `apps/web/src/views/Settings*.tsx`; focused new privacy tests | TM4 session-only persistence/export boundaries; TM1/TM2/TM3/TM7/TM14 source review and bounded local selections. Final execution status is recorded per TM in the completion matrix, not implied by this claim. |\n| metadata_privacy | `apps/web/src/components/ReceiptPanel*.tsx`, `packages/scan-source/src/{padded,range}*.ts`, `apps/web/src/lib/scanPrivacy*.ts`, `apps/web/src/views/Scan{,.privacy.test}.tsx`; focused invoice/default acceptance tests | TM9 opt-in scoped to receipt identity; TM15 bounded/cancellable padding; TM8/TM10/TM12 source and test qualification while preserving checkpoint owner. |\n| relayer_chain_privacy | Existing TM11 relayer privacy source/tests/docs and TM13 BTC/Solana/TRON flow-specific tests; runtime only for a confirmed in-scope defect | Strict padding/ingress/zero-log behavior; chain-specific query consent and sign-time checks. |\n| acceptance_review | Read-only fourth-role review and acceptance-review report | Test coverage, active call paths, disclosure boundaries and independently reviewed corrections. |\n| coordinator | CSP scripts/tests and deployment documentation; privacy matrix/defaults tests; catalogs after coordination; qualification and review evidence | TM5 generated meta/header/nginx validation; TM6 accurate Tor guidance; all 15 dispositions, independent cross-review and exact-source qualification. |\n\nAll 15 authoritative recommendations were read before product changes. Read-only\nsource review preceded failing regressions for each confirmed defect.\nPR #241 owns general browser transports, #235 owns checkpoint architecture, #234\nowns pinned invoice signers, and #239/#240 own Spec 18. Those implementations are\nnot independently redesigned. Main merges, deployment, release publication,\ncontracts/Mythril, unrelated dependency upgrades and general consolidation are\noutside this task. Do not overwrite concurrent changes; recheck remote heads\nbefore publication. Final source and test evidence belong in\n`docs/handoffs/tm-hardening-20261118/`.\n\nTM acceptance fixture follow-up: browser_privacy owns only the hostile-text case in `apps/web/e2e/app.spec.ts`; the existing dialog listener must acknowledge one expected outgoing beforeunload prompt without suppressing invoice-origin dialogs. Runtime/key retention and global helpers stay unchanged. acceptance_review independently reviews the fixture delta; hosted full/lean execution remains required.\n\n",
+      "## TM5 artifact-validation follow-up \u2014 2026-11-19\n\nWorker: browser_privacy. Independent reviewer: acceptance_review. Coordinator:\nroot, owning actual artifact generation, final source publication and hosted gates.\nBranch: `chatgpt/ghostpay-tm-hardening-20261118`; published input checkpoint\n`f0c15de9b381ac8a13ed3c76781d7fad8b236391`, PR #249.\n\nOwned paths: `apps/web/scripts/scan-bundle.mjs`, `apps/web/scripts/scan-bundle.d.mts`,\n`apps/web/scripts/apply-csp.mjs`, `apps/web/scripts/apply-csp.d.mts`, and\n`scripts/tests/privacy-csp-bundle.test.mjs`. No transport, runtime provider,\ndependency, workflow, checkpoint, contract or gate-policy ownership is added.\n\nAcceptance: actual full/lean tight-CSP outputs exposed the scanner rejecting\nconfigured HTTPS/WSS origins in the enforcing head policy after CSP application\nhad passed. Permit only that exact validated `connect-src` source portion;\npreserve all generic host, resource, inline-code, worker-network and deployment\nchecks elsewhere. Invalid configuration, inert/late/duplicate/malformed policy,\nmismatched headers, ambiguous source ranges and non-ASCII source separators must\nremain rejected without echoing credential-bearing configuration.\n\nStatus: five-file correction independently source-reviewed with no remaining\nsource blocker reported. The focused Node selection passed 79/79 after failing-first\nregressions; independent probes passed 56/56 (54 synthetic and two existing\nartifact scans). Fresh corrected full and lean Vite outputs each passed bundling,\nCSP application and unchanged `scan-dist`, six stages with exit 0. The artifact\nreceipts pin the input checkpoint, all five changed source hashes and produced\nfile inventories; build metadata remains `unknown`. These are isolated artifact\nchecks, not a canonical TypeScript/npm build, full test suite, Chromium pass or\nrelease artifact. Final exact-source hosted qualification remains pending on\n[PR #249's checks](https://github.com/djshellshoxxx/GhostPay/pull/249/checks).\n\nQualification documentation owner: metadata_privacy updates only\n`docs/threat-model/TM_HARDENING_COMPLETION_20261118.md` and this registry for this\ncheckpoint. The matrix explicitly separates local targeted/artifact passes,\nsource-only review, incomplete processes and outstanding acceptance for all 15\nrecommendations. Root owns the qualification handoff, evidence publication and\nnext exact-tree commit; no future commit SHA or unexecuted gate result is assumed.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 258,
+    "title": "fix(web): cancel QR imports when the page becomes hidden",
+    "head_sha": "84398a79e18673f3e371a405931bc464e1cca99a",
+    "head_ref": "automation/20261119T073600Z/bug/camera-visibility",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:16:49Z",
+    "matching_claim_sections": [
+      "# QR import visibility cancellation \u2014 2026-11-19\n\nWorker: GhostPay automation bug worker, with a separate security reviewer.\nBranch: `automation/20261119T073600Z/bug/camera-visibility`.\nBase: `e454de6abfefda70d82784fafc1d8949b277c334` (current main at claim).\nOwned paths: `apps/web/src/components/CameraImporter.tsx`, focused `CameraImporter` tests,\nand `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md`.\nAcceptance: reproduce pending image/paste imports remaining authorized while the document is hidden;\nabort those operations on hiding; reject late delivery and hidden dispatch; retain existing camera,\nmultipart, scope and retry behavior. Run focused tests and independent review before publication.\nThis isolated claim does not own other workers' scan, session, recovery, transport or integration paths.\nStatus: implemented at `d6e9dd38`; nine regressions failed on the original runtime and pass after repair.\nAll 77 focused importer tests pass. Independent security review found no source blocker and reran the\nnine regressions successfully. Scoped TypeScript/typed lint pass; full hosted gates and integration remain\ncoordinator-owned. See `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md` for exact evidence and limits.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 261,
+    "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+    "head_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+    "head_ref": "automation/20261119T073600Z/coordinator/integration-lock",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:14:19Z",
+    "matching_claim_sections": [
+      "# Autonomous cycle integration coordination \u2014 2026-11-19\n\nWorker: ChatGPT root coordinator, with independent branch and lock reviewer.\nBranch: `automation/20261119T073600Z/coordinator/integration-lock`.\nBase: `e454de6abfefda70d82784fafc1d8949b277c334` (observed live main).\nOwned paths: new `scripts/automation/integration-lock.mjs`, new\n`scripts/tests/integration-lock.test.mjs`, new `docs/automation/` tracking and runbook,\nand this branch-only ownership record. Other workers' product paths remain read-only.\nAcceptance: implement a durable repository-wide integration lock with atomic Git\nref updates; prove concurrent acquisition has one winner, ownership checks fail\nclosed, expired locks cannot be stolen, and release preserves append-only history.\nRun real local Git concurrency regressions and obtain independent source/test review.\nOnly then establish or adopt the remote coordination ref before shared tracking or\nintegration. Do not bypass required CI/review, force-push, deploy, or rewrite other branches.\nStatus: implementation d3749e45633bd1825b5b773b11a9a975476e2ffe independently reviewed; 10/10 real-Git tests pass locally and independently. Two reviewer-found tag/clock issues were reproduced and fixed before remote use. Remote establishment and cycle evidence are tracked in docs/automation/CYCLE_HISTORY.md.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 260,
+    "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+    "head_sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+    "head_ref": "integration/ghostpay-recovery-reconciled-20261119",
+    "base_ref": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:10:15Z",
+    "matching_claim_sections": [
+      "# Spec 18 complementary recovery reconciliation \u2014 2026-11-19 UTC\n\nWorker: ChatGPT `pages_features`, coordinated by the comprehensive branch-audit root.\nBranch: `integration/ghostpay-recovery-reconciled-20261119`.\nBase: PR #239 at `4a1b181c89e02ee564b5568d4b4b8d689f5e42c5`.\nRead-only source: PR #240 at `38d69832ddc58ec27a19c00dbe3c89347c577495`.\nBoth source heads were read from GitHub immediately before this claim. Main was observed at\n`e454de6abfefda70d82784fafc1d8949b277c334`; #238 ancestry is preserved by this base.\n\nOwned paths: the complementary BOM-byte refusal in `StealthExportRecovery` and\n`StealthExportVerification` and their tests; event-time `AppShell` before-unload protection\nand its tests; the corresponding Spec 18 and sweep browser acceptance cases; this claim\nand a new source-pinned reconciliation handoff. The source branches remain unchanged.\n\nAcceptance: preserve #239's atomic session replacement, retryable generated downloads,\npassphrase-verification state invalidation, real-KDF test synchronization and sealing barrier;\nrecover #240's actual-byte refusals and event-time external-copy checks; retain every existing\nassertion and security gate; execute focused tests, lint and browser checks where available.\nThe root owns publication and subsequent integration after independent review. No deployment,\nmain merge, remote source-branch update or unrelated feature work belongs to this lane.\n\nStatus: reconciled source `3110611e4a49d2b3f426fc0b770a0823109ac3d4` was independently\nreviewed and published by the root as draft PR #260 at identical-tree remote commit\n`789e63501c1628d602006dbd324a36f8a9c50d71`. All five newly recovered regressions failed\nagainst the unchanged #239 runtime and passed against the reconciled runtime. The\nbroader twelve-file attempt and dependency installation terminated with exit 137;\nfull frozen-installation, typecheck/lint, coverage and browser qualification remain\nopen. The precise frozen-cache/diagnostic-transpilation environment and the required\n#256 session-integration checks are recorded in\n`docs/handoffs/RECOVERY_RECONCILIATION_20261119.md`. No source branch or main was changed.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 240,
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "head_sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+    "head_ref": "chatgpt/spec18-recovery-completion-20261118",
+    "base_ref": "integration/ghostpay-pages-completion-20261118",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:09:14Z",
+    "matching_claim_sections": [
+      "# Spec 18 portable recovery completion \u2014 2026-11-18\n\nCoordinator: ChatGPT root. Branch: `chatgpt/spec18-recovery-completion-20261118`.\nBase: PR #238, `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at\n`dfc75ef2087fa6463ae59e0818abec01796c578d`. The existing #213/#229 implementation\nis already present. This task is stacked on #238; it does not merge that consolidation.\n\nExclusive lanes on this task branch:\n\n- Coordinator: export lifecycle panels other than `StealthExportRecovery`, shared export helpers,\n  seller-session/backup integration if required, locale catalogs/security-key declarations, browser\n  acceptance tests, this registry, and completion/security reports.\n- Recovery UI worker: `apps/web/src/components/StealthExportRecovery.tsx`,\n  `apps/web/src/lib/paymentKeyExport.ts`, and their focused tests.\n- Crypto/recovery worker: `packages/ux-vault/src/stealth-export-portable*`, `scripts/recovery/**`,\n  deterministic recovery vectors if needed, the format reference, and independent recovery guide.\n  Follow-up: `apps/web/src/AppShell.tsx` and `AppShell.beforeUnload.test.tsx` for the confirmed\n  cross-tab vault-deletion/sole-copy exit risk; preserve imported complete-backup exceptions.\n- Reconnaissance/reviewer: read-only branch/source review and final independent security review.\n\nAcceptance: export/retention/verification states remain distinct; saved files can be verified without\ninstalling keys; imports preserve existing keys until fresh bound consent; cancellation and locking\ndiscard stale results; offline recovery reproduces addresses and spending authority; malicious inputs\nfail safely. Every confirmed defect gets a regression test. Execute applicable original gates and\nreal browser checks; record unavailable or failing gates explicitly. No deployment, release,\nmain merge, force-push, branch deletion, custody service, or unrelated feature work.\n\nStatus: feature acceptance complete for the supported scheme-1 EVM EOA scope. Published\nimplementation `032c42fc3d5e52d8428a7907775835b5d1ed3704`, local equivalent\n`eb9e244232a6b7002e7dfc7085041cbf4177a566` and hosted merge\n`b53f116b825d7cf6e85681fc835aec18ef7add75` have identical tree\n`631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5`. Eight findings are resolved; independent\nreview has no unresolved feature blocker. Original whole-workspace typecheck passed;\nwhole-web coverage passed 2,997 tests with one existing Bitcoin skip and unchanged\nthresholds, followed by 3/3 nocov tests. Both Chromium profiles passed all nine Spec 18\njourneys, including actual BOM-file refusals; Pages artifact acceptance passed 16/16.\nDraft PR [#240](https://github.com/djshellshoxxx/GhostPay/pull/240) remains stacked on\n#238. Overall integration/release qualification is incomplete: inherited browser,\nlint and script gates remain failing, inherited CodeQL/Mythril issues remain open,\nand automatic approval review blocked a fresh npm audit. See the\n[completion report](../handoffs/spec18-completion-20261118/COMPLETION_REPORT.md),\n[security review](../handoffs/spec18-completion-20261118/SECURITY_REVIEW.md) and\n[hosted validation](../handoffs/spec18-completion-20261118/HOSTED_VALIDATION.md).\nNo main merge, deployment or release was performed.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 259,
+    "title": "Recover historical documentation and reconcile current Pages guidance",
+    "head_sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+    "head_ref": "integration/ghostpay-docs-recovery-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T08:00:18Z",
+    "matching_claim_sections": [
+      "## Documentation consolidation and historical recovery \u2014 2026-11-19 UTC\n\nWorker: ChatGPT consolidation_review, coordinated by the main consolidation worker.\nBranch: `integration/ghostpay-docs-recovery-20261119`.\nBase: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (main after PR #214).\nOwned paths: `docs/wiki/**`, `docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md`,\n`docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md`,\n`docs/handoffs/docs-recovery-20261119/**`, the QR precedence paragraph in\n`docs/design/qr-colors.md` (coordinator-approved recovery from #140), and this claim only.\nThe coordinator owns `docs/maintenance/**`; existing producer branches remain unchanged.\n\nAcceptance: merge exact PR #215 and #216 source heads into this isolated branch while\npreserving ancestry; supersede outdated current-main and PR #241 guidance with a pinned\nsnapshot; preserve useful historical evidence from #139, #140 and #153 in a dated\narchive or document its exact supersession. Verify relative documentation links,\nhistorical provenance, branch ancestry, absence of runtime/workflow changes and clean\ndiff formatting. Runtime tests are not claimed for this documentation-only change.\nNo remote publication, merge to main, deployment or live Wiki publication is performed\nby this worker. The coordinator reviews and qualifies the completed candidate.\n\nStatus: local documentation integration and historical extraction completed. Both\nsource heads are retained by normal merges; no source-owner branch was updated.\nThe recovery report and `verification.json` record static checks. Publication,\nindependent review, applicable CI and main integration remain coordinator-owned.\n"
+    ],
+    "wiki_paths": [
+      "docs/wiki/Architecture-and-Design-Rationale.md",
+      "docs/wiki/Codebase-Map.md",
+      "docs/wiki/Current-Status.md",
+      "docs/wiki/Developer-Guide.md",
+      "docs/wiki/Home.md",
+      "docs/wiki/QR-and-Devices.md",
+      "docs/wiki/User-Guide.md",
+      "docs/wiki/Verification-and-Release-Gates.md",
+      "docs/wiki/_Sidebar.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 248,
+    "title": "Complete private seller scan checkpoints and durable discovery",
+    "head_sha": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+    "head_ref": "chatgpt/ghostpay-private-scan-completion-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T07:54:56Z",
+    "matching_claim_sections": [
+      "# Private seller scan completion \u2014 2026-11-19\n\nOwner: ChatGPT coordinator with independent scan reviewer, encrypted-storage worker and scan UI worker.\nBranch: `chatgpt/ghostpay-private-scan-completion-20261119`.\nBase: PR #235 `a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1`; main observed\n`dfc75ef2087fa6463ae59e0818abec01796c578d`. Updated main\n`58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (#241 transport isolation and #237 log retention)\nwas merged into this feature branch at `684eec18` before combined qualification.\nOwned paths: EVM `scanClient`, new `privateScanStore` and `privateScanLifecycle`, `views/Scan`,\nscan services, focused scanner/storage/lifecycle/browser tests, minimal seller-vault deletion integration,\nrelated locale strings and scoped user/developer/handoff documentation. The scanner's optional per-dispatch guard\nin `scanPrivacy.ts` is included; PR #241 transport implementations remain separate. Storage worker owns\n`privateScanStore.ts` and its tests; UI worker owns Scan/services and view/browser tests; coordinator owns\nengine/lifecycle/integration. Independent reviewer owns only\n`docs/handoffs/private-scan-independent-review.md` and otherwise remains read-only.\nAcceptance: atomic encrypted discovery+cursor persistence; seller/network/config/session isolation;\nsafe interruption, recovery, cross-tab conflicts, deletion and reorg handling; bounded scan work;\nfailing-first regression evidence; full/lean browser qualification and unchanged security gates.\nPR #238 is a read-only consolidation input; #241 transport modules, Spec 18 formats, contracts,\ndependency inputs, automation branches and unrelated work stay with their existing owners.\nNo merge into main, deployment or release is authorized.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 255,
+    "title": "Close Mythril evidence gaps and bind Factory freeze-risk acknowledgments",
+    "head_sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "head_ref": "integration/ghostpay-mythril-security-closure-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T07:41:28Z",
+    "matching_claim_sections": [
+      "# Mythril security closure \u2014 2026-11-18 (active)\n\nCoordinator: ChatGPT root, with separate Factory, findings and analyzer-tooling workers.\nBranch: `integration/ghostpay-mythril-security-closure-20261118`.\nBase: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (observed current main).\nOwned paths: integration of the scoped Mythril checker and evidence capture, deployment\nsafeguards, related analyzer CI integrity, and dedicated records under\n`docs/audits/mythril-closure-20261118/`. Workers use their own branches/worktrees and\nrecord their narrower claims; the coordinator owns conflict resolution, combined-source\nqualification, the owner decision packet and publication of the integration PR.\nAcceptance: verify current-source findings; preserve strict analyzer outcomes; reject\nincomplete/malformed/crashed or changed-source evidence; bind proposed dispositions to\nexact source/configuration/review and real approval; test fee-token deployment safeguards;\nrun pinned contract/security checks; retain independent review and exact source identities.\nPRs #212, #217, #220 and #225 are read-only provenance inputs. PR #238 is a separately\nowned Pages integration, inspected for overlap but not replaced by this scoped work.\nNo finding exceptions are approved by this engineering authorization. No deployment,\nrelease, branch deletion, fee-policy change or bypass of checks/reviews is authorized.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 253,
+    "title": "fix(net-harness): reject decoded SOCKS chunks in major dependency candidate",
+    "head_sha": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+    "head_ref": "repair/ghostpay-pr-87-20261119",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T07:06:03Z",
+    "matching_claim_sections": [
+      "# PR 87 SOCKS socket ingress compatibility \u2014 2026-11-19 (active)\n\nWorker: ChatGPT `ci_inventory`, assigned by the pre-merge reconciliation coordinator.\nBranch: `repair/ghostpay-pr-87-20261119-local`; starting PR #87 source\n`bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa`; current main observed at\n`58d89b39b27a66454ebf392bcd35d5c68b57b2f8`. Both source histories will be retained.\nOwned paths: `packages/net-harness/src/socks5Server.ts`, focused net-harness tests,\nthis additive claim and a source-pinned repair handoff. The current open-PR filename\ninventory has no competing edits to net-harness source; dependency manifests remain\ncoordinator-owned and unchanged by this repair.\nAcceptance: reproduce the socket data `string | NonSharedBuffer` compile failure with\nthe PR-pinned compiler/types, repair the binary ingress safely without assertions or\ndependency changes, and run affected typecheck/build/tests plus scoped lint when the\nexact toolchain is available. Preserve loopback-only behavior and all existing tests\nand security gates. Record any unsupported tooling peers and remaining broad upgrade\ngates explicitly. Root owns publication; no push, merge, deployment or paid automation.\n\nStatus: scoped source/test repair completed at `3d7889af94c398517e10c09100de3aa305d11206`\nand independently reviewed at that exact head. Package build, typecheck, lint and all 28\ntests with unchanged coverage thresholds pass. The full major-dependency candidate is\nnot qualified: web compiler-API compatibility and dependent/full CI remain outstanding.\nEvidence and the precise TypeScript 7 compatibility probe are recorded in\n`docs/handoffs/PR87_SOCKS_COMPATIBILITY_20261119.md`.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 250,
+    "title": "Recover historical adapter date, retry and TRON completeness safeguards",
+    "head_sha": "22af2074a086d9957a18e310ef8572b28d1facd0",
+    "head_ref": "integration/ghostpay-historical-promotion-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T06:45:01Z",
+    "matching_claim_sections": [
+      "## Historical correctness promotion \u2014 2026-11-18\n\nWorker: ChatGPT integration coordinator. Branch: `integration/ghostpay-historical-promotion-20261118`.\nBase: `ab4e0da2cfe2a18adac0424896fba0b40fac81a8` (#242 qualified group, still pending its last checks).\nOwned paths: merge of reviewed historical ports at `b1a2005472132c4787f1416386c629a399350151`; registry conflict resolution and qualification record.\nAcceptance: preserve current transport hardening, validate real calendar dates, bound invalid retry counts and reject incomplete TRON ranges; retain failing-first evidence and complete both package coverage gates; combined hosted checks and independent review before main merge.\nNo other historical payload, dependency update, deployment, release or branch deletion.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 215,
+    "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+    "head_sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+    "head_ref": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T05:44:03Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [
+      "docs/wiki/Architecture-and-Design-Rationale.md",
+      "docs/wiki/Developer-Guide.md",
+      "docs/wiki/Home.md",
+      "docs/wiki/User-Guide.md",
+      "docs/wiki/Verification-and-Release-Gates.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 239,
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "head_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+    "head_ref": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+    "base_ref": "integration/ghostpay-pages-completion-20261118",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-19T00:09:14Z",
+    "matching_claim_sections": [
+      "# Spec 18 independent completion review \u2014 2026-11-18\n\nCoordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.\nBase: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at\n`dfc75ef2087fa6463ae59e0818abec01796c578d`. A concurrent local Spec 18 implementation\non `chatgpt/spec18-recovery-completion-20261118` is preserved read-only. This branch\nintegrates a fixed, hashed snapshot for independent testing and fixes, without\nchanging the original checkout or its branch.\n\nOwnership: coordinator owns snapshot integration, browser acceptance, locales, reports\nand publication; separate review lanes inspect crypto/offline recovery and UI/lifecycle\nwith edits assigned explicitly after findings. Acceptance: all twenty specified threats\nare traced to source and executed tests; backup retention and verification stay distinct;\nimports require fresh bound consent; offline recovery reproduces spending authority;\nfull feature gates execute or exact blockers are recorded. No release, deployment,\nmain merge, forced update, secret persistence or unrelated feature work.\n\nAssigned lanes on this branch:\n\n- `crypto_recovery_review`: `packages/ux-vault/src/stealth-export-portable*.ts`,\n  `scripts/recovery/**`, the Spec 18 format reference and independent recovery guide.\n  Acceptance: authenticated bounded recovery, authority reproduction and failure cleanup.\n- `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,\n  `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:\n  bound fresh consent, verify-only disposal, selected-file and session cancellation.\n  A reproduced import-preservation defect additionally assigns the narrow `session.ts`\n  box/install transaction and `session.atomicity.test.ts`: stage the replacement\n  before disposing the old keys and clean partially allocated secret boxes on failure.\n- Coordinator: remaining export panels/Common, locales/security keys, browser tests,\n  dependency preparation, combined qualification, evidence and integration.\n- `recovery_recon`: read-only independent final source/threat review; sole write scope\n  is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.\n\nHosted test follow-up, `lifecycle_review`: local source\n`58995408bec0e072a969db7bd4eb4687579bd4a7`; findings from hosted jobs\n`135206455356`, `135206455231` and `135206357114`.\nOwned paths: the test-only receiver/type repairs in `apps/web/e2e/stealth-export.spec.ts`\nand `apps/web/src/lib/session.atomicity.test.ts`; exact legacy `Verify backup` button\nselectors across the affected `apps/web/e2e/` journeys. Acceptance: resolve the three\nhosted typed-lint diagnostics and disambiguate legacy keystore verification from the\nnew Spec 18 verify-only button while retaining all assertions, timing and release gates.\nRun only bounded focused checks during the coordinator's full web coverage run;\nfresh hosted browser/lint results remain necessary. No runtime or remote changes.\n\nHosted real-crypto synchronization follow-up, `lifecycle_review`: local source\n`7d99c223e977938cd96c5e496232bad44a3b4799`, published candidate\n`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`; hosted job `135212473022`.\nOwned path: `apps/web/src/components/StealthExportVerification.test.tsx` only.\nThe two real-verification cases exceeded Testing Library's default polling deadline\nwhile the KDF remained active. Observe the actual call-through verification promise\nand await its settlement inside "
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 232,
+    "title": "docs: preserve beta execution results, source pins and remaining gates",
+    "head_sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+    "head_ref": "chatgpt/ghostpay-beta-consolidation-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T13:55:58Z",
+    "matching_claim_sections": [
+      "# Pages beta execution evidence \u2014 2026-11-18\n\nOwner: ChatGPT root coordinator. Branch: `chatgpt/ghostpay-beta-consolidation-20261118`.\nBase: `dfc75ef2087fa6463ae59e0818abec01796c578d` after the independently reviewed #206 merge.\nOwned paths: this additive claim and `docs/handoffs/beta-execution-20261118/**` only.\nAcceptance: preserve exact source, remote PR heads, changed-file inventory, CI and locally executed test evidence;\nseparate implementation, integration, beta qualification and release authorization; identify unmerged dependencies\nand unresolved security findings without weakening gates. Existing historical ledgers remain unchanged.\nSource repairs use separate worker branches and their own claims. No deployment, release, branch deletion or history rewrite.\n\nExecution checkpoint: #206 merged at canonical main `dfc75ef2087fa6463ae59e0818abec01796c578d`, automatically incorporating #204. Proven superseded #127/#42/#49 closed with branches retained. Twelve reviewed repair/completion PRs (#225\u2013#231 and #233\u2013#237) are published as unmerged drafts; #232 holds the exact-source A\u2013G report and evidence. Required hosted/browser gates remain incomplete, with specific failures recorded rather than bypassed. The current source, acceptance gaps, 44-PR inventory and 243-branch census are in `docs/handoffs/beta-execution-20261118/EXECUTION_REPORT.md`. This is not beta qualification or an assertion of continuing work after the session.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 228,
+    "title": "fix(privacy): enforce own-node selection on cached RPC clients",
+    "head_sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+    "head_ref": "chatgpt/ghostpay-own-node-guard-20261118",
+    "base_ref": "privacy/hardening-recommendations",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T12:43:20Z",
+    "matching_claim_sections": [
+      "# Own-node request guard \u2014 2026-11-18\n\nWorker: ChatGPT privacy review agent using the Caveman workflow. Branch:\n`chatgpt/ghostpay-own-node-guard-20261118`; base PR #222\n`2bc2098298d90928eb1acafad969f28316bb05fc`.\nOwned paths: `apps/web/src/lib/defaultServices.ts`, its focused tests, this claim,\n`docs/handoffs/OWN_NODE_GUARD_REVIEW_20261118.md` and\n`docs/handoffs/PRIVACY_CONSOLIDATION_REVIEW_20261118.md`.\nAcceptance: switching to acknowledged own-node mode prevents cached RPC clients\nand their retries from sending new requests to a third party. Refusals contain\nno endpoint or request data. Loopback requests remain usable in own-node mode.\nOther #222 findings and integration conflicts remain separate; no Tor or release\nqualification, remote mutation, deployment or public-chain transaction.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 222,
+    "title": "privacy: implement threat-model recommendations TM1-TM15",
+    "head_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "head_ref": "privacy/hardening-recommendations",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T12:43:06Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 233,
+    "title": "test(e2e): honor encrypted invoices, minimized receipts and balance consent",
+    "head_sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+    "head_ref": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+    "base_ref": "privacy/hardening-recommendations",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T12:28:10Z",
+    "matching_claim_sections": [
+      "## Privacy-default browser fixtures \u2014 2026-11-18\n\nWorker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-privacy-browser-fixtures-20261118`.\nBase: PR #222 head `2bc2098298d90928eb1acafad969f28316bb05fc`; the failing hosted Pages job tested synthetic merge\n`644a43ee6366298f418a0aca5a40ecf974871748` in run `44279444265`, job `134715947261`.\nOwned paths: affected receipt/envelope/consent setup in `apps/web/e2e/{pages-devnet,core-journey,devnet-journey,flows,sweep}.spec.ts`,\n`apps/web/e2e/devnet/pages.ts`, a pure invoice-tamper fixture helper, its focused `apps/web/src/test` regression,\nthis claim and `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.\nAcceptance: assert minimized receipts omit the payment address, then explicitly opt into full receipts without\nweakening signature/address assertions; preserve encrypted invoice defaults and prove altered amounts still decrypt\nbut fail signature verification; explicitly request Sweep balances before existing spend/dust assertions.\nRuntime sources, defaults, dependencies, CI gates and skips remain unchanged. Local helper and existing UI tests,\nscoped lint/typecheck and independent source review are evidence only for their stated scope. Local Chromium cannot\nlaunch; no browser acceptance is claimed and fresh hosted CI remains required.\n\nMilestone: repaired fixture source `6dc3ae7c419c8f706c11fc3d96de66e055ad165d` passes 49 focused tests, whole-web\ntypecheck at a 1536 MiB cap and scoped lint. Independent review reports no blocker and independently passes the\nthree pure tamper-helper tests. Playwright discovery lists 14 tests in three mocked suites without execution.\nThe prior hosted result remains 11 passed, 2 failed and 3 not run until fresh exact-source CI executes.\nHandoff: `docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md`.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 231,
+    "title": "fix(web): ask before refreshing the displayed Sweep balance",
+    "head_sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+    "head_ref": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T12:07:31Z",
+    "matching_claim_sections": [
+      "## Sweep balance query consent \u2014 2026-11-18\n\nWorker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.\nBase: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.\nOwned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in\n`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,\nand `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button\nclicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`\nsweep setup points; existing signing and payment assertions remain unchanged.\nAcceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;\nordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session\ninvalidates pending results and requires a new click. Preserve the required-private-path warning and the existing\nsweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.\nScope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that\nshared transport policy. Exact-head hosted CI and independent integration review remain required.\n\nMilestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck\nat a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source\nblocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;\nbrowser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 230,
+    "title": "fix(privacy): remove plaintext sweep history and retain session-only warnings",
+    "head_sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+    "head_ref": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+    "base_ref": "privacy/hardening-recommendations",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T11:36:01Z",
+    "matching_claim_sections": [
+      "# Session-only sweep destination history \u2014 2026-11-18\n\nWorker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-ledger-memory-20261118`.\nBase: PR #222, `2bc2098298d90928eb1acafad969f28316bb05fc`.\nOwned paths: sweep destination history source/tests, the two Sweep view recording call sites and focused tests,\nthe existing reuse-warning messages, user privacy guidance, this claim and the task handoff.\nAcceptance: no source/destination linkage is serialized to browser storage; delete only the legacy plaintext key\nwithout importing it; clear memory on app lock and seller-session change; reject delayed records from old epochs;\nretain nonblocking reuse warnings within the active session. Persistence across sessions stays unavailable until an\nencrypted, explicitly opted-in design is qualified. Signing and duplicate-send journal behavior remain unchanged.\nLocal verification complete: 171 affected tests, focused lint, whole-web typecheck and i18n check passed.\nEvidence and remaining integration gates: `docs/handoffs/GHOSTPAY_SWEEP_LEDGER_PRIVACY_20261118.md`.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 229,
+    "title": "fix(recovery): bind import consent to the selected export and disclose key boundaries",
+    "head_sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+    "head_ref": "chatgpt/ghostpay-recovery-review-20261118",
+    "base_ref": "claude/ghostpay-consolidation-9xhtxg-spec18",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T11:30:45Z",
+    "matching_claim_sections": [
+      "# Recovery cancellation review \u2014 2026-11-18\n\nWorker: ChatGPT recovery review agent using the Caveman workflow. Branch:\n`chatgpt/ghostpay-recovery-review-20261118`; base PR #213\n`ebf7c92c3be1c7aebd37fc58b5567e114fb932fc`. Root coordinates integration.\nOwned paths: `apps/web/src/components/StealthExportRecovery.tsx` and its test;\n`docs/user/recover-stealth-payment-keys.md`; the scheme-1 boundary in the format reference and recovery script help;\nthe three existing payment-export warning strings in `apps/web/locales/{en,es,ja,ar}.json` (coordinator-approved);\nthis claim and the recovery review handoff.\nAcceptance: reproduce a cancelled master-import request affecting a later export, bind replacement authorization\nto the selected export and current operation, preserve lock/session guards, and verify the focused recovery suites.\nDocument the scheme-1 viewing-key plus payment-private-key spending-authority boundary. Other locale, session,\nScan and CI paths remain coordinator-owned. No remote mutation, deployment, release or real funds.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 226,
+    "title": "fix(audit): contain static helper symlinks and malformed requests",
+    "head_sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+    "head_ref": "chatgpt/ghostpay-sonar-review-20261118",
+    "base_ref": "nodata/jolly-rubin-u4zd45",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T11:24:15Z",
+    "matching_claim_sections": [
+      "# Independent PoC static-server security followup \u2014 2026-11-18\n\nWorker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-sonar-review-20261118`.\nBase: PR #224, `1054daabc5cabe958466ec144582d76137b54910`.\nOwned paths: `docs/audits/poc/static-server.mjs`, its tests, this claim and the task handoff.\nAcceptance: reproduce malformed-URL process termination and symlink escape; return safe responses for URL and\nfilesystem failures, constrain served files to the canonical bundle directory, and retain normal serving behavior.\nThis audit-only helper change does not alter product bundles, SonarCloud state, release gates or deployment behavior.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 225,
+    "title": "fix(security): reject analyzer process failures in proposed Mythril checker",
+    "head_sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+    "head_ref": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+    "base_ref": "claude/ghostpay-consolidation-9xhtxg-security",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T11:20:15Z",
+    "matching_claim_sections": [
+      "# Mythril disposition checker validation \u2014 2026-11-18\n\nWorker: ChatGPT security review, Caveman workflow. Branch: `chatgpt/ghostpay-mythril-checker-failclosed-20261118`.\nBase: PR #212, `4894d0d8d94333dffa8ae3937a4d8314f27c686f`.\nOwned paths: `scripts/contract-analysis/mythril-disposition-check.mjs`, its focused tests, this claim and the task handoff.\nAcceptance: reproduce the candidate checker's acceptance of a clean-looking JSON document followed by an abnormal\nanalyzer exit; reject abnormal, malformed and inconsistent runner error annotations; preserve legitimate finding\ndispositions. Keep the checker unwired and the production Mythril runner unchanged. Per-target analysis provenance\nremains a separate prerequisite to any future gate integration because clean raw reports contain no target identity.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 209,
+    "title": "Completion run 2026-11-18: claims + integration",
+    "head_sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+    "head_ref": "claude/ghostpay-completion-audit-ot5jjm",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T09:51:27Z",
+    "matching_claim_sections": [
+      "# Completion run 2026-11-18 (claude completion-audit) \u2014 ACTIVE\n\nCoordinator: Claude Code cloud session (integration owner of this claim only). Integration branch\n`claude/ghostpay-completion-audit-ot5jjm`, created from `origin/main` = `5467c158` (merge of PR #203). Draft PR to\n`main` opened with this claim. Lane branches `claude/completion-20261118/<lane>` are local-only worktrees; only the\ncoordinator merges them (`--no-ff`) after independent review. Prompt: `docs/handoffs/completion-20261118/EXECUTION_PROMPT.md`\n(PR #208, not this session's file). Ledgers: `docs/handoffs/completion-20261118/{LEDGER,SECURITY_CLOSURE,HANDOFF}.md`.\n\n| Lane | Owned paths (exclusive for this run) | Acceptance |\n|---|---|---|\n| ~~C1 spec 18 crypto core~~ / ~~C2 spec 18 web UI~~ | **Dropped 07:50Z**: spec 18 K01-K06/KC is owned by session `session_01KtKj8n5RpS93YXABPS297n` (PR #213, `claude/ghostpay-consolidation-9xhtxg-spec18`, work from 06:27Z). Not integrated here; this run reviews #213 independently instead | \u2014 |\n| B1 web hosting hardening (+SEC-43 attestation) | `apps/web/src/{main.tsx,AppShell.tsx}`, new `apps/web/src/lib/frameGuard.ts`, `apps/web/src/lib/manifest.ts`, `apps/web/scripts/{scan-bundle,validate-deployments}.mjs`, `scripts/pages/**`, `.github/workflows/pages.yml`, their tests | SEC-09/TB-03, SEC-14, SEC-18, SEC-24, SEC-40, SEC-42, SEC-44, SEC-46 closed RED-first or recorded |\n| B2 transport and settings | `packages/chain-adapters/src/rpc.ts`, `packages/net-transport/src/**`, `apps/web/src/lib/scanPrivacy.ts`, settings view files, their tests | SEC-10/TB-02, SEC-19, SEC-20, SEC-23, SEC-45 closed RED-first or recorded |\n| B3 key management and docs honesty (+SEC-37 residual doc) | `packages/pool-sdk/src/store.ts`, `docs/developer/byte-layouts.md`, `docs/threat-model/**`, stale README/ADR text named by TB-10 | SEC-15, SEC-16, SEC-21, SEC-27, TB-10 |\n| B4 CI, release and supply chain | `.github/workflows/{release,nightly}.yml`, `.github/dependabot.yml`, `deploy/**`, `scripts/test-reconciliation-idb.mjs`, `apps/web/package.json` scripts, workflow tests under `scripts/tests/` | TB-01, TB-06 (reconciliation IDB script; `validate:deployments` is in PR #212), TB-09, SEC-17 (nightly part), SEC-25, SEC-26 |\n| A consolidation ports | `docs/design/qr-colors.md`, `apps/web/scripts/test-seller-vault-idb.mjs` | Selective recoveries named by the post-consolidation BRANCH_RECOVERY_MATRIX, provenance via `cherry-pick -x` or cited source SHA |\n| D/E/F finders, G review, H CI | read-only, then fixes as separate claimed follow-up lanes recorded in LEDGER.md | Findings need a concrete failing input and an adversarial verifier |\n\nCoordinator-only: `package-lock.json`, `apps/web/locales/**` merge resolution, this section, the integration merges.\n\n**Excluded (owned by other active sessions; read-only here):** `docs/handoffs/post-consolidation-20261118/**`\n(PR #205, `nodata/zealous-hopper-lr0nxe`); `CLAUDE.md`, `AGENTS.md`, `docs/ai/**` tooling, `.claude/**`,\n`scripts/agent/**`, `.github/workflows/ci.yml` (PR #206/#204, until it lands on `main`);\n`docs/handoffs/completion-20261118/EXECUTION_PROMPT.md` (PR #208); every `chatgpt/*`, `codex/*`, `dependabot/*`\nbranch and PR. If the post-consolidation audit lands its own plan, its task IDs are adopted and rows it owns are\nmarked `owned by` that session.\n\nOther concurrent coordinators (verified on GitHub 07:40-07:50Z): PR #211 (`nodata/wonderful-darwin-kd1h22`, rows SEC-11/12/13/22/29/30, TB-08; merges after #209); PR #212"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 224,
+    "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+    "head_sha": "1054daabc5cabe958466ec144582d76137b54910",
+    "head_ref": "nodata/jolly-rubin-u4zd45",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T09:49:48Z",
+    "matching_claim_sections": [
+      "# SonarCloud triage and hardening \u2014 2026-11-18 (active)\n\nOwner: Claude Code session `session_01KtKj8kihrZk94nwT1TfKJ2`. Branch `nodata/jolly-rubin-u4zd45` from `main` `5467c158`.\nOwned paths (exclusive for this lane, all unclaimed by open PRs #205/#209/#211-#222 at 09:40Z):\n`docs/audits/poc/static-server.mjs` (+ a new focused test), `infra/integration/Dockerfile.{runner,solana}`,\n`scripts/regtest/Dockerfile.bitcoind`, `packages/pool-circuits/scripts/install-circom.sh`, `packages/i18n/src/format.ts`,\nthe raw-bidirectional-character test lines SonarCloud names outside paths owned by another PR,\n`scripts/integration/run-in-runner.sh` (npx no-install), new `docs/audits/sonarcloud-triage-2026-11-18.md`, new\n`docs/handoffs/decision-packets/D03-AUD24-01-policy-hash-calldata.md` (D03 packet, docs only), and this section.\nAcceptance: every one of the 107 open SonarCloud vulnerabilities (last `main` analysis 2026-11-04 at `14f9b267`) is\nre-checked on current `main` and dispositioned (fixed RED-first / false positive with reason / accepted / routed to\nthe owning PR); behaviour-preserving fixes pass their package tests. Read-only: `scripts/devnet/e2e.mjs` (#218),\n`.github/workflows/{ci,nightly}.yml` (#213/#220), `packages/merchant-ledger/src/ledger.test.ts` (#220).\nOut of scope: contract sources, scheme-2 ABI (AUD24-01 stays owner-gated), merges to `main`, deployment, signing.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 218,
+    "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+    "head_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+    "head_ref": "claude/exciting-brown-7v69cr",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T09:48:02Z",
+    "matching_claim_sections": [
+      "# Completion run 2026-11-18 (dropped-fix restoration, CLI and relayer) \u2014 ACTIVE\n\nCoordinator: Claude Code cloud session `exciting-brown` (`session_01KtKj8jTode8Vj3yVT7tvFM`; integration owner of this\nclaim only). Integration branch `claude/exciting-brown-7v69cr`, restarted from `origin/main` = `5467c158` (merge of\nPR #203; the branch's earlier head `07968599` is an ancestor of `main`, so the update is a fast-forward). Draft PR to\n`main` opened with this claim. Lane branches are local-only worktrees; only this coordinator merges them after a\nreview by an agent that did not write the change. Ledger: `docs/handoffs/completion-20261118-lostfix/`.\n\n**Source of the rows.** This session reviewed the candidate `364b1f18` on 2026-11-10/11 (16 lanes, 34 findings, each\nreproduced by an executed failing test) and compared 2 months of `fix` commits with the candidate line by line. That\ncomparison showed that merge `84c2c185` (2026-10-22) dropped fixes that earlier audits record as present. The part\nthat was fixed then is in `main` through #119/#203. The rows below are the part that is still missing at `5467c158`;\neach was rechecked against `5467c158` before being claimed. None of them is a row of PR #205, #209, #211, #212 or #213.\n\n| Lane | Rows | Owned paths (exclusive for this run) | Acceptance |\n|---|---|---|---|\n| L1 CLI input handling | R11-1 (High), R11-2 (Medium), R11-3, R11-4 (Low) | `packages/cli/src/**`, `packages/cli/README.md` | `--help`/`-h`/`--version` in an option-value position no longer ends a command with exit 0 and `ok:true`; `reconcile propose` marks a record verified only when it was among the freshly verified observations; malformed local observations are invalid input, not a network failure; error text does not echo link-like paths or raw catalog keys. Each test RED on `5467c158`, then GREEN; full CLI suite, typecheck, lint |\n| L2 sweep destination check | LF-6f25385ce-2 (Medium, privacy) | `apps/web/src/lib/sweep.ts`, `apps/web/src/views/Sweep.tsx` (+ tests), the sweep keys it adds to `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts` as a separate commit | Before a direct or relayed sweep the destination's transaction count, balance and code are read through the user-selected RPC only; a destination with history, or one already used in this tab, needs an explicit acknowledgement; a failed read blocks or asks, never passes silently; no new request under \"require the private path\" beyond what the sweep itself sends. RED-first; lean bundle rules unchanged |\n| L3 fiat quote age and Pay residuals | LF-365f017ac-1, LF-7aee9060b-1, LF-65392fcef-3, LF-65392fcef-4 (Low) | `packages/chain-adapters/src/quote.ts`, `apps/web/src/lib/pay.ts`, `apps/web/src/lib/format.ts`, the delay label line in `apps/web/src/views/Pay.tsx` (+ tests) | The accepted age of a price is bounded by the feed's recorded heartbeat plus a margin, not only by the seller-authored quote window; a feed without a recorded heartbeat is refused for fiat quotes; a malformed permit nonce answer is a user-facing error; the delay label shows fractional minutes. RED-first |\n| L4 relayer hardening | R07-2, R07-3, R07-4 (evaluate), LF-074edb61e-1/-4/-7/-8/-9, LF-2789f780b-2/-3, LF-29de09c05-1/-4, LF-6f25385ce-1 | `apps/relayer/**`, `docs/operators/relayer-runbook.md`, the relayer section of `docs/developer/api/apps.md` | Each row rechecked against `main`'s rewritten relayer first (state store, ops and metrics landed after the triage); rows `main` already covers a"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 223,
+    "title": "docs: sync docs with current code (2026-11-18)",
+    "head_sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+    "head_ref": "nodata/doc-sweep-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T09:45:36Z",
+    "matching_claim_sections": [
+      "## Documentation sweep \u2014 2026-11-18\n\nWorker: docs sweep agent (Claude Code, documentation only). Branch: `nodata/doc-sweep-20261118`; base `5467c158069c5bab264b6a653ac56e89e13f3e13` (origin/main).\nOwned paths: `README.md` (stale CI, workspace-wiring, anvil and PR-status statements), `docs/developer/local-setup.md` (stale `REQUIRE_ANVIL` behaviour note), this claim. No source, package, lockfile or CI workflow changes.\nAcceptance: each edited statement re-checked against `package.json`, `.github/workflows/ci.yml`, `apps/web/src`, and the test sources it describes; PR states checked through the GitHub REST API; unverified statements left unchanged and reported.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 211,
+    "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+    "head_sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+    "head_ref": "nodata/wonderful-darwin-kd1h22",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T09:44:09Z",
+    "matching_claim_sections": [
+      "# Completion run 2026-11-18 (gap-fill, second coordinator) \u2014 CLOSED for new work; PR #211 open\n\nStatus 2026-11-18: every lane below is integrated on `nodata/wonderful-darwin-kd1h22` (PR #211) and qualified (see\n`docs/handoffs/completion-20261118-gapfill/HANDOFF.md`). No worker is active. The owned paths stay reserved for PR #211\nuntil it merges or is closed. Remaining coordinator work is only the POST-209 merge (sequenced after PR #209) and the\ntest-vectors README entry after PR #213. SEC-22 identifiers outside the scan cursor are unclaimed.\n\nCoordinator: Claude Code cloud session `wonderful-darwin` (integration owner of this claim only). Integration branch\n`nodata/wonderful-darwin-kd1h22`, created from `origin/main` = `5467c158` (merge of PR #203). Draft PR to `main`\nopened with this claim. Lane branches `claude/completion-20261118-gapfill/<lane>` are local-only worktrees; only this\ncoordinator merges them (`--no-ff`) after independent review. Ledgers live in\n`docs/handoffs/completion-20261118-gapfill/` (not `docs/handoffs/completion-20261118/`, which belongs to PR #209).\n\n**Sequencing.** PR #209 (`claude/ghostpay-completion-audit-ot5jjm`, claimed 07:15 UTC) was claimed first and goes\nfirst. This run takes only security rows and gaps #209 did not claim, on paths #209 does not own. It runs no\nduplicate bug-hunt, fresh-security or missing-code finders: #209 runs lanes D/E/F across all subsystems. After #209\nlands, this branch merges `main` and resolves the `docs/ai/ACTIVE_WORK.md` insertion conflict.\n\n| Lane | Source rows | Owned paths (exclusive for this run) | Acceptance |\n|---|---|---|---|\n| G1 scheme-2 client gates | SEC-11, SEC-12 / OD-11 default, SEC-28 (policy-scheme doc line only) | `packages/policy-scheme/src/**` (+ tests), `apps/web/src/features/policy/**` (+ tests), `docs/developer/api/policy-scheme.md` | Seller policy creation and payer flows refuse or warn on assets without a limits leaf (RED-first); delay floor never below the factory `MIN_DELAY`, with any per-chain floor sourced or marked owner-gated; no contract source change |\n| G2 alt-chain secret reveal | SEC-13 / OD-02 default | `apps/web/src/components/SecretBackup.tsx` (+ tests), secret-reveal and backup code in `apps/web/src/features/{btc,solana,tron}/**` (+ tests) | No clipboard path for BTC/SOL/TRON seeds or keys (OD-02 fail-closed default); reveal stays explicit; RED-first tests; lean bundle untouched |\n| G3 storage linkability | SEC-22 | scan-cursor slot naming in `apps/web/src/lib/scanClient.ts` (+ tests) | Checkpoint slot names no longer derivable from public keys alone (RED-first); legacy slots fail closed to a rescan, never to a wrong cursor |\n| G4 UX residuals | SEC-29 / R-03, SEC-30 / R-04 | `apps/web/src/components/ContextHelp.tsx` (+ tests), new `apps/web/e2e/focus-scope.spec.ts` | Hover-leave never collapses help that a click or focus opened (RED-first); paste-submit focus pinned by a browser test |\n| G5 meta-address format drift | TB-08 | `packages/chain-solana/**`, `packages/chain-tron/**` (+ tests), new `test-vectors/meta-address-sol-tron-v1.json` | CLI and web Solana/TRON meta-address encodings agree, proven by shared vectors; or the incompatibility is recorded with evidence and an owner question |\n| G3b SEC-22 hardening (review follow-up) | SEC-22 | `apps/web/src/lib/scanClient.ts`, `apps/web/src/lib/scanCursorSlot.ts` (+ tests) | All legacy v2 cursor slots swept, not only the saved chain; slot name cached per chain and key set so the viewing key "
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 217,
+    "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+    "head_sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+    "head_ref": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T09:19:05Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 213,
+    "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+    "head_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+    "head_ref": "claude/ghostpay-consolidation-9xhtxg-spec18",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T08:46:38Z",
+    "matching_claim_sections": [
+      "# Spec 18 key portability + consolidation follow-through \u2014 2026-11-18 (ACTIVE)\n\nWorker: Claude Code cloud session `ghostpay-consolidation-9xhtxg` (this session promoted PR #203 to `main` as\n`5467c158`). Spec 18 work started 06:27 UTC from candidate `71abc7e5` (tree equal to `main` `5467c158`) on local branch\n`spec18-local`; pushed to `claude/ghostpay-consolidation-9xhtxg-spec18`. Committed so far: format reference `a62f489d`,\ncodec `5c0a12cc`, independent recovery script + K04 anvil interop + user guide `b5762d19`; web UI, e2e, independent\nreview and verification in progress.\n\n| Lane | Owned paths (exclusive) | Acceptance |\n|---|---|---|\n| Spec 18 K01-K06 (codec, recovery, web UI, e2e) | `docs/specs/18-stealth-keypair-export-formats.md`; `packages/ux-vault/src/stealth-export-portable*.ts`, `packages/ux-vault/src/{portable,portable-errors}.ts` export/error lines; `test-vectors/{generate-stealth-export.mjs,stealth-export.json}`; `scripts/recovery/**`; recovery user-guide page; `apps/web/src/lib/{stealthExport,paymentKeyExport}.ts` (+ tests), re-authentication helper lines in `apps/web/src/lib/{session,keyVault}.ts`; spec 18 entry points in `apps/web/src/views/{Scan,SellerKeys}.tsx`; `apps/web/src/components/StealthExport*.tsx`; `apps/web/e2e/stealth-export.spec.ts`; `stealthExport.*` / `error.stealthExport.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`; one glob added to the ts-test shard-0 script-test line in `.github/workflows/ci.yml` | Spec 18 acceptance list on one exact SHA; independent review; external wallet/device rows pending |\n| #204 reconciliation (PR #206) | `CLAUDE.md`, `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`, the ci.yml shard-0 script-test line | Merged after green CI |\n| Security/release reconciliation (PR #212) | `docs/audits/{mythril-reevaluation,echidna-and-fee-token-review,ci-supply-chain-review}-20261118.md`, `docs/handoffs/consolidation-20261118/{OWNER_ACTION_PACKET,STATIC_BETA_DECISIONS}.md`, `docs/pages/PAGES_QUALIFICATION_20261118.md`, `scripts/contract-analysis/mythril-disposition-check.mjs` + test; already made before seeing #209's claim: `.github/dependabot.yml` (CI-06), `apps/web/package.json` `validate:deployments` script + `apps/web/src/validateDeploymentsScript.test.ts` + `apps/web/deployments/README.md` (B03) | Merged after green CI; #209 lanes B1/B4 may skip CI-06 and B03 |\n\nNot claimed (left to PR #209 / #211): SEC-09/SEC-10 Pages origin and loopback CSP, every other #205 row.\nOut of scope: deployment, signing, release, mainnet, contract source changes, branch deletion, owner decisions.\n\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 205,
+    "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+    "head_sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+    "head_ref": "nodata/zealous-hopper-lr0nxe",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T08:43:32Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 221,
+    "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+    "head_sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+    "head_ref": "nodata/wizardly-allen-qwol6u",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T08:40:29Z",
+    "matching_claim_sections": [
+      "# Repository consolidation \u2014 2026-11-18 (active)\n\nStatus (coordinator update): every worker lane below has completed and been integrated after review; the worker\nbranches were local only and are not pushed. Integrated as: specs `b20e1c98`; cigates `15c302cd`; mythril-expiry\n`1fa4179f` (+ review `3f10fcaf`); tagarchive `0dda9ca1`; mythril-factory `afbce0a6` (+ review `1e1121b3`); reimport\n`84b4e605` (+ `86b6e9e5`, `4a3d47d8`); echidna `81aa5e68`. Coordinator fixes: bundle scanner `b441cc64`/`5ddb042a`,\naudit test `bbd24cd0`, blocked keystore download `cfb482f9`. Remaining work is coordinator-owned: final CI evidence,\ncensus at the final head and the promotion packet. Open draft PR #204 (another session, base `main`) conflicts in\n`.github/workflows/ci.yml` and `CLAUDE.md` and is not part of this consolidation.\n\nCoordinator: Claude Code session (integration owner). Integration branch: `nodata/wizardly-allen-qwol6u`, created from\nunified `beb525dd` (tree `36177d29`), main ancestry merged at `f5e10f84` (tree unchanged), Pages #200 lineage merged at\n`d39e304a`. The coordinator alone owns this branch, the consolidation ledgers under `docs/handoffs/consolidation-20261118/`,\n`package-lock.json`, this registry and the merge sequence. Worker branches are local task branches based on `d39e304a`;\neach commits only inside its owned paths and is integrated by the coordinator after review.\n\n| Worker branch | Owned paths | Acceptance |\n|---|---|---|\n| `consolidation/20261118-reimport` | `apps/web/e2e/core-journey.spec.ts`, keystore import/session lifecycle source and focused tests only as diagnosis requires | Establish the cause of the #201/#202 verified-keystore reimport timeout with synthetic secrets; minimal regression-backed fix; original stale-session assertions and #202 control both execute and pass. |\n| `consolidation/20261118-tagarchive` | full-profile `TagArchive` component and its focused test | Port #193 blocked-click regression; cleanup on throwing click; success and failure messaging verified; lean bundle untouched. |\n| `consolidation/20261118-specs` | `docs/specs/**`, `docs/future/privacy-architecture/**` | Integrate #190/#191; spec 18 canonical; privacy 5k corrected; unrelated future specs remain proposed. |\n| `consolidation/20261118-cigates` | `.github/workflows/release.yml`, `contract-analysis.yml`, `nightly.yml`, workflow tests/runbook | Source-matched analyzer success becomes an enforced promotion condition; missing/skipped/cancelled evidence fails. |\n| `consolidation/20261118-echidna` | `packages/contracts/test/echidna/**`, Echidna config/corpus/runner tests | Demonstrate >= 3 successful native policy withdrawals without lowering the threshold or weakening properties. |\n| `consolidation/20261118-mythril-expiry` | new expiry-focused contract tests, expiry disposition record | Individual dispositions for the three expiry-timestamp Mythril records. |\n| `consolidation/20261118-mythril-factory` | new factory-focused contract tests, factory disposition record | Individual dispositions for the eight factory/OpenZeppelin call-path Mythril records. |\n\nOut of scope for every worker: protected-main merge, deployment, release signing/publication, Wiki publication, branch\ndeletion, real funds, new custody/authority surfaces, and spec 18 key-export implementation (next phase).\n\nThe ChatGPT \"zero-codex\" rotation automation is an active external writer on `chatgpt/zero-codex/*` branches (observed\npushes 2026-11-18 01:39-01:44 UTC). Those branches ar"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 220,
+    "title": "Security remediation 2026-11-18: Mythril re-evaluation, red-team fixes (CI policy, RPC egress, confidential router, ledger), key-boundary docs",
+    "head_sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+    "head_ref": "security/mythril-full-remediation-20261118",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T08:33:01Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 219,
+    "title": "Bitcoin scan: recognise spent outputs locally; per-outpoint provider query becomes opt-in (spec 12)",
+    "head_sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+    "head_ref": "claude/vibrant-cori-scu18b",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T08:28:06Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 212,
+    "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+    "head_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+    "head_ref": "claude/ghostpay-consolidation-9xhtxg-security",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T07:43:00Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 87,
+    "title": "deps: bump the npm-major group across 1 directory with 11 updates",
+    "head_sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+    "head_ref": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+    "base_ref": "main",
+    "author": "dependabot[bot]",
+    "updated_at": "2026-11-18T07:27:34Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 207,
+    "title": "ci: bump the actions group across 1 directory with 2 updates",
+    "head_sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+    "head_ref": "dependabot/github_actions/actions-b9ade1236b",
+    "base_ref": "main",
+    "author": "dependabot[bot]",
+    "updated_at": "2026-11-18T07:06:33Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 153,
+    "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+    "head_sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+    "head_ref": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+    "base_ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T06:46:23Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 140,
+    "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+    "head_sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+    "head_ref": "chatgpt/zero-codex/docs-pages-scope-20261112",
+    "base_ref": "claude/ghostpay-github-pages-up6cj6",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T06:45:33Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [
+      "docs/wiki/Codebase-Map.md",
+      "docs/wiki/Developer-Guide.md",
+      "docs/wiki/Home.md",
+      "docs/wiki/QR-and-Devices.md",
+      "docs/wiki/User-Guide.md",
+      "docs/wiki/Verification-and-Release-Gates.md"
+    ],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 139,
+    "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+    "head_sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+    "head_ref": "chatgpt/zero-codex/audit-pages-release-20261112",
+    "base_ref": "claude/ghostpay-github-pages-up6cj6",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-18T06:43:36Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 160,
+    "title": "docs(pages): source-pinned integration and release-gate inventory",
+    "head_sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+    "head_ref": "chatgpt/pages-release-gate-audit-20261114",
+    "base_ref": "integration/consolidated-2026-11-14",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-15T01:22:27Z",
+    "matching_claim_sections": [
+      "# Active AI work registry\n\nThis file is a coordination template, not a live lock service. Always inspect open PRs and branch heads before relying on it.\n\n| Worker | Branch | Base SHA | Owned paths | Acceptance criteria | Status |\n| --- | --- | --- | --- | --- | --- |\n| ChatGPT Pages release-gate audit | `chatgpt/pages-release-gate-audit-20261114` | `c3e707ade896c5acfebdb5967f4de7c0445740e2` | `docs/ai/PAGES_RELEASE_GATES_2026-11-14.md`, task-branch registry row | Source-pinned ownership and qualification checklist; no production changes | Documented; CI not run |\n\nWorkers should update their task-branch copy and communicate ownership through the PR description. Do not treat absence from this table as proof a path is free.\n"
+    ],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 82,
+    "title": "Configure OpenAI autonomous development workflow and prompts",
+    "head_sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+    "head_ref": "codex/setup-autonomous-agent-20261104",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-04T21:21:00Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 52,
+    "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+    "head_sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+    "head_ref": "automation/ghostpay-parallel-four-agents-20261103",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-04T00:41:30Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  },
+  {
+    "number": 51,
+    "title": "ci: continue GhostPay API-funded backlog development twice daily",
+    "head_sha": "5835736c12968231ac7b3152e394077bee453622",
+    "head_ref": "automation/ghostpay-recurrent-backlog-20261103",
+    "base_ref": "main",
+    "author": "djshellshoxxx",
+    "updated_at": "2026-11-04T00:23:22Z",
+    "matching_claim_sections": [],
+    "wiki_paths": [],
+    "ownership": "Treat open branch as active; coordinator identity from matching exact-branch claims where present; all other inherited claims are not used as ownership evidence."
+  }
+]

@@ -1,0 +1,6 @@
+manifests: none (payments disabled on every chain)
+== build apps/web (lean profile, relative base) at 2df03bde3883439e7514a02c871db66ccffd83fd
+== assemble Pages site
+== verify site
+Pages site verified: 16 files; DEVELOPMENT BUILD (not release evidence): DEMO: payments disabled on every chain (no deployment manifest)
+build-pages: OK -> /workspace/scratch/a13b43b0f3c9/qr-pages-2df03bde/site (evidence in /workspace/scratch/a13b43b0f3c9/qr-pages-2df03bde/evidence)

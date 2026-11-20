@@ -1,0 +1,14 @@
+{
+  "source": "55b306d6d69ee2931f15a35a7934d124c1f5c512",
+  "test_source": "954152e2cf048824965fe93c370bc5479e373e9d",
+  "command": "node_modules/.bin/tsc --noEmit -p apps/web/tsconfig.qr-cycle-verification.json",
+  "config": {
+    "extends": "./tsconfig.json",
+    "include": [
+      "src/lib/qrKinds.test.ts"
+    ]
+  },
+  "scope": "QR test plus transitive imports using existing web compiler settings; not full web typecheck",
+  "exit_code": 0,
+  "duration_seconds": 1.52
+}

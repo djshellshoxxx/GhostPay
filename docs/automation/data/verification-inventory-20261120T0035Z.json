@@ -1,0 +1,171 @@
+{
+  "cycle": "20261120T0035Z",
+  "note": "SHA-256 inventory of preserved raw outputs/receipts, including failures and superseded source evidence. Empty successful lint/typecheck outputs are accompanied by source-pinned handoff or result receipts.",
+  "files": [
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/integration-invoice-build.txt",
+      "bytes": 220,
+      "sha256": "a3328b4a4fac82d09b486fbb30d90a2dabd98532f4a28be850aa5ebcd97e55a8"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/integration-invoice-lint.txt",
+      "bytes": 235,
+      "sha256": "632be6b3f0464e2e7de7b6f8a24ff994940e329166606bfef15c045ba72d797d"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/integration-invoice-tests.txt",
+      "bytes": 2575,
+      "sha256": "6afda98c8f59b06b74438a11a2f72ca16d21a0072831ba3583c9e20498d9043c"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/integration-invoice-typecheck.txt",
+      "bytes": 227,
+      "sha256": "36c31bac9ae8930cb8be1291dd51d9c371b9418df9947720c29da5d45688bd61"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/integration-passphrase-isolated.txt",
+      "bytes": 238,
+      "sha256": "c90a6f8b0b1e1c37eeaee9d08200a8265879c49d26aed2a28e55e4b7b1c4797a"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/npm-ci-pr289.txt",
+      "bytes": 375,
+      "sha256": "5679b15e3ba06f39698a0fc95b2014490f57fde302e5629b06a445940ffa7470"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/npm-ci-qr.txt",
+      "bytes": 150,
+      "sha256": "9aac3da9a7039a99c345545c32f286aa65c358d571bfce7e00d94625d095c829"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/npm-ci.txt",
+      "bytes": 665,
+      "sha256": "c4640744c03d20aee55c0130fbdb3f83e3b5b107bf01b08bc28dd306e2c4a9f1"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/pr289-invoice-build.txt",
+      "bytes": 220,
+      "sha256": "a3328b4a4fac82d09b486fbb30d90a2dabd98532f4a28be850aa5ebcd97e55a8"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/pr289-invoice-lint.txt",
+      "bytes": 842,
+      "sha256": "ac3407914686b6b75d1f74aafa24ae0a798f8a99040655c506b911bf01aa29db"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/pr289-invoice-tests-serial.txt",
+      "bytes": 1595,
+      "sha256": "c59ba4bfc17d65d6674f4943937a07d09a74bf622e59bf1050d45d7854fac5a9"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/pr289-invoice-tests.txt",
+      "bytes": 1783,
+      "sha256": "5b0d21446ba80ca06b66e601b5a9dd12945952420de2e80b7610b3dae9b442d7"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/pr289-invoice-typecheck.txt",
+      "bytes": 227,
+      "sha256": "36c31bac9ae8930cb8be1291dd51d9c371b9418df9947720c29da5d45688bd61"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/pr289-serial-result.json",
+      "bytes": 294,
+      "sha256": "7b18d7fe31c9013567ec3f3223d3ec185f90ff5da25fe35c2bf0d4694bf02b3b"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-build-libs.txt",
+      "bytes": 17496,
+      "sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-config-unbuilt-libs.txt",
+      "bytes": 2894,
+      "sha256": "dc2037c263ed45487915a1a16cdef994ba9df985253487affc9c128169ac9b2e"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-final-flags-lint.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-final-flags-vitest.txt",
+      "bytes": 225,
+      "sha256": "d26ccc1368113d188ff4468ab5cfd421508a1e51b613ab8dcbdf9dfa0c89b219"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-final-typecheck-result.json",
+      "bytes": 476,
+      "sha256": "cac6018c45ba58a67da644a0fe3d60ab29aa114036e4a32f969d7c90821a8df6"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-final-typecheck.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-green.txt",
+      "bytes": 215,
+      "sha256": "2507dee78fa9f6de50d175b4fa86cad87b8f21ec4527b3600dd6dc57ca9d8d0e"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-lint.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-pages-build.txt",
+      "bytes": 465,
+      "sha256": "db96c9c545401e70a210a413e58ef219c481e85a30abc303661479912230751a"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-red.txt",
+      "bytes": 3598,
+      "sha256": "f1fc6e471638ab5abd151c912c2442cbfca221b4ef57d63dd0abc57810d6f208"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-runner-unavailable.txt",
+      "bytes": 77,
+      "sha256": "20c1ba1358dd3ca315c84b32c6f142057fb7f3493337b314fca3fb1eefda6d00"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-supplement-lint.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-supplement-typecheck.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-supplement-vitest.txt",
+      "bytes": 243,
+      "sha256": "8965bcef2c738d34ecd14f137a9237caa803cbdff2588684c9eba8e2af78c72f"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-supplement-web-build.txt",
+      "bytes": 3270,
+      "sha256": "7f8cf3b943d5dd60ff2bf0b50e12a29b6fad7df828c6e374afc7fed1123376e2"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-typecheck.txt",
+      "bytes": 216,
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/qr-ui-tests.txt",
+      "bytes": 565,
+      "sha256": "6485287a158ef6a46a9bfaa22007d04a0fc712f98c2699bd34c9b36f8ac8d63c"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/superseded-supplement-0c3893db.patch",
+      "bytes": 12968,
+      "sha256": "1f4de45f1f34fd537c37ff1ab22679a799dae7991ad1316410cf6969d211fc3c"
+    },
+    {
+      "path": "docs/automation/data/verification-20261120T0035Z/superseded-supplement-handoff.txt",
+      "bytes": 5848,
+      "sha256": "530d8bdecd437799390a9d7ce92cb166afed8665046cb68fb8a2865834831192"
+    }
+  ]
+}
