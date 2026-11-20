@@ -14,6 +14,20 @@ describe('formatUnits / parseUnits', () => {
     expect(() => formatUnits(1n, 37)).toThrow(RangeError);
     expect(() => formatUnits(1n, 1.5)).toThrow(RangeError);
   });
+  it('fails closed on invalid runtime decimal precision', () => {
+    for (const precision of [-1, 1.5, 37, NaN, Infinity, -Infinity, undefined, '2']) {
+      expect(parseUnits('1', precision as number)).toBeUndefined();
+    }
+    expect(parseUnits('1', 0)).toBe(1n);
+    expect(parseUnits('1', 36)).toBe(10n ** 36n);
+    expect(parseUnits('0.000000000000000000000000000000000001', 36)).toBe(1n);
+  });
+  it('returns undefined instead of throwing for non-string runtime amounts', () => {
+    for (const input of [null, undefined, 123, true, false, {}, [], ['1']]) {
+      expect(parseUnits(input as string, 2)).toBeUndefined();
+    }
+    expect(parseUnits(' 7 ', 2)).toBe(700n);
+  });
   it('parses strictly without rounding', () => {
     expect(parseUnits('25.50', 6)).toBe(25_500_000n);
     expect(parseUnits(' 7 ', 2)).toBe(700n);
