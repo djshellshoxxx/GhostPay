@@ -21,6 +21,44 @@ Acceptance: all source IDs covered, hard dependency graph acyclic, real code
 reuse documented, independent branch/spec publication verified, documentation-only
 diffs. No implementation, main merge, deployment, activation, fee decisions or release
 changes. Feature branches append their own claim before their specification commit.
+# Focused hosting main reconciliation — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-main-reconcile-20261119`.
+Starting PR #267 head: `c3a693e87053fbe91219f8edfe159a5ec0a37a34`.
+Qualified main input: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: additive `docs/ai/ACTIVE_WORK.md` reconciliation and new evidence under
+`docs/consolidation/hosting-timestamp-reconciliation-20261119/`. Incoming qualified
+main source/test changes are preserved exactly; no runtime source or gate edits.
+Acceptance: first preview merge conflicts; preserve main and focused ancestry;
+retain all existing ownership sections; keep the complete 80-file hosting-kit tree
+and its three reviewed timestamp source/test blobs exact; inspect the full resulting
+source/config diff and run only checks needed for a concrete reconciliation risk.
+Historical hosted kit/browser outcomes remain pinned to the earlier checkout;
+new-head CI/build/browser qualification is coordinator-owned and remains pending.
+No remote writes, force operations, mainnet, deployment or parallel heavy checks.
+Status: claim recorded before merge; merge-tree preview found only this registry.
+
+# Focused hosting timestamp promotion — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-timestamp-main-20261119`.
+Base: `14ded337a10c140d7a9f9a9238ec038587d925bb`, independently verified as GitHub main.
+Owned paths: the three reviewed source/test files from
+`38fe7fdaf151ef433be9721af8fea7cbcdea89c4` under `tools/portable-hosting-kit/`,
+the unchanged historical evidence in `docs/consolidation/hosting-timestamp-20261119/`,
+new provenance in `docs/consolidation/hosting-timestamp-main-20261119/`, and this
+additive claim. Acceptance: cherry-pick the exact reviewed fix without importing
+feature-candidate ancestry; verify all three blobs and the complete kit tree match
+the tested product; preserve every prior main claim; identify differences in root
+configuration/lockfiles and record evidence limits honestly. Obtain independent
+recovery-worker review. No other runtime, dependency, workflow, threshold, deployment
+or remote changes. The coordinator owns publication and hosted qualification.
+Status: exact `-x` cherry-pick product `f4464e57bc6743800c2564ddb71bb5b06f64eb35`;
+complete kit tree and three product blobs equal the reviewed original. Historical
+evidence copied byte-for-byte; root lock differences remain explicit. Recovery-worker
+source review found no introduced blocker. No new runtime replay is claimed.
+Provenance: `docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md`.
 
 # Historical security promotion — 2026-11-19
 
