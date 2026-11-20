@@ -1,0 +1,13 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 2,
+  "elapsed_seconds": 0.04,
+  "local_repair_commit": "95493e10281f0307c225b088ed29884b857ad168",
+  "test_blob": "c6f9bfcb6af548ba7eb99c6fa053d4575fd8641c",
+  "output": "docs/future/modules/F03-private-payment-links/round2/evidence/ci44692101562-browser-evidence.json:1632: new blank line at EOF.\n"
+}

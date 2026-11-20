@@ -1,5 +1,38 @@
 # F03 successor-worker handoff
 
+## Continuation checkpoint — 2026-11-20
+
+Read [round2/QUALIFICATION.md](round2/QUALIFICATION.md) and its two independent review records
+first. Original hosted full/lean execution is now established: each ran all six F03 cases, with
+two passed and four stopped by incorrect bare exact memo assertions. Hash-verified failure
+snapshots show the correct labeled memo in every failed context. The renderer is unchanged.
+
+The adopted canonical test-only correction is `1de98f6c9371010883253450446e6f7294da84fa`,
+tree `bb171ebd63e38dce3496e3a7e84990c3dd020fc1`, test blob
+`085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f`. A concurrent worker published this equivalent,
+slightly stronger repair before our guarded update; we preserve it exactly. Exact positive memo
+matching is scoped to payment review; global absence checks cover confidential and both directions
+of superseded memo text. Fresh independent follow-up review reports no findings. The incoming
+handoff records typed lint, whole-web typecheck and six-case collection per profile. Product source,
+dependencies, configuration and workflows are unchanged.
+
+Our separately reviewed helper proposal (`95493e10`, test blob `c6f9bfcb`) and its exact local
+command records remain historical evidence. API-created equivalent `9dedda1d` and documentation
+successor `aae04662` never replaced the canonical ref. Their history and the additional reports
+are retained on `audit/f03-browser-qualification-20261120`, preserving both workers' ownership
+entries and the incoming handoff. Continue qualification on the canonical feature branch; do not
+overwrite its test with the historical helper or move documentation onto it just to restart CI.
+
+At this documentation checkpoint, repaired-head native browser qualification is the remaining
+gate. Consult the actual current PR head and workflow results for subsequent outcomes. Do not
+repeat the old failing locator or count an earlier partial fixture as a complete pass. The
+continuation record provides source maps, concrete criteria and known environment limits.
+CI run `44769994546` is the queued repaired-head run at the recorded observation. Read its
+actual state and verify the current PR head before proceeding. Keep the PR draft until required
+checks and both six-case browser profiles actually pass.
+
+## Original implementation and audit handoff
+
 Feature implementation and the fresh-worker source audit are complete for signed-invoice
 request-file interchange. Continue branch `future/f03-private-payment-links`, draft
 [PR #310](https://github.com/djshellshoxxx/GhostPay/pull/310). Do not restart the implementation or

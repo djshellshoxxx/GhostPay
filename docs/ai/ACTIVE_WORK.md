@@ -1,3 +1,57 @@
+# F03 concurrent repair and evidence reconciliation — 2026-11-20
+
+Coordinator: ChatGPT `/root`; reviewer: `f03_repair_review` with an independent preservation
+cross-check. Local task branch: `continuation/f03-browser-qualification-20261120`.
+Canonical branch: `future/f03-private-payment-links`, now at
+`1de98f6c9371010883253450446e6f7294da84fa`; supporting evidence branch:
+`audit/f03-browser-qualification-20261120`. Common base:
+`976d26ee791836c176431c8a5d0b825486f78caf`. Local evidence checkpoint before reconciliation:
+`21d456e1e8c5ed9f99ec2f8373eb16e1ea377810`.
+
+Owned changes: this additive registry claim; F03 qualification/handoff and `round2` evidence.
+The incoming test and incoming `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md` are
+preserved byte-for-byte. Neither source file is reopened for implementation. The reviewer owns
+only its appended independent report. Fresh reconciliation reviewer `f03_reconciliation_audit`
+owns only `round2/RECONCILIATION_REVIEW.md` and independently checks preservation, source pins
+and evidence distinctions. All existing ownership claims and source histories remain.
+
+Acceptance: retain incoming test blob `085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f`, combine both
+ownership additions, distinguish the historical helper-based proposal from the adopted repair,
+and keep earlier local checks pinned to the source they actually tested. Publish the additional
+evidence on a separate audit branch so documentation does not cancel/restart active canonical
+CI run `44769994546`. Confirm no runtime, configuration, workflow, dependency or test-source
+difference from canonical `1de98f6c`. Inspect actual hosted outcomes before claiming browser
+qualification. No force update, main merge or deployment.
+
+# F03 hosted-browser qualification continuation — 2026-11-20
+
+Coordinator: ChatGPT `/root`; fresh investigator: `f03_hosted_browser`; independent repair
+reviewer: `f03_repair_review`. Canonical remote branch: `future/f03-private-payment-links`, PR #310.
+Local continuation branch: `continuation/f03-browser-qualification-20261120`.
+Base/head: `976d26ee791836c176431c8a5d0b825486f78caf`; current main remains
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`. Prior local-author history is preserved separately.
+
+Owned paths: coordinator owns `apps/web/e2e/payment-request-file.spec.ts`, this entry, and the
+F03 qualification/handoff update. Investigator owns `docs/future/modules/F03-private-payment-links/`
+`round2/HOSTED_BROWSER.md` and its bounded evidence. Product source is read-only unless an actual
+feature defect is established and ownership is explicitly extended before a repair.
+The repair reviewer owns only `round2/REPAIR_REVIEW.md`; its source review is independent of the
+investigator and coordinator. Root owns all test execution and publication.
+
+Acceptance: preserve and inspect original CI run `44692101562`, its full/lean browser failures,
+checkout/tree identity and actual error-context artifacts. Correct the demonstrated exact-text
+memo locator mismatch without weakening assertions or changing runtime behavior. Include latent
+memo and absence assertions that the earlier failures prevented from executing. Obtain independent
+review, typed lint/typecheck/test collection, then actual full/lean browser execution at the repair
+head. Retain existing assertions, guards and thresholds. Record actual outcomes and remaining
+gates. No unrelated branch integration, main merge or deployment.
+Historical proposed repair: local `95493e10281f0307c225b088ed29884b857ad168`, API-created exact-tree
+equivalent `9dedda1ded9511922a9faa5ee617a01cba245095` (not moved to the canonical ref), test blob
+`c6f9bfcb6af548ba7eb99c6fa053d4575fd8641c`. Fresh review reports no actionable finding.
+Typed lint, bounded whole-web typecheck and six-case collection per profile pass. Native browser
+rerun is required at the adopted incoming PR head `1de98f6c`, test blob `085bbccd`; see the
+reconciliation claim above and F03 `round2` reports. The helper proposal remains historical only.
+
 # PR #310 invoice-file memo browser checks — 2026-11-20
 
 Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.

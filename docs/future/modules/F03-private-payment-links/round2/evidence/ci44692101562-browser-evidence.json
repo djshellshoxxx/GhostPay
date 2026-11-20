@@ -1,0 +1,1631 @@
+{
+  "schema": "ghostpay-f03-hosted-browser-investigation/1",
+  "investigator": "f03_hosted_browser",
+  "recorded_date_utc": "2026-11-20",
+  "repository": "djshellshoxxx/GhostPay",
+  "purpose": "Source-pinned diagnosis of original hosted F03 browser failures; this is not repaired-head browser qualification.",
+  "identity": {
+    "pull_request": 310,
+    "source_revision": "976d26ee791836c176431c8a5d0b825486f78caf",
+    "base_revision": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+    "checkout_commit": "18c2806e70bb9f1af05edc293e9350bd9c638f2f",
+    "checkout_tree": "91a8610bfd6cb2015f57d7fa32b5dc38d962bdf3",
+    "checkout_parents": [
+      "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "976d26ee791836c176431c8a5d0b825486f78caf"
+    ],
+    "head_tree": "91a8610bfd6cb2015f57d7fa32b5dc38d962bdf3",
+    "old_local_checkpoint": "30eb81741fa8cdc5683d710000b218d83ca3b4e2",
+    "old_local_checkpoint_tree": "91a8610bfd6cb2015f57d7fa32b5dc38d962bdf3",
+    "same_tree_verified": true
+  },
+  "run": {
+    "id": 44692101562,
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44692101562",
+    "name": "CI",
+    "workflow_path": ".github/workflows/ci.yml",
+    "attempt": 1,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-11-20T07:03:05Z",
+    "updated_at": "2026-11-20T11:29:35Z"
+  },
+  "collection": {
+    "browser_project": "desktop",
+    "workers": 1,
+    "retries_configured": 0,
+    "device_projects_execute_f03": false,
+    "lean_grep_invert": "embed SDK \\((popup mode only|iframe mode)\\)",
+    "devnet_journeys_excluded_from_this_configuration": true
+  },
+  "jobs": [
+    {
+      "profile": "full",
+      "id": 136181689920,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44692101562/job/136181689920",
+      "name": "e2e (full)",
+      "status": "completed",
+      "conclusion": "failure",
+      "counts": {
+        "collected": 89,
+        "passed": 84,
+        "failed": 4,
+        "skipped": 1,
+        "f03_executed": 6,
+        "f03_passed": 2,
+        "f03_failed": 4,
+        "f03_skipped": 0
+      },
+      "reported_duration": "3.5m",
+      "log_line_count": 737,
+      "log_excerpts": [
+        {
+          "line": 129,
+          "text": "2026-11-20T09:41:54.9383059Z HEAD is now at 18c2806 Merge 976d26ee791836c176431c8a5d0b825486f78caf into 773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "line": 131,
+          "text": "2026-11-20T09:41:54.9416591Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 132,
+          "text": "2026-11-20T09:41:54.9437304Z 18c2806e70bb9f1af05edc293e9350bd9c638f2f"
+        },
+        {
+          "line": 441,
+          "text": "2026-11-20T09:42:23.0816231Z ##[group]Run npm run test:e2e --workspace @ghostpay/web"
+        },
+        {
+          "line": 445,
+          "text": "2026-11-20T09:42:23.0843985Z   GHOSTPAY_LOCAL_BUILD_PROFILE: full"
+        },
+        {
+          "line": 449,
+          "text": "2026-11-20T09:42:23.1867049Z > playwright test"
+        },
+        {
+          "line": 462,
+          "text": "2026-11-20T09:42:41.3366146Z Running 89 tests using 1 worker"
+        },
+        {
+          "line": 523,
+          "text": "2026-11-20T09:44:01.6492048Z   ✘  53 [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects (10.8s)"
+        },
+        {
+          "line": 524,
+          "text": "2026-11-20T09:44:13.2357807Z   ✘  54 [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects (10.9s)"
+        },
+        {
+          "line": 525,
+          "text": "2026-11-20T09:44:26.0204043Z   ✘  55 [desktop] › e2e/payment-request-file.spec.ts:101:1 › passphrase request stays closed until the existing unlock flow succeeds (12.1s)"
+        },
+        {
+          "line": 526,
+          "text": "2026-11-20T09:44:27.6872033Z   ✓  56 [desktop] › e2e/payment-request-file.spec.ts:129:1 › invalid replacement files clear a prior preview and the identical valid file can be retried (1.0s)"
+        },
+        {
+          "line": 527,
+          "text": "2026-11-20T09:44:38.6130142Z   ✘  57 [desktop] › e2e/payment-request-file.spec.ts:154:1 › successive request files open their own signed terms without a page refresh (10.9s)"
+        },
+        {
+          "line": 528,
+          "text": "2026-11-20T09:44:40.1648881Z   ✓  58 [desktop] › e2e/payment-request-file.spec.ts:185:1 › a corrupted signed amount remains untrusted and cannot enable payment (901ms)"
+        },
+        {
+          "line": 578,
+          "text": "2026-11-20T09:45:54.1291150Z   1) [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects "
+        },
+        {
+          "line": 580,
+          "text": "2026-11-20T09:45:54.1292262Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 582,
+          "text": "2026-11-20T09:45:54.1293005Z     Locator: getByText('Synthetic invoice file note', { exact: true })"
+        },
+        {
+          "line": 584,
+          "text": "2026-11-20T09:45:54.1294107Z     Timeout: 10000ms"
+        },
+        {
+          "line": 585,
+          "text": "2026-11-20T09:45:54.1294485Z     Error: element(s) not found"
+        },
+        {
+          "line": 592,
+          "text": "2026-11-20T09:45:54.1296961Z       93 |     await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();"
+        },
+        {
+          "line": 593,
+          "text": "2026-11-20T09:45:54.1297733Z       94 |     await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 594,
+          "text": "2026-11-20T09:45:54.1298409Z     > 95 |     await expect(page.getByText('Synthetic invoice file note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 595,
+          "text": "2026-11-20T09:45:54.1298986Z          |                                                                                  ^"
+        },
+        {
+          "line": 596,
+          "text": "2026-11-20T09:45:54.1299558Z       96 |     expect((await localSnapshot(page)).wallet).toEqual(before.wallet);"
+        },
+        {
+          "line": 597,
+          "text": "2026-11-20T09:45:54.1300189Z       97 |     await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);"
+        },
+        {
+          "line": 598,
+          "text": "2026-11-20T09:45:54.1300696Z       98 |   });"
+        },
+        {
+          "line": 599,
+          "text": "2026-11-20T09:45:54.1301196Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:95:82"
+        },
+        {
+          "line": 603,
+          "text": "2026-11-20T09:45:54.1303166Z   2) [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects "
+        },
+        {
+          "line": 605,
+          "text": "2026-11-20T09:45:54.1304146Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 607,
+          "text": "2026-11-20T09:45:54.1304708Z     Locator: getByText('Synthetic invoice file note', { exact: true })"
+        },
+        {
+          "line": 609,
+          "text": "2026-11-20T09:45:54.1305461Z     Timeout: 10000ms"
+        },
+        {
+          "line": 610,
+          "text": "2026-11-20T09:45:54.1305812Z     Error: element(s) not found"
+        },
+        {
+          "line": 617,
+          "text": "2026-11-20T09:45:54.1308040Z       93 |     await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();"
+        },
+        {
+          "line": 618,
+          "text": "2026-11-20T09:45:54.1308777Z       94 |     await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 619,
+          "text": "2026-11-20T09:45:54.1309541Z     > 95 |     await expect(page.getByText('Synthetic invoice file note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 620,
+          "text": "2026-11-20T09:45:54.1310207Z          |                                                                                  ^"
+        },
+        {
+          "line": 621,
+          "text": "2026-11-20T09:45:54.1310782Z       96 |     expect((await localSnapshot(page)).wallet).toEqual(before.wallet);"
+        },
+        {
+          "line": 622,
+          "text": "2026-11-20T09:45:54.1311677Z       97 |     await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);"
+        },
+        {
+          "line": 623,
+          "text": "2026-11-20T09:45:54.1312236Z       98 |   });"
+        },
+        {
+          "line": 624,
+          "text": "2026-11-20T09:45:54.1312781Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:95:82"
+        },
+        {
+          "line": 628,
+          "text": "2026-11-20T09:45:54.1317188Z   3) [desktop] › e2e/payment-request-file.spec.ts:101:1 › passphrase request stays closed until the existing unlock flow succeeds "
+        },
+        {
+          "line": 630,
+          "text": "2026-11-20T09:45:54.1318005Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 632,
+          "text": "2026-11-20T09:45:54.1318477Z     Locator: getByText('Synthetic confidential note', { exact: true })"
+        },
+        {
+          "line": 634,
+          "text": "2026-11-20T09:45:54.1453840Z     Timeout: 10000ms"
+        },
+        {
+          "line": 635,
+          "text": "2026-11-20T09:45:54.1454124Z     Error: element(s) not found"
+        },
+        {
+          "line": 642,
+          "text": "2026-11-20T09:45:54.1456305Z       123 |   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible({ timeout: 30_000 });"
+        },
+        {
+          "line": 643,
+          "text": "2026-11-20T09:45:54.1456956Z       124 |   await expect(page.getByText('Synthetic confidential item', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 644,
+          "text": "2026-11-20T09:45:54.1457534Z     > 125 |   await expect(page.getByText('Synthetic confidential note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 645,
+          "text": "2026-11-20T09:45:54.1457993Z           |                                                                                ^"
+        },
+        {
+          "line": 646,
+          "text": "2026-11-20T09:45:54.1458376Z       126 |   expect((await localSnapshot(page)).wallet.methods).toEqual([]);"
+        },
+        {
+          "line": 647,
+          "text": "2026-11-20T09:45:54.1458746Z       127 | });"
+        },
+        {
+          "line": 648,
+          "text": "2026-11-20T09:45:54.1458931Z       128 |"
+        },
+        {
+          "line": 649,
+          "text": "2026-11-20T09:45:54.1459316Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:125:80"
+        },
+        {
+          "line": 653,
+          "text": "2026-11-20T09:45:54.1461073Z   4) [desktop] › e2e/payment-request-file.spec.ts:154:1 › successive request files open their own signed terms without a page refresh "
+        },
+        {
+          "line": 655,
+          "text": "2026-11-20T09:45:54.1461625Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 657,
+          "text": "2026-11-20T09:45:54.1461976Z     Locator: getByText('Synthetic request B', { exact: true })"
+        },
+        {
+          "line": 659,
+          "text": "2026-11-20T09:45:54.1462490Z     Timeout: 10000ms"
+        },
+        {
+          "line": 660,
+          "text": "2026-11-20T09:45:54.1462758Z     Error: element(s) not found"
+        },
+        {
+          "line": 667,
+          "text": "2026-11-20T09:45:54.1464526Z       171 |   await page.getByRole('button', { name: OPEN, exact: true }).click();"
+        },
+        {
+          "line": 668,
+          "text": "2026-11-20T09:45:54.1465159Z       172 |   await expect(page.getByText('Fixed: 0.75 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 669,
+          "text": "2026-11-20T09:45:54.1465753Z     > 173 |   await expect(page.getByText('Synthetic request B', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 670,
+          "text": "2026-11-20T09:45:54.1466184Z           |                                                                        ^"
+        },
+        {
+          "line": 671,
+          "text": "2026-11-20T09:45:54.1466631Z       174 |   await expect(page.getByText('Synthetic request A', { exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 672,
+          "text": "2026-11-20T09:45:54.1467077Z       175 |   await page.getByRole('button', { name: 'Forget this invoice', exact: true }).click();"
+        },
+        {
+          "line": 673,
+          "text": "2026-11-20T09:45:54.1467469Z       176 |   await page.getByText('Scan an invoice QR', { exact: true }).click();"
+        },
+        {
+          "line": 674,
+          "text": "2026-11-20T09:45:54.1467943Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:173:72"
+        },
+        {
+          "line": 678,
+          "text": "2026-11-20T09:45:54.1469564Z   4 failed"
+        },
+        {
+          "line": 679,
+          "text": "2026-11-20T09:45:54.1470220Z     [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects "
+        },
+        {
+          "line": 680,
+          "text": "2026-11-20T09:45:54.1471170Z     [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects "
+        },
+        {
+          "line": 681,
+          "text": "2026-11-20T09:45:54.1472103Z     [desktop] › e2e/payment-request-file.spec.ts:101:1 › passphrase request stays closed until the existing unlock flow succeeds "
+        },
+        {
+          "line": 682,
+          "text": "2026-11-20T09:45:54.1473088Z     [desktop] › e2e/payment-request-file.spec.ts:154:1 › successive request files open their own signed terms without a page refresh "
+        },
+        {
+          "line": 683,
+          "text": "2026-11-20T09:45:54.1473777Z   1 skipped"
+        },
+        {
+          "line": 684,
+          "text": "2026-11-20T09:45:54.1473993Z   84 passed (3.5m)"
+        },
+        {
+          "line": 711,
+          "text": "2026-11-20T09:45:54.9086163Z SHA256 digest of uploaded artifact is 6d7c34372a3c53c5ea03f48b7f15e54559e6376ef93b04af5900e936da6e8096"
+        },
+        {
+          "line": 713,
+          "text": "2026-11-20T09:45:55.3714691Z Artifact playwright-test-results-full successfully finalized. Artifact ID 14617959493"
+        }
+      ],
+      "steps": [
+        {
+          "name": "Run npm run test:e2e --workspace @ghostpay/web",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        },
+        {
+          "name": "Record the build used by the successful browser run",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Retain the browser-tested build and its identity",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        }
+      ],
+      "skipped_tests": [
+        {
+          "line": 485,
+          "text": "2026-11-20T09:43:02.4894704Z   -  18 [desktop] › e2e/backup-panel.spec.ts:60:3 › lean profile › keeps the key backup and has no tag archive item or combined panel"
+        }
+      ]
+    },
+    {
+      "profile": "lean",
+      "id": 136181689927,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44692101562/job/136181689927",
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "failure",
+      "counts": {
+        "collected": 79,
+        "passed": 72,
+        "failed": 4,
+        "skipped": 3,
+        "f03_executed": 6,
+        "f03_passed": 2,
+        "f03_failed": 4,
+        "f03_skipped": 0
+      },
+      "reported_duration": "3.3m",
+      "log_line_count": 728,
+      "log_excerpts": [
+        {
+          "line": 129,
+          "text": "2026-11-20T09:43:50.4049812Z HEAD is now at 18c2806 Merge 976d26ee791836c176431c8a5d0b825486f78caf into 773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "line": 131,
+          "text": "2026-11-20T09:43:50.4096380Z [command]/usr/bin/git log -1 --format=%H"
+        },
+        {
+          "line": 132,
+          "text": "2026-11-20T09:43:50.4120360Z 18c2806e70bb9f1af05edc293e9350bd9c638f2f"
+        },
+        {
+          "line": 442,
+          "text": "2026-11-20T09:44:26.8224068Z ##[group]Run npm run test:e2e --workspace @ghostpay/web"
+        },
+        {
+          "line": 446,
+          "text": "2026-11-20T09:44:26.8268976Z   GHOSTPAY_LOCAL_BUILD_PROFILE: lean"
+        },
+        {
+          "line": 450,
+          "text": "2026-11-20T09:44:26.9387209Z > playwright test"
+        },
+        {
+          "line": 463,
+          "text": "2026-11-20T09:44:47.5697119Z Running 79 tests using 1 worker"
+        },
+        {
+          "line": 514,
+          "text": "2026-11-20T09:45:55.7688560Z   ✘  43 [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects (10.8s)"
+        },
+        {
+          "line": 515,
+          "text": "2026-11-20T09:46:07.4787118Z   ✘  44 [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects (10.9s)"
+        },
+        {
+          "line": 516,
+          "text": "2026-11-20T09:46:20.6722618Z   ✘  45 [desktop] › e2e/payment-request-file.spec.ts:101:1 › passphrase request stays closed until the existing unlock flow succeeds (12.4s)"
+        },
+        {
+          "line": 517,
+          "text": "2026-11-20T09:46:22.3807129Z   ✓  46 [desktop] › e2e/payment-request-file.spec.ts:129:1 › invalid replacement files clear a prior preview and the identical valid file can be retried (935ms)"
+        },
+        {
+          "line": 518,
+          "text": "2026-11-20T09:46:33.2769036Z   ✘  47 [desktop] › e2e/payment-request-file.spec.ts:154:1 › successive request files open their own signed terms without a page refresh (10.9s)"
+        },
+        {
+          "line": 519,
+          "text": "2026-11-20T09:46:34.8966201Z   ✓  48 [desktop] › e2e/payment-request-file.spec.ts:185:1 › a corrupted signed amount remains untrusted and cannot enable payment (865ms)"
+        },
+        {
+          "line": 569,
+          "text": "2026-11-20T09:47:48.8635980Z   1) [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects "
+        },
+        {
+          "line": 571,
+          "text": "2026-11-20T09:47:48.8636901Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 573,
+          "text": "2026-11-20T09:47:48.8637503Z     Locator: getByText('Synthetic invoice file note', { exact: true })"
+        },
+        {
+          "line": 575,
+          "text": "2026-11-20T09:47:48.8638349Z     Timeout: 10000ms"
+        },
+        {
+          "line": 576,
+          "text": "2026-11-20T09:47:48.8638694Z     Error: element(s) not found"
+        },
+        {
+          "line": 583,
+          "text": "2026-11-20T09:47:48.8641434Z       93 |     await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();"
+        },
+        {
+          "line": 584,
+          "text": "2026-11-20T09:47:48.8642318Z       94 |     await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 585,
+          "text": "2026-11-20T09:47:48.8647038Z     > 95 |     await expect(page.getByText('Synthetic invoice file note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 586,
+          "text": "2026-11-20T09:47:48.8647788Z          |                                                                                  ^"
+        },
+        {
+          "line": 587,
+          "text": "2026-11-20T09:47:48.8648412Z       96 |     expect((await localSnapshot(page)).wallet).toEqual(before.wallet);"
+        },
+        {
+          "line": 588,
+          "text": "2026-11-20T09:47:48.8649253Z       97 |     await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);"
+        },
+        {
+          "line": 589,
+          "text": "2026-11-20T09:47:48.8649843Z       98 |   });"
+        },
+        {
+          "line": 590,
+          "text": "2026-11-20T09:47:48.8650393Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:95:82"
+        },
+        {
+          "line": 594,
+          "text": "2026-11-20T09:47:48.8653712Z   2) [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects "
+        },
+        {
+          "line": 596,
+          "text": "2026-11-20T09:47:48.8654567Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 598,
+          "text": "2026-11-20T09:47:48.8655151Z     Locator: getByText('Synthetic invoice file note', { exact: true })"
+        },
+        {
+          "line": 600,
+          "text": "2026-11-20T09:47:48.8655950Z     Timeout: 10000ms"
+        },
+        {
+          "line": 601,
+          "text": "2026-11-20T09:47:48.8656288Z     Error: element(s) not found"
+        },
+        {
+          "line": 608,
+          "text": "2026-11-20T09:47:48.8659060Z       93 |     await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();"
+        },
+        {
+          "line": 609,
+          "text": "2026-11-20T09:47:48.8659918Z       94 |     await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 610,
+          "text": "2026-11-20T09:47:48.8660806Z     > 95 |     await expect(page.getByText('Synthetic invoice file note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 611,
+          "text": "2026-11-20T09:47:48.8661518Z          |                                                                                  ^"
+        },
+        {
+          "line": 612,
+          "text": "2026-11-20T09:47:48.8662158Z       96 |     expect((await localSnapshot(page)).wallet).toEqual(before.wallet);"
+        },
+        {
+          "line": 613,
+          "text": "2026-11-20T09:47:48.8663146Z       97 |     await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);"
+        },
+        {
+          "line": 614,
+          "text": "2026-11-20T09:47:48.8663788Z       98 |   });"
+        },
+        {
+          "line": 615,
+          "text": "2026-11-20T09:47:48.8664554Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:95:82"
+        },
+        {
+          "line": 619,
+          "text": "2026-11-20T09:47:48.8667405Z   3) [desktop] › e2e/payment-request-file.spec.ts:101:1 › passphrase request stays closed until the existing unlock flow succeeds "
+        },
+        {
+          "line": 621,
+          "text": "2026-11-20T09:47:48.8668381Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 623,
+          "text": "2026-11-20T09:47:48.8682016Z     Locator: getByText('Synthetic confidential note', { exact: true })"
+        },
+        {
+          "line": 625,
+          "text": "2026-11-20T09:47:48.8682876Z     Timeout: 10000ms"
+        },
+        {
+          "line": 626,
+          "text": "2026-11-20T09:47:48.8683108Z     Error: element(s) not found"
+        },
+        {
+          "line": 633,
+          "text": "2026-11-20T09:47:48.8685540Z       123 |   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible({ timeout: 30_000 });"
+        },
+        {
+          "line": 634,
+          "text": "2026-11-20T09:47:48.8686190Z       124 |   await expect(page.getByText('Synthetic confidential item', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 635,
+          "text": "2026-11-20T09:47:48.8686760Z     > 125 |   await expect(page.getByText('Synthetic confidential note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 636,
+          "text": "2026-11-20T09:47:48.8687209Z           |                                                                                ^"
+        },
+        {
+          "line": 637,
+          "text": "2026-11-20T09:47:48.8687609Z       126 |   expect((await localSnapshot(page)).wallet.methods).toEqual([]);"
+        },
+        {
+          "line": 638,
+          "text": "2026-11-20T09:47:48.8687936Z       127 | });"
+        },
+        {
+          "line": 639,
+          "text": "2026-11-20T09:47:48.8688119Z       128 |"
+        },
+        {
+          "line": 640,
+          "text": "2026-11-20T09:47:48.8688491Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:125:80"
+        },
+        {
+          "line": 644,
+          "text": "2026-11-20T09:47:48.8690350Z   4) [desktop] › e2e/payment-request-file.spec.ts:154:1 › successive request files open their own signed terms without a page refresh "
+        },
+        {
+          "line": 646,
+          "text": "2026-11-20T09:47:48.8690882Z     Error: expect(locator).toBeVisible() failed"
+        },
+        {
+          "line": 648,
+          "text": "2026-11-20T09:47:48.8691230Z     Locator: getByText('Synthetic request B', { exact: true })"
+        },
+        {
+          "line": 650,
+          "text": "2026-11-20T09:47:48.8691725Z     Timeout: 10000ms"
+        },
+        {
+          "line": 651,
+          "text": "2026-11-20T09:47:48.8691938Z     Error: element(s) not found"
+        },
+        {
+          "line": 658,
+          "text": "2026-11-20T09:47:48.8693981Z       171 |   await page.getByRole('button', { name: OPEN, exact: true }).click();"
+        },
+        {
+          "line": 659,
+          "text": "2026-11-20T09:47:48.8694808Z       172 |   await expect(page.getByText('Fixed: 0.75 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 660,
+          "text": "2026-11-20T09:47:48.8695417Z     > 173 |   await expect(page.getByText('Synthetic request B', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 661,
+          "text": "2026-11-20T09:47:48.8695830Z           |                                                                        ^"
+        },
+        {
+          "line": 662,
+          "text": "2026-11-20T09:47:48.8696257Z       174 |   await expect(page.getByText('Synthetic request A', { exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 663,
+          "text": "2026-11-20T09:47:48.8696748Z       175 |   await page.getByRole('button', { name: 'Forget this invoice', exact: true }).click();"
+        },
+        {
+          "line": 664,
+          "text": "2026-11-20T09:47:48.8697205Z       176 |   await page.getByText('Scan an invoice QR', { exact: true }).click();"
+        },
+        {
+          "line": 665,
+          "text": "2026-11-20T09:47:48.8697693Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/payment-request-file.spec.ts:173:72"
+        },
+        {
+          "line": 669,
+          "text": "2026-11-20T09:47:48.8698967Z   4 failed"
+        },
+        {
+          "line": 670,
+          "text": "2026-11-20T09:47:48.8699491Z     [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact plain invoice without implicit effects "
+        },
+        {
+          "line": 671,
+          "text": "2026-11-20T09:47:48.8700268Z     [desktop] › e2e/payment-request-file.spec.ts:74:3 › request file retains the exact bearer-encrypted invoice without implicit effects "
+        },
+        {
+          "line": 672,
+          "text": "2026-11-20T09:47:48.8701068Z     [desktop] › e2e/payment-request-file.spec.ts:101:1 › passphrase request stays closed until the existing unlock flow succeeds "
+        },
+        {
+          "line": 673,
+          "text": "2026-11-20T09:47:48.8701846Z     [desktop] › e2e/payment-request-file.spec.ts:154:1 › successive request files open their own signed terms without a page refresh "
+        },
+        {
+          "line": 674,
+          "text": "2026-11-20T09:47:48.8702301Z   3 skipped"
+        },
+        {
+          "line": 675,
+          "text": "2026-11-20T09:47:48.8702480Z   72 passed (3.3m)"
+        },
+        {
+          "line": 702,
+          "text": "2026-11-20T09:47:49.8130740Z SHA256 digest of uploaded artifact is a2395728ca3dc4ef0d3489273519ad480dde94f1ea305fdf1c3d7b7d8d65d8e3"
+        },
+        {
+          "line": 704,
+          "text": "2026-11-20T09:47:50.3054634Z Artifact playwright-test-results-lean successfully finalized. Artifact ID 14618107784"
+        }
+      ],
+      "steps": [
+        {
+          "name": "Run npm run test:e2e --workspace @ghostpay/web",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        },
+        {
+          "name": "Record the build used by the successful browser run",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8
+        },
+        {
+          "name": "Retain the browser-tested build and its identity",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        }
+      ],
+      "skipped_tests": [
+        {
+          "line": 485,
+          "text": "2026-11-20T09:45:06.5967781Z   -  17 [desktop] › e2e/backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export"
+        },
+        {
+          "line": 487,
+          "text": "2026-11-20T09:45:07.0521677Z   -  19 [desktop] › e2e/btc-worker.spec.ts:6:1 › Bitcoin native worker cancels, resumes encrypted checkpoints, and never selects restored matches"
+        },
+        {
+          "line": 520,
+          "text": "2026-11-20T09:46:34.9500108Z   -  49 [desktop] › e2e/product-backup-retry.spec.ts:7:1 › reimports the same original tag archive after a successful import without reloading"
+        }
+      ]
+    }
+  ],
+  "other_job_statuses": [
+    {
+      "id": 136170631782,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136170632235,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181689930,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181689950,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181689955,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181689983,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690021,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690024,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690030,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690040,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690066,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690079,
+      "name": "ts-test (web)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690094,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690114,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690147,
+      "name": "ts-test (confidential-contracts)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690200,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690202,
+      "name": "ts-test (core-crypto)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690204,
+      "name": "ts-test (rest-1)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690221,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136181690247,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136236996929,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    },
+    {
+      "id": 136243962637,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Job status only; individual test execution was not inspected in this investigation."
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "plain",
+      "source_line": 74,
+      "title": "request file retains the exact plain invoice without implicit effects",
+      "result": "failed",
+      "failure_line": 95,
+      "failure_text": "Synthetic invoice file note",
+      "completed_before_failure": [
+        "Downloaded wrapper equals the original signed fragment (lines 78–80).",
+        "Preview appears without payment review, URL/storage/wallet-state changes or new requests (lines 87–91).",
+        "Explicit open reaches Review payment and Fixed: 0.5 ETH (lines 92–94)."
+      ],
+      "not_reached": [
+        "Post-open wallet equality (line 96).",
+        "Final-check heading absence (line 97)."
+      ],
+      "artifact_context": "payment-request-file-reque-79024-ce-without-implicit-effects-desktop/error-context.md"
+    },
+    {
+      "id": "bearer",
+      "source_line": 74,
+      "title": "request file retains the exact bearer-encrypted invoice without implicit effects",
+      "result": "failed",
+      "failure_line": 95,
+      "failure_text": "Synthetic invoice file note",
+      "completed_before_failure": [
+        "Downloaded wrapper equals the original signed fragment (lines 78–80).",
+        "Preview appears without payment review, URL/storage/wallet-state changes or new requests (lines 87–91).",
+        "Explicit open reaches Review payment and Fixed: 0.5 ETH (lines 92–94)."
+      ],
+      "not_reached": [
+        "Post-open wallet equality (line 96).",
+        "Final-check heading absence (line 97)."
+      ],
+      "artifact_context": "payment-request-file-reque-f1610-ce-without-implicit-effects-desktop/error-context.md"
+    },
+    {
+      "id": "passphrase",
+      "source_line": 101,
+      "title": "passphrase request stays closed until the existing unlock flow succeeds",
+      "result": "failed",
+      "failure_line": 125,
+      "failure_text": "Synthetic confidential note",
+      "completed_before_failure": [
+        "Downloaded wrapper preserves fragment and does not contain the passphrase (lines 108–109).",
+        "Passphrase preview, absent confidential item, wrong-passphrase rejection, and continued absence of payment review/item (lines 112–120).",
+        "Correct unlock reaches Review payment and confidential item (lines 123–124)."
+      ],
+      "weak_prior_assertion": {
+        "line": 114,
+        "reason": "Bare exact memo-absence locator can return zero for a present labeled memo; its passed execution is not reliable memo-nondisclosure evidence."
+      },
+      "not_reached": [
+        "Post-unlock wallet-methods absence (line 126)."
+      ],
+      "artifact_context": "payment-request-file-passp-32f2b-isting-unlock-flow-succeeds-desktop/error-context.md"
+    },
+    {
+      "id": "replacement",
+      "source_line": 129,
+      "title": "invalid replacement files clear a prior preview and the identical valid file can be retried",
+      "result": "passed",
+      "completed_fixture": true,
+      "completed_coverage": [
+        "Malformed wrapper, oversized bytes and invalid UTF-8 each clear a staged valid preview.",
+        "The identical valid file can be retried after invalid selection and explicit clear.",
+        "Final wallet-methods array is empty (line 151)."
+      ]
+    },
+    {
+      "id": "successive",
+      "source_line": 154,
+      "title": "successive request files open their own signed terms without a page refresh",
+      "result": "failed",
+      "failure_line": 173,
+      "failure_text": "Synthetic request B",
+      "completed_before_failure": [
+        "Two different signed request fragments are created; first file is staged, then replaced with second (lines 156–170).",
+        "Explicit open reaches second request's Fixed: 0.75 ETH (lines 171–172)."
+      ],
+      "not_reached": [
+        "Stale request-A memo absence (line 174).",
+        "Forget/reopen request A and its amount/memo checks (lines 175–180).",
+        "Final URL equality and wallet-methods absence (lines 181–182)."
+      ],
+      "latent_locator_lines": [
+        174,
+        180
+      ],
+      "artifact_context": "payment-request-file-succe-aaa7c-erms-without-a-page-refresh-desktop/error-context.md"
+    },
+    {
+      "id": "corruption",
+      "source_line": 185,
+      "title": "a corrupted signed amount remains untrusted and cannot enable payment",
+      "result": "passed",
+      "completed_fixture": true,
+      "completed_coverage": [
+        "Invalid-signature preview is shown.",
+        "Explicit open reaches payment review, but Continue remains disabled and Prepare payment is absent.",
+        "Final wallet-methods array is empty (line 200)."
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "profile": "full",
+      "id": 14617959493,
+      "name": "playwright-test-results-full",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44692101562/artifacts/14617959493",
+      "size_bytes": 56492,
+      "expires_at": "2026-11-27T09:45:54Z",
+      "metadata_digest": "sha256:6d7c34372a3c53c5ea03f48b7f15e54559e6376ef93b04af5900e936da6e8096",
+      "downloaded_sha256": "6d7c34372a3c53c5ea03f48b7f15e54559e6376ef93b04af5900e936da6e8096",
+      "digest_verified": true,
+      "archive_member_count": 50,
+      "retained_locally": false,
+      "contexts": [
+        {
+          "path": "payment-request-file-passp-32f2b-isting-unlock-flow-succeeds-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 66,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 67,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 85,
+              "text": "    - definition: \"Fixed: 0.5 ETH\""
+            },
+            {
+              "line": 108,
+              "text": "          - row \"Synthetic confidential item 1 USD 50.00\":"
+            },
+            {
+              "line": 109,
+              "text": "            - cell \"Synthetic confidential item\""
+            },
+            {
+              "line": 114,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 115,
+              "text": "      - text: Synthetic confidential note"
+            }
+          ]
+        },
+        {
+          "path": "payment-request-file-reque-79024-ce-without-implicit-effects-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 66,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 67,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 85,
+              "text": "    - definition: \"Fixed: 0.5 ETH\""
+            },
+            {
+              "line": 114,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 115,
+              "text": "      - text: Synthetic invoice file note"
+            }
+          ]
+        },
+        {
+          "path": "payment-request-file-reque-f1610-ce-without-implicit-effects-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 66,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 67,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 85,
+              "text": "    - definition: \"Fixed: 0.5 ETH\""
+            },
+            {
+              "line": 114,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 115,
+              "text": "      - text: Synthetic invoice file note"
+            }
+          ]
+        },
+        {
+          "path": "payment-request-file-succe-aaa7c-erms-without-a-page-refresh-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 66,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 67,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 85,
+              "text": "    - definition: \"Fixed: 0.75 ETH\""
+            },
+            {
+              "line": 114,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 115,
+              "text": "      - text: Synthetic request B"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "lean",
+      "id": 14618107784,
+      "name": "playwright-test-results-lean",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44692101562/artifacts/14618107784",
+      "size_bytes": 56263,
+      "expires_at": "2026-11-27T09:47:49Z",
+      "metadata_digest": "sha256:a2395728ca3dc4ef0d3489273519ad480dde94f1ea305fdf1c3d7b7d8d65d8e3",
+      "downloaded_sha256": "a2395728ca3dc4ef0d3489273519ad480dde94f1ea305fdf1c3d7b7d8d65d8e3",
+      "digest_verified": true,
+      "archive_member_count": 50,
+      "retained_locally": false,
+      "contexts": [
+        {
+          "path": "payment-request-file-passp-32f2b-isting-unlock-flow-succeeds-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 59,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 60,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 78,
+              "text": "    - definition: \"Fixed: 0.5 ETH\""
+            },
+            {
+              "line": 101,
+              "text": "          - row \"Synthetic confidential item 1 USD 50.00\":"
+            },
+            {
+              "line": 102,
+              "text": "            - cell \"Synthetic confidential item\""
+            },
+            {
+              "line": 107,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 108,
+              "text": "      - text: Synthetic confidential note"
+            }
+          ]
+        },
+        {
+          "path": "payment-request-file-reque-79024-ce-without-implicit-effects-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 59,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 60,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 78,
+              "text": "    - definition: \"Fixed: 0.5 ETH\""
+            },
+            {
+              "line": 107,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 108,
+              "text": "      - text: Synthetic invoice file note"
+            }
+          ]
+        },
+        {
+          "path": "payment-request-file-reque-f1610-ce-without-implicit-effects-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 59,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 60,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 78,
+              "text": "    - definition: \"Fixed: 0.5 ETH\""
+            },
+            {
+              "line": 107,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 108,
+              "text": "      - text: Synthetic invoice file note"
+            }
+          ]
+        },
+        {
+          "path": "payment-request-file-succe-aaa7c-erms-without-a-page-refresh-desktop/error-context.md",
+          "lines": [
+            {
+              "line": 59,
+              "text": "  - region \"Review payment\":"
+            },
+            {
+              "line": 60,
+              "text": "    - heading \"Review payment\" [level=2]"
+            },
+            {
+              "line": 78,
+              "text": "    - definition: \"Fixed: 0.75 ETH\""
+            },
+            {
+              "line": 107,
+              "text": "      - strong: \"Memo:\""
+            },
+            {
+              "line": 108,
+              "text": "      - text: Synthetic request B"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "source_references": [
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "revision": "976d26ee791836c176431c8a5d0b825486f78caf",
+      "excerpts": [
+        {
+          "start_line": 1106,
+          "end_line": 1110,
+          "lines": [
+            {
+              "line": 1106,
+              "text": "      {inv.memo !== undefined && ("
+            },
+            {
+              "line": 1107,
+              "text": "        <p className=\"wrap\">"
+            },
+            {
+              "line": 1108,
+              "text": "          <strong>{t('pay.memo.label')}</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ` ${t('pay.memo.flagged')}` : ''}"
+            },
+            {
+              "line": 1109,
+              "text": "        </p>"
+            },
+            {
+              "line": 1110,
+              "text": "      )}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "apps/web/e2e/payment-request-file.spec.ts",
+      "revision": "976d26ee791836c176431c8a5d0b825486f78caf",
+      "lines": [
+        {
+          "line": 74,
+          "text": "  test(`request file retains the exact ${encrypt ? 'bearer-encrypted' : 'plain'} invoice without implicit effects`, async ({ page }) => {"
+        },
+        {
+          "line": 78,
+          "text": "    expect(parsePaymentRequestFile(bytes.toString('utf8'))).toEqual({"
+        },
+        {
+          "line": 79,
+          "text": "      format: 'ghostpay-payment-request', version: 1, fragment: new URL(link).hash,"
+        },
+        {
+          "line": 87,
+          "text": "    await expect(page.getByRole('heading', { name: PREVIEW, exact: true })).toBeVisible();"
+        },
+        {
+          "line": 88,
+          "text": "    await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 89,
+          "text": "    expect(page.url()).toBe(originalUrl);"
+        },
+        {
+          "line": 90,
+          "text": "    expect(await localSnapshot(page)).toEqual(before);"
+        },
+        {
+          "line": 91,
+          "text": "    expect(requests).toEqual([]);"
+        },
+        {
+          "line": 93,
+          "text": "    await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();"
+        },
+        {
+          "line": 94,
+          "text": "    await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 95,
+          "text": "    await expect(page.getByText('Synthetic invoice file note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 96,
+          "text": "    expect((await localSnapshot(page)).wallet).toEqual(before.wallet);"
+        },
+        {
+          "line": 97,
+          "text": "    await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);"
+        },
+        {
+          "line": 101,
+          "text": "test('passphrase request stays closed until the existing unlock flow succeeds', async ({ page }) => {"
+        },
+        {
+          "line": 108,
+          "text": "  expect(parsePaymentRequestFile(bytes.toString('utf8')).fragment).toBe(new URL(link).hash);"
+        },
+        {
+          "line": 109,
+          "text": "  expect(bytes.toString('utf8')).not.toContain(PASSPHRASE);"
+        },
+        {
+          "line": 112,
+          "text": "  await expect(page.getByText('This invoice needs a passphrase. Its header is unverified until it opens.', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 113,
+          "text": "  await expect(page.getByText('Synthetic confidential item', { exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 114,
+          "text": "  await expect(page.getByText('Synthetic confidential note', { exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 118,
+          "text": "  await expect(page.getByRole('button', { name: 'Open invoice', exact: true })).toBeEnabled({ timeout: 30_000 });"
+        },
+        {
+          "line": 119,
+          "text": "  await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 120,
+          "text": "  await expect(page.getByText('Synthetic confidential item', { exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 123,
+          "text": "  await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible({ timeout: 30_000 });"
+        },
+        {
+          "line": 124,
+          "text": "  await expect(page.getByText('Synthetic confidential item', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 125,
+          "text": "  await expect(page.getByText('Synthetic confidential note', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 126,
+          "text": "  expect((await localSnapshot(page)).wallet.methods).toEqual([]);"
+        },
+        {
+          "line": 129,
+          "text": "test('invalid replacement files clear a prior preview and the identical valid file can be retried', async ({ page }) => {"
+        },
+        {
+          "line": 142,
+          "text": "    await expect(page.getByText(invalid.message, { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 143,
+          "text": "    await expect(page.getByRole('button', { name: OPEN, exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 148,
+          "text": "  await expect(page.getByRole('button', { name: OPEN, exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 150,
+          "text": "  await expect(page.getByRole('button', { name: OPEN, exact: true })).toBeVisible();"
+        },
+        {
+          "line": 151,
+          "text": "  expect((await localSnapshot(page)).wallet.methods).toEqual([]);"
+        },
+        {
+          "line": 154,
+          "text": "test('successive request files open their own signed terms without a page refresh', async ({ page }) => {"
+        },
+        {
+          "line": 168,
+          "text": "  await expect(page.getByRole('button', { name: OPEN, exact: true })).toBeVisible();"
+        },
+        {
+          "line": 170,
+          "text": "  await expect(page.getByRole('button', { name: OPEN, exact: true })).toBeVisible();"
+        },
+        {
+          "line": 172,
+          "text": "  await expect(page.getByText('Fixed: 0.75 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 173,
+          "text": "  await expect(page.getByText('Synthetic request B', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 174,
+          "text": "  await expect(page.getByText('Synthetic request A', { exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 175,
+          "text": "  await page.getByRole('button', { name: 'Forget this invoice', exact: true }).click();"
+        },
+        {
+          "line": 177,
+          "text": "  await uploadRequest(page, first);"
+        },
+        {
+          "line": 178,
+          "text": "  await page.getByRole('button', { name: OPEN, exact: true }).click();"
+        },
+        {
+          "line": 179,
+          "text": "  await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 180,
+          "text": "  await expect(page.getByText('Synthetic request A', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 181,
+          "text": "  expect(page.url()).toBe(originalUrl);"
+        },
+        {
+          "line": 182,
+          "text": "  expect((await localSnapshot(page)).wallet.methods).toEqual([]);"
+        },
+        {
+          "line": 185,
+          "text": "test('a corrupted signed amount remains untrusted and cannot enable payment', async ({ page }) => {"
+        },
+        {
+          "line": 195,
+          "text": "  await expect(page.getByText('Chain 84532. The invoice signature is invalid. Payment will remain blocked.', { exact: true })).toBeVisible();"
+        },
+        {
+          "line": 197,
+          "text": "  await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();"
+        },
+        {
+          "line": 198,
+          "text": "  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();"
+        },
+        {
+          "line": 199,
+          "text": "  await expect(page.getByRole('button', { name: 'Prepare payment', exact: true })).toHaveCount(0);"
+        },
+        {
+          "line": 200,
+          "text": "  expect((await localSnapshot(page)).wallet.methods).toEqual([]);"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "revision": "976d26ee791836c176431c8a5d0b825486f78caf",
+      "lines": [
+        {
+          "line": 14,
+          "text": "const profile = process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full';"
+        },
+        {
+          "line": 15,
+          "text": "if (profile !== 'full' && profile !== 'lean') throw new Error('Unknown Playwright build profile.');"
+        },
+        {
+          "line": 20,
+          "text": "const DEVICE_SPECS = [/accessibility\\.spec\\.ts$/, /devices[^/]*\\.spec\\.ts$/];"
+        },
+        {
+          "line": 23,
+          "text": "  testMatch: DEVICE_SPECS,"
+        },
+        {
+          "line": 28,
+          "text": "  testDir: './e2e',"
+        },
+        {
+          "line": 29,
+          "text": "  timeout: 60_000,"
+        },
+        {
+          "line": 30,
+          "text": "  expect: { timeout: 10_000 },"
+        },
+        {
+          "line": 31,
+          "text": "  fullyParallel: false,"
+        },
+        {
+          "line": 32,
+          "text": "  workers: 1,"
+        },
+        {
+          "line": 33,
+          "text": "  ...(profile === 'lean' ? { grepInvert: /embed SDK \\((popup mode only|iframe mode)\\)/ } : {}),"
+        },
+        {
+          "line": 38,
+          "text": "    { name: 'desktop', testIgnore: [/devices[^/]*\\.spec\\.ts$/, /devnet-journey\\.spec\\.ts$/, /pages-devnet\\.spec\\.ts$/] },"
+        },
+        {
+          "line": 49,
+          "text": "    command: 'npm run build && npm run preview -- --port 4173 --strictPort --host localhost',"
+        },
+        {
+          "line": 51,
+          "text": "    reuseExistingServer: false,"
+        },
+        {
+          "line": 52,
+          "text": "    timeout: 180_000,"
+        },
+        {
+          "line": 58,
+          "text": "      GHOSTPAY_LOCAL_BUILD_PROFILE: profile,"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "revision": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "excerpts": [
+        {
+          "start_line": 1094,
+          "end_line": 1098,
+          "lines": [
+            {
+              "line": 1094,
+              "text": "      {inv.memo !== undefined && ("
+            },
+            {
+              "line": 1095,
+              "text": "        <p className=\"wrap\">"
+            },
+            {
+              "line": 1096,
+              "text": "          <strong>{t('pay.memo.label')}</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ` ${t('pay.memo.flagged')}` : ''}"
+            },
+            {
+              "line": 1097,
+              "text": "        </p>"
+            },
+            {
+              "line": 1098,
+              "text": "      )}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "diagnosis": {
+    "classification": "introduced F03 test-locator defect",
+    "memo_renderer_unchanged_from_base": true,
+    "all_failed_contexts_show_expected_memo": true,
+    "reason": "The existing memo paragraph contains the Memo: label plus the memo text. Exact bare-memo locators do not match its complete text.",
+    "source_defect_established": false,
+    "unrelated_baseline_browser_failures": 0,
+    "remaining_qualification": "Repair positive and negative memo assertions, independently review the repair, and execute all six fixtures in both profiles. Assertions after failure points remain unqualified."
+  },
+  "retention": {
+    "included": "Repository/job/source identities, counts, bounded literal log and snapshot excerpts, artifact IDs and verified digests.",
+    "excluded": "Generated invoice envelopes, passphrases, keys, storage snapshots, unrelated fixture data, full logs, screenshots, ZIP files and temporary download URLs.",
+    "line_numbering": "Job lines are 1-based in the original connector-decoded log string split on LF; artifact lines are 1-based within the named ZIP member. Excerpt content is copied without rewriting."
+  },
+  "method": {
+    "github_tools": [
+      "fetch",
+      "fetch_workflow_run_jobs",
+      "fetch_workflow_job_logs",
+      "fetch_workflow_run_artifacts",
+      "download_workflow_artifact"
+    ],
+    "artifact_inspection": "Downloaded ZIP bytes were hashed and opened in memory with Python standard-library urllib/hashlib/zipfile; only bounded memo/review excerpts are retained.",
+    "source_inspection": "Pinned git show at the source and base revisions; independent GitHub merge-commit metadata; local checkpoint tree comparison.",
+    "local_browser_execution": false,
+    "source_or_dependency_changes_by_investigator": false,
+    "staging_or_commits_by_investigator": false
+  }
+}

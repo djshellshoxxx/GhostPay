@@ -1,5 +1,11 @@
 # F03 request-file implementation and qualification
 
+Continuation record, 2026-11-20: the original hosted browser run completed with an introduced
+memo-locator defect in four of six feature cases per profile. Actual snapshots contain the correct
+memos. A minimal independently reviewed test repair is recorded in
+[round2/QUALIFICATION.md](round2/QUALIFICATION.md), which supersedes the original browser-status
+statements below. This original ledger retains its source-pinned implementation evidence.
+
 Selected feature: signed-invoice file interchange. Implementation and fresh-worker source audits
 are complete. Browser and exact-current-head CI qualification remain separate gates. This does
 not complete the broader F03 reusable-request, wallet-URI or provider-abstraction program.
