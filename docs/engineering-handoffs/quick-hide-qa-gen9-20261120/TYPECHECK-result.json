@@ -1,0 +1,366 @@
+{
+  "format": "ghostpay-quick-hide-typecheck/1",
+  "worker": "/root/quick_hide_qa_gen9",
+  "local_feature_source": "c8a2d7ca7c6c1caa96256e1cd57ffd7afaafa9d5",
+  "published_feature_source": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+  "feature_common_tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+  "execution_head": "9a96ff659ff7295d00caf7a49a5d847d877eff9d",
+  "execution_tree": "b74943ca026ad4006599e278ce6b33c532a28e5b",
+  "execution_delta_from_feature": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "working_directory": "/workspace/scratch/e5b5e498b785/GhostPay-quick-hide-qa-gen9",
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "--workspace",
+    "@ghostpay/web"
+  ],
+  "display_command": "NODE_OPTIONS=--max-old-space-size=1024 npm run typecheck --workspace @ghostpay/web",
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=1024"
+  },
+  "node_version": "v24.22.3",
+  "npm_version": "11.19.1",
+  "node_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+  "npm_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+  "typescript_version": "5.9.3",
+  "started_utc": "2026-11-20T03:11:10.575681+00:00",
+  "finished_utc": "2026-11-20T03:11:41.196458+00:00",
+  "duration_seconds": 30.621,
+  "external_cap_seconds": 300,
+  "external_cap_reached": false,
+  "exit_code": 0,
+  "success": true,
+  "raw_log_sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+  "gzip_log_sha256": "0699a4bf16c490643447a38fb134c175abda7b5485e1ccd111b8947b99fdcb40",
+  "raw_log_bytes": 223,
+  "source_status_before": "clean except owned documentation evidence",
+  "source_status_after": "clean except owned documentation evidence",
+  "input_hashes": [
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "git_blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+      "sha256": "956b71b282cadd2c9186e0b32e5842a7519d75829ed7c6353351ede803ffe47e"
+    },
+    {
+      "path": "apps/web/src/AppShell.quickHide.test.tsx",
+      "git_blob": "e524497cf602d5c08fbd15f11b7b5fd35f9e73a5",
+      "sha256": "b0e79a49d8387e378569d7b450d1f353ada5faf06c7903c322e8232b5bf3c281"
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.tsx",
+      "git_blob": "7e855836d25e8e70ed17430161efd12116794d52",
+      "sha256": "be3d365c37806aa59a3a91e2427a4b5e30626ec0fe8d7f9e48b3f05b8f82ea93"
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.test.tsx",
+      "git_blob": "abc4394869cf13217141dcf64d98d8edefb5dabd",
+      "sha256": "28d964c298a137bc336ea86e80f5e394ec034f5230bd0509d35c8187649ea49c"
+    },
+    {
+      "path": "apps/web/package.json",
+      "git_blob": "dc383c41588864646c2bfa0083acc1d9d33e1f54",
+      "sha256": "8dc92a2cb449e4ed9661c24a7265da5f912836ca0d82bf593ae643897f8f9ad9"
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "git_blob": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+      "sha256": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+    },
+    {
+      "path": "package.json",
+      "git_blob": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "sha256": "45148392cfa33376c21adab08c11ae342d9b6b0d4074aa3690812446e81a6c76"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "git_blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "sha256": "316a2ed6ab87f08469d72806c15fa6af52a39ce947a5d694195e895f4986600f"
+    }
+  ],
+  "private_node_modules": "/workspace/scratch/e5b5e498b785/GhostPay-quick-hide-qa-gen9/node_modules",
+  "workspace_symlinks": [
+    {
+      "path": "node_modules/@ghostpay/address-safety",
+      "target": "packages/address-safety"
+    },
+    {
+      "path": "node_modules/@ghostpay/amount-blur",
+      "target": "packages/amount-blur"
+    },
+    {
+      "path": "node_modules/@ghostpay/btc-family",
+      "target": "packages/btc-family"
+    },
+    {
+      "path": "node_modules/@ghostpay/btc-payjoin",
+      "target": "packages/btc-payjoin"
+    },
+    {
+      "path": "node_modules/@ghostpay/btc-silent-payments",
+      "target": "packages/btc-silent-payments"
+    },
+    {
+      "path": "node_modules/@ghostpay/chain-adapters",
+      "target": "packages/chain-adapters"
+    },
+    {
+      "path": "node_modules/@ghostpay/chain-evm-extra",
+      "target": "packages/chain-evm-extra"
+    },
+    {
+      "path": "node_modules/@ghostpay/chain-solana",
+      "target": "packages/chain-solana"
+    },
+    {
+      "path": "node_modules/@ghostpay/chain-tron",
+      "target": "packages/chain-tron"
+    },
+    {
+      "path": "node_modules/@ghostpay/cli",
+      "target": "packages/cli"
+    },
+    {
+      "path": "node_modules/@ghostpay/confidential-amounts",
+      "target": "packages/confidential-amounts"
+    },
+    {
+      "path": "node_modules/@ghostpay/confidential-contracts",
+      "target": "packages/confidential-contracts"
+    },
+    {
+      "path": "node_modules/@ghostpay/core-crypto",
+      "target": "packages/core-crypto"
+    },
+    {
+      "path": "node_modules/@ghostpay/donation",
+      "target": "packages/donation"
+    },
+    {
+      "path": "node_modules/@ghostpay/external-pools",
+      "target": "packages/external-pools"
+    },
+    {
+      "path": "node_modules/@ghostpay/external-pools-privacypools",
+      "target": "packages/external-pools-privacypools"
+    },
+    {
+      "path": "node_modules/@ghostpay/external-pools-railgun",
+      "target": "packages/external-pools-railgun"
+    },
+    {
+      "path": "node_modules/@ghostpay/hops",
+      "target": "packages/hops"
+    },
+    {
+      "path": "node_modules/@ghostpay/hygiene",
+      "target": "packages/hygiene"
+    },
+    {
+      "path": "node_modules/@ghostpay/i18n",
+      "target": "packages/i18n"
+    },
+    {
+      "path": "node_modules/@ghostpay/invoice-schema",
+      "target": "packages/invoice-schema"
+    },
+    {
+      "path": "node_modules/@ghostpay/merchant-billing",
+      "target": "packages/merchant-billing"
+    },
+    {
+      "path": "node_modules/@ghostpay/merchant-hooks",
+      "target": "packages/merchant-hooks"
+    },
+    {
+      "path": "node_modules/@ghostpay/merchant-ledger",
+      "target": "packages/merchant-ledger"
+    },
+    {
+      "path": "node_modules/@ghostpay/merchant-multisig",
+      "target": "packages/merchant-multisig"
+    },
+    {
+      "path": "node_modules/@ghostpay/metadata-hardening",
+      "target": "packages/metadata-hardening"
+    },
+    {
+      "path": "node_modules/@ghostpay/net-harness",
+      "target": "packages/net-harness"
+    },
+    {
+      "path": "node_modules/@ghostpay/net-transport",
+      "target": "packages/net-transport"
+    },
+    {
+      "path": "node_modules/@ghostpay/ops-monitor",
+      "target": "packages/ops-monitor"
+    },
+    {
+      "path": "node_modules/@ghostpay/payer-sponsor",
+      "target": "packages/payer-sponsor"
+    },
+    {
+      "path": "node_modules/@ghostpay/payment-uri",
+      "target": "packages/payment-uri"
+    },
+    {
+      "path": "node_modules/@ghostpay/pir-two-server",
+      "target": "packages/pir-two-server"
+    },
+    {
+      "path": "node_modules/@ghostpay/plugin-api",
+      "target": "packages/plugin-api"
+    },
+    {
+      "path": "node_modules/@ghostpay/policy-scheme",
+      "target": "packages/policy-scheme"
+    },
+    {
+      "path": "node_modules/@ghostpay/pool-circuits",
+      "target": "packages/pool-circuits"
+    },
+    {
+      "path": "node_modules/@ghostpay/pool-prover",
+      "target": "packages/pool-prover"
+    },
+    {
+      "path": "node_modules/@ghostpay/pool-relayer",
+      "target": "packages/pool-relayer"
+    },
+    {
+      "path": "node_modules/@ghostpay/pool-sdk",
+      "target": "packages/pool-sdk"
+    },
+    {
+      "path": "node_modules/@ghostpay/privacy-pipeline",
+      "target": "packages/privacy-pipeline"
+    },
+    {
+      "path": "node_modules/@ghostpay/privacy-profiles",
+      "target": "packages/privacy-profiles"
+    },
+    {
+      "path": "node_modules/@ghostpay/qr-exchange",
+      "target": "packages/qr-exchange"
+    },
+    {
+      "path": "node_modules/@ghostpay/relayer",
+      "target": "apps/relayer"
+    },
+    {
+      "path": "node_modules/@ghostpay/relayer-guard",
+      "target": "packages/relayer-guard"
+    },
+    {
+      "path": "node_modules/@ghostpay/sandbox",
+      "target": "packages/sandbox"
+    },
+    {
+      "path": "node_modules/@ghostpay/scan-source",
+      "target": "packages/scan-source"
+    },
+    {
+      "path": "node_modules/@ghostpay/sdk",
+      "target": "packages/sdk"
+    },
+    {
+      "path": "node_modules/@ghostpay/secret-box",
+      "target": "packages/secret-box"
+    },
+    {
+      "path": "node_modules/@ghostpay/solana-stealth",
+      "target": "packages/solana-stealth"
+    },
+    {
+      "path": "node_modules/@ghostpay/tron-adapter",
+      "target": "packages/tron-adapter"
+    },
+    {
+      "path": "node_modules/@ghostpay/tx-review",
+      "target": "packages/tx-review"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-connect",
+      "target": "packages/ux-connect"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-core",
+      "target": "packages/ux-core"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-export",
+      "target": "packages/ux-export"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-fees",
+      "target": "packages/ux-fees"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-fiat",
+      "target": "packages/ux-fiat"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-flow",
+      "target": "packages/ux-flow"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-guide",
+      "target": "packages/ux-guide"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-i18n",
+      "target": "packages/ux-i18n"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-intake",
+      "target": "packages/ux-intake"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-links",
+      "target": "packages/ux-links"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-notify",
+      "target": "packages/ux-notify"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-presets",
+      "target": "packages/ux-presets"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-privacy",
+      "target": "packages/ux-privacy"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-receipts",
+      "target": "packages/ux-receipts"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-sandbox",
+      "target": "packages/ux-sandbox"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-schedule",
+      "target": "packages/ux-schedule"
+    },
+    {
+      "path": "node_modules/@ghostpay/ux-vault",
+      "target": "packages/ux-vault"
+    },
+    {
+      "path": "node_modules/@ghostpay/web",
+      "target": "apps/web"
+    }
+  ],
+  "dependency_limit": "Existing private installation and package declaration outputs copied after the identical lockfile and 65 complete tracked package trees were checked. No fresh install or package build. See DEPENDENCIES.json.",
+  "prior_attempts": "Three earlier full typing attempts ended with exit 137; their prior source-pinned author evidence remains an incomplete historical outcome.",
+  "other_execution": "No tests, lint, build, browser or hosted checks were run by this worker."
+}

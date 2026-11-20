@@ -1,0 +1,533 @@
+{
+  "format": "ghostpay-quick-hide-dependency-reuse/1",
+  "source_worktree": "/workspace/scratch/e5b5e498b785/GhostPay-quick-hide-review",
+  "source_head": "2c0f73a16e3472d3438d85f4dffd5bff2d41e25d",
+  "destination": "/workspace/scratch/e5b5e498b785/GhostPay-quick-hide-qa-gen9",
+  "feature_source": "c8a2d7ca7c6c1caa96256e1cd57ffd7afaafa9d5",
+  "lockfile_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+  "installed_lock_sha256": "ac2796cd036c37766ca04a740c5d7bddc599da3d9bbd517ea10c368a4f8d827f",
+  "package_dist_copies": [
+    {
+      "package": "packages/relayer-guard",
+      "source_tree": "02559e2ba376e5e9b41792968bbff36189d34ad3",
+      "dist_copy": {
+        "files": 27,
+        "sha256": "f970bbc43c4ef3984244d539e94bc81c80628214df1666f58b73293d5a101291"
+      }
+    },
+    {
+      "package": "packages/net-harness",
+      "source_tree": "f1d66c1206f1e418838e75987e7aa8c5569a84dc",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "1e0491da20505c5e5c92c04ec0795d8b609a3ccae70895aff996b88e15b9ae20"
+      }
+    },
+    {
+      "package": "packages/ux-core",
+      "source_tree": "edc85204d5085eb25755b9ebebcda90a0ad663b9",
+      "dist_copy": {
+        "files": 18,
+        "sha256": "07d821a3b520910cf8652e0b509e12e320a59c9717d882a171058a74ce105de6"
+      }
+    },
+    {
+      "package": "packages/core-crypto",
+      "source_tree": "d50ffb1e8afe32101c27f08e40c6cd1c67264a84",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "24d8c5558478a3f6b5eebfbeff739c27fd9da40f91f0c969df26aef51cc3e6d0"
+      }
+    },
+    {
+      "package": "packages/ux-connect",
+      "source_tree": "f876e45db4ac1d19ee94bbca597c0f1515dba5c6",
+      "dist_copy": {
+        "files": 15,
+        "sha256": "ad8e2ae5a993e3116bed982aaacb825993e87f7365c5615da487d87ad41581fd"
+      }
+    },
+    {
+      "package": "packages/metadata-hardening",
+      "source_tree": "2236feb35194b6a060bf808f5bd5cb139b94d5e4",
+      "dist_copy": {
+        "files": 39,
+        "sha256": "7d0fbc30cbea8568b1f5fa7932ac873c72657b825bba28fff5ebd980b2a36fa1"
+      }
+    },
+    {
+      "package": "packages/tron-adapter",
+      "source_tree": "1e569801c9d71138edeac57cd39b02aece79c349",
+      "dist_copy": {
+        "files": 30,
+        "sha256": "48564f3456da9349e632525ce2ba129eccd41656451b0cd0bac54aba4fb7608a"
+      }
+    },
+    {
+      "package": "packages/chain-adapters",
+      "source_tree": "888a615f8a6b1a1c0736ae08bf6edca069099859",
+      "dist_copy": {
+        "files": 93,
+        "sha256": "756824ddf97dadc8da3f54f5c253d6c09f9447d48118c0d2dbe1e05caa23c0b9"
+      }
+    },
+    {
+      "package": "packages/ux-schedule",
+      "source_tree": "f3ba0fcf24b7a7caf67cbfc32538bb52cf484542",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "2cb8746e40888b5fbb6b41602ea8e7ac738464863cab883d4bb69fafc29371a7"
+      }
+    },
+    {
+      "package": "packages/pool-circuits",
+      "source_tree": "b6ab0e97ba0273370b7d9848a2f04da6c0c339d4",
+      "dist_copy": {
+        "files": 21,
+        "sha256": "b92ecbd78bbdca3c7909e9860486ad9c8a0b7675d014a0266bef04280eb8f686"
+      }
+    },
+    {
+      "package": "packages/merchant-hooks",
+      "source_tree": "5c3c015f7a39306eab1cdb82103f16888bfac760",
+      "dist_copy": {
+        "files": 21,
+        "sha256": "9b26df590b5d902219a83b1c2dae12a4eff1e6edbfc7ad5eb2662b64a77a5a3e"
+      }
+    },
+    {
+      "package": "packages/chain-tron",
+      "source_tree": "99fd17103a022c8502a1c01b75305b93ceb6fd85",
+      "dist_copy": {
+        "files": 18,
+        "sha256": "2062208534d985733dc7a8348ad5c303fb5283abd2a1aa0b29db57c14de6abdf"
+      }
+    },
+    {
+      "package": "packages/external-pools-railgun",
+      "source_tree": "531676ae4edee8ad28b387424484d81361ee146f",
+      "dist_copy": {
+        "files": 15,
+        "sha256": "fad3689cd2d46d91ff03b74bad2d434e3668771f5f3f5b83ca5cde42ae2c8001"
+      }
+    },
+    {
+      "package": "packages/sandbox",
+      "source_tree": "4c19aabe7303a3fcedc68d3de202ea14115b5f10",
+      "dist_copy": {
+        "files": 36,
+        "sha256": "1f97451e9a20865282c0057c9e6b8b344acb8983e2978e1111b165443cf0fc49"
+      }
+    },
+    {
+      "package": "packages/external-pools-privacypools",
+      "source_tree": "bd81dcb929d5f0c23ab411df6f53815f1d287f17",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "ff4f29bdb878cd6aaee7c1c438dded8fc3fd02ba37dcd2aecba445b2d8365892"
+      }
+    },
+    {
+      "package": "packages/solana-stealth",
+      "source_tree": "0a606970a17fcce7b29df4840faade1d75a912d3",
+      "dist_copy": {
+        "files": 45,
+        "sha256": "576ddb0060f3c9218ccb214dce025cda49ee6b7bae2ecbdfc5c0d67be696efb1"
+      }
+    },
+    {
+      "package": "packages/ux-vault",
+      "source_tree": "c39fa17985fcff4d060c9c416a7d287706485c39",
+      "dist_copy": {
+        "files": 57,
+        "sha256": "805f7cf2a06d9676b5955d7c59d12240ddcfd8fd7234cf0cc1ae9864b66e6583"
+      }
+    },
+    {
+      "package": "packages/pir-two-server",
+      "source_tree": "d83018a4b74733606eafb2689e3dacff025246e8",
+      "dist_copy": {
+        "files": 36,
+        "sha256": "5363cff102b011f2aae157cc2e77478f5871e918a6c6a97a25a36d1bf74891a8"
+      }
+    },
+    {
+      "package": "packages/payment-uri",
+      "source_tree": "55c27a9fac61782febee14c1bdd647d64c4cf076",
+      "dist_copy": {
+        "files": 42,
+        "sha256": "f985299a024a3937e1379e6badc58a352dd8fe23ae17df63c924ea99e492f8f4"
+      }
+    },
+    {
+      "package": "packages/ux-notify",
+      "source_tree": "6ad1ff29c18c28a19bd12bc2aa2370e9fb9f9d25",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "fa1a69bea340d6b650cca8005388dc841dc6abda1b60db43c030a19db99d6c65"
+      }
+    },
+    {
+      "package": "packages/ux-intake",
+      "source_tree": "14ce0507071b5bb4a6cd87e136352e2cbd661746",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "7185e77ef8db8ab23604b8c0a1a486b65f78e921b7e34934fc982c9e75e85dbf"
+      }
+    },
+    {
+      "package": "packages/sdk",
+      "source_tree": "f567b6f92575585e7fcae3057d3456efeb36a9b3",
+      "dist_copy": {
+        "files": 27,
+        "sha256": "67f6c1b3aaf1d631c5e4992f35af813645612b6025198be32f53b3d05392f67e"
+      }
+    },
+    {
+      "package": "packages/secret-box",
+      "source_tree": "d60343b97bc6d852d14806dd694e83e30ee15d9b",
+      "dist_copy": {
+        "files": 9,
+        "sha256": "8dd920037535f96ee41754f68c697fdb5231f17ac2e19d4e9e1feffe48b64d90"
+      }
+    },
+    {
+      "package": "packages/merchant-billing",
+      "source_tree": "8cad55e9d03252a1a8e3b988aab6891c2c25c17f",
+      "dist_copy": {
+        "files": 33,
+        "sha256": "3f248bc8b1f32dec6924e345a7f43bb1696f8957d4a229b935c76e4a4d7129a4"
+      }
+    },
+    {
+      "package": "packages/invoice-schema",
+      "source_tree": "dcd6fb655436753f0b45fbaa034c184063a14a83",
+      "dist_copy": {
+        "files": 33,
+        "sha256": "08df6a895272834d9038fade9e9663748711aff6d3b6cba2333160f5d4c0a3b1"
+      }
+    },
+    {
+      "package": "packages/payer-sponsor",
+      "source_tree": "3ee21511334a92073f7836ce76c0a40d3827a60b",
+      "dist_copy": {
+        "files": 72,
+        "sha256": "537825218952b65801f7bf3ce697d36ee3bbe24c5379fed301347930b1f14fb8"
+      }
+    },
+    {
+      "package": "packages/policy-scheme",
+      "source_tree": "495ca7bef19ef228d890bcc2b474c6ad6c2fc04b",
+      "dist_copy": {
+        "files": 45,
+        "sha256": "d53a83c15d57dced96d693f0231a96ed6154aa004bbadac8579c6e93b5e705d2"
+      }
+    },
+    {
+      "package": "packages/merchant-multisig",
+      "source_tree": "5cb0934425b12bb7a88bcef1422c2201bbc363ce",
+      "dist_copy": {
+        "files": 27,
+        "sha256": "0adf01d39da241248f8088738ca9d8993816264a11ab467bd9d64d4c40ca1e1e"
+      }
+    },
+    {
+      "package": "packages/privacy-profiles",
+      "source_tree": "ea2d03bbcf884328acb029dfecc38bdbfd745091",
+      "dist_copy": {
+        "files": 36,
+        "sha256": "d3dc9308bd683d329797648d9e805d10e7e4567b7f8433b563ac842352fac6f0"
+      }
+    },
+    {
+      "package": "packages/plugin-api",
+      "source_tree": "b53f5f414722413d22cb79303f859aff24458153",
+      "dist_copy": {
+        "files": 21,
+        "sha256": "b6adcce2b7694a598afa4a57c46d6ccff4d7ce046e140f88915ba39e9f3f722e"
+      }
+    },
+    {
+      "package": "packages/ops-monitor",
+      "source_tree": "da1de47f553fd64a93519dbab46084145886f282",
+      "dist_copy": {
+        "files": 48,
+        "sha256": "beddbaa4799c3967d0e4f1b7a7efa12bbc51736af3288c274a85de91c1e20420"
+      }
+    },
+    {
+      "package": "packages/hops",
+      "source_tree": "aadda99b8a3ffe86a355c01e10f3da43f5c3a91b",
+      "dist_copy": {
+        "files": 33,
+        "sha256": "adf69fd6e09a2e9060c4171d2298ff73857a0eb7cdd1835388ecb6e561915dee"
+      }
+    },
+    {
+      "package": "packages/pool-relayer",
+      "source_tree": "a0895650553e2caeedefe0c74ff3775ed8ae9821",
+      "dist_copy": {
+        "files": 33,
+        "sha256": "b6759bc90eac8ddcab8232fe068f9ae3231a5b8efb6e56af29f0091931dcb05f"
+      }
+    },
+    {
+      "package": "packages/tx-review",
+      "source_tree": "669528afe5d104e0c6e400d61083fa51b21c6a5e",
+      "dist_copy": {
+        "files": 15,
+        "sha256": "eb38b51ebae629a080bf6185f3aeb4e09f467e3465dd80ccbcd5659070da34a6"
+      }
+    },
+    {
+      "package": "packages/confidential-amounts",
+      "source_tree": "16982a96ebf4c07090f1cc4738af996fcb8b5054",
+      "dist_copy": {
+        "files": 45,
+        "sha256": "910eb6142fe88becdc24d1c85a6929cc6a53500363f702b07c88539070d2f9ba"
+      }
+    },
+    {
+      "package": "packages/ux-export",
+      "source_tree": "6428c608aab43e22878e2da7cfb07414fc22096d",
+      "dist_copy": {
+        "files": 30,
+        "sha256": "0a08313deeef1588bfbf961ff2ed516609fe8e95f3f2ed7461a9119d071f93e2"
+      }
+    },
+    {
+      "package": "packages/address-safety",
+      "source_tree": "5ba0c53c1a3a1576125e0e743f54987153594b07",
+      "dist_copy": {
+        "files": 18,
+        "sha256": "9d09be3345dee55ec90762b4380b64dd99917aec9d2f1f6577d417fd0b2c4369"
+      }
+    },
+    {
+      "package": "packages/privacy-pipeline",
+      "source_tree": "f639e9367643751cc590d502a8407faa0a623de8",
+      "dist_copy": {
+        "files": 63,
+        "sha256": "2cca8dbaaddc5b9d3d066b089d69c596c763551e42d19961eb1e355f32638506"
+      }
+    },
+    {
+      "package": "packages/ux-fees",
+      "source_tree": "cf7c160df296bea9e4ab5e3dd74dcac689205c53",
+      "dist_copy": {
+        "files": 18,
+        "sha256": "0460b54a48e57862090f692b7a13683d523ff6fbd1610cb781407b9fa7516787"
+      }
+    },
+    {
+      "package": "packages/cli",
+      "source_tree": "07d43ccb1e673f7d08821af9dc54bacfdd35f228",
+      "dist_copy": {
+        "files": 117,
+        "sha256": "b6766c6ac733bd401a595c085467450c9931645df948109aa62edeb7b7282261"
+      }
+    },
+    {
+      "package": "packages/pool-prover",
+      "source_tree": "8f2a50f7ab7ed9870639c89e5589dcf1f4cfed49",
+      "dist_copy": {
+        "files": 9,
+        "sha256": "2feb7df99ea2e3292529e8c94c7aaee8dd7f33528291d2c10addfac036a5c774"
+      }
+    },
+    {
+      "package": "packages/ux-sandbox",
+      "source_tree": "e85baefa0ee3b23fe8899c1207139318ebcabd89",
+      "dist_copy": {
+        "files": 3,
+        "sha256": "9461b4ed7fd1524fd2a66507cb0342825944e3dee20e2f257f931afd79927346"
+      }
+    },
+    {
+      "package": "packages/external-pools",
+      "source_tree": "475a51392285aa3f1d70cd95a3b698c0ab27e361",
+      "dist_copy": {
+        "files": 63,
+        "sha256": "17e3c96dce04f03e723e652a4f645319d72d75bc9a1b75693894448c91648f51"
+      }
+    },
+    {
+      "package": "packages/btc-payjoin",
+      "source_tree": "01b5f8a2d76bb0aa97a8ddc49c97f0d72f66b6b3",
+      "dist_copy": {
+        "files": 63,
+        "sha256": "2961486818b38557edecb5c6d894a9a70f38866128992381586cb54b1767bece"
+      }
+    },
+    {
+      "package": "packages/amount-blur",
+      "source_tree": "4dbd0ea21274e3689becdffb95c7dd8095aaf7ed",
+      "dist_copy": {
+        "files": 33,
+        "sha256": "d883ae5935b072226190a78c7711aeeabb749cb7847ada0071dc09365ee338ce"
+      }
+    },
+    {
+      "package": "packages/ux-fiat",
+      "source_tree": "6218d528f396a20aa9dff72ae0631d03c4ec6526",
+      "dist_copy": {
+        "files": 21,
+        "sha256": "91dc9333b6aa92435259335993fa9f9f374883df7fa863f34b70328e7194d5a1"
+      }
+    },
+    {
+      "package": "packages/chain-evm-extra",
+      "source_tree": "02545d5ea6c18fbd98716d694235f5902f07c8dc",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "4bd2fcf6331fb8cc90c869565604c3303678feb1a62c479afbe92239b6767d43"
+      }
+    },
+    {
+      "package": "packages/ux-guide",
+      "source_tree": "c152b4c68edd651c40178fccc9b02def5ceaebf4",
+      "dist_copy": {
+        "files": 12,
+        "sha256": "fff53dda7c3f382b0d7e09e67e5bc9c42fe84ebed722136b139dadf715c65c62"
+      }
+    },
+    {
+      "package": "packages/i18n",
+      "source_tree": "f71de6a12bf1460868ad59e6e1d4b0bd7ba15a35",
+      "dist_copy": {
+        "files": 75,
+        "sha256": "9a54a764b3450c23f2cc8d2269856995b18d909318253d22fd6034306a6fd07f"
+      }
+    },
+    {
+      "package": "packages/chain-solana",
+      "source_tree": "8d586bae42ac9bcb2699285f37fc93673026e6d3",
+      "dist_copy": {
+        "files": 39,
+        "sha256": "48eae9cebd255c1ebe936da93575a8aa4801635bc49aa8f7d678d067ec98b70c"
+      }
+    },
+    {
+      "package": "packages/hygiene",
+      "source_tree": "f29d07964ffc2976e3b9fb51ed6e48ebff1c839f",
+      "dist_copy": {
+        "files": 36,
+        "sha256": "3a9a695d30768fc8214cddfe1aa5218c62f310329d21c2df1106388bd34ce4cd"
+      }
+    },
+    {
+      "package": "packages/scan-source",
+      "source_tree": "c254e30dfc95920fa8ea0878bf6357b2977e105e",
+      "dist_copy": {
+        "files": 45,
+        "sha256": "409e5b6889ec083cef4147d66de5b1d79bf79b23f76d22a2a29ec7c7891763dc"
+      }
+    },
+    {
+      "package": "packages/ux-links",
+      "source_tree": "2ee6f937b45a57eec98f3c9eee0d83fcc3b59a1a",
+      "dist_copy": {
+        "files": 36,
+        "sha256": "2606ce5c21977c24a9db7573d29bf7ebf45d19be95f11bc323655dc031e58f13"
+      }
+    },
+    {
+      "package": "packages/pool-sdk",
+      "source_tree": "074dc0482228ddb06729d6075e8aadf42ee50868",
+      "dist_copy": {
+        "files": 60,
+        "sha256": "cdcf21e3770c94909cda02142d947e4188c9d102eb6891117bf02e53150ac2cf"
+      }
+    },
+    {
+      "package": "packages/ux-privacy",
+      "source_tree": "bfeb54342995b61d80bfd6b809f1a3a9f4504141",
+      "dist_copy": {
+        "files": 12,
+        "sha256": "d4dc435d9247b39af6d3352d06323539ef30fa1176d0eabb401dc9cc08168a6f"
+      }
+    },
+    {
+      "package": "packages/ux-receipts",
+      "source_tree": "3c665f874f9f5c5d7e163e3101735a117a207c76",
+      "dist_copy": {
+        "files": 42,
+        "sha256": "6301da23c85a91c334570686003ac84a4dd5e4962c563f68319de141e3f0a9c8"
+      }
+    },
+    {
+      "package": "packages/ux-flow",
+      "source_tree": "66b83c944ff6d19807d608fcfcf77f1d2052d94c",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "90738a72e6dcd7f9e52428add54d5167b51d392f80cd908b5d94e7a950428bef"
+      }
+    },
+    {
+      "package": "packages/donation",
+      "source_tree": "2d84530ac38e470db73928df999b7bcf18306db2",
+      "dist_copy": {
+        "files": 24,
+        "sha256": "1e933f50955eab031a746cee74326fed1d2a8a545852dc95e1de6a0f34f9344d"
+      }
+    },
+    {
+      "package": "packages/ux-i18n",
+      "source_tree": "494f94f50c787439909caa250995cab77ff2a2c7",
+      "dist_copy": {
+        "files": 3,
+        "sha256": "c7f7b60febc4d31522b57ffb1bafe3b92ce858a6dba794f51bc81be00124d617"
+      }
+    },
+    {
+      "package": "packages/ux-presets",
+      "source_tree": "b8386253da9da2268d29ec808612dc182040bb29",
+      "dist_copy": {
+        "files": 18,
+        "sha256": "9a779e435dcc1e5049d78e4cc96e4fc5772a0c1c8fcbe46c39998b26ce6903a7"
+      }
+    },
+    {
+      "package": "packages/btc-silent-payments",
+      "source_tree": "66d641d5a7f9b024858ec659b1582bad7c344fdc",
+      "dist_copy": {
+        "files": 102,
+        "sha256": "b9320f42af720b18b0207d911a05015e43082540c56fc3e2c8a83e754db10610"
+      }
+    },
+    {
+      "package": "packages/merchant-ledger",
+      "source_tree": "a7119060996f2f6177ce4121888e885fec7a274b",
+      "dist_copy": {
+        "files": 18,
+        "sha256": "278f7c7aa2ff0ce0daf377be727202a0ad1c8b1c3c3f69ba5f77948272160987"
+      }
+    },
+    {
+      "package": "packages/qr-exchange",
+      "source_tree": "785fa9383652d8059eb83c3e605ab4f2de70452f",
+      "dist_copy": {
+        "files": 30,
+        "sha256": "557f8ddce6c91870aaae7f7245bd1ea15247109681dc3e87e500b8ec27776ddd"
+      }
+    },
+    {
+      "package": "packages/net-transport",
+      "source_tree": "51efb5fdfdb0352c7ee5fcb32460123b73ca57c3",
+      "dist_copy": {
+        "files": 63,
+        "sha256": "7c4723138df68e81427b8e5cce46f8c745944bd71f8ef1853966465780a86921"
+      }
+    },
+    {
+      "package": "packages/btc-family",
+      "source_tree": "4f4664512ddb119943a6b79683e8721a6119b976",
+      "dist_copy": {
+        "files": 54,
+        "sha256": "ea370701f2ce28eb4b13093ccd97fd07ae6e02f891016fbe447d499f7633c36f"
+      }
+    }
+  ],
+  "copy_method": "cp -a --reflink=auto; private directory, existing relative workspace links retained",
+  "limits": "No fresh install or package build. Only copy identity and tracked source inputs were independently compared; prior declaration provenance remains attributed to generation2."
+}

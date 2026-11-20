@@ -1,0 +1,122 @@
+{
+  "source": "2149ad2814d9ae031b23322f87f74842af5dde78",
+  "original_output_directory": "/workspace/scratch/e5b5e498b785/verification/pages-2149ad28-qa-gen3",
+  "archive": "pages-2149ad28.tar.gz",
+  "archive_sha256": "28e006e0e2c32c82be8d66bbc3a7f74de057779c4941a82e4899333980faeabd",
+  "archive_bytes": 790173,
+  "archive_file_count": 21,
+  "site_file_count": 16,
+  "artifact_inventory": [
+    {
+      "path": "evidence/SHA256SUMS",
+      "bytes": 1397,
+      "sha256": "cb80eaed8de4493bd34cbf579759e0a4698b5d5393603dfc2ac4e8ee604f438e"
+    },
+    {
+      "path": "evidence/artifact-verification.log",
+      "bytes": 60,
+      "sha256": "3741e3a0fda5781813941ef685f0ac3b9f9b321adf8f0d1ef560f3cb968beae3"
+    },
+    {
+      "path": "evidence/build.log",
+      "bytes": 2876,
+      "sha256": "4ea798eb22603e21b2464b9c9151355a07ab1b5b974571241741ba167c68fd4a"
+    },
+    {
+      "path": "evidence/ghostpay-lean-build.json",
+      "bytes": 107999,
+      "sha256": "e81be38cac1ecc52d73cf9be71abd0a0eeb7fa23ac34b0f2a7c8e9de8d58b6ea"
+    },
+    {
+      "path": "evidence/pages-evidence.json",
+      "bytes": 893,
+      "sha256": "c6f517e5273e3c16e89ce8f37963413e6ae863deff1b0060df5196389b060803"
+    },
+    {
+      "path": "site/.nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "site/assets/ar-DUvT08cM.js",
+      "bytes": 343093,
+      "sha256": "101d05b6109dc3958a5906c7d56dabee1ef038c8efd545f3861cd4c4b69214a7"
+    },
+    {
+      "path": "site/assets/es-C9FxJnQQ.js",
+      "bytes": 286150,
+      "sha256": "3319a093dc9c4d4c9a23bb686bbb5eae7f05a0f38d700ed35882e0671ba54aa4"
+    },
+    {
+      "path": "site/assets/index-DiJGnPD_.js",
+      "bytes": 1468437,
+      "sha256": "6eaf154d37dd8bc645bab2fd9862706b0a547d84a98a40722620add2040d0526"
+    },
+    {
+      "path": "site/assets/ja-CwSzae9l.js",
+      "bytes": 335578,
+      "sha256": "91db9e7991bbd6de2b6010376726d2a2a18c23839b53ac9f14d4150e9fc97450"
+    },
+    {
+      "path": "site/assets/jsQR-DMfxOdIb.js",
+      "bytes": 129986,
+      "sha256": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869"
+    },
+    {
+      "path": "site/assets/rolldown-runtime-XKyaHtl9.js",
+      "bytes": 726,
+      "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+    },
+    {
+      "path": "site/assets/scanner.worker-CAQQ64R_.js",
+      "bytes": 62186,
+      "sha256": "54119a9d91ffe1acb7e5ecde487dca6ab939245160d19951c1e26d6b4a7e8f0f"
+    },
+    {
+      "path": "site/assets/style-sbKVpGL7.css",
+      "bytes": 11944,
+      "sha256": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c"
+    },
+    {
+      "path": "site/build-info.json",
+      "bytes": 185,
+      "sha256": "5f6a1a1d268b138ea889bb7a24509e27fe189669794aa4f95834774b73465261"
+    },
+    {
+      "path": "site/favicon.svg",
+      "bytes": 332,
+      "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+    },
+    {
+      "path": "site/help.css",
+      "bytes": 3283,
+      "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+    },
+    {
+      "path": "site/help.html",
+      "bytes": 16886,
+      "sha256": "b314210505425768485c4af5bc5ea39c2d3b4917725be37f1ea9cc2b77b7ba9e"
+    },
+    {
+      "path": "site/index.html",
+      "bytes": 4279,
+      "sha256": "624aab60cbe719e457ab0e13c78999c5f5b80771226eaf66b121a82b282ea08c"
+    },
+    {
+      "path": "site/pages-mirror.css",
+      "bytes": 643,
+      "sha256": "0185b681b3e3860c2f09b4422362366ecbd95ed93864722873bd764d03f91f51"
+    },
+    {
+      "path": "site/privacy.html",
+      "bytes": 8062,
+      "sha256": "b20966210e80da692156ee36dd481718f9ca34295ad6c07ff151d7fea3726881"
+    }
+  ],
+  "archive_content_hashes_reverified": true,
+  "release": false,
+  "payments_enabled_chain_ids": [],
+  "node_resource_wrapper": "pages-node-resource-wrapper.json",
+  "original_build_and_promoted_verification": "corrected-checks.json",
+  "limits": "Development payments-disabled output only. Integrity and exact source association are established against this local build inventory; this is not external artifact authenticity, hosted browser qualification, a deployment, or release approval."
+}

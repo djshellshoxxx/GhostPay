@@ -1,0 +1,394 @@
+{
+  "format": "ghostpay-completion-source-review/1",
+  "reviewer": "/root/completion_review_gen8",
+  "recorded_at": "2026-11-20T03:05:31.415747+00:00",
+  "canonical": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "product_freeze": "2149ad2814d9ae031b23322f87f74842af5dde78",
+  "product_tree": "253a5d7fb0a83f50206e9830ca3d6ba5a21dcabf",
+  "manifest_commit": "be12cd043dbfc2f562368fd0ccc1a2a8c3f7a22f",
+  "manifest_path": "docs/engineering-handoffs/completion-20261120/SOURCE_INPUTS.json",
+  "review_claim_commit": "d8b27fd03af604c5786c02bcb6b426d91452af46",
+  "selected_files": [
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "source": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "source_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "frozen_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "manifest_commit_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "review_checkout_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "sha256": "c97b533ca1591281f3efc07a79013c9614ecb0469d654246ad7fc4565fc094a5",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "source": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "source_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "frozen_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "manifest_commit_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "review_checkout_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "sha256": "f8e8ae94c7ada88b31f4689ab040661772a8df0e097e9c49b21f2a71d54d88e6",
+      "identical": true
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "source": "172695efb41665a4e50d335029e54184bbb5b328",
+      "blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "source_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "frozen_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "manifest_commit_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "review_checkout_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "sha256": "a8d5c555d4c7ccc813fff240dfe25263c929d4e3aa3c5b5a8c0535b83e1a5f74",
+      "identical": true
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.test.ts",
+      "source": "172695efb41665a4e50d335029e54184bbb5b328",
+      "blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "source_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "frozen_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "manifest_commit_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "review_checkout_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "sha256": "0c9c155df03929dee47e6f7a778dd276286f53585b83c72d84b5bdc0b336960f",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "source_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "frozen_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "manifest_commit_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "review_checkout_blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "sha256": "7a29be1f740cce8b83c66dbd6ba792d1f58de31fd5db35c9933422e1f807ddcf",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "source_blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "frozen_blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "manifest_commit_blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "review_checkout_blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "sha256": "5ea57e72798fa926ee2f4e26f8a41d304e3c532043ecc9b536cd6d03c8eec6e8",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "source_blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "frozen_blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "manifest_commit_blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "review_checkout_blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "sha256": "540846cc836212f233e5ff760e41c82405ad16b48a0bf3893843cfae97a290fb",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "source_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "frozen_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "manifest_commit_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "review_checkout_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "sha256": "936ed118ca6823c460abd984cd8cbf82e3f9f7f6b44646ba50d33b6d8b6a104d",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "source_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "frozen_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "manifest_commit_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "review_checkout_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "sha256": "e0e6514ea1a8ef50ba6770f3e888eeba78d3ccecc9f16fa121b872b07c4b6b46",
+      "identical": true
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "source_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "frozen_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "manifest_commit_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "review_checkout_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "sha256": "fca08d8ea186444bdfad2bdb8a6faa8d8be2091d69da0b25103a2e4c95cf08a5",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "source_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "frozen_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "manifest_commit_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "review_checkout_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "sha256": "8b177611e90e35d2461b5fe21739234714b676f0ec2d2a4dcf0b6d9e22593b72",
+      "identical": true
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "source_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "frozen_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "manifest_commit_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "review_checkout_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "sha256": "c6d5625cd3e937201360f31036b386a0dc59bcb3bf32191c6d833d46104ee174",
+      "identical": true
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "source_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "frozen_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "manifest_commit_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "review_checkout_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "sha256": "46ef7733e7e7d1cf42708d8b32ea1692b47bf19b678c7e3036eae8f8d239d59d",
+      "identical": true
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "source_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "frozen_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "manifest_commit_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "review_checkout_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha256": "6402f359c4e86fbf110072befd6b1e036707befd06d413c4354b477ba91b098f",
+      "identical": true
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "source_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "frozen_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "manifest_commit_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "review_checkout_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "sha256": "63e376af4fbc72d0629f0dd69c1810ba3b3bb82b8eb77b2ff9be556550a6bf38",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+      "source": "898d3361af4320dccca7743d960b32a94fb66922",
+      "blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+      "source_blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+      "frozen_blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+      "manifest_commit_blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+      "review_checkout_blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+      "sha256": "44ee77e1cddd888ff1125f08592cb6c90cf80dbb6c2a47f47939bd3f1e482ea4",
+      "identical": true
+    }
+  ],
+  "non_documentation_changed_paths": [
+    "apps/web/e2e/flowMocks.ts",
+    "apps/web/src/features/policy/fixtures.testutil.ts",
+    "apps/web/src/lib/payExec.acceptance.test.ts",
+    "apps/web/src/lib/payExec.test.ts",
+    "apps/web/src/lib/qrKinds.test.ts",
+    "apps/web/src/lib/qrKinds.ts",
+    "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+    "apps/web/src/lib/wallet.test.ts",
+    "apps/web/src/lib/wallet.ts",
+    "apps/web/src/views/Pay.test.tsx",
+    "packages/chain-adapters/src/deployments.test.ts",
+    "packages/qr-exchange/src/assembler.test.ts",
+    "packages/qr-exchange/src/assembler.ts",
+    "scripts/pages/build-pages-artifact-gate.test.mjs",
+    "scripts/pages/build-pages.sh",
+    "scripts/tests/privacy-csp-bundle.test.mjs"
+  ],
+  "unexpected_non_documentation_changed_paths": [],
+  "prior_product_freeze": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "non_documentation_delta_since_prior": [
+    "apps/web/src/features/policy/fixtures.testutil.ts"
+  ],
+  "non_documentation_delta_to_manifest_commit": [],
+  "source_ancestry": [
+    {
+      "source": "172695efb41665a4e50d335029e54184bbb5b328",
+      "is_ancestor_of_freeze": true
+    },
+    {
+      "source": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "is_ancestor_of_freeze": true
+    },
+    {
+      "source": "898d3361af4320dccca7743d960b32a94fb66922",
+      "is_ancestor_of_freeze": true
+    },
+    {
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "is_ancestor_of_freeze": true
+    },
+    {
+      "source": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "is_ancestor_of_freeze": true
+    },
+    {
+      "source": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "is_ancestor_of_freeze": true
+    }
+  ],
+  "protected_scopes": [
+    {
+      "scope": ".github",
+      "canonical_object": "00fa1135747338e2b6a3f951e002bca669560e02",
+      "candidate_object": "00fa1135747338e2b6a3f951e002bca669560e02",
+      "identical": true
+    },
+    {
+      "scope": "package.json",
+      "canonical_object": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "candidate_object": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "identical": true
+    },
+    {
+      "scope": "package-lock.json",
+      "canonical_object": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "candidate_object": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "identical": true
+    },
+    {
+      "scope": "tsconfig.base.json",
+      "canonical_object": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "candidate_object": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/deployments",
+      "canonical_object": "cb063e0872cf1cd01f07c73cf9fb15e45490cde9",
+      "candidate_object": "cb063e0872cf1cd01f07c73cf9fb15e45490cde9",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/src/views/Settings.tsx",
+      "canonical_object": "fb144d734ef2e05825735e01aaeb3243d43085f7",
+      "candidate_object": "fb144d734ef2e05825735e01aaeb3243d43085f7",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/e2e/network-authorization.spec.ts",
+      "canonical_object": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "candidate_object": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/src/views/Pay.signer.test.tsx",
+      "canonical_object": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "candidate_object": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/src/lib/payExec.ts",
+      "canonical_object": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "candidate_object": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "canonical_object": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "candidate_object": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/src/lib/transactionOutcome.ts",
+      "canonical_object": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "candidate_object": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "identical": true
+    },
+    {
+      "scope": "apps/web/src/lib/errors.ts",
+      "canonical_object": "a1fb55a8eb9ec0270491fa4d5b2f071200d08142",
+      "candidate_object": "a1fb55a8eb9ec0270491fa4d5b2f071200d08142",
+      "identical": true
+    },
+    {
+      "scope": "packages/confidential-contracts",
+      "canonical_object": "5e16369cf4cb925bc836db104dc1e35ee529de7d",
+      "candidate_object": "5e16369cf4cb925bc836db104dc1e35ee529de7d",
+      "identical": true
+    },
+    {
+      "scope": "packages/contracts",
+      "canonical_object": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "candidate_object": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "identical": true
+    },
+    {
+      "scope": "packages/payer-hiding-contracts",
+      "canonical_object": "d392d5298fb106658a02619c2e88265807bcc251",
+      "candidate_object": "d392d5298fb106658a02619c2e88265807bcc251",
+      "identical": true
+    },
+    {
+      "scope": "packages/pool-contracts",
+      "canonical_object": "443d026dc21ed272dee89dc4790b77c2fa2c80c3",
+      "candidate_object": "443d026dc21ed272dee89dc4790b77c2fa2c80c3",
+      "identical": true
+    }
+  ],
+  "policy_consumer_preservation": [
+    {
+      "path": "apps/web/src/features/policy/send.test.ts",
+      "prior_blob": "aa1b08c198e72dc55854551183670d37061984b0",
+      "candidate_blob": "aa1b08c198e72dc55854551183670d37061984b0",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.guard.test.tsx",
+      "prior_blob": "9ccdadb0fd50fed4112e5abc399c0598ba26f93d",
+      "candidate_blob": "9ccdadb0fd50fed4112e5abc399c0598ba26f93d",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.scope.test.tsx",
+      "prior_blob": "0c80f5a339d28cbe9eecd3e547fb76f70e615052",
+      "candidate_blob": "0c80f5a339d28cbe9eecd3e547fb76f70e615052",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.network.test.tsx",
+      "prior_blob": "bfcf526291cc81f624b97441cfc186997fa485ed",
+      "candidate_blob": "bfcf526291cc81f624b97441cfc186997fa485ed",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+      "prior_blob": "7cd927c29357adda705d353a33379aea0bc29df2",
+      "candidate_blob": "7cd927c29357adda705d353a33379aea0bc29df2",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+      "prior_blob": "2d5df14501a00e9842d2aa055cf7b08e67209693",
+      "candidate_blob": "2d5df14501a00e9842d2aa055cf7b08e67209693",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyReceive.regression.test.tsx",
+      "prior_blob": "9c493241a69595b1c1d7d1aa92e7152da7b50397",
+      "candidate_blob": "9c493241a69595b1c1d7d1aa92e7152da7b50397",
+      "identical": true
+    }
+  ],
+  "mock_wallet": {
+    "path": "apps/web/src/test/mockWallet.ts",
+    "blob": "9b533f45adb1fb9d334a592c30f3ef76007ed29f",
+    "unchanged": true,
+    "source_returned_hash": "0x9999999999999999999999999999999999999999999999999999999999999999"
+  },
+  "commands": [
+    "git diff --name-only -z <canonical> <freeze>",
+    "git rev-parse <ref>:<path>",
+    "git show <ref>:<path>",
+    "git merge-base --is-ancestor <source> <freeze>"
+  ],
+  "execution_scope": "Git/source identity and preservation checks only. No application tests, typecheck, build, lint, browser or hosted checks were run by this reviewer."
+}

@@ -1,0 +1,90 @@
+{
+  "format": "ghostpay-format-port-source/1",
+  "base_candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "original_pr": 301,
+  "original_head": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+  "original_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "original_tests_commit": "1e90047b17627f3f18446b2d9bcc0d73e345d4ce",
+  "original_fix_commit": "f49cd29b27766afe6cb42c07ab5cfd2d8b2e6f51",
+  "original_author": "sheldon <127660907+djshellshoxxx@users.noreply.github.com>",
+  "claim_commit": "660ddb9433a31b122069900a619ed9dcf9d15bc3",
+  "ported_tests_commit": "d2d270edd0697fa5d2b2a6a39995db2e39ebbeed",
+  "ported_fix_commit": "eb969686fece9a1c89be38983b5cb4b0cae14bd8",
+  "entries": [
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "base_blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "original_base_blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "original_fixed_blob": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+      "ported_blob": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+      "working_blob": "9ba8ea7b418eab5cf18e900923572cf3e255aedd"
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "base_blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "original_base_blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "original_fixed_blob": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+      "ported_blob": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+      "working_blob": "43d5b5c882abdfb392776dd13d772e972f13ab46"
+    }
+  ],
+  "unchanged_controls": [
+    {
+      "path": "package.json",
+      "object": "3cb706b2a695b959d6d261323174de61c2439e34"
+    },
+    {
+      "path": "package-lock.json",
+      "object": "539274d58048bc3edf066ca1a7891f247b2aea36"
+    },
+    {
+      "path": "eslint.config.js",
+      "object": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "object": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797"
+    },
+    {
+      "path": "apps/web/package.json",
+      "object": "dc383c41588864646c2bfa0083acc1d9d33e1f54"
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "object": "6500e86eb5839bfa98d0193c88615e7a3c13039d"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "object": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+    },
+    {
+      "path": "apps/web/vitest.nocov.config.ts",
+      "object": "294c480e9bb915656cd8f525110d9f18b60727e0"
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "object": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31"
+    },
+    {
+      "path": ".github",
+      "object": "00fa1135747338e2b6a3f951e002bca669560e02"
+    },
+    {
+      "path": "scripts",
+      "object": "acb07aa8d759fa98c41cd1fa3df9b804102898c9"
+    },
+    {
+      "path": "packages",
+      "object": "e98cd4e072270e9e7e162900f18920a13b9b98a2"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "object": "800cfa90810b887898d4184ff3f5ccfb2601c971"
+    }
+  ],
+  "non_documentation_paths": [
+    "apps/web/src/lib/format.test.ts",
+    "apps/web/src/lib/format.ts"
+  ],
+  "qualification_scope": "Current-candidate dependency/configuration context, not original-PR301 older dependency lock. No whole-repository or hosted qualification claimed."
+}

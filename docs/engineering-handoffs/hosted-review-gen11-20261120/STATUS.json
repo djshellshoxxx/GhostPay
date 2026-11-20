@@ -1,0 +1,209 @@
+{
+  "consolidation_checks": {
+    "observed_at_utc": "2026-11-20T03:16:35.537755+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 12,
+    "items": {
+      "counts": {
+        "skipped": 1,
+        "queued": 11
+      },
+      "failed": [],
+      "named_security_checks": []
+    }
+  },
+  "consolidation_status": {
+    "observed_at_utc": "2026-11-20T03:16:35.538586+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 1,
+    "items": {
+      "state": "success",
+      "statuses": [
+        {
+          "context": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "description": "No manifest changes detected in 1 project",
+          "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/c27a7b73-7047-41bf-b7ec-30d0ca734f8d"
+        }
+      ]
+    }
+  },
+  "consolidation_runs": {
+    "observed_at_utc": "2026-11-20T03:16:35.539039+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 6,
+    "items": [
+      {
+        "id": 44665648867,
+        "name": "Pages",
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44665648867"
+      },
+      {
+        "id": 44665648858,
+        "name": "Integration",
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44665648858"
+      },
+      {
+        "id": 44665648856,
+        "name": "CI",
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44665648856"
+      },
+      {
+        "id": 44665648934,
+        "name": "Hosting kit",
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44665648934"
+      },
+      {
+        "id": 44665648862,
+        "name": "Beta acceptance",
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44665648862"
+      },
+      {
+        "id": 44665648967,
+        "name": "CLI operator qualification",
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44665648967"
+      }
+    ]
+  },
+  "quick_hide_checks": {
+    "observed_at_utc": "2026-11-20T03:16:35.539510+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 28,
+    "items": {
+      "counts": {
+        "queued": 23,
+        "skipped": 1,
+        "success": 4
+      },
+      "failed": [],
+      "named_security_checks": []
+    }
+  },
+  "quick_hide_status": {
+    "observed_at_utc": "2026-11-20T03:16:39.581037+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 1,
+    "items": {
+      "state": "success",
+      "statuses": [
+        {
+          "context": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "description": "No manifest changes detected in 1 project",
+          "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/861f09da-5e54-416d-a6d0-d1a723e8781f"
+        }
+      ]
+    }
+  },
+  "quick_hide_runs": {
+    "observed_at_utc": "2026-11-20T03:16:39.744810+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 4,
+    "items": [
+      {
+        "id": 44662861940,
+        "name": "Pages",
+        "head_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44662861940"
+      },
+      {
+        "id": 44662861927,
+        "name": "Beta acceptance",
+        "head_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44662861927"
+      },
+      {
+        "id": 44662861818,
+        "name": "CI",
+        "head_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "status": "queued",
+        "conclusion": null,
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44662861818"
+      },
+      {
+        "id": 44662861923,
+        "name": "Hosting kit",
+        "head_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44662861923"
+      }
+    ]
+  },
+  "consolidation_merge_checks": {
+    "observed_at_utc": "2026-11-20T03:16:39.765991+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 0,
+    "items": {
+      "counts": {},
+      "failed": [],
+      "named_security_checks": []
+    }
+  },
+  "quick_hide_merge_checks": {
+    "observed_at_utc": "2026-11-20T03:16:39.993567+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": 0,
+    "items": {
+      "counts": {},
+      "failed": [],
+      "named_security_checks": []
+    }
+  },
+  "pr302": {
+    "observed_at_utc": "2026-11-20T03:16:44.047976+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": null,
+    "items": {
+      "head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "merge_commit_sha": "45a48dd80336d53448d43962d86673d86e714562",
+      "draft": true,
+      "mergeable": true
+    }
+  },
+  "pr300": {
+    "observed_at_utc": "2026-11-20T03:16:44.058455+00:00",
+    "http_status": 200,
+    "error": null,
+    "total_count": null,
+    "items": {
+      "head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "base": "d6819796a9542acc488b896786faffe83b913d9b",
+      "merge_commit_sha": "67a59cc1d6875ce507dd7af0cb60ef6a5aa1666c",
+      "draft": true,
+      "mergeable": true
+    }
+  }
+}

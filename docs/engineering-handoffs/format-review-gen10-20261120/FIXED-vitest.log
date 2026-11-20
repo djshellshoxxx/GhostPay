@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/e5b5e498b785/GhostPay-format-review-gen10/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  19:14:14
+   Duration  221ms (transform 44%, import 26%, tests 19%, worker 10%)
+

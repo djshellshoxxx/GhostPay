@@ -1,0 +1,36 @@
+[
+  {
+    "lane": "consolidation",
+    "published_head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "local_checkpoint": "be12cd043dbfc2f562368fd0ccc1a2a8c3f7a22f",
+    "synthetic_merge": "45a48dd80336d53448d43962d86673d86e714562",
+    "expected_tree": "2408882ff9adcc8714c3a21b43c4074975f13c23",
+    "observed_trees": {
+      "head": "2408882ff9adcc8714c3a21b43c4074975f13c23",
+      "local": "2408882ff9adcc8714c3a21b43c4074975f13c23",
+      "merge": "2408882ff9adcc8714c3a21b43c4074975f13c23"
+    },
+    "synthetic_merge_ordered_parents": [
+      "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+    ],
+    "full_tree_equivalence": true
+  },
+  {
+    "lane": "quick_hide",
+    "published_head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "local_checkpoint": "c8a2d7ca7c6c1caa96256e1cd57ffd7afaafa9d5",
+    "synthetic_merge": "67a59cc1d6875ce507dd7af0cb60ef6a5aa1666c",
+    "expected_tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+    "observed_trees": {
+      "head": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+      "local": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+      "merge": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9"
+    },
+    "synthetic_merge_ordered_parents": [
+      "d6819796a9542acc488b896786faffe83b913d9b",
+      "137628961463fc5abd8b7927b2efe6b18a0a206a"
+    ],
+    "full_tree_equivalence": true
+  }
+]

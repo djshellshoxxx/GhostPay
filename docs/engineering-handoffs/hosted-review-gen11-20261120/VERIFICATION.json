@@ -1,0 +1,222 @@
+{
+  "format": "ghostpay-hosted-review-verification/1",
+  "worker": "/root/hosted_review_gen11",
+  "claim_commit": "f16c22c2",
+  "reviewed_at_utc": "2026-11-20T03:18:51.088642+00:00",
+  "source_tree_comparisons": 6,
+  "synthetic_merge_parent_lists_checked": 2,
+  "source_blobs": {
+    "consolidation": {
+      ".github/workflows/hosting-kit.yml": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+      ".github/workflows/pages.yml": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      ".github/workflows/ci.yml": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+      "tools/portable-hosting-kit/test/browser/chromium.test.mjs": "ddcb63f2e7871dd84fa5853a663708d3a2338864"
+    },
+    "quick_hide": {
+      ".github/workflows/hosting-kit.yml": "c5ee68185f8bfa8feb82cdb97990c82c1d79aaec",
+      ".github/workflows/pages.yml": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      ".github/workflows/ci.yml": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+      "tools/portable-hosting-kit/test/browser/chromium.test.mjs": "ddcb63f2e7871dd84fa5853a663708d3a2338864"
+    }
+  },
+  "metadata_queries": [
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "consolidation_checks",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/e22c1748a3de6eb02f5be3abe27d634b238c67c6/check-runs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:47.985846+00:00",
+      "http_status": 200,
+      "total_count": 12
+    },
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "consolidation_status",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/e22c1748a3de6eb02f5be3abe27d634b238c67c6/status?per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:47.986513+00:00",
+      "http_status": 200,
+      "total_count": 1
+    },
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "consolidation_runs",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs?head_sha=e22c1748a3de6eb02f5be3abe27d634b238c67c6&per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:47.987010+00:00",
+      "http_status": 200,
+      "total_count": 6
+    },
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "quick_hide_checks",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/137628961463fc5abd8b7927b2efe6b18a0a206a/check-runs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:47.987665+00:00",
+      "http_status": 200,
+      "total_count": 28
+    },
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "quick_hide_status",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/137628961463fc5abd8b7927b2efe6b18a0a206a/status?per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:52.663460+00:00",
+      "http_status": 200,
+      "total_count": 1
+    },
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "quick_hide_runs",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs?head_sha=137628961463fc5abd8b7927b2efe6b18a0a206a&per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:52.809093+00:00",
+      "http_status": 200,
+      "total_count": 4
+    },
+    {
+      "snapshot": "metadata-initial.json",
+      "query": "quick_hide_hosting_jobs",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44662861923/jobs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:14:52.890510+00:00",
+      "http_status": 200,
+      "total_count": 2
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "consolidation_checks",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/e22c1748a3de6eb02f5be3abe27d634b238c67c6/check-runs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:35.537755+00:00",
+      "http_status": 200,
+      "total_count": 12
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "consolidation_status",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/e22c1748a3de6eb02f5be3abe27d634b238c67c6/status?per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:35.538586+00:00",
+      "http_status": 200,
+      "total_count": 1
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "consolidation_runs",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs?head_sha=e22c1748a3de6eb02f5be3abe27d634b238c67c6&per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:35.539039+00:00",
+      "http_status": 200,
+      "total_count": 6
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "quick_hide_checks",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/137628961463fc5abd8b7927b2efe6b18a0a206a/check-runs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:35.539510+00:00",
+      "http_status": 200,
+      "total_count": 28
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "quick_hide_status",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/137628961463fc5abd8b7927b2efe6b18a0a206a/status?per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:39.581037+00:00",
+      "http_status": 200,
+      "total_count": 1
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "quick_hide_runs",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs?head_sha=137628961463fc5abd8b7927b2efe6b18a0a206a&per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:39.744810+00:00",
+      "http_status": 200,
+      "total_count": 4
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "consolidation_merge_checks",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/45a48dd80336d53448d43962d86673d86e714562/check-runs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:39.765991+00:00",
+      "http_status": 200,
+      "total_count": 0
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "quick_hide_merge_checks",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/commits/67a59cc1d6875ce507dd7af0cb60ef6a5aa1666c/check-runs?per_page=100",
+      "observed_at_utc": "2026-11-20T03:16:39.993567+00:00",
+      "http_status": 200,
+      "total_count": 0
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "pr302",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls/302",
+      "observed_at_utc": "2026-11-20T03:16:44.047976+00:00",
+      "http_status": 200,
+      "total_count": null
+    },
+    {
+      "snapshot": "metadata-final.json",
+      "query": "pr300",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls/300",
+      "observed_at_utc": "2026-11-20T03:16:44.058455+00:00",
+      "http_status": 200,
+      "total_count": null
+    }
+  ],
+  "all_requested_metadata_pages_complete": true,
+  "check_run_filter": "GitHub default latest; not every historical attempt",
+  "log_jobs": [
+    136045028663,
+    136045029080
+  ],
+  "lossless_decoded_log_archives_checked": 2,
+  "local_application_commands_executed": 0,
+  "remote_mutations": 0,
+  "files_excluding_this_record": [
+    {
+      "path": "HANDOFF.md",
+      "bytes": 2160,
+      "sha256": "e2de639ee362ac7003f066de026b3b597027b257e7677d2a563b748fd3017668"
+    },
+    {
+      "path": "LOGS.json",
+      "bytes": 616,
+      "sha256": "b0d41ec77fe6c29f49972ff7d3d330fee320360e4324de5b7a0752feed93562f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7464,
+      "sha256": "99293ece6d75cb8c67a4aa37c28ac5e53b6da032f327bdea578009facbf0f1c4"
+    },
+    {
+      "path": "SOURCE.json",
+      "bytes": 1382,
+      "sha256": "9c0b2a061da851a7bcec78a6ae23660637912966c631e04a9ddb9131d5284e81"
+    },
+    {
+      "path": "STATUS.json",
+      "bytes": 6154,
+      "sha256": "0dfa8c88a6418d6daeba4c8956effc4d7a56c01768857449c0ce9395e772763e"
+    },
+    {
+      "path": "logs/quick-hide-hosting-kit.log.gz",
+      "bytes": 30145,
+      "sha256": "7d30d7045d8d103ae466eaeac1adb0b6ddbe7941205719d04c6046c9194c94a9"
+    },
+    {
+      "path": "logs/quick-hide-qualify-web.log.gz",
+      "bytes": 14786,
+      "sha256": "78a703eb54a89caeb567e909f3c208428ecb1be02a92eea105057a05b562bd4f"
+    },
+    {
+      "path": "metadata-final.json.gz",
+      "bytes": 19072,
+      "sha256": "02ae225de144348cc0b5ec7e6b517ffeb4ceaf7dbfd18c44900fc84c73bc178d"
+    },
+    {
+      "path": "metadata-initial.json.gz",
+      "bytes": 14479,
+      "sha256": "30505c31ed97c943345cdd8d557b69d4c249485cf338a13818d6344143191f8b"
+    },
+    {
+      "path": "prs-initial.json.gz",
+      "bytes": 4220,
+      "sha256": "9a2fdfc2b1417fe911d62700aa2333ea4a84055b594e8de47407ff18cf8119bf"
+    }
+  ],
+  "result": "passed; hosted qualification remains incomplete"
+}

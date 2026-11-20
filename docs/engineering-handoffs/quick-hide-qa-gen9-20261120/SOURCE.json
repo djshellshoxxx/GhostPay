@@ -1,0 +1,41 @@
+{
+  "format": "ghostpay-quick-hide-qa-source/1",
+  "observed_utc": "2026-11-20T03:12:56.356531+00:00",
+  "local_feature": "c8a2d7ca7c6c1caa96256e1cd57ffd7afaafa9d5",
+  "published_feature": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+  "common_feature_tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+  "original_implementation": "052ac56c36cf62419941223318d1b6a366954625",
+  "execution_head": "9a96ff659ff7295d00caf7a49a5d847d877eff9d",
+  "execution_tree": "b74943ca026ad4006599e278ce6b33c532a28e5b",
+  "execution_delta_from_feature": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "identical_scopes": {
+    "apps/web": "250144557b9bd6f4d7445090b686f9d488259a9b",
+    "packages": "e692401bde9618f4e3d2fe35937d0c10f43dc529",
+    "scripts": "62c8f794cb70315d10d8f3442334108533a97955",
+    ".github": "00fa1135747338e2b6a3f951e002bca669560e02",
+    "package.json": "3cb706b2a695b959d6d261323174de61c2439e34",
+    "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36",
+    "tsconfig.base.json": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+    "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee"
+  },
+  "main_observed": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "dependency_local": "8be152897a717447e33642c99a976cdbb76b709f",
+  "dependency_published": "d6819796a9542acc488b896786faffe83b913d9b",
+  "live_refs_after": [
+    "137628961463fc5abd8b7927b2efe6b18a0a206a\trefs/heads/feat/ghostpay-privacy-quick-hide-20261120",
+    "c977b5d6723f6822c3b5d86cd6b231712c53c395\trefs/heads/main",
+    "d6819796a9542acc488b896786faffe83b913d9b\trefs/heads/snapshot/ghostpay-privacy-8be15289-20261120"
+  ],
+  "pr": {
+    "number": 300,
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/300",
+    "state": "open",
+    "draft": true,
+    "head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "base": "d6819796a9542acc488b896786faffe83b913d9b",
+    "metadata_observation": "GitHub connector metadata read before execution; live head/base branch refs rechecked afterward."
+  },
+  "scope_limit": "Typing on the unchanged separate feature source; no integration into the corrected completion candidate or latest active privacy lanes."
+}
