@@ -2386,3 +2386,46 @@ Validation: inspect exact request ordering and use original web typecheck/lint p
 Source is frozen at `420df3b55be2a4207950f312d2b0bd5b899602e2`, tree `c47596d02196c1d2cb38040a2f52fe24bd4d3081`. The coordinator independently approved the complete three-file E2E-only patch. Original full web typecheck and lint passed after restoring one missing own-worktree test dependency link; the first TypeScript failure remains in the evidence. Dedicated static collection found 3 devnet cases and 16 Pages cases; default full/lean collection found 136/126 cases. These are discovery counts, not browser passes.
 The coordinator explicitly extended the initial no-install boundary after reviewing cached exact-lock tarballs and disk space, authorizing one offline selected web/root/tooling extraction with scripts disabled and no network fallback. It passed with unchanged manifests/lockfile; own workspace source/output provenance is recorded. No other worktree dependencies were removed or reused with mismatched versions.
 Final handoff and 28 lossless original artifacts are under `docs/consolidation/devnet-wallet-consent-r2-20261120/`. No browser, server, anvil or RPC was started locally. Original hosted failures remain preserved; actual hosted acceptance of the corrected published tree and all other applicable gates remain required. Root owns publication and integration.
+
+## Browser acceptance continuation — 2026-11-20
+
+Worker: `/root/r3_browser_qualification`, delegated by the consolidation coordinator.
+New isolated branch: `fix/ghostpay-browser-acceptance-20261120-r3`; exact base PR #336
+`410353a23631234aa888e46f38df22291c699a26`, tree `a506f54f1cd2c7ee5bbc007299e4a82a78d62a87`.
+Current main was independently observed at `bfebea0acf213a113d2740366fd592042661ca67`;
+it is not changed by this lane. All 113 open PRs and the changed paths of newer
+PRs #337–342 were inspected; none owns these acceptance paths. Prior privacy and
+retention owners released their source paths. Root owns publication and integration.
+
+Owned paths: `apps/web/e2e/{devnet-journey.spec.ts,pages-devnet.spec.ts,app.spec.ts,walletFixture.ts}`;
+`apps/web/src/components/{SharedComponents.i18n.test.tsx,WalletDisclosure.test.tsx}`;
+only the reviewed Pay reference-count delta in `docs/privacy/network-egress-inventory.json`;
+this additive claim and `docs/consolidation/browser-qualification-r3-20261120/`.
+
+Acceptance: preserve every original chain, balance, journal, duplicate, wallet refusal,
+privacy and focus assertion. Reloaded journal records remain stored but are revealed only
+after deliberate account disclosure and matching wallet connection. Locale fixtures supply
+the required account/chain scope. Keyboard traversal includes the existing header privacy
+control. The final authority-recheck fixture changes its account without emitting the
+separately tested provider event. Review the exact added Pay RPC references before refreshing
+that one documented count; preserve all inventory assertions and surface records. Diagnose
+the inherited quick-hide focus failure using a mounted regression before proposing any
+runtime edit, with a separately reported bounded claim if a runtime defect is reproduced.
+
+Evidence at claim: all four observed #336 failed jobs checked out merge
+`de0abd3f33f5f147a506743f87919230ad038197`, whose tree equals the exact PR head above.
+Pages job `136527106205`: 10 passed, 1 failed, 5 not run; Beta job `136527105979`:
+1 browser case passed, 2 failed. Both failures are disconnected-journal visibility
+assumptions. Full E2E job `136570703059`: 131 passed, 3 failed, 2 skipped (header
+Tab order, account-recheck fixture, quick-hide focus). Web job `136570703109`:
+4202 passed, 1 failed, 1 skipped (unscoped WalletAttempts locale fixture).
+Exact parent #326/#327 job logs reproduce the same three full/lean failures;
+#327 repeats the sole locale failure. Parent rest0 jobs each fail one reviewed
+network-inventory snapshot assertion after 413 script tests pass. All original logs
+remain retained. Lean and other incomplete #336 jobs remain unqualified at claim.
+
+Validation: existing exact-lock dependencies only, original DOM test/type/lint/static
+discovery commands and source-pinned evidence. No local browser, server, socket, anvil
+or RPC execution; no retry intended to conceal a failure. No release gate, workflow,
+dependency, fee, transaction behavior or privacy boundary is weakened. Source review,
+exact-successor hosted gates and parent integration qualification remain required.
