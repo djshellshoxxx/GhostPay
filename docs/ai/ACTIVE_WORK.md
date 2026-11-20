@@ -1923,3 +1923,14 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+# Rejected QR fragment idle deadline — 2026-11-19
+
+Worker: ChatGPT root, workspace `c374725a11b7`, with independent native reviewers.
+Branch: `fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7`.
+Base: PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`, tree `e76c03d9dba595ff1171577139c1628c4ad45f5b`.
+Owned paths: `packages/qr-exchange/src/assembler.ts`, `packages/qr-exchange/src/assembler.test.ts`, this additive claim, and `docs/handoffs/qr-conflict-expiry-20261119/`.
+Scope: rejected CRC-valid conflicting chunks must not refresh an incomplete transfer's idle deadline. The documented unchanged-state contract includes the expiry clock; accepted identical duplicates retain their existing refresh behavior.
+Acceptance: deterministic regression fails against the unchanged base and passes after the minimal repair; confirm mismatch/malformed rejection, exact expiry boundary, accepted duplicate refresh, completion and reset controls; run the original package coverage suite, typecheck, build and lint without modifying configuration or thresholds; obtain an independent review and preserve source-pinned evidence.
+Impact boundary: this is shared API contract correctness. The current browser importer already resets on `CHUNK_CONFLICT`; no browser exploit, integrity bypass or fund impact is asserted.
+Ownership check: current #278 source and open ownership records were checked before edits. Preflight-observation, merchant-ledger recovery, Pages build tooling and CodeQL fixtures remain owned by other active workers. The shared integration lease is held by the separate coordinator; this worker will publish only an isolated branch/draft and will not update the shared candidate, merge main, deploy, change contracts/fees/dependencies/gates, or create automation.

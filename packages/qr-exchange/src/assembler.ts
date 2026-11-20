@@ -75,7 +75,6 @@ export class Assembler {
       throw new QrExchangeError('SESSION_MISMATCH');
     }
     if (this.#done !== null) return this.#result();
-    this.#lastActivity = now;
     const held = this.#parts[c.index];
     if (held === undefined) {
       this.#parts[c.index] = c.data;
@@ -83,6 +82,8 @@ export class Assembler {
     } else if (held !== c.data) {
       throw new QrExchangeError('CHUNK_CONFLICT');
     }
+    // Rejected chunks leave the idle deadline unchanged.
+    this.#lastActivity = now;
     if (this.#received === this.#total) this.#finish();
     return this.#result();
   }

@@ -1,0 +1,52 @@
+(node:36) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/qr-exchange@0.1.0 test
+> vitest run --coverage
+
+(node:49) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/c374725a11b7/GhostPay-resume/packages/qr-exchange
+      Coverage enabled with v8
+
+(node:84) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:103) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:109) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:115) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:92) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  7 passed (7)
+      Tests  239 passed (239)
+   Start at  16:48:35
+   Duration  2.50s (tests 62%, import 21%, transform 15%, worker 2%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   97.57 |    95.17 |     100 |   99.08 |                   
+ assembler.ts      |     100 |    97.95 |     100 |     100 | 126               
+ base64url.ts      |     100 |    79.41 |     100 |     100 | 15,20,23,36       
+ camera.ts         |   95.65 |    91.58 |     100 |   98.96 | 259               
+ generate.ts       |   97.05 |      100 |     100 |   95.83 | 41                
+ multipart.ts      |     100 |    97.22 |     100 |     100 | 33                
+ readers.ts        |   93.56 |    93.83 |     100 |    97.7 | 163,179,242       
+ seller.ts         |     100 |    98.63 |     100 |     100 | 75                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97.57% ( 685/702 )
+Branches     : 95.17% ( 552/580 )
+Functions    : 100% ( 91/91 )
+Lines        : 99.08% ( 543/548 )
+================================================================================
