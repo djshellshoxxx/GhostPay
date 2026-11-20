@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "transport": "onion",
+  "publicOrigin": null,
+  "basePath": "/",
+  "listen": { "kind": "tcp", "host": "127.0.0.1", "port": 8080 },
+  "mirrorLabel": "ghostpay-onion",
+  "onionLocation": null
+}

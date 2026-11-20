@@ -6,13 +6,13 @@ import { KitError } from '../../src/errors.mjs';
 import { KIT_DEFAULT_HEADERS_FILE, REQUIRED_CSP_DIRECTIVES, REQUIRED_HEADERS } from '../../src/policy.mjs';
 import {
   HSTS_VALUE, assertServableHeaders, canonicalHeaderName, checkRequiredHeaders, cspDirectiveNames, effectiveHeaders, kitHeaderNames, kitResponseHeaders,
-  loadHeaderPolicy, parseHeadersFile, patternRegexSource, transportHeaders,
+  loadHeaderPolicy, onionOrigin, parseHeadersFile, patternRegexSource, transportHeaders,
 } from '../../src/serve/headers.mjs';
 import { GHOSTPAY_HEADERS_PATH } from './helpers.mjs';
 
 /** @typedef {import('../../src/types.mjs').HostConfig} HostConfig */
 
-const ONION = `http://${'b'.repeat(56)}.onion`;
+const ONION = 'http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion';
 
 /**
  * @param {Partial<HostConfig>} over
@@ -175,10 +175,23 @@ test('transport headers: HSTS only for clearnet https, Onion-Location only when 
   assert.deepEqual(transportHeaders(host({ publicOrigin: 'http://example.org' })), []);
   assert.deepEqual(transportHeaders(host({ publicOrigin: null })), []);
   assert.deepEqual(transportHeaders(host({ onionLocation: ONION, basePath: '/m/' })), [['Onion-Location', `${ONION}/m/`]]);
-  assert.deepEqual(transportHeaders(host({ onionLocation: `${ONION}/` }), '/a?b=1'), [['Onion-Location', `${ONION}/a?b=1`]]);
+  assert.deepEqual(transportHeaders(host({ onionLocation: ONION }), '/a?b=1'), [['Onion-Location', `${ONION}/a?b=1`]]);
   assert.deepEqual(transportHeaders(host({ transport: 'onion', publicOrigin: `${ONION}`, onionLocation: ONION })), []);
   assert.deepEqual(transportHeaders(host({ transport: 'i2p', publicOrigin: `http://${'c'.repeat(52)}.b32.i2p` })), []);
   assert.throws(() => transportHeaders(host({ onionLocation: 'http://evil.example' })), (e) => e instanceof KitError && e.code === 'E_CONFIG');
+});
+
+test('direct header helpers only advertise canonical, checksum-valid HTTP onion origins', () => {
+  assert.equal(onionOrigin(host({ onionLocation: ONION })), ONION);
+  for (const raw of [
+    `http://${'b'.repeat(56)}.onion`, ONION.replace('http:', 'https:'),
+    ONION.toUpperCase(), `${ONION}/`, `${ONION}:80`, `${ONION}:8080`,
+    null, /** @type {any} */ ({ toString: () => ONION }),
+  ]) {
+    const hc = host({ onionLocation: raw });
+    assert.throws(() => onionOrigin(hc), (e) => e instanceof KitError && e.code === 'E_CONFIG');
+    if (raw !== null) assert.throws(() => transportHeaders(hc), (e) => e instanceof KitError && e.code === 'E_CONFIG');
+  }
 });
 
 test('kitResponseHeaders: Cache-Control default, transport headers never override site rules', () => {

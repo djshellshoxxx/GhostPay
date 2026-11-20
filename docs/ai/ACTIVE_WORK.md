@@ -1,3 +1,48 @@
+# Tor hosted qualification extension — 2026-11-19
+
+Worker: coordinator `/root`, same Tor completion branch and base as below.
+Owns new `.github/workflows/tor-static.yml` plus `scripts/tor/browser-acceptance.mjs`.
+Reason: local Chromium exits before page assertions because socket() is denied;
+Docker and Tor are unavailable. Add read-only CI for the lean artifact, offline
+browser acceptance, and container configuration without launching an onion service.
+No deployment credentials, Tor network bootstrap or public service.
+
+# Tor static-hosting completion — 2026-11-19
+
+Coordinator: ChatGPT `/root`; workers: `tor_scope_review`, `tor_hosting`, `tor_security`.
+Branch: `feat/ghostpay-tor-completion-20261119`.
+Base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (live main fetched at task start).
+Scope: complete the existing 5g static HTTPS/onion hosting path with no mandatory
+relayer; reuse the portable hosting kit, preserve explicit RPC/wallet disclosures,
+and qualify the actual static browser artifact under independent origins/subpaths.
+Owned paths: new `deploy/tor-static/`; Tor adapter source/tests/docs under
+`tools/portable-hosting-kit/`; new Tor hosting tests/scripts and evidence under
+`scripts/tor/` and `docs/handoffs/tor-completion-20261119/`; `deploy/TOR.md`;
+new scoped spec `docs/specs/TOR_HOSTING_COMPLETION.md`; additive claim in this file.
+Existing web runtime/build paths are read-only unless a demonstrated hosting blocker
+requires a narrow, separately recorded ownership extension. Other open PR work is
+preserved; no automatic integration of overlapping recovery/privacy work.
+Acceptance: a static-only publish recipe with isolated identity storage, private
+backend listener, safe Tor config and no silent clearnet fallback; validated v3
+origins; focused tests, build/lint, browser request evidence, and independent defensive
+source review. Actual Tor/runtime checks are required before claiming those outcomes;
+missing capabilities stay explicit. No real funds or unsolicited live-service probes.
+No deployment, public onion identity, release signing, gate relaxation or force push.
+Status: claim recorded before implementation; design and current-source review begun.
+
+## Tor origin validation extension — 2026-11-19
+
+Worker: `tor_scope_review`, delegated by the Tor completion coordinator on the same
+`feat/ghostpay-tor-completion-20261119` branch and base above.
+Owned paths: `tools/portable-hosting-kit/src/config/host-config.mjs`,
+`src/adapters/tor.mjs`, `src/serve/headers.mjs`, their focused tests, and the kit's
+Tor/config documentation. Acceptance: one strict canonical HTTP v3 onion-origin
+validator with checksum and generated port-80 consistency; direct adapter/header
+calls refuse invalid onion origins; I2P and clearnet behavior remains unchanged.
+Add bounded local validation regressions and record actual Node/lint/typecheck
+results. No application runtime, RPC profile, deployment activation, or external
+network behavior changes. This section is the worker's only registry edit.
+
 # Focused hosting main reconciliation — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
