@@ -2347,7 +2347,7 @@
     "error.paymentKeyExport.noRpc": "يحتاج فحص العنوان إلى RPC الذي استخدمه هذا الفحص. شغّل الفحص مرة أخرى، ثم صدّر.",
     "error.paymentKeyExport.wrongChain": "يخدم RPC الذي استخدمه هذا الفحص سلسلة مختلفة عن سلسلة هذه الدفعة، لذا لم يُصدَّر أي شيء.",
     "error.paymentKeyExport.codeCheckFailed": "تعذّر على RPC تأكيد أن هذا العنوان لا يحوي شيفرة عقد، لذا لم يُصدَّر أي مفتاح خاص. حاول مرة أخرى.",
-    "error.paymentKeyExport.contractAccount": "يحوي العنوان {address} شيفرة عقد (عقد أو تفويض EIP-7702). لا يُصدَّر مفتاحه الخاص، لأنه لا يمكن افتراض أن مفتاحًا خاصًا يتحكم في الأموال هناك.",
+    "error.paymentKeyExport.contractAccount": "The selected address holds contract code (a contract or an EIP-7702 delegation). Its private key is not exported, because a private key cannot be assumed to control funds there.",
     "error.paymentKeyExport.noPayments": "لا توجد دفعات للتصدير.",
     "error.paymentKeyExport.confirmRawKey": "أكّد أولًا التحذير الخاص بالمفتاح الخاص.",
     "error.paymentKeyExport.recoveredKeysClosed": "أُغلق هذا التصدير ومُسحت مفاتيحه. افتح الملف مرة أخرى.",
@@ -2543,7 +2543,8 @@
     "privacyUx.historyLocked": "Unlock the reconciliation vault before revealing history.",
     "privacyUx.historyHint": "Revealing history does not start a network lookup. Existing encrypted backups are preserved.",
     "walletAttempts.privateWarning": "A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.",
-    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts."
+    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts.",
+    "policy.error.contractResponse": "The contract did not answer the requested read as expected."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

@@ -8,7 +8,9 @@ import { InvoiceSignerVerification } from '../components/InvoiceSignerVerificati
 import { getInvoiceSignerPinsSnapshot, useInvoiceSignerPins } from '../lib/invoiceSignerPins';
 import { invoiceVerificationFailure, invoiceVerificationStatus, unrecognizedInvoiceFragmentStatus, type InvoiceVerificationStatus } from '../lib/invoiceVerification';
 import { subscribeAppLock } from '../lib/appLock';
+import { useWalletPrivacy } from '../lib/useWalletPrivacy';
 import { loadSettings, SETTINGS_KEY } from '../lib/settings';
+import { sameExecutionSettings } from '../lib/executionSettings';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
@@ -148,6 +150,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  // Presentation-only choices preserve the reviewed request and pending preparation. Every other setting,
+  // including replaced endpoint/signer references and future fields, still creates fresh execution authority.
+  const executionSettingsRef = useRef(app.settings);
+  if (!sameExecutionSettings(executionSettingsRef.current, app.settings)) executionSettingsRef.current = app.settings;
+  const executionSettings = executionSettingsRef.current;
   const latestT = useRef(t); latestT.current = t;
   const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
@@ -411,10 +418,29 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
   const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
   const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
-  const latest = useRef({ signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision });
-  latest.current = { signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision };
+  const latest = useRef({ signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: executionSettings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision });
+  latest.current = { signerBlocked, verificationScope, parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: executionSettings, session: app.session, receiptConsent, supportedOnly, keepContext, getRpc: app.getRpc, networkRevision: app.networkRevision };
+  const walletPrivacy = useWalletPrivacy(wallet, () => {
+    flowRevision.current++;
+    scheduler.current?.cancel();
+    setWallet(undefined);
+    setWallets(undefined);
+    setStatus('');
+    setError(undefined);
+    // Keep completed/uncertain submission evidence and its receipt context. Only unsubmitted preparation is reset.
+    if (result === undefined && broadcast === undefined) {
+      if (approvalHash !== undefined) setPreviousBroadcast({ hash: approvalHash, kind: 'approval' });
+      setBuilt(undefined);
+      setBuiltFor(undefined);
+      setBuiltForContext(undefined);
+      setApproval(undefined);
+      setGranted(undefined);
+      setApprovalHash(undefined);
+      setPhase(latest.current.parsed === undefined ? 'input' : 'ready');
+    }
+  });
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly && latest.current.networkRevision === app.networkRevision && verificationIsCurrent() && !latest.current.signerBlocked;
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === executionSettings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly && latest.current.networkRevision === app.networkRevision && verificationIsCurrent() && !latest.current.signerBlocked;
   const currentNetworkSignal = useCallback((): AbortSignal => {
     if (latest.current.fragment !== fragment || preflightAuthorization.current.fragment !== fragment ||
         preflightAuthorization.current.revision !== renderedNetworkRevision || (services.network?.getRevision() ?? 0) !== renderedNetworkRevision || networkOperation.current.signal.aborted) {
@@ -519,7 +545,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setCtxError(captureUserMessage(e));
       return undefined;
     }
-  }, [app, services, verificationScope, signerBlocked]);
+  }, [app.getRpc, app.networkRevision, executionSettings, services, verificationScope, signerBlocked]);
   const refreshRef = useRef(refreshContext);
   refreshRef.current = refreshContext;
   const reviewKey = review === undefined ? '' : review.blockers.join('|');
@@ -795,30 +821,41 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   };
   useEffect(() => {
     if (phase === 'ready' && wallets === undefined) onFindWallets();
-  }, [phase]);
+  }, [phase, wallets]);
 
   const runtime = useCallback(async (): Promise<Runtime> => {
-    const rpc = chainId === undefined ? undefined : await app.getRpc(chainId, { action: 'payment-preflight', signal: currentNetworkSignal() });
+    // Capture before acquisition so a late send cannot renew a revoked wallet operation's read authority.
+    const privacyScope = walletPrivacy.capture();
+    const rpc = chainId === undefined ? undefined : await app.getRpc(chainId, {
+      action: 'payment-preflight',
+      signal: AbortSignal.any([currentNetworkSignal(), privacyScope.signal]),
+    });
+    privacyScope.assertCurrent();
     return { rpc, nowSeconds: () => Math.floor(services.nowMs() / 1000), sleep: services.sleep };
-  }, [app, chainId, services, currentNetworkSignal]);
+  }, [app, chainId, services, currentNetworkSignal, walletPrivacy.capture]);
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined) return;
     const revision = flowRevision.current;
     const sessionGuard = captureSessionVersionGuard();
+    const privacyScope = walletPrivacy.begin();
     const invoice = parsed?.invoice;
+    const guard = (): void => {
+      sessionGuard();
+      privacyScope.assertCurrent();
+      if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) throw new UserFacingError({ key: 'pay.error.sellerKeysChanged' });
+    };
     setError(undefined);
     setStatus({ key: 'pay.status.walletWaiting' });
-    connectWallet(w, chainId).then(
+    connectWallet(w, chainId, guard, privacyScope.signal).then(
       (s) => {
-        try { sessionGuard(); } catch { return; }
-        if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
+        try { guard(); } catch { return; }
         setWallet(s);
         setStatus('');
         announce({ key: 'pay.announce.connected' });
       },
       (e: unknown) => {
-        if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
+        try { guard(); } catch { return; }
         setStatus('');
         setError(captureUserMessage(e));
       },
@@ -1056,7 +1093,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     return (
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">{t('pay.title.input')}</h2>
-        <WalletAttempts />
+        <WalletAttempts wallet={wallet} />
         {signerPanel}
         {previousBroadcast !== undefined && (
           <Notice kind="warn" title={t('pay.previous.title')}>
@@ -1124,7 +1161,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   return (
     <section aria-labelledby="pay-h">
       <h2 id="pay-h">{t('pay.title.review')}</h2>
-      <WalletAttempts />
+      <WalletAttempts wallet={wallet} />
       {signerPanel}
       {signerBlocked && <Notice kind="error">{t('pay.signer.policyBlocked')}</Notice>}
       {previousBroadcast !== undefined && (
@@ -1374,7 +1411,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         </div>
       )}
 
-      {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
+      {wallet !== undefined && built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
         <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 

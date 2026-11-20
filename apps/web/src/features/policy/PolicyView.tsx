@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
+import { useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { connectWallet, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -26,23 +27,47 @@ export interface PolicyCtx {
   readonly networkSignal?: AbortSignal;
 }
 
-function WalletPicker(props: { readonly chainId: number; readonly onConnected: (w: WalletSession) => void }): ReactNode {
+function WalletPicker(props: { readonly chainId: number; readonly assertCurrent: () => void; readonly onConnected: (w: WalletSession) => void }): ReactNode {
   const services = useServices();
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [err, setErr] = useState<string | undefined>(undefined);
+  const privacy = useWalletPrivacy(undefined, () => { setWallets(undefined); setErr(undefined); });
+  const find = (): void => {
+    const scope = privacy.begin();
+    setErr(undefined);
+    void services.discoverWallets().then((found) => {
+      try { scope.assertCurrent(); props.assertCurrent(); } catch { return; }
+      setWallets(found);
+    }, (e: unknown) => {
+      try { scope.assertCurrent(); props.assertCurrent(); } catch { return; }
+      setErr(userMessage(e));
+    });
+  };
+  const connect = (selected: WalletInfo): void => {
+    const scope = privacy.begin();
+    const guard = (): void => { scope.assertCurrent(); props.assertCurrent(); };
+    setErr(undefined);
+    void connectWallet(selected, props.chainId, guard, scope.signal).then((connected) => {
+      try { guard(); } catch { return; }
+      props.onConnected(connected);
+    }, (e: unknown) => {
+      try { guard(); } catch { return; }
+      setErr(userMessage(e));
+    });
+  };
   return (
     <div>
-      <button type="button" onClick={() => { setErr(undefined); void services.discoverWallets().then(setWallets, (e: unknown) => { setErr(userMessage(e)); }); }}>
+      <button type="button" onClick={find}>
         {t('policy.wallet.find')}
       </button>
       {wallets?.length === 0 && <p>{t('policy.wallet.none')}</p>}
       <ul className="plain">
         {wallets?.map((w) => (
           <li key={w.id}>
-            <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
+            <button type="button" onClick={() => { connect(w); }}>
               {t('policy.wallet.connect', { name: w.name })}
             </button>
           </li>
@@ -85,6 +110,10 @@ export function PolicyView(): ReactNode {
     setBusy(false);
     return next;
   }, []);
+  useWalletPrivacy(wallet, () => {
+    setWallet(undefined);
+    invalidateDeployment();
+  });
   useEffect(() => services.network?.subscribe(invalidateDeployment), [services.network, invalidateDeployment]);
   const networkRevision = services.network?.getRevision() ?? 0;
 
@@ -148,7 +177,9 @@ export function PolicyView(): ReactNode {
             </dl>
           )}
           <h3>{t('policy.wallet.heading')}</h3>
-          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker key={`wallet:${String(scope)}`} chainId={chain.chainId} onConnected={(w) => { if (revision.current === scope) setWallet(w); }} />}
+          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker key={`wallet:${String(scope)}`} chainId={chain.chainId} assertCurrent={() => {
+            if (revision.current !== scope || operation.current.signal.aborted) throw new UserFacingError({ key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' });
+          }} onConnected={(w) => { if (revision.current === scope) setWallet(w); }} />}
         </>
       )}
 

@@ -126,7 +126,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
             </div>
           )}
           {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
-          <WalletAttempts />
+          <WalletAttempts wallet={wallet} />
         </>
       )}
     </section>

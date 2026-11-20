@@ -18,6 +18,7 @@ import {
 } from './paymentKeyExport';
 import { TEST_N, VECTORS, VECTOR_CHAIN, VECTOR_PASS, VECTOR_TIME, codeRpc, loadVectorSeller, vectorAnnouncement, vectorMatch } from './paymentKeyExport.testutil';
 import type { SecretExportCredential } from './keyVault';
+import { UserFacingError, captureUserMessage, userMessage } from './errors';
 
 const EXPORT_PASS = 'orbit-lantern-cobalt-meadow-violet';
 const strip = (hex: string): string => hex.replace(/^0x/, '');
@@ -92,6 +93,19 @@ describe('single encrypted keypair', () => {
     await expect(exportEncryptedPayment(m, keystore, EXPORT_PASS, { rpc: undefined, N: TEST_N })).rejects.toThrow(/needs the RPC this scan used/);
     await expect(exportEncryptedPayment(m, keystore, EXPORT_PASS, { rpc: codeRpc(84532), N: TEST_N })).rejects.toThrow(/serves a different chain/);
     expect(noRpc.calls).toEqual([]);
+  });
+
+  it('keeps contract-code refusals free of the selected payment address', async () => {
+    const match = vectorMatch('a1');
+    const session = getSessionPublic();
+    const error: unknown = await exportEncryptedPayment(match, keystore, EXPORT_PASS, {
+      rpc: codeRpc(VECTOR_CHAIN, () => '0xef0100aabbccddeeff00112233445566778899aabbcc'), N: TEST_N,
+    }).then(() => undefined, (cause: unknown) => cause);
+    expect(error).toBeInstanceOf(UserFacingError);
+    expect(userMessage(error)).toMatch(/contract code.*EIP-7702/);
+    expect(userMessage(error).toLowerCase()).not.toContain(match.stealthAddress.toLowerCase());
+    expect(JSON.stringify(captureUserMessage(error)).toLowerCase()).not.toContain(match.stealthAddress.toLowerCase());
+    expect(getSessionPublic()).toEqual(session);
   });
 
   it('checks the new passphrase and the credential before any request', async () => {
@@ -209,7 +223,12 @@ describe('payment key archive', () => {
   it('refuses the whole archive when one address has code, and wipes every derived key', async () => {
     const bad = vectorAnnouncement('a2').announcement.stealthAddress;
     const rpc = codeRpc(VECTOR_CHAIN, (address) => (address === bad ? '0x60016001' : '0x'));
-    await expect(exportPaymentArchive([vectorMatch('a1'), vectorMatch('a2')], 'all-discovered', keystore, EXPORT_PASS, { rpc, N: TEST_N })).rejects.toThrow(new RegExp(bad));
+    const error: unknown = await exportPaymentArchive([vectorMatch('a1'), vectorMatch('a2')], 'all-discovered', keystore, EXPORT_PASS, { rpc, N: TEST_N })
+      .then(() => undefined, (cause: unknown) => cause);
+    expect(error).toBeInstanceOf(UserFacingError);
+    expect(userMessage(error)).toMatch(/contract code/);
+    expect(userMessage(error).toLowerCase()).not.toContain(bad.toLowerCase());
+    expect(JSON.stringify(captureUserMessage(error)).toLowerCase()).not.toContain(bad.toLowerCase());
     let captured: Uint8Array[] = [];
     vi.spyOn(stealthExport, 'encryptPaymentKeys').mockImplementation((items) => { captured = items.map((i) => i.secret); return Promise.reject(new Error('sealing failed')); });
     await expect(exportPaymentArchive([vectorMatch('a1'), vectorMatch('a2')], 'selected', keystore, EXPORT_PASS, { rpc: codeRpc(), N: TEST_N })).rejects.toThrow(/sealing failed/);

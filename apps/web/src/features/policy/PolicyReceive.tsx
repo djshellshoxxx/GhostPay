@@ -271,7 +271,9 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
       ctx.assertDeploymentCurrent();
       if (c === undefined) throw new UserFacingError(t('policy.error.noRpc'));
       const start = visibleCursor ?? { nextBlock: /^[0-9]{1,15}$/.test(fromBlock.trim()) ? BigInt(fromBlock.trim()) : 0n };
-      const f = await fetchScheme2Announcements({ chain: ctx.chain, client: c, deployment: dep, cursor: start });
+      const f = await fetchScheme2Announcements({ chain: ctx.chain, client: c, deployment: dep, cursor: start,
+        assertCurrent: () => { assertSessionCurrent(); ctx.assertDeploymentCurrent(); },
+      });
       assertSessionCurrent();
       ctx.assertDeploymentCurrent();
       const hashes = ctx.records.map((r) => r.policyHash);

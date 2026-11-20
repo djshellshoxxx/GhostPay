@@ -1,0 +1,66 @@
+{
+  "feature": "v1-01-masking",
+  "generation": 3,
+  "base": "59188a23e7f98e3119011f160627f088ab88ed8d",
+  "runtime": "32930d6615310e78009b525841fec58cba07f805",
+  "runtime_tree": "4ae7a9626071a1961bd053a02902d958468d93f7",
+  "scope": "AppShell.updateSettings stale-revision fallback only",
+  "runs": [
+    {
+      "name": "fixture-setup",
+      "source": "5493bf01606d70d46a144ac47d6921200b1e966e",
+      "exit": 1,
+      "raw_log_sha256": "71647ba83a6ec055be812dd01cb73f36d7dc6605ab57964f6cef3b67b36119ad",
+      "log": "fixture-setup.log.gz",
+      "failed": 6,
+      "filtered": 12,
+      "seconds": 3.15,
+      "classification": "Fixture setup failure: frozen network authority cannot be spied on; no privacy behavior executed.",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/AppShell.privacy.test.tsx -t \"refuses a stale\" --coverage=false --maxWorkers=1",
+      "cwd": "apps/web"
+    },
+    {
+      "name": "behavioral-red",
+      "source": "5f845ce83bf9dc136993ea7913bf41837f7d65fb",
+      "exit": 1,
+      "raw_log_sha256": "8f1242631c991c7311d8e98cb79677b17aa8c5a3d4df82d460924f2763b8c77a",
+      "log": "behavioral-red.log.gz",
+      "failed": 6,
+      "filtered": 12,
+      "seconds": 3.27,
+      "classification": "All six selected cases reached the current privacy switch assertion and observed false instead of true.",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/AppShell.privacy.test.tsx -t \"refuses a stale\" --coverage=false --maxWorkers=1",
+      "cwd": "apps/web"
+    },
+    {
+      "name": "focused-green",
+      "source": "32930d6615310e78009b525841fec58cba07f805",
+      "exit": 0,
+      "raw_log_sha256": "45c1de77f170300305aad5e46bedc2c883e0356bda59afe1c81bdfc2bb265862",
+      "log": "focused-green.log.gz",
+      "passed": 40,
+      "filtered": 0,
+      "files": 4,
+      "seconds": 8.3,
+      "classification": "Complete four-file original-config selection.",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/AppShell.privacy.test.tsx src/views/Settings.clipboardPrivacy.test.tsx src/lib/settings.uiPrivacy.test.ts src/lib/executionSettings.test.ts --coverage=false --maxWorkers=1",
+      "cwd": "apps/web"
+    },
+    {
+      "name": "secret-scan",
+      "source": "32930d6615310e78009b525841fec58cba07f805",
+      "exit": 0,
+      "raw_log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "log": "secret-scan.log.gz",
+      "classification": "No committed env files or key material found.",
+      "command": "bash scripts/scan-secrets.sh",
+      "cwd": "repository root"
+    }
+  ],
+  "diff_checks": {
+    "working_tree_exit": 0,
+    "complete_generation_range_exit": 0,
+    "range": "59188a23..32930d66"
+  },
+  "full_qualification": "Original combined type/lint/coverage/browser/hosted gates remain coordinator-owned and unqualified by this generation."
+}

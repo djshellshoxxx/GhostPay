@@ -2070,3 +2070,152 @@ Exact feature source: 052ac56c36cf62419941223318d1b6a366954625; frozen privacy d
 Owned writes: this additive claim and docs/engineering-handoffs/security-review-gen2-20261120/ only.
 Acceptance: independently inspect new shortcut source, shell integration and original focused tests for one-way hiding, keyboard/accessibility behavior, focus and listener lifecycle, preserved independent history authority and sole-copy material. Review the separately owned receipt-status repair at its later exact source. Preserve setup failures and distinguish focused execution from full/browser qualification.
 No source-branch mutations, remote writes, contract/fee/deployment/release changes or security gate weakening.
+
+
+## Required privacy specs and independent teams — 2026-11-20 UTC
+
+Worker /root in workspace dc1ef37f4621. Base published 137628961463fc5abd8b7927b2efe6b18a0a206a. Owned M0 paths: docs/privacy-release/, tasks/plan.md, tasks/todo.md and this entry. Scope exactly #286/#287. Nine specs precede code, three parallel worker slots, fresh successor review. Preserve shared generation-6 integration lock, main and original branches. Initial unpublished local spec/candidate were lost in workspace cleanup; source and evidence reset to this published base. No deployment/release, gate waiver or dependency change.
+
+
+## Global masking team generation 1
+
+Worker /root; branch privacy/v1-masking-20261120; base bbcf71b7. Runtime retained from published13762896; owned writes limited to additive focused evidence and handoff unless inspection proves a defect. Review global SensitiveContent boundaries, temporary reveal expiry, one-way quick hide, preservation of recovery/drafts, accessibility/focus and app-shell integration. Execute original targeted tests. Independent successor receives exact-source evidence. No dependency, network, storage, recovery erasure, remote publication or release-gate changes.
+
+
+## Required privacy candidate reconciliation — coordinator
+
+Worker /root in dc1ef37f4621. Own isolated local candidates work/ghostpay-required-v1-candidate-20261120 and work/ghostpay-required-v11-candidate-20261120. Reconcile released feature branches only, preserve individual feature ancestry/evidence, record original gates on exact combined source. Existing shared integration lock and other coordinator's branches/main remain untouched. v1 candidate must not depend on v1.1 modules. Resolve shared-file appends/imports/catalog keys without discarding worker behavior. No remote push (automatic approval review rejected earlier push), release, deployment, security gate waiver or dependency update.
+
+
+## Clipboard privacy team generation 1 — current-cycle qualification
+
+Worker /root; branch privacy/v1-clipboard-20261120; base bbcf71b7. Own additive evidence under docs/privacy-release/evidence/v1-clipboard/ and this claim. Runtime is retained from published13762896 and is more advanced than standalone PR297 (digest ownership, cleanup generations, pending-clear serialization). Do not replace it with older PR source. Acceptance: original focused runtime/component/settings checks on this exact retained implementation, independent browser-permission and race review in a fresh successor. No runtime change without concrete missing behavior. No deployment, gate or remote writes.
+
+
+## Private history team generation 1
+
+Worker /root; branch privacy/v1-history-20261120; base bbcf71b7. Owned writes additive qualification evidence and next-generation handoff; published runtime retained unless concrete defect appears. Verify independent unlocked history reveal, account/chain/session scope, preservation of encrypted reconciliation and unresolved duplicate attempts, no new network lookup/plaintext history. Original focused tests, then fresh independent review. No storage migration, deletion, dependency, network, remote write or gate change.
+
+
+## Privacy-safe output team generation 1
+
+Worker /root; branch privacy/v1-outputs-20261120; base bbcf71b7. Owned runtime: lib/tagArchive.ts and features/policy/PolicyCreate.tsx; matching existing regression files, additive evidence and this entry. Inspection found export filenames still contain a policy-hash prefix and archive creation date. Replace only filename metadata with fixed neutral names while preserving canonical policy record and encrypted archive contents/recovery semantics. Existing wallet, masking, signature and storage lanes stay unchanged. Regressions before fix, focused original checks, fresh independent output review. No remote writes/deployment/gate change.
+
+
+## Private history independent review — generation 2
+
+Worker /root/history_gen2; branch privacy/v1-history-20261120; base814eb4d88f96cc797294a130583737d01cc19054. Reused released worktree privacy-address. Owned writes: narrow WalletAttempts wallet-scope prop wiring in Pay.tsx (two call sites), features/registry/RegistryView.tsx and features/policy/PolicyPay.tsx, focused matching regression coverage and docs/privacy-release/evidence/history-gen2*. Parent explicitly reserved these call-site spans; wallet_gen1 owns independent lifecycle hooks/guards and disclosure_gen2 owns consent presentation/fixtures. Existing component filters/reveal/confirmation and complete unknown/submitted journal records remain authoritative. Reproduce original blind-retry and policy clear failures before repairing caller scope; independently review history lock/account/reveal/accessibility and encrypted preservation. No network/storage/dependency/crypto/fee/contract changes or remote writes. Full original gates remain open under coordinator resource scheduling.
+
+
+History generation 2 released after runtime4cc9026f and84 passing focused tests. Only the four claimed WalletAttempts prop spans changed in production. Original full/browser/hosted gates and combined provider lifecycle remain coordinator/successor work. No process remains active and no remote mutation occurred.
+
+
+## Wallet lifecycle privacy generation 1 — required v1.0
+
+Worker /root/wallet_gen1; branch privacy/v1-wallet-lock-20261120; base bbcf71b79d4efd00892948faa833cb7d8f471406. Own apps/web/src/lib/{wallet.ts,useWalletPrivacy.ts} and targeted matching regressions, views/Pay.tsx, features/{registry/RegistryView.tsx,policy/PolicyView.tsx}, additive evidence wallet-gen1 and this claim. The v1.0 spec is committed before implementation. Clear stale visible wallet/session authority on account, chain, disconnect, app/session lock and unmount; pending promises cannot restore revoked state or trigger follow-up signing/sends. Preserve known/uncertain broadcast outcomes, duplicate-attempt journal, encrypted records and sole-copy recovery material. Reuse existing guards. Independent successor receives bounded original test evidence and exact-source remaining work. Coordinate overlapping disclosure API with root; no v1.1 dependency, shared integration mutation, remote writes, dependency/crypto/contract/fee changes or weakened gates.
+
+
+Wallet lifecycle generation1 released at tested runtime 74cb34cbc5f3f193e70430d17bef1ccafd00afca. Focused59/59 pass; evidence docs/privacy-release/evidence/wallet-gen1.md. Independent successor owns next review/repair; typing/lint/browser/full suite remain open.
+
+
+## Wallet lifecycle generation 2 independent review
+
+Worker /root/wallet_gen2; branch privacy/v1-wallet-lock-20261120; base2f2da8316ee025151e7f275eba5d9b93944a070c, runtime74cb34cbc5f3f193e70430d17bef1ccafd00afca. Owned paths: useWalletPrivacy.ts, wallet.ts lifecycle/connection guard spans, matching original/focused tests and narrow Pay/Registry/Policy lifecycle wiring, evidence/wallet-gen2*. History_gen2 owns four WalletAttempts wallet-prop spans; disclosure_gen2 owns independent v1.1 consent API/fixtures. Root reconciles candidate branches.
+
+Acceptance: independent examination of competing connection scopes, provider listener disposal/reentrancy, app-lock/session expiry, stale promises and preserved known/unknown transaction evidence. Repair only concrete defects with original regression evidence. Standalone v1 has no v1.1 dependency; no key/backup/journal deletion, new RPC/dependency/wire/crypto/fee/contract change or remote mutation. Use bounded one-worker tests; full typing/lint/browser/hosted gates remain separately unqualified. Deliver source-pinned M2 handoff and release at verified milestone.
+
+
+Wallet generation2 narrow adapter follow-through: the revised real Policy scan lifecycle regression at59cb2ce2 found one follow-up mock client read after session replacement while a prior log call ignored abort. Production defaultServices already guards transport authorization, so this is not evidence of external egress bypass. Coordinator explicitly approved extending owned scope to policy/scan2.ts optional read-lifetime guard and the existing PolicyReceive scan call; no shared adapter package, transport policy or new RPC. Preserve the stronger before/after-await cancellation regression and existing scanner results.
+
+
+### Wallet generation 2 milestone released
+
+Worker /root/wallet_gen2 completed independent review at `a431845b9f8a4daa1759893132c4452bf50ce618` (tree `698a00feb0a84fbd045f65956de40758ea2a94e3`), runtime `99b2c1668f126603b198adedf9adf3b8d8f2463c`. Reused independent history four-prop fix; guarded app-level Policy scan continuation for uncooperative clients; preserved original lifecycle/custody/journal invariants; added competing connection and late-outcome cases; corrected unsupported role-query test options. Focused scan36 and lifetime11 pass; wider219-selected attempt returned203 passes plus2SIGKILL worker errors, explicitly not passed; two killed original files subsequently29/29 pass in quiet window. Evidence and next-generation assignment: docs/privacy-release/evidence/wallet-gen2.md and wallet-gen2/evidence.json. No process active; paths released. Full combined typing/lint/coverage/browser/hosted gates remain open; no remote mutation.
+
+
+## Global masking generation 2 independent review
+
+Worker /root/masking_gen2; branch privacy/v1-masking-20261120; base1110d51fb512803353b3361e8f76ec5eefa177e9. Published13762896 runtime retained by generation1;49original focused cases passed there. Own additive review/evidence under docs/privacy-release/evidence/masking-gen2*, plus narrow privacyMode/SensitiveContent/PrivacyControls/PrivacyQuickHide regression and repair only if a concrete defect is established. Coordinator owns shared app reconciliation; wallet_gen2 owns account lifecycle and disclosure_gen2 owns its new dialog.
+
+Acceptance: independent review of bounded reveal clocks, lock/session/visibility/route authority, safe focus and selection, one-way quick hide, visible/accessibility concealment and mounted draft/sole-copy recovery preservation. No claims of DOM/JS erasure. Execute only bounded original focused checks under1024MB/oneworker; original full typing and browser build remain blocked by coordinator resource failures, and no gate bypass is permitted. No dependencies, new egress, storage deletion, recovery changes, remote publication or release. Finish source-pinned evidence and a fresh successor task, then release.
+
+
+### Masking storage-refresh boundary regression
+
+Independent review found the execution-settings storage handler can reload default visual preferences after missing/corrupt/blocked UI-preference storage, unlike the UI-only handler which preserves current choices. Narrow additional owned span: AppShell.privacy.test.tsx storage-refresh regression, with AppShell.tsx onStorage fallback repair coordinated with root; disclosure's scope/provider additions remain untouched. Require current masking and draft/session preservation while retaining existing execution-grant revocation and permitting a deliberate later privacy toggle.
+
+
+### Masking-only prepared Pay context stability
+
+Root assigned the separately reproduced privacy-toggle/Pay-preparation gap to masking_gen2. Owned narrow spans: Pay.tsx execution-settings identity and refreshContext dependencies/current guards; new Pay.masking.test.tsx. Reuse the existing sameExecutionSettings boundary (only privacyMode/clipboardClearAfterMs excluded); every other current/future setting, endpoint/signer reference, session, invoice, network grant, quote and expiry remains guarded. Wallet lifecycle and disclosure APIs/consent helpers remain independently owned. Verify unchanged prepared payload, no extra privacy-triggered RPC/wallet activity, in-flight preparation preservation and execution-change refusal.
+
+
+### Masking generation 2 released
+
+Worker /root/masking_gen2 completed independent review and two bounded repairs at runtime `ea6759e50655e9a4a469bb59bd0cb05ca2515bf6` (tree `1edc0e83c0edc74516af6a4e327590725d39f306`). Four storage-refresh regressions and two prepared-Pay regressions reproduced; actual execution-setting revocation remained passing. Final original focused selection66/66 across8files, zero skips, exit0; secret/full-feature whitespace checks passed. Scoped typed lint was killed137 and remains open with full type/coverage/browser/hosted gates. Evidence and fresh successor assignment: docs/privacy-release/evidence/masking-gen2.md. Owned spans released; no active test process or remote mutation.
+
+
+## Clipboard privacy independent review — generation 2
+
+Worker /root/clipboard_gen2; branch privacy/v1-clipboard-20261120; base 52f1332f97a066c59318dfb8f7985f1deba2dd93, runtime retained from published137628961463fc5abd8b7927b2efe6b18a0a206a. Owned writes: docs/privacy-release/evidence/clipboard-gen2* and this additive claim; clipboardPrivacy.ts/Common.tsx/SecretBackup.tsx and their focused tests only if a concrete bounded defect is reproduced. Parent owns combined qualification, shared-file reconciliation and publication.
+
+Acceptance: independently inspect digest-only ownership, reserved copy intent, pending-clear serialization, replacement races, denied/unavailable APIs, timer/disable/unmount cleanup and asynchronous backup generation. Preserve newer clipboard text, deliberate successful copies, keys and backups. No unconditional-clear fallback, plaintext timer retention, new dependency/network/storage/deployment/security-gate changes. Original browser journey is reviewed but execution awaits the coordinator's quiet build window; focused checks use original configuration and exact-source evidence. Retain browser/OS history and external race limitations. Release a source-pinned next-generation handoff at the bounded milestone.
+
+
+### Clipboard generation 2 milestone released
+
+Worker /root/clipboard_gen2 repaired queued-copy lifetime at `a17bad1900d58c005efd42ca308907531b2bd9ed` (tree `af710d89f790437fc56cc866f819ccb8fb304eb1`) after three real component regressions. Full focused seven-file selection77/77passed,zero skips,exit0; prior wrong-cwd startup and RED3fail/13filtered preserved. Secret scan and feature-range whitespace checks passed. Existing native clipboard/permission/history limitations remain explicit. Review/evidence/internal successor assignment: docs/privacy-release/evidence/clipboard-gen2.md. Full combined typing/lint/browser/coverage/hosted gates remain coordinator-owned and open. Owned paths released; no active process or remote mutation.
+
+
+## Privacy-safe outputs team generation 2 independent review
+
+Worker /root/outputs_gen2; branch privacy/v1-outputs-20261120; base 76ddb0309dcc941d0930d253d63460f1e7822453, runtime81e295a3cdf3e75d5a64f36cefe395aa233cce0c. Owned writes initially docs/privacy-release/evidence/outputs-gen2* and this additive claim. Review fixed filenames, all current browser export callers, neutral document titles/error/notification/log surfaces and preserved canonical/encrypted recovery payloads. Only a demonstrated defect may justify a narrow additional production/test claim. Other workers own masking, wallet lifecycle, disclosure, retention and integration; coordinate shared files with root.
+
+Acceptance: independently inventory applicable output surfaces, inspect exact payload-versus-filename changes, execute bounded original checks as justified and preserve actual failures/skips. Existing deliberate invoice fragments/export bodies remain functional; no new Notification API, secret erasure, storage/network/dependency/crypto/fee/contract/gate changes. Full combined type/lint/browser/coverage gates remain root-scheduled. No remote writes, deployment or release. Commit exact-source review evidence and an internal fresh-generation handoff, then release.
+
+
+### Outputs generation 2 demonstrated message-boundary repair scope
+
+Coordinator confirmed narrow ownership of features/policy/chain.ts read-failure message, lib/paymentKeyExport.ts contract-code refusal descriptor, their existing policy.logic.test.ts/paymentKeyExport.test.ts regressions, four locale entries and explicit critical-key classification. Inspection found selected policy/stealth addresses retained and rendered by these UserFacingError paths. Preserve all RPC inputs, refusal/authorization behavior, export payload construction and known transaction outcomes. Regression before repair; no other caller/lifecycle/transport changes.
+
+
+## Global masking generation 3 stale-update fallback
+
+Worker /root/masking_gen3; branch privacy/v1-masking-20261120; base59188a23e7f98e3119011f160627f088ab88ed8d (released M2 plus supported role-query typing repair). Owned spans: AppShell.tsx updateSettings stale-execution-revision fallback, AppShell.privacy.test.tsx narrowly corresponding regressions, and docs/privacy-release/evidence/masking-gen3*. The independent generation4 review identified the sibling fallback left as an M2 inspection target. Root and integration_gen3 coordinate later candidate reconciliation; disclosure scope, Pay identity and other worker spans remain untouched.
+
+Acceptance: reproduce missing/corrupt/inaccessible UI privacy storage after another-tab execution write whose storage event has not arrived, then refuse a stale clipboard-only/settings update while retaining the current mask. Preserve current draft/session, exact newer execution-storage bytes, return-false behavior, revision refresh, RPC/session-only cache clearing and network invalidation; valid explicit privacy choices remain usable. Minimal functional current-state fallback reuses loadPrivacyPreferences. Original focused RED/GREEN tests under one worker/1024MiB, exact source/log evidence, secret/diff checks, fresh successor handoff. No dependencies, storage format, network destinations, crypto/fees/contracts, remote publication, deployment or gate changes. Full combined typing/lint/browser qualification stays coordinator-owned.
+
+
+### Masking generation 3 released
+
+Worker /root/masking_gen3 completed the stale-settings-update follow-through at runtime `32930d6615310e78009b525841fec58cba07f805` (tree `4ae7a9626071a1961bd053a02902d958468d93f7`). Corrected tests-only baseline5f845ce8 reproduced6behavioral failures after an earlier immutable-authority fixture setup failure; final original four-file acceptance40/40passed,zero skips,8.30s,exit0. Only AppShell.updateSettings stale-revision visual fallback changed; newer execution bytes/refusal/network revocation remain. Secret and generation-range whitespace checks passed. Evidence and fresh successor task: docs/privacy-release/evidence/masking-gen3.md and masking-gen3/evidence.json. No active process or remote mutation; owned spans released. Full combined gates remain coordinator-owned.
+
+### Outputs generation 2 released — 2026-11-20
+
+Worker `/root/outputs_gen2` completed the independent output inventory and two narrowly authorized neutral-error repairs. Both regressions failed before production changes; final complete focused selection passed 107/107 in 8 files, zero skips, exit 0 at `5e28b52b418d9c6cb250f559e4f2ce5805425c64`, tree `389c34c055975916f9bdee8969ccfb6c20fe5c26`. The initial acceptance failure is retained; its old address-positive archive expectation was updated while retaining all whole-archive refusal and key-wipe checks. Secret scan and diff check pass. Review, original logs, hashes and fresh-successor instructions are in `docs/privacy-release/evidence/outputs-gen2.md` and `outputs-gen2/`. Ownership is released; no test/build process remains. Full combined type/lint/coverage/browser/hosted gates and integration remain root-owned. No remote mutation.
+
+
+## Wallet lifecycle generation 3: post-broadcast read authority
+
+Worker /root/wallet_gen3; branch privacy/v1-wallet-lock-20261120; base c883dafb96f614b71aa98e3ecd2c7dae61487fcd. Owned paths: narrow Pay.tsx runtime RPC-scope capture, WalletPrivacy.lifecycle.test.tsx or a focused matching real-Pay regression, additive wallet-gen3 evidence and this claim. Independently verify the generation-4 static finding that a provider account/chain/disconnect event during a pending native send leaves the old payment RPC grant live. Reproduce before changing behavior; preserve returned transaction hashes, unknown outcomes and duplicate-attempt evidence, including a send already dispatched. Stop new reads from a revoked wallet operation without reusing signing-expiry checks after broadcast or claiming to cancel a transaction. Fresh deliberate verification may capture new authority. No shared transport/network policy, dependency, wire, crypto, fee, contract, v1.1 disclosure dependency, remote or release-gate changes. Root/integration own combined reconciliation; exact-source focused evidence and a fresh successor handoff are required.
+
+
+### Wallet generation 3 coordinator-preserved release
+
+Worker runtime3ef264fa and its17+271focused checks are preserved; the worker turn ended before documentation commit. Coordinator independently checked the exact diff and all retained log hashes and authored the source-pinned handoff without claiming a test rerun. Only documentation/logs added here. Runtime ownership is released; no process remains. Original combined gates stay open.
+
+## Clipboard original-suite follow-through — generation 3
+
+Worker `/root/clipboard_gen3`; branch `privacy/v1-clipboard-20261120`; base `9174ea73eb7d232b2e07a3b07238e6f216cd9226`. The coordinator's original coverage shard at combined v1 source `573901ee1c66624e57143526571a3fd76f52f264` completed 512 cases and failed the existing Solana backup-copy/Lock case. Owned paths: narrow `apps/web/src/features/solana/SolanaView.test.tsx`, matching Solana/SecretBackup/clipboard runtime only if a demonstrated defect requires it, and `docs/privacy-release/evidence/clipboard-gen3*`. First establish the original published `13762896` behavior before classifying a regression. Preserve readable ownership comparison, denied/unavailable-read refusal, newer clipboard contents, warned deliberate copies, key wipe and native best-effort limits. An obsolete fixture may be repaired only with equivalent or stronger ownership/Lock assertions. Use the coordinator's sole heavy window for bounded original-config tests; no full gates, dependency/configuration/assertion weakening, new platform feature, remote mutation, release or shared integration-lock change. Preserve exact source/commands/exits and redact ephemeral test-generated seed values in committed failure logs while retaining the original raw hash. Obtain fresh source review and release a bounded successor handoff.
+
+### Clipboard generation 3 released
+
+Published `13762896` and current `e077b1b1` both reproduced the same original missing-read fixture failure. Fixture-only repair `aeefe366cb89b9e571a521f18a0aa9b61fd92070` preserves warning/exact-copy/exact-clear assertions, models readable ownership, adds three actual-view no-clobber/read-denial cases, and passes 95/95 cases in nine complete files, zero skips, exit 0. Production code is unchanged. Fresh immutable-source review found no blocker; secret/whitespace checks passed. Sanitized failure logs, original/sanitized hashes, complete receipts and successor assignment are in `docs/privacy-release/evidence/clipboard-gen3.md` and `clipboard-gen3/evidence.json`. All execution stopped, the temporary published-baseline checkout was removed, and owned paths are released. Original combined gates remain open; no remote mutation.
+
+## Clipboard remaining caller fixtures — generation 4
+
+Worker `/root/clipboard_gen4`; branch `privacy/v1-clipboard-20261120`; base `17df2a8e651483c9e66ebccee38f57187d7eb374`. Owned paths: `apps/web/src/features/btc/BtcView.test.tsx`, `apps/web/src/features/tron/TronView.test.tsx`, a minimal shared test fixture only if needed, and `docs/privacy-release/evidence/clipboard-gen4*`. Reproduce the three original warning/Lock/retry clipboard cases before any repair and compare published `13762896` behavior. Preserve explicit warning and exact copy, readable ownership comparisons, asynchronous safe clearing, denied-write retry, no extra clear, newer contents and key/lock presentation. No unconditional cleanup or production change without a demonstrated defect and coordinator agreement. Use the released sole heavy window for bounded original-config complete files, then fresh immutable-source review and source-pinned sanitized evidence. No new client feature, dependency, configuration, assertion weakening, full-gate execution, remote mutation, main/shared integration-lock change, deployment or release. Existing incomplete qualification stays open.
+
+### Clipboard generation 4 released
+
+Published `13762896` and current `70c27ed8` each reproduced the same three original BTC/TRON missing-read fixture failures. Fixture-only repair `6a71c69caac9b6c31e26e45bcea0651dd29398e4` preserves warning, exact copy/clear counts and BTC activation-retry behavior, models readable ownership and adds six actual-view no-clobber/read-denial cases. Acceptance passed 137/137 in 13 complete files, zero skips, exit 0. Production code is unchanged. Fresh immutable-source review found no blocker; secret/whitespace checks passed. Five sanitized compressed logs, exact receipts and internal successor assignment are in `docs/privacy-release/evidence/clipboard-gen4.md` and `clipboard-gen4/evidence.json`. Temporary baseline checkout removed; all processes stopped and owned paths released. Full original combined qualification remains open; no remote mutation.

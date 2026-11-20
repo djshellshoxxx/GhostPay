@@ -1,0 +1,241 @@
+{
+  "feature": "v1-02-clipboard",
+  "generation": 4,
+  "branch": "privacy/v1-clipboard-20261120",
+  "predecessor": "17df2a8e651483c9e66ebccee38f57187d7eb374",
+  "ownership": "70c27ed84c7942d4d19990c5f22bfcc51b22524c",
+  "tested_source": "6a71c69caac9b6c31e26e45bcea0651dd29398e4",
+  "tested_tree": "c450f130e192faeb9322f0b4a12f9e8b9791ff12",
+  "application_files": [
+    "apps/web/src/features/btc/BtcView.test.tsx",
+    "apps/web/src/features/tron/TronView.test.tsx"
+  ],
+  "production_changed": false,
+  "source_comparison": {
+    "published": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "claim": "70c27ed84c7942d4d19990c5f22bfcc51b22524c",
+    "files": {
+      "apps/web/src/features/btc/BtcView.test.tsx": {
+        "137628961463fc5abd8b7927b2efe6b18a0a206a": "283bb07fb7866c114c67d238d827203ae5d02d63",
+        "70c27ed84c7942d4d19990c5f22bfcc51b22524c": "283bb07fb7866c114c67d238d827203ae5d02d63"
+      },
+      "apps/web/src/features/btc/BtcView.tsx": {
+        "137628961463fc5abd8b7927b2efe6b18a0a206a": "640097f71621009a82c2f3f81d4bf831506b5121",
+        "70c27ed84c7942d4d19990c5f22bfcc51b22524c": "640097f71621009a82c2f3f81d4bf831506b5121"
+      },
+      "apps/web/src/features/tron/TronView.test.tsx": {
+        "137628961463fc5abd8b7927b2efe6b18a0a206a": "1e2b9535454af35c4dbb07062bfdcf1ac2d974cd",
+        "70c27ed84c7942d4d19990c5f22bfcc51b22524c": "1e2b9535454af35c4dbb07062bfdcf1ac2d974cd"
+      },
+      "apps/web/src/features/tron/TronView.tsx": {
+        "137628961463fc5abd8b7927b2efe6b18a0a206a": "bc28c9d2d442e92da89328121da5be24c332ad18",
+        "70c27ed84c7942d4d19990c5f22bfcc51b22524c": "bc28c9d2d442e92da89328121da5be24c332ad18"
+      }
+    },
+    "dependency_equivalence": "No packages, root/package lock, web/package or Vite config diff; prepared node_modules point to same-source existing dist."
+  },
+  "runs": [
+    {
+      "id": "published-red",
+      "source": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/BtcView.test.tsx",
+        "src/features/tron/TronView.test.tsx",
+        "--testNamePattern",
+        "copies the (backup seed|key backup) only after a warning|empties the clipboard at the next click",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=default"
+      ],
+      "cwd": "apps/web",
+      "node_options": "--max-old-space-size=1024",
+      "exit": 1,
+      "seconds": 12.45,
+      "raw_sha256": "cbf5d9fbd2605899def90b8c3e12ec4e374309ef67a023ed68f578db28b40222",
+      "summary": [
+        "Test Files  2 failed (2)",
+        "Tests  3 failed | 26 skipped (29)",
+        "Duration  12.00s (transform 50%, import 23%, environment 14%, tests 14%)"
+      ],
+      "log": "published-red.log.gz",
+      "raw_bytes": 5702,
+      "sanitized_sha256": "368ee5fb853c29481df6b09dc0c0282e7d578b6933dbba406e7cd1bd8017a35d",
+      "sanitized_bytes": 5574,
+      "redacted_values": 2,
+      "compressed_sha256": "ba41d6e437616d87b149bcb88373fbe2f7268c17e90ebdeb2c0fae6b8869bb36",
+      "files": 2,
+      "failed": 3,
+      "passed": 0,
+      "filtered": 26,
+      "vitest_seconds": 12.0,
+      "classification": "Original selected cases fail on missing readable ownership fixture; filters are intentional, not unexplained skips."
+    },
+    {
+      "id": "current-red",
+      "source": "70c27ed84c7942d4d19990c5f22bfcc51b22524c",
+      "tree": "536276df920ff29778b3c93abd2b50a923295979",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/BtcView.test.tsx",
+        "src/features/tron/TronView.test.tsx",
+        "--testNamePattern",
+        "copies the (backup seed|key backup) only after a warning|empties the clipboard at the next click",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=default"
+      ],
+      "cwd": "apps/web",
+      "node_options": "--max-old-space-size=1024",
+      "exit": 1,
+      "seconds": 6.71,
+      "raw_sha256": "5f9ad65260a96a02a23c7cc45a265930577c66ab52d2c748297c518da5736ed1",
+      "summary": [
+        "Test Files  2 failed (2)",
+        "Tests  3 failed | 26 skipped (29)",
+        "Duration  6.07s (import 32%, environment 25%, tests 23%, transform 20%)"
+      ],
+      "log": "current-red.log.gz",
+      "raw_bytes": 5692,
+      "sanitized_sha256": "689ec6aebc57e9eb19ec03c3b9a3909597675f70a18d7ad5dc5e091fc3716d93",
+      "sanitized_bytes": 5564,
+      "redacted_values": 2,
+      "compressed_sha256": "8fd030f397b6cb444fb8e8b0ba8c132ed1a8e328cb385e69beb3b44a585993ad",
+      "files": 2,
+      "failed": 3,
+      "passed": 0,
+      "filtered": 26,
+      "vitest_seconds": 6.07,
+      "classification": "Original selected cases fail on missing readable ownership fixture; filters are intentional, not unexplained skips."
+    },
+    {
+      "id": "focused-green",
+      "source": "6a71c69caac9b6c31e26e45bcea0651dd29398e4",
+      "tree": "c450f130e192faeb9322f0b4a12f9e8b9791ff12",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/btc/BtcView.test.tsx",
+        "src/features/btc/BtcView.secrets.test.tsx",
+        "src/features/tron/TronView.test.tsx",
+        "src/features/tron/TronView.lock.test.tsx",
+        "src/features/solana/SolanaView.test.tsx",
+        "src/features/solana/SolanaView.lock.test.tsx",
+        "src/lib/clipboardPrivacy.test.ts",
+        "src/components/Common.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.clipboardPrivacy.test.tsx",
+        "src/views/Settings.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.test.tsx",
+        "src/components/SecretBackup.views.test.tsx",
+        "src/components/Common.test.tsx",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=default"
+      ],
+      "cwd": "apps/web",
+      "node_options": "--max-old-space-size=1024",
+      "started_utc": "2026-11-20T07:54:21.654941+00:00",
+      "exit": 0,
+      "seconds": 49.75,
+      "raw_sha256": "f6a94314bc195ba1d488481d0e3abfc78f82d45caf468f97f0e267613515ee0b",
+      "selection": [
+        "src/features/btc/BtcView.test.tsx",
+        "src/features/btc/BtcView.secrets.test.tsx",
+        "src/features/tron/TronView.test.tsx",
+        "src/features/tron/TronView.lock.test.tsx",
+        "src/features/solana/SolanaView.test.tsx",
+        "src/features/solana/SolanaView.lock.test.tsx",
+        "src/lib/clipboardPrivacy.test.ts",
+        "src/components/Common.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.clipboardPrivacy.test.tsx",
+        "src/views/Settings.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.test.tsx",
+        "src/components/SecretBackup.views.test.tsx",
+        "src/components/Common.test.tsx"
+      ],
+      "summary": [
+        "Test Files  13 passed (13)",
+        "Tests  137 passed (137)",
+        "Duration  49.22s (tests 65%, import 19%, environment 14%, transform 2%)"
+      ],
+      "log": "focused-green.log.gz",
+      "raw_bytes": 5818,
+      "sanitized_sha256": "f6a94314bc195ba1d488481d0e3abfc78f82d45caf468f97f0e267613515ee0b",
+      "sanitized_bytes": 5818,
+      "redacted_values": 0,
+      "compressed_sha256": "02a6693ecae9ef7231ef2af20d12f91e387dee33581e141bd93552328e1e8990",
+      "files": 13,
+      "passed": 137,
+      "failed": 0,
+      "skipped": 0,
+      "vitest_seconds": 49.22,
+      "classification": "Bounded complete-file original configuration, coverage disabled; not the full release gate."
+    },
+    {
+      "id": "secret-scan",
+      "source": "6a71c69caac9b6c31e26e45bcea0651dd29398e4",
+      "tree": "c450f130e192faeb9322f0b4a12f9e8b9791ff12",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "raw_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "log": "secret-scan.log.gz",
+      "raw_bytes": 50,
+      "sanitized_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "sanitized_bytes": 50,
+      "redacted_values": 0,
+      "compressed_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3"
+    },
+    {
+      "id": "whitespace",
+      "source": "6a71c69caac9b6c31e26e45bcea0651dd29398e4",
+      "tree": "c450f130e192faeb9322f0b4a12f9e8b9791ff12",
+      "command": [
+        "git",
+        "diff",
+        "17df2a8e651483c9e66ebccee38f57187d7eb374",
+        "HEAD",
+        "--check"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "whitespace.log.gz",
+      "raw_bytes": 0,
+      "sanitized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sanitized_bytes": 0,
+      "redacted_values": 0,
+      "compressed_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    }
+  ],
+  "review": {
+    "agent": "/root/clipboard_gen4/caller_fixture_review",
+    "sources": [
+      "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "70c27ed84c7942d4d19990c5f22bfcc51b22524c",
+      "6a71c69caac9b6c31e26e45bcea0651dd29398e4"
+    ],
+    "tested_tree": "c450f130e192faeb9322f0b4a12f9e8b9791ff12",
+    "kind": "Read-only immutable-source baseline and fixture-diff review; no writes or execution.",
+    "result": "Inherited fixture mismatch confirmed; no blocker in bounded two-file repair.",
+    "identical_cleanup_function_sha256": {
+      "clearClipboardIfUnchanged": "358eeab6ba1469562da707eef74a245b87ed9469758303bdff8eae040ff67474",
+      "clearCopiedBackup": "c574231d7120bd30f858bf54fb3070d32d542f80867ee0ae99e27e48aea83d9e"
+    }
+  },
+  "counting": "Selections across generations overlap. The 137 cases are one 13-file run; do not add predecessor or coordinator totals.",
+  "redaction": "Only original RED logs contain generated ephemeral backup values. Committed logs redact standalone 64- or 128-hex values and retain original, sanitized and compressed hashes.",
+  "limits": [
+    "Immediate mocks do not establish delayed native or actual browser permission behavior.",
+    "UI concealment assertions are separate from actual key-wipe tests in the complete selection.",
+    "Full type/lint/coverage/build/browser/hosted qualification remains coordinator-owned and open."
+  ],
+  "reuse": "Existing G3 stateful test model and repository clipboard primitives; no external code copy or new dependency.",
+  "remote_mutation": false
+}

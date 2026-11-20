@@ -14,6 +14,7 @@ import {
 import { recoverTypedDataAddress } from 'viem';
 import { decodeFunctionData } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
+import { UserFacingError, captureUserMessage, userMessage } from '../../lib/errors';
 import { PINNED_POLICY_DEPLOYMENTS, readAccount, readBalance, readWindow, verifyPolicyDeployment, chainNow, readNonceUsed } from './chain';
 import { createPolicyMetaAddress, DELAY_PRESETS } from './create';
 import { POLICY_FLAG, isPolicyFeatureEnabled } from './flag';
@@ -352,6 +353,15 @@ describe('edge cases', () => {
     await expect(readBalance(notHex, acct, ZERO_ADDRESS)).rejects.toThrow(/malformed balance/);
     await expect(chainNow(notHex)).rejects.toThrow(/malformed block/);
   });
+  it('keeps policy account identifiers out of malformed-read error surfaces', async () => {
+    const rpc = fakeChain(SEPOLIA, { code: new Set([acct.toLowerCase()]), extra: (method) => method === 'eth_call' ? '0x1234' : undefined });
+    const error: unknown = await readAccount(rpc, acct).then(() => undefined, (cause: unknown) => cause);
+    expect(error).toBeInstanceOf(UserFacingError);
+    expect(userMessage(error)).toMatch(/as expected/);
+    expect(userMessage(error).toLowerCase()).not.toContain(acct.toLowerCase());
+    expect(JSON.stringify(captureUserMessage(error)).toLowerCase()).not.toContain(acct.toLowerCase());
+  });
+
   it('deployment verification refuses unexpected answer types', async () => {
     const f = DEPLOYMENT.factory.toLowerCase();
     const calls = deploymentCalls();

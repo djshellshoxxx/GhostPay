@@ -228,23 +228,91 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
  * Connects and verifies a wallet: account lists from `eth_requestAccounts` and `eth_accounts` must agree and the chain
  * must equal the invoice chain (one switch request is offered). Any inconsistency refuses the connection.
  */
-export async function connectWallet(wallet: WalletInfo, expectedChainId: number): Promise<WalletSession> {
-  const requested = firstAccount(await call(wallet.provider, 'eth_requestAccounts'));
-  const listed = firstAccount(await call(wallet.provider, 'eth_accounts'));
-  if (requested !== listed) throw new UserFacingError({ key: 'error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue' });
-  let chainId = await readChainId(wallet.provider);
-  if (chainId !== expectedChainId) {
-    try {
-      await call(wallet.provider, 'wallet_switchEthereumChain', [{ chainId: `0x${expectedChainId.toString(16)}` }]);
-    } catch (e) {
-      if (e instanceof UserFacingError) throw e;
+export async function connectWallet(wallet: WalletInfo, expectedChainId: number, assertCurrent?: () => void, signal?: AbortSignal): Promise<WalletSession> {
+  const provider = wallet.provider;
+  let changed = false;
+  let accountResolved = false;
+  let switching = false;
+  let stop = (): void => undefined;
+  const check = (): void => {
+    assertCurrent?.();
+    if (changed || signal?.aborted === true || wallet.provider !== provider) {
+      throw new UserFacingError({ key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' });
     }
-    chainId = await readChainId(wallet.provider);
+  };
+  const abort = (): void => { changed = true; stop(); };
+  try {
+    check();
+    if (!Number.isSafeInteger(expectedChainId) || expectedChainId < 1) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidChainId' });
+    signal?.addEventListener('abort', abort, { once: true });
+    stop = observeWalletLifecycle(provider, (event) => {
+      // Permission grants may announce the initial account/network; both are verified below. Only the requested
+      // network switch is allowed after that point, and its final chain and account are re-read before returning.
+      if (event === 'disconnect' || (accountResolved && !(event === 'chainChanged' && switching))) changed = true;
+    });
+    check();
+    const requested = firstAccount(await call(provider, 'eth_requestAccounts'));
+    accountResolved = true;
+    check();
+    const listed = firstAccount(await call(provider, 'eth_accounts'));
+    check();
+    if (requested !== listed) throw new UserFacingError({ key: 'error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue' });
+    let chainId = await readChainId(provider, check);
+    check();
     if (chainId !== expectedChainId) {
-      throw new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: String(chainId), expected: String(expectedChainId) } });
+      try {
+        switching = true;
+        await call(provider, 'wallet_switchEthereumChain', [{ chainId: `0x${expectedChainId.toString(16)}` }]);
+      } catch (e) {
+        check();
+        if (e instanceof UserFacingError) throw e;
+      } finally { switching = false; }
+      check();
+      chainId = await readChainId(provider, check);
+      check();
+      if (chainId !== expectedChainId) {
+        throw new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: String(chainId), expected: String(expectedChainId) } });
+      }
     }
+    const finalAccount = firstAccount(await call(provider, 'eth_accounts'));
+    check();
+    if (finalAccount !== requested) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
+    return { wallet, account: requested, chainId };
+  } finally {
+    stop();
+    signal?.removeEventListener('abort', abort);
   }
-  return { wallet, account: requested, chainId };
+}
+
+export type WalletLifecycleEvent = 'accountsChanged' | 'chainChanged' | 'disconnect';
+
+/** Bounded, disposable EIP-1193 subscription. Retained callbacks become inert before provider cleanup runs. */
+export function observeWalletLifecycle(provider: Eip1193Provider, changed: (event: WalletLifecycleEvent) => void): () => void {
+  let active = true;
+  const bound: { readonly event: WalletLifecycleEvent; readonly listener: () => void }[] = [];
+  let remove: Eip1193Provider['removeListener'];
+  const dispose = (): void => {
+    active = false;
+    for (const { event, listener } of bound.splice(0)) {
+      try { remove?.call(provider, event, listener); } catch { /* Stale callbacks are already inert. */ }
+    }
+  };
+  try {
+    const add = provider.on;
+    remove = provider.removeListener;
+    if (add === undefined && remove === undefined) return dispose;
+    if (typeof add !== 'function' || typeof remove !== 'function') throw new Error('monitor-unavailable');
+    for (const event of ['accountsChanged', 'chainChanged', 'disconnect'] as const) {
+      const listener = (): void => { if (active) changed(event); };
+      // Include this entry before calling untrusted registration: it may register and then throw.
+      bound.push({ event, listener });
+      add.call(provider, event, listener);
+    }
+    return dispose;
+  } catch {
+    dispose();
+    throw new UserFacingError({ key: 'error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork' });
+  }
 }
 
 /** Re-reads account and chain immediately before a signature or send. */

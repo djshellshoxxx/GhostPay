@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-20",
+  "worker": "/root/outputs_gen2",
+  "specification": "docs/privacy-release/v1-05-outputs.md",
+  "milestone": "M2 bounded independent review and demonstrated neutral-error repairs",
+  "branch": "privacy/v1-outputs-20261120",
+  "published_baseline": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+  "incoming_evidence_head": "76ddb0309dcc941d0930d253d63460f1e7822453",
+  "incoming_runtime": "81e295a3cdf3e75d5a64f36cefe395aa233cce0c",
+  "accepted_source_commit": "5e28b52b418d9c6cb250f559e4f2ce5805425c64",
+  "accepted_source_tree": "389c34c055975916f9bdee8969ccfb6c20fe5c26",
+  "production_repair_commit": "27e587fc3b8e9389f961daea700e6f5ba6e8bc25",
+  "production_repair_tree": "45b3eee38e9f9226a28c5c21725a36ace2f17d43",
+  "executions": [
+    {
+      "name": "demonstrated regressions before production repair",
+      "cwd": "apps/web",
+      "source_commit": "d62af55f2735327441e26b49fa08c4419e226ef6",
+      "source_tree": "b6dcbe2d3d827a5bb29834bf4020905da89c7745",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/paymentKeyExport.test.ts src/features/policy/policy.logic.test.ts -t 'keeps contract-code refusals free|keeps policy account identifiers out' --coverage=false --maxWorkers=1",
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 2,
+      "intentionally_filtered": 57,
+      "files": 2,
+      "duration_seconds": 2.52,
+      "log": "red.log.gz",
+      "interpretation": "Both selected operations rendered the selected account address; no acceptance claim."
+    },
+    {
+      "name": "initial complete focused selection",
+      "cwd": "apps/web",
+      "source_commit": "27e587fc3b8e9389f961daea700e6f5ba6e8bc25",
+      "source_tree": "45b3eee38e9f9226a28c5c21725a36ace2f17d43",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/paymentKeyExport.test.ts src/features/policy/policy.logic.test.ts src/components/Common.test.tsx src/main.test.tsx src/lib/errors.test.ts src/lib/errors.i18n.test.ts src/i18n/securityKeys.test.ts src/i18n/catalog.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 1,
+      "passed": 106,
+      "failed": 1,
+      "skipped": 0,
+      "files": 8,
+      "duration_seconds": 14.02,
+      "log": "initial-acceptance-failure.log.gz",
+      "interpretation": "An existing archive test required the offending address in error text. Tests-only follow-up preserved refusal and key-wipe checks and asserted neutral output."
+    },
+    {
+      "name": "final complete focused selection",
+      "cwd": "apps/web",
+      "source_commit": "5e28b52b418d9c6cb250f559e4f2ce5805425c64",
+      "source_tree": "389c34c055975916f9bdee8969ccfb6c20fe5c26",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/paymentKeyExport.test.ts src/features/policy/policy.logic.test.ts src/components/Common.test.tsx src/main.test.tsx src/lib/errors.test.ts src/lib/errors.i18n.test.ts src/i18n/securityKeys.test.ts src/i18n/catalog.test.ts --coverage=false --maxWorkers=1",
+      "exit_code": 0,
+      "passed": 107,
+      "failed": 0,
+      "skipped": 0,
+      "files": 8,
+      "duration_seconds": 14.92,
+      "log": "acceptance.log.gz",
+      "interpretation": "Complete named files, focused acceptance only; prior runs are not additive coverage."
+    },
+    {
+      "name": "repository secret scan",
+      "cwd": ".",
+      "source_commit": "5e28b52b418d9c6cb250f559e4f2ce5805425c64",
+      "source_tree": "389c34c055975916f9bdee8969ccfb6c20fe5c26",
+      "command": "bash scripts/scan-secrets.sh",
+      "exit_code": 0,
+      "log": "secrets.log.gz"
+    },
+    {
+      "name": "generation diff whitespace check",
+      "cwd": ".",
+      "source_commit": "5e28b52b418d9c6cb250f559e4f2ce5805425c64",
+      "source_tree": "389c34c055975916f9bdee8969ccfb6c20fe5c26",
+      "command": "git diff 76ddb0309dcc941d0930d253d63460f1e7822453..HEAD --check",
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "source_inventory": {
+    "source_commit": "5e28b52b418d9c6cb250f559e4f2ce5805425c64",
+    "source_tree": "389c34c055975916f9bdee8969ccfb6c20fe5c26",
+    "command": "rg -n 'downloadText\\(|downloadBlob\\(|filename:|\\.download\\s*=' apps/web/src packages/ux-vault/src/stealth-export-portable.ts --glob '!*.test.*' --glob '!*.testutil.*' --glob '!*.testutil'",
+    "exit_code": 0,
+    "log": "download-inventory.log.gz",
+    "interpretation": "Source-search aid supplemented by manual inspection, not a behavioral security gate."
+  },
+  "log_integrity": {
+    "red.log.gz": {
+      "uncompressed_bytes": 2681,
+      "uncompressed_sha256": "f631caec6d70511d589af366c279f7fde3cc1c5947d91998231f1438b819e5c6",
+      "compressed_bytes": 956,
+      "compressed_sha256": "ee4265a3989dde90672feac7363338eb1c0359951a1c1dc0381deb820d0b4c5c",
+      "unmodified": true
+    },
+    "initial-acceptance-failure.log.gz": {
+      "uncompressed_bytes": 1905,
+      "uncompressed_sha256": "4ca6cec57306abe9314722d3a838d83d9575449699c361dff3e7a5b774a669d4",
+      "compressed_bytes": 922,
+      "compressed_sha256": "561cba56e8862bb8a1de2fe51b0c90ccb5821271023e84756bacc55e4f06965d",
+      "unmodified": true
+    },
+    "acceptance.log.gz": {
+      "uncompressed_bytes": 425,
+      "uncompressed_sha256": "70907115d68ce733f262b3eb49b3a1ef5f99bb3e35c6fde1e4f31d75eef8473d",
+      "compressed_bytes": 307,
+      "compressed_sha256": "cfe1f4328e1fae4bf5c949e70498bf194cd4a427319f7fbd8e1a7593f41cbb13",
+      "unmodified": true
+    },
+    "secrets.log.gz": {
+      "uncompressed_bytes": 50,
+      "uncompressed_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "compressed_bytes": 70,
+      "compressed_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3",
+      "unmodified": true
+    },
+    "download-inventory.log.gz": {
+      "uncompressed_bytes": 3642,
+      "uncompressed_sha256": "b16282391f6be3f82af40627dc3e47d9dc2b4f19e3e7e49c876b765b262c4fcb",
+      "compressed_bytes": 1025,
+      "compressed_sha256": "3c47caec638040817fdd61710c184c7cd3feaa7482e929d0f696da2daf79ae77",
+      "unmodified": true
+    }
+  },
+  "scope": {
+    "reused_existing_error_and_export_modules": true,
+    "external_code_copied": false,
+    "new_dependencies": false,
+    "cryptography_or_wire_format_changed": false,
+    "intentional_export_payloads_changed": false,
+    "remote_mutations": false,
+    "critical_catalogs_updated": [
+      "en",
+      "es",
+      "ja",
+      "ar"
+    ],
+    "native_language_review_claimed": false,
+    "full_or_browser_qualification_claimed": false
+  },
+  "open_gates": [
+    "Original full web typecheck and lint on combined exact source",
+    "Original full unit coverage on combined exact source",
+    "Original real browser/export leak guard on combined exact source",
+    "Hosted security and release qualification",
+    "Shared catalog reconciliation and independent integrated-source review"
+  ],
+  "handoff": "../outputs-gen2.md#internal-fresh-successor-handoff"
+}

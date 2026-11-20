@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest';
 import { clearCopiedBackup, englishBackupText, SecretBackup } from './SecretBackup';
 import { CopyButton } from './Common';
+import { clearClipboardIfUnchanged } from '../lib/clipboardPrivacy';
 
 afterEach(async () => {
   cleanup();
@@ -114,4 +115,41 @@ it('a late hidden-backup write completion never takes cleanup ownership back fro
   expect(value).toBe('new invoice');
   expect(port.writeText.mock.calls).toEqual(beforeCompletion);
   expect(screen.queryByText('backup secret')).toBeNull();
+});
+
+
+it.each(['hidden', 'unmounted'] as const)('does not dispatch a queued backup copy after its reveal is %s', async (end) => {
+  let value = 'earlier copy';
+  let completeClear!: () => void;
+  const clear = new Promise<void>((resolve) => { completeClear = resolve; });
+  const port = {
+    readText: vi.fn(() => Promise.resolve(value)),
+    writeText: vi.fn((next: string) => {
+      if (next === '') return clear.then(() => { value = ''; });
+      value = next;
+      return Promise.resolve();
+    }),
+  };
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: port });
+  const panel = render(<SecretBackup reveal={() => 'queued backup secret'} text={englishBackupText('seed')} />);
+  let earlierClear!: Promise<unknown>;
+  await act(async () => {
+    earlierClear = clearClipboardIfUnchanged((text) => text === 'earlier copy', port, () => true);
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+  expect(port.writeText).toHaveBeenCalledExactlyOnceWith('');
+  await copyBackup();
+  expect(port.writeText).not.toHaveBeenCalledWith('queued backup secret');
+  await act(async () => {
+    if (end === 'hidden') fireEvent.click(screen.getByRole('button', { name: 'Hide seed' }));
+    else panel.unmount();
+    await Promise.resolve();
+  });
+  // Once the clear finishes there may be no user activation for a compensating read/clear.
+  port.readText.mockRejectedValue(new DOMException('Denied', 'NotAllowedError'));
+  await act(async () => { completeClear(); await clear; await earlierClear; });
+  expect(port.writeText).toHaveBeenCalledExactlyOnceWith('');
+  expect(value).toBe('');
+  expect(screen.queryByText('queued backup secret')).toBeNull();
 });

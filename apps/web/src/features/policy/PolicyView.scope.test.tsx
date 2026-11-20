@@ -157,9 +157,13 @@ describe('policy receive scope', () => {
     await user.click(screen.getByRole('button', { name: 'Scan for policy payments' }));
     await vi.waitFor(() => { expect(waiting).toBe(true); });
     act(importKeys);
+    expect(screen.queryByLabelText('Verified policy deployment')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Scan for policy payments' })).toBeNull();
+    const callsAfterRevocation = rpc.calls.length;
     await act(async () => { gate.resolve([]); await gate.promise; });
-    expect(await screen.findByText('Seller keys changed during this action. Try again.')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Continue scan' })).toBeNull();
+    expect(screen.queryByText(/new for your keys/)).toBeNull();
+    expect(rpc.calls).toHaveLength(callsAfterRevocation);
   });
 
   it('keeps the checked asset fixed while an account read is pending', async () => {

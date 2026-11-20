@@ -175,7 +175,12 @@ export function AppShell(props: AppShellProps): ReactNode {
       clearRpcSessionOnly();
       rpcCache.current.clear();
       settingsRevision.current = storedSettingsRevision();
-      setSettings(loadSettings());
+      setSettings((current) => ({
+        ...loadSettings(),
+        // Clearing or losing execution storage is not consent to expose a currently masked screen.
+        // An explicit valid visual preference still wins; absent/invalid storage retains this tab's choice.
+        ...loadPrivacyPreferences(current),
+      }));
     };
     window.addEventListener('storage', onStorage);
     const unsubscribeLock = subscribeAppLock(() => { rpcCache.current.clear(); });
@@ -443,7 +448,11 @@ export function AppShell(props: AppShellProps): ReactNode {
           rpcCache.current.clear();
           clearRpcSessionOnly();
           settingsRevision.current = storedSettingsRevision();
-          setSettings(loadSettings());
+          setSettings((current) => ({
+            ...loadSettings(),
+            // Refusing an obsolete edit is not consent to expose the current tab's sensitive content.
+            ...loadPrivacyPreferences(current),
+          }));
           services.network?.invalidate();
           setLive({ key: 'error.network.authorizationRefused' });
           return false;

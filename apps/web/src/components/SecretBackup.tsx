@@ -199,7 +199,7 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     void (async () => {
       try {
         const clipboard = navigator.clipboard;
-        await writeClipboardText(value, clipboard);
+        await writeClipboardText(value, clipboard, () => current() && isCurrentClipboardCopy(intent));
         recordClipboardCopy(value, clipboard, clearAfterMs, intent);
         if (current()) setCopy('copied');
         else if (copies === mine && isCurrentClipboardCopy(intent) && (onClipboard === mine || onClipboard === 0)) {

@@ -129,6 +129,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'about.feeNote', 'sweep.relayerFee', 'btc.review.approve', 'btc.sweep.destinationHint',
       'sellerKeys.wipeUnsaved.body', 'sellerKeys.wipeSignerOnly.body', 'app.idle.signerLost',
       'policy.create.keepBody', 'policy.account.withdrawal', 'policy.account.cancel',
+      'policy.error.contractResponse', 'error.paymentKeyExport.contractAccount',
       'sweep.attempt.unknownDirect', 'sweep.note.pendingDirect', 'settings.outside.title',
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',
       'sellerKeys.pairing.title', 'sellerKeys.pairing.caption', 'sellerKeys.pairing.importLabel', 'sellerKeys.pairing.previewHeading',

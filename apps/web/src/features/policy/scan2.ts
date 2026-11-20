@@ -19,21 +19,42 @@ export interface Scheme2Fetch {
   readonly reorg?: { readonly rolledBackTo: bigint };
 }
 
+/** Bounds an injected scan client's work to the initiating view even when that client ignores AbortSignal. */
+function currentScanClient(client: RpcClient, assertCurrent: () => void): RpcClient {
+  const read = async <T>(action: () => Promise<T>): Promise<T> => {
+    assertCurrent();
+    try { return await action(); }
+    finally { assertCurrent(); }
+  };
+  return {
+    chainId: client.chainId,
+    request: (method, params) => read(() => client.request(method, params)),
+    blockNumber: () => read(() => client.blockNumber()),
+    getBlock: (number) => read(() => client.getBlock(number)),
+    getLogs: (filter) => read(() => client.getLogs(filter)),
+  };
+}
+
 export async function fetchScheme2Announcements(p: {
   readonly chain: ChainConfig;
   readonly client: RpcClient;
   readonly deployment: PolicyChainDeployment;
   readonly cursor: ScanCursor;
   readonly maxRequests?: number;
+  /** Session and view authority captured by the initiating scan. No later read can revive a revoked scope. */
+  readonly assertCurrent?: () => void;
 }): Promise<Scheme2Fetch> {
+  p.assertCurrent?.();
+  const client = p.assertCurrent === undefined ? p.client : currentScanClient(p.client, p.assertCurrent);
   const r = await fetchAnnouncements({
     chain: p.chain,
-    client: p.client,
+    client,
     announcer: p.deployment.announcer,
     cursor: p.cursor,
     schemeId: SCHEME_ID,
     ...(p.maxRequests === undefined ? {} : { maxRequests: p.maxRequests }),
   });
+  p.assertCurrent?.();
   return { announcements: r.announcements, cursor: r.cursor, truncated: r.truncated, skipped: r.skipped, ...(r.reorg === undefined ? {} : { reorg: r.reorg }) };
 }
 

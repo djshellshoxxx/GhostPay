@@ -39,10 +39,14 @@ export function cancelClipboardCleanup(): void {
   cancelTimer();
 }
 
-/** Do not let an already-dispatched cleanup finish after a newer app copy. Normal copies retain user activation. */
-export function writeClipboardText(value: string, clipboard: ClipboardPort): Promise<void> {
+/**
+ * Do not let an already-dispatched cleanup finish after a newer app copy. Normal copies retain user activation.
+ * Recheck queued-copy authority before dispatch; a native browser write that already started cannot be cancelled.
+ */
+export function writeClipboardText(value: string, clipboard: ClipboardPort, current: () => boolean = () => true): Promise<void> {
+  if (!current()) return Promise.reject(new Error('Clipboard copy is no longer current.'));
   if (pendingClear === undefined) return clipboard.writeText(value);
-  return pendingClear.catch(() => undefined).then(() => writeClipboardText(value, clipboard));
+  return pendingClear.catch(() => undefined).then(() => writeClipboardText(value, clipboard, current));
 }
 
 /** Retain a digest, not the copied backup or payment text, while a timer or activation retry waits. */

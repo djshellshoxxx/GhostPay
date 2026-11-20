@@ -123,7 +123,7 @@ async function assertPlainAccount(rpc: ExportRpc, address: string, check: () => 
   }
   check();
   if (typeof code !== 'string' || code.length > MAX_CODE_HEX || !/^0x(?:[0-9a-fA-F]{2})*$/.test(code)) throw new UserFacingError({ key: 'error.paymentKeyExport.codeCheckFailed' });
-  if (code !== '0x') throw new UserFacingError({ key: 'error.paymentKeyExport.contractAccount', values: { address } });
+  if (code !== '0x') throw new UserFacingError({ key: 'error.paymentKeyExport.contractAccount' });
 }
 
 /** Derives one payment's key with the loaded keys and verifies it controls the announced address; the caller wipes `secret`. */

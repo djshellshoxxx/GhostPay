@@ -2347,7 +2347,7 @@
     "error.paymentKeyExport.noRpc": "La comprobación de la dirección necesita el RPC que usó este análisis. Vuelve a ejecutar el análisis y luego exporta.",
     "error.paymentKeyExport.wrongChain": "El RPC que usó este análisis sirve una cadena distinta de la de este pago, así que no se exportó nada.",
     "error.paymentKeyExport.codeCheckFailed": "El RPC no pudo confirmar que esta dirección no contiene código de contrato, así que no se exportó ninguna clave privada. Inténtalo de nuevo.",
-    "error.paymentKeyExport.contractAccount": "La dirección {address} contiene código de contrato (un contrato o una delegación EIP-7702). Su clave privada no se exporta, porque no se puede suponer que una clave privada controle los fondos allí.",
+    "error.paymentKeyExport.contractAccount": "The selected address holds contract code (a contract or an EIP-7702 delegation). Its private key is not exported, because a private key cannot be assumed to control funds there.",
     "error.paymentKeyExport.noPayments": "No hay pagos que exportar.",
     "error.paymentKeyExport.confirmRawKey": "Confirma primero la advertencia sobre la clave privada.",
     "error.paymentKeyExport.recoveredKeysClosed": "Esta exportación se cerró y sus claves se borraron. Vuelve a abrir el archivo.",
@@ -2543,7 +2543,8 @@
     "privacyUx.historyLocked": "Unlock the reconciliation vault before revealing history.",
     "privacyUx.historyHint": "Revealing history does not start a network lookup. Existing encrypted backups are preserved.",
     "walletAttempts.privateWarning": "A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.",
-    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts."
+    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts.",
+    "policy.error.contractResponse": "The contract did not answer the requested read as expected."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

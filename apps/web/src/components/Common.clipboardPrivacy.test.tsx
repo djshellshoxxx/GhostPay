@@ -2,7 +2,7 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { CopyButton } from './Common';
-import { cancelClipboardCleanup, recordClipboardCopy } from '../lib/clipboardPrivacy';
+import { cancelClipboardCleanup, clearClipboardIfUnchanged, recordClipboardCopy } from '../lib/clipboardPrivacy';
 import { AppContext, type AppState } from '../state';
 import { DEFAULT_SETTINGS, type ClipboardClearAfterMs } from '../lib/settings';
 import { ClipboardPrivacySync } from './ClipboardPrivacySync';
@@ -169,4 +169,34 @@ it('issue286 audit limitation: the second read cannot make the compare and write
   // This is a characterization of the browser-port limit, not a claim of absolute protection.
   expect(port.writeText).toHaveBeenCalledExactlyOnceWith('');
   expect(clipboard).toBe('');
+});
+
+
+it('does not dispatch a queued ordinary copy after its control unmounts', async () => {
+  let value = 'earlier copy';
+  let completeClear!: () => void;
+  const clear = new Promise<void>((resolve) => { completeClear = resolve; });
+  const port = {
+    readText: vi.fn(() => Promise.resolve(value)),
+    writeText: vi.fn((next: string) => {
+      if (next === '') return clear.then(() => { value = ''; });
+      value = next;
+      return Promise.resolve();
+    }),
+  };
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: port });
+  const panel = render(<CopyButton text="queued invoice" label="Copy invoice" />);
+  let earlierClear!: Promise<unknown>;
+  await act(async () => {
+    earlierClear = clearClipboardIfUnchanged((text) => text === 'earlier copy', port, () => true);
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+  expect(port.writeText).toHaveBeenCalledExactlyOnceWith('');
+  fireEvent.click(screen.getByRole('button', { name: 'Copy invoice' }));
+  expect(port.writeText).not.toHaveBeenCalledWith('queued invoice');
+  panel.unmount();
+  await act(async () => { completeClear(); await clear; await earlierClear; });
+  expect(port.writeText).toHaveBeenCalledExactlyOnceWith('');
+  expect(value).toBe('');
 });

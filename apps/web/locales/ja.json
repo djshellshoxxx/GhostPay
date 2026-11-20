@@ -2347,7 +2347,7 @@
     "error.paymentKeyExport.noRpc": "アドレスの確認には、このスキャンが使った RPC が必要です。スキャンをもう一度実行してからエクスポートしてください。",
     "error.paymentKeyExport.wrongChain": "このスキャンが使った RPC はこの支払いとは別のチェーンを提供しているため、何もエクスポートされていません。",
     "error.paymentKeyExport.codeCheckFailed": "このアドレスにコントラクトコードがないことを RPC で確認できなかったため、秘密鍵はエクスポートされていません。もう一度お試しください。",
-    "error.paymentKeyExport.contractAccount": "アドレス {address} にはコントラクトコード（コントラクトまたは EIP-7702 の委任）があります。秘密鍵がそこの資金を管理できるとは限らないため、その秘密鍵はエクスポートされません。",
+    "error.paymentKeyExport.contractAccount": "The selected address holds contract code (a contract or an EIP-7702 delegation). Its private key is not exported, because a private key cannot be assumed to control funds there.",
     "error.paymentKeyExport.noPayments": "エクスポートする支払いがありません。",
     "error.paymentKeyExport.confirmRawKey": "先に秘密鍵に関する警告を確認してください。",
     "error.paymentKeyExport.recoveredKeysClosed": "このエクスポートは閉じられ、その鍵は消去されました。ファイルをもう一度開いてください。",
@@ -2543,7 +2543,8 @@
     "privacyUx.historyLocked": "Unlock the reconciliation vault before revealing history.",
     "privacyUx.historyHint": "Revealing history does not start a network lookup. Existing encrypted backups are preserved.",
     "walletAttempts.privateWarning": "A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.",
-    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts."
+    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts.",
+    "policy.error.contractResponse": "The contract did not answer the requested read as expected."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

@@ -1,13 +1,34 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { clearCopiedBackup } from '../../components/SecretBackup';
 import { makeServices, renderWith } from '../../test/render';
 import { DEST, SEED_A, mockChain, walletA, type MockChain } from './fixtures.testutil';
 import { MAINNET_GENESIS } from './network';
 import { SolanaView } from './SolanaView';
 
 type User = ReturnType<typeof userEvent.setup>;
+
+function clipboardFixture() {
+  let value = '';
+  const writeText = vi.fn((text: string) => { value = text; return Promise.resolve(); });
+  const readText = vi.fn(() => Promise.resolve(value));
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
+  return {
+    writeText,
+    readText,
+    get value() { return value; },
+    set value(next: string) { value = next; },
+  };
+}
+
+afterEach(async () => {
+  cleanup();
+  // Denied-read cases leave best-effort retry ownership; end it between isolated tests.
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText: () => Promise.resolve(''), writeText: () => Promise.resolve() } });
+  await act(async () => { clearCopiedBackup(); await Promise.resolve(); });
+});
 
 async function setup(over: Partial<Pick<MockChain, 'failMethod' | 'genesis'>> = {}) {
   const chain = mockChain('localnet', walletA());
@@ -68,21 +89,49 @@ describe('SolanaView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
   });
 
-  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
+  it('copies the backup seed only after a warning, and Lock clears the unchanged copied seed', async () => {
     const { user } = await setup();
-    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const clipboard = clipboardFixture();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
-    expect(writeText).not.toHaveBeenCalled();
+    expect(clipboard.writeText).not.toHaveBeenCalled();
     expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenLastCalledWith(''));
+    expect(clipboard.writeText).toHaveBeenCalledTimes(2);
+    expect(clipboard.value).toBe('');
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
+  });
+
+  it.each(['replaced', 'denied', 'unavailable'] as const)('Lock forgets the wallet without clearing a %s clipboard', async (state) => {
+    const { user } = await setup();
+    const clipboard = clipboardFixture();
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
+    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
+
+    if (state === 'replaced') clipboard.value = 'newer external clipboard content';
+    else if (state === 'denied') clipboard.readText.mockRejectedValue(new DOMException('Denied', 'NotAllowedError'));
+    else Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: clipboard.writeText } });
+
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(state === 'replaced' ? 'newer external clipboard content' : seed);
+    if (state !== 'unavailable') expect(clipboard.readText).toHaveBeenCalled();
   });
 
   it('rejects a malformed seed with a message', async () => {

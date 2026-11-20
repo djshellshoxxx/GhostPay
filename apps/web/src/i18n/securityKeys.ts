@@ -1481,6 +1481,7 @@ export const SECURITY_KEY_GROUPS = {
     'policy.intro',
     'policy.error.noRpc',
     'policy.error.verifyFirst',
+    'policy.error.contractResponse',
     'policy.network.notPinned',
     'policy.deployment.aria',
     'policy.deployment.feeRecipient',

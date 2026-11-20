@@ -74,11 +74,17 @@ describe('policy view: session guard before the wallet request', () => {
     await user.type(screen.getByLabelText('Amount (base units)'), '1000');
     await user.click(screen.getByRole('button', { name: 'Review payment' }));
     act(() => { clearSession(); });
-    await user.click(screen.getByRole('button', { name: 'Send payment' }));
-    expect(await screen.findByText('Seller keys changed during this action. Try again.')).toBeTruthy();
+    // Session revocation removes the old review and connection immediately, before another click is possible.
+    expect(screen.queryByRole('button', { name: 'Send payment' })).toBeNull();
+    expect(screen.queryByLabelText('Policy payment review')).toBeNull();
+    expect(screen.queryByLabelText('Verified policy deployment')).toBeNull();
+    expect(screen.queryByText(/Connected:/)).toBeNull();
     expect(walletSends(w)).toBe(0);
-    // A fresh review under the current session sends.
-    await user.click(screen.getByRole('button', { name: 'Review payment' }));
+    // A new explicit deployment check, connection and review under the current session sends.
+    await user.click(screen.getByRole('button', { name: 'Verify on-chain' }));
+    await screen.findByLabelText('Verified policy deployment');
+    await connect(user);
+    await reviewPay(user, 'native', '1000');
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     expect(await screen.findByText(/Payment submitted/)).toBeTruthy();
     expect(walletSends(w)).toBe(1);
@@ -331,7 +337,7 @@ describe('policy pay: ERC-20 repeats and the attempt journal', () => {
 });
 
 describe('policy receive: session guard on withdraw, cancel and execute', () => {
-  it('refuses each owner action when the keys are re-imported during the wallet re-check', async () => {
+  it.each(['cancel', 'request', 'execute'] as const)('refuses the %s owner action when the keys are re-imported during the wallet re-check', async (action) => {
     act(importA1);
     const pay = preparePolicyPayment({ metaAddress: a1.metaAddress, deployment: DEPLOYMENT, token: 'native', gross: 1_000_000n, nowSec: 1n, rng: fixedRng(a1.ephemeralPrivateKey) });
     const foreign = `0x${'ab'.repeat(32)}` as const;
@@ -366,37 +372,22 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
       if (armed && args.method === 'eth_accounts') { armed = false; importA1(); }
       return orig(args);
     };
-    const refused = async (): Promise<void> => {
-      await vi.waitFor(() => { expect(screen.queryByRole('button', { name: 'Check account' })).toBeNull(); });
-      expect(armed).toBe(false);
-      expect(walletSends(w)).toBe(sends);
-    };
-    const rescan = async (): Promise<void> => {
-      await user.click(screen.getByRole('button', { name: 'Scan for policy payments' }));
-      await user.click(await screen.findByRole('button', { name: 'Check account' }));
-      await screen.findByText(/A withdrawal you did not sign on this device is pending/);
-    };
     let sends = 0;
-
+    if (action === 'execute') {
+      await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
+      await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
+      expect(await screen.findByText(/Withdrawal request submitted/)).toBeTruthy();
+      sends = 1;
+      await user.click(screen.getByRole('button', { name: 'Check account' }));
+      await screen.findByRole('button', { name: 'Execute withdrawal' });
+    } else if (action === 'request') {
+      await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
+    }
     armed = true;
-    await user.click(screen.getByRole('button', { name: 'Cancel it' }));
-    await refused();
-
-    await rescan();
-    await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
-    armed = true;
-    await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
-    await refused();
-
-    await rescan();
-    await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
-    await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
-    expect(await screen.findByText(/Withdrawal request submitted/)).toBeTruthy();
-    sends = 1;
+    const actionName = action === 'cancel' ? 'Cancel it' : action === 'request' ? 'Sign and send withdrawal request' : 'Execute withdrawal';
+    await user.click(screen.getByRole('button', { name: actionName }));
+    await vi.waitFor(() => { expect(screen.queryByRole('button', { name: 'Check account' })).toBeNull(); });
+    expect(armed).toBe(false);
     expect(walletSends(w)).toBe(sends);
-    armed = true;
-    await user.click(screen.getByRole('button', { name: 'Check account' }));
-    await user.click(await screen.findByRole('button', { name: 'Execute withdrawal' }));
-    await refused();
   });
 });

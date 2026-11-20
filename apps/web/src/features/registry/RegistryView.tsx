@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
+import { useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -111,12 +112,28 @@ export function RegistryView(): ReactNode {
     setLook(undefined);
   }), [services.network]);
   useEffect(() => { setConsent(false); }, [chainId, app.session]);
+  const walletPrivacy = useWalletPrivacy(wallet, () => {
+    operation.current.abort();
+    operation.current = new AbortController();
+    lookupVersion.current++;
+    setWallet(undefined);
+    setWallets(undefined);
+    setReviewed(undefined);
+    setReviewAction(undefined);
+    setPub(undefined);
+    setFound(undefined);
+    setLook(undefined);
+    setScannedMeta(undefined);
+    setScanError(undefined);
+  });
   const captureAuthority = (): (() => void) => {
     const expected = latest.current;
     const networkRevision = services.network?.getRevision() ?? 0;
     const guardSession = captureSessionGuard();
+    const privacyScope = walletPrivacy.capture();
     return () => {
       guardSession();
+      privacyScope.assertCurrent();
       const current = latest.current;
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
@@ -137,16 +154,23 @@ export function RegistryView(): ReactNode {
 
   const onDiscover = (): void => {
     setPub(undefined);
-    void services.discoverWallets().then(setWallets, () => {
+    const scope = walletPrivacy.begin();
+    void services.discoverWallets().then((foundWallets) => {
+      try { scope.assertCurrent(); } catch { return; }
+      setWallets(foundWallets);
+    }, () => {
+      try { scope.assertCurrent(); } catch { return; }
       setWallets([]);
     });
   };
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
-    const guard = captureAuthority();
+    const privacyScope = walletPrivacy.begin();
+    const authority = captureAuthority();
+    const guard = (): void => { privacyScope.assertCurrent(); authority(); };
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId).then(
+    connectWallet(w, chainId, guard, privacyScope.signal).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);
@@ -269,7 +293,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">{t('registry.title')}</h2>
-      <WalletAttempts />
+      <WalletAttempts wallet={wallet} />
       <p className="hint">
         {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>

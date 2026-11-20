@@ -163,6 +163,46 @@ describe('required global privacy masking', () => {
     expect(screen.getByText('Browser storage is unavailable, so these settings apply to this tab only.')).toBeTruthy();
   });
 
+  it.each(['origin clear', 'missing privacy', 'corrupt privacy', 'blocked privacy'] as const)('keeps the current mask across an execution-storage refresh with %s', async (scenario) => {
+    const user = userEvent.setup();
+    const seller = generateSession();
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test/' } }));
+    const authority = createNetworkAuthority();
+    try {
+      renderWith(<AppShell order={CORE_ORDER} profile="lean" />, makeServices({ network: authority }));
+      await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Pay' }));
+      const draft = screen.getByRole<HTMLTextAreaElement>('textbox', { name: 'Paste an invoice link' });
+      await user.type(draft, '#retained-private-draft');
+      const control = within(screen.getByRole('banner')).getByRole<HTMLInputElement>('switch', { name: 'Privacy mode' });
+      await user.click(control);
+      expect(isInaccessible(draft)).toBe(true);
+      const grant = authority.authorize({ action: 'payment-preflight', category: 'rpc', endpoint: 'https://rpc.test/', network: { kind: 'evm', chainId: 84532 } });
+      const read = Storage.prototype.getItem;
+      act(() => {
+        if (scenario === 'origin clear') localStorage.clear();
+        else {
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://other.test/' } }));
+          if (scenario === 'missing privacy') localStorage.removeItem(UI_PRIVACY_KEY);
+          if (scenario === 'corrupt privacy') localStorage.setItem(UI_PRIVACY_KEY, '{broken');
+          if (scenario === 'blocked privacy') vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (this: Storage, key: string): string | null {
+            if (key === UI_PRIVACY_KEY) throw new DOMException('Denied', 'SecurityError');
+            return read.call(this, key);
+          });
+        }
+        window.dispatchEvent(new StorageEvent('storage', { key: scenario === 'origin clear' ? null : SETTINGS_KEY, storageArea: localStorage }));
+      });
+      expect(() => grant.assertCurrent()).toThrow();
+      expect(control.checked).toBe(true);
+      expect(isInaccessible(draft)).toBe(true);
+      expect(screen.queryByRole('textbox', { name: 'Paste an invoice link' })).toBeNull();
+      expect(draft.value).toBe('#retained-private-draft');
+      expect(getSessionPublic()).toBe(seller);
+      await user.click(control);
+      expect(control.checked).toBe(false);
+      expect(screen.getByRole('textbox', { name: 'Paste an invoice link' })).toBe(draft);
+    } finally { authority.dispose(); }
+  });
+
   it('syncs only private preferences across tabs while retaining existing execution-storage revocation', () => {
     const rawSettings = '{ "rpcUrls": { "84532": "https://rpc.test/" } }';
     localStorage.setItem(SETTINGS_KEY, rawSettings);
@@ -190,6 +230,74 @@ describe('required global privacy masking', () => {
       expect(() => grant.assertCurrent()).toThrow();
       expect(observed!.settings.rpcUrls['84532']).toBe('https://other.test/');
       expect(observed!.settings.privacyMode).toBe(true);
+    } finally { authority.dispose(); }
+  });
+
+  it.each([
+    ['clipboard', 'missing'], ['clipboard', 'corrupt'], ['clipboard', 'blocked'],
+    ['form', 'missing'], ['form', 'corrupt'], ['form', 'blocked'],
+  ] as const)('refuses a stale %s edit without revealing after %s privacy storage', async (edit, privacyStorage) => {
+    const user = userEvent.setup();
+    const seller = generateSession();
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test/' } }));
+    localStorage.setItem(UI_PRIVACY_KEY, JSON.stringify({ privacyMode: false, clipboardClearAfterMs: 30_000 }));
+    const authority = createNetworkAuthority();
+    const createRpc = vi.fn<Services['createRpc']>(() => Promise.reject(new Error('No RPC is needed for this privacy probe')));
+    let observed: AppState | undefined;
+    function Observe() { observed = useApp(); return null; }
+    try {
+      renderWith(<AppShell order={CORE_ORDER} profile="lean" mainPrelude={<Observe />} />, makeServices({ network: authority, createRpc }));
+      await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: edit === 'clipboard' ? 'Settings' : 'Pay' }));
+      const sensitive = edit === 'clipboard'
+        ? screen.getByLabelText<HTMLInputElement>('Base Sepolia RPC URL')
+        : screen.getByRole<HTMLTextAreaElement>('textbox', { name: 'Paste an invoice link' });
+      if (edit === 'form') fireEvent.change(sensitive, { target: { value: '#retained-stale-form-draft' } });
+      const control = within(screen.getByRole('banner')).getByRole<HTMLInputElement>('switch', { name: 'Privacy mode' });
+      await user.click(control);
+      expect(isInaccessible(sensitive)).toBe(true);
+      const captured = observed!;
+      const grant = authority.authorize({ action: 'payment-preflight', category: 'rpc', endpoint: 'https://rpc.test/', network: { kind: 'evm', chainId: 84532 } });
+      const newerRaw = '{ "rpcUrls": { "84532": "https://newer.test/" } }';
+      localStorage.setItem(SETTINGS_KEY, newerRaw);
+      const read = Storage.prototype.getItem;
+      let deniedRead: { mockRestore(): void } | undefined;
+      if (privacyStorage === 'missing') localStorage.removeItem(UI_PRIVACY_KEY);
+      else if (privacyStorage === 'corrupt') localStorage.setItem(UI_PRIVACY_KEY, '{broken');
+      else deniedRead = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (this: Storage, key: string): string | null {
+        if (key === UI_PRIVACY_KEY) throw new DOMException('Denied', 'SecurityError');
+        return read.call(this, key);
+      });
+      // The newer write is already observable, but its cross-tab storage event has not reached this shell.
+      const previousRevision = authority.getRevision();
+      if (edit === 'clipboard') {
+        await user.selectOptions(screen.getByRole('combobox', { name: 'Clear copied data automatically' }), '60000');
+        expect(screen.getByText('Browser storage is unavailable, so these settings apply to this tab only.')).toBeTruthy();
+      } else {
+        let saved: boolean | undefined;
+        act(() => { saved = captured.updateSettings({ ...captured.settings, rpcUrls: { '84532': 'https://stale-form.test/' } }); });
+        expect(saved).toBe(false);
+      }
+      expect(authority.getRevision()).toBe(previousRevision + 1);
+      expect(() => grant.assertCurrent()).toThrow();
+      expect(localStorage.getItem(SETTINGS_KEY)).toBe(newerRaw);
+      expect(observed!.settings.rpcUrls['84532']).toBe('https://newer.test/');
+      expect(control.checked).toBe(true);
+      expect(observed!.settings.clipboardClearAfterMs).toBe(30_000);
+      expect(isInaccessible(sensitive)).toBe(true);
+      expect(sensitive.isConnected).toBe(true);
+      if (edit === 'form') expect(sensitive.value).toBe('#retained-stale-form-draft');
+      expect(getSessionPublic()).toBe(seller);
+      expect(createRpc).not.toHaveBeenCalled();
+      deniedRead?.mockRestore();
+      // The refused edit advanced the execution revision. A new explicit visual choice can now succeed.
+      const nextGrant = authority.authorize({ action: 'payment-preflight', category: 'rpc', endpoint: 'https://newer.test/', network: { kind: 'evm', chainId: 84532 } });
+      const refreshedRevision = authority.getRevision();
+      await user.click(control);
+      expect(control.checked).toBe(false);
+      expect(isInaccessible(sensitive)).toBe(false);
+      expect(localStorage.getItem(SETTINGS_KEY)).toBe(newerRaw);
+      expect(authority.getRevision()).toBe(refreshedRevision);
+      expect(() => nextGrant.assertCurrent()).not.toThrow();
     } finally { authority.dispose(); }
   });
 });

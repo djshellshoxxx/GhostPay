@@ -169,12 +169,15 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect.poll(journal).toMatchObject([{ status: 'submitted', hash, account: `0x${'5'.repeat(40)}` }]);
     await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
     const attempts = page.getByRole('region', { name: 'Wallet attempt journal' });
-    await expect(attempts).toContainText(hash);
+    await expect(attempts).not.toContainText(hash);
     await expect(attempts).toContainText('cannot cancel an in-flight wallet request or roll back a transaction');
     await expect(page.getByText(/Nothing was sent|request (?:was |has been )?cancelled|transaction (?:was |has been )?rolled back/i)).toHaveCount(0);
 
+    // Restore the fixture's original account in the same tab, then explicitly reconnect before revealing its journal.
+    await openFresh(page, link);
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
+    await expect(attempts).toContainText(hash);
     await page.getByRole('button', { name: 'Prepare payment' }).click();
     await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(page.getByRole('alert')).toContainText('previous wallet attempt');

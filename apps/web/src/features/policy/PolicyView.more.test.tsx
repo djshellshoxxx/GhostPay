@@ -96,6 +96,8 @@ describe('policy view: wallet and network', () => {
 
 describe('policy view: create and restore', () => {
   it('creates a policy with limits and downloads its record', async () => {
+    const filenames: string[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) { filenames.push(this.download); });
     const spy = vi.fn<(b: Blob | MediaSource) => string>(() => 'blob:x');
     URL.createObjectURL = spy;
     URL.revokeObjectURL = vi.fn();
@@ -117,6 +119,7 @@ describe('policy view: create and restore', () => {
     await user.click(screen.getByRole('button', { name: 'Download policy record' }));
     const blob = spy.mock.calls[0]?.[0] as Blob;
     expect(await blob.text()).toBe(canonical('acct-001'));
+    expect(filenames).toEqual(['ghostpay-policy.json']);
   });
   it('restore search reports bad input and misses', async () => {
     const user = await open();

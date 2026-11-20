@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { bech32 } from '@scure/base';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { clearCopiedBackup } from '../../components/SecretBackup';
 import { notifyAppLock } from '../../lib/appLock';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
@@ -10,6 +11,26 @@ import { inlineBtcScanWorker } from './scanWorker.testutil';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
 
 const BCRT = bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]);
+
+function clipboardFixture() {
+  let value = '';
+  const writeText = vi.fn((text: string) => { value = text; return Promise.resolve(); });
+  const readText = vi.fn(() => Promise.resolve(value));
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
+  return {
+    writeText,
+    readText,
+    get value() { return value; },
+    set value(next: string) { value = next; },
+  };
+}
+
+afterEach(async () => {
+  cleanup();
+  // Denied-read cases leave best-effort retry ownership; end it between isolated tests.
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText: () => Promise.resolve(''), writeText: () => Promise.resolve() } });
+  await act(async () => { clearCopiedBackup(); await Promise.resolve(); });
+});
 
 async function setup(over: Partial<{ failPath: string; payments: number }> = {}) {
   const chain = mockChain('regtest', walletA(), { payments: over.payments ?? 1 });
@@ -62,48 +83,80 @@ describe('BtcView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
   });
 
-  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
+  it('copies the backup seed only after a warning, and Lock clears the unchanged copied seed', async () => {
     const { user } = await setup();
-    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const clipboard = clipboardFixture();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
-    expect(writeText).not.toHaveBeenCalled();
+    expect(clipboard.writeText).not.toHaveBeenCalled();
     expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenLastCalledWith(''));
+    expect(clipboard.writeText).toHaveBeenCalledTimes(2);
+    expect(clipboard.value).toBe('');
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
   });
 
   it('empties the clipboard at the next click when the app lock could not (no user activation)', async () => {
     const { user } = await setup();
-    let refuse = false;
-    const writeText = vi.fn((text: string) => (refuse && text === '' ? Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError')) : Promise.resolve()));
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const clipboard = clipboardFixture();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
     // The idle lock runs without user activation, so the browser refuses to empty the clipboard.
-    refuse = true;
+    clipboard.writeText.mockRejectedValueOnce(new DOMException('Document is not focused.', 'NotAllowedError'));
     await act(async () => {
       notifyAppLock('idle');
       await Promise.resolve();
     });
-    expect(writeText).toHaveBeenCalledTimes(2);
-    expect(writeText).toHaveBeenLastCalledWith('');
-    refuse = false;
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenCalledTimes(2));
+    expect(clipboard.writeText).toHaveBeenLastCalledWith('');
+    expect(clipboard.value).toBe(seed);
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
     // Back at the page: the first click empties it.
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
-    expect(writeText).toHaveBeenCalledTimes(3);
-    expect(writeText).toHaveBeenLastCalledWith('');
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenCalledTimes(3));
+    expect(clipboard.writeText).toHaveBeenLastCalledWith('');
+    expect(clipboard.value).toBe('');
     // Emptied once: Lock leaves the clipboard alone.
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenCalledTimes(3);
+    expect(clipboard.writeText).toHaveBeenCalledTimes(3);
+    expect(clipboard.value).toBe('');
+  });
+
+  it.each(['replaced', 'denied', 'unavailable'] as const)('Lock forgets the wallet without clearing a %s clipboard', async (state) => {
+    const { user } = await setup();
+    const clipboard = clipboardFixture();
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
+    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
+
+    if (state === 'replaced') clipboard.value = 'newer external clipboard content';
+    else if (state === 'denied') clipboard.readText.mockRejectedValue(new DOMException('Denied', 'NotAllowedError'));
+    else Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: clipboard.writeText } });
+
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(state === 'replaced' ? 'newer external clipboard content' : seed);
+    if (state !== 'unavailable') expect(clipboard.readText).toHaveBeenCalled();
   });
 
   it('discloses what the scan verifies, its limits and the data-source modes (hosted scanning unavailable)', async () => {

@@ -1,0 +1,61 @@
+{
+  "feature": "v1-02-clipboard",
+  "generation": 2,
+  "base": "52f1332f97a066c59318dfb8f7985f1deba2dd93",
+  "claim": "4a52a75b",
+  "regression_source": "54286f1a",
+  "runtime_source": "a17bad1900d58c005efd42ca308907531b2bd9ed",
+  "runtime_tree": "af710d89f790437fc56cc866f819ccb8fb304eb1",
+  "tests": [
+    {
+      "name": "incorrect cwd startup",
+      "exit": 1,
+      "executed": 0,
+      "qualification": "No test files found; not behavioral RED"
+    },
+    {
+      "name": "behavioral RED",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/components/Common.clipboardPrivacy.test.tsx src/components/SecretBackup.clipboardPrivacy.test.tsx -t 'queued' --coverage=false --maxWorkers=1",
+      "failed": 3,
+      "passed": 0,
+      "filtered": 13,
+      "exit": 1,
+      "duration_seconds": 3.08
+    },
+    {
+      "name": "original focused acceptance",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/clipboardPrivacy.test.ts src/components/Common.clipboardPrivacy.test.tsx src/components/SecretBackup.clipboardPrivacy.test.tsx src/views/Settings.clipboardPrivacy.test.tsx src/components/SecretBackup.test.tsx src/components/SecretBackup.views.test.tsx src/components/Common.test.tsx --coverage=false --maxWorkers=1",
+      "passed": 77,
+      "failed": 0,
+      "filtered": 0,
+      "files": 7,
+      "exit": 0,
+      "duration_seconds": 18.57
+    }
+  ],
+  "checks": {
+    "secret_scan": "passed exit0",
+    "full_feature_diff_check": "passed exit0",
+    "full_typecheck": "not run by this worker",
+    "typed_lint": "not run by this worker",
+    "browser": "reviewed existing two cases; not executed",
+    "full_coverage_hosted_release": "open"
+  },
+  "logs": {
+    "startup-no-tests": {
+      "file": "startup-no-tests.log.gz",
+      "raw_sha256": "7618ead039a5122f8e1f2bb279bae66184c1a0ff73b661b28b9586626dca128e"
+    },
+    "red": {
+      "file": "red.log.gz",
+      "raw_sha256": "13c5a7cf25cfa4d37134079430cf656844b69fad22e51fb7762e13d845896afc"
+    },
+    "green": {
+      "file": "green.log.gz",
+      "raw_sha256": "d5edd18c1f801170901f50d1acf5db45911145f7a7648c5d948ad14fe36fa61b"
+    }
+  },
+  "scope": "Revalidate existing copy lifetime before queued native write. Native writes already dispatched, external compare/write race, OS history/sync and JS zeroization are not controlled."
+}

@@ -2347,7 +2347,7 @@
     "error.paymentKeyExport.noRpc": "The address check needs the RPC this scan used. Run the scan again, then export.",
     "error.paymentKeyExport.wrongChain": "The RPC this scan used serves a different chain than this payment, so nothing was exported.",
     "error.paymentKeyExport.codeCheckFailed": "The RPC could not confirm that this address holds no contract code, so no private key was exported. Try again.",
-    "error.paymentKeyExport.contractAccount": "The address {address} holds contract code (a contract or an EIP-7702 delegation). Its private key is not exported, because a private key cannot be assumed to control funds there.",
+    "error.paymentKeyExport.contractAccount": "The selected address holds contract code (a contract or an EIP-7702 delegation). Its private key is not exported, because a private key cannot be assumed to control funds there.",
     "error.paymentKeyExport.noPayments": "There are no payments to export.",
     "error.paymentKeyExport.confirmRawKey": "Confirm the private key warning first.",
     "error.paymentKeyExport.recoveredKeysClosed": "This export was closed and its keys were wiped. Open the file again.",
@@ -2543,7 +2543,8 @@
     "privacyUx.historyLocked": "Unlock the reconciliation vault before revealing history.",
     "privacyUx.historyHint": "Revealing history does not start a network lookup. Existing encrypted backups are preserved.",
     "walletAttempts.privateWarning": "A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.",
-    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts."
+    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts.",
+    "policy.error.contractResponse": "The contract did not answer the requested read as expected."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

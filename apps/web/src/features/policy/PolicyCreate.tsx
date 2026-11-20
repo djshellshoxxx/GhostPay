@@ -139,7 +139,7 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
                 <p><Mono>{r.metaAddress}</Mono></p>
                 <p>{t('policy.create.recordDestination')} <Mono>{r.policy.destination}</Mono>{t('policy.create.recordTerms', { seconds: r.policy.delaySeconds.toString(), limits: r.limits.length === 0 ? t('policy.create.noLimits') : t('policy.create.tokenLimits', { count: String(r.limits.length) }) })}</p>
                 <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
-                <button type="button" onClick={() => { downloadText(`ghostpay-policy-${r.policyHash.slice(2, 10)}.json`, serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
+                <button type="button" onClick={() => { downloadText('ghostpay-policy.json', serializePolicyRecord(r), 'application/json'); }}>{t('policy.create.download')}</button>
               </li>
             ))}
           </ul>

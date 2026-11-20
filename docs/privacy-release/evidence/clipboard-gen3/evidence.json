@@ -1,0 +1,204 @@
+{
+  "feature": "v1-02-clipboard",
+  "generation": 3,
+  "kind": "Inherited original-test fixture correction; no production code changes",
+  "branch": "privacy/v1-clipboard-20261120",
+  "base": "9174ea73eb7d232b2e07a3b07238e6f216cd9226",
+  "ownership_claim": "e077b1b1b155cab3bb372d4f9a17c2adeb46dbea",
+  "tested_source": "aeefe366cb89b9e571a521f18a0aa9b61fd92070",
+  "tested_tree": "e01f9be6c3b28045fcc4386a84416805ed7f7867",
+  "published_baseline": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+  "published_tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+  "changed_application_paths": [
+    "apps/web/src/features/solana/SolanaView.test.tsx"
+  ],
+  "baseline_equal_blobs": {
+    "apps/web/src/features/solana/SolanaView.test.tsx": "e03905fc598e4228ce609707c8ba6374a269bfbf",
+    "apps/web/src/features/solana/SolanaView.tsx": "f9de347e9fac5ce8e370f00e479e6a9d1c785a92"
+  },
+  "baseline_classification": "Published and released source both require readable ownership comparisons before clearing. The original write-only clipboard fixture fails identically on both exact source checkouts. M2 changes only new-copy dispatch predicates, not the cleanup path.",
+  "discovery_input": {
+    "executor": "coordinator",
+    "source": "573901ee1c66624e57143526571a3fd76f52f264",
+    "shard": "1/8",
+    "files": 36,
+    "passed": 512,
+    "failed": 1,
+    "exit": 1,
+    "raw_sha256": "e92c2fb33297ea6f25918608a06141b24aa036b563fad0f7d0e4122faa9a7fca",
+    "retention": "Coordinator retains its source-pinned discovery log separately; no raw seed value copied here."
+  },
+  "dependencies": "Existing coordinator-prepared dependencies and workspace dist reused; package sources and package-lock were verified identical between published baseline and current clipboard branch. No installation, lock or package changes.",
+  "independent_review": {
+    "worker": "/root/clipboard_gen3/clipboard_fixture_review",
+    "source": "aeefe366cb89b9e571a521f18a0aa9b61fd92070",
+    "tree": "e01f9be6c3b28045fcc4386a84416805ed7f7867",
+    "compared_with": "e077b1b1b155cab3bb372d4f9a17c2adeb46dbea",
+    "kind": "Read-only immutable-source review; no execution",
+    "result": "No blocker; warning/exact writes preserved, stateful readable ownership modeled, negative Lock/no-clobber cases and retry-isolation assertions appropriate; no production diff."
+  },
+  "runs": [
+    {
+      "id": "published-red",
+      "source": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/solana/SolanaView.test.tsx",
+        "--testNamePattern",
+        "copies the backup seed only after a warning",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=default"
+      ],
+      "node_options": "--max-old-space-size=1024",
+      "exit": 1,
+      "seconds": 5.92,
+      "raw_sha256": "3986aee212f71fe78df0b384c95a314b29bf253af80a1e2215bffba451c6af8d",
+      "sanitized_sha256": "2cc709dc83b6d681bc274ff8d1753c435e0a5be5ea9bae09111ee97025ea4873",
+      "redaction": "All standalone 64-hex test values in failed assertions removed from committed/viewed output.",
+      "log": "published-red.log.gz",
+      "compressed_sha256": "2059ad56aac7bf7720bdde824b18c63492c3e233f12ef4d5becb72df3bb67a28",
+      "sanitized_bytes": 2198,
+      "files": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 13,
+      "skip_reason": "Explicit original test-name filter; other cases were not executed."
+    },
+    {
+      "id": "current-red",
+      "source": "e077b1b1b155cab3bb372d4f9a17c2adeb46dbea",
+      "tree": "8cc40ed1706810b3ab057eabf9cbbde018e58fbe",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/solana/SolanaView.test.tsx",
+        "--testNamePattern",
+        "copies the backup seed only after a warning",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=default"
+      ],
+      "node_options": "--max-old-space-size=1024",
+      "exit": 1,
+      "seconds": 4.27,
+      "raw_sha256": "f3a464f423b96036c8ab70b9ec00852245550fcd6e9c488d599ad67d015caa80",
+      "sanitized_sha256": "defdd505c9a650820917fa0cd3e452d79ef1cc078501c8fbd2dce30f75704618",
+      "redaction": "All standalone 64-hex test values in failed assertions removed from committed/viewed output.",
+      "log": "current-red.log.gz",
+      "compressed_sha256": "430b9320249d1fee37e6ae5fab97d2d67d733b5ccad14f21aa2bc80bbc34772e",
+      "sanitized_bytes": 2187,
+      "files": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 13,
+      "skip_reason": "Explicit original test-name filter; other cases were not executed."
+    },
+    {
+      "id": "green",
+      "source": "aeefe366cb89b9e571a521f18a0aa9b61fd92070",
+      "tree": "e01f9be6c3b28045fcc4386a84416805ed7f7867",
+      "selection": [
+        "src/features/solana/SolanaView.test.tsx",
+        "src/features/solana/SolanaView.lock.test.tsx",
+        "src/lib/clipboardPrivacy.test.ts",
+        "src/components/Common.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.clipboardPrivacy.test.tsx",
+        "src/views/Settings.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.test.tsx",
+        "src/components/SecretBackup.views.test.tsx",
+        "src/components/Common.test.tsx"
+      ],
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/features/solana/SolanaView.test.tsx",
+        "src/features/solana/SolanaView.lock.test.tsx",
+        "src/lib/clipboardPrivacy.test.ts",
+        "src/components/Common.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.clipboardPrivacy.test.tsx",
+        "src/views/Settings.clipboardPrivacy.test.tsx",
+        "src/components/SecretBackup.test.tsx",
+        "src/components/SecretBackup.views.test.tsx",
+        "src/components/Common.test.tsx",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=default"
+      ],
+      "node_options": "--max-old-space-size=1024",
+      "exit": 0,
+      "seconds": 22.69,
+      "raw_sha256": "60067d73c3f4631da23019b695a35e0f1fb53cae438199dcf578a571c16c4a73",
+      "sanitized_sha256": "60067d73c3f4631da23019b695a35e0f1fb53cae438199dcf578a571c16c4a73",
+      "redaction": "Standalone 64-hex test values redacted if any appear.",
+      "log": "green.log.gz",
+      "compressed_sha256": "19ce921bf7474c5fe4a78f27b7d5c2866f6e768fcf99f508eab5d21a86a7b7c3",
+      "sanitized_bytes": 2088,
+      "files": 9,
+      "passed": 95,
+      "failed": 0,
+      "skipped": 0,
+      "vitest_seconds": 22.21
+    },
+    {
+      "id": "secret-scan",
+      "source": "aeefe366cb89b9e571a521f18a0aa9b61fd92070",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "exit": 0,
+      "seconds": 0.15,
+      "raw_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "sanitized_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "log": "secret-scan.log.gz",
+      "compressed_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3",
+      "sanitized_bytes": 50
+    },
+    {
+      "id": "whitespace",
+      "source": "aeefe366cb89b9e571a521f18a0aa9b61fd92070",
+      "command": [
+        "git",
+        "diff",
+        "9174ea73eb7d232b2e07a3b07238e6f216cd9226",
+        "HEAD",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.01,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sanitized_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "whitespace.log.gz",
+      "compressed_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "sanitized_bytes": 0
+    }
+  ],
+  "log_redaction": "Published/current failure logs replace standalone 64-hex values produced by the ephemeral test wallet. Original raw SHA256 and sanitized SHA256 are retained; committed gzip hashes describe sanitized bytes. Green log required no redaction. Raw failed logs remain scratch only.",
+  "counts": "95 is one complete nine-file selection. The77 predecessor clipboard cases are included, and the parent512-case partial shard overlaps; do not sum counts.",
+  "unqualified": [
+    "complete original coverage/nocov",
+    "full typecheck",
+    "full typed lint",
+    "build/CSP/bundle",
+    "built-browser and actual permission behavior",
+    "hosted release gates"
+  ],
+  "limits": [
+    "Mocks immediately resolve/reject; no delayed native-operation or real browser-permission claim.",
+    "Browser read/write cleanup remains best effort; no unconditional fallback, OS clipboard-history erasure or native-write cancellation.",
+    "No new Solana feature, external source copy, dependency or runtime change."
+  ],
+  "process_state": "All baseline, current and final focused test processes completed; sole heavy execution window released to coordinator.",
+  "remote_mutation": false,
+  "successor_inventory": {
+    "reported_by": "coordinator",
+    "paths": [
+      "apps/web/src/features/btc/BtcView.test.tsx",
+      "apps/web/src/features/tron/TronView.test.tsx"
+    ],
+    "scope": "Existing backup-copy/cleanup/retry fixtures with similar ownership assumptions; independently reproduce in fresh generation before repair. Not executed or changed by generation3."
+  }
+}
