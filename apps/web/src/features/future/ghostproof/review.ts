@@ -63,6 +63,7 @@ const HEX32 = /^0x[0-9a-fA-F]{64}$/;
 const ADDRESS = /^0x[0-9a-fA-F]{40}$/;
 const PUBKEY = /^(02|03)[0-9a-fA-F]{64}$/;
 const AMOUNT = /^[1-9][0-9]{0,77}$/;
+const matchesEntire = (pattern: RegExp, value: string): boolean => pattern.exec(value)?.[0] === value;
 
 function plainRecord(value: unknown): value is Record<string, unknown> {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -75,17 +76,17 @@ function copyBinding(value: unknown): ReceiptInvoiceBinding | undefined {
   if (!plainRecord(value) || Reflect.ownKeys(value).some(key => typeof key !== 'string' || !BINDING_KEYS.has(key))
     || Object.values(Object.getOwnPropertyDescriptors(value)).some(descriptor => !('value' in descriptor))
     || BINDING_REQUIRED.some(key => !Object.hasOwn(value, key))) throw new TypeError('Invalid binding');
-  if (typeof value.invoiceDigest !== 'string' || !HEX32.test(value.invoiceDigest)
+  if (typeof value.invoiceDigest !== 'string' || !matchesEntire(HEX32, value.invoiceDigest)
     || !Number.isSafeInteger(value.chainId) || (value.chainId as number) <= 0
-    || typeof value.asset !== 'string' || (value.asset !== 'native' && !ADDRESS.test(value.asset))
-    || typeof value.amountMinorUnits !== 'string' || !AMOUNT.test(value.amountMinorUnits)
+    || typeof value.asset !== 'string' || (value.asset !== 'native' && !matchesEntire(ADDRESS, value.asset))
+    || typeof value.amountMinorUnits !== 'string' || !matchesEntire(AMOUNT, value.amountMinorUnits)
     || BigInt(value.amountMinorUnits) >= (1n << 256n)
-    || typeof value.invoiceSignerPublicKey !== 'string' || !PUBKEY.test(value.invoiceSignerPublicKey)
+    || typeof value.invoiceSignerPublicKey !== 'string' || !matchesEntire(PUBKEY, value.invoiceSignerPublicKey)
     || typeof value.invoiceSignatureValid !== 'boolean') throw new TypeError('Invalid binding');
   if (value.trustedSignerPublicKey !== undefined && (typeof value.trustedSignerPublicKey !== 'string'
-    || value.trustedSignerPublicKey.length > 128 || !PUBKEY.test(value.trustedSignerPublicKey.trim()))) throw new TypeError('Invalid binding');
-  if (value.txHash !== undefined && (typeof value.txHash !== 'string' || !HEX32.test(value.txHash))) throw new TypeError('Invalid binding');
-  if (value.stealthAddress !== undefined && (typeof value.stealthAddress !== 'string' || !ADDRESS.test(value.stealthAddress))) throw new TypeError('Invalid binding');
+    || value.trustedSignerPublicKey.length > 128 || !matchesEntire(PUBKEY, value.trustedSignerPublicKey.trim()))) throw new TypeError('Invalid binding');
+  if (value.txHash !== undefined && (typeof value.txHash !== 'string' || !matchesEntire(HEX32, value.txHash))) throw new TypeError('Invalid binding');
+  if (value.stealthAddress !== undefined && (typeof value.stealthAddress !== 'string' || !matchesEntire(ADDRESS, value.stealthAddress))) throw new TypeError('Invalid binding');
   return Object.freeze({
     invoiceDigest: value.invoiceDigest, chainId: value.chainId as number, asset: value.asset,
     amountMinorUnits: value.amountMinorUnits, invoiceSignerPublicKey: value.invoiceSignerPublicKey,

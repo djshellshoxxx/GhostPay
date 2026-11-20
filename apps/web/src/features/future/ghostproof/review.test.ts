@@ -158,6 +158,20 @@ describe('bounded untrusted receipt input', () => {
       .toEqual({ ok: false, code: 'INVALID_CONTEXT' });
   });
 
+  it.each(['\n', '\r', '\r\n', '\u2028', '\u2029'])(
+    'requires complete canonical invoice-binding strings with terminator %j', async terminator => {
+      const canonicalFields = {
+        invoiceDigest: SIGNED.invoiceDigest, asset: SIGNED.stealthAddress,
+        amountMinorUnits: SIGNED.amountMinorUnits, invoiceSignerPublicKey: SIGNED.signerPublicKey,
+        txHash: SIGNED.txHash, stealthAddress: SIGNED.stealthAddress,
+      };
+      for (const [name, value] of Object.entries(canonicalFields)) {
+        expect(await reviewReceipt(SIGNED_TEXT, options({ invoiceBinding: { ...BINDING, [name]: value + terminator } })))
+          .toEqual({ ok: false, code: 'INVALID_CONTEXT' });
+      }
+    },
+  );
+
   it('rejects absent runtime options, unavailable digest verification and cancelled operations', async () => {
     expect(await reviewReceipt(SIGNED_TEXT, undefined as unknown as ReceiptReviewOptions)).toEqual({ ok: false, code: 'INVALID_CONTEXT' });
     const text = await digestText();
