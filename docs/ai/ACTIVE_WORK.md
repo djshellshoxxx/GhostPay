@@ -2442,3 +2442,24 @@ The hosted full/lean focus assertion remains unchanged. Worker additionally owns
 restoration targets and fall back when a still-visible opener cannot receive focus.
 Preserve dialog trapping, explicit disclosure, cancellation and provider call boundaries.
 No product edit preceded this controlled reproduction and report to the coordinator.
+
+### Browser acceptance R3 completion checkpoint
+
+Product/test source is frozen at `5923fcbb13b73a6973f7dd21cf38daa573248ea5`, tree
+`2e61abb2a3ed37379bd16ecc90306d2d765e2ed3`. The expanded tests-only source
+`38290781f014ebfbaf6e877137d56f2097a38ada` reproduced three focus failures with seven
+controls passing before runtime repair. Final complete focused selection passes
+92/92 in seven files; original inventory passes 6/6, and original full web typecheck
+and lint pass. Initial regressions, the initial passing focus probe and the authored
+test-option type error remain retained. All original assertion lines in the reviewed
+acceptance files and all workflow/test configuration bytes are preserved.
+
+Independent `/root/r3_feature_completion` approved the exact frozen source with zero
+findings; the coordinator also inspected the complete runtime/test diff. Source-only
+review and 17 complete original failed hosted jobs are preserved under
+`docs/consolidation/browser-qualification-r3-20261120/`. #336 itself still fails Pages,
+Beta, full/lean browser and web gates. Static collection (3 devnet, 16 Pages, 136 full,
+126 lean) is discovery only. No local browser/server/socket/anvil/RPC execution occurred.
+All local test/build processes have stopped and source paths are released to the
+coordinator for isolated draft publication. Exact-successor hosted gates, fresh
+combined-tree qualification, integration and deployment remain coordinator-owned.

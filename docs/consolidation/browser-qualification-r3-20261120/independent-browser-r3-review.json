@@ -1,0 +1,178 @@
+{
+  "recorded_at_utc": "2026-11-20T23:25:50.224048+00:00",
+  "reviewer": "/root/r3_feature_completion",
+  "implementation_owner": "/root/r3_browser_qualification",
+  "decision": "APPROVE bounded source and assertion-preservation review",
+  "base": "410353a23631234aa888e46f38df22291c699a26",
+  "base_tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+  "candidate": "5923fcbb13b73a6973f7dd21cf38daa573248ea5",
+  "candidate_tree": "2e61abb2a3ed37379bd16ecc90306d2d765e2ed3",
+  "patch_sha256": "254c8b4af61ddffa69a088dcffccd37395db858710e26a2c0c5969e3c9ec9d42",
+  "changed_paths": [
+    {
+      "path": "apps/web/e2e/app.spec.ts",
+      "base": "92afdb684409110c7b542d4e842fc8d915d81b43",
+      "candidate": "c99fc0ace227b09a13e24b3ba6ea8a3e9fbbf51d"
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "base": "b6e3cdea64b3e84feb932692d71cb7d2cf65d25c",
+      "candidate": "f828914507f3b5a64440ffe435c1b8bb202ab0bc"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "base": "008f7a72d59bd8128eb5ca972fee61e9ee58c7b2",
+      "candidate": "f3a2c166ca063a5d2bd482024f9154dd345d12af"
+    },
+    {
+      "path": "apps/web/e2e/walletFixture.ts",
+      "base": "283b4d1006033f53c7eafc20b055039de43a2d6a",
+      "candidate": "b075081e07fefadfc25ec3d477d4ace5f3f62817"
+    },
+    {
+      "path": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+      "base": "a48fbe04da171154ba009ce11132e30ffbcaf80f",
+      "candidate": "80e5ad3fc7593ecff00aae052181300fac3a11e0"
+    },
+    {
+      "path": "apps/web/src/components/WalletDisclosure.test.tsx",
+      "base": "f560c3ba9ce4d16024794c9bd1d5babed4c143ce",
+      "candidate": "dc6748580947f2f2e9ac6be8798c4cb9d667705e"
+    },
+    {
+      "path": "apps/web/src/components/WalletDisclosure.tsx",
+      "base": "fe26789ff37a6802f23ee94d02631575ce1d01f7",
+      "candidate": "00a70efc5f273da55d4ce4a76141a0b92fd5601a"
+    },
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "base": "02e690440c487022264bb7960cf662a40bf117f2",
+      "candidate": "03dd09a88748af0cba8cbc9416ffbe150e4d1ff7"
+    },
+    {
+      "path": "docs/privacy/network-egress-inventory.json",
+      "base": "5b4f13aead42cf0f5a4842ce78a2ddbfe77fc7b7",
+      "candidate": "40571dc76d476eab8c00baf2b0b973923500c9ea"
+    }
+  ],
+  "unchanged_critical_paths": [
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "666b9d9774a3de841c23196c7ccde14c335e14ba",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/walletDisclosure.ts",
+      "blob": "a0700207e8781ccb4184e3d70fd1c78e6d442766",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/PrivateHistory.tsx",
+      "blob": "1919f8a37f42fe5994450713c86c8f3fc276fb35",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/SensitiveContent.tsx",
+      "blob": "e4b64ba4f3312c3392e2498ca5c6b306fd0871d5",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/PrivacyControls.tsx",
+      "blob": "590b40b5ed2f984870122cbbaff9da47f651d4d6",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.tsx",
+      "blob": "7e855836d25e8e70ed17430161efd12116794d52",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/privacyMode.tsx",
+      "blob": "1ab179b7a39c6e5c4f54fb114d21e70f83f6effa",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "blob": "213396721bb63d68bc3d0c51755f9389ab3e2746",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/e2e/flows.spec.ts",
+      "blob": "a54df0d1b2e764fcf42236edeb826cb69acad2f8",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/e2e/wallet-disclosure.spec.ts",
+      "blob": "6bde4cbc654658bc1468c6683c6d17ea1b50b357",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "blob": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/tests/network-egress-inventory.test.mjs",
+      "blob": "d48716335d66af3ce36c5add29fcaf05da53e8ad",
+      "unchanged": true
+    }
+  ],
+  "findings": [],
+  "blocking_findings": 0,
+  "assessment": {
+    "runtime": "Only WalletDisclosure.tsx changes at runtime. Root/disabled/inert/hidden or ineffective opener restoration falls back to the visible privacy control after teardown. A replacement dialog retains focus ownership. Dialog trapping, controller approvals, revocation and provider boundaries remain unchanged.",
+    "journal_fixtures": "Reloaded attempts remain independently asserted in tab storage; hashes remain concealed without wallet authority and are positively asserted after explicit disclosure and connection of the matching account/chain. Original duplicate-send, nonce, balances, status and contract assertions remain.",
+    "locale_fixture": "Mounts with no wallet to assert the warning and absence of account/clear control, then rerenders with the exact matching account/chain before retaining original clear and payment-line assertions.",
+    "silent_account_recheck": "The net_version fixture mutates only the returned account state without emitting accountsChanged, selecting the actual final eth_accounts check. The original event-emitting changeAccount helper and separate lifecycle tests remain. Send calls, sent transaction and journal must remain absent in the unchanged authority test.",
+    "keyboard_navigation": "Adds the existing header Privacy mode switch to the Tab sequence and retains skip link, Home and navigation focus assertions.",
+    "network_inventory": "Exactly one integer changes: Pay reference:getRpc 6 to 7. Actual calls remain 3. The seventh reference was introduced by 74dccc41 in refreshContext callback dependencies, not a new dispatcher. All 37 surfaces, authorization records and detector assertions remain byte-identical."
+  },
+  "static_checks": {
+    "git_diff_check_exit": 0,
+    "original_network_inventory_except_one_count_preserved": true,
+    "inventory_surfaces": 37,
+    "getRpc_calls": 3,
+    "getRpc_references": 7,
+    "test_first_runtime_order": {
+      "body_regression": "9c1b320874e0f6dc99acf96e55abde562b8f3db6",
+      "additional_targets": "38290781f014ebfbaf6e877137d56f2097a38ada",
+      "runtime": "86ae406779d8d753cf11936da0105eaa753f4bf6",
+      "final_test_selector_correction": "5923fcbb13b73a6973f7dd21cf38daa573248ea5"
+    }
+  },
+  "execution": {
+    "repository_tests_run": false,
+    "typecheck_run": false,
+    "lint_run": false,
+    "build_run": false,
+    "browser_run": false,
+    "network_or_wallet_run": false,
+    "source_or_ref_changes": false,
+    "scratch_reports_only": true
+  },
+  "limitations": [
+    "Source-only approval does not assert hosted CI, browser, devnet, accessibility-platform, merge or deployment acceptance.",
+    "Implementation-worker RED/GREEN and other execution results remain separately attributed evidence.",
+    "Exact successor hosted/browser gates and fresh head/ownership checks remain coordinator responsibilities."
+  ]
+}
