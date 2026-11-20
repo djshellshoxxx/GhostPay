@@ -1,3 +1,13 @@
+# Clipboard auto-clear safety primitive — cycle 20261120T004531Z
+
+Worker: single ChatGPT operator; independent second worker unavailable in this invocation. Root integration coordinator for PR #278 is separate and holds integration lock generation 5.
+Branch: `automation/20261120T004531Z/feature/clipboard-guard` based on exact draft #278 head `d74af79ebabdc8cead843361c3497b46d8c421f9`, current main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Scope: new `apps/web/src/lib/clipboardPrivacy.ts` and its tests, and bounded opt-in wiring to existing `apps/web/src/components/Common.tsx` plus focused regression tests; a task-specific handoff only. Do not touch Pay preflight/network-authorization, shared docs/automation, release branch or deployment workflows.
+Dependency: issue #286 clipboard protection. Acceptance: configurable opt-in delayed clear, clear only if clipboard still equals copied value, newer same-value copy supersedes older timer, denied read/write silently leave clipboard untouched, default copy behavior unchanged. This is a reusable primitive, **not** completion of issue #286's end-user Settings control or global coverage.
+Tests: first record negative reproductions for missing protection; then focused assertions and scoped TypeScript. Hosted CI and independent review required before integration. No integration lock acquired.
+
+---
+
 # Isolated consolidation follow-through — 2026-11-19
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
