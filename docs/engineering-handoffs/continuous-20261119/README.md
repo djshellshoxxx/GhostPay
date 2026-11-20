@@ -6,9 +6,10 @@ Repository: https://github.com/djshellshoxxx/GhostPay. Canonical review entry: [
 qualifies the retained #289/#285 fixes and publishes the independently reviewed
 QR runtime-key follow-up as draft #290. Distinct tests from concurrent #291 are
 retained without duplicating its runtime. Source head `ec546311` remains subject
-to hosted checks and the active generation-5 integration owner. This link and the
-parallel-cycle ledger entry are an isolated evidence proposal; historical results
-below retain their original source and scope.
+to hosted checks and qualification against the owner's updated #278 at `417f7c71`.
+The generation-5 lock is released; any shared update requires a new acquisition.
+This link and the parallel-cycle ledger entry are an isolated evidence proposal;
+historical results below retain their original source and scope.
 
 **Release status: BLOCKED.** Seven demonstrated runtime defects are repaired and independently reviewed. Final combined typecheck, lint, library/full web/Pages builds passed; original full web coverage and hosted qualification remain in progress. This is an engineering checkpoint, not release, deployment, external-audit or whole-repository completion approval.
 

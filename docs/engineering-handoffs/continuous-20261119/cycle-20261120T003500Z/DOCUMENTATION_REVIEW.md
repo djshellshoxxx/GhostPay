@@ -25,3 +25,21 @@ Two issues were identified and addressed by the coordinator before publication:
 
 No other factual, relative-link, source-identity or qualification overclaim was
 identified. This is internal documentation QA, not release or external-audit approval.
+
+## Subsequent closing refresh
+
+The coordinator subsequently refreshed GitHub at 01:06 UTC. The lock is now
+released by its generation-5 owner; #278 published its browser/signer repairs;
+#291 was closed unmerged by its owner. Fresh PRs #292–#295 and required privacy
+issue #286 are recorded in CLOSING_REFRESH.json and the updated handoff.
+The earlier independent documentation review above applies to its recorded
+snapshot. These additive source/state corrections change no implementation or
+test result, and do not constitute new release qualification.
+
+The same independent native reviewer inspected this closing addendum and verified
+its links, routes and bounded claims. Two remaining navigation corrections were
+applied: the parent introduction now records the released lock and published
+417f7c71, and current feature/missing-implementation routes point to this cycle
+while retaining the historical completeness path separately. The coordinator
+subsequently recorded a read-only integration probe: one ownership-document
+conflict and no product-file conflicts; no merge was performed.

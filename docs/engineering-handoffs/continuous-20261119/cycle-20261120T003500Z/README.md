@@ -11,8 +11,10 @@ blocked/pending. No deployment or release occurred.**
 ## Source identities and ownership
 
 - Main at discovery and the recorded refresh: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
-- Canonical candidate: [PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278),
-  `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+- Canonical candidate at implementation base: [PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278),
+  `d74af79ebabdc8cead843361c3497b46d8c421f9`. Closing refresh found its owner's
+  follow-up at `417f7c71daf8645e1432f2ec8f070110879b80bd`; the original base remains
+  an ancestor. Neither QR file changed there, so #290 remains an outstanding delta.
 - This cycle's minimal stacked source: [PR #290](https://github.com/djshellshoxxx/GhostPay/pull/290),
   final head `ec546311f994fe1db544fe85ff2aa6db428d67d4`, tree
   `9c5df12a4621384323af1f4d51b1b04e37d62d3c`.
@@ -29,10 +31,19 @@ pair and matching tree. Direct Git push lacked credentials. The authorized
 connector used expected-head, non-force updates; each reconstructed tree was
 checked before publication. No credential retrieval or permission bypass occurred.
 
-The lock was initially released at generation 4. Its refreshed immutable state at
-`2f56e26f56db57d0d4cabf646d8e0843ccb8d1e3` is **held, generation 5**, by
-`20261119-continuous-followup-0a7bc3583588-root`. This cycle never acquired,
-renewed, released or changed it. Shared integration belongs to that coordinator.
+The lock was initially released at generation 4, then held at generation 5 by
+`20261119-continuous-followup-0a7bc3583588-root` at `2f56e26f`. Its closing immutable
+state at `c8517bebd1d5218f9102ca8d1911013cf10a27fc` is **released, generation 5**,
+with the owning coordinator's release recorded at `2026-11-20T01:00:43Z`. This cycle
+never acquired, renewed, released or changed it. A future shared update still
+requires a new valid acquisition and independent ownership readback.
+
+[CLOSING_REFRESH.json](CLOSING_REFRESH.json) supersedes earlier snapshots only for
+fresh PR heads/states, owner publication and lock state. Earlier test and failure
+receipts retain their original immutable source and observation times. The first
+complete evidence publication was `334fb34b04c84947b8d44b8830bc3e121acb431a`, tree
+`c8dd7e34da451af560d8d9518c9c5fe96979edff`, fetched through Git and compared
+byte-for-byte with local `d9b2d1ee` before this closing addendum.
 
 ## Actual engineering and scoped audit
 
@@ -80,7 +91,9 @@ The final reviewer confirmed that #290's existing assertions remain intact and
 that the extracted tests retain #291's useful semantics. **Integrate the guard
 once, using the canonical-baseline #290 candidate after all gates pass.** Preserve
 #291 and its independent evidence; do not wholesale replace the final test file
-or separately merge its equivalent runtime. Neither PR was closed or deleted.
+or separately merge its equivalent runtime. Fresh API metadata confirms #291's
+owner closed it unmerged at `2026-11-20T00:48:09Z` and preserved its branch. This
+cycle closed no PR and deleted no branch. #290 remains draft and unmerged.
 Creation timestamps establish publication order only, not which investigation
 began first. See [the comparison](ci-review/REVIEW.md).
 
@@ -98,6 +111,16 @@ None of these original heads is an ancestor of the observed main. No additional
 product integration into #278 is necessary for these already retained fixes.
 The comparison is bounded to these candidates; it is not a new semantic audit of
 every repository branch. Detailed identities are in [CI/source evidence](ci-review/evidence.json).
+
+The closing open-PR census also found separately owned follow-ups. Preserve these
+branches and evaluate their own evidence; this cycle did not execute their tests:
+
+| Candidate / exact head | Scope and dependency |
+| --- | --- |
+| #292 `814950a1cf99e68765b85f241e6f4a0fc55ea9c6` | Pages promotion verification, malformed-fixture construction and Sweep authority tests; separate follow-up on d74. |
+| #293 `6c648770f5647ca7993cc108ef9e5ede9b46b4c9` | Partial opt-in clipboard infrastructure for #286; Settings, call sites and independent/repository qualification remain unfinished. |
+| #294 `172695efb41665a4e50d335029e54184bbb5b328` | QR assembler conflict/idle-deadline repair; separate package work on d74. |
+| #295 `4493793ad2c438fcc0f45f96851eac8967cb607a` | Test-only child of #290 at ec546. Its inspected diff adds a distinct unverified stateful-conversion case and compile-time exhaustive mappings with all eight flag combinations. Production is unchanged. Preserve this small supplement for qualified integration rather than merging the redundant #291 runtime. |
 
 ## Verification actually executed
 
@@ -143,8 +166,8 @@ three separate nocov tests. Synthetic checkout trees were verified equal to thei
 respective PR-head trees; earlier standalone-only limitations are now resolved
 for those specific executed scopes.
 
-At final source #290 `ec546311`, five applicable workflows were observed
-queued/pending; **no success is inferred**. The current links are:
+At final source #290 `ec546311`, five applicable workflows remain incomplete. At the closing observation, CI was
+pending, Pages/Beta/Hosting queued, and CLI qualification running; **no success is inferred**. The current links are:
 
 - [CI 44649231040](https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231040)
 - [Pages 44649231026](https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231026)
@@ -156,7 +179,7 @@ These workflows support a stacked PR base. QR-only paths do not trigger the
 separate Integration/Contract-analysis workflows; their absence is not described
 as a pass. Snyk's reported status is recorded separately in [SNAPSHOT.json](SNAPSHOT.json).
 
-Parent #278's [CI 44643709383](https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709383)
+Parent #278 at previous d74's [CI 44643709383](https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709383)
 has three substantive failures and a failed aggregate: the same network-authority
 scenario in both browser profiles, and one `Pay.signer.test.tsx` assertion. The
 web run reports 3,849 passed, one failed and one skipped; its chained nocov pass
@@ -164,12 +187,27 @@ did not run. Other 20 jobs passed. Earlier cached workflow summaries temporarily
 reported queued despite terminal jobs; the terminal response and logs are retained
 in the CI review rather than interpreting that cache inconsistency as a rerun.
 
-The active integration owner already has separate fixes: browser follow-up
-`89e163fcc24f72830c0a5876486a72178a9365e7` and signer-fixture follow-up
-`f2b991f7eb2c843e96bb533729d71b6a537b9293`. Their source and local owner receipts
-were observed; this cycle did not edit, publish, integrate or re-qualify those
-branches. Preserve their ownership and obtain fresh hosted results when that
-coordinator publishes its combined candidate.
+The integration owner has now published its combined candidate at #278
+`417f7c71daf8645e1432f2ec8f070110879b80bd`. Its browser follow-up local
+`89e163fcc24f72830c0a5876486a72178a9365e7` maps to published
+`7f9e0bee1ec8263590e04a45dbefa548ec96075a`; signer-fixture local
+`f2b991f7eb2c843e96bb533729d71b6a537b9293` maps to
+`6f863cbfd4b0ea882be0b6764501de12d6ccd06b`. This cycle did not author, publish or
+re-qualify those repairs. Independent closing reads confirmed their publication,
+unchanged original QR blobs, and queued exact-head workflow/job states.
+
+At `2026-11-20T01:04:37Z`, all eight new-head PR workflows were queued; job
+endpoints showed 14 queued jobs and one configured skipped Pages release-gate
+job. [New CI 44650172265](https://github.com/djshellshoxxx/GhostPay/actions/runs/44650172265)
+and [new Pages 44650172281](https://github.com/djshellshoxxx/GhostPay/actions/runs/44650172281)
+therefore provide no new-head success yet. The owner publication resolves the
+earlier local-only uncertainty, not the mandatory hosted qualification gate.
+
+A read-only `git merge-tree --write-tree` probe of #278 `417f7c71` with #290
+`ec546311` reports one content conflict, in `docs/ai/ACTIVE_WORK.md`; product
+files have no conflicts. Preserve both additive ownership claims when preparing
+a qualified combined candidate. No branch or working tree was merged or changed
+by that probe; the tested source remains frozen.
 
 ## Tracking, documentation and remaining blockers
 
@@ -183,7 +221,7 @@ live ledger and does not update the shared integration branch.
 | --- | --- |
 | Master status / cycle history | This source-pinned handoff and `SNAPSHOT.json`. |
 | Branch inventory / merge queue | Candidate table and `ci-review/evidence.json`; #290/#291 duplication explicitly resolved. |
-| Feature backlog / missing implementations | Existing generation-3 completeness assessment retained. No new required feature gap was established in this bounded slice; whole-product completion is not asserted. |
+| Feature backlog / missing implementations | Existing generation-3 assessment retained as historical evidence. Closing issue #286 and #278 explicitly identify five required privacy UX behaviors still awaiting complete implementation/verification; #293 is only partial infrastructure. |
 | Security findings / bug backlog | QR finding above, independent reviews, existing open Mythril/external gates, and owner-held browser/signer repairs. |
 | Worker handoffs | `/root/base64_review`, `/root/qr_security_review` and `/root/ci_reconcile` reports in this directory. |
 
@@ -191,6 +229,12 @@ Wiki Home and Sidebar still prominently link separate User Guide and Developer
 Guide sections. All 27 relative file links in Home, Sidebar and both guides resolve.
 Existing Wiki owner #215 is preserved; no live Wiki publication or external-link/
 anchor verification is claimed. The source-backed QR design document was updated.
+
+Issue [#286](https://github.com/djshellshoxxx/GhostPay/issues/286) remains open and
+requires sensitive-data masking, clipboard protection, account/lock privacy,
+private history, and privacy-safe exports/notifications for beta. These are not
+certified by the earlier broad completeness assessment. Existing active owners
+must be checked before taking a narrow unfinished implementation slice.
 
 Required remaining gates: final-head hosted checks; current canonical-owner
 integration and deduplication; readable required protection/review policy (connector
@@ -200,13 +244,16 @@ wallet/testnet acceptance. No source change waives any of those requirements.
 
 ## Next bounded invocation
 
-1. Refresh main, #278, #290, #291 and the lock. Read this cycle and any newer owner
+1. Refresh main, #278, #290, #292–#295 and the lock. Read this cycle and any newer owner
    handoff before claiming files.
 2. Inspect the final #290 workflow results, including the actual checkout SHA/tree.
    Diagnose source failures; retain environmental failures without blind retries.
-3. Let the active integration owner publish and qualify its browser/signer fixes.
-   Preserve #290's regression superset and apply the QR runtime guard only once.
-4. Keep unresolved Mythril/security and deployment gates separate from local code
+3. Qualify the now-published #278 browser/signer fixes at 417f7c71. Preserve #290's
+   regression superset and #295's distinct test-only supplement; apply the runtime
+   guard only once after re-evaluating integration against the updated parent.
+4. Continue an unclaimed slice of #286's required privacy work after checking
+   #293 and current ownership. Keep #292 and #294 as separate qualified candidates.
+5. Keep unresolved Mythril/security and deployment gates separate from local code
    qualification. Merge only with every required gate and valid lock ownership.
 
 Actual concurrency peaked at four: one coordinator and three native workers.

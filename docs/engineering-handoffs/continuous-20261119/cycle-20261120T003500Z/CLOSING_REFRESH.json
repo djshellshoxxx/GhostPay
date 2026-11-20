@@ -1,0 +1,323 @@
+{
+  "format": "ghostpay-closing-refresh/1",
+  "observed_at_utc": "2026-11-20 01:06:08 UTC",
+  "user_date": "2026-11-19",
+  "user_timezone": "America/Vancouver",
+  "cycle": "20261120T003500Z",
+  "main_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "source": {
+    "pr": 290,
+    "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "tree": "9c5df12a4621384323af1f4d51b1b04e37d62d3c",
+    "state": "open",
+    "draft": true,
+    "source_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "source_unchanged": true
+  },
+  "canonical": {
+    "pr": 278,
+    "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "tree": "4cf2148578f83d27a61d45f480246f317c5099ff",
+    "previous_head_is_ancestor": true,
+    "state": "open",
+    "draft": true,
+    "qr_290_not_included": true,
+    "qr_runtime_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "qr_test_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+    "signer_test_blob": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+    "owner_browser_repair": "7f9e0bee1ec8263590e04a45dbefa548ec96075a",
+    "owner_signer_repair": "6f863cbfd4b0ea882be0b6764501de12d6ccd06b",
+    "owner_merchant_repair": "05e851cec2948ab46789b0b62398581d69a86d51",
+    "hosted_job_observation": {
+      "reviewer": "/root/ci_reconcile",
+      "observed_at_utc": "2026-11-20T01:04:37Z",
+      "pr_workflows": 8,
+      "queued_jobs": 14,
+      "configured_skipped_pages_release_gate_jobs": 1,
+      "new_head_success_claimed": false
+    }
+  },
+  "original_heads": {
+    "pr289": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+    "pr285": "89942105c48df03b9351f777278b6a992e35a95e"
+  },
+  "deduplicated": {
+    "pr": 291,
+    "head": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+    "state": "closed",
+    "merged": false,
+    "closed_at": "2026-11-20T00:48:09Z",
+    "closed_by_this_cycle": false,
+    "branch_preserved_per_owner_record": true,
+    "unique_tests_retained_in": 290,
+    "remaining_unique_test_supplement": 295
+  },
+  "lock": {
+    "ref_sha": "c8517bebd1d5218f9102ca8d1911013cf10a27fc",
+    "file_sha": "f3d7b0ed798ee9567450d52c0f90564ce0c0ac80",
+    "state": {
+      "format": "ghostpay-integration-lock/1",
+      "status": "released",
+      "owner": "20261119-continuous-followup-0a7bc3583588-root",
+      "token": "5f0ffa37-9b4f-42f0-b308-cc245a4cfd79",
+      "generation": 5,
+      "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "acquired_at": "2026-11-20T00:36:43.000Z",
+      "heartbeat_at": "2026-11-20T00:36:43.000Z",
+      "expires_at": "2026-11-20T01:36:43.000Z",
+      "transport": "github-connector-expected-head-nonforce",
+      "released_at": "2026-11-20T01:00:43.000Z",
+      "cycle_result": {
+        "pr": 278,
+        "published_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "tree": "4cf2148578f83d27a61d45f480246f317c5099ff",
+        "main_unchanged": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "status": "draft followup published and read back; exact-source hosted qualification running; no main merge or deployment"
+      }
+    },
+    "owned_or_modified_by_this_cycle": false,
+    "new_atomic_acquisition_required_for_shared_updates": true
+  },
+  "source_workflows": [
+    {
+      "id": 44649231040,
+      "name": "CI",
+      "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "status": "pending",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231040",
+      "run_attempt": 1,
+      "event": "pull_request"
+    },
+    {
+      "id": 44649231026,
+      "name": "Pages",
+      "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231026",
+      "run_attempt": 1,
+      "event": "pull_request"
+    },
+    {
+      "id": 44649231132,
+      "name": "Beta acceptance",
+      "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231132",
+      "run_attempt": 1,
+      "event": "pull_request"
+    },
+    {
+      "id": 44649231031,
+      "name": "Hosting kit",
+      "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231031",
+      "run_attempt": 1,
+      "event": "pull_request"
+    },
+    {
+      "id": 44649231168,
+      "name": "CLI operator qualification",
+      "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44649231168",
+      "run_attempt": 1,
+      "event": "pull_request"
+    }
+  ],
+  "canonical_workflows": [
+    {
+      "id": 44650172265,
+      "name": "CI",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 1523,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172265/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172265/logs",
+      "workflow_id": 391558649
+    },
+    {
+      "id": 44650172511,
+      "name": "Hosting kit",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 395,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172511/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172511/logs",
+      "workflow_id": 398745505
+    },
+    {
+      "id": 44650172281,
+      "name": "Pages",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 279,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172281/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172281/logs",
+      "workflow_id": 392799214
+    },
+    {
+      "id": 44650172397,
+      "name": "Integration",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 347,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172397/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172397/logs",
+      "workflow_id": 392297734
+    },
+    {
+      "id": 44650172478,
+      "name": "Beta acceptance",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 284,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172478/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172478/logs",
+      "workflow_id": 414091144
+    },
+    {
+      "id": 44650172439,
+      "name": "GhostPay Parallel Research and Verification",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 93,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172439/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172439/logs",
+      "workflow_id": 406377707
+    },
+    {
+      "id": 44650172383,
+      "name": "CLI operator qualification",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 266,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172383/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172383/logs",
+      "workflow_id": 412675588
+    },
+    {
+      "id": 44650172375,
+      "name": "Contract analysis",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 42,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172375/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44650172375/logs",
+      "workflow_id": 420681805
+    }
+  ],
+  "new_candidates": [
+    {
+      "pr": 292,
+      "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+      "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "title": "Gate Pages artifact promotion and qualify adversarial security fixtures",
+      "state": "open",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/292",
+      "independently_tested_by_this_cycle": false
+    },
+    {
+      "pr": 293,
+      "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "title": "feat(web): add opt-in race-aware clipboard cleanup primitive",
+      "state": "open",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/293",
+      "independently_tested_by_this_cycle": false
+    },
+    {
+      "pr": 294,
+      "head": "172695efb41665a4e50d335029e54184bbb5b328",
+      "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "title": "fix(qr-exchange): preserve idle deadline after rejected conflicts",
+      "state": "open",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/294",
+      "independently_tested_by_this_cycle": false
+    },
+    {
+      "pr": 295,
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "base": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "title": "test(web): complete unverified QR and flag-combination coverage",
+      "state": "open",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/295",
+      "independently_tested_by_this_cycle": false
+    }
+  ],
+  "pr295_diff_review": {
+    "files": [
+      {
+        "path": "apps/web/src/lib/qrKinds.test.ts",
+        "sha": "257b634250f033ddec042b67941fec23ffba1323",
+        "additions": 21,
+        "deletions": 12
+      },
+      {
+        "path": "docs/ai/ACTIVE_WORK.md",
+        "sha": "afeed83321f1b8857a9554867c5243d5bc09ad3c",
+        "additions": 12,
+        "deletions": 0
+      },
+      {
+        "path": "docs/handoffs/QR_FLAG_COVERAGE_20261120.md",
+        "sha": "da0ed98a941e5056a44eed7bb02ce16e5c3a0855",
+        "additions": 46,
+        "deletions": 0
+      }
+    ],
+    "production_changes": false,
+    "distinct_cases": [
+      "Unverified payload with stateful conversion hook remains untouched",
+      "Compile-time exhaustive mapping Record and all eight flag combinations"
+    ],
+    "coordinator_executed_tests": false,
+    "disposition": "Preserve test-only child of #290; qualify before any integration."
+  },
+  "required_privacy_issue": {
+    "number": 286,
+    "state": "open",
+    "required_for_beta": true,
+    "behaviors": [
+      "Global sensitive-data masking",
+      "Clipboard protection",
+      "Wallet/account switching and vault-lock privacy",
+      "Private transaction history",
+      "Privacy-safe exports and notifications"
+    ],
+    "partial_candidate": 293,
+    "completion_not_established": true
+  },
+  "first_complete_evidence": {
+    "published": "334fb34b04c84947b8d44b8830bc3e121acb431a",
+    "local": "d9b2d1eeef907e10110d554ec7edc70fa6e458b9",
+    "tree": "c8dd7e34da451af560d8d9518c9c5fe96979edff",
+    "git_readback_diff_exit": 0
+  },
+  "boundaries": {
+    "no_shared_update": true,
+    "no_main_merge": true,
+    "no_deployment": true,
+    "no_release": true,
+    "no_force_push": true,
+    "no_schedule_change": true,
+    "no_paid_agent_or_codex_job": true
+  },
+  "supersedes": "Earlier snapshots for current PR/lock states only; immutable source/test/failure receipts remain historical and valid.",
+  "next": "Inspect #290 exact-head checks and #278 updated parent; acquire integration lock only if all required gates are otherwise satisfiable. Preserve #295's distinct tests, #292/#294 owners and #293's unfinished required privacy work.",
+  "integration_probe": {
+    "command": "git merge-tree --write-tree 417f7c71daf8645e1432f2ec8f070110879b80bd ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "exit_code": 1,
+    "conflicted_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "non_documentation_conflicts": [],
+    "branch_or_worktree_updated": false,
+    "disposition": "Preserve both additive ownership claims when preparing a qualified combined candidate; frozen source branch remains unchanged."
+  }
+}
