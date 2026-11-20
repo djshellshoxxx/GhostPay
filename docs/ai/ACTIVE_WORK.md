@@ -1,3 +1,15 @@
+# GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
+
+Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
+Branch: `automation/20261120T1635Z/bug/tron-scan-abort` based on main commit `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+Owned paths: `packages/tron-adapter/src/scan.ts`, new `packages/tron-adapter/src/scan.cancellation.test.ts`, an additive `docs/ai/ACTIVE_WORK.md` claim, and a dedicated `docs/handoffs/TRON_SCAN_ABORT_20261120.md`. No other files are claimed.
+Evidence: GP-BUG-13/MC-01 in existing read-only bugcheck PR #312; abort during iteration of a buffered page permits a second matched payment after signal cancellation. Prior audit exercised two synthetic native payments without network access on main/integration.
+Acceptance: preserve all valid native and TRC-20 detection, validation and pagination; return typed `ABORTED` rather than any further result after cancellation, including after delayed page or receipt readbacks and between same-page yields; add deterministic test-first Vitest regressions, with no real RPC/network or private keys; keep no-fee/non-custodial Pages behavior. No new dependencies, policy changes or contract edits.
+Ownership reconciliation: current integration PR #307 does not change TRON adapter scan source/tests; broad PRs #278/#262/#264 own `scan.test.ts` but not the `scan.ts` production file. Use a new focused test file to avoid their test ownership. Recheck all heads before any future integration. The durable integration lock is **held by another coordinator at generation 8**; do not acquire, update its metadata, or merge into main.
+Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
+
+---
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
