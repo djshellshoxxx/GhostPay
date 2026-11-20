@@ -1128,3 +1128,10 @@ Initial defects and exact acceptance evidence are tracked in the task handoff di
 Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
 preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
 The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.
+
+
+### Idle recovery live-guidance follow-up — 2026-11-20
+
+Worker/branch: `/root/idle_completion_r2`, `integration/ghostpay-idle-session-20261120-r2`. Qualified product checkpoint: `1ca7105e050f7d76aee18fe3efee3cd02cd72cb4`.
+Additional owned path: only the two key-loss/retained-key rows in `docs/guides/troubleshooting-by-symptom.md`, plus this additive record.
+Acceptance: resolve independent review finding IDLE-R2-DOC-01 by matching the already-recovered user troubleshooting guidance: a download requires verification before it counts as a surviving copy; idle-retained keys remain suspended for encrypted recovery until normal import/unlock. Preserve every application/test/configuration byte and request source-only review of the narrow documentation diff. Coordinator authorized this follow-up after runtime qualification.
