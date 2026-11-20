@@ -26,6 +26,9 @@ export function recordClipboardCopy(value: string, clipboard: ClipboardPort, cle
       try {
         // Permission may be denied or API unavailable: never unconditionally overwrite clipboard contents.
         if (await clipboard.readText() !== value || generation !== latestCopy) return;
+        // A read may have resolved with a stale snapshot while another application changed the clipboard.
+        // A second read narrows (but cannot eliminate) the Web Clipboard API compare/write race.
+        if (await clipboard.readText() !== value || generation !== latestCopy) return;
         await clipboard.writeText('');
       } catch {
         // The app cannot safely clear a clipboard without permission; leave it untouched.
