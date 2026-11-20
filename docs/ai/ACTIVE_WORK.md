@@ -1,3 +1,19 @@
+# Independent F03 consolidation qualification — 2026-11-20
+
+Worker: `invoice_file_completion`, delegated by the current unique-code consolidation coordinator.
+Branch: `feature/ghostpay-invoice-file-completion-20261120`.
+Source: canonical PR #310 head `1de98f6c9371010883253450446e6f7294da84fa` after its original owner's memo-locator repair.
+Owned paths: this additive claim and `docs/consolidation/invoice-file-20261120/` qualification evidence.
+Acceptance: independently inspect the existing repaired browser assertions and unchanged product boundary;
+rebuild internal libraries from this worktree, execute the six existing request-file Playwright fixtures
+in full and lean profiles where the installed browser permits execution, and report exact source and
+results. Existing feature code, test assertions, build settings, timeouts, skips and coverage gates stay
+unchanged unless a new demonstrated feature defect requires a separately recorded claim and review.
+The original F03 owner's checkout, remote branch and round2 evidence are read-only. The root coordinator
+owns final source integration, publication and main merge. No production payments or deployment.
+
+---
+
 # PR #310 invoice-file memo browser checks — 2026-11-20
 
 Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.
