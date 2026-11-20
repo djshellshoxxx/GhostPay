@@ -1215,3 +1215,12 @@ Run the complete request-file and relevant Pay compatibility tests, original web
 typecheck/lint/build, and record source/dependency provenance and limitations.
 No local browser/socket attempts, remote mutation, live transaction or deployment.
 Status: claim recorded before test changes; source confirmation granted by root.
+
+Status update: bounded test-only implementation `9ca941305028fca0e68f86ca7e3ebe2becee724d`
+passed 163/163 complete Pay compatibility cases, original web typecheck/lint and
+lean build/postbuild. The original hosted failure, passing unmodified local
+controls, focused-coverage threshold failures and first killed lint attempt are
+preserved in `docs/consolidation/request-file-async-r3-20261120/`. Both focused
+coverage selections pass 17 behavioral cases but retain exit 1 at the unchanged
+global thresholds; no full-web coverage pass is claimed. Root owns independent
+review, exact published-source hosted/browser qualification and integration.

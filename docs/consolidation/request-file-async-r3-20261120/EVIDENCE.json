@@ -1,0 +1,628 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-20T23:20:46.862601+00:00",
+  "worker": "/root/r3_feature_completion",
+  "branch": "fix/ghostpay-request-file-async-20261120-r3",
+  "base": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+  "base_pr": 335,
+  "claim": "b23353726ecf476cdb90165c9c6a11f15e4e5f24",
+  "qualified_source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+  "qualified_tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+  "test_change": {
+    "path": "apps/web/src/views/Pay.requestFile.test.tsx",
+    "insertions": 9,
+    "deletions": 0,
+    "original_test_recovered_byte_for_byte_after_removing_insertions": true,
+    "runtime_changes": false,
+    "original_query_timeout_ms": 15000,
+    "original_configured_test_timeout_ms": 60000
+  },
+  "hosted_failure": {
+    "pr": 333,
+    "head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+    "run": 44797683772,
+    "job": 136548344602,
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44797683772/job/136548344602",
+    "counts": {
+      "passed": 3180,
+      "failed": 1,
+      "skipped": 1
+    },
+    "files": {
+      "passed": 212,
+      "failed": 1,
+      "skipped": 1
+    },
+    "failed_case": "Pay request-file intake > uses the existing passphrase flow without previewing private fields",
+    "failure": "15-second Review payment DOM query expired while Opening invoice remained visible",
+    "decoded_log_sha256": "c3512cbf4a860b3444f418b2070476c9cc0ccc3baff73db6a270abc696ccfa89",
+    "decoded_log_bytes": 330518
+  },
+  "runs": {
+    "baseline": {
+      "source": "ca89f1b61f8c9e69fb2987abc7bec83c169b5051",
+      "tree": "41ff1ce468d95b5199808e5587a53766db472a67",
+      "started_at_utc": "2026-11-20T23:13:39.312649+00:00",
+      "cmd": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.requestFile.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/scratch/994a0d214fb9/r3-request-file-baseline.json"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt/apps/web",
+      "NODE_OPTIONS": "--max-old-space-size=1536",
+      "coverage": false,
+      "exit_code": 0,
+      "seconds": 8.0091443909987
+    },
+    "baseline-coverage": {
+      "source": "ca89f1b61f8c9e69fb2987abc7bec83c169b5051",
+      "tree": "41ff1ce468d95b5199808e5587a53766db472a67",
+      "started_at_utc": "2026-11-20T23:14:04.532553+00:00",
+      "cmd": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.requestFile.test.tsx",
+        "--coverage",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/scratch/994a0d214fb9/r3-request-file-baseline-coverage.json",
+        "--coverage.reportsDirectory=/workspace/scratch/994a0d214fb9/r3-request-file-baseline-coverage"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt/apps/web",
+      "NODE_OPTIONS": "--max-old-space-size=1536",
+      "coverage": true,
+      "coverage_thresholds_unchanged": true,
+      "scope": "one complete test file; cannot establish global coverage",
+      "exit_code": 1,
+      "seconds": 27.789553917005833
+    },
+    "compatibility": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:16:18.488797+00:00",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.test.tsx",
+        "src/views/Pay.invoiceQr.test.tsx",
+        "src/views/Pay.requestFile.test.tsx",
+        "src/views/Pay.i18n.test.tsx",
+        "src/views/Pay.supported.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/scratch/994a0d214fb9/r3-request-file-compatibility.json"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt/apps/web",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "exit_code": 0,
+      "seconds": 47.35909192899999,
+      "log_bytes": 4286,
+      "log_sha256": "26306b8ef91a1a86df9430e86c002051eb6d9e3996ba4bd313ea1193d2277da5"
+    },
+    "typecheck": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:16:18.485975+00:00",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "apps/web"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "exit_code": 0,
+      "seconds": 19.85281899799884,
+      "log_bytes": 216,
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    "lint": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:16:18.485987+00:00",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "apps/web"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "exit_code": 137,
+      "seconds": 17.59631657099817,
+      "log_bytes": 593,
+      "log_sha256": "441a148de077441d4ee1d6003d6d631ece87ce6fe28d440dc39ce83772761986"
+    },
+    "lint-serial": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:17:14.649905+00:00",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "apps/web"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "exit_code": 0,
+      "seconds": 39.143824630999006,
+      "log_bytes": 228,
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    "lean-build": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:17:56.141008+00:00",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "apps/web"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean",
+        "GP_COMMIT": "9ca941305028fca0e68f86ca7e3ebe2becee724d"
+      },
+      "exit_code": 0,
+      "seconds": 19.243660747997637,
+      "log_bytes": 2509,
+      "log_sha256": "936de55b422668bb74532f73555356b1dae788b1bd944695300c61409241132e"
+    },
+    "secrets": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:18:37.407933+00:00",
+      "command": [
+        "npm",
+        "run",
+        "ci:scan-secrets"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "exit_code": 0,
+      "seconds": 0.283729596005287,
+      "log_bytes": 266,
+      "log_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9"
+    },
+    "corrected-coverage": {
+      "source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+      "tracked_diff": "",
+      "started_at_utc": "2026-11-20T23:18:37.406949+00:00",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.requestFile.test.tsx",
+        "--coverage",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/workspace/scratch/994a0d214fb9/r3-request-file-corrected-coverage.json",
+        "--coverage.reportsDirectory=/workspace/scratch/994a0d214fb9/r3-request-file-corrected-coverage"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-receipt/apps/web",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "exit_code": 1,
+      "seconds": 25.30420203900576,
+      "log_bytes": 14080,
+      "log_sha256": "f5eb2e5da64a3c6c10e75e43a7763a3027d7cedee7be282a88d9f3cc61b40665"
+    }
+  },
+  "test_counts": {
+    "baseline": {
+      "numTotalTests": 17,
+      "numPassedTests": 17,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "baseline-coverage": {
+      "numTotalTests": 17,
+      "numPassedTests": 17,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "compatibility": {
+      "numTotalTests": 163,
+      "numPassedTests": 163,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "corrected-coverage": {
+      "numTotalTests": 17,
+      "numPassedTests": 17,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    }
+  },
+  "counts_note": "Final compatibility has 163 distinct tests in five complete files. The 17-case file is included. Repeated before/after and coverage results overlap and are not summed.",
+  "coverage_limits": {
+    "original_thresholds": {
+      "statements": 90,
+      "branches": 85,
+      "functions": 90,
+      "lines": 90
+    },
+    "unchanged": true,
+    "both_focused_commands_exit": 1,
+    "behavioral_failures": 0,
+    "reason": "Only one complete test file ran; unchanged global thresholds correctly reject the subset coverage. Neither focused result is a full-web coverage pass.",
+    "full_web_coverage_claimed": false
+  },
+  "preserved_failed_attempt": {
+    "gate": "first original full typed web lint",
+    "exit": 137,
+    "log": "r3-request-file-lint.log",
+    "observed": "Killed while concurrent with typecheck and compatibility tests; no ESLint finding was printed",
+    "later_result": "Unchanged command and source passed serially; no configuration, rule, or source adjustment"
+  },
+  "build_artifacts": {
+    "qualified_source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+    "profile": "lean",
+    "build_info": {
+      "app": "ghostpay-web",
+      "version": "0.1.0",
+      "commit": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+      "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    "files": [
+      {
+        "path": "_headers",
+        "bytes": 1761,
+        "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+      },
+      {
+        "path": "assets/ar-95zXR6fS.js",
+        "bytes": 307018,
+        "sha256": "e5f9952535fd90c1b5547c932fe6cf2812fdba6549da0d50ea7d0e05ba050c7a"
+      },
+      {
+        "path": "assets/es-WiftYO7y.js",
+        "bytes": 253485,
+        "sha256": "624dcddf7692419789c069276dcba7b3793f02515a753047298bd31fa5a4cb8b"
+      },
+      {
+        "path": "assets/index-Bpyx9FIh.js",
+        "bytes": 1293081,
+        "sha256": "dcac5323537c4b35d55740d9b103198057ef2832eb886b0fbebfbbac8d533c02"
+      },
+      {
+        "path": "assets/ja-C67A-DnB.js",
+        "bytes": 300359,
+        "sha256": "76dea40798727e60ed3d1ac42894521736e1e38414c10d7d9c6a9487f3e0e20b"
+      },
+      {
+        "path": "assets/jsQR-Ct1FLwmy.js",
+        "bytes": 129988,
+        "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f"
+      },
+      {
+        "path": "assets/rolldown-runtime-XKyaHtl9.js",
+        "bytes": 726,
+        "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+      },
+      {
+        "path": "assets/scanner.worker-k6gTvtBx.js",
+        "bytes": 62202,
+        "sha256": "4e2d5eb463bb7e379cba83fedd952078bb17fbfbb4466897fc39ee5e13f4dc16"
+      },
+      {
+        "path": "assets/style-CF4XsaTc.css",
+        "bytes": 11888,
+        "sha256": "e49301963aa3230db49475ca90ac300577214eba0dd095a49210a33670d8201d"
+      },
+      {
+        "path": "build-info.json",
+        "bytes": 178,
+        "sha256": "16f7dd0a697eb868f24db9fa90b07bd80da2fe61c040b8f211923ad25f9a119a"
+      },
+      {
+        "path": "deployments/README.md",
+        "bytes": 861,
+        "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+      },
+      {
+        "path": "favicon.svg",
+        "bytes": 332,
+        "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+      },
+      {
+        "path": "ghostpay-lean-build.json",
+        "bytes": 103384,
+        "sha256": "89adba53af927219bd461e9d7ba2280b7c86ab91370d2a4e35b66c96dc414b25"
+      },
+      {
+        "path": "help.css",
+        "bytes": 3283,
+        "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+      },
+      {
+        "path": "help.html",
+        "bytes": 16886,
+        "sha256": "09b585810f3fc447fa804b98d832f7c192dfb3dc846a1603352433f816ffcfcb"
+      },
+      {
+        "path": "index.html",
+        "bytes": 3402,
+        "sha256": "724900c0b1af6fbb14147752443b1d37022f63ddad3363e4dfbb8b21bcc32764"
+      },
+      {
+        "path": "privacy.html",
+        "bytes": 8062,
+        "sha256": "0e83034ca8426c7418a3d17da76988eafa6d7cbef096bd30a5c394977b4f06a1"
+      }
+    ],
+    "count": 17,
+    "total_bytes": 2496896
+  },
+  "source_provenance_artifact": "outputs/r3-request-file-source-provenance.json.artifact.json",
+  "dependency_provenance_artifact": "outputs/r3-request-file-dependency-provenance.json.artifact.json",
+  "execution_environment": {
+    "node": "v24.22.3",
+    "npm": "11.19.1",
+    "NODE_OPTIONS": "--max-old-space-size=1536",
+    "workers": 1,
+    "fresh_install": false,
+    "dependency_copy": false,
+    "workspace_libs_rebuilt": false,
+    "matching_input_groups": 9,
+    "resolved_direct_dependencies": 34,
+    "compiled_dependency_files_verified_before_and_after": 2283
+  },
+  "independent_review": "Coordinator-owned; not performed or claimed by this implementation worker",
+  "remaining_gates": [
+    "Independent coordinator source review",
+    "Fresh published-source hosted checks including full web coverage and no-coverage pass",
+    "Applicable browser qualification and coordinated integration"
+  ],
+  "scope_limits": [
+    "No reproduced product defect claimed; both unmodified local controls passed",
+    "No runtime, crypto/KDF, storage, economic, format, dependency, workflow, coverage threshold, skip or timeout changes",
+    "No extra openFragment/decryption request, precomputed decrypt result, or replacement mock",
+    "No local browser/socket, live wallet/RPC/payment, remote publication, main merge or deployment"
+  ],
+  "lossless_artifacts": [
+    {
+      "original": "r3-request-file-baseline-coverage-run.json",
+      "artifact": "outputs/r3-request-file-baseline-coverage-run.json.artifact.json",
+      "bytes": 879,
+      "sha256": "3930a7e8bef1aacfc5f9db8516e0d0cd953fcd6d01a19fe34f768e3e5a74f9ec",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-baseline-coverage.json",
+      "artifact": "outputs/r3-request-file-baseline-coverage.json.artifact.json",
+      "bytes": 3706167,
+      "sha256": "22713c72b51938ce9eea1e2ef17a7cc62f7bb52f846d4ca30de927201255d26b",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-baseline-coverage.log",
+      "artifact": "outputs/r3-request-file-baseline-coverage.log.artifact.json",
+      "bytes": 13911,
+      "sha256": "23ab66cee15a412bc9021019dc0e9e826b44d5eba1267a6a7e773bcf53a0b1c5",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-baseline-run.json",
+      "artifact": "outputs/r3-request-file-baseline-run.json.artifact.json",
+      "bytes": 637,
+      "sha256": "e16d8e5cbc39768a92eee0075046d792cfb4543c39e78b133faf26487177ec68",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-baseline.json",
+      "artifact": "outputs/r3-request-file-baseline.json.artifact.json",
+      "bytes": 6528,
+      "sha256": "b6edce4c13e696f09fcd7d4aa0c8665e5818f2b958bd190edc4487cc44353c84",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-baseline.log",
+      "artifact": "outputs/r3-request-file-baseline.log.artifact.json",
+      "bytes": 603,
+      "sha256": "3c60b39f9d64f979869e7bd7d5849752bd715fd0867d942ed579a0d62d57622d",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-build-artifacts.json",
+      "artifact": "outputs/r3-request-file-build-artifacts.json.artifact.json",
+      "bytes": 2998,
+      "sha256": "81855e26fe223cd171fe6511310ecd0fa291430fc711a354ed0b05aa24905b7b",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-compatibility-run.json",
+      "artifact": "outputs/r3-request-file-compatibility-run.json.artifact.json",
+      "bytes": 924,
+      "sha256": "6697a5a0ab7a3a975791f4db3d25f3a3d5775910db9e4221143bf946c7b65bb3",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-compatibility.json",
+      "artifact": "outputs/r3-request-file-compatibility.json.artifact.json",
+      "bytes": 64193,
+      "sha256": "626d371156377a31d97f8d28ff0521ba63b7720c749bef1fec9b14334c5db98c",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-compatibility.log",
+      "artifact": "outputs/r3-request-file-compatibility.log.artifact.json",
+      "bytes": 4286,
+      "sha256": "26306b8ef91a1a86df9430e86c002051eb6d9e3996ba4bd313ea1193d2277da5",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-corrected-coverage-run.json",
+      "artifact": "outputs/r3-request-file-corrected-coverage-run.json.artifact.json",
+      "bytes": 905,
+      "sha256": "8f3e0549ca90b3b936d7d2777681a1f140efc220fc69eb1a33bb1ec53eb7b30e",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-corrected-coverage.json",
+      "artifact": "outputs/r3-request-file-corrected-coverage.json.artifact.json",
+      "bytes": 3706169,
+      "sha256": "a3a181476d1a740d3a1abfa8defdabc3666bd8428bff51abcc304226d5c1eeb8",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-corrected-coverage.log",
+      "artifact": "outputs/r3-request-file-corrected-coverage.log.artifact.json",
+      "bytes": 14080,
+      "sha256": "f5eb2e5da64a3c6c10e75e43a7763a3027d7cedee7be282a88d9f3cc61b40665",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-dependency-provenance.json",
+      "artifact": "outputs/r3-request-file-dependency-provenance.json.artifact.json",
+      "bytes": 408027,
+      "sha256": "6ea87aa01d537753fc17b34043aa77514386f573f20f05d639928d8360a796e2",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-lean-build-run.json",
+      "artifact": "outputs/r3-request-file-lean-build-run.json.artifact.json",
+      "bytes": 665,
+      "sha256": "fe6b723482e3e8de5cedbdda62aedd9021287834b214b0e1a517f82357a6e7f2",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-lean-build.log",
+      "artifact": "outputs/r3-request-file-lean-build.log.artifact.json",
+      "bytes": 2509,
+      "sha256": "936de55b422668bb74532f73555356b1dae788b1bd944695300c61409241132e",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-lint-run.json",
+      "artifact": "outputs/r3-request-file-lint-run.json.artifact.json",
+      "bytes": 559,
+      "sha256": "2ea99c11b26e15a40ffd62a169dfaa47ae01606c823aebb8ea81649cfa3a513c",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-lint-serial-run.json",
+      "artifact": "outputs/r3-request-file-lint-serial-run.json.artifact.json",
+      "bytes": 558,
+      "sha256": "70c5e55f602ae0327e125ab88eae61a5f25384a77b580e92bdb4e8aa529b1b54",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-lint-serial.log",
+      "artifact": "outputs/r3-request-file-lint-serial.log.artifact.json",
+      "bytes": 228,
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-lint.log",
+      "artifact": "outputs/r3-request-file-lint.log.artifact.json",
+      "bytes": 593,
+      "sha256": "441a148de077441d4ee1d6003d6d631ece87ce6fe28d440dc39ce83772761986",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-run.py",
+      "artifact": "outputs/r3-request-file-run.py.artifact.json",
+      "bytes": 1651,
+      "sha256": "12ce73ee49180d005961a6cd32faee3c0724f948693a8c3a0d02372f6a50b906",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-secrets-run.json",
+      "artifact": "outputs/r3-request-file-secrets-run.json.artifact.json",
+      "bytes": 542,
+      "sha256": "155f7685729f472810e91ee07d72db56bcd2db10f3e33e895fd4c5f367f72998",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-secrets.log",
+      "artifact": "outputs/r3-request-file-secrets.log.artifact.json",
+      "bytes": 266,
+      "sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-source-provenance.json",
+      "artifact": "outputs/r3-request-file-source-provenance.json.artifact.json",
+      "bytes": 6372,
+      "sha256": "420e0a0ed7f9757d8f30b8a8ef0c2640153a19cd04d8828377cdd4f0769d9450",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-typecheck-run.json",
+      "artifact": "outputs/r3-request-file-typecheck-run.json.artifact.json",
+      "bytes": 562,
+      "sha256": "2decc7d9db22f44af967ef1f1019a729e39889561231cb2c520e22ee108ac2b4",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-typecheck.log",
+      "artifact": "outputs/r3-request-file-typecheck.log.artifact.json",
+      "bytes": 216,
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-backup-hosted-original.log",
+      "artifact": "outputs/r3-backup-hosted-original.log.artifact.json",
+      "bytes": 330518,
+      "sha256": "c3512cbf4a860b3444f418b2070476c9cc0ccc3baff73db6a270abc696ccfa89",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-baseline-coverage/lcov.info",
+      "artifact": "outputs/r3-request-file-baseline-coverage--lcov.info.artifact.json",
+      "bytes": 400604,
+      "sha256": "59cc6f09c90be5fa6a5c65f6bf5963b2465649b102c845f2cbfc5244dfb1ba21",
+      "encoding": "gzip+base64"
+    },
+    {
+      "original": "r3-request-file-corrected-coverage/lcov.info",
+      "artifact": "outputs/r3-request-file-corrected-coverage--lcov.info.artifact.json",
+      "bytes": 400604,
+      "sha256": "d4e0d47d7735c0cadf378691aff20cc9f8d05851d552d6758ae21189cdd2167a",
+      "encoding": "gzip+base64"
+    }
+  ],
+  "artifact_verification": {
+    "count": 29,
+    "original_bytes": 9076754,
+    "decoded_equal_to_originals": true
+  }
+}
