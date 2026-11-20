@@ -28,6 +28,18 @@ describe('taxonomy', () => {
     }
     expect(qrKindClass('proof')).toBe('qr-kind-proof');
   });
+  it('rejects unknown runtime payload types before choosing handling warnings', () => {
+    for (const raw of ['unknown', '', '__proto__', 'constructor', 'toString']) {
+      const type = raw as Parameters<typeof kindForPayload>[0];
+      expect(() => kindForPayload(type)).toThrow('unknown QR payload type');
+      expect(() => kindForPayload(type, { unverified: true })).toThrow('unknown QR payload type');
+    }
+  });
+  it('rejects unknown frame kinds instead of generating arbitrary CSS classes', () => {
+    for (const raw of ['unknown', '__proto__', 'constructor']) {
+      expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0])).toThrow('unknown QR kind');
+    }
+  });
   it('maps payloads to kinds; secret is never downgraded', () => {
     expect(kindForPayload('keystore-backup')).toBe('secret');
     expect(kindForPayload('keystore-backup', { testnet: true })).toBe('secret');
