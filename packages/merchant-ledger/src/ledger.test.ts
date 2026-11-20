@@ -119,6 +119,26 @@ describe('reconcile', () => {
     expect(status(reconcile([inv('a', '50')], [pay('p', '1', { invoiceId: 'a' })], o), 'a')).toBe('paid');
     expect(status(reconcile([inv('b', '10000')], [], { now: T0, tolerance: { bps: 10_000 } }), 'b')).toBe('unmatched');
   });
+  it('keeps zero-due invoices settled with tolerance before and after expiry', () => {
+    for (const now of [T0, T0 + 1000]) {
+      expect(reconcile([inv('z', '0')], [], { now, tolerance: { absoluteMinor: 100n } }).invoices[0])
+        .toMatchObject({ status: 'paid', dueMinor: '0', paidMinor: '0', paymentIds: [] });
+    }
+  });
+  it('does not use rejected or late observations as a payment under oversized tolerance', () => {
+    const observations = [
+      pay('zero', '0', { invoiceId: 'a' }),
+      pay('currency', '50', { invoiceId: 'a', currency: 'EUR' }),
+      pay('late', '50', { invoiceId: 'a', observedAt: T0 + 1000 }),
+      pay('invalid-time', '50', { invoiceId: 'a', observedAt: NaN }),
+    ];
+    for (const now of [T0, T0 + 1000]) {
+      const result = reconcile([inv('a', '50')], observations, { now, tolerance: { absoluteMinor: 100n } });
+      expect(result.invoices[0]).toMatchObject({
+        status: now === T0 ? 'unmatched' : 'expired', paidMinor: '0', paymentIds: [],
+      });
+    }
+  });
   it('tolerance abs and bps', () => {
     const o = { now: T0, tolerance: { absoluteMinor: 5n } };
     expect(status(reconcile([inv('a', '1000')], [pay('p', '996', { invoiceId: 'a' })], o), 'a')).toBe('paid');
