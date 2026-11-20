@@ -651,3 +651,13 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+# SellerKeys superseded operation state — 2026-11-20 08:35 UTC
+
+- Cycle and worker: `20261120T0835Z` / coordinator acting as sequential bug-repair worker; no independent agent or review is claimed.
+- Branch: `automation/20261120T0835Z/bug/sellerkeys-operation-supersession`; base `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; originally reported source `apps/web/src/views/SellerKeys.tsx` blob `437c684af1fac0f759607bb3fe4f8e37238a3d89`.
+- Owned paths: `apps/web/src/views/SellerKeys.tsx`, new `apps/web/src/views/SellerKeys.operation.test.tsx`, this additive claim and `docs/handoffs/SELLERKEYS_OPERATION_SUPERSESSION_20261120.md`.
+- Finding: existing QA-01 from PR #309. An export superseded by backup verification strands `busy`; verification superseded by export strands `verifyBusy`. Preserve active-controller/generation checks; do not change persistent vault save/delete lifetimes or key custody.
+- Dependencies/other owners: PR #309 documentation-only evidence; PR #278 recovery integration, PR #293 privacy and ongoing integration PRs #306/#307 are separate, active branches. Do not edit those branches or shared ledgers.
+- Acceptance: deterministic held-operation regressions for both action orders and late settlement; correct controls after cancellation; no stale status; normal operation and explicit cancellation unchanged; source review, focused tests and hosted qualification on exact candidate. No production deployment or main merge.
+- State: ownership registered before product or regression changes; code/test execution and independent review not yet claimed.
