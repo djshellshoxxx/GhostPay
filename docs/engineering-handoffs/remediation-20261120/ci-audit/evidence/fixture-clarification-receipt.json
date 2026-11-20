@@ -1,0 +1,97 @@
+{
+  "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "implementation_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+  "node": "v22.23.4",
+  "node_path": "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+  "dependencies": "Read-only symlink to remediation coordinator exact-lock node_modules; no package manifest or lock changes. No separate clean install claimed by this worker.",
+  "files": [
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "sha256": "c6d5625cd3e937201360f31036b386a0dc59bcb3bf32191c6d833d46104ee174"
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "sha256": "63e376af4fbc72d0629f0dd69c1810ba3b3bb82b8eb77b2ff9be556550a6bf38"
+    }
+  ],
+  "commands": [
+    {
+      "scope": "CSP original fixture suite",
+      "command": "node --test scripts/tests/privacy-csp-bundle.test.mjs",
+      "exit_code": 0,
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "Deployment original fixture file",
+      "cwd": "packages/chain-adapters",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/deployments.test.ts --coverage.enabled=false --maxWorkers=1 --reporter=json --outputFile=...",
+      "exit_code": 0,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "CSP clarified fixture suite",
+      "command": "node --test scripts/tests/privacy-csp-bundle.test.mjs",
+      "exit_code": 0,
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "Deployment clarified fixture file",
+      "cwd": "packages/chain-adapters",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/deployments.test.ts --coverage.enabled=false --maxWorkers=1 --reporter=json --outputFile=...",
+      "exit_code": 0,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "Type-aware lint",
+      "command": "node node_modules/eslint/bin/eslint.js --config eslint.config.js packages/chain-adapters/src/deployments.test.ts",
+      "exit_code": 0
+    },
+    {
+      "scope": "CSP syntax",
+      "command": "node --check scripts/tests/privacy-csp-bundle.test.mjs",
+      "exit_code": 0
+    },
+    {
+      "scope": "Whitespace",
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "scope": "Generated input equivalence",
+      "command": "node docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/verify-fixture-equivalence.mjs",
+      "exit_code": 0,
+      "initial_utility_failure": "See equivalence-initial-attempt.json"
+    }
+  ],
+  "json_results": {
+    "deployments-original-tests": {
+      "numTotalTests": 13,
+      "numPassedTests": 13,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "deployments-clarified-tests": {
+      "numTotalTests": 13,
+      "numPassedTests": 13,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  },
+  "qualification_limits": [
+    "Focused deployment file uses coverage-disabled diagnostic selection. Original full-package coverage gate remains required and unchanged.",
+    "No post-change hosted CodeQL, full CI, browser execution, security alert dismissal, merge, deployment or release claimed.",
+    "Internal potential-false-positive assessment remains subject to independent review and fresh scanner results."
+  ]
+}

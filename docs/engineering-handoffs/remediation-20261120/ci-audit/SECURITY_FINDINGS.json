@@ -1,0 +1,48 @@
+{
+  "scope": "two exact d74 CodeQL test annotations only",
+  "repository_wide_confirmed_counts": {
+    "critical": null,
+    "high": null,
+    "medium": null
+  },
+  "findings": [
+    {
+      "id": "CODEQL-D74-DEPLOYMENT-FIXTURE",
+      "source_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "check_id": 135981137999,
+      "reported_severity": "High",
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "line_at_source": 96,
+      "confirmed_runtime_vulnerability": false,
+      "assessment": "potential false positive: fixed adversarial test-fixture construction, with rejection expected",
+      "assessment_limits": "Independent review and post-change hosted CodeQL remain required; repository-wide private alerts unknown.",
+      "exploit_reproduction": "No runtime exploit claimed. Original test file passed. Byte-identical adversarial fixture verified after clarification.",
+      "clarification_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "final_test_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "verification": "evidence/fixture-clarification-receipt.json",
+      "independent_review": "PENDING_OUTSIDE_THIS_WORKER",
+      "hosted_clearance": "PENDING",
+      "alert_dismissed": false,
+      "disposition": "READY_FOR_INDEPENDENT_REVIEW"
+    },
+    {
+      "id": "CODEQL-D74-CSP-FIXTURE",
+      "source_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "check_id": 135981137999,
+      "reported_severity": "High",
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "line_at_source": 130,
+      "confirmed_runtime_vulnerability": false,
+      "assessment": "potential false positive: fixed adversarial test-fixture construction, with rejection expected",
+      "assessment_limits": "Independent review and post-change hosted CodeQL remain required; repository-wide private alerts unknown.",
+      "exploit_reproduction": "No runtime exploit claimed. Original test file passed. Byte-identical adversarial fixture verified after clarification.",
+      "clarification_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "final_test_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "verification": "evidence/fixture-clarification-receipt.json",
+      "independent_review": "PENDING_OUTSIDE_THIS_WORKER",
+      "hosted_clearance": "PENDING",
+      "alert_dismissed": false,
+      "disposition": "READY_FOR_INDEPENDENT_REVIEW"
+    }
+  ]
+}
