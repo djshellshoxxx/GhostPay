@@ -48,29 +48,38 @@ interface LocalRecordV1 {
   ciphertext: string; envelopeFormat: string;
 }
 interface ImportPreviewV1 {
-  version: 1; baseRevision: string;
+  version: 1; previewId: string; baseRevision: string;
+  planDigest: string; sessionEpoch: number;
+  expiresAt: string; // Canonical unsigned decimal UTC epoch milliseconds.
   added: number; conflicts: number; refused: number;
   recoveryImpact: readonly string[];
 }
+declare const importPlanBrand: unique symbol;
+interface ImportPlanHandle { readonly [importPlanBrand]: true }
 interface EncryptedStateProvider {
   read(ref: RecordRef, key: SecretHandle, ctx: OperationContext):
     Promise<ModuleResult<ScopedRecord>>;
-  previewImport(bytes: Uint8Array, ctx: OperationContext):
-    Promise<ModuleResult<ImportPreviewV1>>;
+  previewImport(bytes: Uint8Array, key: SecretHandle, ctx: OperationContext):
+    Promise<ModuleResult<{ preview: ImportPreviewV1; plan: ImportPlanHandle }>>;
+  approveImport(plan: ImportPlanHandle, approvedDigest: string,
+    ctx: OperationContext): ModuleResult<ImportPlanHandle>;
   commit(plan: ImportPlanHandle, ctx: OperationContext):
     Promise<ModuleResult<Revision>>;
+  revokePlan(plan: ImportPlanHandle): void;
   capability(): CapabilityDescriptorV1;
 }
 ```
 
-Record headers contain no contact names or invoice text. Bind identity, kind, schema and revision to authenticated data. A preview is not authority to commit after state changes. Scoped plaintext callbacks cannot return secret buffers or serialize key handles; consumers receive minimal public summaries.
+Record headers contain no contact names or invoice text. Bind identity, kind, schema and revision to authenticated data. `previewImport` authenticates and stages an immutable candidate without changing durable state, returning a public summary and provider-registered nonserializable plan handle. The handle binds candidate digest, profile/key identity, base storage revision, operation/session epoch and expiry. `approveImport` records the explicit reviewed digest in provider-private state; an unapproved, forged or serialized handle cannot commit. `commit` rechecks every binding and consumes approval atomically with the revision compare-and-swap; concurrent/repeated commit calls cannot apply the same plan twice. Refusal or uncertain storage completion requires read-back reconciliation before any new plan, never blind retry.
+
+`expiresAt` is canonical unsigned decimal UTC epoch milliseconds, bounded and compared exactly with the injected UTC clock; initial preview lifetime is at most five minutes and never exceeds the operation deadline. Clock rollback, lock, profile/key replacement, cancellation or expiry invalidates the plan. `revokePlan` disposes staged data without modifying originals. A preview is not authority after state changes. Scoped plaintext callbacks cannot return secret buffers or serialize key handles; consumers receive minimal public summaries.
 
 ## 5. State transitions and failures
 
 1. Unlock with an authorized role and capture session/storage revision.
 2. Read/decrypt bounded records, validate their schema and keep plaintext ephemeral.
-3. Prepare additions, merge conflicts or selective export locally; show counts and recovery impact.
-4. Verify destination capacity and commit using atomic compare-and-swap/batch semantics.
+3. Prepare additions, merge conflicts or selective export locally; show counts, exact plan digest and recovery impact. Explicit user approval calls `approveImport`; preview creation alone remains read-only.
+4. Verify destination capacity, unchanged candidate digest/base revision/session, and single-use approval; commit atomically using compare-and-swap/batch semantics.
 5. Verify exported backup through an actual read-back/decrypt comparison before marking it verified.
 6. Lock, sleep expiry or key replacement cancels operations, wipes transient buffers and rejects late commits/downloads.
 7. Concurrent-tab change returns conflict and leaves both durable originals recoverable.
@@ -110,6 +119,9 @@ Local encryption, lock, backup verification, import and independent recovery rem
 - **P05-A08:** Legacy profile/keystore formats remain compatible and domain-separated.
 - **P05-A09:** Browser-process restart preserves atomic state; private-mode/storage-unavailable paths fail honestly.
 - **P05-A10:** Spec 18 recovery is referenced and qualified separately, never replaced by metadata backup success.
+- **P05-A11:** Preview creation and unapproved/forged/serialized plans cannot mutate storage; only the reviewed candidate digest can be approved.
+- **P05-A12:** Changed candidate bytes, wrong revision/profile/epoch, expiry and clock rollback invalidate commit authority without touching originals.
+- **P05-A13:** Concurrent/repeated commits consume a plan at most once; interrupted completion is reconciled by durable revision before another import plan is made.
 
 ## 10. Implementation slices and future checks
 
