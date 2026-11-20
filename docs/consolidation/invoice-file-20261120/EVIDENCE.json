@@ -1,0 +1,117 @@
+{
+  "recorded_at": "2026-11-20T16:14:58.451912+00:00",
+  "reviewer": "invoice_file_completion",
+  "canonical_source": {
+    "pr": 310,
+    "head": "1de98f6c9371010883253450446e6f7294da84fa",
+    "tree": "bb171ebd63e38dce3496e3a7e84990c3dd020fc1",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/310"
+  },
+  "execution_source": {
+    "head": "7ae2f73fec9097c316620b846a8853f413d7fb15",
+    "tree": "a85b29155f2baa76912a8b38924d0124d481e7c2",
+    "difference_from_canonical": "Only the independent ownership entry in docs/ai/ACTIVE_WORK.md. All product and test paths match."
+  },
+  "environment": {
+    "node": "v24.22.3",
+    "package_lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+    "vitest": "5.0.5",
+    "playwright": "1.64.1",
+    "chromium": "156.0.8078.79",
+    "dependency_source": "Copied installed external dependencies from a checkout with an identical lockfile; workspace symlinks target this checkout; all 18 required internal libraries rebuilt here."
+  },
+  "checks": [
+    {
+      "name": "required internal libraries",
+      "result": "passed",
+      "exit_code": 0,
+      "workspaces": [
+        "@ghostpay/address-safety",
+        "@ghostpay/btc-silent-payments",
+        "@ghostpay/core-crypto",
+        "@ghostpay/invoice-schema",
+        "@ghostpay/chain-adapters",
+        "@ghostpay/net-harness",
+        "@ghostpay/net-transport",
+        "@ghostpay/payment-uri",
+        "@ghostpay/policy-scheme",
+        "@ghostpay/qr-exchange",
+        "@ghostpay/pir-two-server",
+        "@ghostpay/scan-source",
+        "@ghostpay/secret-box",
+        "@ghostpay/solana-stealth",
+        "@ghostpay/tron-adapter",
+        "@ghostpay/tx-review",
+        "@ghostpay/ux-vault",
+        "@ghostpay/relayer-guard"
+      ],
+      "node_heap_mib": 512,
+      "log_sha256": "aab70d052c80f6b084b3fd7716c1b73e7c49df99c1a3143835010ab4d36293d2"
+    },
+    {
+      "name": "focused feature DOM and QR interoperability",
+      "result": "passed",
+      "exit_code": 0,
+      "command": "NODE_OPTIONS=--max-old-space-size=512 RAYON_NUM_THREADS=2 node ../../node_modules/vitest/vitest.mjs run --maxWorkers=1 src/components/PaymentRequestDownload.test.tsx src/components/PaymentRequestFileInput.test.tsx src/views/Pay.requestFile.test.tsx src/views/Pay.invoiceQr.test.tsx src/lib/requestFileInterop.test.ts",
+      "cwd": "apps/web",
+      "tests_passed": 105,
+      "files_passed": 5,
+      "duration_seconds": 94.37,
+      "coverage": "Not requested; this is focused behavioral validation, not a full-suite coverage claim.",
+      "captured_summary": "RUN  v5.0.5 /workspace/scratch/994a0d214fb9/GhostPay-invoice/apps/web\n\n\n Test Files  5 passed (5)\n      Tests  105 passed (105)\n   Start at  08:11:47\n   Duration  94.37s (tests 49%, transform 20%, import 19%, environment 12%)\n\n    Isolate  5 workers spawned \u00b7 ~2.69s startup each (spawn + environment, per file)\n             at least ~10.74s faster with isolate: false \u2014 reuses workers across files instead of one per file",
+      "log_sha256": "99c8d8c83e92208195a4df83c386abbcdada139fd6781fce98e33c752d850776"
+    },
+    {
+      "name": "original full-profile focused Playwright runner",
+      "result": "blocked before browser or assertions",
+      "exit_code": 1,
+      "command": "NODE_OPTIONS=--max-old-space-size=1280 RAYON_NUM_THREADS=2 GHOSTPAY_CHROMIUM=/usr/bin/chromium GHOSTPAY_LOCAL_BUILD_PROFILE=full GP_COMMIT=7ae2f73fec9097c316620b846a8853f413d7fb15 npm run test:e2e --workspace @ghostpay/web -- payment-request-file.spec.ts --project=desktop --max-failures=1",
+      "failure": "The unchanged webServer build subprocess was killed with exit 137 during tsc; no artifact was emitted.",
+      "log_sha256": "7c6a90af33e72e399d4285095f1558a61b5d86e724e3adb31b6810a7a8dae4c5"
+    },
+    {
+      "name": "installed Chromium launch diagnosis",
+      "result": "blocked before page creation",
+      "exit_code": 1,
+      "executable": "/usr/bin/chromium",
+      "args": [
+        "--no-sandbox"
+      ],
+      "error": "process_singleton_posix.cc:297: socket() failed: Operation not permitted (1)",
+      "signal": "SIGABRT",
+      "log_sha256": "cc61a18cbfaaa8decf3ab03f613c05a034da3abbccb52c763c31661f5bf2555d"
+    }
+  ],
+  "interrupted_attempts": [
+    {
+      "name": "initial focused Playwright invocation",
+      "exit_code": 130,
+      "reason": "Stopped before any test result to correct a mistyped GP_COMMIT build label. The completed blocked attempt above used the actual checked-out commit.",
+      "log_sha256": "a16a296524e2eadfb9c80ecf02ecc3481dbb3f97c55f19c3b80a45d074510af9"
+    }
+  ],
+  "merge_probe": {
+    "base": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+    "incoming": "1de98f6c9371010883253450446e6f7294da84fa",
+    "command": "git merge-tree --write-tree BASE INCOMING",
+    "exit_code": 1,
+    "conflicts": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "product_conflicts": [],
+    "limit": "Structural merge only. This does not prove combined runtime behavior or qualify a later main head."
+  },
+  "hosted": {
+    "repair_run": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44769994546",
+    "observed_status": "queued",
+    "head": "1de98f6c9371010883253450446e6f7294da84fa",
+    "observed_at": "2026-11-20T16:13:07Z",
+    "original_failed_run": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44692101562"
+  },
+  "remaining": [
+    "Exact-current-head hosted full and lean Playwright execution and all required checks.",
+    "Recheck incoming and target heads and additive ACTIVE_WORK resolution before integration.",
+    "Qualify the final combined source after integration."
+  ],
+  "unchanged": "No production code, authored tests, dependencies, configuration, limits, skips, timeouts or coverage gates were changed by this independent lane."
+}

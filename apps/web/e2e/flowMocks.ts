@@ -132,7 +132,7 @@ export async function mockNetwork(
           return reply(String(body.params[0]).toLowerCase() === state.evidence.txHash.toLowerCase() ? state.evidence.receipt : null);
         }
         return reply(
-          state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
+          state.sent === undefined ? null : { transactionHash: body.params[0], status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
         );
       case 'eth_gasPrice':
         return reply('0x3b9aca00');

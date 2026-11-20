@@ -113,7 +113,7 @@ test('nginx -t accepts generated configs (root, subpath, IPv6, unix socket, Ghos
     const variants = [
       gen({}), gen({ basePath: '/mirror/app/' }), gen({ listen: { kind: 'tcp', host: '::1', port: 8443 } }),
       gen({ listen: { kind: 'unix', path: path.join(dir, 'web.sock') }, transport: 'onion', publicOrigin: null }),
-      gen({ onionLocation: `http://${'a'.repeat(56)}.onion` }, { policy: ghostpay, files: [...FILES, '_headers', 'assets/x-1.js', 'deployments/1.json'] }),
+      gen({ onionLocation: 'http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion' }, { policy: ghostpay, files: [...FILES, '_headers', 'assets/x-1.js', 'deployments/1.json'] }),
     ];
     for (const [i, v] of variants.entries()) {
       const confDir = path.join(dir, `v${i}`);
@@ -196,7 +196,7 @@ test('serves over a unix socket listener', { skip: NGINX_SKIP }, async () => {
 
 test('R2-A: every add_header line is well-formed and each required header appears exactly once', async () => {
   const ghostpay = { rules: parseHeadersFile(await fs.readFile(GHOSTPAY_HEADERS_PATH, 'utf8')), source: /** @type {const} */ ('site') };
-  for (const v of [gen({}), gen({ basePath: '/m/', onionLocation: `http://${'a'.repeat(56)}.onion` }, { policy: ghostpay, files: [...FILES, '_headers'] })]) {
+  for (const v of [gen({}), gen({ basePath: '/m/', onionLocation: 'http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion' }, { policy: ghostpay, files: [...FILES, '_headers'] })]) {
     const code = v.server.split('\n').filter((l) => !/^\s*#/.test(l));
     const lines = code.filter((l) => /\badd_header\b/.test(l));
     assert.ok(lines.length >= 5);

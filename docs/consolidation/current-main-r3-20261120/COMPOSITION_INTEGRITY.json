@@ -1,0 +1,1095 @@
+{
+  "at_utc": "2026-11-20T23:18:48.559296+00:00",
+  "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "sweep": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+  "main": "bfebea0acf213a113d2740366fd592042661ca67",
+  "head": "b8fe24507e7f8100c70287f86b0932f9c83f31aa",
+  "tree": "9ca0b6d25c5ec46e4f3302164578ddcb744bb9bd",
+  "parents": [
+    "106524ee42bbb860aa0283679d4850d2194509e3",
+    "bfebea0acf213a113d2740366fd592042661ca67"
+  ],
+  "overlapping_paths": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "all_other_contributed_blobs_and_modes_match": true,
+  "ownership_both_original_files_preserved_as_ordered_lines": true,
+  "checked_entries": [
+    {
+      "path": ".github/workflows/tor-static.yml",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 56a7423decd27d84e123ad3cf7f911c2e7061aae\t.github/workflows/tor-static.yml"
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 9ffde108dc29cdb99d36a9333cdebd4b7f1d1415\tapps/web/e2e/core-journey.spec.ts"
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0b37e89513340df81a1c0dbf3410ff9e474df6c5\tapps/web/e2e/devnet-journey.spec.ts"
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a9081deadbfac984619299d39de77c0fba3370cc\tapps/web/e2e/flowMocks.ts"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 46dabb22224684a8638a26c536c53db4aea605ea\tapps/web/e2e/pages-devnet.spec.ts"
+    },
+    {
+      "path": "apps/web/e2e/payment-request-file.spec.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f\tapps/web/e2e/payment-request-file.spec.ts"
+    },
+    {
+      "path": "apps/web/e2e/print-targets.spec.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c68f8138d7a57f6e89b84bba16223758ea66acf5\tapps/web/e2e/print-targets.spec.ts"
+    },
+    {
+      "path": "apps/web/e2e/sweep.spec.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 782aa57661a8ce4d8db0e98789d6ce5b58c35d25\tapps/web/e2e/sweep.spec.ts"
+    },
+    {
+      "path": "apps/web/locales/ar.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 734af2fb7f17e150d7235b15d9c007f896a2dd3b\tapps/web/locales/ar.json"
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob afd359647e11d684096774a0c711c997a7319ef1\tapps/web/locales/en.json"
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1ff38b5bab8ba0a9833d338a6369c49583a146bc\tapps/web/locales/es.json"
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 2758d892030bac000259d02dfe627eced61c234d\tapps/web/locales/ja.json"
+    },
+    {
+      "path": "apps/web/src/components/CameraImporter.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 255e318fb120ef769687e0c2dfb38f2bceb9e7d9\tapps/web/src/components/CameraImporter.tsx"
+    },
+    {
+      "path": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 591becf9ad1f59e143bd3356b9b3a1bcc1ec6d11\tapps/web/src/components/CameraImporter.visibility.test.tsx"
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 3f964ae6b4109e5729383316f7cbf3445b2b2851\tapps/web/src/components/PaymentRequestDownload.test.tsx"
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestDownload.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 27ab300574119f72d9e96450a0fcc651d6168d5c\tapps/web/src/components/PaymentRequestDownload.tsx"
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob bdd942f53dcbca6daaaef6dadfd79f63eb08388e\tapps/web/src/components/PaymentRequestFileInput.test.tsx"
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestFileInput.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 487a1892d9d78daca50d48fde488f65f8d5d9101\tapps/web/src/components/PaymentRequestFileInput.tsx"
+    },
+    {
+      "path": "apps/web/src/components/PrintableBill.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4cea0ec083ba081346bd2c9c7bfe0d1feaf54961\tapps/web/src/components/PrintableBill.test.tsx"
+    },
+    {
+      "path": "apps/web/src/components/PrintableBill.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 946f38f0d2c8b31c9f5b58309eab726ad23b1989\tapps/web/src/components/PrintableBill.tsx"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 21d4c479733284408e29f64ed8262f06a0746b7a\tapps/web/src/components/ReceiptPanel.test.tsx"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1f0e967c587bfb36e191962bc1473351da9d4e3c\tapps/web/src/components/ReceiptPanel.tsx"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob cdffc8230d996621ac89a05810b37aff50555b82\tapps/web/src/components/ReconciliationLedger.test.tsx"
+    },
+    {
+      "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 6db098624324846c7a6f577a90bd35b01c80f200\tapps/web/src/features/policy/fixtures.testutil.ts"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 3cdc5ce0fb5b8d96487dff6479d2595d1ecbb3cf\tapps/web/src/i18n/securityKeys.ts"
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 43d5b5c882abdfb392776dd13d772e972f13ab46\tapps/web/src/lib/format.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 9ba8ea7b418eab5cf18e900923572cf3e255aedd\tapps/web/src/lib/format.ts"
+    },
+    {
+      "path": "apps/web/src/lib/jitter.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ff652c1d81720c9e45157479058e6b7b0edcaad2\tapps/web/src/lib/jitter.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 9845576adfb522c17db145b1772276f66523180c\tapps/web/src/lib/jitter.ts"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 6eafa0466c682977baa69b7c87b91ffd8b79c227\tapps/web/src/lib/payExec.acceptance.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0e9a3abe4e78e4091b19614ef68efb285b5c1254\tapps/web/src/lib/payExec.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 257b634250f033ddec042b67941fec23ffba1323\tapps/web/src/lib/qrKinds.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a85e1011cdface74c87683146ff7428654b7830d\tapps/web/src/lib/qrKinds.ts"
+    },
+    {
+      "path": "apps/web/src/lib/requestFileInterop.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 954c6f24e2279ec0820df1710100ad1d848a5c47\tapps/web/src/lib/requestFileInterop.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 929e8059142d482e4130e0103d821161280bf8cd\tapps/web/src/lib/scanPrivacy.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob b95a021577597705c25510534ac98bbe994292a0\tapps/web/src/lib/scanPrivacy.ts"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 64d9d0d95a66da023f2968faa7bd97c7dbe66605\tapps/web/src/lib/scannerCore.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 3ad466bae0d7d19187260e0696c0d29fb6a71293\tapps/web/src/lib/scannerCore.ts"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob b1e5c22e708da43efa3d61b85d9272ce136a2bdb\tapps/web/src/lib/sweep.reviewAuthority.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c45152ff8babdb2b1039cdc414ccde0fd5f71819\tapps/web/src/lib/sweep.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a351684b70b84a73705c7aed73dee65bd45cf36c\tapps/web/src/lib/sweep.ts"
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1f1749730b2af7483bacdeecc29f2fbda5490de3\tapps/web/src/lib/txGuard.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23\tapps/web/src/lib/txGuard.ts"
+    },
+    {
+      "path": "apps/web/src/lib/usePrintTarget.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d12258ee57a39c2b2f5ca248c63fcf7b2fa2d24c\tapps/web/src/lib/usePrintTarget.test.tsx"
+    },
+    {
+      "path": "apps/web/src/lib/usePrintTarget.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 38b127b71d71597847c82a5e0f1cd96ed9a0b3bc\tapps/web/src/lib/usePrintTarget.ts"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0eef38ea9deb736072515d3240eeabfbd6b5e49b\tapps/web/src/lib/wallet.test.ts"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 800cfa90810b887898d4184ff3f5ccfb2601c971\tapps/web/src/lib/wallet.ts"
+    },
+    {
+      "path": "apps/web/src/styles/app.css",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 073bdae58e1af0a31a5e2d1a428516de4adc3c0c\tapps/web/src/styles/app.css"
+    },
+    {
+      "path": "apps/web/src/styles/print.css",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ae75e16e8cb78c604e9f2c06feaf52edf0acc5e7\tapps/web/src/styles/print.css"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1a31bebd47e897e63ea34c367228cb35262c9098\tapps/web/src/views/CreateInvoice.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 404da9ba3f203c0192ddb01145fdb8a9776db015\tapps/web/src/views/Pay.invoiceQr.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Pay.requestFile.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 89cb8d83c1275ca466efe70b45572b846b505cfb\tapps/web/src/views/Pay.requestFile.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c\tapps/web/src/views/Pay.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 197e5f2d69fee42b3fc5d368e22bb4c1581b0540\tapps/web/src/views/Pay.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tags.scope.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob bbb0225d16d0c46159273c2798dae3820e176469\tapps/web/src/views/Scan.tags.scope.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob aa06ef54e732908005734096c4300c2f6e8423cf\tapps/web/src/views/Scan.tsx"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.operation.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 29fd9ccaf8226c501e7c1d6e075822960507017c\tapps/web/src/views/SellerKeys.operation.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob b3f97d41e71e1b20587e4881fee33337dc87a8eb\tapps/web/src/views/SellerKeys.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4\tapps/web/src/views/Sweep.privacy.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 13a977cbfa59ee1d7c8c688afa74e9fc8c981f4e\tapps/web/src/views/Sweep.quoteLifecycle.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 586cd0d242378e486f22e5a5ae5a2533bacbe9ae\tapps/web/src/views/Sweep.test.tsx"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4b6a65c45863f2b312f2f5383d17f7c21bf21649\tapps/web/src/views/Sweep.tsx"
+    },
+    {
+      "path": "deploy/TOR.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 811ec89d0b4a3885dffee32a3c225bf94710c9c7\tdeploy/TOR.md"
+    },
+    {
+      "path": "deploy/tor-static/.dockerignore",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 2465bc7364814b57d1b8f484e3c67148615edc08\tdeploy/tor-static/.dockerignore"
+    },
+    {
+      "path": "deploy/tor-static/Dockerfile",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 8d593b9a0e419661c59a6d85d8b57ac6f498b29c\tdeploy/tor-static/Dockerfile"
+    },
+    {
+      "path": "deploy/tor-static/README.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0bbb974c52f2753623dee8eaa712babdb6607f8d\tdeploy/tor-static/README.md"
+    },
+    {
+      "path": "deploy/tor-static/host.example.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob bff0f3e674f504e966cfeb7523d97048f356170c\tdeploy/tor-static/host.example.json"
+    },
+    {
+      "path": "deploy/tor-static/prepare.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1c0776edde8faff31e7fc247204915509f48e141\tdeploy/tor-static/prepare.mjs"
+    },
+    {
+      "path": "deploy/tor-static/runtime-check.sh",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 8dddbffac95e7aeb2cca04260fa0a02cd7565dc3\tdeploy/tor-static/runtime-check.sh"
+    },
+    {
+      "path": "deploy/tor-static/tor-start.sh",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 811be5b8949748d34b39edd0ffa05eb82711e809\tdeploy/tor-static/tor-start.sh"
+    },
+    {
+      "path": "docs/ai/prompts/F03_AUDIT_HANDOFF.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob fc87307bbc9c951f20e84c2242766da920d8a89d\tdocs/ai/prompts/F03_AUDIT_HANDOFF.md"
+    },
+    {
+      "path": "docs/ai/prompts/F03_WORKER_BRIEF.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e367b6d3509fdb84772736e1036423bfea1b6262\tdocs/ai/prompts/F03_WORKER_BRIEF.md"
+    },
+    {
+      "path": "docs/consolidation/continuation-20261120/BRANCH_CENSUS_INITIAL.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0e7388cc313003917e90c97913ff10b15ac6436b\tdocs/consolidation/continuation-20261120/BRANCH_CENSUS_INITIAL.json"
+    },
+    {
+      "path": "docs/consolidation/continuation-20261120/REPORT.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 40e006a99af6c5640a85a43dc30630bc43f2557c\tdocs/consolidation/continuation-20261120/REPORT.md"
+    },
+    {
+      "path": "docs/consolidation/invoice-file-20261120/EVIDENCE.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 5ea5196dbb1ee42bb530b97f38840b42b9b12ec1\tdocs/consolidation/invoice-file-20261120/EVIDENCE.json"
+    },
+    {
+      "path": "docs/consolidation/invoice-file-20261120/REVIEW.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 2c3850db26853ddb3b59c680ccebddf8dd64dc76\tdocs/consolidation/invoice-file-20261120/REVIEW.md"
+    },
+    {
+      "path": "docs/consolidation/main-unique-code-20261120/BLOB_DISPOSITIONS.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 7d1e9d01cbab699a599c7c252a1b54d5a5caae1b\tdocs/consolidation/main-unique-code-20261120/BLOB_DISPOSITIONS.json"
+    },
+    {
+      "path": "docs/consolidation/main-unique-code-20261120/BRANCH_CENSUS.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 716307038368dabd9d43cdb44716623279dcd0fa\tdocs/consolidation/main-unique-code-20261120/BRANCH_CENSUS.json"
+    },
+    {
+      "path": "docs/consolidation/main-unique-code-20261120/recovered-fixes/PROVENANCE.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 934195f446e99a0ae7181eb64c19f667c2f2c501\tdocs/consolidation/main-unique-code-20261120/recovered-fixes/PROVENANCE.json"
+    },
+    {
+      "path": "docs/consolidation/main-unique-code-20261120/recovered-fixes/REPORT.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob b74c6e7f6f866229e61ee87d281e100ea3efdf06\tdocs/consolidation/main-unique-code-20261120/recovered-fixes/REPORT.md"
+    },
+    {
+      "path": "docs/consolidation/merge-readiness/PR231.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1ce96c915e90f38ca574240adbb86ff192c19346\tdocs/consolidation/merge-readiness/PR231.md"
+    },
+    {
+      "path": "docs/consolidation/sweep-20261120/BRANCH_CENSUS.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 553154051686e7110fb14fbd71bfe3d27c2ba9bd\tdocs/consolidation/sweep-20261120/BRANCH_CENSUS.json"
+    },
+    {
+      "path": "docs/consolidation/sweep-20261120/EVIDENCE.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4a468d0b6fc13276881ad2af5e0898e4875b4432\tdocs/consolidation/sweep-20261120/EVIDENCE.json"
+    },
+    {
+      "path": "docs/consolidation/sweep-20261120/REPORT.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ccd86682f8ec36c5af997313e140915f360c28c2\tdocs/consolidation/sweep-20261120/REPORT.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/CATALOG_RECONCILIATION.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob af9139d4a47aae1c8c8ac80054c0a2f9de9f12ef\tdocs/future/modules/F03-private-payment-links/CATALOG_RECONCILIATION.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/ENVIRONMENT.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob def36792bdfbb1ab36e70fad48f4d7304872b602\tdocs/future/modules/F03-private-payment-links/ENVIRONMENT.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/HANDOFF.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 64b25cd040e878fc912854ace6865eb4408b7395\tdocs/future/modules/F03-private-payment-links/HANDOFF.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/QUALIFICATION.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1e5016bb45991bce222822d066abffe1924115f9\tdocs/future/modules/F03-private-payment-links/QUALIFICATION.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/SPEC.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ecc36f043a3ff7eb00778d624b22575386dfb7dd\tdocs/future/modules/F03-private-payment-links/SPEC.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/audits/PRIVACY_SECURITY.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob de05c2bee2719ebee4c2b697a7f3b060848593c1\tdocs/future/modules/F03-private-payment-links/audits/PRIVACY_SECURITY.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/audits/SPEC.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c3b6fa50c405ad424faa100033f1751311d2cf8d\tdocs/future/modules/F03-private-payment-links/audits/SPEC.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/audits/STANDARDS.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 266cca011b3f295a0ffd1c35d8e2732ba1e37849\tdocs/future/modules/F03-private-payment-links/audits/STANDARDS.md"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/console-log-normalization.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4686d61528f1011535d9b6f1a779c62a78006631\tdocs/future/modules/F03-private-payment-links/evidence/console-log-normalization.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a7b719d943f90bfa9537572067ad6f3029b70628\tdocs/future/modules/F03-private-payment-links/evidence/feature-lint.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/future/modules/F03-private-payment-links/evidence/feature-lint.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob b8b58129a3214422697b52beb1672fe02f268452\tdocs/future/modules/F03-private-payment-links/evidence/final-secret-scan.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f728616990977904e8f3bea03aedfb9f48eaf6cd\tdocs/future/modules/F03-private-payment-links/evidence/final-secret-scan.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob bb20a4f3ee237d89ea7a37db8a28a6d8e44d9a63\tdocs/future/modules/F03-private-payment-links/evidence/final-whitespace.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/future/modules/F03-private-payment-links/evidence/final-whitespace.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/hosted-product-status.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 757075e54f682c8249db18e920a67043feba75f3\tdocs/future/modules/F03-private-payment-links/evidence/hosted-product-status.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 7085fc7d89e446c264e6ac13e5dc9b0876df3de7\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1eb89f50ee14a34a745dffce9c4ffc20bcdf6820\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage-initial-interrupted.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0821307e6ec31896ce2ce9c6286ad67e19f7e27d\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage-initial-interrupted.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob eebcbe381e7a29ec867a3a2df613b67716d1ae23\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a3edb574dde9c45888cef4a89ebf7c4e6053d65d\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 65c426cddb744d327b4fb038f5d980611d1fdd0a\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4e50dd5b8a83d6d00bd7e69b399a8b074d318e62\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob dac698a97e88f342efe7cb52d712436f71609fa4\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4ed551fc09f87c74d5a06626289918cd84b70794\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-lcov.info",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 37d4f5de4aa2bdee0d587642a7f8e2ffb721a3c2\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-lcov.info"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4161cf020058e2e85cbfd7bf48748594f88c1677\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4a01d3ab29ef26ebf57c22a901dfc592db30c7df\tdocs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 24972f3bbe11d7540cff1526cfcfc5f0a6f175b8\tdocs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 940ae9067b24c46413d87a213422323d82071a6b\tdocs/future/modules/F03-private-payment-links/evidence/locale-catalog.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 112314ddf9eaeb5f64e7311c4577347ffd96fcbc\tdocs/future/modules/F03-private-payment-links/evidence/locale-catalog.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/original-console-logs.tar.gz.b64",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 9c6e6188a653a4580fa8307d351875e02abb8c85\tdocs/future/modules/F03-private-payment-links/evidence/original-console-logs.tar.gz.b64"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 00fc268f352803e8a9c9580e7d342ce4d7cbaced\tdocs/future/modules/F03-private-payment-links/evidence/secret-scan.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f728616990977904e8f3bea03aedfb9f48eaf6cd\tdocs/future/modules/F03-private-payment-links/evidence/secret-scan.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 85578fc0b99136ed28ca080c5786e1f7d39dbcab\tdocs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 2273d4a15ba3c41be85407b6b46eb02e5ac3c006\tdocs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-red.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 5a1b8bee94a60c1d00a40293293e18bb0c1ee242\tdocs/future/modules/F03-private-payment-links/evidence/spec-app-lock-red.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d4d7afc1637f3fa174a5c5d327dd6ac73d02b266\tdocs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4e415ddd4d311ce8d1343fd02bd1718b72f0224b\tdocs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-full.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 68de9cb705d75685166eaf6e860b254caafcfd58\tdocs/future/modules/F03-private-payment-links/evidence/web-artifact-full.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-lean.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 7b338f593bebfed0e84e4f5731f8b18e4901cf78\tdocs/future/modules/F03-private-payment-links/evidence/web-artifact-lean.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d99b637dd6d5f4a8cf85af5c1082177fe431eb40\tdocs/future/modules/F03-private-payment-links/evidence/web-build-full.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0991c7e9aedcc7dca848d9bccd77cf919749443f\tdocs/future/modules/F03-private-payment-links/evidence/web-build-full.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ed1f064891318698ebc55a0abd43f2cbac7ef558\tdocs/future/modules/F03-private-payment-links/evidence/web-build-lean.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0991c7e9aedcc7dca848d9bccd77cf919749443f\tdocs/future/modules/F03-private-payment-links/evidence/web-build-lean.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 17d6d254931871882907ff03f196940230c33027\tdocs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 76751f7a88731ead89b11e3bd49a3babb50e2a12\tdocs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f004ecc6ce8f8da090a4b1cb55c1c2a66f4da67a\tdocs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c87435b1b492226cb204430963007f7c12940b3f\tdocs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f2e775722c792c473d3d7291fe85c6f68cce43b1\tdocs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 6b3beb8014918cfbe5411cae452e6391a685eb0c\tdocs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob baee3cd061b825d93047aee45aa5e97633a37a85\tdocs/future/modules/F03-private-payment-links/evidence/web-typecheck.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ee84062b420a8c367863e5ccd3d26ecb35072fb4\tdocs/future/modules/F03-private-payment-links/evidence/web-typecheck.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob fff18fa746d72b950ee96c08eafdf953ccd5c038\tdocs/future/modules/F03-private-payment-links/evidence/web-vite-full.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 19582ce84c55b67ef587125a68d7b3f91fc2cdd7\tdocs/future/modules/F03-private-payment-links/evidence/web-vite-full.log"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0f7a8a30a405e27b9e732ac80d6577c1dcfb3308\tdocs/future/modules/F03-private-payment-links/evidence/web-vite-lean.json"
+    },
+    {
+      "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.log",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 3ba7bb65001f3ec4fc3f47b55f6405e8c43701f1\tdocs/future/modules/F03-private-payment-links/evidence/web-vite-lean.log"
+    },
+    {
+      "path": "docs/handoffs/LEDGER_ACTIONABILITY_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4fe363034895b4786b14a176081a4106b7221f2e\tdocs/handoffs/LEDGER_ACTIONABILITY_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/PAYMENT_URI_DECIMAL_OPTIONS_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 34c31b099f0cb13c0d5513b4719beb952c1acf38\tdocs/handoffs/PAYMENT_URI_DECIMAL_OPTIONS_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 11dcb8bdae172c1e85d7bfee51cab55a6cc49c59\tdocs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 92963483c8ed0ecff4492ad97ad3d28e59560caf\tdocs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/SCAN_TAG_SCOPE_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 92c7070d40de80e831f618cf98a27a5a0af01bb0\tdocs/handoffs/SCAN_TAG_SCOPE_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/SCAN_TAG_SESSION_CI_REPAIR_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob be85d9e0382ed25c2dea1b997fbd6330a5687b7a\tdocs/handoffs/SCAN_TAG_SESSION_CI_REPAIR_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/SELLERKEYS_OPERATION_COMPLETION_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob cbf1c4adfd80c6bea4d039bb2acddfea304194b6\tdocs/handoffs/SELLERKEYS_OPERATION_COMPLETION_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/SELLERKEYS_OPERATION_SUPERSESSION_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 6403fc35d3421e882489bf19427680bbd4213e2c\tdocs/handoffs/SELLERKEYS_OPERATION_SUPERSESSION_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/TOR_QUALIFICATION_REPAIR_20261120.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e7b1fe5347948508d20f44f855d266ba73e075cc\tdocs/handoffs/TOR_QUALIFICATION_REPAIR_20261120.md"
+    },
+    {
+      "path": "docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob dc5f28998fac07937b463d4ec156d1b267b7360c\tdocs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md"
+    },
+    {
+      "path": "docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 9ad3f8a3fc84f84784cf56afcd434dbc3e7aee83\tdocs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/EVIDENCE.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 283f654486c81d72645d4e5f7f68f58fde3cf691\tdocs/handoffs/tor-completion-20261119/EVIDENCE.json"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/INDEPENDENT_QA.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob cb373eb6e8c9d5588aee74dc5a508507d8212076\tdocs/handoffs/tor-completion-20261119/INDEPENDENT_QA.md"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/README.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d6810330e1c41afdbb40d60ea9ee4b18e5e9c7c0\tdocs/handoffs/tor-completion-20261119/README.md"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-artifact-validation.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f74592711acebedd7363de719f8a140d4cfda116\tdocs/handoffs/tor-completion-20261119/evidence/tor-artifact-validation.json"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-audit-all.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob bf3af9b597dc6f3ecf6c119eeeb36773e464c532\tdocs/handoffs/tor-completion-20261119/evidence/tor-audit-all.json"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-audit-production.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob bf3af9b597dc6f3ecf6c119eeeb36773e464c532\tdocs/handoffs/tor-completion-20261119/evidence/tor-audit-production.json"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-bundle-scan.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c87435b1b492226cb204430963007f7c12940b3f\tdocs/handoffs/tor-completion-20261119/evidence/tor-bundle-scan.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-independent-kit-tests.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 5bb4e6bd13fe5db5f698429dc14d9d39dc5f7abc\tdocs/handoffs/tor-completion-20261119/evidence/tor-independent-kit-tests.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-install-web.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 78e80ad1a52153d2baf38794b5d8ccb1fa66768b\tdocs/handoffs/tor-completion-20261119/evidence/tor-install-web.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-kit-lint-final.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 254eceae458fa4e859f5340b0755d3e96bf87946\tdocs/handoffs/tor-completion-20261119/evidence/tor-kit-lint-final.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-kit-typecheck-final.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 05c3b0d4cb5c92491856a11a12d3e78c1d76b4e1\tdocs/handoffs/tor-completion-20261119/evidence/tor-kit-typecheck-final.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-onion-crosscheck.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 635ecfb363c0e5b2f92717fcb5215a2d12ab2d99\tdocs/handoffs/tor-completion-20261119/evidence/tor-onion-crosscheck.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-prepare.json",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 5434fe83d894dc7a12f467bd0b3d7f8c689570b6\tdocs/handoffs/tor-completion-20261119/evidence/tor-prepare.json"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-recipe-final.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 3746f432612651f5e7d1c586e790ba1384ae3753\tdocs/handoffs/tor-completion-20261119/evidence/tor-recipe-final.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-vite-build.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a87983e6fc07232f3f78be54a3fc93f7499f5ef7\tdocs/handoffs/tor-completion-20261119/evidence/tor-vite-build.txt"
+    },
+    {
+      "path": "docs/handoffs/tor-completion-20261119/evidence/tor-web-tests.txt",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob e98f6f23f71c283749cdfa5298d2731c20505275\tdocs/handoffs/tor-completion-20261119/evidence/tor-web-tests.txt"
+    },
+    {
+      "path": "docs/specs/TOR_HOSTING_COMPLETION.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ce1cd8fe38246d46ae863b23a554a72acf6f0a25\tdocs/specs/TOR_HOSTING_COMPLETION.md"
+    },
+    {
+      "path": "docs/user/payment-request-files.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 52ccdba07123d703ade59d6b7d4f7aa7f2211b8e\tdocs/user/payment-request-files.md"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 9a35cce7f79ef3341e73ed2b8aa140653b97756b\tpackages/chain-adapters/src/deployments.test.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1fbaa3af3f200622596bd552d7af6e330d1c2fb8\tpackages/chain-adapters/src/deployments.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/quote.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ab98c68605acba6a7d094e631ab1431ab88e2763\tpackages/chain-adapters/src/quote.test.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f7bb85cb0296ccae726859842b06c6f76b6974b8\tpackages/chain-adapters/src/rpc.test.ts"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1c8d1edc486c70b7ea7fee96ec62c57af00e421e\tpackages/chain-adapters/src/rpc.ts"
+    },
+    {
+      "path": "packages/invoice-schema/README.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f70c48ba0955a3c07bb1b109d208892c71ebb560\tpackages/invoice-schema/README.md"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 8d959c2b144182d0d0f576214dc7b761b7166c47\tpackages/invoice-schema/src/base64url.test.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 5466ee0b99925dedd23e753636ae7ab3f6f48234\tpackages/invoice-schema/src/base64url.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/index.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 34d2e76882ba3a8975930f3bfcee35ae1f7e395c\tpackages/invoice-schema/src/index.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 2ffdfe70a8814762b14721ac640fc82cab0b9e54\tpackages/invoice-schema/src/json.test.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 8ed01592d487c356a72d51e240e5cc63fb470a3a\tpackages/invoice-schema/src/json.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a1299d9ceedefeefb5784d287d556008531af02f\tpackages/invoice-schema/src/merchantProfile.test.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a4269dec888518799aa4b3e8cc82d2ff9cc21d77\tpackages/invoice-schema/src/merchantProfile.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/requestFile.interop.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 0a722695a606f524bcf512652e9fbbe42b27f871\tpackages/invoice-schema/src/requestFile.interop.test.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/requestFile.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 68c194bf5c6fc12d0f17ff3a39afb9ec01d902cb\tpackages/invoice-schema/src/requestFile.test.ts"
+    },
+    {
+      "path": "packages/invoice-schema/src/requestFile.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4eb802016bc54f6d3e53e7061f08a2272bc29a3a\tpackages/invoice-schema/src/requestFile.ts"
+    },
+    {
+      "path": "packages/payment-uri/src/decimal-options.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob cc17c8a77312d250e52193fc7daae199579208d0\tpackages/payment-uri/src/decimal-options.test.ts"
+    },
+    {
+      "path": "packages/payment-uri/src/decimal.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f5665dace3449a172abadcbd64eeec04f6a7bf74\tpackages/payment-uri/src/decimal.ts"
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.test.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ee613b41e23d1d77ebe9caf3151ecef014bd22cd\tpackages/qr-exchange/src/assembler.test.ts"
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 144dd8ec67e8aaeffc5c3d90f6a06234d770abcd\tpackages/qr-exchange/src/assembler.ts"
+    },
+    {
+      "path": "scripts/automation/integration-lock.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 47a7411628f7775228e15f88b120c3684b461249\tscripts/automation/integration-lock.mjs"
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob aa99b0b9c0c4e0211e5315153abd99880e2e8a59\tscripts/pages/build-pages-artifact-gate.test.mjs"
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100755 blob 272d994a11987ba644f007a98a850af8e4c81650\tscripts/pages/build-pages.sh"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 56a1753d5181a6c5f9738ab62fd5f32911b6b516\tscripts/pages/verify-pages-artifact.mjs"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d827559a5db32969b955d4f299a65db420010824\tscripts/pages/verify-pages-artifact.test.mjs"
+    },
+    {
+      "path": "scripts/tests/integration-lock.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob f2ef3e9ac3425ad6296a878526c68d69afac04c7\tscripts/tests/integration-lock.test.mjs"
+    },
+    {
+      "path": "scripts/tor/browser-acceptance.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 1f57b2d5a102f398cfc111e349dfc2684d498518\tscripts/tor/browser-acceptance.mjs"
+    },
+    {
+      "path": "scripts/tor/hosting-config.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 4ac175f883ce1760c5cf308fc385e1b8218fa81d\tscripts/tor/hosting-config.test.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/docs/TOR.md",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ef030ae9c95543c5483b17c36efc974afd5840c5\ttools/portable-hosting-kit/docs/TOR.md"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a01d11a4d0409438cec689cde3998d0ce1c8c777\ttools/portable-hosting-kit/src/adapters/tor.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob ba5f2c311c77fabc1d85d66dc05f94388c7f616b\ttools/portable-hosting-kit/src/config/host-config.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d0bce8f92792580ea517d72b40a2653ea70111eb\ttools/portable-hosting-kit/src/serve/headers.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/adapters/tor.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob c41becdbc6099757a9fbbe1996698374f43c8f44\ttools/portable-hosting-kit/test/adapters/tor.test.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/config/host-config.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob d702839dbaf95f62b6d86186b351817eae07fdff\ttools/portable-hosting-kit/test/config/host-config.test.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 5721e767c46307ed6776048163ba149f2cc5987b\ttools/portable-hosting-kit/test/profiles/differential.test.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/nginx.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob 963eec40dfae88830f8594cc923026b671d9c0fc\ttools/portable-hosting-kit/test/profiles/nginx.test.mjs"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+      "donor": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "entry": "100644 blob a2f499b8820e299d817520943724941e5b4cabc5\ttools/portable-hosting-kit/test/serve/headers.test.mjs"
+    },
+    {
+      "path": "docs/consolidation/current-census-20261120/CENSUS.json",
+      "donor": "bfebea0acf213a113d2740366fd592042661ca67",
+      "entry": "100644 blob b77a4a0f7ad997f502df47eaf6fe2318ceb41d26\tdocs/consolidation/current-census-20261120/CENSUS.json"
+    },
+    {
+      "path": "docs/consolidation/current-census-20261120/README.md",
+      "donor": "bfebea0acf213a113d2740366fd592042661ca67",
+      "entry": "100644 blob 4e9f1bbfd6fa518cae02e34fb89e8308e05d25b7\tdocs/consolidation/current-census-20261120/README.md"
+    },
+    {
+      "path": "docs/handoffs/TRON_SCAN_ABORT_20261120.md",
+      "donor": "bfebea0acf213a113d2740366fd592042661ca67",
+      "entry": "100644 blob 93bebb5ccd5ef6ba0163f2f8684c71afbc9a9ffc\tdocs/handoffs/TRON_SCAN_ABORT_20261120.md"
+    },
+    {
+      "path": "packages/tron-adapter/src/scan.cancellation.test.ts",
+      "donor": "bfebea0acf213a113d2740366fd592042661ca67",
+      "entry": "100644 blob 6d981bc0afaeaf20c6e2fdb871738b67856d2165\tpackages/tron-adapter/src/scan.cancellation.test.ts"
+    },
+    {
+      "path": "packages/tron-adapter/src/scan.ts",
+      "donor": "bfebea0acf213a113d2740366fd592042661ca67",
+      "entry": "100644 blob 549ea733bb6855695b21600d3e0b5f90b6ec4b9e\tpackages/tron-adapter/src/scan.ts"
+    }
+  ],
+  "source_count": 215
+}

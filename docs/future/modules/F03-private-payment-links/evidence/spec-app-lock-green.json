@@ -1,0 +1,20 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "90s",
+    "node",
+    "--max-old-space-size=1024",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/views/Pay.requestFile.test.tsx",
+    "--maxWorkers=1",
+    "--coverage.enabled=false",
+    "--reporter=verbose",
+    "--testNamePattern=app lock"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 4.75,
+  "source_commit": "d82744017594267d9511e46beaf19e5842fb8317",
+  "log": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.log"
+}

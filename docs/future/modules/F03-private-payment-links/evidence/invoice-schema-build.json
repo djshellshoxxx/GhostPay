@@ -1,0 +1,19 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "120s",
+    "npm",
+    "run",
+    "build",
+    "-w",
+    "@ghostpay/invoice-schema"
+  ],
+  "cwd": ".",
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=1024"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 1.37,
+  "source_commit": "d82744017594267d9511e46beaf19e5842fb8317"
+}

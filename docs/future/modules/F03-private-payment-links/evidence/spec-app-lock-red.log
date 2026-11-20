@@ -1,0 +1,89 @@
+Original RED output transcript, preserved from exec output chunks ad5496 and 101ffc.
+This first run was captured by the execution tool, not redirected to a file at run time.
+Production source: f472030a1d9a993db1ba7a1a33f9a208c28ebf13 (checkout 057c922f2f9edee9edad0bef66d77f5da8f2f877 added audit handoff only).
+Regression cases later preserved in commit c4c85727; no production modification preceded this run.
+Working directory: /workspace/scratch/63789860705e/GhostPay/apps/web
+Command: timeout --kill-after=5s 90s node --max-old-space-size=1024 ../../node_modules/vitest/vitest.mjs run src/views/Pay.requestFile.test.tsx --maxWorkers=1 --coverage.enabled=false --reporter=verbose --testNamePattern='app lock'
+Exit status: 1
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay/apps/web
+
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=false) and opens only after explicit review
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=true) and opens only after explicit review
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > uses the existing passphrase flow without previewing private fields
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > accepts a second file after forgetting the first without refreshing the page
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > clears an earlier preview before rejecting an oversized replacement without reading it
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > cannot let an older file read replace a newer QR preview
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > choosing a file supersedes an older QR parser result
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after clear invalidation
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after close invalidation
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after hidden invalidation
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after session invalidation
+ × src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=absent) 400ms
+   → expected <button type="button" …(1)></button> to be null
+ × src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=retained) 137ms
+   → expected <button type="button" …(1)></button> to be null
+ × src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=absent) 140ms
+   → expected <button type="button" …(1)></button> to be null
+ × src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=retained) 139ms
+   → expected <button type="button" …(1)></button> to be null
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > discards a pending file when pinned signer policy changes without unmounting Pay
+ ↓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > preserves the lean invoice gate when a request file contains a full-profile invoice
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=absent)
+ FAIL  src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=retained)
+AssertionError: expected <button type="button" …(1)></button> to be null
+
+- Expected:
+null
+
++ Received:
+<button
+  class="btn"
+  type="button"
+>
+  Open request file
+</button>
+
+ ❯ src/views/Pay.requestFile.test.tsx:184:87
+    182|     await act(async () => { read.resolve(bytes(invoices.serializePayme…
+    183|
+    184|     expect(screen.queryByRole('button', { name: 'Open request file', h…
+       |                                                                                       ^
+    185|     expect(screen.queryByText('Request file is ready for review.')).to…
+    186|     expect(screen.queryByRole('heading', { name: 'Review payment' })).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=absent)
+ FAIL  src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=retained)
+AssertionError: expected <button type="button" …(1)></button> to be null
+
+- Expected:
+null
+
++ Received:
+<button
+  class="btn"
+  type="button"
+>
+  Open request file
+</button>
+
+ ❯ src/views/Pay.requestFile.test.tsx:203:87
+    201|     act(() => { notifyAppLock('idle'); });
+    202|     expect(getSessionPublic()).toBe(session);
+    203|     expect(screen.queryByRole('button', { name: 'Open request file', h…
+       |                                                                                       ^
+    204|     expect(screen.queryByText('Request file is ready for review.')).to…
+    205|     fireEvent.click(open);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 13 skipped (17)
+   Start at  22:36:48
+   Duration  5.31s (import 38%, transform 30%, environment 16%, tests 16%)

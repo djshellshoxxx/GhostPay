@@ -122,8 +122,15 @@ export async function simulateCall(
     return 'unavailable';
   }
   if (typeof r !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(r)) return 'unavailable';
-  if (expectBool && r.length === 66 && BigInt(r) === 0n) {
-    throw new UserFacingError({ key: 'error.txGuard.blockedADryRunSaysTheTokenRefusesThisTransfer' });
+  if (expectBool && r !== '0x') {
+    // Legacy ERC-20 calls may return no data. A nonempty ABI bool must be one 32-byte
+    // word containing exactly 0 or 1; do not treat malformed nonzero words as success.
+    if (r.length !== 66) return 'unavailable';
+    const answer = BigInt(r);
+    if (answer === 0n) {
+      throw new UserFacingError({ key: 'error.txGuard.blockedADryRunSaysTheTokenRefusesThisTransfer' });
+    }
+    if (answer !== 1n) return 'unavailable';
   }
   return 'ok';
 }

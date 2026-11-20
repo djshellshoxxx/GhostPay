@@ -1,0 +1,16 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "180s",
+    "node",
+    "--max-old-space-size=1536",
+    "node_modules/typescript/bin/tsc",
+    "-p",
+    "apps/web/tsconfig.json",
+    "--noEmit"
+  ],
+  "exit_code": 2,
+  "elapsed_seconds": 23.07,
+  "source_commit": "f472030a1d9a993db1ba7a1a33f9a208c28ebf13"
+}

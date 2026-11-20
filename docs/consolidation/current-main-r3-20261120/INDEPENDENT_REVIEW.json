@@ -1,0 +1,46 @@
+{
+  "recorded_at_utc": "2026-11-20T23:19:24.252591+00:00",
+  "reviewer": "/root/r3_branch_recovery",
+  "source_pins": {
+    "main": "bfebea0acf213a113d2740366fd592042661ca67",
+    "307": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+    "325": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "325_merge": "394793b1276aeac337aedde30499548bb57eadf9",
+    "claim": "106524ee42bbb860aa0283679d4850d2194509e3",
+    "composition": "b8fe24507e7f8100c70287f86b0932f9c83f31aa"
+  },
+  "composition_tree": "9ca0b6d25c5ec46e4f3302164578ddcb744bb9bd",
+  "325_merge_tree_equals_325": true,
+  "325_merge_parents": [
+    "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+    "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a"
+  ],
+  "composition_parents": [
+    "106524ee42bbb860aa0283679d4850d2194509e3",
+    "bfebea0acf213a113d2740366fd592042661ca67"
+  ],
+  "claim_changed_paths": [
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "nonregistry_unexpected": [],
+  "ownership_ordered_preservation": {
+    "claim": [
+      true,
+      1118,
+      1118
+    ],
+    "main": [
+      true,
+      748,
+      748
+    ],
+    "sweep": [
+      true,
+      1095,
+      1095
+    ]
+  },
+  "conflict_markers": [],
+  "verdict": "APPROVE FOR PUBLICATION; exact combined-head CI still required before main promotion",
+  "tests_executed": false
+}

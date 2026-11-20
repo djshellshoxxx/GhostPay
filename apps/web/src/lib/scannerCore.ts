@@ -100,7 +100,11 @@ export class ScanSession {
       if (this.cancelled) break;
       const log = logs[i] as WireLog;
       const key = memoKey(log);
-      let hit = key === undefined ? undefined : this.memo.get(key);
+      // Session keys were validated at construction. Unsupported schemes cannot match and need no curve work.
+      // Keep core-crypto's omitted-scheme compatibility and the common accounting/progress path below.
+      let hit: AnnouncementCheck | undefined = log.schemeId !== undefined && log.schemeId !== 1n
+        ? { matches: false }
+        : key === undefined ? undefined : this.memo.get(key);
       if (hit === undefined) {
         hit = checkAnnouncement(log, secret, this.spend, log.skipTag === true ? { ignoreViewTag: true } : {});
         if (key !== undefined) {

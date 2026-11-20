@@ -15,6 +15,7 @@ export function formatUnits(value: bigint, decimals: number): string {
 
 /** Strictly parses a decimal string into base units. Returns undefined for anything unexpected (never rounds). */
 export function parseUnits(text: string, decimals: number): bigint | undefined {
+  if (typeof text !== 'string' || !Number.isInteger(decimals) || decimals < 0 || decimals > 36) return undefined;
   const m = DECIMAL_RE.exec(text.trim());
   if (m === null) return undefined;
   const whole = m[1] as string;

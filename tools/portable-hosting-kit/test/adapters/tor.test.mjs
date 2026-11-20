@@ -8,6 +8,7 @@ import { generateTorProfile, DEFAULT_TOR_BASE_IMAGE } from '../../src/adapters/t
 import { onionHost, text, directives, throwsCode } from './fixtures.mjs';
 
 const HS = '/var/lib/tor/ghostpay';
+const ONION = 'http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion';
 
 test('system mode: fragment with v3 service, loopback target and DoS defenses', () => {
   const r = generateTorProfile({ hostConfig: onionHost(), hiddenServiceDir: HS, target: 'host-listener' });
@@ -104,8 +105,25 @@ test('wrong transport and malformed host configs are refused', () => {
   throwsCode(() => generateTorProfile({ hostConfig: onionHost({ listen: { kind: 'tcp', host: '0.0.0.0', port: 8080 } }), hiddenServiceDir: HS, target: 'host-listener' }), 'E_NETWORK_SCOPE');
   throwsCode(() => generateTorProfile({ hostConfig: onionHost({ mirrorLabel: 'evil\nHiddenServiceSingleHopMode 1' }), hiddenServiceDir: HS, target: 'host-listener' }), 'E_CONFIG');
   throwsCode(() => generateTorProfile(/** @type {any} */ ({ hiddenServiceDir: HS, target: 'host-listener' })), 'E_USAGE');
-  const ok = generateTorProfile({ hostConfig: onionHost({ publicOrigin: `http://${'a'.repeat(56)}.onion` }), hiddenServiceDir: HS, target: 'host-listener' });
-  assert.match(text(ok.files, 'tor/README-TOR.md'), /aaaa\.onion|a{56}\.onion/);
+  const ok = generateTorProfile({ hostConfig: onionHost({ publicOrigin: ONION }), hiddenServiceDir: HS, target: 'host-listener' });
+  assert.deepEqual(
+    text(ok.files, 'tor/README-TOR.md').split('\n').filter((line) => line.startsWith('- Onion origin: ')),
+    [`- Onion origin: ${ONION}`],
+  );
+});
+
+test('direct Tor adapter calls validate the onion checksum and advertised port', () => {
+  const run = (/** @type {string} */ publicOrigin, virtualPort = 80) => generateTorProfile({
+    hostConfig: onionHost({ publicOrigin }), hiddenServiceDir: HS, target: 'host-listener', virtualPort,
+  });
+  for (const origin of [
+    `http://${'a'.repeat(56)}.onion`, ONION.toUpperCase(),
+    ONION.replace('http:', 'https:'), `${ONION}:80`, `${ONION}:8080`, `${ONION}/`,
+  ]) {
+    throwsCode(() => run(origin), 'E_CONFIG');
+  }
+  throwsCode(() => run(ONION, 8080), 'E_CONFIG', /virtualPort must be 80/);
+  assert.match(text(run(ONION).files, 'tor/onion-service.torrc'), /^HiddenServicePort 80 /m);
 });
 
 test('HiddenServiceDir must be absolute, normalized and injection-free', () => {

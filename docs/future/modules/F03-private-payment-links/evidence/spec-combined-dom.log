@@ -1,0 +1,125 @@
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay/apps/web
+
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=false) and opens only after explicit review 472ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > stages the unchanged signed invoice locally (encrypted=true) and opens only after explicit review 148ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > uses the existing passphrase flow without previewing private fields 1968ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > accepts a second file after forgetting the first without refreshing the page 330ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > clears an earlier preview before rejecting an oversized replacement without reading it 92ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > cannot let an older file read replace a newer QR preview 189ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > choosing a file supersedes an older QR parser result 135ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after clear invalidation 79ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after close invalidation 69ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after hidden invalidation 66ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > does not stage a file that finishes after session invalidation 72ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=absent) 61ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a pending file read on app lock (seller session=retained) 57ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=absent) 75ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > invalidates a staged file preview on app lock (seller session=retained) 81ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > discards a pending file when pinned signer policy changes without unmounting Pay 58ms
+ ✓ src/views/Pay.requestFile.test.tsx > Pay request-file intake > preserves the lean invoice gate when a request file contains a full-profile invoice 45ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > previews a valid signed fragment locally and opens the ordinary review only after confirmation 496ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > previews a valid signed link locally and opens the ordinary review only after confirmation 173ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > imports its own app-generated invoice QR from deployment path /GhostPay/index.html 104ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > imports its own app-generated invoice QR from deployment path /GhostPay.v1/checkout.page.html 107ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > imports its own app-generated invoice QR from deployment path /deploy/nestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednestednested/index.html 137ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /./ 106ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /../ 97ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%2e/ 105ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%2E%2e/ 244ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /.%2e/ 105ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%2e./ 76ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /%252e%252e/ 84ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /safe/%2f../ 73ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /safe/%5c../ 100ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects traversal or a different deployment path /another/index.html 104ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /%252e%252e/index.html 72ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /safe%2f../index.html 65ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /%5c../index.html 76ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /bad%zz/index.html 70ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /%00/index.html 73ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects unsafe or oversized path even when the current base uses it: /aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 74ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix javascript:alert(1) without navigation or wallet access 72ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix data:text/html,secret without navigation or wallet access 86ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test.evil/ without navigation or wallet access 79ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test@evil.test/ without navigation or wallet access 66ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test:443/ without navigation or wallet access 88ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test/?secret=1 without navigation or wallet access 102ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix http://app.test/ without navigation or wallet access 87ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix https://app.test/../ without navigation or wallet access 71ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects hostile URL prefix prefix without navigation or wallet access 74ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 58ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 60ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 61ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 149ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > rejects malformed or unrelated input without a preview 82ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > discards the previous preview before new oversized input is rejected 95ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > uses the existing passphrase prompt without showing private fields 1638ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late ordinary parser result after confirming QR then changing seller session 100ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > keeps newer invoice B when an old confirmed QR parse A returns after session change 220ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not activate an old preview during coalesced collapse and reopening 170ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not revive a pending parse when collapse and reopening coalesce before toggle 79ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after collapse changes 87ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after reset changes 108ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after session changes 79ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after fragment changes 101ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after unmount changes 62ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > does not install a late preview after input changes 90ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after collapse changes 93ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after reset changes 84ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after session changes 77ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after fragment changes 93ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > stops late camera permission tracks after unmount changes 77ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > invalidates a pending QR preview when pinned signer settings change without unmounting Pay 94ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake > clears an already displayed preview when disclosure closes or session changes 192ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > previews a forged (re-signed-less) invoice as invalid and keeps payment blocked after opening 126ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > rejects a QR whose encoding was corrupted in transit without any preview 89ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > opens an expired scanned invoice only into the ordinary review, which blocks it 128ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links > never reaches a wallet merely because a valid QR was scanned and opened 149ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > explains a {"format":"ghostpay-settings","v":1,"settings":{"autoClearFragment":true,"delayMaxSec":900,"delayMinSec":120,"lockTimeoutMin":15,"theme":"dark"}} QR without a preview, navigation or wallet access 119ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > explains a ethereum:0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359@1?value=1 QR without a preview, navigation or wallet access 471ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > explains a bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq QR without a preview, navigation or wallet access 90ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: other GhostPay QR families are named, never acted on > keeps the generic guidance for text that is not any GhostPay QR 76ms
+ ✓ src/views/Pay.invoiceQr.test.tsx > Pay invoice QR intake: multi-part invoice codes > assembles out-of-order parts locally and previews the invoice only once complete 176ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > reads only an explicitly selected file and passes its exact fragment, independent of MIME and filename 96ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > allows the same file to be selected again without retaining native input state 21ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects declared overflow before calling the file reader and invalidates the preceding preview first 22ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 10ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 12ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 9ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > rejects an empty or invalid wrapper without exposing contents 8ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > checks actual bytes after a declared-small read 8ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > refuses truncated reads and malformed UTF-8 instead of repairing them 13ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > does not expose reader or consumer exception details 14ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > keeps the latest selected request when an older read resolves later 17ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > an invalid replacement discards an older pending read 16ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > honors a parent revision changed by a newer QR input 14ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > invalidates a read when the parent scope changes and when the seller session locks without a render 14ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > invalidates a close/reopen cycle even when native toggle events coalesce 7ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > aborts an active consumer and clears its preview on hide 73ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > does not start reads in a hidden document or closed disclosure 12ms
+ ✓ src/components/PaymentRequestFileInput.test.tsx > local payment request file intake > aborts a pending consumer on unmount and honors explicit consumer refusal 70ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > exports the unchanged original fragment only after explicit action, with a generic filename 328ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > exports the current invoice after a new request replaces it 32ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > reports a blocked download without exposing content or claiming that a file was saved 73ms
+ ✓ src/components/PaymentRequestDownload.test.tsx > payment request download > refuses invalid request data before invoking the download helper and clears failure for a new invoice 51ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > classifies every current English key exactly once without unknown or duplicate policy keys 8ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries 2ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > keeps all critical text English in the es draft despite complete translated content 159ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > keeps all critical text English in the ar draft despite complete translated content 66ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > keeps all critical text English in the ja draft despite complete translated content 65ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > retains actual Spanish neutral labels, neutral plurals, and locale display formatting 20ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > does not accept a catalog metadata reviewed claim as native-review authority 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > uses the actual catalog locale registry decision, not approval inferred from a regional tag 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > still skips broken reviewed messages and diagnoses the English fallback once 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > always has bundled source critical text even when a caller omits or replaces the English layer 1ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > refuses draft text for an unknown runtime key before the classification census can run 0ms
+ ✓ src/i18n/securityKeys.test.ts > critical translation native-review boundary (IN-3) > reports policy fallback once and gives pseudo locales no production review exemption 0ms
+
+ Test Files  5 passed (5)
+      Tests  114 passed (114)
+   Start at  22:42:13
+   Duration  26.50s (tests 55%, import 19%, environment 15%, transform 10%)
+
+    Isolate  5 workers spawned · ~997ms startup each (spawn + environment, per file)
+             at least ~3.99s faster with isolate: false — reuses workers across files instead of one per file

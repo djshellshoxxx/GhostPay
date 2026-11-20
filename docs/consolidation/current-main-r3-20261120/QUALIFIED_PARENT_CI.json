@@ -1,0 +1,1123 @@
+{
+  "started_at_utc": "2026-11-20T23:10:22.276Z",
+  "repository": "djshellshoxxx/GhostPay",
+  "main_at_start": "bfebea0acf213a113d2740366fd592042661ca67",
+  "items": [
+    {
+      "pr": 307,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/307",
+      "head": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "head_branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "base_branch": "main",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": false,
+      "observed_at_utc": "2026-11-20T23:10:23.515Z",
+      "counts": {
+        "success": 38,
+        "skipped": 3
+      },
+      "checks": {
+        "items": [
+          {
+            "id": 136545065242,
+            "name": "typescript",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136545065242",
+            "started_at": "2026-11-20T21:24:27Z",
+            "completed_at": "2026-11-20T21:24:30Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136541938002,
+            "name": "contracts",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136541938002",
+            "started_at": "2026-11-20T21:24:27Z",
+            "completed_at": "2026-11-20T21:24:30Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136486290756,
+            "name": "Deploy to GitHub Pages",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "skipped",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255943/job/136486290756",
+            "started_at": "2026-11-20T18:29:52Z",
+            "completed_at": "2026-11-20T18:29:51Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136486290642,
+            "name": "Post-deployment smoke test",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "skipped",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255943/job/136486290642",
+            "started_at": "2026-11-20T18:29:52Z",
+            "completed_at": "2026-11-20T18:29:51Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325169,
+            "name": "ts-test (rest-2)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325169",
+            "started_at": "2026-11-20T20:07:39Z",
+            "completed_at": "2026-11-20T20:19:53Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325130,
+            "name": "ts-test (rest-1)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325130",
+            "started_at": "2026-11-20T19:49:23Z",
+            "completed_at": "2026-11-20T19:50:59Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325110,
+            "name": "ts-test (confidential-contracts)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325110",
+            "started_at": "2026-11-20T20:13:03Z",
+            "completed_at": "2026-11-20T20:16:11Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325108,
+            "name": "ts-typecheck",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325108",
+            "started_at": "2026-11-20T20:06:37Z",
+            "completed_at": "2026-11-20T20:09:45Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325102,
+            "name": "ts-test (rest-0)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325102",
+            "started_at": "2026-11-20T19:44:45Z",
+            "completed_at": "2026-11-20T19:47:20Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325090,
+            "name": "contracts-coverage",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325090",
+            "started_at": "2026-11-20T19:18:26Z",
+            "completed_at": "2026-11-20T19:20:30Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325088,
+            "name": "ts-test-relayer",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325088",
+            "started_at": "2026-11-20T20:00:50Z",
+            "completed_at": "2026-11-20T20:01:45Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325080,
+            "name": "ts-test (btc-silent-payments)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325080",
+            "started_at": "2026-11-20T19:15:46Z",
+            "completed_at": "2026-11-20T19:16:42Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325068,
+            "name": "ts-test (web)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325068",
+            "started_at": "2026-11-20T20:09:03Z",
+            "completed_at": "2026-11-20T20:18:54Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325021,
+            "name": "contracts-static",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325021",
+            "started_at": "2026-11-20T20:13:41Z",
+            "completed_at": "2026-11-20T20:13:56Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458325004,
+            "name": "ts-check",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458325004",
+            "started_at": "2026-11-20T20:02:16Z",
+            "completed_at": "2026-11-20T20:04:41Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324992,
+            "name": "ts-test (core-crypto)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324992",
+            "started_at": "2026-11-20T19:34:25Z",
+            "completed_at": "2026-11-20T19:35:36Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324978,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324978",
+            "started_at": "2026-11-20T19:49:22Z",
+            "completed_at": "2026-11-20T19:51:07Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324947,
+            "name": "lean-candidate",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324947",
+            "started_at": "2026-11-20T19:56:53Z",
+            "completed_at": "2026-11-20T20:00:41Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324863,
+            "name": "e2e (full)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324863",
+            "started_at": "2026-11-20T19:47:20Z",
+            "completed_at": "2026-11-20T19:50:24Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324862,
+            "name": "e2e (lean)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324862",
+            "started_at": "2026-11-20T18:54:43Z",
+            "completed_at": "2026-11-20T18:58:31Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324833,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324833",
+            "started_at": "2026-11-20T19:00:32Z",
+            "completed_at": "2026-11-20T19:01:18Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324823,
+            "name": "contracts-slither",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324823",
+            "started_at": "2026-11-20T19:15:46Z",
+            "completed_at": "2026-11-20T19:16:14Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324817,
+            "name": "contracts-test",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324817",
+            "started_at": "2026-11-20T19:35:22Z",
+            "completed_at": "2026-11-20T19:36:28Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136458324816,
+            "name": "ts-lint",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136458324816",
+            "started_at": "2026-11-20T19:46:12Z",
+            "completed_at": "2026-11-20T19:52:22Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136456139788,
+            "name": "CodeQL",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/runs/136456139788",
+            "started_at": "2026-11-20T17:34:52Z",
+            "completed_at": "2026-11-20T17:34:56Z",
+            "app": "github-advanced-security"
+          },
+          {
+            "id": 136419709001,
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "skipped",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255943/job/136419709001",
+            "started_at": "2026-11-20T16:31:36Z",
+            "completed_at": "2026-11-20T16:31:36Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419708160,
+            "name": "CLI (macos-latest)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256473/job/136419708160",
+            "started_at": "2026-11-20T17:15:38Z",
+            "completed_at": "2026-11-20T17:21:34Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419708073,
+            "name": "CLI (windows-latest)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256473/job/136419708073",
+            "started_at": "2026-11-20T17:34:06Z",
+            "completed_at": "2026-11-20T17:41:39Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419707553,
+            "name": "CLI (ubuntu-24.04)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256473/job/136419707553",
+            "started_at": "2026-11-20T17:35:17Z",
+            "completed_at": "2026-11-20T17:41:48Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419707222,
+            "name": "secrets-and-egress",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136419707222",
+            "started_at": "2026-11-20T17:47:57Z",
+            "completed_at": "2026-11-20T17:48:11Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419707083,
+            "name": "qualify",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256451/job/136419707083",
+            "started_at": "2026-11-20T17:45:41Z",
+            "completed_at": "2026-11-20T17:52:12Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419706993,
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256522/job/136419706993",
+            "started_at": "2026-11-20T17:39:24Z",
+            "completed_at": "2026-11-20T17:43:35Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419706773,
+            "name": "Pages artifact on anvil (browser)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255943/job/136419706773",
+            "started_at": "2026-11-20T18:24:58Z",
+            "completed_at": "2026-11-20T18:29:51Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419706487,
+            "name": "changes",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974/job/136419706487",
+            "started_at": "2026-11-20T17:38:40Z",
+            "completed_at": "2026-11-20T17:38:45Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419706042,
+            "name": "Build and verify the Pages site",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255943/job/136419706042",
+            "started_at": "2026-11-20T17:51:26Z",
+            "completed_at": "2026-11-20T17:53:36Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419705999,
+            "name": "kit",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255816/job/136419705999",
+            "started_at": "2026-11-20T17:48:28Z",
+            "completed_at": "2026-11-20T17:49:24Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419705487,
+            "name": "qualify-ghostpay-web",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255816/job/136419705487",
+            "started_at": "2026-11-20T17:35:06Z",
+            "completed_at": "2026-11-20T17:38:37Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419705042,
+            "name": "integration (anvil + bitcoind regtest + solana-test-validator)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255762/job/136419705042",
+            "started_at": "2026-11-20T17:44:38Z",
+            "completed_at": "2026-11-20T17:50:07Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419664146,
+            "name": "Analyze (python)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774241768/job/136419664146",
+            "started_at": "2026-11-20T18:34:49Z",
+            "completed_at": "2026-11-20T18:35:37Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419662810,
+            "name": "Analyze (javascript-typescript)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774241768/job/136419662810",
+            "started_at": "2026-11-20T17:43:38Z",
+            "completed_at": "2026-11-20T17:45:59Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136419662801,
+            "name": "Analyze (actions)",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774241768/job/136419662801",
+            "started_at": "2026-11-20T17:34:19Z",
+            "completed_at": "2026-11-20T17:35:03Z",
+            "app": "github-actions"
+          }
+        ],
+        "total_count": 41,
+        "page_count": 1
+      },
+      "workflows": {
+        "items": [
+          {
+            "id": 44774256473,
+            "name": "CLI operator qualification",
+            "path": ".github/workflows/cli-operator.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256473",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T17:41:48Z"
+          },
+          {
+            "id": 44774256522,
+            "name": "Beta acceptance",
+            "path": ".github/workflows/beta-acceptance.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256522",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T17:43:36Z"
+          },
+          {
+            "id": 44774255816,
+            "name": "Hosting kit",
+            "path": ".github/workflows/hosting-kit.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255816",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T17:49:25Z"
+          },
+          {
+            "id": 44774255762,
+            "name": "Integration",
+            "path": ".github/workflows/integration.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255762",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T17:50:08Z"
+          },
+          {
+            "id": 44774256451,
+            "name": "Tor static hosting",
+            "path": ".github/workflows/tor-static.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774256451",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T17:52:12Z"
+          },
+          {
+            "id": 44774255943,
+            "name": "Pages",
+            "path": ".github/workflows/pages.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255943",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T18:29:52Z"
+          },
+          {
+            "id": 44774255974,
+            "name": "CI",
+            "path": ".github/workflows/ci.yml",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774255974",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:35Z",
+            "updated_at": "2026-11-20T21:24:31Z"
+          },
+          {
+            "id": 44774241768,
+            "name": "PR #307",
+            "path": "dynamic/github-code-scanning/codeql",
+            "head_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+            "event": "dynamic",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44774241768",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T16:31:30Z",
+            "updated_at": "2026-11-20T18:35:38Z"
+          }
+        ],
+        "total_count": 8,
+        "page_count": 1
+      },
+      "statuses": {
+        "items": [
+          {
+            "id": 59490371463,
+            "context": "security/snyk (djshellshoxxx)",
+            "state": "success",
+            "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/402944c0-f7b9-47a7-873c-24f3fde62377",
+            "updated_at": "2026-11-20T16:31:46Z"
+          }
+        ],
+        "total_count": 1,
+        "page_count": 1
+      }
+    },
+    {
+      "pr": 325,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/325",
+      "head": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "head_branch": "integration/ghostpay-sweep-consent-20261120",
+      "base_branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "state": "open",
+      "merged": false,
+      "draft": true,
+      "mergeable": true,
+      "observed_at_utc": "2026-11-20T23:10:23.378Z",
+      "counts": {
+        "success": 33,
+        "skipped": 3
+      },
+      "checks": {
+        "items": [
+          {
+            "id": 136590900572,
+            "name": "contracts",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136590900572",
+            "started_at": "2026-11-20T22:51:08Z",
+            "completed_at": "2026-11-20T22:51:11Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136590215419,
+            "name": "typescript",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136590215419",
+            "started_at": "2026-11-20T22:46:25Z",
+            "completed_at": "2026-11-20T22:46:28Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136506699670,
+            "name": "Deploy to GitHub Pages",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "skipped",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858976/job/136506699670",
+            "started_at": "2026-11-20T19:07:45Z",
+            "completed_at": "2026-11-20T19:07:45Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136506699240,
+            "name": "Post-deployment smoke test",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "skipped",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858976/job/136506699240",
+            "started_at": "2026-11-20T19:07:45Z",
+            "completed_at": "2026-11-20T19:07:45Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505547339,
+            "name": "ts-test (confidential-contracts)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505547339",
+            "started_at": "2026-11-20T21:33:53Z",
+            "completed_at": "2026-11-20T21:37:16Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505547306,
+            "name": "ts-test (rest-1)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505547306",
+            "started_at": "2026-11-20T21:47:04Z",
+            "completed_at": "2026-11-20T21:48:20Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505547135,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505547135",
+            "started_at": "2026-11-20T21:47:58Z",
+            "completed_at": "2026-11-20T21:49:45Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505547111,
+            "name": "ts-test (core-crypto)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505547111",
+            "started_at": "2026-11-20T21:33:12Z",
+            "completed_at": "2026-11-20T21:34:09Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505547001,
+            "name": "ts-test (web)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505547001",
+            "started_at": "2026-11-20T21:09:25Z",
+            "completed_at": "2026-11-20T21:18:04Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546949,
+            "name": "ts-test (btc-silent-payments)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546949",
+            "started_at": "2026-11-20T21:16:31Z",
+            "completed_at": "2026-11-20T21:17:25Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546924,
+            "name": "ts-test (rest-2)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546924",
+            "started_at": "2026-11-20T21:32:17Z",
+            "completed_at": "2026-11-20T21:44:13Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546877,
+            "name": "ts-test (rest-0)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546877",
+            "started_at": "2026-11-20T21:13:25Z",
+            "completed_at": "2026-11-20T21:17:06Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546805,
+            "name": "contracts-test",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546805",
+            "started_at": "2026-11-20T21:06:32Z",
+            "completed_at": "2026-11-20T21:07:52Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546763,
+            "name": "ts-test-relayer",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546763",
+            "started_at": "2026-11-20T21:21:12Z",
+            "completed_at": "2026-11-20T21:22:13Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546747,
+            "name": "contracts-coverage",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546747",
+            "started_at": "2026-11-20T21:02:17Z",
+            "completed_at": "2026-11-20T21:06:14Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546727,
+            "name": "e2e (lean)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546727",
+            "started_at": "2026-11-20T21:16:35Z",
+            "completed_at": "2026-11-20T21:20:20Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546715,
+            "name": "contracts-static",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546715",
+            "started_at": "2026-11-20T20:57:18Z",
+            "completed_at": "2026-11-20T20:57:38Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546695,
+            "name": "contracts-slither",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546695",
+            "started_at": "2026-11-20T20:57:01Z",
+            "completed_at": "2026-11-20T20:57:29Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546664,
+            "name": "ts-check",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546664",
+            "started_at": "2026-11-20T20:49:43Z",
+            "completed_at": "2026-11-20T20:52:06Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546660,
+            "name": "ts-lint",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546660",
+            "started_at": "2026-11-20T20:57:08Z",
+            "completed_at": "2026-11-20T21:02:40Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546652,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546652",
+            "started_at": "2026-11-20T20:46:33Z",
+            "completed_at": "2026-11-20T20:47:40Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546628,
+            "name": "lean-candidate",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546628",
+            "started_at": "2026-11-20T20:35:22Z",
+            "completed_at": "2026-11-20T20:40:57Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546599,
+            "name": "e2e (full)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546599",
+            "started_at": "2026-11-20T20:40:39Z",
+            "completed_at": "2026-11-20T20:44:20Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136505546548,
+            "name": "ts-typecheck",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136505546548",
+            "started_at": "2026-11-20T20:37:03Z",
+            "completed_at": "2026-11-20T20:39:17Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449847287,
+            "name": "CLI (ubuntu-24.04)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858879/job/136449847287",
+            "started_at": "2026-11-20T18:40:57Z",
+            "completed_at": "2026-11-20T18:44:34Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449846928,
+            "name": "CLI (macos-latest)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858879/job/136449846928",
+            "started_at": "2026-11-20T17:50:18Z",
+            "completed_at": "2026-11-20T17:57:24Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449846649,
+            "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "skipped",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858976/job/136449846649",
+            "started_at": "2026-11-20T17:23:37Z",
+            "completed_at": "2026-11-20T17:23:37Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449846469,
+            "name": "CLI (windows-latest)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858879/job/136449846469",
+            "started_at": "2026-11-20T18:48:25Z",
+            "completed_at": "2026-11-20T18:55:37Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449844533,
+            "name": "Build and verify the Pages site",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858976/job/136449844533",
+            "started_at": "2026-11-20T19:05:16Z",
+            "completed_at": "2026-11-20T19:07:44Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449844342,
+            "name": "kit",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858914/job/136449844342",
+            "started_at": "2026-11-20T19:13:49Z",
+            "completed_at": "2026-11-20T19:14:36Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449844263,
+            "name": "changes",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136449844263",
+            "started_at": "2026-11-20T19:05:32Z",
+            "completed_at": "2026-11-20T19:05:38Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449843959,
+            "name": "Pages artifact on anvil (browser)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858976/job/136449843959",
+            "started_at": "2026-11-20T18:46:14Z",
+            "completed_at": "2026-11-20T18:50:52Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449843779,
+            "name": "secrets-and-egress",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865/job/136449843779",
+            "started_at": "2026-11-20T18:52:26Z",
+            "completed_at": "2026-11-20T18:52:43Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449843752,
+            "name": "qualify",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858877/job/136449843752",
+            "started_at": "2026-11-20T19:07:12Z",
+            "completed_at": "2026-11-20T19:12:19Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449843735,
+            "name": "beta acceptance (lib + cli + browser on anvil)",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858897/job/136449843735",
+            "started_at": "2026-11-20T18:55:31Z",
+            "completed_at": "2026-11-20T18:59:36Z",
+            "app": "github-actions"
+          },
+          {
+            "id": 136449843596,
+            "name": "qualify-ghostpay-web",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858914/job/136449843596",
+            "started_at": "2026-11-20T18:52:10Z",
+            "completed_at": "2026-11-20T18:54:43Z",
+            "app": "github-actions"
+          }
+        ],
+        "total_count": 36,
+        "page_count": 1
+      },
+      "workflows": {
+        "items": [
+          {
+            "id": 44782858976,
+            "name": "Pages",
+            "path": ".github/workflows/pages.yml",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858976",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T17:23:36Z",
+            "updated_at": "2026-11-20T19:07:45Z"
+          },
+          {
+            "id": 44782858897,
+            "name": "Beta acceptance",
+            "path": ".github/workflows/beta-acceptance.yml",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858897",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T17:23:36Z",
+            "updated_at": "2026-11-20T18:59:37Z"
+          },
+          {
+            "id": 44782858914,
+            "name": "Hosting kit",
+            "path": ".github/workflows/hosting-kit.yml",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858914",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T17:23:36Z",
+            "updated_at": "2026-11-20T19:14:37Z"
+          },
+          {
+            "id": 44782858877,
+            "name": "Tor static hosting",
+            "path": ".github/workflows/tor-static.yml",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858877",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T17:23:36Z",
+            "updated_at": "2026-11-20T19:12:19Z"
+          },
+          {
+            "id": 44782858879,
+            "name": "CLI operator qualification",
+            "path": ".github/workflows/cli-operator.yml",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858879",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T17:23:36Z",
+            "updated_at": "2026-11-20T18:55:38Z"
+          },
+          {
+            "id": 44782858865,
+            "name": "CI",
+            "path": ".github/workflows/ci.yml",
+            "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "event": "pull_request",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44782858865",
+            "run_attempt": 1,
+            "created_at": "2026-11-20T17:23:36Z",
+            "updated_at": "2026-11-20T22:51:12Z"
+          }
+        ],
+        "total_count": 6,
+        "page_count": 1
+      },
+      "statuses": {
+        "items": [
+          {
+            "id": 59495168823,
+            "context": "security/snyk (djshellshoxxx)",
+            "state": "success",
+            "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/946d0ab2-fd72-489f-8970-0f910ccedc85",
+            "updated_at": "2026-11-20T17:23:42Z"
+          }
+        ],
+        "total_count": 1,
+        "page_count": 1
+      }
+    }
+  ],
+  "errors": [],
+  "completed_at_utc": "2026-11-20T23:10:26.185Z",
+  "purpose": "Historical exact-head qualification before the #325 merge and current-main refresh. This does not qualify the new combined head."
+}

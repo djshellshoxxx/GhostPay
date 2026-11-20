@@ -1,0 +1,58 @@
+{
+  "observed_at": "2026-11-20 06:56:12 UTC",
+  "published_product_commit": "bd128598f1b4c5291dad5c003a4775ad47bbb888",
+  "source_tree": "e96e7876585150032a26ccf0947ea724b070c3ee",
+  "workflow_runs": [
+    {
+      "id": 44690682290,
+      "name": "Hosting kit",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 415,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682290/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682290/logs",
+      "workflow_id": 398745505
+    },
+    {
+      "id": 44690682321,
+      "name": "Beta acceptance",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 301,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682321/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682321/logs",
+      "workflow_id": 414091144
+    },
+    {
+      "id": 44690682381,
+      "name": "CLI operator qualification",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 282,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682381/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682381/logs",
+      "workflow_id": 412675588
+    },
+    {
+      "id": 44690682233,
+      "name": "Pages",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 296,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682233/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682233/logs",
+      "workflow_id": 392799214
+    },
+    {
+      "id": 44690682469,
+      "name": "CI",
+      "status": "pending",
+      "conclusion": null,
+      "run_number": 1548,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682469/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44690682469/logs",
+      "workflow_id": 391558649
+    }
+  ],
+  "limits": "Snapshot of queued/pending GitHub checks at the product checkpoint. This is not a successful CI or browser run; later documentation commits require their own exact-head status check."
+}

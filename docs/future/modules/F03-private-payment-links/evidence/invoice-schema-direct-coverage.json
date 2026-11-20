@@ -1,0 +1,19 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "180s",
+    "node",
+    "--max-old-space-size=1024",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "--coverage",
+    "--coverage.reportsDirectory=/tmp/ghostpay-f03-package-direct-coverage",
+    "--maxWorkers=1",
+    "--no-file-parallelism",
+    "--reporter=verbose"
+  ],
+  "exit_code": 124,
+  "elapsed_seconds": 180.04,
+  "source_commit": "f472030a1d9a993db1ba7a1a33f9a208c28ebf13"
+}

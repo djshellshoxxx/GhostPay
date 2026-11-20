@@ -1,0 +1,12 @@
+
+ RUN  v5.0.5 /workspace/scratch/82fb6102f244/GhostPay-tor/apps/web
+
+
+ Test Files  4 passed (4)
+      Tests  103 passed (103)
+   Start at  22:28:13
+   Duration  4.59s (import 54%, transform 30%, tests 16%)
+
+    Isolate  4 workers spawned · ~135ms startup each (spawn + environment, per file)
+             at least ~404ms faster with isolate: false — reuses workers across files instead of one per file
+

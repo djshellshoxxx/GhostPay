@@ -1,0 +1,9 @@
+{
+  "command": [
+    "node",
+    "scripts/i18n/check.mjs"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.4,
+  "source_commit": "e543d25fc7f3b65460518f4b3df4c513d34a1215"
+}
