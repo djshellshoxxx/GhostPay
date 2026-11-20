@@ -4,7 +4,9 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { WalletDisclosureProvider, useWalletDisclosure } from './WalletDisclosure';
-import { PrivacyProvider } from '../lib/privacyMode';
+import { PrivacyProvider, usePrivacy } from '../lib/privacyMode';
+import { PrivacyQuickHide } from './PrivacyQuickHide';
+import { SensitiveContent } from './SensitiveContent';
 import { notifyAppLock } from '../lib/appLock';
 import { connectWallet, sendViaWallet, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { clearSession } from '../lib/session';
@@ -30,6 +32,18 @@ function App(props: { readonly provider: MockWallet; readonly scope: object; rea
   return <PrivacyProvider enabled={props.private === true} scope={props.scope}>
     <WalletDisclosureProvider scope={props.scope}><Client provider={props.provider} /></WalletDisclosureProvider>
   </PrivacyProvider>;
+}
+
+function PrivateWallet(props: { readonly provider: MockWallet }): ReactNode {
+  const privacy = usePrivacy();
+  return <>
+    <header>
+      <input type="checkbox" role="switch" aria-label="Privacy mode" data-privacy-safe-control />
+      <button type="button" onClick={privacy.reveal}>Reveal details</button>
+      <PrivacyQuickHide />
+    </header>
+    <SensitiveContent><Client provider={props.provider} /></SensitiveContent>
+  </>;
 }
 
 describe('mounted wallet disclosure and real wallet entry points', () => {
@@ -88,6 +102,37 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     await screen.findByRole('dialog'); act(() => { notifyAppLock('manual'); });
     await screen.findByText('Cancelled'); expect(screen.queryByRole('dialog')).toBeNull();
     expect(provider.calls).toEqual([]);
+  });
+  it('quick hide restores focus only after the privacy control is no longer inert', async () => {
+    const provider = new MockWallet(); const scope = {};
+    render(<PrivacyProvider enabled scope={scope}><WalletDisclosureProvider scope={scope}>
+      <PrivateWallet provider={provider} />
+    </WalletDisclosureProvider></PrivacyProvider>);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Reveal details' }));
+    await user.click(screen.getByRole('button', { name: 'Connect', exact: true }));
+    await user.click(await screen.findByRole('button', { name: 'Continue to wallet' }));
+    await screen.findByText('Connected');
+    const connectedCalls = [...provider.calls];
+    await user.click(screen.getByRole('button', { name: 'Send', exact: true }));
+    await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+    const blockedFocus: string[] = [];
+    const recordFocus = (event: FocusEvent): void => {
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('[hidden], [inert]') !== null) {
+        blockedFocus.push(target.getAttribute('aria-label') ?? target.textContent ?? target.tagName);
+      }
+    };
+    document.addEventListener('focusin', recordFocus, true);
+    try {
+      await user.keyboard('{Alt>}{Shift>}H{/Shift}{/Alt}');
+      await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
+      expect(provider.calls).toEqual(connectedCalls);
+      expect(provider.sent).toBeUndefined();
+      expect(screen.queryByRole('button', { name: 'Send', exact: true })).toBeNull();
+      expect(blockedFocus).toEqual([]);
+      expect(document.activeElement).toBe(screen.getByRole('switch', { name: 'Privacy mode' }));
+    } finally { document.removeEventListener('focusin', recordFocus, true); }
   });
   it('route/scope changes and unmount cancel the prompt rather than keeping its approval alive', async () => {
     const provider = new MockWallet(); const mounted = render(<App provider={provider} scope={{}} />);
