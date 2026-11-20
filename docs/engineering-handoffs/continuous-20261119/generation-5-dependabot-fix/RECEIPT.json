@@ -1,0 +1,77 @@
+{
+  "schema": "ghostpay-dependabot-discovery/1",
+  "baseline": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "upstream_commit": "b246782cf7acd5625b5fd97df76ff6be6a5e7678",
+  "source_head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+  "candidate_original_blob": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+  "fixed_blob": "604a27d1f04a043461d0dd9adcbcfdf73234e845",
+  "parsed_delta_only": {
+    "package-ecosystem": "github-actions",
+    "removed": {
+      "directory": "/"
+    },
+    "added": {
+      "directories": [
+        "/",
+        "/.github/actions/*"
+      ]
+    }
+  },
+  "schedule": {
+    "interval": "weekly",
+    "day": "monday"
+  },
+  "groups": {
+    "actions": {
+      "patterns": [
+        "*"
+      ]
+    }
+  },
+  "open_pull_requests_limit": 5,
+  "npm_entry_unchanged": true,
+  "additional_existing_manifest_paths": [
+    {
+      "path": ".github/actions/release-verify/action.yml",
+      "sha256": "a50cd7ebe0ebb35160286c0f622b0bcc95928ac37f6849718f77e95255b7fb2e",
+      "blob": "b06b6ef7ce0a49dc50baf88faecf60c818e2ff13"
+    },
+    {
+      "path": ".github/actions/setup-forge/action.yml",
+      "sha256": "538a60d1e89fa45dcfd90c7e51ee49f59a337e06d641d9cbfac7af01da9f027a",
+      "blob": "3015f5ef9122e72d2452b1e78de960c970910618"
+    },
+    {
+      "path": ".github/actions/setup-node-libs/action.yml",
+      "sha256": "050439d4442f70544d482967e88ff2023031c46b7cf185560f6575954c4677a1",
+      "blob": "ebebe8c5a8a5edf6ba749dea76aeffdc02a23fe8"
+    }
+  ],
+  "upstream_comment_excluded": "Historical version-bump comment not copied; exact semantic configuration delta retained.",
+  "sources": [
+    "https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#directories-or-directory",
+    "https://github.com/dependabot/dependabot-core/blob/main/github_actions/lib/dependabot/github_actions/file_fetcher.rb"
+  ],
+  "limits": [
+    "Primary-source scope inspection plus YAML semantic comparison; no hosted Dependabot run claimed.",
+    "No schedule,dependency/action version,group,limit,workflow or runtime change."
+  ],
+  "configuration_commit": "ed98fde75f7d58f7f34ea6c7816ed95a81a42a07",
+  "validated_at_utc": "2026-11-20T00:27:32.016700+00:00",
+  "validation_log_sha256": "8a6a5249a72d1218ff09a36d1ff6494eb32a3cb3581a4b9d532e83bfb3bde7b2",
+  "validation_commands": [
+    {
+      "command": "Python 3/PyYAML safe_load: compare before/after mappings with only the authorized key substitution",
+      "exit": 0
+    },
+    {
+      "command": "Enumerate existing .github/actions/*/action.y*ml matches",
+      "exit": 0
+    },
+    {
+      "command": "bash scripts/check-actions-pinned.sh",
+      "exit": 0
+    }
+  ],
+  "primary_source_observation": "2026-11-20; public primary documentation and file_fetcher.rb main as displayed; no immutable upstream fetcher commit claimed"
+}

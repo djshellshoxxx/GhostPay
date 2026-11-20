@@ -1949,3 +1949,12 @@ Branch: `review/ghostpay-merchant-gen6-20261119`; base `3dc86fbc49e919e664230b63
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/`; temporary independent test probes may execute only in this isolated checkout and are preserved as evidence.
 Acceptance: independently reproduce nonzero invoices becoming paid solely through large tolerance; inspect zero-due/positive-payment/expiry/rejected-observation semantics; verify the exact final extracted source against baseline and original package tests, coverage, typecheck, lint and build. Identify actual consumers and scope, preserve configuration/gates, report actual source-pinned results.
 Boundaries: no remote writes, dependency/fee/feature activation or broad beta approval. Root owns integration and the existing hosted candidate; implementing worker owns the production patch.
+
+# Generation 5 composite-action dependency discovery — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`; separately authorized by root after functional uniqueness evidence.
+Branch: `fix/ghostpay-dependabot-composites-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`.
+Owned writes: `.github/dependabot.yml`, this additive claim, and `docs/engineering-handoffs/continuous-20261119/generation-5-dependabot-fix/`.
+Upstream: `b246782c`, retained at `claude/ghostpay-consolidation-9xhtxg-security` (`4894d0d8`).
+Acceptance: root Actions updater currently discovers root action.yml/yaml and workflows, leaving three existing nested composite actions outside configured update manifests. Selectively add `/.github/actions/*` to the existing Actions directory list, preserve weekly cadence/group/PR limit/npm configuration, parse both semantic mappings and inventory concrete target files. Root independently reviews current primary-source discovery semantics before publication. No added schedule, action/dependency bump, workflow/gate edit, remote-ref mutation or deployment.
