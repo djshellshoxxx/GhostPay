@@ -1,3 +1,26 @@
+# F03 hosted-browser qualification continuation — 2026-11-20
+
+Coordinator: ChatGPT `/root`; fresh investigator: `f03_hosted_browser`; independent repair
+reviewer: `f03_repair_review`. Canonical remote branch: `future/f03-private-payment-links`, PR #310.
+Local continuation branch: `continuation/f03-browser-qualification-20261120`.
+Base/head: `976d26ee791836c176431c8a5d0b825486f78caf`; current main remains
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`. Prior local-author history is preserved separately.
+
+Owned paths: coordinator owns `apps/web/e2e/payment-request-file.spec.ts`, this entry, and the
+F03 qualification/handoff update. Investigator owns `docs/future/modules/F03-private-payment-links/`
+`round2/HOSTED_BROWSER.md` and its bounded evidence. Product source is read-only unless an actual
+feature defect is established and ownership is explicitly extended before a repair.
+The repair reviewer owns only `round2/REPAIR_REVIEW.md`; its source review is independent of the
+investigator and coordinator. Root owns all test execution and publication.
+
+Acceptance: preserve and inspect original CI run `44692101562`, its full/lean browser failures,
+checkout/tree identity and actual error-context artifacts. Correct the demonstrated exact-text
+memo locator mismatch without weakening assertions or changing runtime behavior. Include latent
+memo and absence assertions that the earlier failures prevented from executing. Obtain independent
+review, typed lint/typecheck/test collection, then actual full/lean browser execution at the repair
+head. Retain existing assertions, guards and thresholds. Record actual outcomes and remaining
+gates. No unrelated branch integration, main merge or deployment.
+
 # F03 payment request interchange — 2026-11-19
 
 Coordinator: ChatGPT `/root`; workers: `request_codec`, `request_browser`, `request_qa`.

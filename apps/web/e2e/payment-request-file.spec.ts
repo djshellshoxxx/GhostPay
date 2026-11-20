@@ -57,6 +57,11 @@ async function uploadRequest(page: Page, buffer: Buffer): Promise<void> {
   });
 }
 
+function reviewMemo(page: Page, memo: string) {
+  return page.getByRole('region', { name: 'Review payment', exact: true })
+    .getByText(`Memo: ${memo}`, { exact: true });
+}
+
 async function localSnapshot(page: Page) {
   return page.evaluate(() => {
     const snapshot = (storage: Storage): Record<string, string | null> => Object.fromEntries(
@@ -92,7 +97,7 @@ for (const encrypt of [false, true]) {
     await page.getByRole('button', { name: OPEN, exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();
     await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();
-    await expect(page.getByText('Synthetic invoice file note', { exact: true })).toBeVisible();
+    await expect(reviewMemo(page, 'Synthetic invoice file note')).toBeVisible();
     expect((await localSnapshot(page)).wallet).toEqual(before.wallet);
     await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);
   });
@@ -111,18 +116,19 @@ test('passphrase request stays closed until the existing unlock flow succeeds', 
   await uploadRequest(page, bytes);
   await expect(page.getByText('This invoice needs a passphrase. Its header is unverified until it opens.', { exact: true })).toBeVisible();
   await expect(page.getByText('Synthetic confidential item', { exact: true })).toHaveCount(0);
-  await expect(page.getByText('Synthetic confidential note', { exact: true })).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('Synthetic confidential note');
   await page.getByRole('button', { name: OPEN, exact: true }).click();
   await page.getByLabel('Invoice passphrase', { exact: true }).fill('wrong synthetic passphrase');
   await page.getByRole('button', { name: 'Open invoice', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Open invoice', exact: true })).toBeEnabled({ timeout: 30_000 });
   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toHaveCount(0);
   await expect(page.getByText('Synthetic confidential item', { exact: true })).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('Synthetic confidential note');
   await page.getByLabel('Invoice passphrase', { exact: true }).fill(PASSPHRASE);
   await page.getByRole('button', { name: 'Open invoice', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText('Synthetic confidential item', { exact: true })).toBeVisible();
-  await expect(page.getByText('Synthetic confidential note', { exact: true })).toBeVisible();
+  await expect(reviewMemo(page, 'Synthetic confidential note')).toBeVisible();
   expect((await localSnapshot(page)).wallet.methods).toEqual([]);
 });
 
@@ -170,14 +176,14 @@ test('successive request files open their own signed terms without a page refres
   await expect(page.getByRole('button', { name: OPEN, exact: true })).toBeVisible();
   await page.getByRole('button', { name: OPEN, exact: true }).click();
   await expect(page.getByText('Fixed: 0.75 ETH', { exact: true })).toBeVisible();
-  await expect(page.getByText('Synthetic request B', { exact: true })).toBeVisible();
-  await expect(page.getByText('Synthetic request A', { exact: true })).toHaveCount(0);
+  await expect(reviewMemo(page, 'Synthetic request B')).toBeVisible();
+  await expect(reviewMemo(page, 'Synthetic request A')).toHaveCount(0);
   await page.getByRole('button', { name: 'Forget this invoice', exact: true }).click();
   await page.getByText('Scan an invoice QR', { exact: true }).click();
   await uploadRequest(page, first);
   await page.getByRole('button', { name: OPEN, exact: true }).click();
   await expect(page.getByText('Fixed: 0.5 ETH', { exact: true })).toBeVisible();
-  await expect(page.getByText('Synthetic request A', { exact: true })).toBeVisible();
+  await expect(reviewMemo(page, 'Synthetic request A')).toBeVisible();
   expect(page.url()).toBe(originalUrl);
   expect((await localSnapshot(page)).wallet.methods).toEqual([]);
 });
