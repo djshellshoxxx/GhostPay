@@ -50,17 +50,22 @@ describe('taxonomy', () => {
       undefined, null, false, true, 0, 1, NaN, Infinity, 1n, Symbol(knownKey),
       [], [knownKey], {}, { 0: knownKey, length: 1 }, new String(knownKey),
     ];
-    for (const input of inputs) expect(() => classify(input)).toThrow(new TypeError(message));
+    for (const input of inputs) {
+      expect(() => classify(input)).toThrow(TypeError);
+      expect(() => classify(input)).toThrow(new TypeError(message));
+    }
   });
   it.each(runtimeClassifiers)('does not coerce a stateful %s key before rejecting it', (_name, classify, knownKey, otherKey, message) => {
     const coerce = vi.fn().mockReturnValueOnce(knownKey).mockReturnValue(otherKey);
     const input = { [Symbol.toPrimitive]: coerce };
+    expect(() => classify(input)).toThrow(TypeError);
     expect(() => classify(input)).toThrow(new TypeError(message));
     expect(coerce).not.toHaveBeenCalled();
   });
   it.each(runtimeClassifiers)('does not inspect a hostile %s coercion hook', (_name, classify, _knownKey, _otherKey, message) => {
     const inspect = vi.fn(() => { throw new Error('private input must not escape'); });
     const input = Object.defineProperty({}, Symbol.toPrimitive, { get: inspect });
+    expect(() => classify(input)).toThrow(TypeError);
     expect(() => classify(input)).toThrow(new TypeError(message));
     expect(inspect).not.toHaveBeenCalled();
   });
