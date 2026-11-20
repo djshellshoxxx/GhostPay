@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LocalReceipt } from '../lib/payExec';
 import { RETENTION_KEY } from '../lib/metadataRetention';
 import { PaymentProofQr } from './PaymentRequestQr';
 
 const PROOF_POLICY = 'ghostpay.proof-preview-retention.v1';
-const RECEIPT: LocalReceipt = Object.freeze({
+const RECEIPT = Object.freeze<LocalReceipt>({
   kind: 'ghostpay-local-receipt', version: 1, chainId: 84532,
   txHash: `0x${'ab'.repeat(32)}`, router: `0x${'cd'.repeat(20)}`,
   token: 'native', gross: '100', fee: '1', net: '99', invoiceNonce: 'n'.repeat(32),
@@ -53,7 +53,7 @@ describe('included-payment proof presentation retention', () => {
     localStorage.setItem(RETENTION_KEY, '{"delay":300000}');
     render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={{}} />);
     show();
-    expect(screen.getByLabelText<HTMLSelectElement>('Close included-payment proof previews automatically').value).toBe('0');
+    expect(screen.getByLabelText<HTMLSelectElement>('Close payment proof previews automatically').value).toBe('0');
     act(() => { vi.advanceTimersByTime(3_601_000); });
     expect(proofText()).not.toBeNull();
     expect(localStorage.getItem(PROOF_POLICY)).toBeNull();
@@ -65,7 +65,7 @@ describe('included-payment proof presentation retention', () => {
     const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
     show();
     const displayed = proofText()?.value;
-    fireEvent.change(screen.getByLabelText('Close included-payment proof previews automatically'), { target: { value: '300000' } });
+    fireEvent.change(screen.getByLabelText('Close payment proof previews automatically'), { target: { value: '300000' } });
     expect(localStorage.getItem(PROOF_POLICY)).toBe('{"delay":300000}');
     expect(localStorage.getItem(RETENTION_KEY)).toBeNull();
     act(() => { vi.advanceTimersByTime(299_000); });
@@ -89,6 +89,60 @@ describe('included-payment proof presentation retention', () => {
     expect(proofText()).not.toBeNull();
     act(() => { vi.advanceTimersByTime(299_000); });
     expect(proofText()).toBeNull();
+  });
+
+  it('keeps manual confirmation bound to the shown snapshot across ordinary same-source rerenders', () => {
+    const source = {};
+    const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
+    show(); preview();
+    const displayed = proofText()?.value;
+    view.rerender(<PaymentProofQr receipt={{ ...RECEIPT, createdAt: '2026-10-25T00:00:01.000Z' }} sourceIdentity={source} />);
+    expect(proofText()?.value).toBe(displayed);
+    expect(screen.getByText('Payment proof previews to close: 1')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Close previewed proofs' }));
+    expect(proofText()).toBeNull();
+  });
+
+  it('preserves current receipt copy/download bytes across snapshot rerenders and cleanup', async () => {
+    const source = {};
+    const writeText = vi.fn(() => Promise.resolve());
+    const originalClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const blobs: Blob[] = [];
+    vi.stubGlobal('URL', class extends URL {
+      public static override createObjectURL(blob: Blob | MediaSource): string { blobs.push(blob as Blob); return 'blob:proof'; }
+      public static override revokeObjectURL(): void { /* Controlled local download only. */ }
+    });
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    const readBlob = (blob: Blob): Promise<string> => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => { resolve(String(reader.result)); };
+      reader.onerror = () => { reject(new Error('synthetic download unreadable')); };
+      reader.readAsText(blob);
+    });
+    try {
+      const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
+      show();
+      const displayed = proofText()?.value;
+      const current = { ...RECEIPT, createdAt: '2026-10-25T00:00:01.000Z' };
+      const expected = JSON.stringify(current, null, 2);
+      view.rerender(<PaymentProofQr receipt={current} sourceIdentity={source} />);
+      expect(proofText()?.value).toBe(displayed);
+      const copy = screen.getByRole('button', { name: 'Copy proof JSON' });
+      fireEvent.click(copy);
+      await waitFor(() => { expect(writeText).toHaveBeenCalledExactlyOnceWith(expected); });
+      fireEvent.click(screen.getByRole('button', { name: 'Download proof JSON' }));
+      preview();
+      fireEvent.click(screen.getByRole('button', { name: 'Close previewed proofs' }));
+      fireEvent.click(copy);
+      await waitFor(() => { expect(writeText).toHaveBeenNthCalledWith(2, expected); });
+      fireEvent.click(screen.getByRole('button', { name: 'Download proof JSON' }));
+      expect(blobs).toHaveLength(2);
+      expect(await Promise.all(blobs.map(readBlob))).toEqual([expected, expected]);
+    } finally {
+      if (originalClipboard === undefined) Reflect.deleteProperty(navigator, 'clipboard');
+      else Object.defineProperty(navigator, 'clipboard', originalClipboard);
+    }
   });
 
   it('withdraws replaced result/context/session source before an old plan or age can close its successor', () => {
@@ -120,6 +174,22 @@ describe('included-payment proof presentation retention', () => {
     expect(proofText()).not.toBeNull();
   });
 
+  it.each(['unconfirmed', 'reverted', 'unknown'] as const)('revokes an included preview before a same-source %s projection can be cleaned', (status) => {
+    vi.useFakeTimers(); vi.setSystemTime(1_000);
+    localStorage.setItem(PROOF_POLICY, '{"delay":300000}');
+    const source = {};
+    const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
+    show(); preview();
+    act(() => { vi.advanceTimersByTime(299_000); });
+    view.rerender(<PaymentProofQr receipt={{ ...RECEIPT, status: status as LocalReceipt['status'] }} sourceIdentity={source} />);
+    expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
+    expect(proofText()).toBeNull();
+    show(); preview();
+    expect(screen.getByText('Payment proof previews to close: 0')).toBeTruthy();
+    act(() => { vi.advanceTimersByTime(301_000); });
+    expect(proofText()).not.toBeNull();
+  });
+
   it('does not enroll hidden or failed-to-render proofs and releases every timer on unmount', () => {
     vi.useFakeTimers();
     const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={{}} />);
@@ -140,9 +210,9 @@ describe('included-payment proof presentation retention', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('denied'); });
     render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={{}} />);
     show();
-    fireEvent.change(screen.getByLabelText('Close included-payment proof previews automatically'), { target: { value: '300000' } });
+    fireEvent.change(screen.getByLabelText('Close payment proof previews automatically'), { target: { value: '300000' } });
     expect(screen.getByText('The preference could not be saved. No cleanup policy was changed.')).toBeTruthy();
-    expect(screen.getByLabelText<HTMLSelectElement>('Close included-payment proof previews automatically').value).toBe('0');
+    expect(screen.getByLabelText<HTMLSelectElement>('Close payment proof previews automatically').value).toBe('0');
     act(() => { vi.advanceTimersByTime(301_000); });
     expect(proofText()).not.toBeNull();
   });
