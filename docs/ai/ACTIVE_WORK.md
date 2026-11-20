@@ -651,3 +651,15 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+# QC-01 encrypted reconciliation actionability — 2026-11-20
+
+Worker/cycle: GhostPay scheduled cycle 10, sequential bug-test and integration triage; no independent worker delegated.
+Branch: `automation/20261120T1042Z/bug/ledger-actionable-activation`.
+Verified base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (main before this isolated task); tracking input blob: `c3b3f28796557d98536bf5220d5eb923a53eb935`.
+Owned paths: `apps/web/src/components/ReconciliationLedger.test.tsx`, additive this ownership claim, isolated `docs/handoffs/LEDGER_ACTIONABILITY_20261120.md`.
+Dependency/source: QA-309 QC-01 evidence in `docs/qa/2026-11-19-readonly/HANDOFF.md` on PR #309. No production logic or cryptographic policy change.
+Acceptance: replace the two presence-only activation clicks with explicit enabled-state synchronization; add deterministic delayed readState regression proving no premature activation, one activation after the button becomes actionable, and imported historical data remains untrusted. Preserve original provenance assertions, avoid sleeps/timeout changes and test-product regressions.
+Conflicts checked: open PR #306/#307/#310/#314 changed-file lists do not include this test; separate source owners preserved. Do not integrate or merge into main without external independent review and full exact-head CI; no deployment.
+Status: ownership recorded before test modifications; repository tests not yet run.
