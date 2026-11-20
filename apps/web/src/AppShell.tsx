@@ -22,6 +22,7 @@ import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PrivacyControls } from './components/PrivacyControls';
 import { ClipboardPrivacySync } from './components/ClipboardPrivacySync';
+import { PrivacyQuickHide } from './components/PrivacyQuickHide';
 import { SensitiveContent } from './components/SensitiveContent';
 import { PrivacyProvider } from './lib/privacyMode';
 import { notifyAppLock, subscribeAppLock } from './lib/appLock';
@@ -482,6 +483,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         <h1>GhostPay</h1>
         <p className="tagline">{t('app.shell.tagline')}</p>
         <PrivacyControls />
+        <PrivacyQuickHide />
         <nav aria-label={t('app.shell.main')}>
           <ul className="nav">
             {order.map((v) => (
