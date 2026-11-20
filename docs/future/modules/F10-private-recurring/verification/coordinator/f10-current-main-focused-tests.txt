@@ -1,0 +1,14 @@
+Head: e134147beb21b7f71d4776def94cd4e24b83346b
+Main: aa3df1cb37274fae73af0ca957183c15c51b62d3
+Command: ["node", "../../node_modules/vitest/vitest.mjs", "run", "src/features/future/private-recurring", "--maxWorkers=1"]
+
+ RUN  v5.0.5 /workspace/scratch/db9ec5207fdd/GhostPay-f10/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  84 passed (84)
+   Start at  08:38:45
+   Duration  1.50s (tests 40%, import 37%, transform 22%, worker 1%)
+
+
+Exit: 0; seconds: 1.87
