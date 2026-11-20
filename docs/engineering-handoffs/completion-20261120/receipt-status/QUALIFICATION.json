@@ -1,0 +1,85 @@
+{
+  "format": "ghostpay-receipt-status-qualification/1",
+  "worker": "/root/bug_hunt_gen2",
+  "base": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+  "regression_commit": "b416ea615d40f6375c868b05e8af0683cf1e10fd",
+  "implementation_and_tests": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+  "runtime": "Node v24.22.3; Vitest 5.1.0; Linux",
+  "dependency_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "dependency_setup": "Private copy of matching-lock node_modules from code-audit-gen1. Existing declarations copied only for unchanged package source; changed qr-exchange package was not copied. No fresh full build claimed.",
+  "source_blobs": {
+    "apps/web/src/lib/wallet.ts": "ac735d7aa2c4aa07e2374623cf41ac82958fdf3d",
+    "apps/web/src/lib/wallet.test.ts": "2732ee227ddf352a6b9315d2d8a01096b9e16032",
+    "apps/web/src/lib/payExec.test.ts": "4f4b49d06a1d687303716be66c74c86c0ea5d47b"
+  },
+  "checks": [
+    {
+      "name": "regression baseline",
+      "source": "b416ea615d40f6375c868b05e8af0683cf1e10fd",
+      "command": "vitest run src/lib/wallet.test.ts src/lib/payExec.test.ts --maxWorkers=1 --no-file-parallelism",
+      "cwd": "apps/web",
+      "heap_limit_mib": 1536,
+      "external_cap_seconds": 90,
+      "exit_code": 1,
+      "passed": 112,
+      "failed": 8,
+      "skipped": 0,
+      "duration_seconds": 6.12,
+      "result": "All eight new unsupported-status assertions failed because the unchanged runtime returned reverted."
+    },
+    {
+      "name": "fixed affected suites",
+      "source": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+      "command": "vitest run src/lib/wallet.test.ts src/lib/payExec.test.ts src/lib/payExec.acceptance.test.ts src/views/Pay.test.tsx --maxWorkers=1 --no-file-parallelism",
+      "cwd": "apps/web",
+      "heap_limit_mib": 768,
+      "external_cap_seconds": 120,
+      "exit_code": 0,
+      "passed": 188,
+      "failed": 0,
+      "skipped": 0,
+      "duration_seconds": 73.81
+    },
+    {
+      "name": "adjacent transaction-shape audit",
+      "source": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+      "command": "vitest run src/lib/wallet.transactionShapeAudit.test.ts --maxWorkers=1 --no-file-parallelism",
+      "cwd": "apps/web",
+      "heap_limit_mib": 768,
+      "external_cap_seconds": 90,
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 3,
+      "skipped": 0,
+      "duration_seconds": 3.93,
+      "result": "All three malformed JSON-array fields were accepted as verified. Probe archived and removed from active collection; separate repair remains with successor."
+    }
+  ],
+  "evidence": {
+    "baseline": {
+      "path": "evidence/baseline.log.gz",
+      "sha256_uncompressed": "c425db7de24e50f7f85c259775cf7c42dba29d758fc878aacb11436dbc96202d",
+      "sha256_gzip": "f315dd123c2e354e587d6afb0e9b159c2ecfa737352203e288b9d47b987dfc20"
+    },
+    "fixed": {
+      "path": "evidence/fixed.log.gz",
+      "sha256_uncompressed": "32522e013d83f664f299eec851865dd4717c1f6ef43803e0f97047ab0211afa8",
+      "sha256_gzip": "a14cbfe39386d6eb64d1cf2f571d82fab23fdb697a5c6fb2768ec515cd17fc9d"
+    },
+    "adjacent-transaction-shape": {
+      "path": "evidence/adjacent-transaction-shape.log.gz",
+      "sha256_uncompressed": "b569f07bb39f8af102a0cf9ccf6fe2217ec214c73ca8262a881a75deb696ac02",
+      "sha256_gzip": "af98ebba406d662f2a6336a08bdfa51e55d75a047fb500ddb5af55562f651e93"
+    },
+    "adjacent-probe": {
+      "path": "evidence/wallet.transactionShapeAudit.test.ts.txt",
+      "sha256": "ed385c4db67fb5eab508fde65f7774f1c5f5f5f197f7507e9b09703eed61b600"
+    }
+  },
+  "limits": [
+    "No original test configuration, timeout, coverage, dependency or workflow changes. Resource limits did not time out the recorded runs.",
+    "No fresh whole-workspace build, scoped lint or full web typecheck in this lane; coordinator assigned subsequent heavy verification to integration_qa_gen3.",
+    "No Playwright, hosted CI, release approval or independently authenticated RPC claim.",
+    "Fresh independent security reviewer security_review_gen2 received the exact implementation freeze; its results are separate."
+  ]
+}

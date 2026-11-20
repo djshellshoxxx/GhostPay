@@ -1,0 +1,89 @@
+{
+  "format": "ghostpay-independent-artifact-review/1",
+  "reviewer": "/root/artifact_security_review",
+  "candidate": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "reviewedFix": "308dcbb2d40793514ea303a898282578dc17342d",
+  "independentOfImplementer": true,
+  "finding": {
+    "id": "PAGES-ARTIFACT-PROMOTION-01",
+    "classification": "release-qualification integration gap",
+    "confirmedExploit": false,
+    "summary": "Builder never invoked the existing independent verifier before final artifact promotion.",
+    "baselineFailedGroups": 7,
+    "baselineCorruptArtifactsPromoted": 6,
+    "fixedPromotionGroupsPassed": 7,
+    "fixedCombinedVerifierGroupsPassed": 24,
+    "disposition": "fixed and independently verified; integration and complete fresh build remain coordinator-owned"
+  },
+  "newConfirmedCritical": 0,
+  "newConfirmedHigh": 0,
+  "newConfirmedMedium": 0,
+  "hostedArtifact": {
+    "id": 14586739296,
+    "run": 44643709322,
+    "filesVerified": 16,
+    "source": "a7ceff94269cddfbc725677dd03737d96a449039",
+    "treeMatchesCandidate": true,
+    "paymentsEnabledChainIds": [],
+    "sharedOrigin": true,
+    "deployed": false
+  },
+  "checks": {
+    "originalVerifierNode22": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    "originalVerifierNode24": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    "fixedCombinedNode22": {
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0
+    },
+    "actualArtifactCliNode22": {
+      "passed": 12,
+      "failed": 0
+    },
+    "actualArtifactCliNode24": {
+      "passed": 12,
+      "failed": 0
+    },
+    "siteSafetyActualArtifact": {
+      "passed": true,
+      "files": 16
+    },
+    "shellSyntax": true,
+    "testSyntax": true,
+    "diffCheck": true,
+    "fullPagesNode22": {
+      "passed": 119,
+      "failed": 0,
+      "skipped": 0,
+      "source": "308dcbb2d40793514ea303a898282578dc17342d",
+      "dependencyEnvironment": "Read-only link to coordinator dependency install and workspace libraries built under Node24; original test suite executed underNode22."
+    }
+  },
+  "limits": [
+    "Counts overlap; do not sum.",
+    "New harness exercises actual final promotion block with staged fixtures, not a full Vite build.",
+    "Actual hosted artifact predates new promotion gate.",
+    "No whole-product, deployment, external audit or testnet qualification is asserted."
+  ],
+  "additionalCodeqlFixtureReview": {
+    "source": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+    "independentOfImplementer": true,
+    "actualFixtureInputsByteIdentical": true,
+    "oldAndNewDeploymentTestsPassed": 13,
+    "oldAndNewCspTestsPassed": 49,
+    "node": "22.23.4",
+    "assertionsUnchanged": true,
+    "productAndGatesUnchanged": true,
+    "disposition": "suitable for integration as fixture clarification; fresh hosted CodeQL required",
+    "alertDismissed": false,
+    "analyzerClearanceClaimed": false
+  }
+}

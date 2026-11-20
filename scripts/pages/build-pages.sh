@@ -218,6 +218,12 @@ writeFileSync(join(evidence, 'pages-evidence.json'), JSON.stringify(record, null
 console.log(`Pages site verified: ${String(files.length)} files; ${record.status}`);
 NODE
 cp "$log" "$evidence/build.log"
+# Independently verify the assembled bytes and exact source against the build's
+# checksum manifest before any publishable output is promoted. This is an
+# integrity gate, not authentication of an externally supplied manifest.
+node "$ROOT/scripts/pages/verify-pages-artifact.mjs" "$site" "$evidence/SHA256SUMS" \
+  --expect-commit "$commit" >"$evidence/artifact-verification.log"
+cat "$evidence/artifact-verification.log"
 mv "$site" "$out/site"
 mv "$evidence" "$out/evidence"
 echo "build-pages: OK -> $out/site (evidence in $out/evidence)"

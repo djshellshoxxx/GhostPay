@@ -1,0 +1,71 @@
+{
+  "observation": "Read through GitHub get_pr_info during this generation; status is a dated source observation, not a CI/release decision.",
+  "pull_requests": [
+    {
+      "number": 151,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/151",
+      "state": "closed",
+      "draft": true,
+      "merged": false,
+      "title": "Lean-core milestone run: audit fixes, fail-closed gates, reachability proof (WIP)",
+      "base": "main",
+      "base_sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+      "head": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "head_sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "author": {
+        "login": "djshellshoxxx",
+        "name": "djshellshoxxx",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/127660907?v=4",
+        "id": 127660907
+      },
+      "updated_at": "2026-11-18T08:36:50Z",
+      "closed_at": "2026-11-18T08:36:50Z",
+      "changed_files": 15
+    },
+    {
+      "number": 259,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/259",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "title": "Recover historical documentation and reconcile current Pages guidance",
+      "base": "main",
+      "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "head": "integration/ghostpay-docs-recovery-20261119",
+      "head_sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "author": {
+        "login": "djshellshoxxx",
+        "name": "djshellshoxxx",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/127660907?v=4",
+        "id": 127660907
+      },
+      "updated_at": "2026-11-19T08:00:18Z",
+      "closed_at": null,
+      "changed_files": 20
+    },
+    {
+      "number": 40,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/40",
+      "state": "closed",
+      "draft": false,
+      "merged": false,
+      "title": "fix(relayer): prevent secret-file validation/read races",
+      "base": "claude/gifted-planck-115x2k",
+      "base_sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "head": "codex/ghostpay-security-audit-20261030",
+      "head_sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "author": {
+        "login": "djshellshoxxx",
+        "name": "djshellshoxxx",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/127660907?v=4",
+        "id": 127660907
+      },
+      "updated_at": "2026-11-18T08:33:56Z",
+      "closed_at": "2026-11-18T08:33:56Z",
+      "changed_files": 3
+    }
+  ]
+}

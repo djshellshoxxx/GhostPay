@@ -1,0 +1,186 @@
+{
+  "format": "ghostpay-release-remediation-receipt/1",
+  "recorded_at": "2026-11-20T00:40:22.001290+00:00",
+  "source_commit": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+  "source_tree": "80fd34834ccdbc81bf8f5fc63ba76edb52905ef1",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "canonical_pr": 278,
+  "canonical_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "runtime": {
+    "node": "22.23.4",
+    "npm": "10.9.11"
+  },
+  "clean_install": {
+    "packages": 721,
+    "exit_code": 0,
+    "source": "308dcbb2d40793514ea303a898282578dc17342d",
+    "unchanged_lockfile": true
+  },
+  "library_build": {
+    "exit_code": 0,
+    "unique_workspace_count": 65,
+    "workspaces": [
+      "@ghostpay/address-safety",
+      "@ghostpay/amount-blur",
+      "@ghostpay/btc-family",
+      "@ghostpay/btc-payjoin",
+      "@ghostpay/btc-silent-payments",
+      "@ghostpay/chain-adapters",
+      "@ghostpay/chain-evm-extra",
+      "@ghostpay/chain-solana",
+      "@ghostpay/chain-tron",
+      "@ghostpay/cli",
+      "@ghostpay/confidential-amounts",
+      "@ghostpay/core-crypto",
+      "@ghostpay/donation",
+      "@ghostpay/external-pools",
+      "@ghostpay/external-pools-privacypools",
+      "@ghostpay/external-pools-railgun",
+      "@ghostpay/hops",
+      "@ghostpay/hygiene",
+      "@ghostpay/i18n",
+      "@ghostpay/invoice-schema",
+      "@ghostpay/merchant-billing",
+      "@ghostpay/merchant-hooks",
+      "@ghostpay/merchant-ledger",
+      "@ghostpay/merchant-multisig",
+      "@ghostpay/metadata-hardening",
+      "@ghostpay/net-harness",
+      "@ghostpay/net-transport",
+      "@ghostpay/ops-monitor",
+      "@ghostpay/payer-sponsor",
+      "@ghostpay/payment-uri",
+      "@ghostpay/pir-two-server",
+      "@ghostpay/plugin-api",
+      "@ghostpay/policy-scheme",
+      "@ghostpay/pool-circuits",
+      "@ghostpay/pool-prover",
+      "@ghostpay/pool-relayer",
+      "@ghostpay/pool-sdk",
+      "@ghostpay/privacy-pipeline",
+      "@ghostpay/privacy-profiles",
+      "@ghostpay/qr-exchange",
+      "@ghostpay/relayer-guard",
+      "@ghostpay/sandbox",
+      "@ghostpay/scan-source",
+      "@ghostpay/sdk",
+      "@ghostpay/secret-box",
+      "@ghostpay/solana-stealth",
+      "@ghostpay/tron-adapter",
+      "@ghostpay/tx-review",
+      "@ghostpay/ux-connect",
+      "@ghostpay/ux-core",
+      "@ghostpay/ux-export",
+      "@ghostpay/ux-fees",
+      "@ghostpay/ux-fiat",
+      "@ghostpay/ux-flow",
+      "@ghostpay/ux-guide",
+      "@ghostpay/ux-i18n",
+      "@ghostpay/ux-intake",
+      "@ghostpay/ux-links",
+      "@ghostpay/ux-notify",
+      "@ghostpay/ux-presets",
+      "@ghostpay/ux-privacy",
+      "@ghostpay/ux-receipts",
+      "@ghostpay/ux-sandbox",
+      "@ghostpay/ux-schedule",
+      "@ghostpay/ux-vault"
+    ],
+    "source": "308dcbb2d40793514ea303a898282578dc17342d",
+    "source_equivalence": "No library implementation or build configuration changes between 308dcbb2 and 1f82abc5; only a chain-adapters test file changes in packages/."
+  },
+  "checks": {
+    "pages_and_csp": {
+      "passed": 168,
+      "failed": 0,
+      "skipped": 0
+    },
+    "sweep_focused": {
+      "passed": 68,
+      "failed": 0,
+      "skipped": 0,
+      "rpc": "authored offline responses; actual client authority, derivation and signing"
+    },
+    "deployment_manifest_focused": {
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": "disabled for focused selection, not whole-package coverage"
+    },
+    "clean_pages_build": {
+      "exit_code": 0,
+      "mode": "release",
+      "files": 16,
+      "enabled_payment_networks": [],
+      "automatic_independent_verification": true
+    },
+    "secret_scan_exit_code": 0,
+    "action_pin_scan_exit_code": 0,
+    "action_references_checked": 113,
+    "production_dependency_tree_exit_code": 0,
+    "dependency_audit": {
+      "production": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "full": {
+        "info": 0,
+        "low": 17,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 17
+      }
+    }
+  },
+  "baseline_regression": {
+    "tests": 7,
+    "failed": 7,
+    "corrupted_artifacts_wrongly_promoted": 6,
+    "scope": "actual final builder shell block with synthetic staged artifacts"
+  },
+  "local_preparation_failures": [
+    {
+      "exit_code": 1,
+      "cause": "shell npm launcher inferred an incorrect npm-prefix.js path",
+      "resolution": "direct npm-cli.js with pinned Node and corrected local symlinks; successful clean install"
+    },
+    {
+      "exit_code": 127,
+      "cause": "first library build attempted before the new clean dependency installation completed",
+      "resolution": "waited for npm ci exit 0, then reran the full library build successfully"
+    }
+  ],
+  "changed_source_pins": {
+    "apps/web/src/lib/sweep.boundaryAudit.test.ts": {
+      "git_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "sha256": "8b177611e90e35d2461b5fe21739234714b676f0ec2d2a4dcf0b6d9e22593b72"
+    },
+    "packages/chain-adapters/src/deployments.test.ts": {
+      "git_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "sha256": "c6d5625cd3e937201360f31036b386a0dc59bcb3bf32191c6d833d46104ee174"
+    },
+    "scripts/pages/build-pages-artifact-gate.test.mjs": {
+      "git_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "sha256": "46ef7733e7e7d1cf42708d8b32ea1692b47bf19b678c7e3036eae8f8d239d59d"
+    },
+    "scripts/pages/build-pages.sh": {
+      "git_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha256": "6402f359c4e86fbf110072befd6b1e036707befd06d413c4354b477ba91b098f"
+    },
+    "scripts/tests/privacy-csp-bundle.test.mjs": {
+      "git_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "sha256": "63e376af4fbc72d0629f0dd69c1810ba3b3bb82b8eb77b2ff9be556550a6bf38"
+    }
+  },
+  "limits": [
+    "Focused test counts overlap independent reviewer reruns and must not be summed with them.",
+    "No new browser, external-testnet, full-contract/analyzer or whole-workspace coverage result is claimed by this receipt.",
+    "The local build is not a deployment, authenticated release signature, independent-machine reproduction or external security audit.",
+    "Hosted validation of the published follow-up remains required."
+  ]
+}

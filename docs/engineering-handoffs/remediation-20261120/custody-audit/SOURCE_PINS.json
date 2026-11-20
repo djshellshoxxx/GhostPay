@@ -1,0 +1,43 @@
+{
+  "format": "ghostpay-sweep-boundary-audit-sources/1",
+  "base_commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "base_tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+  "files": {
+    "apps/web/src/lib/sweep.ts": {
+      "git_blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "sha256": "783adf54a9956b3e1d12763797e869e1de893532970d8f8b6a7df1ae5cc696ee"
+    },
+    "apps/web/src/views/Sweep.tsx": {
+      "git_blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "sha256": "420d9b8fbf6c31df7cc592c907f73cb903426a42eeccb9fbd4515742017d00ae"
+    },
+    "apps/web/src/lib/session.ts": {
+      "git_blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "sha256": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672"
+    },
+    "apps/web/src/lib/networkAuthorization.ts": {
+      "git_blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "sha256": "3bcc735e14fd5245c12ea5d391502affa802cb5c6f7c5ff9b457c2b2b1c060ea"
+    },
+    "apps/web/src/lib/sweep.nativeReview.test.ts": {
+      "git_blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+      "sha256": "7795d4bae6a20e6604fd6f7fd6e41bb4a42baca21d9976211278147daa56ab95"
+    },
+    "apps/web/src/lib/sweep.reviewAuthority.test.ts": {
+      "git_blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+      "sha256": "9c5809bb36e1f162310e05159325ae9feb3f28b6351685ef31f0f3ebb4fb1e65"
+    },
+    "apps/web/src/lib/sweep.boundaryAudit.test.ts": {
+      "git_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "sha256": "8b177611e90e35d2461b5fe21739234714b676f0ec2d2a4dcf0b6d9e22593b72"
+    },
+    "apps/web/vite.config.ts": {
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+    },
+    "package-lock.json": {
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+    }
+  }
+}

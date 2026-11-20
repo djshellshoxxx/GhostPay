@@ -1,0 +1,5 @@
+2527d6b9367887508d7d8f678a18564132652a03	refs/heads/claude/ghostpay-lean-core-milestone-t5lwox
+63994db6cff8b3b3ca698427eee9e95904230546	refs/heads/codex/ghostpay-security-audit-20261030
+4ff80733a3b36019e2f12fc21a8448e7666b6049	refs/heads/integration/ghostpay-docs-recovery-20261119
+c977b5d6723f6822c3b5d86cd6b231712c53c395	refs/heads/main
+417f7c71daf8645e1432f2ec8f070110879b80bd	refs/heads/release/ghostpay-beta-qualification-20261119

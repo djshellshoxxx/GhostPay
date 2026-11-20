@@ -1,0 +1,32 @@
+{
+  "format": "ghostpay-independent-fixture-equivalence/1",
+  "node": "v22.23.4",
+  "baseline": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "fixed": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+  "sourceFiles": [
+    "packages/chain-adapters/src/deployments.test.ts",
+    "scripts/tests/privacy-csp-bundle.test.mjs",
+    "packages/chain-adapters/src/fixtures.testutil.ts"
+  ],
+  "fixtures": [
+    {
+      "name": "prototype-member manifest",
+      "bytes": 760,
+      "sha256": "a98b16b14e498d5598beb530caeaa0d1273e59ced23b19f8fff158bf7fd90281",
+      "exactBytesEqual": true,
+      "actualOriginalExpression": "JSON.stringify(manifestJson()).replace('{', '{\"__proto__\":{\"a\":1},')",
+      "actualNewExpression": "'{\"__proto__\":{\"a\":1},' + JSON.stringify(manifestJson()).slice(1)",
+      "hostileMemberRetained": true
+    },
+    {
+      "name": "duplicate CSP content attribute",
+      "bytes": 250,
+      "sha256": "8d1df43e5446dde7b518b47c8f8fd1b399669c7f8ba8b7080afc7d18ef70386a",
+      "exactBytesEqual": true,
+      "actualOriginalExpression": "(tag) => tag.replace('>', ' content=\"connect-src *\">')",
+      "actualNewExpression": "(tag) => `${tag.slice(0, -1)} content=\"connect-src *\">`",
+      "duplicateAttributeCount": 2
+    }
+  ],
+  "codeqlClearanceClaimed": false
+}

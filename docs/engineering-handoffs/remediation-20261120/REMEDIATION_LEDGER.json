@@ -1,0 +1,134 @@
+{
+  "format": "ghostpay-scoped-remediation-ledger/1",
+  "recorded_at": "2026-11-20T00:42:43.248Z",
+  "canonical": {
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "pr": 278,
+    "branch": "release/ghostpay-beta-qualification-20261119",
+    "head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "shared_write_owner": "active continuous coordinator in workspace 0a7bc3583588",
+    "integration_lock_acquired_by_this_cycle": false
+  },
+  "followup": {
+    "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+    "frozen_source": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+    "tree": "80fd34834ccdbc81bf8f5fc63ba76edb52905ef1",
+    "disposition": "Requires regression testing",
+    "detail": "All scoped local verification and independent reviews passed; complete hosted qualification and lease-protected integration remain."
+  },
+  "findings": [
+    {
+      "id": "PAGES-PROMOTION-VERIFY",
+      "kind": "release qualification gap",
+      "severity": null,
+      "demonstrated_runtime_exploit": false,
+      "affected": [
+        "scripts/pages/build-pages.sh"
+      ],
+      "reproduction": "Actual original final promotion block accepted six corrupt staged artifacts; seven new expectations failed including verification receipt control.",
+      "implementation_commit": "308dcbb2d40793514ea303a898282578dc17342d",
+      "verification": "24 focused tests;119 Pages tooling tests;fresh16-file full build; independent baseline/fix replay and final combined-source review",
+      "status": "Fixed and independently regression-tested; hosted qualification pending"
+    },
+    {
+      "id": "CODEQL-FIXTURE-PROTOTYPE",
+      "kind": "analyzer fixture false positive",
+      "analyzer_severity": "high",
+      "confirmed_product_vulnerability": false,
+      "affected": [
+        "packages/chain-adapters/src/deployments.test.ts"
+      ],
+      "implementation_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "verification": "Original and clarified13/13; two independent AST-based760-byte equivalence proofs",
+      "status": "Fixture clarified and independently reviewed; no alert suppression or dismissal; fresh hosted CodeQL required"
+    },
+    {
+      "id": "CODEQL-FIXTURE-CSP",
+      "kind": "analyzer fixture false positive",
+      "analyzer_severity": "high",
+      "confirmed_product_vulnerability": false,
+      "affected": [
+        "scripts/tests/privacy-csp-bundle.test.mjs"
+      ],
+      "implementation_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "verification": "Original and clarified49/49; two independent AST-based250-byte equivalence proofs",
+      "status": "Fixture clarified and independently reviewed; no alert suppression or dismissal; fresh hosted CodeQL required"
+    }
+  ],
+  "additional_coverage": {
+    "commit": "3814ad2efffc6588f1c176a39b1090033f2f3537",
+    "new_cases": 11,
+    "selection_passed": 68,
+    "selection_failed": 0,
+    "selection_skipped": 0,
+    "transport": "authored offline RPC responses with actual cryptography and network capabilities",
+    "new_confirmed_defects": 0
+  },
+  "security_counts": {
+    "new_confirmed_critical": 0,
+    "new_confirmed_high": 0,
+    "new_confirmed_medium": 0,
+    "scope": "This bounded cycle only; not a global clearance count",
+    "current_strict_mythril_findings": null,
+    "current_strict_mythril_status": "in_progress at last retrieved snapshot; exact artifact not available",
+    "production_dependency_alerts": 0,
+    "development_dependency_alerts": {
+      "low": 17,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "dispositions": [
+    {
+      "pr": 278,
+      "status": "Requires regression testing",
+      "reason": "Canonical candidate; active coordinator owns new browser repair and integration."
+    },
+    {
+      "pr": 276,
+      "status": "Integrated",
+      "scope": "Verifier implementation retained in canonical candidate; not merged to main.",
+      "reason": "Independent verifier tests and fresh hosted16-file artifact verified; this cycle connects it to builder."
+    },
+    {
+      "pr": 277,
+      "status": "Integrated",
+      "scope": "Race-hardening retained in canonical verifier; not merged to main.",
+      "reason": "Descriptor/file-identity regression tests and independent mutation probes pass."
+    },
+    {
+      "pr": 272,
+      "status": "Requires regression testing",
+      "reason": "Current candidate includes reviewed Sweep source;11 additional real-capability adversarial cases pass; combined release and actual testnet acceptance remain."
+    },
+    {
+      "pr": 262,
+      "status": "Superseded",
+      "scope": "As canonical baseline selection only; preserve branch-specific provenance and unique work.",
+      "reason": "PR278 is the current reviewed integration candidate; no blanket branch deletion or semantic-equivalence assertion."
+    },
+    {
+      "pr": 270,
+      "status": "Superseded",
+      "scope": "Old failing qualification as current release evidence.",
+      "reason": "Current candidate lint/rest-0 passes; retain historical code and current gates."
+    }
+  ],
+  "global_blockers": [
+    "Complete exact-source hosted matrix including browser and CodeQL",
+    "Current strict analyzer evidence and finding-specific security acceptance",
+    "Required external security review",
+    "Owner ADR/origin/DNS/HTTPS/Pages environment and exact publication approvals",
+    "Approved testnet deployment/signing identity/manifests",
+    "Actual authorized wallet/testnet payment, confirmation, scanning, sweep and recovery",
+    "Live artifact integrity and post-deployment checks"
+  ],
+  "release_verdict": "BLOCKED — WITH PRECISE REMAINING REQUIREMENTS",
+  "schedules_changed": false,
+  "main_merges": [],
+  "tags_created": [],
+  "deployments": [],
+  "branches_deleted": [],
+  "continuation": "Read README.md, coordinator-evidence/RECEIPT.json, final-review/REVIEW.md and current live refs. Preserve canonical coordinator ownership."
+}

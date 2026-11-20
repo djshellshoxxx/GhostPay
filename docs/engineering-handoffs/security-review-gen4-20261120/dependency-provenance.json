@@ -1,0 +1,333 @@
+{
+  "source": "/workspace/scratch/e5b5e498b785/GhostPay",
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "external_dependencies": "External packages reused through symlinks into the unchanged locked coordinator installation; this reviewer did not mutate them.",
+  "workspace_links": "separate local links under this review worktree",
+  "declarations": [
+    {
+      "package": "address-safety",
+      "action": "reused-identical-inputs",
+      "input_count": 16
+    },
+    {
+      "package": "amount-blur",
+      "action": "reused-identical-inputs",
+      "input_count": 26
+    },
+    {
+      "package": "btc-family",
+      "action": "reused-identical-inputs",
+      "input_count": 36
+    },
+    {
+      "package": "btc-payjoin",
+      "action": "reused-identical-inputs",
+      "input_count": 42
+    },
+    {
+      "package": "btc-silent-payments",
+      "action": "reused-identical-inputs",
+      "input_count": 89
+    },
+    {
+      "package": "chain-adapters",
+      "action": "reused-identical-inputs",
+      "input_count": 71
+    },
+    {
+      "package": "chain-evm-extra",
+      "action": "reused-identical-inputs",
+      "input_count": 19
+    },
+    {
+      "package": "chain-solana",
+      "action": "reused-identical-inputs",
+      "input_count": 33
+    },
+    {
+      "package": "chain-tron",
+      "action": "reused-identical-inputs",
+      "input_count": 17
+    },
+    {
+      "package": "cli",
+      "action": "reused-identical-inputs",
+      "input_count": 93
+    },
+    {
+      "package": "confidential-amounts",
+      "action": "reused-identical-inputs",
+      "input_count": 30
+    },
+    {
+      "package": "core-crypto",
+      "action": "reused-identical-inputs",
+      "input_count": 26
+    },
+    {
+      "package": "donation",
+      "action": "reused-identical-inputs",
+      "input_count": 20
+    },
+    {
+      "package": "external-pools",
+      "action": "reused-identical-inputs",
+      "input_count": 32
+    },
+    {
+      "package": "external-pools-privacypools",
+      "action": "reused-identical-inputs",
+      "input_count": 25
+    },
+    {
+      "package": "external-pools-railgun",
+      "action": "reused-identical-inputs",
+      "input_count": 17
+    },
+    {
+      "package": "hops",
+      "action": "reused-identical-inputs",
+      "input_count": 29
+    },
+    {
+      "package": "hygiene",
+      "action": "reused-identical-inputs",
+      "input_count": 24
+    },
+    {
+      "package": "i18n",
+      "action": "reused-identical-inputs",
+      "input_count": 42
+    },
+    {
+      "package": "invoice-schema",
+      "action": "reused-identical-inputs",
+      "input_count": 33
+    },
+    {
+      "package": "merchant-billing",
+      "action": "reused-identical-inputs",
+      "input_count": 26
+    },
+    {
+      "package": "merchant-hooks",
+      "action": "reused-identical-inputs",
+      "input_count": 14
+    },
+    {
+      "package": "merchant-ledger",
+      "action": "reused-identical-inputs",
+      "input_count": 11
+    },
+    {
+      "package": "merchant-multisig",
+      "action": "reused-identical-inputs",
+      "input_count": 22
+    },
+    {
+      "package": "metadata-hardening",
+      "action": "reused-identical-inputs",
+      "input_count": 29
+    },
+    {
+      "package": "net-harness",
+      "action": "reused-identical-inputs",
+      "input_count": 14
+    },
+    {
+      "package": "net-transport",
+      "action": "reused-identical-inputs",
+      "input_count": 34
+    },
+    {
+      "package": "ops-monitor",
+      "action": "reused-identical-inputs",
+      "input_count": 34
+    },
+    {
+      "package": "payer-sponsor",
+      "action": "reused-identical-inputs",
+      "input_count": 47
+    },
+    {
+      "package": "payment-uri",
+      "action": "reused-identical-inputs",
+      "input_count": 24
+    },
+    {
+      "package": "pir-two-server",
+      "action": "reused-identical-inputs",
+      "input_count": 21
+    },
+    {
+      "package": "plugin-api",
+      "action": "reused-identical-inputs",
+      "input_count": 17
+    },
+    {
+      "package": "policy-scheme",
+      "action": "reused-identical-inputs",
+      "input_count": 30
+    },
+    {
+      "package": "pool-circuits",
+      "action": "reused-identical-inputs",
+      "input_count": 47
+    },
+    {
+      "package": "pool-prover",
+      "action": "reused-identical-inputs",
+      "input_count": 11
+    },
+    {
+      "package": "pool-relayer",
+      "action": "reused-identical-inputs",
+      "input_count": 27
+    },
+    {
+      "package": "pool-sdk",
+      "action": "reused-identical-inputs",
+      "input_count": 32
+    },
+    {
+      "package": "privacy-pipeline",
+      "action": "reused-identical-inputs",
+      "input_count": 42
+    },
+    {
+      "package": "privacy-profiles",
+      "action": "reused-identical-inputs",
+      "input_count": 26
+    },
+    {
+      "package": "qr-exchange",
+      "action": "reused-identical-inputs",
+      "input_count": 23
+    },
+    {
+      "package": "relayer-guard",
+      "action": "reused-identical-inputs",
+      "input_count": 21
+    },
+    {
+      "package": "sandbox",
+      "action": "reused-identical-inputs",
+      "input_count": 27
+    },
+    {
+      "package": "scan-source",
+      "action": "reused-identical-inputs",
+      "input_count": 27
+    },
+    {
+      "package": "sdk",
+      "action": "reused-identical-inputs",
+      "input_count": 25
+    },
+    {
+      "package": "secret-box",
+      "action": "reused-identical-inputs",
+      "input_count": 12
+    },
+    {
+      "package": "solana-stealth",
+      "action": "reused-identical-inputs",
+      "input_count": 31
+    },
+    {
+      "package": "tron-adapter",
+      "action": "reused-identical-inputs",
+      "input_count": 27
+    },
+    {
+      "package": "tx-review",
+      "action": "reused-identical-inputs",
+      "input_count": 17
+    },
+    {
+      "package": "ux-connect",
+      "action": "reused-identical-inputs",
+      "input_count": 15
+    },
+    {
+      "package": "ux-core",
+      "action": "reused-identical-inputs",
+      "input_count": 16
+    },
+    {
+      "package": "ux-export",
+      "action": "reused-identical-inputs",
+      "input_count": 22
+    },
+    {
+      "package": "ux-fees",
+      "action": "reused-identical-inputs",
+      "input_count": 14
+    },
+    {
+      "package": "ux-fiat",
+      "action": "reused-identical-inputs",
+      "input_count": 13
+    },
+    {
+      "package": "ux-flow",
+      "action": "reused-identical-inputs",
+      "input_count": 18
+    },
+    {
+      "package": "ux-guide",
+      "action": "reused-identical-inputs",
+      "input_count": 12
+    },
+    {
+      "package": "ux-i18n",
+      "action": "reused-identical-inputs",
+      "input_count": 7
+    },
+    {
+      "package": "ux-intake",
+      "action": "reused-identical-inputs",
+      "input_count": 20
+    },
+    {
+      "package": "ux-links",
+      "action": "reused-identical-inputs",
+      "input_count": 23
+    },
+    {
+      "package": "ux-notify",
+      "action": "reused-identical-inputs",
+      "input_count": 18
+    },
+    {
+      "package": "ux-presets",
+      "action": "reused-identical-inputs",
+      "input_count": 16
+    },
+    {
+      "package": "ux-privacy",
+      "action": "reused-identical-inputs",
+      "input_count": 11
+    },
+    {
+      "package": "ux-receipts",
+      "action": "reused-identical-inputs",
+      "input_count": 22
+    },
+    {
+      "package": "ux-sandbox",
+      "action": "reused-identical-inputs",
+      "input_count": 7
+    },
+    {
+      "package": "ux-schedule",
+      "action": "reused-identical-inputs",
+      "input_count": 19
+    },
+    {
+      "package": "ux-vault",
+      "action": "reused-identical-inputs",
+      "input_count": 35
+    }
+  ]
+}

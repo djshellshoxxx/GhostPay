@@ -1,0 +1,27 @@
+{
+  "source": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+  "regression_baseline": "b416ea615d40f6375c868b05e8af0683cf1e10fd",
+  "runtime_diff_added_lines": 3,
+  "files": {
+    "apps/web/src/lib/wallet.ts": {
+      "git_blob": "ac735d7aa2c4aa07e2374623cf41ac82958fdf3d",
+      "sha256": "de30e505cab55332a9cc51ab7ef56d36a2e28b3b397f0166927364e6426e1b1c"
+    },
+    "apps/web/src/lib/wallet.test.ts": {
+      "git_blob": "2732ee227ddf352a6b9315d2d8a01096b9e16032",
+      "sha256": "75514042e51d36c3338845bb6fb3de85b18611e9e472e16efaa13b483297d897"
+    },
+    "apps/web/src/lib/payExec.test.ts": {
+      "git_blob": "4f4b49d06a1d687303716be66c74c86c0ea5d47b",
+      "sha256": "bcb3f8de6f03dd931c8ad50689f32c6aafd1062fe56b85807e4d55d82f67692d"
+    },
+    "apps/web/src/lib/payExec.acceptance.test.ts": {
+      "git_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "sha256": "936ed118ca6823c460abd984cd8cbf82e3f9f7f6b44646ba50d33b6d8b6a104d"
+    },
+    "apps/web/src/views/Pay.test.tsx": {
+      "git_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "sha256": "e0e6514ea1a8ef50ba6770f3e888eeba78d3ccecc9f16fa121b872b07c4b6b46"
+    }
+  }
+}

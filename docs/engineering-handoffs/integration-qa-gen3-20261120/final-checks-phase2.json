@@ -1,0 +1,52 @@
+{
+  "node": "v24.22.3",
+  "configuration": "original full web coverage and existing no-coverage pass; bounded concurrency/heap only; verbose reporting for progress",
+  "checks": [
+    {
+      "name": "final-web-coverage",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3/apps/web",
+      "source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+      "started_at": "2026-11-20T02:39:53.632182+00:00",
+      "duration_seconds": 900.095,
+      "exit_code": 124,
+      "external_timeout": true,
+      "timeout_seconds": 900,
+      "heap_mib": 768,
+      "log": "logs/final-web-coverage.log.gz",
+      "raw_log_sha256": "e2715fee08bd744bc77890b683b9d8c0fbede49923fae384646bc687f66b8e67",
+      "gzip_sha256": "0104f7d3c0f44a4f395ec26af2b9fd3b4ab414fb6440bc654ab54e2777d4520d"
+    },
+    {
+      "name": "final-web-nocov",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3/apps/web",
+      "source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+      "started_at": "2026-11-20T02:54:53.735954+00:00",
+      "duration_seconds": 42.416,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 300,
+      "heap_mib": 768,
+      "log": "logs/final-web-nocov.log.gz",
+      "raw_log_sha256": "e9b3553fb6789a203adf14b690c24a277314f8f48303f79c0cea5d9a337c4928",
+      "gzip_sha256": "f2e60af3fc61ec1212b5d5c1cb70537aec26a8d29e7b24a4859c62d97d0f806d"
+    }
+  ]
+}

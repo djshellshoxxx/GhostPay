@@ -15,6 +15,14 @@ Every QR code in GhostPay is shown inside a frame that tells the user what kind 
 
 `kindForPayload(type, flags)` picks the presentation kind. **Both `secret` and `bearer` take precedence over testnet, unsigned and unverified flags:** a key-bearing QR must not lose its spending/decryption warning just because the content is also testnet or unverified. All other flagged kinds become `caution`. This is enforced in `apps/web/src/lib/qrKinds.test.ts` (the bearer-with-testnet and bearer-with-unsigned/unverified assertions). QR kind classification is not independent payload verification; scanned content still needs its owning parser and application trust checks.
 
+The payload classifier and `qrKindClass(kind)` accept only primitive strings that
+name an own entry in their respective tables. Unknown names, inherited property
+names, arrays, boxed strings and other non-string runtime values throw `TypeError`
+with `unknown QR payload type` or `unknown QR kind`. Rejection occurs before
+property access can invoke a conversion hook. Passing `unverified: true` does not
+make an invalid payload type acceptable. Valid kinds and their handling rules are
+unchanged; this runtime validation does not authenticate QR contents.
+
 ## Rationale
 
 - Colour is never the only cue (WCAG 1.4.1): each frame has a text label, an icon (decorative, `aria-hidden`; the label carries the meaning) and a unique border style. Text-only browsers (lynx) and screen readers get the label, the explanation and any warning as plain text.

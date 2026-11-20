@@ -1,0 +1,117 @@
+{
+  "node": "v24.22.3",
+  "heap_mib": 768,
+  "configuration": "original repository configurations; one worker/no file parallelism only for resource control",
+  "checks": [
+    {
+      "name": "qr-coverage",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "--workspace",
+        "@ghostpay/qr-exchange",
+        "--",
+        "--maxWorkers=1",
+        "--no-file-parallelism"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+      "started_at": "2026-11-20T02:23:02.135739+00:00",
+      "duration_seconds": 11.968,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 180,
+      "log": "logs/qr-coverage.log.gz",
+      "raw_log_sha256": "21c669e2c1df5873bce89e55512860d3f5c89f410bac673c03577cd222f337cc",
+      "gzip_sha256": "52525dccc08c7b0309795ff57265256c46df9fd305a3a6dce4790079992711ff"
+    },
+    {
+      "name": "qr-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/qr-exchange"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+      "started_at": "2026-11-20T02:23:14.116361+00:00",
+      "duration_seconds": 4.557,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 120,
+      "log": "logs/qr-typecheck.log.gz",
+      "raw_log_sha256": "9b98c0aab2d3bd4988d8cb79859671c410564ea8957093e9d2e6169359e829db",
+      "gzip_sha256": "ae911eab2b24820a69790a2ac0ad4f90cb6dc2654e8eccc4467d2ddb8805748c"
+    },
+    {
+      "name": "qr-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/qr-exchange"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+      "started_at": "2026-11-20T02:23:18.679445+00:00",
+      "duration_seconds": 9.766,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 120,
+      "log": "logs/qr-lint.log.gz",
+      "raw_log_sha256": "2bc4aeb3a9ddd4fa5381928e0190aceee3465ee6ca9f7628915bb70535af62b6",
+      "gzip_sha256": "88edafa80093ca8d82213e4bc66c0ef5f01eef8f2af3cbc16c65ab0c90a5a369"
+    },
+    {
+      "name": "qr-build",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/qr-exchange"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+      "started_at": "2026-11-20T02:23:28.454465+00:00",
+      "duration_seconds": 2.002,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 120,
+      "log": "logs/qr-build.log.gz",
+      "raw_log_sha256": "d7daaf349b8d8c501f105cd03303f2ba8969fc73d8dc67607f4db27084901a2f",
+      "gzip_sha256": "9a0a4681783640e5a26c8a1d0017610684b2db78464a2179a2caaea71e1b708e"
+    },
+    {
+      "name": "pages-tooling",
+      "command": [
+        "node",
+        "--test",
+        "--test-concurrency=1",
+        "scripts/pages/build-pages-artifact-gate.test.mjs",
+        "scripts/pages/pages-hosting.test.mjs",
+        "scripts/pages/serve-pages.test.mjs",
+        "scripts/pages/smoke-render-errors.test.mjs",
+        "scripts/pages/smoke-url.test.mjs",
+        "scripts/pages/smoke-walk.test.mjs",
+        "scripts/pages/verify-pages-artifact.test.mjs",
+        "scripts/pages/verify-pages-site.test.mjs",
+        "scripts/tests/privacy-csp-bundle.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-integration-qa-gen3",
+      "source": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+      "started_at": "2026-11-20T02:23:30.491069+00:00",
+      "duration_seconds": 12.814,
+      "exit_code": 0,
+      "external_timeout": false,
+      "timeout_seconds": 180,
+      "log": "logs/pages-tooling.log.gz",
+      "raw_log_sha256": "d4e4125b763bd67d3f50ec09e3cb338347ee152cd5c54f7e6d16c27839cb5269",
+      "gzip_sha256": "10a3c1fd21375a9d9002d68bb9a3af47a42e8a88f092c16358c47b6522913cdd"
+    }
+  ]
+}

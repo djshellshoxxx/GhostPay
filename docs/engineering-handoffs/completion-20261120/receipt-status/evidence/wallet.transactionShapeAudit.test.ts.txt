@@ -1,0 +1,22 @@
+import { describe, expect, it } from 'vitest';
+import { verifySubmission } from './wallet';
+
+const HASH = `0x${'9'.repeat(64)}` as const;
+const FROM = '0x1111111111111111111111111111111111111111';
+const TO = '0x2222222222222222222222222222222222222222';
+const DATA = '0xabcd';
+const expected = { from: FROM, to: TO, data: DATA, value: 5n, chainId: 84532 } as const;
+const transaction = (patch: Record<string, unknown>) => ({ hash: HASH, from: FROM, to: TO, input: DATA, value: '0x5', chainId: '0x14a34', ...patch });
+
+describe('fresh adjacent transaction field audit', () => {
+  it.each([
+    ['hash', { hash: [HASH] }],
+    ['input', { input: [DATA] }],
+    ['fallback data', { input: undefined, data: [DATA] }],
+  ] as const)('rejects a JSON array in %s before claiming verification', async (_field, patch) => {
+    const request = () => Promise.resolve(transaction(patch));
+    await expect(verifySubmission({ request }, HASH, expected, () => Promise.resolve(), 1)).rejects.toMatchObject({
+      translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' },
+    });
+  });
+});

@@ -1,0 +1,57 @@
+[
+  {
+    "path": "evidence/all-pages-fixed-node22.log.gz",
+    "uncompressedSha256": "81cf9174d64d7f579f274e4c2c2329798ffdb150b9ebcd8b7ec6219dad885b39",
+    "uncompressedBytes": 26060
+  },
+  {
+    "path": "evidence/codeql-baseline-deployments.log.gz",
+    "uncompressedSha256": "2ca678007f0636b39876e97e9207042b22ca98416ef6f45c648cd052bf6f9b38",
+    "uncompressedBytes": 591
+  },
+  {
+    "path": "evidence/codeql-baseline-privacy-csp.log.gz",
+    "uncompressedSha256": "c87ebc7381181e4d12ea4c96d6034ef8589975aba442b14077d773a311f0045c",
+    "uncompressedBytes": 10671
+  },
+  {
+    "path": "evidence/codeql-fixed-deployments.log.gz",
+    "uncompressedSha256": "104742bc8f432e50f52b5c867d0881872951f5319ec8bba4baaaa0c8454c47e5",
+    "uncompressedBytes": 591
+  },
+  {
+    "path": "evidence/codeql-fixed-privacy-csp.log.gz",
+    "uncompressedSha256": "32d9247a44b18a66ffa6d26744622dfa2450e9097dc3d33ebc98d17fd96917c7",
+    "uncompressedBytes": 10673
+  },
+  {
+    "path": "evidence/hosted-site-verification.log.gz",
+    "uncompressedSha256": "99b84c81e186c74047bf900095f79951f92a245905e72c9cb78b47ee578c111c",
+    "uncompressedBytes": 42
+  },
+  {
+    "path": "evidence/promotion-baseline-frozen.log.gz",
+    "uncompressedSha256": "8a46c55cb90dba19a0a8ac8c8bf37744cc08ef4f1dfd6679d64b70393e26e31c",
+    "uncompressedBytes": 8568
+  },
+  {
+    "path": "evidence/promotion-baseline-independent.log.gz",
+    "uncompressedSha256": "18f25100db9877555edc2c329aab52eb8cad626fd4ad538ea9eb3d58ca1a5963",
+    "uncompressedBytes": 8343
+  },
+  {
+    "path": "evidence/promotion-fixed-frozen.log.gz",
+    "uncompressedSha256": "6ddf9e335fbfe7956fe5322d3a167459d614003d7a054e1ce3bd5dd578954c78",
+    "uncompressedBytes": 5624
+  },
+  {
+    "path": "evidence/verifier-tests-node22.log.gz",
+    "uncompressedSha256": "426c5b4b915870c2853b0e2ae849b241f2607478c98345804c8db13a7a737ae2",
+    "uncompressedBytes": 4148
+  },
+  {
+    "path": "evidence/verifier-tests.log.gz",
+    "uncompressedSha256": "c96af1b42c8680352e99c4d883217bc3bfc551a4bb261191e205ad7e26ca7fd7",
+    "uncompressedBytes": 1654
+  }
+]
