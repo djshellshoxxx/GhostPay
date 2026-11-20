@@ -1,3 +1,15 @@
+# Cycle 20261120T1840Z — receipt archive identity (isolated)
+
+- Coordinator/worker: one ChatGPT assistant, sequential implementation, bug audit, and source review. No separate native verifier available; no independent approval claimed.
+- Branch: `automation/20261120T1840Z/bug/receipt-archive-identity`; frozen main base `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+- Source owner: `apps/web/src/components/ReceiptPanel.tsx` plus **new** `apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx`; additive section in this registry; `docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_20261120.md`.
+- Finding: existing GP-BUG-01 / COMP-OPEN-01 from audit PR #312; signing receipt B after clearing invoice binding can inherit receipt A's `archive=done`, and an in-flight archive of A can claim completion on B. Baseline verified from source; prior audit recorded a failing signed-receipt component reproduction. No payments or keys outside synthetic/test scope.
+- Dependencies and ownership: broad PR #307 and earlier #278 change receipt source for printing and validation; do not change their branches. This narrow branch targets main, must be reconciled with their newer print code by the integration coordinator. Inspected open PR #321/#325/#331 and the latest issues. Integration metadata `automation/ghostpay-integration-lock` was released generation 8 at claim; no protected integration/merge authorized.
+- Acceptance: test first for both completed-A-before-B and delayed-A-finishes-after-B; real signed A/B signatures differ; B's Archive button remains available; delayed A cannot mark B archived; immutable A stays associated with its own vault write. Do not alter archive/policy data, custody, signing, error messages, dependencies, contracts, workflows, protection or deployment.
+- Verification gates: focused original Vitest, web TypeScript/lint and exact-head hosted CI plus independent review required before merge. Local checkout may be unavailable because GitHub DNS is blocked; never claim an unexecuted suite passed.
+
+---
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
