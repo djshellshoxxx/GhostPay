@@ -651,3 +651,11 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## QA-03 typed decimal-option guard — 2026-11-20 UTC (same bounded cycle)
+
+- Worker: sequential ChatGPT API-correctness lane; branch `automation/20261120T0641Z/bug/payment-uri-decimal-options`, base `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Source: QA-03 / CORE-QA-02, documentation-only [PR #309](https://github.com/djshellshoxxx/GhostPay/pull/309) and current unchanged `packages/payment-uri/src/decimal.ts` blob `8d8ceb070d29d511a1080861f878bbc6d367798f`.
+- Owned paths: `packages/payment-uri/src/decimal.ts`, new `decimal-options.test.ts`, additive claim, `docs/handoffs/PAYMENT_URI_DECIMAL_OPTIONS_20261120.md`. Separate from sibling QA-02 URI-length PR; do not edit its branch or owned paths.
+- Acceptance: public parseDecimal accepts integer precision 0–77 consistently with toAtomic/formatAtomic; rejects fractional, nonfinite, negative, overly large and nonnumeric runtime precision options with stable typed INVALID_AMOUNT before BigInt exponentiation; preserve exact decimal roundtrips and fixed 8/18 scale behavior. Test first, no new feature or policy decisions.
+- No native delegation or independent approval; local repo checkout was unavailable due blocked GitHub DNS. Require hosted real test/typecheck/lint and independent verification before merge. No shared ledger/main/lock/deployment changes.
