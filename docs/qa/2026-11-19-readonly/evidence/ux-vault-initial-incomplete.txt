@@ -1,0 +1,64 @@
+
+ RUN  v5.0.5 <QA_REPOSITORY>/packages/ux-vault
+      Coverage enabled with v8
+
+ ✓ src/vault.test.ts (22 tests) 153ms
+ ✓ src/schema.test.ts (39 tests) 80ms
+ ✓ src/contacts.test.ts (24 tests) 37ms
+ ✓ src/reconciliation-amounts.test.ts (19 tests) 75ms
+ ✓ src/envelope.test.ts (12 tests) 151ms
+ ✓ src/confusables.test.ts (20 tests) 16ms
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-pool]: Worker forks emitted error.
+ ❯ EventEmitter.onTaskError ../../node_modules/vitest/dist/chunks/index.1TqnEahn.js:5915:21
+ ❯ EventEmitter.emit node:events:514:28
+ ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.1TqnEahn.js:5390:22
+ ❯ ChildProcess.emit node:events:514:28
+ ❯ ChildProcess._handle.onexit node:internal/child_process:324:12
+
+Caused by: Error: Worker exited unexpectedly with signal SIGKILL during started state while running test file <QA_REPOSITORY>/packages/ux-vault/src/portable-parity.test.ts
+ ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.1TqnEahn.js:5388:33
+ ❯ ChildProcess.emit node:events:514:28
+ ❯ ChildProcess._handle.onexit node:internal/child_process:324:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  6 passed (7)
+      Tests  267 passed (284)
+     Errors  1 error
+   Start at  22:07:51
+   Duration  281.32s (import 44%, transform 37%, tests 11%, worker 8%)
+
+WARNING: Some tests are still running when generating the JSON report.This is likely an internal bug in Vitest.Please report it to https://github.com/vitest-dev/vitest/issues
+JSON report written to <QA_WORKSPACE>/qa-logs/ux-vault-results.json
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   46.84 |    41.67 |   50.31 |   49.25 |
+ confusables.ts    |     100 |    98.14 |     100 |     100 | 168
+ contacts.ts       |     100 |    98.68 |     100 |     100 | 213
+ ...re-portable.ts |       0 |        0 |       0 |       0 | 44-438
+ ...on-portable.ts |   11.84 |    19.51 |    6.55 |   13.33 | ...2-643,656-1143
+ schema.ts         |     100 |    96.29 |     100 |     100 | 107,111
+ seller-scope.ts   |       0 |      100 |       0 |       0 | 9
+ ...ve-portable.ts |       0 |        0 |       0 |       0 | 58-253
+ vault.ts          |     100 |    95.08 |     100 |     100 | 104,207,230
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 46.84% ( 749/1599 )
+Branches     : 41.67% ( 498/1195 )
+Functions    : 50.31% ( 160/318 )
+Lines        : 49.25% ( 628/1275 )
+================================================================================
+ERROR: Coverage for lines (49.25%) does not meet global threshold (95%)
+ERROR: Coverage for functions (50.31%) does not meet global threshold (95%)
+ERROR: Coverage for statements (46.84%) does not meet global threshold (95%)
+ERROR: Coverage for branches (41.67%) does not meet global threshold (90%)

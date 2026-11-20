@@ -1,0 +1,919 @@
+[
+  {
+    "label": "core-crypto full",
+    "reporter_counts": {
+      "numTotalTests": 75,
+      "numPassedTests": 75,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "reporter_warning": "Do not infer process success from these fields. Consult TEST_RESULTS.md for exit status, killed workers, coverage gates and interruptions.",
+    "files": [
+      {
+        "name": "packages/core-crypto/src/differential.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/hash-edge.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 8
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/independent.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 16
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/metadata.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 5
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/negative.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 26
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/properties.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/secret.builtinHex.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/secrets.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 7
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/core-crypto/src/vectors.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 7
+        },
+        "nonpassing": []
+      }
+    ]
+  },
+  {
+    "label": "payment-uri full",
+    "reporter_counts": {
+      "numTotalTests": 199,
+      "numPassedTests": 199,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "reporter_warning": "Do not infer process success from these fields. Consult TEST_RESULTS.md for exit status, killed workers, coverage gates and interruptions.",
+    "files": [
+      {
+        "name": "packages/payment-uri/src/fuzz.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 10
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/payment-uri/src/negative.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 163
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/payment-uri/src/vectors.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 26
+        },
+        "nonpassing": []
+      }
+    ]
+  },
+  {
+    "label": "ux-vault full final",
+    "reporter_counts": {
+      "numTotalTests": 284,
+      "numPassedTests": 284,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "reporter_warning": "Do not infer process success from these fields. Consult TEST_RESULTS.md for exit status, killed workers, coverage gates and interruptions.",
+    "files": [
+      {
+        "name": "packages/ux-vault/src/confusables.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 20
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/ux-vault/src/contacts.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 24
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/ux-vault/src/envelope.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 12
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/ux-vault/src/portable-parity.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 148
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/ux-vault/src/reconciliation-amounts.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 19
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/ux-vault/src/schema.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 39
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "packages/ux-vault/src/vault.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 22
+        },
+        "nonpassing": []
+      }
+    ]
+  },
+  {
+    "label": "web broad selection incomplete",
+    "reporter_counts": {
+      "numTotalTests": 892,
+      "numPassedTests": 880,
+      "numFailedTests": 1,
+      "numPendingTests": 1,
+      "success": false
+    },
+    "reporter_warning": "Do not infer process success from these fields. Consult TEST_RESULTS.md for exit status, killed workers, coverage gates and interruptions.",
+    "files": [
+      {
+        "name": "apps/web/src/App.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 17
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/AppLean.fragment.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 9
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/AppLean.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 13
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/AppShell.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/AppShell.idleClock.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 10
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/BackupPanel.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 15
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/CameraImporter.behavior.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 12
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/CameraImporter.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 9
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/CameraImporter.lifecycle.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 18
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/CameraImporter.multipart.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 23
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/CameraImporter.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 6
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/Common.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 16
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ContextHelp.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 8
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ErrorBoundary.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 5
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/InvoicePaymentSummary.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 6
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/MerchantProfilePanel.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 8
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/MerchantTemplateIssuer.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/PaymentRequestQr.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 14
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/PrintableBill.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 9
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/QrFrame.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/QrFrame.largeWarning.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/QrFrame.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 19
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/QrView.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/QrView.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReceiptPanel.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReceiptPanel.invoice.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 16
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReceiptPanel.profile.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 7
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReceiptPanel.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 5
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReconciliationLedger.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 16
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/ReconciliationLedger.test.tsx",
+        "reporter_status": "failed",
+        "assertion_statuses": {
+          "failed": 1,
+          "passed": 16
+        },
+        "nonpassing": [
+          {
+            "name": "encrypted reconciliation UI activates only a previewed encrypted backup as imported untrusted history",
+            "status": "failed"
+          }
+        ]
+      },
+      {
+        "name": "apps/web/src/components/SecretBackup.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 29
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/SecretBackup.views.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 16
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/TagArchive.atomicity.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 14
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/TagArchive.history.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/TagArchive.retry.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/TagArchive.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 9
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/components/WalletAttempts.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/LanguagePicker.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/Trans.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/catalog.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/context.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/languages.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 6
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/message.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 38
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/securityKeys.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 12
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/settings.integration.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/storage.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/i18n/translator.test.ts",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/About.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 8
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/CreateInvoice.buffer.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 32
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/CreateInvoice.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/CreateInvoice.register.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/CreateInvoice.supported.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 9
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/CreateInvoice.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 16
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Pay.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 7
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 63
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Pay.supported.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 10
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Pay.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 66
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/RegistryView.route.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Scan.autoRescan.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 5
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Scan.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Scan.privacy.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Scan.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 31
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/ScanPrivacy.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/SellerKeys.completion.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 8
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/SellerKeys.i18n.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 1
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/SellerKeys.lock.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 4
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/SellerKeys.storage.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/SellerKeys.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 28,
+          "pending": 11
+        },
+        "nonpassing": [
+          {
+            "name": "encrypted vault save lifetime reports a durable commit honestly when the keys change after the write landed",
+            "status": "pending"
+          },
+          {
+            "name": "encrypted vault delete confirmation Cancel keeps vault A byte-for-byte",
+            "status": "pending"
+          },
+          {
+            "name": "encrypted vault delete confirmation a stale confirmation cannot delete replacement vault B (A -> B)",
+            "status": "pending"
+          },
+          {
+            "name": "encrypted vault delete confirmation a stale confirmation rejects when the vault was removed and B saved meanwhile (A -> empty -> B)",
+            "status": "pending"
+          },
+          {
+            "name": "encrypted vault delete confirmation rejects when B lands between the Confirm click and the delete transaction",
+            "status": "pending"
+          },
+          {
+            "name": "encrypted vault delete confirmation an unchanged confirmation deletes A, and a repeated click cannot delete a later B",
+            "status": "pending"
+          },
+          {
+            "name": "encrypted vault delete confirmation shows a visible error when browser storage fails during delete",
+            "status": "pending"
+          },
+          {
+            "name": "G2-05: typed key hex and passphrases do not outlive their use a failed hex import clears the typed keys and their value attributes",
+            "status": "pending"
+          },
+          {
+            "name": "G2-05: typed key hex and passphrases do not outlive their use typed hex keys are gone once other keys were loaded and wiped",
+            "status": "pending"
+          },
+          {
+            "name": "G2-05: typed key hex and passphrases do not outlive their use the idle lock clears them without keys, and while unsaved keys stay loaded",
+            "status": "pending"
+          },
+          {
+            "name": "G2-06: vault passphrases are not offered to the browser password manager uses autocomplete=\"off\" and distinct non-credential names on every vault and step-up field, and says not to save",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "name": "apps/web/src/views/SellerPairing.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 17
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Settings.exchange.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 11
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Settings.race.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 2
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Settings.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 14
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Sweep.privacy.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 3
+        },
+        "nonpassing": []
+      },
+      {
+        "name": "apps/web/src/views/Sweep.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 55
+        },
+        "nonpassing": []
+      }
+    ]
+  },
+  {
+    "label": "ledger isolated",
+    "reporter_counts": {
+      "numTotalTests": 17,
+      "numPassedTests": 17,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "reporter_warning": "Do not infer process success from these fields. Consult TEST_RESULTS.md for exit status, killed workers, coverage gates and interruptions.",
+    "files": [
+      {
+        "name": "apps/web/src/components/ReconciliationLedger.test.tsx",
+        "reporter_status": "passed",
+        "assertion_statuses": {
+          "passed": 17
+        },
+        "nonpassing": []
+      }
+    ]
+  }
+]

@@ -1,0 +1,143 @@
+{
+  "source": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "node": "v24.22.3",
+  "seed": 1196446017,
+  "seedHex": "0x47505141",
+  "groups": [
+    {
+      "name": "decimal-exact-roundtrips",
+      "status": "passed",
+      "elapsedMs": 10.893,
+      "cases": 5000,
+      "decimals": [
+        0,
+        36
+      ],
+      "maxAtomicBits": 128
+    },
+    {
+      "name": "evm-payment-uri-roundtrips",
+      "status": "passed",
+      "elapsedMs": 113.252,
+      "cases": 2000,
+      "maxAtomicBits": 128,
+      "chainIdRange": [
+        1,
+        4294967296
+      ]
+    },
+    {
+      "name": "multichain-normal-text-roundtrips",
+      "status": "passed",
+      "elapsedMs": 88.268,
+      "cases": 1500,
+      "textCorpusCount": 6
+    },
+    {
+      "name": "accepted-text-boundary-builder-parser-consistency",
+      "status": "failed",
+      "elapsedMs": 0.96,
+      "cases": 3,
+      "observations": [
+        {
+          "name": "bitcoin-label-message-and-silent-address",
+          "builder": "accepted",
+          "parser": "rejected",
+          "uriCharacters": 2124,
+          "parserError": "TOO_LONG",
+          "labelBytes": 128,
+          "messageBytes": 512
+        },
+        {
+          "name": "solana-label-message-memo",
+          "builder": "accepted",
+          "parser": "rejected",
+          "uriCharacters": 2770,
+          "parserError": "TOO_LONG",
+          "labelBytes": 128,
+          "messageBytes": 512
+        },
+        {
+          "name": "tron-label-message-token-amount",
+          "builder": "accepted",
+          "parser": "rejected",
+          "uriCharacters": 2071,
+          "parserError": "TOO_LONG",
+          "labelBytes": 128,
+          "messageBytes": 512
+        }
+      ],
+      "consistencyFailures": 3
+    },
+    {
+      "name": "multipart-qr-roundtrip-stress",
+      "status": "passed",
+      "elapsedMs": 879.747,
+      "cases": 600,
+      "payloadBytes": [
+        1,
+        32768
+      ],
+      "totalBytes": 10146005,
+      "totalFrames": 27949,
+      "duplicateFrameAdds": 27949,
+      "maxFrames": 64,
+      "throughputMiBPerSec": 11
+    },
+    {
+      "name": "invoice-ordinary-plain-encrypted-roundtrips",
+      "status": "passed",
+      "elapsedMs": 1564.885,
+      "cases": 120,
+      "plain": 60,
+      "encrypted": 60,
+      "textCorpusCount": 5
+    },
+    {
+      "name": "settings-exchange-valid-roundtrips",
+      "status": "passed",
+      "elapsedMs": 22.65,
+      "cases": 1000,
+      "delayRangeSeconds": [
+        0,
+        86400
+      ],
+      "lockRangeMinutes": [
+        1,
+        240
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "name": "bitcoin-label-message-and-silent-address",
+      "builder": "accepted",
+      "parser": "rejected",
+      "uriCharacters": 2124,
+      "parserError": "TOO_LONG",
+      "labelBytes": 128,
+      "messageBytes": 512
+    },
+    {
+      "name": "solana-label-message-memo",
+      "builder": "accepted",
+      "parser": "rejected",
+      "uriCharacters": 2770,
+      "parserError": "TOO_LONG",
+      "labelBytes": 128,
+      "messageBytes": 512
+    },
+    {
+      "name": "tron-label-message-token-amount",
+      "builder": "accepted",
+      "parser": "rejected",
+      "uriCharacters": 2071,
+      "parserError": "TOO_LONG",
+      "labelBytes": 128,
+      "messageBytes": 512
+    }
+  ],
+  "finishedAt": "2026-11-20T06:09:40.698Z",
+  "peakRssBytes": 121270272,
+  "failedGroups": 1
+}

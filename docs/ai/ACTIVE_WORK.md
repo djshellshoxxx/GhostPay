@@ -612,3 +612,23 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## Read-only QA, QC and bounded stress review — 2026-11-19
+
+Worker: ChatGPT QA coordinator with independent core, browser and QC reviewers.
+Branch: `audit/ghostpay-qa-stress-20261119`.
+Pinned main/base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: this additive claim and `docs/qa/2026-11-19-readonly/**` only.
+Acceptance: record source-pinned actual test/build outcomes, bounded synthetic
+property/stress observations, independently reviewed issues and actionable repair
+handoffs. Distinguish main findings, pending-branch fixes, hypotheses and environment
+limits. Verify the final Git delta contains documentation only.
+User constraint: do not modify application, tests, dependencies, configuration,
+workflows or contracts. Temporary QA harnesses and logs remain outside tracked
+source; generated build outputs are not committed. No integration, release or
+live-funds action is part of this review.
+Status: completed as a documentation-only QA handoff. Three functional/API
+findings and one test-synchronization issue are left for a separate repair worker.
+Actual passes, interrupted runs, source refresh and remaining gates are recorded
+in `docs/qa/2026-11-19-readonly/README.md` and `TEST_RESULTS.md`.
