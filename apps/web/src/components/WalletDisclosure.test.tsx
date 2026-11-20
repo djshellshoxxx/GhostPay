@@ -134,6 +134,26 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
       expect(document.activeElement).toBe(screen.getByRole('switch', { name: 'Privacy mode' }));
     } finally { document.removeEventListener('focusin', recordFocus, true); }
   });
+  it('quick hide focuses the privacy control when the caller lost focus before disclosure', async () => {
+    const provider = new MockWallet(); const scope = {};
+    render(<PrivacyProvider enabled scope={scope}><WalletDisclosureProvider scope={scope}>
+      <PrivateWallet provider={provider} />
+    </WalletDisclosureProvider></PrivacyProvider>);
+    const user = userEvent.setup();
+    const reveal = screen.getByRole('button', { name: 'Reveal details' });
+    await user.click(reveal);
+    // A real wallet caller can disable its initiating button while awaiting preflight.
+    // Browsers then leave body as the active element before the disclosure is requested.
+    reveal.blur();
+    expect(document.activeElement).toBe(document.body);
+    fireEvent.click(screen.getByRole('button', { name: 'Connect', exact: true }));
+    await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+    await user.keyboard('{Alt>}{Shift>}H{/Shift}{/Alt}');
+    await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
+    expect(provider.calls).toEqual([]);
+    expect(screen.queryByRole('button', { name: 'Connect', exact: true })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('switch', { name: 'Privacy mode' }));
+  });
   it('route/scope changes and unmount cancel the prompt rather than keeping its approval alive', async () => {
     const provider = new MockWallet(); const mounted = render(<App provider={provider} scope={{}} />);
     const user = userEvent.setup(); await user.click(screen.getByRole('button', { name: 'Connect' }));
