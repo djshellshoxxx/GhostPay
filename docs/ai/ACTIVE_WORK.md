@@ -1963,3 +1963,17 @@ released generation 4. This cycle has not acquired or modified it. Any shared
 integration requires a fresh valid lease and all other gates; isolated review
 work may proceed. No deployment, release, funds, paid agents, workflow changes,
 force-pushes, or security-gate waiver is authorized.
+
+## Qualification evidence checkpoint for the same bounded cycle
+
+Evidence-only branch: `automation/20261120T003500Z/coordinator/qualification-evidence`.
+Base: final source PR #290 at `ec546311f994fe1db544fe85ff2aa6db428d67d4`,
+tree `9c5df12a4621384323af1f4d51b1b04e37d62d3c`, identical to local
+`53503b41e1b459e389b8b2d2696631a47bc2298c`.
+The coordinator owns only this additive claim, the cycle subdirectory under the
+existing continuous handoff, and additive proposals to its README/TASK_LEDGER
+and the handoff index. This branch keeps documentation receipts separate from
+the final source PR so evidence updates do not restart its active CI.
+The runtime is frozen; distinct tests from concurrent PR #291 were selectively
+retained with provenance. Neither original source branch is removed or rewritten.
+Shared integration remains with the generation-5 lock owner; no lease is claimed.
