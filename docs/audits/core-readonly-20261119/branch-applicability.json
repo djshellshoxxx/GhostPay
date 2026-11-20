@@ -1,0 +1,2174 @@
+{
+  "reviewer": "branch_matrix_review",
+  "review_date": "2026-11-20",
+  "scope": "Independent applicability review of the 16 specifically requested findings across seven immutable snapshots.",
+  "method": "Read-only git source/diff and tree metadata inspection; targeted independent reading of relevant source ranges and complete narrow correction hunks; identical whole blobs share findings. Existing full-file review coverage is supplied by unified-coverage.json.",
+  "runtime_execution": "No application source, target tests, analyzers, scanners, browser, payloads, live endpoints, or transactions were executed. No target source or repository documents were changed.",
+  "coverage_claim": "This matrix contributes exact-snippet applicability revalidation, not additional whole-file coverage or runtime testing.",
+  "source_reviews": [
+    "custody_privacy_review.json",
+    "payment_ui_review.json",
+    "payment_surfaces_wave2.json",
+    "scan_network_wave2.json",
+    "crypto_protocol_review.json"
+  ],
+  "snapshot_catalog": {
+    "current_main": {
+      "label": "Current main",
+      "branch": "main (freshness snapshot)",
+      "commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+    },
+    "release": {
+      "label": "Release",
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    },
+    "completion": {
+      "label": "Completion",
+      "branch": "integration/ghostpay-completion-20261120",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+    },
+    "quick_hide": {
+      "label": "Quick-hide",
+      "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+      "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+    },
+    "unique_code": {
+      "label": "Unique-code",
+      "branch": "integration/ghostpay-main-unique-code-20261120",
+      "commit": "885b9569e6fc99e43bf01d23305494275e10120e"
+    },
+    "recovered_fixes": {
+      "label": "Recovered-fixes",
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+    },
+    "tor": {
+      "label": "Tor",
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "commit": "14a7526842b3cb055452b721d237a7e68813ff0c"
+    }
+  },
+  "status_legend": {
+    "affected": "The specific defect is present in an inspected application path, subject to the stated conditions; confirmed by source, not execution.",
+    "fixed": "The inspected immutable snapshot contains the source correction for this row. This does not mean deployed, merged elsewhere, runtime-tested, or comprehensively secure.",
+    "not-present": "The defect-specific implementation/contract is absent. This does not imply equivalent newer functionality or a backported fix.",
+    "conditional": "The code gap remains at a malformed direct-runtime-input or caller/environment boundary; normal production reachability has not been established.",
+    "partial": "A subset is corrected; the remaining condition is explicitly stated in the cell."
+  },
+  "findings": [
+    {
+      "id": "CUSTODY-01",
+      "title": "Idle lock retains ordinary authority",
+      "severity": "Medium",
+      "condition": "Loaded seller keys reach idle expiry. Ordinary authority is not synchronously revoked while custody is checked; if there is no verified recoverable copy, keys remain usable through ordinary secret APIs.",
+      "impact_limit": "This is a local session-authority lifecycle gap. Fixed snapshots deliberately preserve narrow encrypted-backup recovery for a sole copy; that retained recovery is not an additional ordinary-session bypass.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "C1-A",
+            "C1-B"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "C1-C",
+            "C1-E"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "C1-C",
+            "C1-E"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "C1-D",
+            "C1-E"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "C1-A",
+            "C1-B"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "affected",
+          "evidence_ids": [
+            "C1-A",
+            "C1-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "C1-A",
+            "C1-B"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "C1-A",
+        "C1-B",
+        "C1-C",
+        "C1-D",
+        "C1-E"
+      ]
+    },
+    {
+      "id": "CUSTODY-02",
+      "title": "Archived receipt issue date exceeds Date range",
+      "severity": "Low",
+      "condition": "An authenticated same-seller/same-chain reconciliation archive contains a positive safe-integer issuedAt outside the representable JavaScript Date range in seconds, and the receipt history is rendered.",
+      "impact_limit": "History rendering can throw; no fund movement, remote unauthenticated path, or stored-byte corruption is established. In the privacy branch the history may additionally require its reveal action.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-A",
+            "C2-C",
+            "C2-D"
+          ]
+        },
+        "release": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-B",
+            "C2-C",
+            "C2-D"
+          ]
+        },
+        "completion": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-B",
+            "C2-C",
+            "C2-D"
+          ]
+        },
+        "quick_hide": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-B",
+            "C2-C",
+            "C2-E"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-A",
+            "C2-C",
+            "C2-D"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-A",
+            "C2-C",
+            "C2-D"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "C2-A",
+            "C2-C",
+            "C2-D"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "C2-A",
+        "C2-B",
+        "C2-C",
+        "C2-D",
+        "C2-E"
+      ]
+    },
+    {
+      "id": "SCAN-NET-02",
+      "title": "Private scan loses session-only RPC selections",
+      "severity": "Medium",
+      "condition": "Production privateScanStore is enabled, current-tab endpoint settings are saved with session-only retention, and persisted settings remain readable. The integrity consequence additionally requires a usable primary, a chosen session-only secondary, and plan.useSecondary=true.",
+      "impact_limit": "The chosen independent secondary may be silently omitted. A session-only primary with no usable custom scan endpoint fails visibly and closed. Read denial/absent browser storage uses the in-memory fallback. No forged payment or fund loss is established.",
+      "cells": {
+        "current_main": {
+          "status": "not-present",
+          "evidence_ids": [
+            "SN2-J",
+            "SN2-K"
+          ],
+          "qualification": "Defect-specific persisted-settings private-scan path is absent; this is not a claim that the newer private-scan feature was integrated and fixed."
+        },
+        "release": {
+          "status": "affected",
+          "evidence_ids": [
+            "SN2-A",
+            "SN2-C",
+            "SN2-E",
+            "SN2-G",
+            "SN2-I"
+          ]
+        },
+        "completion": {
+          "status": "affected",
+          "evidence_ids": [
+            "SN2-A",
+            "SN2-C",
+            "SN2-E",
+            "SN2-G",
+            "SN2-I"
+          ]
+        },
+        "quick_hide": {
+          "status": "affected",
+          "evidence_ids": [
+            "SN2-B",
+            "SN2-D",
+            "SN2-F",
+            "SN2-H",
+            "SN2-I"
+          ]
+        },
+        "unique_code": {
+          "status": "not-present",
+          "evidence_ids": [
+            "SN2-J",
+            "SN2-K"
+          ],
+          "qualification": "Defect-specific persisted-settings private-scan path is absent; this is not a claim that the newer private-scan feature was integrated and fixed."
+        },
+        "recovered_fixes": {
+          "status": "not-present",
+          "evidence_ids": [
+            "SN2-J",
+            "SN2-K"
+          ],
+          "qualification": "Defect-specific persisted-settings private-scan path is absent; this is not a claim that the newer private-scan feature was integrated and fixed."
+        },
+        "tor": {
+          "status": "not-present",
+          "evidence_ids": [
+            "SN2-J",
+            "SN2-K"
+          ],
+          "qualification": "Defect-specific persisted-settings private-scan path is absent; this is not a claim that the newer private-scan feature was integrated and fixed."
+        }
+      },
+      "evidence_ids": [
+        "SN2-A",
+        "SN2-B",
+        "SN2-C",
+        "SN2-D",
+        "SN2-E",
+        "SN2-F",
+        "SN2-G",
+        "SN2-H",
+        "SN2-I",
+        "SN2-J",
+        "SN2-K"
+      ]
+    },
+    {
+      "id": "SCAN-NET-01",
+      "title": "Thirty-day privacy count loses partial qualifier",
+      "severity": "Low",
+      "condition": "The scan covers the recent seven-day interval but not the whole available thirty-day interval, while reporting both counts.",
+      "impact_limit": "The thirty-day count can be presented as complete when it is a lower bound. Spending authority is unaffected.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "SN1-A"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "SN1-B"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "SN1-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "SN1-B"
+          ]
+        },
+        "unique_code": {
+          "status": "fixed",
+          "evidence_ids": [
+            "SN1-B"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "SN1-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "SN1-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "SN1-A",
+        "SN1-B"
+      ]
+    },
+    {
+      "id": "PUI-01",
+      "title": "RPC receipt identity and status are not fully validated",
+      "severity": "Medium",
+      "condition": "The selected RPC returns a receipt with missing/mismatched transactionHash or a parsed status outside the two defined outcomes.",
+      "impact_limit": "Payment outcome presentation can be attributed to inconsistent data. This does not establish chain-state forgery or theft. Both identity and status checks are required for fixed status.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "P1-A"
+          ]
+        },
+        "release": {
+          "status": "affected",
+          "evidence_ids": [
+            "P1-A"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P1-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "affected",
+          "evidence_ids": [
+            "P1-A"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "P1-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P1-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "P1-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P1-A",
+        "P1-B"
+      ]
+    },
+    {
+      "id": "PUI-02",
+      "title": "ERC20 simulation accepts malformed nonempty ABI bool",
+      "severity": "Low",
+      "condition": "simulateCall is used with expectBool=true and receives nonempty syntactically valid hex that is not a canonical ABI boolean.",
+      "impact_limit": "The UI can omit its unavailable-simulation warning. The product already permits unavailable simulations with a warning; no direct unintended-transfer bypass is established.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "P2-A"
+          ]
+        },
+        "release": {
+          "status": "affected",
+          "evidence_ids": [
+            "P2-A"
+          ]
+        },
+        "completion": {
+          "status": "affected",
+          "evidence_ids": [
+            "P2-A"
+          ]
+        },
+        "quick_hide": {
+          "status": "affected",
+          "evidence_ids": [
+            "P2-A"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "P2-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P2-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "P2-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P2-A",
+        "P2-B"
+      ]
+    },
+    {
+      "id": "PUI-03",
+      "title": "Sweep input edits do not revoke pending review",
+      "severity": "Medium",
+      "condition": "A user begins a sweep with a valid session, then changes destination, mode, or the review context while preparation/signing is awaiting completion.",
+      "impact_limit": "The earlier captured transaction context can continue despite changed visible inputs. This is stale consent, not arbitrary recipient injection. No fund-loss magnitude or live signing result is asserted.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "P3-A",
+            "P3-B"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P3-C",
+            "P3-D"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P3-C",
+            "P3-D"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P3-C",
+            "P3-D"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "P3-A",
+            "P3-B"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "affected",
+          "evidence_ids": [
+            "P3-A",
+            "P3-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "P3-A",
+            "P3-B"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P3-A",
+        "P3-B",
+        "P3-C",
+        "P3-D"
+      ]
+    },
+    {
+      "id": "PUI-04",
+      "title": "Page hiding does not revoke pending local imports",
+      "severity": "Low",
+      "condition": "A local paste/image import remains pending when the page is hidden with no active camera.",
+      "impact_limit": "The consumer callback can receive content after the action lifetime should end. Downstream consumer checks can limit effects; no secret disclosure or unauthorized signing is established.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "P4-A"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P4-B"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P4-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P4-B"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "P4-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P4-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "P4-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P4-A",
+        "P4-B"
+      ]
+    },
+    {
+      "id": "PUI-05",
+      "title": "parseUnits lacks runtime argument guards",
+      "severity": "Low",
+      "condition": "A direct runtime caller violates the TypeScript amount/decimal-precision contract.",
+      "impact_limit": "The utility can throw or perform excessive work, but reviewed normal production callers use strings and configured precision. No network-controlled unbounded-precision path is established.",
+      "cells": {
+        "current_main": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P5-A"
+          ]
+        },
+        "release": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P5-A"
+          ]
+        },
+        "completion": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P5-A"
+          ]
+        },
+        "quick_hide": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P5-A"
+          ]
+        },
+        "unique_code": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P5-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P5-B"
+          ]
+        },
+        "tor": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P5-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P5-A",
+        "P5-B"
+      ]
+    },
+    {
+      "id": "PS2-01",
+      "title": "Privacy WalletAttempts callers omit wallet",
+      "severity": "Low",
+      "condition": "The privacy WalletAttempts implementation has journal entries, but its production Pay/Registry callers omit the optional wallet account/chain scope even after connection.",
+      "impact_limit": "History and its explicit-clear recovery action are unavailable. Duplicate-attempt protection remains active, and the current transaction view may still display a hash. No false success or theft is established.",
+      "cells": {
+        "current_main": {
+          "status": "not-present",
+          "evidence_ids": [
+            "PS1-E"
+          ]
+        },
+        "release": {
+          "status": "not-present",
+          "evidence_ids": [
+            "PS1-B",
+            "PS1-C",
+            "PS1-D",
+            "PS1-E"
+          ]
+        },
+        "completion": {
+          "status": "not-present",
+          "evidence_ids": [
+            "PS1-B",
+            "PS1-C",
+            "PS1-D",
+            "PS1-E"
+          ]
+        },
+        "quick_hide": {
+          "status": "affected",
+          "evidence_ids": [
+            "PS1-A",
+            "PS1-B",
+            "PS1-C",
+            "PS1-D"
+          ]
+        },
+        "unique_code": {
+          "status": "not-present",
+          "evidence_ids": [
+            "PS1-E"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "not-present",
+          "evidence_ids": [
+            "PS1-E"
+          ]
+        },
+        "tor": {
+          "status": "not-present",
+          "evidence_ids": [
+            "PS1-E"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "PS1-A",
+        "PS1-B",
+        "PS1-C",
+        "PS1-D",
+        "PS1-E"
+      ]
+    },
+    {
+      "id": "CP-H01",
+      "title": "Rejected conflicting QR chunk refreshes idle expiry",
+      "severity": "Low",
+      "condition": "An incomplete bounded multipart QR session receives a conflicting chunk before its existing idle deadline.",
+      "impact_limit": "Rejected input refreshes the deadline. Final payload integrity/authentication and storage bounds remain in force; no unbounded-storage or authentication bypass is established.",
+      "cells": {
+        "current_main": {
+          "status": "affected",
+          "evidence_ids": [
+            "H1-A"
+          ]
+        },
+        "release": {
+          "status": "affected",
+          "evidence_ids": [
+            "H1-A"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H1-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "affected",
+          "evidence_ids": [
+            "H1-A"
+          ]
+        },
+        "unique_code": {
+          "status": "affected",
+          "evidence_ids": [
+            "H1-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H1-B"
+          ]
+        },
+        "tor": {
+          "status": "affected",
+          "evidence_ids": [
+            "H1-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "H1-A",
+        "H1-B"
+      ]
+    },
+    {
+      "id": "CP-H02",
+      "title": "Canonical arrays lack dense own-data validation",
+      "severity": "Informational",
+      "condition": "A direct JavaScript caller supplies a sparse, decorated, accessor-bearing, or otherwise malformed array to canonicalize.",
+      "impact_limit": "Unexpected canonical representations are possible at the API boundary. Strict parsed JSON supplies ordinary dense arrays; no reachable signature bypass is established. Descriptor snapshotting does not imply arbitrary proxy objects can never run any trap.",
+      "cells": {
+        "current_main": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H2-A"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H2-B"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H2-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H2-B"
+          ]
+        },
+        "unique_code": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H2-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H2-B"
+          ]
+        },
+        "tor": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H2-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "H2-A",
+        "H2-B"
+      ]
+    },
+    {
+      "id": "CP-H03",
+      "title": "Base64url decoder lacks runtime string guard",
+      "severity": "Informational",
+      "condition": "A direct runtime caller supplies a non-string decoder argument.",
+      "impact_limit": "Behavior/errors can be inconsistent, but the invoice-fragment entry point already checks string input. No external verification bypass is established.",
+      "cells": {
+        "current_main": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H3-A"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H3-B"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H3-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H3-B"
+          ]
+        },
+        "unique_code": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H3-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H3-B"
+          ]
+        },
+        "tor": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H3-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "H3-A",
+        "H3-B"
+      ]
+    },
+    {
+      "id": "CP-H04",
+      "title": "Merchant profile expiry lacks invalid-clock guard",
+      "severity": "Low",
+      "condition": "The caller/environment supplies a non-finite or negative nowSec; some invalid clock values allow a correctly signed profile to pass without meaningful expiry evaluation.",
+      "impact_limit": "Clock control is a caller/environment prerequisite; no external clock-control path is established. Fixed status covers the explicit non-finite/negative-clock check.",
+      "cells": {
+        "current_main": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H4-A"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H4-B"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H4-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H4-B"
+          ]
+        },
+        "unique_code": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H4-A"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "H4-B"
+          ]
+        },
+        "tor": {
+          "status": "conditional",
+          "evidence_ids": [
+            "H4-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "H4-A",
+        "H4-B"
+      ]
+    },
+    {
+      "id": "PUI-06",
+      "title": "QR kind helpers lack complete runtime guards",
+      "severity": "Informational",
+      "condition": "A runtime caller supplies an out-of-domain kind/payload argument or a non-string property key.",
+      "impact_limit": "Normal reviewed callers use typed constants; no imported-QR route to privileged secret handling or key disclosure is established.",
+      "cells": {
+        "current_main": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P6-A"
+          ]
+        },
+        "release": {
+          "status": "partial",
+          "evidence_ids": [
+            "P6-B"
+          ],
+          "qualification": "Own-key checks are present, but a runtime string check is missing; residual behavior requires malformed direct runtime input."
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P6-C"
+          ]
+        },
+        "quick_hide": {
+          "status": "partial",
+          "evidence_ids": [
+            "P6-B"
+          ],
+          "qualification": "Own-key checks are present, but a runtime string check is missing; residual behavior requires malformed direct runtime input."
+        },
+        "unique_code": {
+          "status": "partial",
+          "evidence_ids": [
+            "P6-B"
+          ],
+          "qualification": "Own-key checks are present, but a runtime string check is missing; residual behavior requires malformed direct runtime input."
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P6-C"
+          ]
+        },
+        "tor": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P6-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P6-A",
+        "P6-B",
+        "P6-C"
+      ]
+    },
+    {
+      "id": "PUI-07",
+      "title": "Multipart QR normalizes ill-formed Unicode",
+      "severity": "Informational",
+      "condition": "A direct multipart caller supplies text containing an unpaired UTF-16 surrogate.",
+      "impact_limit": "Encoded text may differ from caller input. Reviewed invoice/key producers emit structured encoded text; no valid signed-invoice/key corruption flow is established.",
+      "cells": {
+        "current_main": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P7-A"
+          ]
+        },
+        "release": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P7-B"
+          ]
+        },
+        "completion": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P7-B"
+          ]
+        },
+        "quick_hide": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P7-B"
+          ]
+        },
+        "unique_code": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P7-B"
+          ]
+        },
+        "recovered_fixes": {
+          "status": "fixed",
+          "evidence_ids": [
+            "P7-B"
+          ]
+        },
+        "tor": {
+          "status": "conditional",
+          "evidence_ids": [
+            "P7-A"
+          ]
+        }
+      },
+      "evidence_ids": [
+        "P7-A",
+        "P7-B"
+      ]
+    }
+  ],
+  "evidence_catalog": {
+    "C1-A": {
+      "id": "C1-A",
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          145,
+          168
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Idle lock awaits custody without suspension; the unrecoverable sole-copy branch returns with the seller session retained.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/AppShell.tsx#L145-L168"
+    },
+    "C1-B": {
+      "id": "C1-B",
+      "path": "apps/web/src/lib/session.ts",
+      "blob": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          312,
+          359
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Ordinary secret access and guards check key-holder/revision presence without an idle suspension check.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/session.ts#L312-L359"
+    },
+    "C1-C": {
+      "id": "C1-C",
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          257,
+          272
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion"
+      ],
+      "observation": "Idle lock calls suspendSession synchronously before vault lock, view notification, or asynchronous custody finalization.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/AppShell.tsx#L257-L272"
+    },
+    "C1-D": {
+      "id": "C1-D",
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          276,
+          291
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "Privacy variant preserves the same synchronous authority suspension.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/AppShell.tsx#L276-L291"
+    },
+    "C1-E": {
+      "id": "C1-E",
+      "path": "apps/web/src/lib/session.ts",
+      "blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          104,
+          146
+        ],
+        [
+          383,
+          451
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Ordinary APIs evaluate expiry and suspension; pre-lock revisions fail, while a separately named encrypted-backup-only guard permits retained recovery.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/session.ts#L104-L146"
+    },
+    "C2-A": {
+      "id": "C2-A",
+      "path": "packages/invoice-schema/src/receipts.ts",
+      "blob": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          86,
+          94
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "issuedAt has a positive-safe-integer check, without a representable JavaScript Date upper bound in seconds.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/packages/invoice-schema/src/receipts.ts#L86-L94"
+    },
+    "C2-B": {
+      "id": "C2-B",
+      "path": "packages/invoice-schema/src/receipts.ts",
+      "blob": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          90,
+          98
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "The optional-address receipt variant retains the same issue-time validation gap.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/invoice-schema/src/receipts.ts#L90-L98"
+    },
+    "C2-C": {
+      "id": "C2-C",
+      "path": "packages/ux-vault/src/reconciliation-portable.ts",
+      "blob": "78d7b8ec843514d3446b69fa22b84e35b178a694",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          527,
+          542
+        ],
+        [
+          1045,
+          1083
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "completion",
+        "quick_hide",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Authenticated archive import delegates issue-time validation to the receipt schema; the explicit Date-range bound applies only to archivedAt.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/ux-vault/src/reconciliation-portable.ts#L527-L542"
+    },
+    "C2-D": {
+      "id": "C2-D",
+      "path": "apps/web/src/components/ReconciliationLedger.tsx",
+      "blob": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          751,
+          757
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "completion",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "History renders receipt.issuedAt * 1000 through unguarded Date.toISOString.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/components/ReconciliationLedger.tsx#L751-L757"
+    },
+    "C2-E": {
+      "id": "C2-E",
+      "path": "apps/web/src/components/ReconciliationLedger.tsx",
+      "blob": "07e736bb80b10e16b49e9e09b2aff9d3085a2a82",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          756,
+          762
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "Privacy-wrapped history retains the same unguarded issue-date rendering.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/components/ReconciliationLedger.tsx#L756-L762"
+    },
+    "SN2-A": {
+      "id": "SN2-A",
+      "path": "apps/web/src/views/Settings.tsx",
+      "blob": "fb144d734ef2e05825735e01aaeb3243d43085f7",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          101,
+          109
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion"
+      ],
+      "observation": "Validated endpoint maps enter current app settings after session-only retention choices are registered.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/views/Settings.tsx#L101-L109"
+    },
+    "SN2-B": {
+      "id": "SN2-B",
+      "path": "apps/web/src/views/Settings.tsx",
+      "blob": "83a8148de6a30fe4e34a287af19d72e2a7dd05fc",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          111,
+          119
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "Privacy settings variant preserves the retention registration and current app-settings update.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/views/Settings.tsx#L111-L119"
+    },
+    "SN2-C": {
+      "id": "SN2-C",
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          421,
+          436
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion"
+      ],
+      "observation": "Current React settings retain the submitted maps while saveSettings writes the stripped persisted representation.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/AppShell.tsx#L421-L436"
+    },
+    "SN2-D": {
+      "id": "SN2-D",
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          440,
+          461
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "An execution-settings change retains the full current maps then saves the stripped representation; UI-only privacy saves have a separate shortcut.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/AppShell.tsx#L440-L461"
+    },
+    "SN2-E": {
+      "id": "SN2-E",
+      "path": "apps/web/src/lib/settings.ts",
+      "blob": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          185,
+          204
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion"
+      ],
+      "observation": "loadSettings reads stored preferences only; saveSettings removes primary and secondary session-only URLs.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/settings.ts#L185-L204"
+    },
+    "SN2-F": {
+      "id": "SN2-F",
+      "path": "apps/web/src/lib/settings.ts",
+      "blob": "666aff245eac46a61633b74257bc65c39fb6093e",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          227,
+          251
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "Privacy preferences are separate, but execution-settings load still reads only storage and save strips session-only URLs.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/lib/settings.ts#L227-L251"
+    },
+    "SN2-G": {
+      "id": "SN2-G",
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          92,
+          98
+        ],
+        [
+          166,
+          175
+        ],
+        [
+          434,
+          467
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion"
+      ],
+      "observation": "Private scanning prefers readable persisted settings. Missing primary fails visibly; an omitted secondary is skipped even when the plan permits its use.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/views/Scan.tsx#L92-L98"
+    },
+    "SN2-H": {
+      "id": "SN2-H",
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "ad2bc9f8ef82de6151b8d769ad468d0761a9026e",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          93,
+          99
+        ],
+        [
+          167,
+          176
+        ],
+        [
+          435,
+          468
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "Privacy variant has the same persisted-settings preference and missing-secondary behavior.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/views/Scan.tsx#L93-L99"
+    },
+    "SN2-I": {
+      "id": "SN2-I",
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          113,
+          119
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Production services enable privateScanStore.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/defaultServices.ts#L113-L119"
+    },
+    "SN2-J": {
+      "id": "SN2-J",
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "blob": "49158fb4ffec9b1d1eb55bcce21f081dbc9c8d4d",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          40,
+          46
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Older production services do not include privateScanStore.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/defaultServices.ts#L40-L46"
+    },
+    "SN2-K": {
+      "id": "SN2-K",
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "eed9daf882711659720a577138b3e08554ce9fe9",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          212,
+          224
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Older scan uses app.getSecondaryRpc directly; the defect-specific persisted-settings private path is absent.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/views/Scan.tsx#L212-L224"
+    },
+    "SN1-A": {
+      "id": "SN1-A",
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "blob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          170,
+          196
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "tor"
+      ],
+      "observation": "The shared partial flag checks from7 despite also reporting count30d.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/scanSpam.ts#L170-L196"
+    },
+    "SN1-B": {
+      "id": "SN1-B",
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          170,
+          196
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide",
+        "unique_code",
+        "recovered_fixes"
+      ],
+      "observation": "The shared partial flag checks the full available from30 range.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/scanSpam.ts#L170-L196"
+    },
+    "P1-A": {
+      "id": "P1-A",
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          478,
+          503
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "quick_hide",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "pollReceipt does not bind transactionHash and maps every parsed status other than one to reverted.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/wallet.ts#L478-L503"
+    },
+    "P1-B": {
+      "id": "P1-B",
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          483,
+          513
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "completion",
+        "recovered_fixes"
+      ],
+      "observation": "pollReceipt requires a valid matching transactionHash and an exactly zero-or-one status.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/wallet.ts#L483-L513"
+    },
+    "P2-A": {
+      "id": "P2-A",
+      "path": "apps/web/src/lib/txGuard.ts",
+      "blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          111,
+          128
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "completion",
+        "quick_hide",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "expectBool simulation rejects canonical false but treats other syntactically valid nonempty hex as ok.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/txGuard.ts#L111-L128"
+    },
+    "P2-B": {
+      "id": "P2-B",
+      "path": "apps/web/src/lib/txGuard.ts",
+      "blob": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+      "representative_commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c",
+      "anchors": [
+        [
+          111,
+          135
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "recovered_fixes"
+      ],
+      "observation": "Nonempty expectBool output must be one 32-byte word equal to zero or one; malformed output is unavailable, and empty legacy output is preserved.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/6c65cc3fd31c9ae361f932bee4a3449d89ed776c/apps/web/src/lib/txGuard.ts#L111-L135"
+    },
+    "P3-A": {
+      "id": "P3-A",
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          80,
+          86
+        ],
+        [
+          138,
+          157
+        ],
+        [
+          190,
+          209
+        ],
+        [
+          241,
+          264
+        ],
+        [
+          355,
+          355
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "UI guard does not bind destination/mode/review revision; destination remains editable and helpers receive no assertReviewCurrent capability.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/views/Sweep.tsx#L80-L86"
+    },
+    "P3-B": {
+      "id": "P3-B",
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          562,
+          573
+        ],
+        [
+          645,
+          664
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Direct sweep checks seller-session identity before signing/handoff but cannot check the live UI review.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/sweep.ts#L562-L573"
+    },
+    "P3-C": {
+      "id": "P3-C",
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          134,
+          161
+        ],
+        [
+          298,
+          329
+        ],
+        [
+          405,
+          469
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Live balance and quote scopes plus cancellation invalidate superseded reviews and pass assertReviewCurrent to submission helpers.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/views/Sweep.tsx#L134-L161"
+    },
+    "P3-D": {
+      "id": "P3-D",
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          955,
+          980
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Direct submission checks the caller review capability alongside session identity immediately before signing and handoff.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/sweep.ts#L955-L980"
+    },
+    "P4-A": {
+      "id": "P4-A",
+      "path": "apps/web/src/components/CameraImporter.tsx",
+      "blob": "f592f573581511d7287608c3da068aae432f5738",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          121,
+          143
+        ],
+        [
+          158,
+          168
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "Hidden-page handler cancels camera work only; visible omits document visibility and deliver calls the consumer before its cancellation check.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/components/CameraImporter.tsx#L121-L143"
+    },
+    "P4-B": {
+      "id": "P4-B",
+      "path": "apps/web/src/components/CameraImporter.tsx",
+      "blob": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          121,
+          145
+        ],
+        [
+          160,
+          170
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide",
+        "recovered_fixes"
+      ],
+      "observation": "Hidden-page handler cancels pending local imports, visible checks document visibility, and deliver checks before calling the consumer.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/components/CameraImporter.tsx#L121-L145"
+    },
+    "P5-A": {
+      "id": "P5-A",
+      "path": "apps/web/src/lib/format.ts",
+      "blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          16,
+          24
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "completion",
+        "quick_hide",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "parseUnits uses trim, BigInt precision, exponentiation and padding without runtime argument validation.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/format.ts#L16-L24"
+    },
+    "P5-B": {
+      "id": "P5-B",
+      "path": "apps/web/src/lib/format.ts",
+      "blob": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+      "representative_commit": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c",
+      "anchors": [
+        [
+          16,
+          25
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "recovered_fixes"
+      ],
+      "observation": "parseUnits checks string input and integer decimals in the closed range 0..36 before arithmetic.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/6c65cc3fd31c9ae361f932bee4a3449d89ed776c/apps/web/src/lib/format.ts#L16-L25"
+    },
+    "PS1-A": {
+      "id": "PS1-A",
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          10,
+          40
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "quick_hide"
+      ],
+      "observation": "The optional wallet prop controls eligible rows and the explicit-clear action; absent wallet means no eligible history.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/components/WalletAttempts.tsx#L10-L40"
+    },
+    "PS1-B": {
+      "id": "PS1-B",
+      "path": "apps/web/src/views/Pay.tsx",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          1059,
+          1059
+        ],
+        [
+          1127,
+          1127
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Both production Pay render paths omit the wallet prop.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/views/Pay.tsx#L1059-L1059"
+    },
+    "PS1-C": {
+      "id": "PS1-C",
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          272,
+          272
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Registry also renders WalletAttempts without the wallet prop.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/features/registry/RegistryView.tsx#L272-L272"
+    },
+    "PS1-D": {
+      "id": "PS1-D",
+      "path": "apps/web/src/features/policy/PolicyPay.tsx",
+      "blob": "2c29b545732754997b4ac0c3fb93096f125ee511",
+      "representative_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "anchors": [
+        [
+          129,
+          129
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide"
+      ],
+      "observation": "Experimental policy caller also omits wallet; this additional caller does not determine core reachability.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/137628961463fc5abd8b7927b2efe6b18a0a206a/apps/web/src/features/policy/PolicyPay.tsx#L129-L129"
+    },
+    "PS1-E": {
+      "id": "PS1-E",
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          8,
+          34
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "completion",
+        "unique_code",
+        "recovered_fixes",
+        "tor"
+      ],
+      "observation": "Older component has no wallet-prop contract and directly renders available journal rows and clear controls, so the privacy regression is not present.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/components/WalletAttempts.tsx#L8-L34"
+    },
+    "H1-A": {
+      "id": "H1-A",
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "blob": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          63,
+          87
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "release",
+        "quick_hide",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "Assembler refreshes lastActivity before it rejects a conflicting chunk in an incomplete session.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/packages/qr-exchange/src/assembler.ts#L63-L87"
+    },
+    "H1-B": {
+      "id": "H1-B",
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          63,
+          88
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "completion",
+        "recovered_fixes"
+      ],
+      "observation": "Assembler refreshes lastActivity only after the conflict validation accepts the chunk.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/qr-exchange/src/assembler.ts#L63-L88"
+    },
+    "H2-A": {
+      "id": "H2-A",
+      "path": "packages/invoice-schema/src/json.ts",
+      "blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          191,
+          205
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "Canonicalizer calls the input array map method without requiring dense own data properties.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/packages/invoice-schema/src/json.ts#L191-L205"
+    },
+    "H2-B": {
+      "id": "H2-B",
+      "path": "packages/invoice-schema/src/json.ts",
+      "blob": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          192,
+          218
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide",
+        "recovered_fixes"
+      ],
+      "observation": "Canonicalizer snapshots descriptors and validates a dense array with no extra own keys or accessor elements.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/invoice-schema/src/json.ts#L192-L218"
+    },
+    "H3-A": {
+      "id": "H3-A",
+      "path": "packages/invoice-schema/src/base64url.ts",
+      "blob": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          52,
+          65
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "Decoder reads length and charCodeAt without an explicit runtime string guard.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/packages/invoice-schema/src/base64url.ts#L52-L65"
+    },
+    "H3-B": {
+      "id": "H3-B",
+      "path": "packages/invoice-schema/src/base64url.ts",
+      "blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          52,
+          66
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide",
+        "recovered_fixes"
+      ],
+      "observation": "Decoder rejects non-string runtime input before reading its length or allocating output.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/invoice-schema/src/base64url.ts#L52-L66"
+    },
+    "H4-A": {
+      "id": "H4-A",
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          156,
+          182
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "unique_code",
+        "tor"
+      ],
+      "observation": "Verifier evaluates signed-profile expiry using the caller clock without first rejecting non-finite or negative values.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/packages/invoice-schema/src/merchantProfile.ts#L156-L182"
+    },
+    "H4-B": {
+      "id": "H4-B",
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "blob": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          156,
+          184
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide",
+        "recovered_fixes"
+      ],
+      "observation": "Verifier rejects non-finite and negative caller clocks before parsing/signature work.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/invoice-schema/src/merchantProfile.ts#L156-L184"
+    },
+    "P6-A": {
+      "id": "P6-A",
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          178,
+          181
+        ],
+        [
+          232,
+          236
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "tor"
+      ],
+      "observation": "QR classification lacks own-key and runtime string checks.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/qrKinds.ts#L178-L181"
+    },
+    "P6-B": {
+      "id": "P6-B",
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "representative_commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "anchors": [
+        [
+          178,
+          182
+        ],
+        [
+          233,
+          240
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "quick_hide",
+        "unique_code"
+      ],
+      "observation": "Intermediate guards require own keys but still allow JavaScript property-key coercion of non-string arguments.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/lib/qrKinds.ts#L178-L182"
+    },
+    "P6-C": {
+      "id": "P6-C",
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          178,
+          182
+        ],
+        [
+          233,
+          240
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "completion",
+        "recovered_fixes"
+      ],
+      "observation": "Complete guards require string values and own keys before classification.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/qrKinds.ts#L178-L182"
+    },
+    "P7-A": {
+      "id": "P7-A",
+      "path": "apps/web/src/lib/qrMultipart.ts",
+      "blob": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+      "representative_commit": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "anchors": [
+        [
+          19,
+          30
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "current_main",
+        "tor"
+      ],
+      "observation": "Multipart encoding passes text directly to TextEncoder, which normalizes unpaired UTF-16 surrogates.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/apps/web/src/lib/qrMultipart.ts#L19-L30"
+    },
+    "P7-B": {
+      "id": "P7-B",
+      "path": "apps/web/src/lib/qrMultipart.ts",
+      "blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+      "representative_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "anchors": [
+        [
+          19,
+          32
+        ]
+      ],
+      "identical_blob_snapshots": [
+        "release",
+        "completion",
+        "quick_hide",
+        "unique_code",
+        "recovered_fixes"
+      ],
+      "observation": "Multipart encoding rejects unpaired UTF-16 surrogates before TextEncoder.",
+      "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/qrMultipart.ts#L19-L32"
+    }
+  },
+  "quality_and_scope_qualifications": [
+    "Historical/main wording in older finding files still applies to current main 773a94b: the c977b5d -> 773a94b diff contains documentation and portable-hosting-kit changes only.",
+    "Tor matches current main for every source blob used by this matrix. This statement is limited to the reviewed finding paths.",
+    "Recovered-fixes corrects many small boundaries but retains the original idle-lock and sweep-review implementation. Unique-code also retains those implementations.",
+    "Quick-hide is not a superset of completion: it retains the older RPC receipt validator and QR conflict-expiry order, and adds the WalletAttempts wiring regression.",
+    "SCAN-NET-02 needs readable persisted settings. Its Medium integrity consequence requires an otherwise usable primary, session-only secondary, and plan.useSecondary=true. The missing-primary case is visible fail-closed availability behavior.",
+    "QR kind guards are partial in release, quick-hide and unique-code. The older worker hash-only receipt fix is likewise partial but is outside these seven primary columns.",
+    "PUI-05, PUI-06, PUI-07 and CP-H02/03/04 must keep their direct-caller/environment prerequisites. Source presence alone is not proof of a remotely exploitable denial of service, signature bypass or key disclosure.",
+    "CUSTODY-02 remains in all seven snapshots and requires an authenticated reconciliation archive/history path; it is not an unauthenticated network finding.",
+    "No additional higher-severity claim was established by this independent applicability review. Severity labels are inherited from the scoped source findings with the conditions above retained."
+  ],
+  "counts": {
+    "current_main": {
+      "affected": 8,
+      "not-present": 2,
+      "conditional": 6
+    },
+    "release": {
+      "fixed": 8,
+      "affected": 5,
+      "conditional": 1,
+      "not-present": 1,
+      "partial": 1
+    },
+    "completion": {
+      "fixed": 11,
+      "affected": 3,
+      "conditional": 1,
+      "not-present": 1
+    },
+    "quick_hide": {
+      "fixed": 8,
+      "affected": 6,
+      "conditional": 1,
+      "partial": 1
+    },
+    "unique_code": {
+      "affected": 7,
+      "not-present": 2,
+      "fixed": 2,
+      "conditional": 4,
+      "partial": 1
+    },
+    "recovered_fixes": {
+      "affected": 3,
+      "not-present": 2,
+      "fixed": 11
+    },
+    "tor": {
+      "affected": 8,
+      "not-present": 2,
+      "conditional": 6
+    }
+  },
+  "completeness": {
+    "findings": 16,
+    "snapshots": 7,
+    "cells": 112,
+    "source_evidence_entries": 53,
+    "all_cells_have_exact_blob_evidence": true
+  }
+}

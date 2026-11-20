@@ -1,0 +1,142 @@
+{
+  "reviewer": "final_coverage_qa",
+  "method": "Independent metadata validation of git tree membership, full Git object line counts, ledger key uniqueness, and unclassified filename closure; no project code/test/analyzer/browser/probe execution. Two omitted small configuration files read completely.",
+  "snapshot_count": 24,
+  "checks": {
+    "snapshot_list_identical": true,
+    "unique_snapshot_commits": 24,
+    "ledger_duplicate_path_blob_keys": 0,
+    "baseline_pending_rows": 0,
+    "baseline_pending_file": [],
+    "baseline_totals": {
+      "path_blob_versions": 1687,
+      "unique_paths": 1382,
+      "version_lines": 349824,
+      "status": {
+        "reviewed": 1401,
+        "excluded": 258,
+        "reviewed-data": 28
+      },
+      "lines_by_status": {
+        "reviewed": 239605,
+        "excluded": 46509,
+        "reviewed-data": 63710
+      },
+      "paths_by_status": {
+        "reviewed": 1156,
+        "excluded": 209,
+        "reviewed-data": 17
+      }
+    },
+    "unclassified_root_units_by_category": {
+      "vendored dependency": 300,
+      "supporting Markdown outside source closure": 41,
+      "configuration requiring closure": 2,
+      "ignore metadata": 3,
+      "static favicon asset": 1,
+      "historical gas snapshot data": 2
+    },
+    "additional_configuration_omissions": 0
+  },
+  "scope_roots": [
+    "apps/web",
+    "packages/address-safety",
+    "packages/chain-adapters",
+    "packages/contracts",
+    "packages/core-crypto",
+    "packages/hygiene",
+    "packages/invoice-schema",
+    "packages/merchant-ledger",
+    "packages/metadata-hardening",
+    "packages/net-transport",
+    "packages/payment-uri",
+    "packages/policy-scheme",
+    "packages/privacy-profiles",
+    "packages/qr-exchange",
+    "packages/scan-source",
+    "packages/sdk",
+    "packages/secret-box",
+    "packages/tx-review",
+    "packages/ux-vault"
+  ],
+  "files": [
+    {
+      "path": "apps/web/public/_headers",
+      "blob": "604be638edef9d055c8c2b4f52d5988e2bbd5ee4",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+        "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+        "885b9569e6fc99e43bf01d23305494275e10120e",
+        "6c65cc3fd31c9ae361f932bee4a3449d89ed776c",
+        "14a7526842b3cb055452b721d237a7e68813ff0c"
+      ],
+      "lines": 36,
+      "status": "reviewed",
+      "kind": "configuration",
+      "method": "Complete source body read by final_coverage_qa; immutable blob identity and membership independently verified in all 24 selected snapshots. Static only; no project execution.",
+      "notes": "Optional host header configuration explicitly states GitHub Pages cannot apply it; intended dynamic RPC connect-src and static embed CORS boundaries. No additional finding established."
+    },
+    {
+      "path": "packages/contracts/remappings.txt",
+      "blob": "779c67d0d1432ad99b1a0828a98d390a04a3e1fa",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+        "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+        "885b9569e6fc99e43bf01d23305494275e10120e",
+        "6c65cc3fd31c9ae361f932bee4a3449d89ed776c",
+        "14a7526842b3cb055452b721d237a7e68813ff0c"
+      ],
+      "lines": 2,
+      "status": "reviewed",
+      "kind": "configuration",
+      "method": "Complete source body read by final_coverage_qa; immutable blob identity and membership independently verified in all 24 selected snapshots. Static only; no project execution.",
+      "notes": "Two import remappings point to vendored OpenZeppelin and forge-std dependencies. Their implementation internals remain excluded. No additional finding established."
+    }
+  ],
+  "limits": [
+    "Scope check excludes third-party packages/contracts/lib source internals, supporting Markdown not needed for source closure, static favicon, ignore metadata, and historical gas snapshot artifacts.",
+    "Rows already marked excluded for inactive products are dispositions, not completed source reads.",
+    "Reviewed source/config/supporting-text version lines are not distinct lines of active production code.",
+    "Raw predecessor pending statuses are superseded only when exact path/blob has a completed successor review.",
+    "No tests or dynamic verification were performed."
+  ],
+  "findings": []
+}

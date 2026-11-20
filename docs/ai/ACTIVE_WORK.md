@@ -612,3 +612,15 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## Read-only core and recent-feature security audit — 2026-11-19
+
+Worker: ChatGPT root with independent cryptography, custody/privacy, payment, and release-control reviewers.
+Branch: `docs/ghostpay-core-readonly-audit-20261119`.
+Base/main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned write paths: this additive claim and `docs/audits/core-readonly-20261119/**` only.
+Scope: immutable main plus recent core/static-browser feature candidates, with per-file/blob coverage and exact branch pins.
+Acceptance: source-grounded defensive findings, main-versus-candidate dispositions, remediation guidance, explicit exclusions and review gaps. Application, tests, build configuration and deployment remain read-only. No exploit reproduction, live probing, integration, release or deployment. Other workers' branches and claims are read-only inputs.
+
+Audit completion (this claim only): 24 immutable snapshots reconciled; 1,403 source/configuration/supporting-text versions and 28 data versions reviewed, 258 inventoried exclusions, zero pending in-scope code/configuration units. Final findings, branch applicability, quality review and coverage are in `docs/audits/core-readonly-20261119/`. No product/test/configuration edits or target execution. Remote push was initially rejected by automatic approval review. The user authorized continuing with publication of the completed audit-notes branch on 2026-11-20; this follow-up changes publication status only.

@@ -1,0 +1,221 @@
+{
+  "findings": [
+    {
+      "id": "ROOT-01",
+      "title": "Independent lean report verification tolerates incomplete module evidence",
+      "severity": "Low",
+      "category": "verification-assurance",
+      "description": "Severity: Low assurance/defense-in-depth, not an established deployment bypass. Present on main and integration.\n\nAt integration e22c1748a3de6eb02f5be3abe27d634b238c67c6, scripts/pages/verify-pages-site.mjs:186\u2013203 checks format/profile and nonempty top-level chunks/workers, then treats absent per-chunk modules and per-worker chunks as empty lists. It does not validate complete chunk provenance, file names, correspondence to site output, or finite nonnegative rendered lengths. The later integration variant of apps/web/scripts/scan-bundle.mjs uses a similarly permissive traversal of optional lean report data; the main variant lacks that traversal. In contrast, apps/web/scripts/localBuildProfile.mjs validates the actual bundler metadata and worker evidence before producing a normal report. Its tests explicitly require nonempty provenance for executable chunks and valid rendered lengths.\n\nImpact: the nominally independent downstream checks provide weaker assurance if their evidence is incomplete or supplied incorrectly. The regular producer remains a control; no path from an untrusted external user to a deployed artifact was established. Checksums alone authenticate neither a hostile build nor a hostile report.\n\nRemediation: share a strict evidence schema, require all executable app and worker chunks to have matching provenance, validate finite nonnegative lengths and required exports, and reject missing evidence before exclusions are assessed. Keep legitimate zero-length tree-shaken modules distinct from absent records. Validation should assert schema rejection and artifact/report correspondence without attack payloads or live deployment.",
+      "source_report": "root-review.md",
+      "evidence": [
+        {
+          "path": "scripts/pages/verify-pages-site.mjs",
+          "lines": "186-203",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce"
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.mjs",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "65c1b1690763f34c64262643e94cdd672f0f057b"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-O01",
+      "title": "Tight CSP controls are not wired through the stock Pages workflow",
+      "severity": "Informational",
+      "category": "supporting-observation",
+      "description": "Informational configuration limitation, not a demonstrated confidentiality issue. Integration build-pages.sh supports GHOSTPAY_CONNECT_ORIGINS and GHOSTPAY_REQUIRE_TIGHT_CSP, but .github/workflows/pages.yml does not pass these repository settings into the build environment. The ordinary default remains connect-src allowing HTTPS and WSS, needed for arbitrary user-configured endpoints. An operator must change the workflow or invoke the script with these settings to enable a narrow deployment-specific policy. Do not present broad CSP alone as an XSS finding.",
+      "source_report": "root-review.md",
+      "evidence": [
+        {
+          "path": "scripts/pages/build-pages.sh",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "2022cf30a0f18535131c2f9651d292226550835b"
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-Q01",
+      "title": "Pages devnet qualification omits its canonical ERC-20 checkout path",
+      "severity": "Informational",
+      "category": "verification-assurance",
+      "description": "Informational, known qualification gap. `apps/web/e2e/pages-devnet.spec.ts` explains that the harness deploys different test tokens from the compile-time allowlist, so supported canonical ERC-20 checkout is not exercised. The same test separately asserts that gas-buffer policy is intentionally unavailable in lean because it requires invoice v2; this is a profile restriction, not a missing required lean feature. Unit tests and mocked token journeys exist. This is an end-to-end acceptance gap, not evidence that production token payment fails.\n\nFuture qualification should use mutually consistent deployed tokens, allowlists and signed manifests and verify supported token checkout. Record exact source/artifact identities and report any skipped scenario separately from a pass. This audit did not run or construct that scenario.",
+      "source_report": "qualification-review.md",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "lines": "427-445",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "90b905165b9b6457585635022bc9e64dab674521"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-Q02",
+      "title": "Clipboard cleanup remains best effort",
+      "severity": "Informational",
+      "category": "supporting-observation",
+      "description": "Informational characterization, not a new exploitable defect. Newer tests cover stale ordinary-copy completion and matching-value cleanup. A second clipboard read followed by a write is not an atomic compare-and-clear operation with respect to external application writes. Describe cleanup as best effort and retain the ownership checks; do not promise guaranteed removal or preservation under every external race. The older unconditional supplemental helper remains CUSTODY-S1.\n\nAll 172 lines of the privacy-branch `Common.clipboardPrivacy.test.tsx` version were read; its full blob is in the ledger. No clipboard operation was performed.",
+      "source_report": "supplemental-review.md",
+      "evidence": [
+        {
+          "path": "apps/web/src/components/Common.clipboardPrivacy.test.tsx",
+          "lines": "",
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "blob": "8f4a9246266ee4565a9cbbce32e526f09e27b888"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-Q03",
+      "title": "Local qualification can succeed with no checks",
+      "severity": "Low",
+      "category": "verification-assurance",
+      "description": "Low assurance. `scripts/dev/local-ci.sh` accepts arbitrary `--only` names (24\u201338), matches a fixed step list (40\u201345), initializes failure to zero (75) and returns it (76\u201387). An unsupported selection can match no step and still print `DONE fail=0` and return success. Blob: `9fded4999dea9bc50835fe10a4c1d817fa8b7cc8`. No reproduction was run.\n\nThe header and developer README also claim parity with CI/every package, while the array at 18\u201322 omits current package, contract and browser gates. Actual hosted CI is a separate control. Reject unknown names, require a nonempty executed selection outside listing mode, and reconcile the catalogue or narrow the parity claim. Report exact executed/skipped checks. No remote release bypass is established.",
+      "source_report": "scope-closure-review.md",
+      "evidence": [
+        {
+          "path": "scripts/dev/local-ci.sh",
+          "lines": "18-45,75-87",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "9fded4999dea9bc50835fe10a4c1d817fa8b7cc8"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-I01",
+      "title": "Legacy image recipes omit the build helper",
+      "severity": "Low",
+      "category": "supporting-observation",
+      "description": "Low availability, supplemental legacy infrastructure. `infra/web/Dockerfile:15\u201321` and `infra/devnet/Dockerfile.web:5\u20138` copy package files, packages and the web app, then invoke `npm run build:libs`. Root package.json defines that as `node scripts/build-workspaces.mjs --libraries`; neither recipe copies scripts. The helper is absent from the build-stage filesystem. These unverified recipes are separate from current Pages and portable Tor paths. No build was run or active outage claimed. Copy required inputs and qualify the exact recipe, or retire it.",
+      "source_report": "scope-closure-review.md",
+      "evidence": [
+        {
+          "path": "infra/web/Dockerfile",
+          "lines": "15-21",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "392a01a256e49f0b5c786791b258196544ea8a88"
+        },
+        {
+          "path": "infra/devnet/Dockerfile.web",
+          "lines": "5-8",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "c7abd58b4194e91b0db12b6b717e012f6938997a"
+        },
+        {
+          "path": "package.json",
+          "lines": "",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-I02",
+      "title": "Legacy Tor example names a missing listener path",
+      "severity": "Informational",
+      "category": "legacy-documentation",
+      "description": "infra/publish/torrc.example line 3 names infra/proxy/Caddyfile.static; the committed listener is infra/web/Caddyfile.static. Correct the reference; this is not the current portable Tor recipe.",
+      "evidence": [
+        {
+          "path": "infra/publish/torrc.example",
+          "lines": "3",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "204866aae5285f30b5c5facc8a5a9eb4731d0fd9"
+        },
+        {
+          "path": "infra/web/Caddyfile.static",
+          "lines": "",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "302e7b0567ff420b9a14ac042dae3220a66982a5"
+        }
+      ]
+    },
+    {
+      "id": "HOST-LEGACY-01",
+      "title": "Legacy selfhost validates env-file inputs while Compose can use shell overrides",
+      "severity": "Low",
+      "category": "legacy-operational-validation",
+      "supersedes": "HOST-CAND-01",
+      "description": "selfhost envval reads only the selected file and validates/installs that web-dist directory. Compose then inherits ambient variables, while its configuration interpolates web-dist, port, image and UID values. Official Docker documentation gives shell variables precedence over --env-file. The validated plan and effective model can differ.",
+      "condition": "A differing interpolation variable exists in the invoking operator environment. This is a local configuration condition, not a third-party attacker premise.",
+      "impact": "The checked/installed path or settings can differ from those used by Compose. config -q checks model validity, not equality with the helper plan. No service was started; new static Tor preparation is separate.",
+      "remediation": "Resolve and validate the effective model once, or supply a controlled environment of validated inputs. Keep displayed, installed and served paths equal.",
+      "acceptance": "Conflicting ambient project variables produce the same validated model or explicit refusal.",
+      "evidence": [
+        {
+          "path": "deploy/selfhost.sh",
+          "lines": "110-118,146-161,280-285,394-398",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "e353f5537e8f5571e0c3e085c6e25d1e1af59cb1"
+        },
+        {
+          "path": "deploy/docker-compose.yml",
+          "lines": "21-22,53-64,82-83",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "blob": "2020e2031560bb3e7eaf16475e00be5eac9970f7"
+        }
+      ],
+      "external_source": "https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/",
+      "validation": "Static source plus primary Docker documentation; no runtime reproduction."
+    },
+    {
+      "id": "ROOT-H01",
+      "title": "Branch-dependent root hardening differs",
+      "severity": "Informational",
+      "category": "hardening-difference",
+      "description": "- Release/completion add frame/origin guards; main has no equivalent. The origin guard protects accidental copies, not an attacker able to modify the app.\n- Release/completion use fixed React root error labels instead of logging arbitrary error messages.\n- Production release key configuration rejects known public test signing keys in later branches; main lacks this denylist if an operator configures such a key. No actual compromised release key was found.\n- Later setup-forge checks the pinned solc binary hash; main does not verify the cached binary in that action.\n- Later Pages workflow binds deployment to file checksums/attestation, and integration verifies assembled artifact integrity before promotion. These differences do not themselves establish a malicious artifact or an active bypass.\n- Latest networking adds scoped authorization/revocation. Custody/network reviewer owns impact analysis.\n- Main's legacy manifest loader is exported but default app services already use strict bundled signed manifests. Do not label this as an active unsigned-manifest bypass without a reachable default caller.",
+      "source_report": "root-review.md",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/frameGuard.ts",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "e1f2279c35ca58966f3a4aa270378da48b78ee94"
+        },
+        {
+          "path": "apps/web/src/main.tsx",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "290ba486b19ad7a36139b8559130fd6c6b498e1e"
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "76a6132fcc692a18e657c3880427c8f60739c6b8"
+        },
+        {
+          "path": ".github/actions/setup-forge/action.yml",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "3015f5ef9122e72d2452b1e78de960c970910618"
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "lines": "",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee"
+        }
+      ]
+    },
+    {
+      "id": "DEP-01",
+      "title": "Development dependency graph retains two advisory families",
+      "severity": "Low",
+      "category": "dependency-advisory-metadata",
+      "description": "Read-only npm audit --package-lock-only --ignore-scripts was run on the exact main lock and integration lock, separately for production-only and all dependencies. No installs or fixes were run.\n\nMain: production 286 / all 814 dependency entries. Integration: production 286 / all 820. Both production scans report zero known vulnerabilities. Both all-dependency scans report 17 low-severity affected package entries from two underlying advisory records (cookie GHSA-pxg6-pf52-xh8x, elliptic GHSA-848j-6mx2-7j84), via Hardhat/development dependency trees. No moderate/high/critical advisories reported. These are registry results at audit time, not proof of runtime safety; separate the development and excluded confidential-contracts tooling from the active browser application.\n\nAll lock records were structurally checked for resolution/integrity: main 815 package records, integration 821; 678/684 nonlink resolved artifacts respectively, all HTTPS registry.npmjs.org with SHA-512 integrity. The three install-script indicators are fsevents, keccak, secp256k1. Vendored dependency implementations are outside this first-party review.",
+      "source_report": "root-review.md"
+    }
+  ]
+}

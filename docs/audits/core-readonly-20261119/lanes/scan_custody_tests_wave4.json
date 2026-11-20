@@ -1,0 +1,1458 @@
+{
+  "reviewer": "scan_custody_tests_wave4",
+  "repo": "/workspace/scratch/e1ba011306bd/GhostPay-audit",
+  "selected_heads": [
+    {
+      "branch": "main",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+    },
+    {
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    },
+    {
+      "branch": "integration/ghostpay-completion-20261120",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+    },
+    {
+      "branch": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "sha": "d6819796a9542acc488b896786faffe83b913d9b"
+    },
+    {
+      "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+    },
+    {
+      "branch": "fix/ghostpay-format-validation-20261120",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+    },
+    {
+      "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+      "sha": "936d054ed067d89c773310d42e33939c1129bbfa"
+    },
+    {
+      "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+    },
+    {
+      "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+      "sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+    },
+    {
+      "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf"
+    },
+    {
+      "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae"
+    },
+    {
+      "branch": "automation/20261120T0243Z/worker/format-units-validation",
+      "sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7"
+    },
+    {
+      "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4"
+    },
+    {
+      "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "sha": "172695efb41665a4e50d335029e54184bbb5b328"
+    },
+    {
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64"
+    },
+    {
+      "branch": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "sha": "89942105c48df03b9351f777278b6a992e35a95e"
+    },
+    {
+      "branch": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141"
+    },
+    {
+      "branch": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "sha": "0041514a630398c89693498d9b5e44ef562d9c61"
+    },
+    {
+      "branch": "automation/20261119-c977/bug/build-profile-failclosed",
+      "sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88"
+    },
+    {
+      "branch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+    }
+  ],
+  "source_ledger": "/workspace/scratch/e1ba011306bd/scan_custody_tests_wave3_remaining.json",
+  "status": "complete assigned 34-row static test-source review",
+  "method": "Coverage keyed by path plus full Git blob. Full source bodies or complete deltas against a fully read base only; identical blob sharing verified against all twenty immutable Git trees.",
+  "execution_policy": "Static defensive source review only. No source/test/config changes, application or test execution, analyzers, payloads, reproduction, endpoints, transactions, deployments or remote writes.",
+  "files": [
+    {
+      "path": "apps/web/src/lib/idbStore.test.ts",
+      "blob": "ac35d25819dc2799b011b6e456d9fac05e1ab082",
+      "lines": 109,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-109.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          109
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: failed/synchronous/blocked open recovery and unexpected database close; local minimal fakes only."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationLedger.test.ts",
+      "blob": "2d0157b553d8b05eb04dd457d9e698a39a3c6dc9",
+      "lines": 224,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-224.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          224
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: verified-router ledger construction, recipient/scope checks, legacy read-only handling, strict size/shape limits. recordedAt Date-range rejection is asserted; distinct from receipt issuedAt ingress."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+      "blob": "fcec62d5d4d2ff02e42b428a7e0a4b60c6c11933",
+      "lines": 215,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-215.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: strict registrations, exact/ambiguous/manual matching, historical provenance separation, reorg/expiry logic and deterministic property source; not executed."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+      "blob": "e228abfe1c3b48b9d74c51899cd05c4a97f6af26",
+      "lines": 28,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-28.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          28
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full helper body: deterministic test-only invoice/public-key fixture; invoice-schema and chain-adapters ownership remains with payment lane."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "blob": "ada7cdbcd4f16163e15923f15f652dec0fcac7f6",
+      "lines": 129,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-129.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          129
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: connection/open/close recovery, InvalidState retry and quota commit refusal."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+      "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+      "lines": 476,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-476.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          476
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: ciphertext invoice/receipt archive, strict scope/shape/bounds, explicit match commit, stale scan guards, canonical times and historical provenance. Receipt fixture issuedAt is NOW+120; no Date-representability assertion for receipt issuedAt."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.test.ts",
+      "blob": "a587e583e7ae8168a27fcdc7db414d614378290b",
+      "lines": 565,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-565.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          565
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: authenticated encrypted persistence, import preview authority, exact ciphertext CAS, bounded reorg invalidation/tombstones, lifecycle revocation, key wipe and legacy cutoff preservation."
+    },
+    {
+      "path": "apps/web/src/lib/scanCheckpointPrivacy.test.ts",
+      "blob": "5a8984f59efedbad9c71eb2aea9e6379d3b55b63",
+      "lines": 137,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-137.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: v4 identity-bound checkpoint namespace; refuses public v1/v2 and ambiguous v3 resume, purges legacy names best effort."
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.test.ts",
+      "blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+      "lines": 1760,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete numbered Git blob body read in consecutive ranges 1-1760. Initial clipped ranges repaired by additional untruncated reads 515-745 and 1535-1595.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          1760
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full scan client suite: payment/replay identity, durable reorg ordering, provider discrepancy refusal and stable rollback/tail anchors, progress/timeouts, cancellation and key wipe, budgets/backlog, finality replay, telemetry windows and no-address request shape. Clients are directly supplied; Settings-to-Scan session-only selection is not exercised."
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+      "blob": "f83c257546972347ae3860d15c53c20388aeb7e6",
+      "lines": 312,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-312.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          312
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: secret-derived private slot names, seller/chain isolation, stale cache refusal, key-copy wipe and storage failure behavior."
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.test.ts",
+      "blob": "2973e6da0371537fa5198bc01998f83fc49bdd40",
+      "lines": 33,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-33.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          33
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: public replay deduplication/upgrading while retaining each router record and grouping shared addresses."
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.test.ts",
+      "blob": "762deed547d68f934999994d770369b2ee95c9ad",
+      "lines": 272,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-272.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          272
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: spam lanes retain every event, public request filters and strict transfer-window limits; general privacy-count boundary source."
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+      "blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "lines": 54,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-54.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          54
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full benchmark source only: compares public core-crypto operations and tag rejection path. No timing or benchmark assertion executed."
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "lines": 38,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-38.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          38
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full deterministic malformed-wire corpus source only, including bounded batches and disposal. No fuzz/corpus execution."
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+      "blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "lines": 194,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-194.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          194
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full generated replay-spam workload source only: lane budgets, held cursors and recovery assertions; mocked fetch with inline worker. No workload execution."
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "blob": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+      "lines": 198,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-198.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          198
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: ownership/deep-tag semantics, malformed messages, worker lifecycle/key wipe, memo identity and import/network isolation source assertions."
+    },
+    {
+      "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+      "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "lines": 157,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-157.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          157
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: opt-in foreground auto-rescan, timing disclosure, checkpoint resume, visibility pause and stop on errors/user disable; persisted endpoint fixture."
+    },
+    {
+      "path": "apps/web/src/views/Scan.i18n.test.tsx",
+      "blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "lines": 94,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-94.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: critical/neutral scan copy classification, reviewed-locale behavior and async language-change descriptor updates; locale catalogs remain root-owned."
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "5ca8631fb1f25658ae55e122d10e22027c0d5e51",
+      "lines": 92,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-92.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          92
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: aligned public windows for directly supplied primary/secondary, require-private-path refusal and no proxy fallback; endpoints seeded in localStorage."
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "8b2fcf37b6c7670c20938018a3810265fd777152",
+      "lines": 696,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete numbered Git blob body read 1-696 in consecutive ranges; clipped range repaired by untruncated lines 535-642.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          696
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full Scan UI suite: loaded-key/manifest/RPC/start checks, payment authority distinctions, tag lifecycle, receipt/ledger explicit actions, persisted secondary comparison/refusal, reorg quarantine and cancellation. Secondary tests seed localStorage, bypassing session-only Settings retention."
+    },
+    {
+      "path": "apps/web/src/views/ScanPrivacy.i18n.test.tsx",
+      "blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "lines": 216,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-216.",
+      "heads": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+        "89942105c48df03b9351f777278b6a992e35a95e",
+        "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+        "0041514a630398c89693498d9b5e44ef562d9c61",
+        "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+        "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          216
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: localized privacy disclosures/errors/partial counts preserve settings, ranges and operation counts; translated approval is a test-local mock."
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+      "blob": "8d8f2e22bdff1be59721a9ce1a7b8ad29eaeb4ad",
+      "lines": 190,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-190.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          190
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: current identity/holder binding, tied key-vault disappearance, local invalidation ordering, cross-tab tombstone CAS and payload-free notifications; legacy progress purge."
+    },
+    {
+      "path": "apps/web/src/lib/privateScanPerformance.nocov.test.ts",
+      "blob": "548916051671c2645c584d5e459a583405db65cf",
+      "lines": 260,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-260.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          260
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full performance-observation source only: synthetic in-memory RPC/CAS, encrypted replay downgrade and equal freshly revalidated discoveries. Explicitly excludes browser/real-network/mobile performance; no measurements executed."
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.test.ts",
+      "blob": "c39c51ef15e04127ea434ed6cbb98791c7eb851d",
+      "lines": 304,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-304.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          304
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: encrypted journal scope/AAD validation, authority downgrade on restore, strict bounds, independent crypto fixtures, CAS/tombstone ABA, lifecycle guards and error redaction. Clipped output repaired by untruncated lines 135-180."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "blob": "4c52b6fe0c7224ef4812ab6d31a07b401d721862",
+      "lines": 200,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete untruncated git diff from ada7cdbcd4f16163e15923f15f652dec0fcac7f6 read; unchanged lines inherit full base read.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [],
+      "remaining_ranges": [],
+      "method": "complete delta read against fully read base",
+      "base_blob": "ada7cdbcd4f16163e15923f15f652dec0fcac7f6",
+      "delta_read_complete": true,
+      "review_notes": "Adds atomic private scan namespace invalidation: waits for commit, isolates prefix and rolls back staged tombstones on abort."
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.test.ts",
+      "blob": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5",
+      "lines": 1995,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete untruncated git diff from c9f850561062eb011c0d97ca02d95898301fdd2b read; unchanged lines inherit full base read.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [],
+      "remaining_ranges": [],
+      "method": "complete delta read against fully read base",
+      "base_blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+      "delta_read_complete": true,
+      "review_notes": "Adds atomic journal-before-progress, history replay bounds/overlap, cancellation/current-scope guards, bulk-evidence cancellation and coverage-warning cap. Directly injected RPC clients still bypass Settings-to-private-Scan endpoint selection."
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+      "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+      "lines": 404,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete untruncated git diff from f83c257546972347ae3860d15c53c20388aeb7e6 read; unchanged lines inherit full base read.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [],
+      "remaining_ranges": [],
+      "method": "complete delta read against fully read base",
+      "base_blob": "f83c257546972347ae3860d15c53c20388aeb7e6",
+      "delta_read_complete": true,
+      "review_notes": "Adds deadline/holder-change, suspended session and cached slot expiry guards, including key-copy wipe after replacement."
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+      "blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "lines": 37,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-37.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "0041514a630398c89693498d9b5e44ef562d9c61"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          37
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: directly asserts ten-day scan is partial for the displayed thirty-day count, full/young-chain range bounds and unfinished scans. Source regression for existing SCAN-NET-01 correction."
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+      "lines": 256,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete untruncated git diff from 902cb6d07492fc8b08131d17b94d7d3fbc70c826 read; unchanged lines inherit full base read.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [],
+      "remaining_ranges": [],
+      "method": "complete delta read against fully read base",
+      "base_blob": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+      "delta_read_complete": true,
+      "review_notes": "Adds unsupported-scheme early rejection, progress/cancel preservation and omitted-scheme compatibility assertions."
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "146a90721ae039959af1ce4cd973c572394721f7",
+      "lines": 117,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete untruncated git diff from 5ca8631fb1f25658ae55e122d10e22027c0d5e51 read; unchanged lines inherit full base read.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [],
+      "remaining_ranges": [],
+      "method": "complete delta read against fully read base",
+      "base_blob": "5ca8631fb1f25658ae55e122d10e22027c0d5e51",
+      "delta_read_complete": true,
+      "review_notes": "Adds cancellation of padded primary/secondary windows after an in-flight response; fixtures still seed persisted endpoints."
+    },
+    {
+      "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+      "blob": "a704ec91667f26d087cb732e273873a2b8514560",
+      "lines": 440,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-440.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          440
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: production privateScanStore UI path with persisted RPC fixture, guarded durable commits, corruption reset, session/profile/settings revocation, pause/retry, coverage-warning persistence and caps. Cross-tab settings case directly writes localStorage; no same-tab session-only selection coverage."
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+      "blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+      "lines": 172,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-172.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          172
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: fresh payment-export authority after cancelled/expired/private scan, offline public records, passphrase refusal and preference-revision revocation before storage events."
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+      "blob": "a386af69cb9c30910df93438cb8d589d16229980",
+      "lines": 124,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Full numbered Git blob body read, lines 1-124.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [
+        [
+          1,
+          124
+        ]
+      ],
+      "remaining_ranges": [],
+      "method": "full body read",
+      "review_notes": "Full test body: explicit export actions only, encrypted export scope, contract/delegation code refusal, bulk scope disclosure and key-change panel cleanup."
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+      "lines": 703,
+      "test": true,
+      "status": "reviewed",
+      "review_method": "Complete untruncated git diff from 8b2fcf37b6c7670c20938018a3810265fd777152 read; unchanged lines inherit full base read.",
+      "heads": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "d6819796a9542acc488b896786faffe83b913d9b",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "936d054ed067d89c773310d42e33939c1129bbfa",
+        "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "172695efb41665a4e50d335029e54184bbb5b328"
+      ],
+      "inherited_from": [
+        "scan_network_wave2_remaining.json"
+      ],
+      "read_ranges": [],
+      "remaining_ranges": [],
+      "method": "complete delta read against fully read base",
+      "base_blob": "8b2fcf37b6c7670c20938018a3810265fd777152",
+      "delta_read_complete": true,
+      "review_notes": "Adds RPC payment-discovery disclosure and receipt one-time-address omission by default; no session-only private-scan endpoint test added."
+    }
+  ],
+  "pending_path_blob_rows": 34,
+  "production_pending": [],
+  "notes": [
+    "These full source bodies were not reviewed. Import inventories and test names are not credited as coverage.",
+    "No partial body reads to preserve: all remaining_ranges start at 1 and end at the exact blob line count.",
+    "A successor may read a complete base blob and then complete Git blob deltas for other variants of the same path.",
+    "Do not overlap the payment-tests worker 149 payment-successor rows or root qualification/browser-E2E ownership.",
+    "Known SCAN-NET-02 conditions: active production privateScanStore, session-only selected endpoint; Medium case additionally requires usable primary and selected session-only secondary with plan.useSecondary=true. Primary-only loss fails visibly with noRpc.",
+    "Known CUSTODY-02 has authenticated same-seller/same-chain archive and out-of-Date-range receipt timestamp preconditions; do not widen to remote unauthenticated ingress.",
+    "Root owns repository notes. Scratch output only. No test/analyzer/payload execution, no probes/listeners, source/config edits, transactions, deploys or remote writes."
+  ],
+  "findings": [],
+  "observations": [
+    "Reconciliation sources assert ciphertext storage, guarded exact CAS, explicit import/match activation, historical provenance separation, canonical-block reorg checks, bounded invalidation and tombstone saturation.",
+    "Scan execution sources assert payment identity, router/public replay distinction, provider discrepancy withholding, stable independent rollback and replay-tail anchors, budgets, durable journal-before-progress ordering, cancellation and key cleanup.",
+    "Private journal sources assert authenticated scope binding, persisted-authority downgrade, exact CAS and tombstone ABA resistance, tied key-vault/session revocation, redacted failures and bounded documents.",
+    "UI sources assert explicit scan/export actions, persisted endpoint comparison/refusal, private-path no-fallback behavior, lifecycle cancellation, foreground automatic checking, incomplete-range disclosures and locale changes without replay.",
+    "Benchmark, performance and generated-corpus files were fully read as source only. No timing measurements, corpus execution or runtime qualification claimed."
+  ],
+  "counts": {
+    "paths": 28,
+    "reviewed_rows": 34,
+    "full_body_rows": 28,
+    "delta_rows": 6,
+    "target_blob_lines": 11201,
+    "pending_rows": 0,
+    "excluded_rows": 0,
+    "full_body_lines": 7526,
+    "delta_target_blob_lines": 3675
+  },
+  "identity_validation": {
+    "original_manifest_rows_preserved": true,
+    "original_head_memberships_preserved": true,
+    "all_20_git_trees_verified": true,
+    "blob_line_counts_verified": true,
+    "delta_bases_full_body_reviewed": true,
+    "errors": []
+  },
+  "imported_helper_dispositions": [
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+      "blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+      "status": "already reviewed by custody lane",
+      "ledger": "custody_privacy_review.json",
+      "method": "Exact blob verified across all 11 importing heads; prior full body review retained, no duplicate count."
+    }
+  ],
+  "existing_finding_test_assessments": [
+    {
+      "id": "SCAN-NET-02",
+      "status": "Existing current production finding retained; no duplicate finding",
+      "assessment": "Assigned test sources do not exercise same-tab session-only Settings-to-production-private-Scan endpoint selection. Library scanClient suites inject clients. Scan UI suites seed persisted settings. The privateScanStore UI suite seeds persisted primary and changes persisted settings through StorageEvent; it does not save a session-only primary or selected secondary through Settings.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+          "lines": [
+            100,
+            112
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "blob": "8b2fcf37b6c7670c20938018a3810265fd777152",
+          "lines": [
+            285,
+            316
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+          "blob": "a704ec91667f26d087cb732e273873a2b8514560",
+          "lines": [
+            45,
+            69
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+          "blob": "a704ec91667f26d087cb732e273873a2b8514560",
+          "lines": [
+            185,
+            207
+          ]
+        }
+      ],
+      "qualification": "This is scoped test-source interpretation, not runtime success/failure or a new production trace. Parent scan_network_wave2 retains severity, complete affected heads and evidence."
+    },
+    {
+      "id": "CUSTODY-02",
+      "status": "Existing Low receipt-date rendering finding retained; no duplicate finding",
+      "assessment": "Receipt archive fixtures use issuedAt=NOW+120. Malformed archive receipt tests cover several shape, signature and chain errors but not positive safe-integer issuedAt outside JavaScript Date representability. Ledger recordedAt and canonical blockTimestamp tests validate different fields and do not cover this receipt-rendering boundary.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+          "lines": [
+            66,
+            68
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+          "lines": [
+            366,
+            399
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationLedger.test.ts",
+          "blob": "2d0157b553d8b05eb04dd457d9e698a39a3c6dc9",
+          "lines": [
+            95,
+            106
+          ]
+        }
+      ],
+      "qualification": "No reproduction or new receipt generation performed. Existing production evidence remains parent-owned."
+    },
+    {
+      "id": "SCAN-NET-01",
+      "status": "Existing older/main-only finding; latest correction has explicit regression source",
+      "assessment": "scanSpam.partial.test.ts asserts a ten-day scan is partial for the displayed thirty-day count, full thirty-day history is complete, young-chain bounds stop at genesis and unfinished head coverage is partial.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+          "blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+          "lines": [
+            10,
+            37
+          ]
+        }
+      ],
+      "qualification": "The test source is read, not executed. Do not present corrected latest behavior as an open production defect."
+    }
+  ],
+  "coverage_boundary": "This worker covers exactly the 34 inherited active test/helper path-plus-blob rows across the original 20 immutable heads. Root owns reconciliation to all 24 snapshots and global completion; no new application source, helper-source or runtime coverage is inferred from imports."
+}

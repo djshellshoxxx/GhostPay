@@ -1,0 +1,177 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "audit_date": "2026-11-19",
+  "timezone": "America/Los_Angeles",
+  "status": "complete for the frozen in-scope first-party code and configuration",
+  "method": "Defensive static body/delta source review; no target code, tests, analyzer, browser, payload, live probe, transaction or deployment executed.",
+  "heads": [
+    {
+      "branch": "main",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+    },
+    {
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    },
+    {
+      "branch": "integration/ghostpay-completion-20261120",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+    },
+    {
+      "branch": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "sha": "d6819796a9542acc488b896786faffe83b913d9b"
+    },
+    {
+      "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a"
+    },
+    {
+      "branch": "fix/ghostpay-format-validation-20261120",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+    },
+    {
+      "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+      "sha": "936d054ed067d89c773310d42e33939c1129bbfa"
+    },
+    {
+      "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+    },
+    {
+      "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+      "sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9"
+    },
+    {
+      "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf"
+    },
+    {
+      "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae"
+    },
+    {
+      "branch": "automation/20261120T0243Z/worker/format-units-validation",
+      "sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7"
+    },
+    {
+      "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4"
+    },
+    {
+      "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "sha": "172695efb41665a4e50d335029e54184bbb5b328"
+    },
+    {
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64"
+    },
+    {
+      "branch": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+      "sha": "89942105c48df03b9351f777278b6a992e35a95e"
+    },
+    {
+      "branch": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141"
+    },
+    {
+      "branch": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "sha": "0041514a630398c89693498d9b5e44ef562d9c61"
+    },
+    {
+      "branch": "automation/20261119-c977/bug/build-profile-failclosed",
+      "sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88"
+    },
+    {
+      "branch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0"
+    },
+    {
+      "branch": "main (freshness snapshot)",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "ref": "main"
+    },
+    {
+      "branch": "integration/ghostpay-main-unique-code-20261120",
+      "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+    },
+    {
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "sha": "6c65cc3fd31c9ae361f932bee4a3449d89ed776c"
+    },
+    {
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "sha": "14a7526842b3cb055452b721d237a7e68813ff0c"
+    }
+  ],
+  "coverage": {
+    "path_blob_versions": 1689,
+    "unique_paths": 1384,
+    "version_lines": 349862,
+    "status": {
+      "reviewed": 1403,
+      "excluded": 258,
+      "reviewed-data": 28
+    },
+    "lines_by_status": {
+      "reviewed": 239643,
+      "excluded": 46509,
+      "reviewed-data": 63710
+    },
+    "paths_by_status": {
+      "reviewed": 1158,
+      "excluded": 209,
+      "reviewed-data": 17
+    }
+  },
+  "pending_in_scope_units": 0,
+  "coverage_definition": "Unique path/blob units. Complete body or complete delta against a fully read base; identical blobs map to all carrying snapshots. Data review is structural. Search, inventory and truncated output do not satisfy review.",
+  "included": [
+    "apps/web core, shared browser dependencies and their tests",
+    "core and policy contracts plus directly supporting code",
+    "selected private-scan, privacy/clipboard, QR, receipt, amount-parser and simulation features",
+    "Pages build/release, portable hosting and latest static Tor support",
+    "direct import closure, qualification scripts and selected legacy support boundaries"
+  ],
+  "package_roots": [
+    "address-safety",
+    "chain-adapters",
+    "contracts",
+    "core-crypto",
+    "hygiene",
+    "invoice-schema",
+    "merchant-ledger",
+    "metadata-hardening",
+    "net-transport",
+    "payment-uri",
+    "policy-scheme",
+    "privacy-profiles",
+    "qr-exchange",
+    "scan-source",
+    "sdk",
+    "secret-box",
+    "tx-review",
+    "ux-vault"
+  ],
+  "exclusions": [
+    "Paused CLI, relayer/server/native products except explicitly recorded boundary reads",
+    "Future-only pool, confidential-amount, payer-hiding and unshipped privacy proposals",
+    "Other-chain BTC/Solana/TRON full-profile implementations",
+    "Vendor implementation internals and generated build output",
+    "Unrelated historical notes, archived evidence and publication integrations",
+    "Supporting Markdown, ignore metadata, historical gas snapshots and visual assets not otherwise explicitly recorded as reviewed"
+  ],
+  "exclusion_count_limit": "258 individually inventoried excluded versions do not inventory every excluded monorepo file. The final full-path check separately identifies 41 Markdown versions, three ignore files, two historical gas snapshots and one favicon under the selected roots; none is executable/configuration code.",
+  "read_only_boundary": "Only docs/audits/core-readonly-20261119/** and the additive audit claim in docs/ai/ACTIVE_WORK.md changed.",
+  "runtime_limit": "No runtime test outcome, live deployment state or third-party certification asserted. Existing tests and prior reports establish intended checks only.",
+  "remote_publication": {
+    "status": "authorized for publication",
+    "action": "git push -u origin docs/ghostpay-core-readonly-audit-20261119",
+    "authorization_date": "2026-11-20",
+    "authorization_timezone": "America/Vancouver",
+    "authorization_context": "The user replied continue directly to the request to approve pushing the completed audit-notes branch.",
+    "completed_audit_commit": "00abc5d6a1567b70433f2b883275dddbea75b404",
+    "prior_rejection": "Automatic approval review previously rejected remote publication for lack of explicit publication authorization.",
+    "delivery_verification": "Confirm the exact remote branch head before reporting successful publication.",
+    "scope_limit": "Documentation publication only; no product merge, deployment or new source-coverage claim."
+  }
+}
