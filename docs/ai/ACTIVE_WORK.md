@@ -586,6 +586,15 @@ Scope is an unmounted future module. No signing, automatic invoice issuance,
 network requests, notification delivery, persistence-provider implementation,
 production/lean route activation, fees, deployment or remote publication.
 
+Status: M1 product/test source `e0b6e44379447037be09d20934972d8afc7a6600` implements
+strict staged snapshots, UTC due previews and single-use local review. All 84
+focused cases pass with unchanged coverage thresholds. The module is unmounted;
+actual P04/P05 issuance/persistence, paused legacy migration, UI, and browser
+qualification remain pending. A typed lint attempt was killed with exit 137;
+serial coordinator lint/typecheck and independent review are still required.
+See `docs/future/modules/F10-private-recurring/HANDOFF.md` for exact contracts,
+source pins, research decisions, acceptance mapping and remaining work.
+
 Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
 regressions (4 failed / 15 passed before correction; 19/19 after), package
 typecheck/lint/build, secret scan and action pins passing. Available full package

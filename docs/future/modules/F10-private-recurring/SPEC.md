@@ -3,9 +3,15 @@
 - Specification version: 1.0; prepared 2026-11-19.
 - Branch: `future/f10-private-recurring`.
 - Pinned source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
-- Status: **SPECIFICATION ONLY; implementation and release remain disabled.**
+- Status: **M1 staged-plan and local-review adapter implemented on this branch; complete product and release remain disabled.**
 - Shared requirements: [COMMON.md](../COMMON.md); [module catalog](../README.md).
 - Existing beta requirements and fee policies remain separate; this document does not activate a product.
+
+Implementation continuation, 2026-11-20: the owner authorized future-feature development.
+The first bounded adapter milestone consumes existing UTC schedule helpers and adds strict
+browser snapshot intake and explicit local period review. It is not mounted in the app.
+See [HANDOFF.md](HANDOFF.md) for source pins, executed checks, narrower implemented
+contracts, and the P04/P05 integration and browser work still required.
 
 ## Objective and user journeys
 
