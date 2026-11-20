@@ -64,21 +64,26 @@ describe('taxonomy', () => {
   });
   it.each(nonStringKeys('invoice-link'))('rejects a non-string payload type: %s', (label, raw) => {
     const type = raw as Parameters<typeof kindForPayload>[0];
+    expect(() => kindForPayload(type), label).toThrow(TypeError);
     expect(() => kindForPayload(type), label).toThrowError(new TypeError('unknown QR payload type'));
+    expect(() => kindForPayload(type, { unverified: true }), label).toThrow(TypeError);
     expect(() => kindForPayload(type, { unverified: true }), label).toThrowError(new TypeError('unknown QR payload type'));
   });
   it.each(nonStringKeys('secret'))('rejects a non-string frame kind: %s', (label, raw) => {
+    expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0]), label).toThrow(TypeError);
     expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0]), label).toThrowError(new TypeError('unknown QR kind'));
   });
   it('rejects payload objects without invoking a changing conversion hook', () => {
     const convert = vi.fn().mockReturnValueOnce('keystore-backup').mockReturnValue('invoice-link');
     const type = { [Symbol.toPrimitive]: convert } as unknown as Parameters<typeof kindForPayload>[0];
+    expect(() => kindForPayload(type)).toThrow(TypeError);
     expect(() => kindForPayload(type)).toThrowError(new TypeError('unknown QR payload type'));
     expect(convert).not.toHaveBeenCalled();
   });
   it('rejects frame objects without invoking a changing conversion hook', () => {
     const convert = vi.fn().mockReturnValueOnce('secret').mockReturnValue('shareable');
     const kind = { [Symbol.toPrimitive]: convert } as unknown as Parameters<typeof qrKindClass>[0];
+    expect(() => qrKindClass(kind)).toThrow(TypeError);
     expect(() => qrKindClass(kind)).toThrowError(new TypeError('unknown QR kind'));
     expect(convert).not.toHaveBeenCalled();
   });
