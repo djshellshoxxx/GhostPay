@@ -664,3 +664,14 @@ complete bounded independently reviewed milestones; retain exact source/test evi
 publish qualified source checkpoints without activating future features or deploying.
 Other active F03, beta, privacy and repair streams remain independently owned.
 Status: discovery and assignment complete; implementation underway.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `8c63fb461e88a5dc5785ecf08b561780acfe0d7c`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
