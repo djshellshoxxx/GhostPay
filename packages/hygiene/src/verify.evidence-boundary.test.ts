@@ -10,7 +10,7 @@ function row(from: string, to: string, value: bigint, opts: {
   emitter?: string; block?: string; index?: string; hash?: string;
 } = {}): Record<string, unknown> {
   return {
-    ...log({ from, to, value, block: opts.block }),
+    ...log({ from, to, value, ...(opts.block === undefined ? {} : { block: opts.block }) }),
     address: opts.emitter ?? TOKEN,
     blockHash: opts.hash ?? BLOCK_HASH,
     logIndex: opts.index ?? '0x0',
@@ -70,8 +70,10 @@ describe('GP-BUG-11: bind ERC-20 evidence to the requested log filter', () => {
 
   it('refuses receipt evidence without a usable log index or block identity', async () => {
     const logRow = row(A1, STEALTH, 20n);
-    const { logIndex: _index, ...missingIndex } = logRow;
-    const { blockHash: _hash, ...missingHash } = logRow;
+    const missingIndex = { ...logRow };
+    const missingHash = { ...logRow };
+    delete missingIndex['logIndex'];
+    delete missingHash['blockHash'];
     await expect(addressFreeReceipt(rpcWith(missingIndex), receipt)).resolves.toBe('absent');
     await expect(addressFreeReceipt(rpcWith(missingHash), receipt)).resolves.toBe('absent');
   });
