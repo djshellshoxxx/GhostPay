@@ -1,8 +1,10 @@
 # Codebase Map
 
+> **Consolidation snapshot — 18 November 2026 Pacific / 19 November UTC:** Inspected main is [`ffd982a7`](https://github.com/djshellshoxxx/GhostPay/commit/ffd982a7aea2856c186b40ef236a39720a1b81f5). [PR #241](https://github.com/djshellshoxxx/GhostPay/pull/241) and [PR #242](https://github.com/djshellshoxxx/GhostPay/pull/242) are already merged. Read the [repository status snapshot](Current-Status.md) for the source-pinned integration and verification boundaries. It supersedes earlier status notes below; dated observations remain historical evidence.
+
 [Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md) · [Verification and Release Gates](Verification-and-Release-Gates.md)
 
-## Current static Pages testnet client (November 15, 2026)
+## Historical static Pages testnet client map (November 15, 2026)
 
 The **active development scope** is the lean EVM-testnet browser build in unmerged [draft #172](https://github.com/djshellshoxxx/GhostPay/pull/172), exact source `dffe072511c34b8a73bd64ac6147d5a79256480e`. This stacked head passed [application CI 24/24](https://github.com/djshellshoxxx/GhostPay/actions/runs/43754104627) and [local-Anvil Pages acceptance](https://github.com/djshellshoxxx/GhostPay/actions/runs/43754104555); it **has not** been integrated with divergent owner [draft #157](https://github.com/djshellshoxxx/GhostPay/pull/157), independently security-audited, deployed or released. The table maps **repository source at that exact Pages head**, not merged `main` or supported production functionality.
 

@@ -1,8 +1,10 @@
 # QR codes and moving data between devices
 
+> **Consolidation snapshot — 18 November 2026 Pacific / 19 November UTC:** Inspected main is [`ffd982a7`](https://github.com/djshellshoxxx/GhostPay/commit/ffd982a7aea2856c186b40ef236a39720a1b81f5). [PR #241](https://github.com/djshellshoxxx/GhostPay/pull/241) and [PR #242](https://github.com/djshellshoxxx/GhostPay/pull/242) are already merged. Read the [repository status snapshot](Current-Status.md) for the source-pinned integration and verification boundaries. It supersedes earlier status notes below; dated observations remain historical evidence.
+
 [Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md)
 
-> **Pages-only scope (November 14, 2026):** This page also describes retained full-profile QR formats. The active, unmerged static Pages candidate is EVM-testnet-only; non-EVM chain handling, CLI, server and relayer implementations are not being developed or qualified for Pages. A documented format or button below is not evidence that it shipped, was independently reviewed, or passed current Pages acceptance. See [Verification and Release Gates](Verification-and-Release-Gates.md).
+> **Historical Pages scope snapshot (November 14, 2026):** This page also describes retained full-profile QR formats. The active, unmerged static Pages candidate is EVM-testnet-only; non-EVM chain handling, CLI, server and relayer implementations are not being developed or qualified for Pages. A documented format or button below is not evidence that it shipped, was independently reviewed, or passed current Pages acceptance. See [Verification and Release Gates](Verification-and-Release-Gates.md).
 
 QR generation and camera decoding are designed to occur in the browser, with no GhostPay-operated QR-upload service in the static Pages architecture. Subsequent user-approved RPC or wallet activity can still disclose network metadata to the selected external providers; this page is not an independent network-privacy verification.
 A scan is not itself transaction or key-import authorization: the relevant flow requires review and a separate confirmation.

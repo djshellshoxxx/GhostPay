@@ -1,5 +1,7 @@
 **GhostPay**
+
 - [Home](Home.md)
+- [Repository Status Snapshot](Current-Status.md)
 - **[User Guide](User-Guide.md)**
 - **[Developer Guide](Developer-Guide.md)**
 - [Architecture and Design Rationale](Architecture-and-Design-Rationale.md)

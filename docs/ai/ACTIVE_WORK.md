@@ -79,6 +79,36 @@ Run all 88 scanner/privacy tests on Node 22, scan the resulting eligible product
 sources, and obtain independent integration-diff review. Source conflicts require
 inspection; publication and hosted qualification remain coordinator-owned.
 
+# Consolidation records and branch census — 2026-11-19
+
+Owner: ChatGPT root coordinator; initial census writer: branch_scout (Caveman investigator).
+Branch: `codex/ghostpay-consolidation-records-20261119`.
+Base: `14ded337a10c140d7a9f9a9238ec038587d925bb` (main; reread 2026-11-19 10:32 UTC).
+
+Owned paths: `docs/consolidation/BRANCH_INVENTORY.md`,
+`docs/consolidation/20261119-branch-census.json`, `docs/consolidation/PR-census.json`
+(initial branch_scout phase), followed by coordinator-owned
+`docs/consolidation/FEATURE_MATRIX.md`, `RECOVERED_WORK.md`, `SECURITY_AUDIT.md`,
+`TEST_RESULTS.md`, `MAIN_MERGE_LOG.md`, `REMAINING_WORK.md`, and `HANDOFF.md`;
+this claim only in `docs/ai/ACTIVE_WORK.md`. All seven abbreviated filenames are under
+`docs/consolidation/`.
+
+Acceptance: preserve the observed 278-branch / 267-PR census with exact source heads and explicit
+dispositions; distinguish later observations, verified ancestry, inherited source review and unrun gates;
+record independent recovery and candidate findings without turning them into release qualification;
+publish reviewable documentation from the pinned main tree. The local environment became temporarily unavailable during the task, then resumed. The original
+census JSON was successfully reread and cross-checked with GitHub metadata before publication. Retained
+connector responses and source-pinned repository evidence remain explicit provenance; no missing data is invented. No application, dependency, workflow,
+security-gate, deployment or integration-lock mutation belongs to this branch.
+
+Write ownership is sequential: branch_scout publishes the census, then ceases all writes and supplies
+its exact head to root; root may append the seven records only with an expected-head guard. Existing
+claims and source candidates remain read-only inputs. The separate active main integration lease stays
+untouched. Source-only fixes remain on their dedicated PRs. A documentation PR is not permission to
+merge, release, deploy, delete branches or close unmerged source work.
+
+Status: claim recorded before census edits. Root owns final review, subsequent documentation and handoff.
+
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
 Worker: ChatGPT lead with separate transport implementer and independent privacy reviewer.
@@ -651,3 +681,71 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## Documentation consolidation and historical recovery — 2026-11-19 UTC
+
+Worker: ChatGPT consolidation_review, coordinated by the main consolidation worker.
+Branch: `integration/ghostpay-docs-recovery-20261119`.
+Base: `ffd982a7aea2856c186b40ef236a39720a1b81f5` (main after PR #214).
+Owned paths: `docs/wiki/**`, `docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md`,
+`docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md`,
+`docs/handoffs/docs-recovery-20261119/**`, the QR precedence paragraph in
+`docs/design/qr-colors.md` (coordinator-approved recovery from #140), and this claim only.
+The coordinator owns `docs/maintenance/**`; existing producer branches remain unchanged.
+
+Acceptance: merge exact PR #215 and #216 source heads into this isolated branch while
+preserving ancestry; supersede outdated current-main and PR #241 guidance with a pinned
+snapshot; preserve useful historical evidence from #139, #140 and #153 in a dated
+archive or document its exact supersession. Verify relative documentation links,
+historical provenance, branch ancestry, absence of runtime/workflow changes and clean
+diff formatting. Runtime tests are not claimed for this documentation-only change.
+No remote publication, merge to main, deployment or live Wiki publication is performed
+by this worker. The coordinator reviews and qualifies the completed candidate.
+
+Status: local documentation integration and historical extraction completed. Both
+source heads are retained by normal merges; no source-owner branch was updated.
+The recovery report and `verification.json` record static checks. Publication,
+independent review, applicable CI and main integration remain coordinator-owned.
+
+## Consolidation checkpoint completion and documentation recovery — 2026-11-19
+
+Owner: ChatGPT root integration coordinator, after explicit branch handoff from branch_scout.
+Branch: `codex/ghostpay-consolidation-records-20261119`; prior head `b60be096fb32ab63f51ea3868892db21728fbdb1`.
+Current main: `8f56376427c96881f49590920ff0bf8543ec81b4`, after independently reviewed and fully qualified PR #257.
+Expanded owned scope: reconcile current main and the complete documentation-only PR #259
+(`4ff80733a3b36019e2f12fc21a8448e7666b6049`) while retaining both histories and every ownership
+claim; its changed `docs/design`, `docs/wiki`, and `docs/handoffs/docs-recovery-20261119` paths
+and the two dated continuation ledgers are included. Correct the demonstrably stale inventory
+statements in `packages/chain-adapters/TODO-VERIFY.md` from the existing token/feed source and
+saved primary-source evidence. Complete the seven already claimed consolidation records.
+Acceptance: historical material stays dated; current status is pinned to actual main and candidate
+heads; archive provenance and all source text are retained; insertion-only ownership conflicts
+preserve every parent section; new main runtime blobs stay unchanged. Verify Markdown links,
+JSON/count consistency, source identities, exact current checks and the resulting publication tree.
+No application, dependency, workflow, contract, security threshold, deployment or release change.
+Original #259 and other workers' source branches remain read-only. Root holds verified cooperative
+lease generation 3 for shared integration actions; that metadata-only control history is never merged.
+This scope expansion is recorded before the recovery and corrective documentation edits.
+
+## Consolidation checkpoint evidence continuation — 2026-11-19
+
+Owner: the same root coordinator for `codex/ghostpay-consolidation-records-20261119`.
+Prior verified checkpoint: `64e192916d66500db8a47a251b4ab17c4d756906`; tree `8923964e4dd7aeab68fc92c722cdd23d0e9a40fa`.
+Additional owned paths, registered before repository edits:
+`docs/consolidation/20261119-eligibility-snapshot-1134.json`,
+`docs/consolidation/20261119-eligibility-snapshot-1134.md`,
+`docs/consolidation/20261119-security-gates-264.json`, and
+`docs/consolidation/20261119-final-observations.json`.
+Purpose: preserve the final source-bound CI inventory, current #264 analyzer evidence,
+late branch/source dispositions, and this coordinator's verified lease handoff.
+Acceptance: retain historical snapshots unchanged; separate pending, failed and completed
+checks; keep original artifact hashes and exact heads; preserve every other claim and
+all application/dependency/workflow blobs. The already owned eight consolidation records
+will be updated to reference this evidence. No test, runtime or security threshold changes.
+
+Final status for this coordinator's consolidation claim: all eight records and recovered
+documentation history are published and read back; the final evidence follow-up records
+reviewed PR277, the288-ref snapshot, pending CI and unresolved security/test gates.
+Generation3 integration ownership was explicitly released at6408563f55081ee941c2036086c025ebf63d2c96.
+No future background execution is promised. Source branches retain their existing owners;
+future integration must re-read live heads and acquire ownership before shared writes.

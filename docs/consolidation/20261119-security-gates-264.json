@@ -1,0 +1,596 @@
+{
+  "artifact_id": 14516957113,
+  "run_id": 44487029107,
+  "job_id": 135432935301,
+  "metadata": {
+    "schemaVersion": 1,
+    "analyzer": "mythril",
+    "requestedCommit": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "checkoutCommit": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "analysisOutcome": "failure",
+    "runnerExitCode": 1,
+    "reportPresent": true,
+    "fullReportBytes": 254223,
+    "fullReportSha256": "475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb",
+    "retainedBytes": 254223,
+    "truncated": false,
+    "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+  },
+  "zip_sha256": "c6bce07d662aec1fa50b2320e452dbe19ed57ca7e575b9f4560240224f2019b9",
+  "contract_results": [
+    {
+      "success": true,
+      "error": null,
+      "issues": [],
+      "analysis_target": "GhostPayRouter"
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": [
+        {
+          "contract": "GhostPaySweepRelayer",
+          "filename": "src/GhostPaySweepRelayer.sol",
+          "lineno": 83,
+          "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+          "swc-id": "116",
+          "severity": "Low",
+          "title": "Dependence on predictable environment variable",
+          "code": "if (block.timestamp > s.deadline) revert Expired()",
+          "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners."
+        }
+      ],
+      "analysis_target": "GhostPaySweepRelayer"
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": [],
+      "analysis_target": "GhostPayPolicyRouter"
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": [
+        {
+          "contract": "PolicyAccount",
+          "filename": "src/PolicyAccount.sol",
+          "lineno": 161,
+          "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+          "swc-id": "116",
+          "severity": "Low",
+          "title": "Dependence on predictable environment variable",
+          "code": "if (block.timestamp > w.deadline) revert Expired()",
+          "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners."
+        },
+        {
+          "contract": "PolicyAccount",
+          "filename": "src/PolicyAccount.sol",
+          "lineno": 262,
+          "function": "proposeDestination(address,uint256,uint256,bytes)",
+          "swc-id": "116",
+          "severity": "Low",
+          "title": "Dependence on predictable environment variable",
+          "code": "if (block.timestamp > deadline) revert Expired()",
+          "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners."
+        }
+      ],
+      "analysis_target": "PolicyAccount"
+    },
+    {
+      "success": true,
+      "error": null,
+      "issues": [
+        {
+          "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+          "filename": null,
+          "lineno": null,
+          "function": "fallback",
+          "swc-id": "110",
+          "severity": "Low",
+          "title": "Exception State",
+          "code": null,
+          "description": "An assertion violation was triggered.\nIt is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values). This issue is reported for internal compiler generated code."
+        },
+        {
+          "contract": "PolicyAccountFactory",
+          "filename": "src/PolicyAccountFactory.sol",
+          "lineno": 117,
+          "function": "deploy(address,address,uint256,bytes32)",
+          "swc-id": "107",
+          "severity": "Medium",
+          "title": "State access after external call",
+          "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+          "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state."
+        },
+        {
+          "contract": "PolicyAccountFactory",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+          "lineno": 99,
+          "function": "deploy(address,address,uint256,bytes32)",
+          "swc-id": "107",
+          "severity": "Low",
+          "title": "State access after external call",
+          "code": "_reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED",
+          "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a fixed address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state."
+        },
+        {
+          "contract": "PolicyAccountFactory",
+          "filename": "src/PolicyAccountFactory.sol",
+          "lineno": 131,
+          "function": "deploy(address,address,uint256,bytes32)",
+          "swc-id": "113",
+          "severity": "Low",
+          "title": "Multiple Calls in a Single Transaction",
+          "code": "token.balanceOf(FEE_RECIPIENT)",
+          "description": "Multiple calls are executed in the same transaction.\nThis call is executed following another call within the same transaction. It is possible that the call never gets executed if a prior call fails permanently. This might be caused intentionally by a malicious callee. If possible, refactor the code such that each transaction only executes one external call or make sure that all callees can be trusted (i.e. they\u2019re part of your own codebase)."
+        },
+        {
+          "contract": "PolicyAccountFactory",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+          "lineno": 104,
+          "function": "deploy(address,address,uint256,bytes32)",
+          "swc-id": "107",
+          "severity": "Medium",
+          "title": "State access after external call",
+          "code": "create2(value, 0x09, 0x37, salt)",
+          "description": "Write to persistent state following external call\nThe contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state."
+        },
+        {
+          "contract": "PolicyAccountFactory",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+          "lineno": 227,
+          "function": "deploy(address,address,uint256,bytes32)",
+          "swc-id": "107",
+          "severity": "Low",
+          "title": "External Call To User-Supplied Address",
+          "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+          "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place."
+        },
+        {
+          "contract": "PolicyAccountFactory",
+          "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+          "lineno": 227,
+          "function": "deploy(address,address,uint256,bytes32)",
+          "swc-id": "104",
+          "severity": "Medium",
+          "title": "Unchecked return value from external call.",
+          "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+          "description": "The return value of a message call is not checked.\nExternal calls return a boolean value. If the callee halts with an exception, 'false' is returned and execution continues in the caller. The caller should check whether an exception happened and react accordingly to avoid unexpected behavior. For example it is often desirable to wrap external calls in require() so the transaction is reverted if the call fails."
+        }
+      ],
+      "analysis_target": "PolicyAccountFactory"
+    }
+  ],
+  "non_json_lines": [
+    "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.",
+    "  import pkg_resources",
+    "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.",
+    "  import pkg_resources",
+    "::error::mythril: GhostPaySweepRelayer reported issues or failed (rc=1)",
+    "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.",
+    "  import pkg_resources",
+    "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.",
+    "  import pkg_resources",
+    "::error::mythril: PolicyAccount reported issues or failed (rc=1)",
+    "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.",
+    "  import pkg_resources",
+    "::error::mythril: PolicyAccountFactory reported issues or failed (rc=1)"
+  ],
+  "counts": {
+    "Low": 7,
+    "Medium": 3
+  },
+  "observed_at_utc": "2026-11-19T11:33:31Z",
+  "artifact_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44487029107/artifacts/14516957113",
+  "workflow_job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44487029107/job/135432935301",
+  "source_identity_vs_historical": {
+    "historical_commit": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+    "candidate_commit": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "paths": [
+      {
+        "path": "packages/contracts/src",
+        "baseline_oid": "dabfd36a98424a4184ee7e267e12815763d1157f",
+        "candidate_oid": "dabfd36a98424a4184ee7e267e12815763d1157f",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/lib",
+        "baseline_oid": "b10191d543360a5c102e269cca72883b4303d8c7",
+        "candidate_oid": "b10191d543360a5c102e269cca72883b4303d8c7",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/foundry.toml",
+        "baseline_oid": "59bf7337ea5fe8526869f22e9595e022027b4712",
+        "candidate_oid": "59bf7337ea5fe8526869f22e9595e022027b4712",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "baseline_oid": "779c67d0d1432ad99b1a0828a98d390a04a3e1fa",
+        "candidate_oid": "779c67d0d1432ad99b1a0828a98d390a04a3e1fa",
+        "equal": true
+      }
+    ],
+    "runner_script_changed": true
+  },
+  "interpretation": "Five per-contract JSON results report success:true/error:null. Three contain findings, so the strict wrapper returns exit1. Ten findings (7Low/3Medium) are not the older eleven-record report (8Low/3Medium). No finding was waived, no rerun was performed, and this bounded symbolic output does not establish complete exploration. CodeQL is a separate unresolved high-alert gate.",
+  "codeql": {
+    "check_run_id": 135456052088,
+    "check_url": "https://github.com/djshellshoxxx/GhostPay/runs/135456052088",
+    "summary": "1 new alert including 1 high severity security vulnerability",
+    "annotations_count": 1,
+    "annotation_details": "Unavailable: connector endpoint unsupported; cloud browser transport failed before page navigation.",
+    "workflow_run_id": 44487024101,
+    "workflow_artifacts": [],
+    "javascript_analysis_job_id": 135432925616,
+    "javascript_analysis_job_conclusion": "success",
+    "job_log_observation": "SARIF upload succeeded; log lists executed queries but does not identify the alert. A successful analysis job is not a clean security result."
+  },
+  "independent_review": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-11-19T11:38:39.330365Z",
+    "review_mode": "Independent read-only artifact verification and source/document comparison; no analysis rerun, tests, suppression, or source edit.",
+    "repository": "djshellshoxxx/GhostPay",
+    "current_source": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "historical_report_source": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+    "artifact_id": 14516957113,
+    "run_id": 44487029107,
+    "job_id": 135432935301,
+    "artifact_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44487029107/artifacts/14516957113",
+    "workflow_job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44487029107/job/135432935301",
+    "verification": {
+      "zip_bytes": 16579,
+      "zip_sha256": "c6bce07d662aec1fa50b2320e452dbe19ed57ca7e575b9f4560240224f2019b9",
+      "report_bytes": 254223,
+      "report_sha256": "475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb",
+      "manifest_bytes": 532,
+      "manifest_sha256": "a4ee717987970d8ec5819537695cb608b08b6f73fe2153a4971565728d7a50fe",
+      "zip_members_match_local_files": true,
+      "manifest_matches_parsed_evidence": true,
+      "retained_issue_projection_matches_raw_report": true,
+      "manifest": {
+        "schemaVersion": 1,
+        "analyzer": "mythril",
+        "requestedCommit": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "checkoutCommit": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "analysisOutcome": "failure",
+        "runnerExitCode": 1,
+        "reportPresent": true,
+        "fullReportBytes": 254223,
+        "fullReportSha256": "475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb",
+        "retainedBytes": 254223,
+        "truncated": false,
+        "retention": "At most the last 8 MiB; truncation applies only to the artifact, not the gate's input."
+      }
+    },
+    "current_contract_results": [
+      {
+        "analysis_target": "GhostPayRouter",
+        "raw_report_line": 3,
+        "success": true,
+        "error": null,
+        "issue_count": 0
+      },
+      {
+        "analysis_target": "GhostPaySweepRelayer",
+        "raw_report_line": 6,
+        "success": true,
+        "error": null,
+        "issue_count": 1
+      },
+      {
+        "analysis_target": "GhostPayPolicyRouter",
+        "raw_report_line": 10,
+        "success": true,
+        "error": null,
+        "issue_count": 0
+      },
+      {
+        "analysis_target": "PolicyAccount",
+        "raw_report_line": 13,
+        "success": true,
+        "error": null,
+        "issue_count": 2
+      },
+      {
+        "analysis_target": "PolicyAccountFactory",
+        "raw_report_line": 17,
+        "success": true,
+        "error": null,
+        "issue_count": 7
+      }
+    ],
+    "current_counts": {
+      "Low": 7,
+      "Medium": 3
+    },
+    "current_total": 10,
+    "current_findings": [
+      {
+        "current_record": 1,
+        "report_line": 6,
+        "analysis_target": "GhostPaySweepRelayer",
+        "historical_factory_record": null,
+        "contract": "GhostPaySweepRelayer",
+        "filename": "src/GhostPaySweepRelayer.sol",
+        "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+        "lineno": 83,
+        "address": 785,
+        "swc-id": "116",
+        "severity": "Low",
+        "title": "Dependence on predictable environment variable",
+        "code": "if (block.timestamp > s.deadline) revert Expired()"
+      },
+      {
+        "current_record": 2,
+        "report_line": 13,
+        "analysis_target": "PolicyAccount",
+        "historical_factory_record": null,
+        "contract": "PolicyAccount",
+        "filename": "src/PolicyAccount.sol",
+        "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+        "lineno": 161,
+        "address": 1876,
+        "swc-id": "116",
+        "severity": "Low",
+        "title": "Dependence on predictable environment variable",
+        "code": "if (block.timestamp > w.deadline) revert Expired()"
+      },
+      {
+        "current_record": 3,
+        "report_line": 13,
+        "analysis_target": "PolicyAccount",
+        "historical_factory_record": null,
+        "contract": "PolicyAccount",
+        "filename": "src/PolicyAccount.sol",
+        "function": "proposeDestination(address,uint256,uint256,bytes)",
+        "lineno": 262,
+        "address": 5077,
+        "swc-id": "116",
+        "severity": "Low",
+        "title": "Dependence on predictable environment variable",
+        "code": "if (block.timestamp > deadline) revert Expired()"
+      },
+      {
+        "current_record": 4,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R4",
+        "contract": "0x72c68108a82e82617b93d1be0d7975d762035015",
+        "filename": null,
+        "function": "fallback",
+        "lineno": null,
+        "address": 30,
+        "swc-id": "110",
+        "severity": "Low",
+        "title": "Exception State",
+        "code": null
+      },
+      {
+        "current_record": 5,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R5",
+        "contract": "PolicyAccountFactory",
+        "filename": "src/PolicyAccountFactory.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 117,
+        "address": 999,
+        "swc-id": "107",
+        "severity": "Medium",
+        "title": "State access after external call",
+        "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)"
+      },
+      {
+        "current_record": 6,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R6",
+        "contract": "PolicyAccountFactory",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 99,
+        "address": 1170,
+        "swc-id": "107",
+        "severity": "Low",
+        "title": "State access after external call",
+        "code": "_reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED"
+      },
+      {
+        "current_record": 7,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R7",
+        "contract": "PolicyAccountFactory",
+        "filename": "src/PolicyAccountFactory.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 131,
+        "address": 1668,
+        "swc-id": "113",
+        "severity": "Low",
+        "title": "Multiple Calls in a Single Transaction",
+        "code": "token.balanceOf(FEE_RECIPIENT)"
+      },
+      {
+        "current_record": 8,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R9",
+        "contract": "PolicyAccountFactory",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 104,
+        "address": 2887,
+        "swc-id": "107",
+        "severity": "Medium",
+        "title": "State access after external call",
+        "code": "create2(value, 0x09, 0x37, salt)"
+      },
+      {
+        "current_record": 9,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R10",
+        "contract": "PolicyAccountFactory",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 227,
+        "address": 2978,
+        "swc-id": "107",
+        "severity": "Low",
+        "title": "External Call To User-Supplied Address",
+        "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)"
+      },
+      {
+        "current_record": 10,
+        "report_line": 17,
+        "analysis_target": "PolicyAccountFactory",
+        "historical_factory_record": "R11",
+        "contract": "PolicyAccountFactory",
+        "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+        "function": "deploy(address,address,uint256,bytes32)",
+        "lineno": 227,
+        "address": 2978,
+        "swc-id": "104",
+        "severity": "Medium",
+        "title": "Unchecked return value from external call.",
+        "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)"
+      }
+    ],
+    "historical_comparison": {
+      "evidence_kind": "Source-pinned historical disposition document; original historical archive was not downloaded or independently rehashed in this review.",
+      "document_ref": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "document_path": "docs/audits/mythril-14290880802-factory-dispositions.md",
+      "document_blob_oid": "a185c120cf4e16d428bb4e8a1acaa6ec913e59b2",
+      "document_url": "https://github.com/djshellshoxxx/GhostPay/blob/bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a/docs/audits/mythril-14290880802-factory-dispositions.md",
+      "historical_artifact_id": 14290880802,
+      "historical_run_id": 43981233671,
+      "historical_report_sha256_as_documented": "f5a03aea77cff52a996e67202893f6dd51f8b85bce2f9ad8e41a05ebc7f158f8",
+      "documented_total": 11,
+      "documented_counts": {
+        "Low": 8,
+        "Medium": 3
+      },
+      "historical_factory_records": [
+        {
+          "record": "R4",
+          "site": "`0x72c6\u20265015` (modelled clone):fallback:none (PC 30)",
+          "pc": 30,
+          "swc": "110",
+          "severity": "Low"
+        },
+        {
+          "record": "R5",
+          "site": "PolicyAccountFactory:deploy:117 `initialize` CALL (PC 999)",
+          "pc": 999,
+          "swc": "107",
+          "severity": "Medium"
+        },
+        {
+          "record": "R6",
+          "site": "PolicyAccountFactory:deploy:ReentrancyGuard.sol:99 (PC 1170 SSTORE)",
+          "pc": 1170,
+          "swc": "107",
+          "severity": "Low"
+        },
+        {
+          "record": "R7",
+          "site": "PolicyAccountFactory:deploy:131 `balanceOf(FEE_RECIPIENT)` (PC 1668)",
+          "pc": 1668,
+          "swc": "113",
+          "severity": "Low"
+        },
+        {
+          "record": "R8",
+          "site": "PolicyAccountFactory:deploy:132 `allowance` (PC 1781)",
+          "pc": 1781,
+          "swc": "113",
+          "severity": "Low"
+        },
+        {
+          "record": "R9",
+          "site": "PolicyAccountFactory:deploy:Clones.sol:104 `create2` (PC 2887)",
+          "pc": 2887,
+          "swc": "107",
+          "severity": "Medium"
+        },
+        {
+          "record": "R10",
+          "site": "PolicyAccountFactory:deploy:SafeERC20.sol:227 `call` (PC 2978)",
+          "pc": 2978,
+          "swc": "107",
+          "severity": "Low"
+        },
+        {
+          "record": "R11",
+          "site": "PolicyAccountFactory:deploy:SafeERC20.sol:227 `call` (PC 2978)",
+          "pc": 2978,
+          "swc": "104",
+          "severity": "Medium"
+        }
+      ],
+      "matched_factory_records": [
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R9",
+        "R10",
+        "R11"
+      ],
+      "absent_factory_records": [
+        {
+          "record": "R8",
+          "site": "PolicyAccountFactory:deploy:132 `allowance` (PC 1781)",
+          "pc": 1781,
+          "swc": "113",
+          "severity": "Low"
+        }
+      ],
+      "mapping_basis": "Factory PC, SWC, severity plus the documented function/source site; current raw report has no PC 1781 finding.",
+      "absent_interpretation": "R8 is not reproduced in this bounded current output. Absence does not establish resolution, elimination, analyzer completeness, or an approved disposition. The historical document also records a prior bounded local rerun that did not reproduce R8, which is contextual history rather than a demonstrated cause of this run difference."
+    },
+    "source_identity": [
+      {
+        "path": "packages/contracts/src",
+        "historical_oid": "dabfd36a98424a4184ee7e267e12815763d1157f",
+        "current_oid": "dabfd36a98424a4184ee7e267e12815763d1157f",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/lib",
+        "historical_oid": "b10191d543360a5c102e269cca72883b4303d8c7",
+        "current_oid": "b10191d543360a5c102e269cca72883b4303d8c7",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/foundry.toml",
+        "historical_oid": "59bf7337ea5fe8526869f22e9595e022027b4712",
+        "current_oid": "59bf7337ea5fe8526869f22e9595e022027b4712",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "historical_oid": "779c67d0d1432ad99b1a0828a98d390a04a3e1fa",
+        "current_oid": "779c67d0d1432ad99b1a0828a98d390a04a3e1fa",
+        "equal": true
+      },
+      {
+        "path": "packages/contracts/scripts",
+        "historical_oid": "eb1b0df3e52d6348a9bc908d472186c8cfcd4ef4",
+        "current_oid": "5de727a595927f5fb196d47d4c383a6b55eeb7c4",
+        "equal": false
+      }
+    ],
+    "runner_diff_scope": {
+      "run_mythril_script": "Only explanatory comments differ between beb525d and bf51047; contract iteration, analyzer invocation and strict result gate are unchanged.",
+      "workflow": "contract-analysis.yml changes release.yml path triggering and pull-request-only cancellation policy.",
+      "other_script": "pre-deploy-check.sh differs. These observations do not establish identical execution environments or exploration."
+    },
+    "strict_gate": "Runner exit 1 is consistent with three contracts returning findings; all five raw result objects report success:true/error:null. Ten current findings keep the strict gate red. No analyzer crash, full symbolic coverage, or finding resolution is inferred.",
+    "codeql_boundary": "CodeQL alert attribution remains a separate unresolved gate; this Mythril review does not clear it."
+  },
+  "independent_review_source_sha256": "d257e35d1bedbdcfbd1844dbccdc94f1a2667c0ee58a8b0d69b59f1e17403acd"
+}
