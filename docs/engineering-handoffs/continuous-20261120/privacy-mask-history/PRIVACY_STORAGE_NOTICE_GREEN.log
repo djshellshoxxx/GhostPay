@@ -1,0 +1,20 @@
+(node:38) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web
+
+(node:87) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  1 passed | 1 skipped (2)
+      Tests  1 passed | 18 skipped (19)
+   Start at  17:38:51
+   Duration  5.83s (transform 43%, import 35%, environment 15%, tests 6%)
+
+    Isolate  2 workers spawned · ~575ms startup each (spawn + environment, per file)
+             at least ~575ms faster with isolate: false — reuses workers across files instead of one per file
+

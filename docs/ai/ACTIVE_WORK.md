@@ -1,3 +1,13 @@
+# Clipboard auto-clear safety primitive — cycle 20261120T004531Z
+
+Worker: single ChatGPT operator; independent second worker unavailable in this invocation. Root integration coordinator for PR #278 is separate and holds integration lock generation 5.
+Branch: `automation/20261120T004531Z/feature/clipboard-guard` based on exact draft #278 head `d74af79ebabdc8cead843361c3497b46d8c421f9`, current main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Scope: new `apps/web/src/lib/clipboardPrivacy.ts` and its tests, and bounded opt-in wiring to existing `apps/web/src/components/Common.tsx` plus focused regression tests; a task-specific handoff only. Do not touch Pay preflight/network-authorization, shared docs/automation, release branch or deployment workflows.
+Dependency: issue #286 clipboard protection. Acceptance: configurable opt-in delayed clear, clear only if clipboard still equals copied value, newer same-value copy supersedes older timer, denied read/write silently leave clipboard untouched, default copy behavior unchanged. This is a reusable primitive, **not** completion of issue #286's end-user Settings control or global coverage.
+Tests: first record negative reproductions for missing protection; then focused assertions and scoped TypeScript. Hosted CI and independent review required before integration. No integration lock acquired.
+
+---
+
 # Isolated consolidation follow-through — 2026-11-19
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
@@ -2006,3 +2016,39 @@ Status: claimed; diagnosis and deterministic reproduction in progress.
 ### Continuous follow-up integration checkpoint — 2026-11-20
 
 Root integrated the completed generation5 dependency/uniqueness evidence, independently verified merchant guard and composite-action discovery, and both independently reviewed browser/signer fixture repairs. Product/test inputs are frozen at2b7c015e28aa23f63ba39486ae7345983ce9ff97; subsequent handoff changes are documentation/evidence only. Original full web failure is retained; combined focused web13, full web typecheck/lint, merchant30 original coverage/build and113action pins pass. Exact-head hosted qualification and security/release gates remain pending. Six fresh generations completed; follow-up reviewer turns are reused agents after an actual further-spawn thread limit. No live-background claim is made for completed workers.
+# Required privacy UX masking and private history — 2026-11-20
+
+Worker: `/root/remaining_unique_gen5`, continuing the existing worker under the coordinator's new priority.
+Branch: `feat/ghostpay-privacy-mask-history-20261120`.
+Base: `417f7c71daf8645e1432f2ec8f070110879b80bd`; application source equals freeze `2b7c015e28aa23f63ba39486ae7345983ce9ff97`.
+Requirement: issue #286 items 1 and 4, explicitly required for beta qualification.
+Owned paths: `apps/web/src/AppShell.tsx`, new `AppShell.privacy.test.tsx`,
+`apps/web/src/lib/privacyMode.tsx` and focused tests, new
+`apps/web/src/components/{PrivacyControls,SensitiveContent,PrivateHistory}.tsx` and focused tests,
+`apps/web/src/components/ReconciliationLedger.tsx` and new `ReconciliationLedger.privacy.test.tsx`,
+`apps/web/e2e/privacy-mask-history.spec.ts`, this additive claim and
+`docs/engineering-handoffs/continuous-20261120/privacy-mask-history/`.
+Coordination: `qa_bug_gen1` owns Settings, settings model and Common/clipboard source;
+the coordinator owns shared catalogs/source-English policy. No edits to their paths.
+Acceptance: demonstrate baseline gaps; global screen/accessibility masking and deliberate 30-second reveal;
+preserve mounted drafts and sole-copy recovery material; clear sensitive selection and move hidden focus safely;
+revoke on expiration, visibility/pagehide, view/session/app-lock boundaries; history requires existing unlock
+and separate reveal. No new plaintext history persistence or network lookup. Integration must also connect
+wallet/account and direct vault-lock revocation before claiming those boundaries complete.
+Limits: visual masking is not DOM/memory erasure or cryptographic lock. Existing backup custody,
+contracts, fees, hosting, network authority, optional privacy 5a–5l and release gates stay under their original owners.
+Product implementation is authorized after the coordinator reviewed the source gap and architecture.
+No remote mutation; publication and independent review remain coordinator-owned.
+
+Additional coordinator-authorized #4 scope: `apps/web/src/components/WalletAttempts.tsx`
+and its test. Preserve the entire existing duplicate-safety journal, show a neutral unresolved-request
+warning without account/hash details while disconnected, and expose only the connected account+chain
+after explicit temporary history reveal in privacy mode. Root owns Pay/Registry call sites and account lifecycle.
+Additional explicit lock integration: only the manual `Tags` lock handler in `apps/web/src/views/Scan.tsx`,
+with an AppShell regression proving reveal revocation, retained seller identity and unchanged encrypted tag records.
+Temporary per-operation vault closures in receipt/invoice workflows are outside this integration.
+Authorized authority-preservation follow-up: new `apps/web/src/lib/executionSettings.ts` and its tests,
+plus AppShell's private-preference update/storage handler. The comparison excludes only the two new UI fields;
+qa_bug_gen1 owns their separate nonsecret storage key/API, and root owns Pay/Registry guard integration.
+Existing raw execution-settings storage, external-setting revocation and network authority checks must remain intact.
+

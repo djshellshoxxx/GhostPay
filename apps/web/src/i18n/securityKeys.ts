@@ -4,6 +4,27 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  privacyUx: [
+    'walletAttempts.privateWarning',
+    'walletAttempts.connectToReveal',
+    'settings.clipboard.label',
+    'settings.clipboard.off',
+    'settings.clipboard.seconds30',
+    'settings.clipboard.minute1',
+    'settings.clipboard.minutes5',
+    'settings.clipboard.hint',
+    'privacyUx.modeLabel',
+    'privacyUx.modeHint',
+    'privacyUx.hidden',
+    'privacyUx.reveal',
+    'privacyUx.hide',
+    'privacyUx.revealed',
+    'privacyUx.historyHidden',
+    'privacyUx.historyReveal',
+    'privacyUx.historyHide',
+    'privacyUx.historyLocked',
+    'privacyUx.historyHint',
+  ],
   privateScanCheckpoints: [
     'scan.checkpoint.retry',
     'scan.checkpoint.loading',

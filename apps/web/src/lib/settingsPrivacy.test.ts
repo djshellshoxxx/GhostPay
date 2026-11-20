@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, clearRpcSessionOnly, isRpcSessionOnly, loadSettings, rpcUrlLooksSecret, saveSettings, setRpcSessionOnly } from './settings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY, clearRpcSessionOnly, isRpcSessionOnly, loadSettings, rpcUrlLooksSecret, saveSettings, setRpcSessionOnly } from './settings';
 import { buildSettingsExport, exportSectionAvailable, exportSettingsExchange, parseSettingsExchange } from './settingsExchange';
 
 afterEach(clearRpcSessionOnly);
@@ -9,10 +9,11 @@ describe('TM4 endpoint confidentiality at persistence and exchange boundaries', 
     const entered = ' HTTPS://RPC.EXAMPLE:443/?apikey=fixture-value ';
     setRpcSessionOnly('primary', '84532', entered);
     expect(isRpcSessionOnly('primary', '84532', 'https://rpc.example/?apikey=fixture-value')).toBe(true);
-    let saved = '';
-    expect(saveSettings({ ...DEFAULT_SETTINGS, rpcUrls: { '84532': entered } }, { setItem: (_key, value) => { saved = value; } })).toBe(true);
-    expect(saved).not.toContain('fixture-value');
-    expect(loadSettings({ getItem: () => saved }).rpcUrls).toEqual({});
+    const records = new Map<string, string>();
+    expect(saveSettings({ ...DEFAULT_SETTINGS, rpcUrls: { '84532': entered } }, { setItem: (key, value) => { records.set(key, value); } })).toBe(true);
+    expect(records.get(SETTINGS_KEY)).not.toContain('fixture-value');
+    expect([...records.values()].join()).not.toContain('fixture-value');
+    expect(loadSettings({ getItem: (key) => records.get(key) ?? null }).rpcUrls).toEqual({});
   });
 
   it('detects explicit credential path labels even when encoded or followed by short alphabetic values', () => {

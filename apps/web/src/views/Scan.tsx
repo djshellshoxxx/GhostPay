@@ -21,6 +21,7 @@ import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, SCAN_LANES_KEY, type Ano
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { subscribeAppLock } from '../lib/appLock';
+import { revokePrivacyReveal } from '../lib/privacyMode';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { ScanStateError, type PrivateScanScope, type PrivateScanState, type PrivateScanVault } from '../lib/privateScanStore';
@@ -995,7 +996,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
             {t('scan.tags.unlock')}
           </button>
         ) : (
-          <button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
+          <button type="button" className="btn" onClick={() => { services.vault.lock(); revokePrivacyReveal(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
             {t('scan.tags.lock')}
           </button>
         )}

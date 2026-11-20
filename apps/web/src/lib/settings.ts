@@ -2,6 +2,9 @@ import { validateRpcUrl } from '@ghostpay/chain-adapters';
 import { validateSettingsDelayRange } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
 
+/** Local clipboard cleanup is opt-in; zero disables it. These preferences are not part of settings QR exchange. */
+export type ClipboardClearAfterMs = 0 | 30_000 | 60_000 | 300_000;
+
 /** Non-secret preferences. RPC URLs are stored in plain text in this browser (unless marked session-only); the Settings page says so. */
 export interface Settings {
   readonly rpcUrls: Readonly<Record<string, string>>;
@@ -13,6 +16,8 @@ export interface Settings {
   readonly lockTimeoutMin: number;
   readonly theme: 'system' | 'light' | 'dark';
   readonly autoClearFragment: boolean;
+  readonly privacyMode: boolean;
+  readonly clipboardClearAfterMs: ClipboardClearAfterMs;
   readonly pinnedSigners: readonly string[];
 }
 
@@ -25,10 +30,43 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
   lockTimeoutMin: 15,
   theme: 'system',
   autoClearFragment: true,
+  privacyMode: false,
+  clipboardClearAfterMs: 0,
   pinnedSigners: Object.freeze([]),
 });
 
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
+/** Visual privacy must not rewrite the execution settings bytes used by active network grants. */
+export const UI_PRIVACY_KEY = 'ghostpay.uiPrivacy.v1';
+export type PrivacyPreferences = Pick<Settings, 'privacyMode' | 'clipboardClearAfterMs'>;
+
+function privacyPreferences(raw: unknown, fallback: PrivacyPreferences): PrivacyPreferences {
+  const object = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? raw as Record<string, unknown> : {};
+  const delay = object['clipboardClearAfterMs'];
+  return {
+    privacyMode: typeof object['privacyMode'] === 'boolean' ? object['privacyMode'] : fallback.privacyMode,
+    clipboardClearAfterMs: delay === 0 || delay === 30_000 || delay === 60_000 || delay === 300_000 ? delay : fallback.clipboardClearAfterMs,
+  };
+}
+
+/** Missing, corrupt or inaccessible UI preferences retain the supplied current/legacy fallback. */
+export function loadPrivacyPreferences(fallback: PrivacyPreferences = DEFAULT_SETTINGS, storage: Pick<Storage, 'getItem'> | undefined = safeLocalStorage()): PrivacyPreferences {
+  try {
+    const text = storage?.getItem(UI_PRIVACY_KEY);
+    return privacyPreferences(text === null || text === undefined ? undefined : JSON.parse(text), fallback);
+  } catch {
+    return privacyPreferences(undefined, fallback);
+  }
+}
+
+/** Writes only these two nonsecret UI choices. Execution settings bytes and RPC/pin objects are untouched. */
+export function savePrivacyPreferences(preferences: PrivacyPreferences, storage: Pick<Storage, 'setItem'> | undefined = safeLocalStorage()): boolean {
+  try {
+    if (storage === undefined) return false;
+    storage.setItem(UI_PRIVACY_KEY, JSON.stringify(privacyPreferences(preferences, DEFAULT_SETTINGS)));
+    return true;
+  } catch { return false; }
+}
 
 /** Validates a user-entered RPC URL (TLS, or explicitly selected loopback HTTP; no userinfo or fragment). */
 export function checkRpcUrl(raw: string): string {
@@ -165,6 +203,8 @@ export function sanitizeSettings(raw: unknown): Settings {
   const lockTimeoutMin = typeof lock === 'number' && Number.isInteger(lock) && lock >= 1 && lock <= 240 ? lock : DEFAULT_SETTINGS.lockTimeoutMin;
   const t = o['theme'];
   const theme = t === 'light' || t === 'dark' || t === 'system' ? t : 'system';
+  const clipboardDelay = o['clipboardClearAfterMs'];
+  const clipboardClearAfterMs = clipboardDelay === 30_000 || clipboardDelay === 60_000 || clipboardDelay === 300_000 ? clipboardDelay : 0;
   const pins = Array.isArray(o['pinnedSigners'])
     ? (o['pinnedSigners'] as unknown[]).filter((p): p is string => typeof p === 'string' && /^(?:02|03)[0-9a-f]{64}$/.test(p)).slice(0, 50)
     : [];
@@ -177,18 +217,24 @@ export function sanitizeSettings(raw: unknown): Settings {
     lockTimeoutMin,
     theme,
     autoClearFragment: typeof o['autoClearFragment'] === 'boolean' ? o['autoClearFragment'] : true,
+    privacyMode: typeof o['privacyMode'] === 'boolean' ? o['privacyMode'] : false,
+    clipboardClearAfterMs,
     pinnedSigners: pins,
   };
 }
 
 /** Storage-failure-tolerant load. */
 export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = safeLocalStorage()): Settings {
+  let settings = DEFAULT_SETTINGS;
   try {
     const text = storage?.getItem(SETTINGS_KEY);
-    return text === null || text === undefined ? DEFAULT_SETTINGS : sanitizeSettings(JSON.parse(text));
+    settings = text === null || text === undefined ? DEFAULT_SETTINGS : sanitizeSettings(JSON.parse(text));
   } catch {
-    return DEFAULT_SETTINGS;
+    // Corrupt execution preferences fall back independently of the local visual privacy choice.
   }
+  const privacy = loadPrivacyPreferences(settings, storage);
+  return settings.privacyMode === privacy.privacyMode && settings.clipboardClearAfterMs === privacy.clipboardClearAfterMs
+    ? settings : { ...settings, ...privacy };
 }
 
 /** Saves only validated non-secret preferences. Returns false when storage is unavailable. */
@@ -198,10 +244,11 @@ export function saveSettings(s: Settings, storage: Pick<Storage, 'setItem'> | un
     // Structural typing permits callers to carry extra fields. Never persist those fields or their
     // toJSON hooks: this storage boundary is deliberately separate from encrypted key backups.
     const clean = sanitizeSettings(s);
+    const { privacyMode, clipboardClearAfterMs, ...execution } = clean;
     const strip = (slot: RpcSlot, map: Readonly<Record<string, string>>): Record<string, string> =>
       Object.fromEntries(Object.entries(map).filter(([k, v]) => !isRpcSessionOnly(slot, k, v)));
-    storage.setItem(SETTINGS_KEY, JSON.stringify({ ...clean, rpcUrls: strip('primary', clean.rpcUrls), rpcUrlsSecondary: strip('secondary', clean.rpcUrlsSecondary) }));
-    return true;
+    storage.setItem(SETTINGS_KEY, JSON.stringify({ ...execution, rpcUrls: strip('primary', clean.rpcUrls), rpcUrlsSecondary: strip('secondary', clean.rpcUrlsSecondary) }));
+    return savePrivacyPreferences({ privacyMode, clipboardClearAfterMs }, storage);
   } catch {
     return false;
   }

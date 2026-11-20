@@ -1,0 +1,528 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: network inventory has unique complete records and references existing sources and tests
+ok 1 - network inventory has unique complete records and references existing sources and tests
+  ---
+  duration_ms: 4.797673
+  type: 'test'
+  ...
+# Subtest: every explicit production web network reference is represented in the inventory
+ok 2 - every explicit production web network reference is represented in the inventory
+  ---
+  duration_ms: 325.79274
+  type: 'test'
+  ...
+# Subtest: shipped SDK and transport boundaries are represented, with library-only adapters distinguished
+ok 3 - shipped SDK and transport boundaries are represented, with library-only adapters distinguished
+  ---
+  duration_ms: 0.302357
+  type: 'test'
+  ...
+# Subtest: inventory detector recognizes calls and aliases without flagging type declarations or comments
+ok 4 - inventory detector recognizes calls and aliases without flagging type declarations or comments
+  ---
+  duration_ms: 0.738453
+  type: 'test'
+  ...
+# Subtest: reference counts detect new dispatchers inside known modules as well as new files
+ok 5 - reference counts detect new dispatchers inside known modules as well as new files
+  ---
+  duration_ms: 0.490736
+  type: 'test'
+  ...
+# Subtest: inventoried authorization actions exist and local/external operations gain no implicit grant
+ok 6 - inventoried authorization actions exist and local/external operations gain no implicit grant
+  ---
+  duration_ms: 3.482836
+  type: 'test'
+  ...
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: TM5 full build accepts configured origins only as enforcing connect-src data
+ok 7 - TM5 full build accepts configured origins only as enforcing connect-src data
+  ---
+  duration_ms: 143.048676
+  type: 'test'
+  ...
+# Subtest: TM5 lean build accepts configured origins only as enforcing connect-src data
+ok 8 - TM5 lean build accepts configured origins only as enforcing connect-src data
+  ---
+  duration_ms: 23.125847
+  type: 'test'
+  ...
+# Subtest: TM5 scanner uses the same strict environment configuration as apply-csp
+ok 9 - TM5 scanner uses the same strict environment configuration as apply-csp
+  ---
+  duration_ms: 36.883144
+  type: 'test'
+  ...
+# Subtest: TM5 scanner never infers an origin allowlist from artifact contents
+ok 10 - TM5 scanner never infers an origin allowlist from artifact contents
+  ---
+  duration_ms: 15.520557
+  type: 'test'
+  ...
+# Subtest: TM5 scanner rejects null caller configuration instead of treating it as the environment default
+ok 11 - TM5 scanner rejects null caller configuration instead of treating it as the environment default
+  ---
+  duration_ms: 1.217112
+  type: 'test'
+  ...
+# Subtest: TM5 existing no-config scanner callers retain their ownOrigin behavior
+ok 12 - TM5 existing no-config scanner callers retain their ownOrigin behavior
+  ---
+  duration_ms: 1.182661
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects a stale header even when the meta matches
+ok 13 - TM5 configured scanner rejects a stale header even when the meta matches
+  ---
+  duration_ms: 47.202691
+  type: 'test'
+  ...
+# Subtest: TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+ok 14 - TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+  ---
+  duration_ms: 1.135451
+  type: 'test'
+  ...
+# Subtest: TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+ok 15 - TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+  ---
+  duration_ms: 0.68196
+  type: 'test'
+  ...
+# Subtest: TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+ok 16 - TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+  ---
+  duration_ms: 0.880834
+  type: 'test'
+  ...
+# Subtest: TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+ok 17 - TM5 direct scanner configuration rejects unsafe origins without echoing credentials
+  ---
+  duration_ms: 0.607269
+  type: 'test'
+  ...
+# Subtest: TM5 scanner preserves ownOrigin compatibility without treating it as a CSP host allowance
+ok 18 - TM5 scanner preserves ownOrigin compatibility without treating it as a CSP host allowance
+  ---
+  duration_ms: 91.980383
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects missing directive in the actual policy
+ok 19 - TM5 configured scanner rejects missing directive in the actual policy
+  ---
+  duration_ms: 27.93005
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects broad default in the actual policy
+ok 20 - TM5 configured scanner rejects broad default in the actual policy
+  ---
+  duration_ms: 15.695616
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects wildcard in the actual policy
+ok 21 - TM5 configured scanner rejects wildcard in the actual policy
+  ---
+  duration_ms: 18.177782
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects stale origin in the actual policy
+ok 22 - TM5 configured scanner rejects stale origin in the actual policy
+  ---
+  duration_ms: 12.165801
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects duplicate directive in the actual policy
+ok 23 - TM5 configured scanner rejects duplicate directive in the actual policy
+  ---
+  duration_ms: 11.657568
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects encoded unexpected origin in the actual policy
+ok 24 - TM5 configured scanner rejects encoded unexpected origin in the actual policy
+  ---
+  duration_ms: 31.773109
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects encoded expected origins in the actual policy
+ok 25 - TM5 configured scanner rejects encoded expected origins in the actual policy
+  ---
+  duration_ms: 25.611226
+  type: 'test'
+  ...
+# Subtest: TM5 configured scanner rejects non-ASCII source separator in the actual policy
+ok 26 - TM5 configured scanner rejects non-ASCII source separator in the actual policy
+  ---
+  duration_ms: 39.275745
+  type: 'test'
+  ...
+# Subtest: TM5 comment cannot gain a configured-origin exemption
+ok 27 - TM5 comment cannot gain a configured-origin exemption
+  ---
+  duration_ms: 27.412934
+  type: 'test'
+  ...
+# Subtest: TM5 template cannot gain a configured-origin exemption
+ok 28 - TM5 template cannot gain a configured-origin exemption
+  ---
+  duration_ms: 28.933724
+  type: 'test'
+  ...
+# Subtest: TM5 noscript cannot gain a configured-origin exemption
+ok 29 - TM5 noscript cannot gain a configured-origin exemption
+  ---
+  duration_ms: 51.779436
+  type: 'test'
+  ...
+# Subtest: TM5 text script cannot gain a configured-origin exemption
+ok 30 - TM5 text script cannot gain a configured-origin exemption
+  ---
+  duration_ms: 26.84272
+  type: 'test'
+  ...
+# Subtest: TM5 misleading attribute cannot gain a configured-origin exemption
+ok 31 - TM5 misleading attribute cannot gain a configured-origin exemption
+  ---
+  duration_ms: 27.200188
+  type: 'test'
+  ...
+# Subtest: TM5 late head policy cannot gain a configured-origin exemption
+ok 32 - TM5 late head policy cannot gain a configured-origin exemption
+  ---
+  duration_ms: 31.560734
+  type: 'test'
+  ...
+# Subtest: TM5 body policy cannot gain a configured-origin exemption
+ok 33 - TM5 body policy cannot gain a configured-origin exemption
+  ---
+  duration_ms: 24.054171
+  type: 'test'
+  ...
+# Subtest: TM5 duplicate policies cannot gain a configured-origin exemption
+ok 34 - TM5 duplicate policies cannot gain a configured-origin exemption
+  ---
+  duration_ms: 31.47042
+  type: 'test'
+  ...
+# Subtest: TM5 late duplicate policy cannot gain a configured-origin exemption
+ok 35 - TM5 late duplicate policy cannot gain a configured-origin exemption
+  ---
+  duration_ms: 26.317722
+  type: 'test'
+  ...
+# Subtest: TM5 duplicate content after valid policy cannot gain a configured-origin exemption
+ok 36 - TM5 duplicate content after valid policy cannot gain a configured-origin exemption
+  ---
+  duration_ms: 26.287447
+  type: 'test'
+  ...
+# Subtest: TM5 duplicate content before valid policy cannot gain a configured-origin exemption
+ok 37 - TM5 duplicate content before valid policy cannot gain a configured-origin exemption
+  ---
+  duration_ms: 40.591935
+  type: 'test'
+  ...
+# Subtest: TM5 duplicate http-equiv cannot gain a configured-origin exemption
+ok 38 - TM5 duplicate http-equiv cannot gain a configured-origin exemption
+  ---
+  duration_ms: 21.897434
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in report-uri directive
+ok 39 - TM5 configured hosts remain forbidden in report-uri directive
+  ---
+  duration_ms: 29.333878
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in img-src directive
+ok 40 - TM5 configured hosts remain forbidden in img-src directive
+  ---
+  duration_ms: 19.349646
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in another meta attribute
+ok 41 - TM5 configured hosts remain forbidden in another meta attribute
+  ---
+  duration_ms: 19.097117
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in body text
+ok 42 - TM5 configured hosts remain forbidden in body text
+  ---
+  duration_ms: 32.94929
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in another element attribute
+ok 43 - TM5 configured hosts remain forbidden in another element attribute
+  ---
+  duration_ms: 25.273886
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in HTML comment
+ok 44 - TM5 configured hosts remain forbidden in HTML comment
+  ---
+  duration_ms: 24.893134
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in image resource
+ok 45 - TM5 configured hosts remain forbidden in image resource
+  ---
+  duration_ms: 39.591754
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in script resource
+ok 46 - TM5 configured hosts remain forbidden in script resource
+  ---
+  duration_ms: 19.081149
+  type: 'test'
+  ...
+# Subtest: TM5 configured hosts remain forbidden in stylesheet resource
+ok 47 - TM5 configured hosts remain forbidden in stylesheet resource
+  ---
+  duration_ms: 34.715159
+  type: 'test'
+  ...
+# Subtest: TM5 configured origins do not become allowed hosts in assets/app.js
+ok 48 - TM5 configured origins do not become allowed hosts in assets/app.js
+  ---
+  duration_ms: 21.525447
+  type: 'test'
+  ...
+# Subtest: TM5 configured origins do not become allowed hosts in assets/app.css
+ok 49 - TM5 configured origins do not become allowed hosts in assets/app.css
+  ---
+  duration_ms: 19.684412
+  type: 'test'
+  ...
+# Subtest: TM5 configured origins do not become allowed hosts in assets/scanner.worker.js
+ok 50 - TM5 configured origins do not become allowed hosts in assets/scanner.worker.js
+  ---
+  duration_ms: 39.777944
+  type: 'test'
+  ...
+# Subtest: TM5 configured origins do not become allowed hosts in help.html
+ok 51 - TM5 configured origins do not become allowed hosts in help.html
+  ---
+  duration_ms: 24.436647
+  type: 'test'
+  ...
+# Subtest: TM5 connect-src exemption leaves inline-code gates active
+ok 52 - TM5 connect-src exemption leaves inline-code gates active
+  ---
+  duration_ms: 21.144043
+  type: 'test'
+  ...
+# Subtest: TM5 connect-src exemption leaves inline-code gates active
+ok 53 - TM5 connect-src exemption leaves inline-code gates active
+  ---
+  duration_ms: 57.520867
+  type: 'test'
+  ...
+# Subtest: TM5 connect-src exemption leaves inline-code gates active
+ok 54 - TM5 connect-src exemption leaves inline-code gates active
+  ---
+  duration_ms: 22.844359
+  type: 'test'
+  ...
+# Subtest: TM5 configured application policy does not replace static help-page CSP rules
+ok 55 - TM5 configured application policy does not replace static help-page CSP rules
+  ---
+  duration_ms: 16.950034
+  type: 'test'
+  ...
+# (node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: TM5 normalizes and deduplicates HTTPS/WSS origins without widening them
+ok 56 - TM5 normalizes and deduplicates HTTPS/WSS origins without widening them
+  ---
+  duration_ms: 6.428065
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://*.example.org"
+ok 57 - TM5 refuses unsafe or non-origin configuration case "https://*.example.org"
+  ---
+  duration_ms: 0.677363
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org;data:"
+ok 58 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org;data:"
+  ---
+  duration_ms: 0.296079
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org'x"
+ok 59 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org'x"
+  ---
+  duration_ms: 0.27036
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\"x"
+ok 60 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\"x"
+  ---
+  duration_ms: 1.348997
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https:rpc.example.org"
+ok 61 - TM5 refuses unsafe or non-origin configuration case "https:rpc.example.org"
+  ---
+  duration_ms: 0.478779
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.exa\\nmple.org"
+ok 62 - TM5 refuses unsafe or non-origin configuration case "https://rpc.exa\\nmple.org"
+  ---
+  duration_ms: 0.219675
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\\\"
+ok 63 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org\\\\"
+  ---
+  duration_ms: 0.225194
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/?api_key=fixture"
+ok 64 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/?api_key=fixture"
+  ---
+  duration_ms: 0.463026
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://user:fixture@rpc.example.org"
+ok 65 - TM5 refuses unsafe or non-origin configuration case "https://user:fixture@rpc.example.org"
+  ---
+  duration_ms: 0.687358
+  type: 'test'
+  ...
+# Subtest: TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/v2/fixture"
+ok 66 - TM5 refuses unsafe or non-origin configuration case "https://rpc.example.org/v2/fixture"
+  ---
+  duration_ms: 0.218614
+  type: 'test'
+  ...
+# Subtest: TM5 direct helper input cannot inject CSP or HTML syntax
+ok 67 - TM5 direct helper input cannot inject CSP or HTML syntax
+  ---
+  duration_ms: 0.296079
+  type: 'test'
+  ...
+# Subtest: TM5 requires the Pages HTML artifact even when _headers is present
+ok 68 - TM5 requires the Pages HTML artifact even when _headers is present
+  ---
+  duration_ms: 2.247207
+  type: 'test'
+  ...
+# Subtest: TM5 validates the broad development profile too
+ok 69 - TM5 validates the broad development profile too
+  ---
+  duration_ms: 189.65741
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 70 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 39.964265
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 71 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 24.795478
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 72 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 15.008209
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 73 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 29.742803
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 74 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 12.873508
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 75 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 66.606678
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 76 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 13.217158
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 77 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 39.591974
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 78 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 13.665561
+  type: 'test'
+  ...
+# Subtest: TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+ok 79 - TM5 inert or mislabeled markup cannot substitute for an enforced head meta policy
+  ---
+  duration_ms: 18.603341
+  type: 'test'
+  ...
+# Subtest: TM5 duplicate connect-src directives fail artifact qualification
+ok 80 - TM5 duplicate connect-src directives fail artifact qualification
+  ---
+  duration_ms: 12.424334
+  type: 'test'
+  ...
+# Subtest: TM5 report-only headers cannot substitute for an enforced header profile
+ok 81 - TM5 report-only headers cannot substitute for an enforced header profile
+  ---
+  duration_ms: 38.878288
+  type: 'test'
+  ...
+# Subtest: TM5 rewrites and validates real shipped HTML/header templates, idempotently
+ok 82 - TM5 rewrites and validates real shipped HTML/header templates, idempotently
+  ---
+  duration_ms: 39.541139
+  type: 'test'
+  ...
+# Subtest: TM5 Pages builder preserves CSP configuration and runs it before bundle scanning
+ok 83 - TM5 Pages builder preserves CSP configuration and runs it before bundle scanning
+  ---
+  duration_ms: 1.060901
+  type: 'test'
+  ...
+# Subtest: TM5 nginx generation preserves standard and embedding header boundaries
+ok 84 - TM5 nginx generation preserves standard and embedding header boundaries
+  ---
+  duration_ms: 8.947867
+  type: 'test'
+  ...
+# Subtest: TM5 meta CSP must precede resource or script execution in generated HTML
+ok 85 - TM5 meta CSP must precede resource or script execution in generated HTML
+  ---
+  duration_ms: 14.720984
+  type: 'test'
+  ...
+1..85
+# tests 85
+# suites 0
+# pass 85
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3169.741171

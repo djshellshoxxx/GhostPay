@@ -3,6 +3,8 @@ import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import { InvoicePaymentSummary } from './InvoicePaymentSummary';
+import { PrivateHistory } from './PrivateHistory';
+import { revokePrivacyReveal } from '../lib/privacyMode';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import {
   clearReconciliationRecords,
@@ -221,6 +223,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setReceipts(next.receipts);
   };
   const reset = (): void => {
+    revokePrivacyReveal();
     revision.current++;
     backupRevision.current++;
     readRevision.current++;
@@ -377,10 +380,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
           disabled={busy || props.sellerKeyId === undefined}
           onClick={() => run(() => Promise.resolve(), true)}
         >{t('ledger.ui.unlockEncryptedReconciliationVault')}</button>
-      ) : (
+      ) : <button type="button" className="btn" onClick={reset}>{t('ledger.ui.lockReconciliationVault')}</button>}
+      <PrivateHistory unlocked={unlocked} scope={`${props.chainId}:${props.sellerKeyId ?? ''}`}>
+      {unlocked && (
         <>
           <div className="actions">
-            <button type="button" className="btn" onClick={reset}>{t('ledger.ui.lockReconciliationVault')}</button>
             <button
               type="button"
               className="btn"
@@ -664,6 +668,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
           </ul>
         )}
       </div>
+      </PrivateHistory>
     </section>
   );
 }

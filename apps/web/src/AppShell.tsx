@@ -5,7 +5,8 @@ import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
 import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, isSessionSuspended, sessionHasExternalCopy, subscribeSession, subscribeSessionBackup, subscribeSessionExpiryCheck, suspendSession } from './lib/session';
-import { clearRpcSessionOnly, loadSettings, saveSettings, SETTINGS_KEY, type Settings as SettingsData } from './lib/settings';
+import { clearRpcSessionOnly, loadPrivacyPreferences, loadSettings, savePrivacyPreferences, saveSettings, SETTINGS_KEY, UI_PRIVACY_KEY, type Settings as SettingsData } from './lib/settings';
+import { sameExecutionSettings } from './lib/executionSettings';
 import { AppContext, VIEW_LABELS, type AppState, type RpcAuthorizationOptions, type ViewId } from './state';
 import { UserFacingError } from './lib/errors';
 import { RegistryView } from './features/registry/RegistryView';
@@ -19,6 +20,10 @@ import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { PrivacyControls } from './components/PrivacyControls';
+import { ClipboardPrivacySync } from './components/ClipboardPrivacySync';
+import { SensitiveContent } from './components/SensitiveContent';
+import { PrivacyProvider } from './lib/privacyMode';
 import { notifyAppLock, subscribeAppLock } from './lib/appLock';
 import { FRAME_REFUSAL, ORIGIN_MISMATCH, currentOriginCheck, embedModeEnabled, frameRefusesView, isFramed, originMismatch } from './lib/frameGuard';
 
@@ -132,6 +137,9 @@ export function AppShell(props: AppShellProps): ReactNode {
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
   const suspended = useSyncExternalStore(subscribeSession, isSessionSuspended);
   const view = suspended ? 'seller' : profile === 'lean' && !CORE_ORDER.includes(selectedView) ? 'home' : selectedView;
+  // Consent for one invoice or sweep target must not reveal a replacement on the same route. Keep the grant's
+  // identity opaque instead of copying invoice text or seller details into the reveal model.
+  const privacyScope = useMemo(() => ({}), [view, fragment, sweepTarget, session, suspended]);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -151,8 +159,18 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   useEffect(() => {
     const onStorage = (event: StorageEvent): void => {
-      if (event.key !== null && event.key !== SETTINGS_KEY) return;
+      if (event.key !== null && event.key !== SETTINGS_KEY && event.key !== UI_PRIVACY_KEY) return;
       if (event.storageArea !== null && event.storageArea !== window.localStorage) return;
+      if (event.key === UI_PRIVACY_KEY) {
+        // A display preference from another tab does not replace selected endpoint/signer references or clear
+        // session-only endpoint consent. The separate execution-storage listener keeps its existing boundary.
+        setSettings((current) => {
+          const privacy = loadPrivacyPreferences(current);
+          return privacy.privacyMode === current.privacyMode && privacy.clipboardClearAfterMs === current.clipboardClearAfterMs
+            ? current : { ...current, ...privacy };
+        });
+        return;
+      }
       clearRpcSessionOnly();
       rpcCache.current.clear();
       settingsRevision.current = storedSettingsRevision();
@@ -419,9 +437,9 @@ export function AppShell(props: AppShellProps): ReactNode {
       settings,
       networkRevision,
       updateSettings: (s) => {
-        rpcCache.current.clear();
         // A form opened before another tab saved may not overwrite that newer selection.
         if (storedSettingsRevision() !== settingsRevision.current) {
+          rpcCache.current.clear();
           clearRpcSessionOnly();
           settingsRevision.current = storedSettingsRevision();
           setSettings(loadSettings());
@@ -429,6 +447,12 @@ export function AppShell(props: AppShellProps): ReactNode {
           setLive({ key: 'error.network.authorizationRefused' });
           return false;
         }
+        if (sameExecutionSettings(settings, s)) {
+          setSettings(s);
+          // Preserve the exact raw execution-settings bytes to which active network grants are bound.
+          return savePrivacyPreferences(s);
+        }
+        rpcCache.current.clear();
         setSettings(s);
         const saved = saveSettings(s);
         settingsRevision.current = storedSettingsRevision();
@@ -451,10 +475,13 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   return (
     <AppContext.Provider value={state}>
+      <ClipboardPrivacySync />
+      <PrivacyProvider enabled={settings.privacyMode} scope={privacyScope}>
       <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
         <h1>GhostPay</h1>
         <p className="tagline">{t('app.shell.tagline')}</p>
+        <PrivacyControls />
         <nav aria-label={t('app.shell.main')}>
           <ul className="nav">
             {order.map((v) => (
@@ -472,7 +499,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           <p>{t('network.actionConsent')}</p>
           <button type="button" className="btn" onClick={() => { services.network?.invalidate(); setLive({ key: 'network.revoked' }); }}>{t('network.revoke')}</button>
         </Notice>}
-        {!suspended && props.mainPrelude}
+        <SensitiveContent>{!suspended && props.mainPrelude}</SensitiveContent>
         {suspended && <Notice kind="warn" title={t('app.idle.suspended.title')}>{t('app.idle.suspended.body')}</Notice>}
         {wrongOrigin !== undefined && (
           <Notice kind="error" title={ORIGIN_MISMATCH.title}>{ORIGIN_MISMATCH.body(wrongOrigin.declared ?? 'another origin', wrongOrigin.actual)}</Notice>
@@ -499,11 +526,13 @@ export function AppShell(props: AppShellProps): ReactNode {
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setView('home'); }}>
           <ShellProfileContext.Provider value={profile}>
+            <SensitiveContent active={view !== 'home' && view !== 'about' && view !== 'settings'}>
             <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={suspended ? undefined : props.sellerArchive} framedRefusal={frameRefusesView(view, framed, embedMode)} />
+            </SensitiveContent>
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
-      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
+      <SensitiveContent><div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div></SensitiveContent>
       <footer className="site-footer">
         <p>{t('app.shell.footer')}</p>
         <ul className="footer-links">
@@ -512,6 +541,7 @@ export function AppShell(props: AppShellProps): ReactNode {
           <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
       </footer>
+      </PrivacyProvider>
     </AppContext.Provider>
   );
 }

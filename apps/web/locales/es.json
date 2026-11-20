@@ -2524,7 +2524,26 @@
     "btc.scan.spentStatus.provider": "Spent status: the selected Esplora server was asked about outputs not already known locally to be spent. It sees each queried output and reports current status, including mempool spends it knows about. This is the server's report, not independent proof.",
     "btc.scan.spentStatus.unknown": "Spent status: unknown. The scan is incomplete, historical input coverage is missing, or supporting chain evidence changed. Displayed outputs cannot be selected for sweeping until their status is refreshed.",
     "btc.scan.foundUnknown": "{count} payment(s) found with unknown spent status; {spent} spend(s) observed. Sweep selection is unavailable.",
-    "btc.scan.unknownRefresh": "Continue a partial scan to the checked tip. For old scan history, use Forget saved scan progress and rescan from the original first block, or explicitly enable the server check. The server check reveals the queried outputs."
+    "btc.scan.unknownRefresh": "Continue a partial scan to the checked tip. For old scan history, use Forget saved scan progress and rescan from the original first block, or explicitly enable the server check. The server check reveals the queried outputs.",
+    "settings.clipboard.label": "Clear copied data automatically",
+    "settings.clipboard.off": "Off",
+    "settings.clipboard.seconds30": "After 30 seconds",
+    "settings.clipboard.minute1": "After 1 minute",
+    "settings.clipboard.minutes5": "After 5 minutes",
+    "settings.clipboard.hint": "Optional, best effort. GhostPay checks that the clipboard still matches its latest copy before clearing it. The browser may deny access, and another app can change the clipboard between the check and clear. Clipboard history and synced copies are not removed. Changing this setting cancels pending automatic cleanup.",
+    "privacyUx.modeLabel": "Privacy mode",
+    "privacyUx.modeHint": "Hide sensitive details for screen sharing. Masking does not lock your vault or erase in-memory data.",
+    "privacyUx.hidden": "Sensitive details are hidden.",
+    "privacyUx.reveal": "Reveal details for 30 seconds",
+    "privacyUx.hide": "Hide sensitive details",
+    "privacyUx.revealed": "Sensitive details are temporarily visible.",
+    "privacyUx.historyHidden": "Transaction history is hidden.",
+    "privacyUx.historyReveal": "Reveal history for 30 seconds",
+    "privacyUx.historyHide": "Hide transaction history",
+    "privacyUx.historyLocked": "Unlock the reconciliation vault before revealing history.",
+    "privacyUx.historyHint": "Revealing history does not start a network lookup. Existing encrypted backups are preserved.",
+    "walletAttempts.privateWarning": "A previous wallet request may already have been submitted. Check your wallet and chain outcome before trying again. Journal records are preserved.",
+    "walletAttempts.connectToReveal": "Connect the relevant wallet account and chain to reveal its attempts."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

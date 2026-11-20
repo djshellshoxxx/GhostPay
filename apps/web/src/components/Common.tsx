@@ -1,4 +1,6 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { beginClipboardCopy, recordClipboardCopy, writeClipboardText } from '../lib/clipboardPrivacy';
+import { AppContext } from '../state';
 import { sanitizeDisplayText } from '../lib/sanitize';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { ContextHelp } from './ContextHelp';
@@ -43,7 +45,9 @@ export function Field(props: {
   );
 }
 
-export function CopyButton(props: { readonly text: string; readonly label: string }): ReactNode {
+export function CopyButton(props: { readonly text: string; readonly label: string; readonly autoClearAfterMs?: number }): ReactNode {
+  const app = useContext(AppContext);
+  const clearAfterMs = props.autoClearAfterMs ?? app?.settings?.clipboardClearAfterMs ?? 0;
   const [result, setResult] = useState<{ readonly text: string; readonly state: 'copied' | 'failed' } | undefined>();
   const attempt = useRef(0);
   const currentText = useRef(props.text);
@@ -61,12 +65,15 @@ export function CopyButton(props: { readonly text: string; readonly label: strin
       onClick={() => {
         const text = props.text;
         const request = ++attempt.current;
+        const copyIntent = beginClipboardCopy();
         const finish = (state: 'copied' | 'failed'): void => {
           if (request === attempt.current && currentText.current === text) setResult({ text, state });
         };
         void (async () => {
           try {
-            await navigator.clipboard.writeText(text);
+            const clipboard = navigator.clipboard;
+            await writeClipboardText(text, clipboard);
+            recordClipboardCopy(text, clipboard, clearAfterMs, copyIntent);
             finish('copied');
           } catch {
             finish('failed');

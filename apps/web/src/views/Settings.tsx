@@ -5,6 +5,9 @@ import {
   type ProfileVerification, type WebNetworkSelection, type WebProfileId, type WebRpcMode,
 } from '@ghostpay/net-transport/browser';
 import { CameraImporter } from '../components/CameraImporter';
+import { ClipboardPrivacyControls } from '../components/ClipboardPrivacyControls';
+import { PrivacyControls } from '../components/PrivacyControls';
+import { SensitiveContent } from '../components/SensitiveContent';
 import { QrFrame } from '../components/QrFrame';
 import {
   applySettingsExchange, buildSettingsExport, DEFAULT_EXPORT_SECTIONS, defaultExchangeSelection, EXCHANGE_SECTIONS, exportSectionAvailable,
@@ -32,6 +35,7 @@ export function Settings(): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const s = app.settings;
+  const formBasis = useRef(s);
   const [rpc, setRpc] = useState<Record<string, string>>({ ...s.rpcUrls });
   const [rpc2, setRpc2] = useState<Record<string, string>>({ ...s.rpcUrlsSecondary });
   // Chains whose endpoint the user keeps for this session only (never written to localStorage).
@@ -67,10 +71,16 @@ export function Settings(): ReactNode {
 
   // A saved-settings change invalidates pending RPC tests (the exchange section resets its own review and export).
   useEffect(() => {
+    const previous = formBasis.current;
+    formBasis.current = s;
     for (const controller of testControllers.current.values()) controller.abort();
     testControllers.current.clear();
     for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
     setChecks({});
+    // Immediate privacy controls save only their own preference. Keep in-progress form edits while masking them.
+    if (previous.rpcUrls === s.rpcUrls && previous.rpcUrlsSecondary === s.rpcUrlsSecondary && previous.relayerUrl === s.relayerUrl &&
+      previous.delayMinSec === s.delayMinSec && previous.delayMaxSec === s.delayMaxSec && previous.lockTimeoutMin === s.lockTimeoutMin &&
+      previous.theme === s.theme && previous.autoClearFragment === s.autoClearFragment && previous.pinnedSigners === s.pinnedSigners) return;
     setRpc({ ...s.rpcUrls }); setRpc2({ ...s.rpcUrlsSecondary }); setRelayer(s.relayerUrl);
     setMinSec(s.delayMinSec); setMaxSec(s.delayMaxSec); setLock(s.lockTimeoutMin);
     setTheme(s.theme); setAutoClear(s.autoClearFragment); setPins(s.pinnedSigners.join('\n'));
@@ -98,7 +108,7 @@ export function Settings(): ReactNode {
         setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
         return;
       }
-      const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      const next: SettingsData = { ...s, rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
       // Commit retention choices only after the entire form validates. A rejected form must not clear an earlier
       // session-only decision that a later, unrelated preference save still needs to honor.
       for (const [slot, map] of [['primary', rpcUrls], ['secondary', rpcUrlsSecondary]] as const) {
@@ -160,6 +170,8 @@ export function Settings(): ReactNode {
   return (
     <section aria-labelledby="set-h">
       <h2 id="set-h">{t('settings.title')}</h2>
+      <PrivacyControls />
+      <ClipboardPrivacyControls />
       {i18n !== undefined && <LanguagePicker />}
       <Notice kind="info">
         {t('settings.notice.plaintext')}
@@ -167,6 +179,7 @@ export function Settings(): ReactNode {
       <Notice kind="warn" title={t('settings.outside.title')}>
         {t('settings.outside.body')}
       </Notice>
+      <SensitiveContent>
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>{t('settings.rpc.legend')}</legend>
@@ -236,6 +249,7 @@ export function Settings(): ReactNode {
         setMessage(undefined);
       }} />
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
+      </SensitiveContent>
     </section>
   );
 }
