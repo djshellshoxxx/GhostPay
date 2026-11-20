@@ -1,0 +1,26 @@
+[
+  {
+    "source": "0561fc247350a5957a682bbab94a6eb0ccd4b5c8",
+    "check": "build-libs",
+    "command": [
+      "npm",
+      "run",
+      "build:libs"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 122.8
+  },
+  {
+    "source": "0561fc247350a5957a682bbab94a6eb0ccd4b5c8",
+    "check": "typecheck-after-build",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 21.05
+  }
+]

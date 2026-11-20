@@ -1,0 +1,122 @@
+[
+  {
+    "number": 278,
+    "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+    "matches": [
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/state.tsx",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 293,
+    "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+    "title": "feat(web): add opt-in race-aware clipboard cleanup primitive",
+    "matches": [
+      "apps/web/src/components/Common.tsx"
+    ]
+  },
+  {
+    "number": 262,
+    "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+    "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+    "matches": [
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/state.tsx",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 264,
+    "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+    "matches": [
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/state.tsx",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 238,
+    "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "title": "Consolidate Pages beta security, privacy, and recovery",
+    "matches": [
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 256,
+    "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+    "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+    "matches": [
+      "apps/web/src/AppShell.tsx"
+    ]
+  },
+  {
+    "number": 251,
+    "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+    "title": "feat(privacy): enforce browser network authorization and cancellation",
+    "matches": [
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/state.tsx",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 249,
+    "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+    "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+    "matches": [
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 260,
+    "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+    "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+    "matches": [
+      "apps/web/src/AppShell.tsx"
+    ]
+  },
+  {
+    "number": 240,
+    "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "matches": [
+      "apps/web/src/AppShell.tsx"
+    ]
+  },
+  {
+    "number": 250,
+    "head": "22af2074a086d9957a18e310ef8572b28d1facd0",
+    "title": "Recover historical adapter date, retry and TRON completeness safeguards",
+    "matches": [
+      "apps/web/src/AppShell.tsx"
+    ]
+  },
+  {
+    "number": 222,
+    "head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "title": "privacy: implement threat-model recommendations TM1-TM15",
+    "matches": [
+      "apps/web/src/lib/settings.ts",
+      "apps/web/src/views/Settings.tsx"
+    ]
+  },
+  {
+    "number": 209,
+    "head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+    "title": "Completion run 2026-11-18: claims + integration",
+    "matches": [
+      "apps/web/src/AppShell.tsx"
+    ]
+  }
+]

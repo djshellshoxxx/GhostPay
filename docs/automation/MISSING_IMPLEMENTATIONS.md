@@ -1,5 +1,26 @@
 # Missing implementation review
 
+## Current source-backed gaps — 20261120T0115Z
+
+The receipt-correlation gap at wallet.ts478–505 is repaired by #298 with real consumer regressions
+and independent execution. #297 completes the existing clipboard candidate's test/lint qualification;
+it does not implement a second clipboard helper or activate the feature.
+
+The five owner-required #286 privacy UX features remain in the beta backlog. At #278 417f7c71 and
+#293 6c648770 there is no global masking setting; clipboard cleanup has no production prop caller,
+Settings, persistence/i18n or end-to-end flow. Existing lock/account, encrypted-ledger reveal and fixed-name
+export controls are partial building blocks, not full acceptance of the new requirements.
+The older nine-family assessment at a1386906 is preserved as scoped historical source evidence.
+
+The independent documentation review checked 18 Wiki Home/Sidebar links; User Guide and Developer Guide
+remain prominent. Home still contains dated November 15–16 status prose. #259/#273 documentation owners
+retain reconciliation; this cycle does not overwrite their branches or claim live Wiki publication.
+
+Source review, focused tests and a payments-disabled development Pages artifact do not supply full web
+coverage, browser/device/wallet acceptance, enabled-payment release evidence, signed manifests or independent
+external security approval. Existing missing implementation and historical records below remain intact.
+
+
 ## Current reconciliation — 20261120T0035Z
 
 Integration-lock implementation is already present in audited #278: the exact #261 script/test blobs

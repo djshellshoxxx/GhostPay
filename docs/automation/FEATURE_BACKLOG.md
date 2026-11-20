@@ -1,5 +1,33 @@
 # Feature backlog
 
+## Current source-backed backlog — 20261120T0115Z
+
+Receipt transaction-status correctness is implemented in #298: a receipt must carry the requested
+primitive 32-byte hash before success/reversion is accepted. Original-hash preservation and no resend
+are covered at the payment consumer. Local and independent focused verification pass; hosted integration
+qualification is pending. This does not add finality or authenticate a consistently lying RPC.
+
+Owner-authored [issue #286](https://github.com/djshellshoxxx/GhostPay/issues/286) explicitly makes
+five privacy UX requirements part of 1.0 beta. They are not removed by deferring broader privacy architecture:
+
+| Requirement | Current source-backed state |
+|---|---|
+| Global sensitive-data masking | No global setting or all-view implementation in inspected #278 417f7c71 |
+| Optional configurable clipboard cleanup | #293 helper/optional prop only; no production prop caller; #297 repairs test qualification |
+| Account-change/lock privacy | Existing authority/vault/invoice invalidation controls; all-view privacy acceptance unverified |
+| Private transaction history | Existing encrypted locked ledger/reveal; global privacy-mode policy and acceptance unfinished |
+| Neutral exports/notifications | Fixed stealth export names and neutral title are partial controls; all surfaces unqualified |
+
+Prioritize the pending same-value clipboard copy interleaving before activating cleanup through Settings.
+Then implement Settings, persistence, translation and production call sites with browser acceptance,
+coordinating with #293 and broad UI owners. Historical nine-family source assessment at a1386906 does
+not establish these five later requirements. See the independent
+[spec review](data/cycle-20261120T0115Z/privacy-spec-review/REVIEW.md).
+
+Both Wiki guide sections and all 18 checked Home/Sidebar links remain intact. Active guide owners
+#259/#273 retain their branches; dated Home narrative is historical, live Wiki publication unperformed.
+
+
 ## Current cycle qualification — 20261120T0035Z
 
 - Base64url primitive-input rejection already exists in #289 and #278. Original #289 repository

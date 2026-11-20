@@ -1,0 +1,19 @@
+{
+  "reviewer": "/root/final_checkpoint_review",
+  "source_sha": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+  "head_after": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/lib/wallet.test.ts",
+    "src/lib/payExec.test.ts",
+    "src/lib/payExec.acceptance.test.ts",
+    "src/views/Pay.test.tsx",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-receipt-review/apps/web",
+  "exit_code": 0,
+  "duration_seconds": 46.95,
+  "observed_at": "2026-11-20T01:32:24.164864+00:00",
+  "scope": "Four original repository Vitest files; focused selection, not full application coverage."
+}

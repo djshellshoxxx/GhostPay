@@ -1,0 +1,100 @@
+{
+  "source": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+  "command": [
+    "node",
+    "scripts/pages/verify-pages-site.mjs",
+    "/workspace/scratch/a13b43b0f3c9/receipt-pages-20261120T0115Z/site",
+    "/workspace/scratch/a13b43b0f3c9/receipt-pages-20261120T0115Z/evidence/ghostpay-lean-build.json",
+    "--expect-commit",
+    "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67"
+  ],
+  "exit_code": 0,
+  "files_checked": 16,
+  "checksums_match": true,
+  "release": false,
+  "paymentsEnabledChainIds": [],
+  "files": [
+    {
+      "path": "./.nojekyll",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matches": true
+    },
+    {
+      "path": "./assets/ar-DUvT08cM.js",
+      "sha256": "101d05b6109dc3958a5906c7d56dabee1ef038c8efd545f3861cd4c4b69214a7",
+      "matches": true
+    },
+    {
+      "path": "./assets/es-C9FxJnQQ.js",
+      "sha256": "3319a093dc9c4d4c9a23bb686bbb5eae7f05a0f38d700ed35882e0671ba54aa4",
+      "matches": true
+    },
+    {
+      "path": "./assets/index-B2B7DR7y.js",
+      "sha256": "929a6a2f75f89fef82ef4b90d3e9ade60200cfe16aabbbdad221a0eaf2ab6268",
+      "matches": true
+    },
+    {
+      "path": "./assets/ja-CwSzae9l.js",
+      "sha256": "91db9e7991bbd6de2b6010376726d2a2a18c23839b53ac9f14d4150e9fc97450",
+      "matches": true
+    },
+    {
+      "path": "./assets/jsQR-DMfxOdIb.js",
+      "sha256": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869",
+      "matches": true
+    },
+    {
+      "path": "./assets/rolldown-runtime-XKyaHtl9.js",
+      "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+      "matches": true
+    },
+    {
+      "path": "./assets/scanner.worker-CAQQ64R_.js",
+      "sha256": "54119a9d91ffe1acb7e5ecde487dca6ab939245160d19951c1e26d6b4a7e8f0f",
+      "matches": true
+    },
+    {
+      "path": "./assets/style-sbKVpGL7.css",
+      "sha256": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+      "matches": true
+    },
+    {
+      "path": "./build-info.json",
+      "sha256": "d5ef0985935d88a863e7bc32c9c8ef74be9347a88e8019c71f307895c91da54c",
+      "matches": true
+    },
+    {
+      "path": "./favicon.svg",
+      "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+      "matches": true
+    },
+    {
+      "path": "./help.css",
+      "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+      "matches": true
+    },
+    {
+      "path": "./help.html",
+      "sha256": "1e7346fa8628c3df7160782eaa421aa3d7fbf07d0393538005e98129337c922e",
+      "matches": true
+    },
+    {
+      "path": "./index.html",
+      "sha256": "1ae88bc4534d7f665d09021f0f33ba96cd936bdfcc1e9c3db24402fb368d667b",
+      "matches": true
+    },
+    {
+      "path": "./pages-mirror.css",
+      "sha256": "0185b681b3e3860c2f09b4422362366ecbd95ed93864722873bd764d03f91f51",
+      "matches": true
+    },
+    {
+      "path": "./privacy.html",
+      "sha256": "6d09920fa8e3dcc90a43b488b5e8942e4ca2f4eaad538aa0cbf3feb2b95cd2dc",
+      "matches": true
+    }
+  ],
+  "browser_acceptance_executed": false,
+  "deployed": false
+}

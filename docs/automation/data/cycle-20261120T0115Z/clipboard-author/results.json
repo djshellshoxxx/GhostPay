@@ -1,0 +1,46 @@
+[
+  {
+    "source": "0561fc247350a5957a682bbab94a6eb0ccd4b5c8",
+    "check": "vitest",
+    "command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/lib/clipboardPrivacy.test.ts",
+      "src/components/Common.test.tsx",
+      "--maxWorkers=1"
+    ],
+    "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-qualification/apps/web",
+    "exit_code": 0,
+    "duration_seconds": 2.28
+  },
+  {
+    "source": "0561fc247350a5957a682bbab94a6eb0ccd4b5c8",
+    "check": "lint",
+    "command": [
+      "../../node_modules/.bin/eslint",
+      "--config",
+      "../../eslint.config.js",
+      "src/lib/clipboardPrivacy.ts",
+      "src/lib/clipboardPrivacy.test.ts",
+      "src/components/Common.tsx",
+      "src/components/Common.test.tsx"
+    ],
+    "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-qualification/apps/web",
+    "exit_code": 0,
+    "duration_seconds": 7.81
+  },
+  {
+    "source": "0561fc247350a5957a682bbab94a6eb0ccd4b5c8",
+    "check": "typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-qualification",
+    "exit_code": 2,
+    "duration_seconds": 24.85
+  }
+]

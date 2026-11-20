@@ -1,0 +1,3817 @@
+{
+  "format": "ghostpay-lean-build/1",
+  "profile": "lean",
+  "chunks": [
+    {
+      "fileName": "assets/ar-DUvT08cM.js",
+      "modules": [
+        {
+          "id": "locales/ar.json",
+          "renderedLength": 251583,
+          "renderedExports": [
+            "_meta",
+            "messages",
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "assets/es-C9FxJnQQ.js",
+      "modules": [
+        {
+          "id": "locales/es.json",
+          "renderedLength": 293041,
+          "renderedExports": [
+            "_meta",
+            "messages",
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "assets/index-B2B7DR7y.js",
+      "modules": [
+        {
+          "id": "virtual:vite/preload-helper.js",
+          "renderedLength": 3453,
+          "renderedExports": [
+            "__vitePreload"
+          ]
+        },
+        {
+          "id": "index.html",
+          "renderedLength": 0,
+          "renderedExports": []
+        },
+        {
+          "id": "locales/en.json",
+          "renderedLength": 264755,
+          "renderedExports": [
+            "_meta",
+            "messages",
+            "default"
+          ]
+        },
+        {
+          "id": "src/AppLean.tsx",
+          "renderedLength": 146,
+          "renderedExports": [
+            "App",
+            "AppLean"
+          ]
+        },
+        {
+          "id": "src/AppShell.tsx",
+          "renderedLength": 21820,
+          "renderedExports": [
+            "AppShell",
+            "CORE_ORDER",
+            "IDLE_CHECK_MS"
+          ]
+        },
+        {
+          "id": "src/components/CameraImporter.tsx",
+          "renderedLength": 15296,
+          "renderedExports": [
+            "CameraImporter"
+          ]
+        },
+        {
+          "id": "src/components/Common.tsx",
+          "renderedLength": 4150,
+          "renderedExports": [
+            "Field",
+            "Mono",
+            "SafeText",
+            "CopyButton",
+            "downloadText",
+            "downloadBlob",
+            "Notice"
+          ]
+        },
+        {
+          "id": "src/components/ContextHelp.tsx",
+          "renderedLength": 3616,
+          "renderedExports": [
+            "ContextHelp"
+          ]
+        },
+        {
+          "id": "src/components/Disclosure.tsx",
+          "renderedLength": 7066,
+          "renderedExports": [
+            "ChainFeeList",
+            "useManifest",
+            "OBSERVERS",
+            "observerKey",
+            "useLimits",
+            "bpsToPercent",
+            "limitKey",
+            "ObserverTable",
+            "FeeDisclosure",
+            "LIMITS"
+          ]
+        },
+        {
+          "id": "src/components/ErrorBoundary.tsx",
+          "renderedLength": 1708,
+          "renderedExports": [
+            "ErrorBoundary"
+          ]
+        },
+        {
+          "id": "src/components/InvoicePaymentSummary.tsx",
+          "renderedLength": 1420,
+          "renderedExports": [
+            "InvoicePaymentSummary"
+          ]
+        },
+        {
+          "id": "src/components/InvoiceSignerVerification.tsx",
+          "renderedLength": 9881,
+          "renderedExports": [
+            "InvoiceSignerVerification"
+          ]
+        },
+        {
+          "id": "src/components/ManifestBanner.tsx",
+          "renderedLength": 318,
+          "renderedExports": [
+            "ManifestBanner"
+          ]
+        },
+        {
+          "id": "src/components/PaymentRequestQr.tsx",
+          "renderedLength": 2599,
+          "renderedExports": [
+            "PaymentProofQr"
+          ]
+        },
+        {
+          "id": "src/components/PrintableBill.tsx",
+          "renderedLength": 6508,
+          "renderedExports": [
+            "PrintableBill",
+            "PrintBillButton"
+          ]
+        },
+        {
+          "id": "src/components/QrFrame.tsx",
+          "renderedLength": 14614,
+          "renderedExports": [
+            "QrIcon",
+            "QrFrame",
+            "PART_INTERVAL_MS"
+          ]
+        },
+        {
+          "id": "src/components/QrView.tsx",
+          "renderedLength": 1687,
+          "renderedExports": [
+            "QrView"
+          ]
+        },
+        {
+          "id": "src/components/ReceiptPanel.tsx",
+          "renderedLength": 22776,
+          "renderedExports": [
+            "ReceiptPanel"
+          ]
+        },
+        {
+          "id": "src/components/ReconciliationLedger.tsx",
+          "renderedLength": 29928,
+          "renderedExports": [
+            "ReconciliationLedger"
+          ]
+        },
+        {
+          "id": "src/components/RichText.tsx",
+          "renderedLength": 650,
+          "renderedExports": [
+            "RichText"
+          ]
+        },
+        {
+          "id": "src/components/StealthExportArchive.tsx",
+          "renderedLength": 6193,
+          "renderedExports": [
+            "StealthExportArchive"
+          ]
+        },
+        {
+          "id": "src/components/StealthExportCommon.tsx",
+          "renderedLength": 9023,
+          "renderedExports": [
+            "readCredential",
+            "useExportOperation",
+            "credentialReady",
+            "exportSelectionIdentity",
+            "useExportT",
+            "CredentialFields",
+            "EMPTY_PASSPHRASE",
+            "withoutPassphrase",
+            "NewPassphraseFields",
+            "useLatestExportT",
+            "EMPTY_CREDENTIAL",
+            "newPassphraseProblem"
+          ]
+        },
+        {
+          "id": "src/components/StealthExportMaster.tsx",
+          "renderedLength": 3871,
+          "renderedExports": [
+            "StealthExportMaster"
+          ]
+        },
+        {
+          "id": "src/components/StealthExportPayment.tsx",
+          "renderedLength": 10060,
+          "renderedExports": [
+            "StealthExportPayment",
+            "chainLabel",
+            "startDownload"
+          ]
+        },
+        {
+          "id": "src/components/StealthExportRecovery.tsx",
+          "renderedLength": 16981,
+          "renderedExports": [
+            "StealthExportRecovery"
+          ]
+        },
+        {
+          "id": "src/components/StealthExportVerification.tsx",
+          "renderedLength": 6516,
+          "renderedExports": [
+            "StealthExportVerification"
+          ]
+        },
+        {
+          "id": "src/components/WalletAttempts.tsx",
+          "renderedLength": 2340,
+          "renderedExports": [
+            "WalletAttempts"
+          ]
+        },
+        {
+          "id": "src/features/registry/RegistryView.tsx",
+          "renderedLength": 20997,
+          "renderedExports": [
+            "RegistryView"
+          ]
+        },
+        {
+          "id": "src/i18n/LanguagePicker.tsx",
+          "renderedLength": 2252,
+          "renderedExports": [
+            "LanguagePicker"
+          ]
+        },
+        {
+          "id": "src/i18n/catalog.ts",
+          "renderedLength": 1550,
+          "renderedExports": [
+            "hasCatalog",
+            "defaultCatalogLoader",
+            "loadLayers"
+          ]
+        },
+        {
+          "id": "src/i18n/context.tsx",
+          "renderedLength": 3476,
+          "renderedExports": [
+            "I18nProvider",
+            "useI18n",
+            "useI18nOptional"
+          ]
+        },
+        {
+          "id": "src/i18n/languages.ts",
+          "renderedLength": 4191,
+          "renderedExports": [
+            "directionOf",
+            "PSEUDO_LANGUAGES",
+            "matchSupported",
+            "REVIEWED_LOCALES",
+            "isPseudoLocale",
+            "fallbackChain",
+            "LANGUAGES",
+            "detectLocale",
+            "isReviewed",
+            "normalizeTag"
+          ]
+        },
+        {
+          "id": "src/i18n/message.ts",
+          "renderedLength": 8646,
+          "renderedExports": [
+            "formatToParts",
+            "parseMessage",
+            "partsToString",
+            "pluralRules",
+            "MessageSyntaxError",
+            "dateTimeFormat",
+            "numberFormat"
+          ]
+        },
+        {
+          "id": "src/i18n/securityKeys.ts",
+          "renderedLength": 85007,
+          "renderedExports": [
+            "NEUTRAL_KEY_LIST",
+            "NEUTRAL_KEYS",
+            "SECURITY_KEY_GROUPS"
+          ]
+        },
+        {
+          "id": "src/i18n/source.ts",
+          "renderedLength": 127,
+          "renderedExports": [
+            "SOURCE_TRANSLATOR"
+          ]
+        },
+        {
+          "id": "src/i18n/sourceCatalog.ts",
+          "renderedLength": 62,
+          "renderedExports": [
+            "SOURCE_CATALOG"
+          ]
+        },
+        {
+          "id": "src/i18n/storage.ts",
+          "renderedLength": 869,
+          "renderedExports": [
+            "isValidPreference",
+            "LOCALE_STORAGE_KEY",
+            "loadPreference",
+            "AUTO",
+            "savePreference"
+          ]
+        },
+        {
+          "id": "src/i18n/translator.ts",
+          "renderedLength": 2375,
+          "renderedExports": [
+            "createTranslator"
+          ]
+        },
+        {
+          "id": "src/lib/appLock.ts",
+          "renderedLength": 294,
+          "renderedExports": [
+            "notifyAppLock",
+            "subscribeAppLock"
+          ]
+        },
+        {
+          "id": "src/lib/boundedRequest.ts",
+          "renderedLength": 4445,
+          "renderedExports": [
+            "boundedRequest",
+            "BoundedRequestError"
+          ]
+        },
+        {
+          "id": "src/lib/buildProfile.ts",
+          "renderedLength": 548,
+          "renderedExports": [
+            "BUILD_PROFILE",
+            "useEffectiveProfile",
+            "ShellProfileContext",
+            "resolveProfile",
+            "profileFromDefine"
+          ]
+        },
+        {
+          "id": "src/lib/bundledManifests.ts",
+          "renderedLength": 74,
+          "renderedExports": [
+            "BUNDLED_MANIFESTS"
+          ]
+        },
+        {
+          "id": "src/lib/defaultServices.ts",
+          "renderedLength": 1963,
+          "renderedExports": [
+            "createDefaultServices",
+            "loadDefaultManifest"
+          ]
+        },
+        {
+          "id": "src/lib/displayText.ts",
+          "renderedLength": 742,
+          "renderedExports": [
+            "safeText",
+            "payeeFingerprint"
+          ]
+        },
+        {
+          "id": "src/lib/duplicateAttemptJournal.ts",
+          "renderedLength": 3762,
+          "renderedExports": [
+            "ATTEMPT_JOURNAL_KEY",
+            "browserAttemptStorage",
+            "beginAttempt",
+            "finishAttempt",
+            "ATTEMPT_JOURNAL_EVENT",
+            "clearAttempt",
+            "readAttempts"
+          ]
+        },
+        {
+          "id": "src/lib/embedHost.ts",
+          "renderedLength": 98,
+          "renderedExports": [
+            "notifyEmbedDone"
+          ]
+        },
+        {
+          "id": "src/lib/errors.ts",
+          "renderedLength": 2775,
+          "renderedExports": [
+            "userMessage",
+            "displayMessage",
+            "captureUserMessage",
+            "UserFacingError",
+            "LocalizedTypeError"
+          ]
+        },
+        {
+          "id": "src/lib/format.ts",
+          "renderedLength": 2222,
+          "renderedExports": [
+            "parseUnits",
+            "shortHex",
+            "formatCountdown",
+            "fiatDecimals",
+            "formatUnits",
+            "formatUnix",
+            "taxFor",
+            "formatFiat"
+          ]
+        },
+        {
+          "id": "src/lib/fragment.ts",
+          "renderedLength": 539,
+          "renderedExports": [
+            "readInvoiceFragment",
+            "clearFragment",
+            "extractFragment"
+          ]
+        },
+        {
+          "id": "src/lib/frameGuard.ts",
+          "renderedLength": 1717,
+          "renderedExports": [
+            "isFramed",
+            "FRAME_REFUSAL",
+            "ORIGIN_MISMATCH",
+            "embedModeEnabled",
+            "declaredOrigin",
+            "originMismatch",
+            "FRAME_SAFE_VIEWS",
+            "frameRefusesView",
+            "currentOriginCheck"
+          ]
+        },
+        {
+          "id": "src/lib/idbStore.ts",
+          "renderedLength": 5325,
+          "renderedExports": [
+            "IdbTagStore"
+          ]
+        },
+        {
+          "id": "src/lib/invoiceCreate.ts",
+          "renderedLength": 5553,
+          "renderedExports": [
+            "buildInvoiceLink",
+            "tokenDecimals",
+            "computeTotals",
+            "tokenChoices"
+          ]
+        },
+        {
+          "id": "src/lib/invoiceSignerPins.ts",
+          "renderedLength": 6665,
+          "renderedExports": [
+            "createInvoiceSignerPinStore",
+            "INVOICE_SIGNER_PINS_KEY",
+            "useInvoiceSignerPins",
+            "changeInvoiceSignerPin",
+            "getInvoiceSignerPinsSnapshot"
+          ]
+        },
+        {
+          "id": "src/lib/invoiceVerification.ts",
+          "renderedLength": 1701,
+          "renderedExports": [
+            "invoiceVerificationStatus",
+            "invoiceVerificationFailure",
+            "unrecognizedInvoiceFragmentStatus",
+            "INVOICE_VERIFICATION_MESSAGES"
+          ]
+        },
+        {
+          "id": "src/lib/jitter.ts",
+          "renderedLength": 2817,
+          "renderedExports": [
+            "randomDelayMs",
+            "DelayScheduler"
+          ]
+        },
+        {
+          "id": "src/lib/keyVault.ts",
+          "renderedLength": 11857,
+          "renderedExports": [
+            "deleteEncryptedVault",
+            "VaultChangedError",
+            "authorizeKeyExport",
+            "VaultSavedForPreviousKeysError",
+            "readEncryptedVault",
+            "unlockEncryptedVault",
+            "IndexedDbKeyVaultStore",
+            "loadedKeysRecoverable",
+            "requireSecretExportAuthorization",
+            "saveEncryptedVault",
+            "vaultMetaAddress",
+            "authorizeEncryptedVault"
+          ]
+        },
+        {
+          "id": "src/lib/keystore.ts",
+          "renderedLength": 338,
+          "renderedExports": [
+            "decryptKeystore",
+            "GENERATED_PASSPHRASE_WORDS",
+            "MAX_KEYSTORE_BYTES",
+            "GENERATED_PASSPHRASE_BITS",
+            "validateKeystoreEnvelope",
+            "passphraseProblemMessage",
+            "passphraseStrength",
+            "generatePassphrase",
+            "encryptKeystore"
+          ]
+        },
+        {
+          "id": "src/lib/manifest.ts",
+          "renderedLength": 1816,
+          "renderedExports": [
+            "verifyManifestForFlow",
+            "loadBundledManifest",
+            "verifyManifestState"
+          ]
+        },
+        {
+          "id": "src/lib/networkAuthorization.ts",
+          "renderedLength": 21281,
+          "renderedExports": [
+            "createNetworkAuthority",
+            "networkAuthorizationError"
+          ]
+        },
+        {
+          "id": "src/lib/networkSelection.ts",
+          "renderedLength": 865,
+          "renderedExports": [
+            "readNetworkSelection"
+          ]
+        },
+        {
+          "id": "src/lib/opStackFee.ts",
+          "renderedLength": 1784,
+          "renderedExports": [
+            "OP_STACK_FEE_RESERVE_MULTIPLIER",
+            "sweepFeeFields",
+            "sweepFeeReserve",
+            "OP_STACK_GAS_PRICE_ORACLE"
+          ]
+        },
+        {
+          "id": "src/lib/pay.ts",
+          "renderedLength": 18578,
+          "renderedExports": [
+            "assertApproveTx",
+            "applyBufferPolicy",
+            "SWEEP_SIMULATION_MARGIN_BPS",
+            "permitPreflightReader",
+            "quoteBuffer",
+            "buildFinal",
+            "reviewInvoice",
+            "bufferOffered",
+            "boundedDeadline",
+            "permitReader",
+            "assertBufferStillSufficient",
+            "offlineClient",
+            "createPayContext",
+            "decodeForDisplay",
+            "DEADLINE_SECONDS",
+            "buildPermit",
+            "assertPreparedBufferFresh",
+            "buildApproveTx",
+            "trustView",
+            "assertReadyToSend",
+            "typedDataJson",
+            "readAllowance",
+            "invoicePayableUntil",
+            "SWEEP_GAS_ESTIMATE",
+            "assertPermitSigner",
+            "permitStateDescriptor",
+            "MAX_SIMULATED_SWEEP_GAS",
+            "MAX_BUFFER_WEI",
+            "assertInvoiceStillPayable"
+          ]
+        },
+        {
+          "id": "src/lib/payExec.ts",
+          "renderedLength": 11945,
+          "renderedExports": [
+            "buildReceipt",
+            "grantApproval",
+            "sendPayment",
+            "preparePayment",
+            "revokeApproval",
+            "PermitRejectedError",
+            "submitTx",
+            "classifyPayerPermit",
+            "planApproval",
+            "PostBroadcastError"
+          ]
+        },
+        {
+          "id": "src/lib/paymentExportRpc.ts",
+          "renderedLength": 1323,
+          "renderedExports": [
+            "createPaymentExportRpc"
+          ]
+        },
+        {
+          "id": "src/lib/paymentKeyExport.ts",
+          "renderedLength": 12470,
+          "renderedExports": [
+            "exportPaymentArchive",
+            "exportMasterBackup",
+            "RecoveredPaymentKeys",
+            "openStealthExport",
+            "exportEncryptedPayment",
+            "verifyStealthExport",
+            "exportPublicRecord",
+            "describePaymentArchive",
+            "distinctPayments",
+            "RecoveredMasterKeys",
+            "exportRawPrivateKey"
+          ]
+        },
+        {
+          "id": "src/lib/privateScanLifecycle.ts",
+          "renderedLength": 2823,
+          "renderedExports": [
+            "subscribePrivateScanInvalidation",
+            "invalidatePrivateScanHistory",
+            "purgeLegacyPrivateScanHistory",
+            "openCurrentPrivateScanVault"
+          ]
+        },
+        {
+          "id": "src/lib/privateScanStore.ts",
+          "renderedLength": 14965,
+          "renderedExports": [
+            "PRIVATE_SCAN_MAX_MATCHES",
+            "isPrivateScanTombstone",
+            "createPrivateScanTombstone",
+            "PRIVATE_SCAN_MAX_PLAINTEXT_BYTES",
+            "PrivateScanVault",
+            "ScanStateError",
+            "PRIVATE_SCAN_SLOT_PREFIX"
+          ]
+        },
+        {
+          "id": "src/lib/qr.ts",
+          "renderedLength": 1872,
+          "renderedExports": [
+            "makeQr",
+            "qrPath",
+            "qrViewSize",
+            "qrSvgText"
+          ]
+        },
+        {
+          "id": "src/lib/qrClassify.ts",
+          "renderedLength": 11688,
+          "renderedExports": [
+            "MAX_QR_TEXT_BYTES",
+            "classifyQrText"
+          ]
+        },
+        {
+          "id": "src/lib/qrKinds.ts",
+          "renderedLength": 4761,
+          "renderedExports": [
+            "kindForPayload",
+            "QR_KINDS",
+            "qrKindClass",
+            "printQrPolicy",
+            "localizedQrKind"
+          ]
+        },
+        {
+          "id": "src/lib/qrMultipart.ts",
+          "renderedLength": 492,
+          "renderedExports": [
+            "toMultipart",
+            "fitsSingleQr",
+            "multipartIfNeeded"
+          ]
+        },
+        {
+          "id": "src/lib/qrPayload.ts",
+          "renderedLength": 223,
+          "renderedExports": [
+            "parsePublicMetaQr"
+          ]
+        },
+        {
+          "id": "src/lib/receipts.ts",
+          "renderedLength": 5531,
+          "renderedExports": [
+            "parseVerifiedReceipt",
+            "signReceipt",
+            "receiptInvoiceFragment",
+            "receiptJson",
+            "receiptBindingForInvoice",
+            "MAX_RECEIPT_INVOICE_BYTES",
+            "receiptSigningFields",
+            "bindReceiptToInvoice"
+          ]
+        },
+        {
+          "id": "src/lib/reconciliationLedger.ts",
+          "renderedLength": 2810,
+          "renderedExports": [
+            "RECONCILIATION_LEDGER_CHANGE_EVENT",
+            "readReconciliationRecords",
+            "searchReconciliationRecords",
+            "RECONCILIATION_LEDGER_DATA_KEY",
+            "MAX_RECONCILIATION_RECORDS",
+            "recordFromVerifiedMatch",
+            "clearReconciliationRecords",
+            "validateReconciliationRecord",
+            "exportUntrustedLegacyReconciliation"
+          ]
+        },
+        {
+          "id": "src/lib/reconciliationMatch.ts",
+          "renderedLength": 215,
+          "renderedExports": [
+            "registrationFromInvoice",
+            "proposeInvoiceMatch"
+          ]
+        },
+        {
+          "id": "src/lib/reconciliationVault.ts",
+          "renderedLength": 6996,
+          "renderedExports": [
+            "ReconciliationVault",
+            "MAX_VAULT_BYTES",
+            "createCurrentReconciliationVault",
+            "isQuotaError",
+            "subscribeReconciliationChanges",
+            "IdbReconciliationVaultStore",
+            "isClosedConnection",
+            "RECONCILIATION_VAULT_CHANGE_EVENT"
+          ]
+        },
+        {
+          "id": "src/lib/registry.ts",
+          "renderedLength": 428,
+          "renderedExports": [
+            "buildClearRegistryCall"
+          ]
+        },
+        {
+          "id": "src/lib/relayerClient.ts",
+          "renderedLength": 6535,
+          "renderedExports": [
+            "requestQuote",
+            "RelayerRefusedError",
+            "submitSweep"
+          ]
+        },
+        {
+          "id": "src/lib/release.ts",
+          "renderedLength": 2777,
+          "renderedExports": [
+            "entryScriptUrl",
+            "computeReleaseHash"
+          ]
+        },
+        {
+          "id": "src/lib/releaseKeys.ts",
+          "renderedLength": 56,
+          "renderedExports": [
+            "RELEASE_PUBLIC_KEYS"
+          ]
+        },
+        {
+          "id": "src/lib/sanitize.ts",
+          "renderedLength": 529,
+          "renderedExports": [
+            "sanitizeDisplayText"
+          ]
+        },
+        {
+          "id": "src/lib/scanClient.ts",
+          "renderedLength": 27536,
+          "renderedExports": [
+            "runScan",
+            "localCheckpointStore"
+          ]
+        },
+        {
+          "id": "src/lib/scanCursorSlot.ts",
+          "renderedLength": 2032,
+          "renderedExports": [
+            "sessionViewingKey",
+            "checkpointSlot",
+            "legacyCheckpointSlot",
+            "isLegacyCheckpointSlot",
+            "checkpointSlotNamer",
+            "CHECKPOINT_SLOT_PREFIX"
+          ]
+        },
+        {
+          "id": "src/lib/scanMatches.ts",
+          "renderedLength": 812,
+          "renderedExports": [
+            "paymentKeyOf",
+            "sharedRouterAddresses",
+            "placeScanMatch"
+          ]
+        },
+        {
+          "id": "src/lib/scanPrivacy.ts",
+          "renderedLength": 21230,
+          "renderedExports": [
+            "fetchHttpTransport",
+            "clampBulkEvidence",
+            "privatePathForbidsDirect",
+            "clampPadBlocks",
+            "SCAN_PRIVACY_KEY",
+            "MAX_PAD_BLOCKS",
+            "saveScanPrivacy",
+            "describeScanDisclosureMessages",
+            "sanitizeScanPrivacy",
+            "planScan",
+            "createWindowedScanClient",
+            "DEFAULT_SCAN_PRIVACY",
+            "applyParanoidPreset",
+            "checkScanEndpoint",
+            "createIndexerScanClient",
+            "browserStorage",
+            "checkIndexerUrl",
+            "openScanClients",
+            "loadScanPrivacy",
+            "MAX_SCAN_WINDOW_REQUESTS"
+          ]
+        },
+        {
+          "id": "src/lib/scanSpam.ts",
+          "renderedLength": 5070,
+          "renderedExports": [
+            "sanitizeScanLanes",
+            "MAX_FLOOD_PER_BLOCK",
+            "saveScanLanes",
+            "PRIVACY_TRANSFER_WINDOW_BLOCKS",
+            "splitLanes",
+            "TRANSFER_TOPIC",
+            "loadScanLanes",
+            "PRIVACY_TRANSFER_MAX_LOGS",
+            "anonymitySet",
+            "estimateSimilarTransfers",
+            "DEFAULT_SCAN_LANES",
+            "SCAN_LANES_KEY"
+          ]
+        },
+        {
+          "id": "src/lib/sellerPairing.ts",
+          "renderedLength": 625,
+          "renderedExports": [
+            "parseSellerPairing",
+            "exportSellerPairing",
+            "isSupportedPairingChain"
+          ]
+        },
+        {
+          "id": "src/lib/services.ts",
+          "renderedLength": 245,
+          "renderedExports": [
+            "useServices",
+            "ServicesContext"
+          ]
+        },
+        {
+          "id": "src/lib/session.ts",
+          "renderedLength": 14326,
+          "renderedExports": [
+            "clearSession",
+            "waiveSessionBackup",
+            "verifyVaultForCurrentSession",
+            "withSessionSecrets",
+            "subscribeSessionBackup",
+            "importSession",
+            "captureSessionGuard",
+            "captureSessionVersionGuard",
+            "subscribeSessionExpiryCheck",
+            "exportKeystore",
+            "captureSessionBackupGuard",
+            "revealViewingKey",
+            "hasSession",
+            "getSessionBackup",
+            "armSessionVault",
+            "getSessionPublic",
+            "verifyDownloadedBackup",
+            "forgetSessionVaultCopy",
+            "generateSession",
+            "withSessionSecretsAsync",
+            "importKeystore",
+            "sessionHasExternalCopy",
+            "verifyCredentialForCurrentSession",
+            "isSessionSuspended",
+            "suspendSession",
+            "sessionVaultRecord",
+            "subscribeSession",
+            "markKeystoreDownloaded"
+          ]
+        },
+        {
+          "id": "src/lib/settings.ts",
+          "renderedLength": 5591,
+          "renderedExports": [
+            "checkDelayRange",
+            "isRpcSessionOnly",
+            "saveSettings",
+            "checkRpcUrl",
+            "clearRpcSessionOnly",
+            "DEFAULT_SETTINGS",
+            "rpcUrlLooksSecret",
+            "SETTINGS_KEY",
+            "sanitizeSettings",
+            "checkRelayerUrl",
+            "loadSettings",
+            "setRpcSessionOnly"
+          ]
+        },
+        {
+          "id": "src/lib/settingsExchange.ts",
+          "renderedLength": 8309,
+          "renderedExports": [
+            "exchangeOptions",
+            "exportSettingsExchange",
+            "EXCHANGE_SECTIONS",
+            "parseSettingsExchange",
+            "previewSettingsExchange",
+            "needsTrustConfirmation",
+            "selectionChangesSomething",
+            "DEFAULT_EXPORT_SECTIONS",
+            "buildSettingsExport",
+            "exportSectionAvailable",
+            "defaultExchangeSelection",
+            "weakensPreferences",
+            "applySettingsExchange"
+          ]
+        },
+        {
+          "id": "src/lib/stealthExport.ts",
+          "renderedLength": 378,
+          "renderedExports": [
+            "buildVerifiedPayment",
+            "parsePublicRecord",
+            "STEALTH_EXPORT_FILENAMES",
+            "encryptPaymentKeys",
+            "encryptMasterBackup",
+            "decryptMasterBackup",
+            "detectStealthExportFormat",
+            "STEALTH_EXPORT_LIMITS",
+            "formatRawPrivateKey",
+            "decryptPaymentKeys",
+            "serializePublicRecord"
+          ]
+        },
+        {
+          "id": "src/lib/sweep.ts",
+          "renderedLength": 25841,
+          "renderedExports": [
+            "isUnresolvedAttempt",
+            "recordSweepDestination",
+            "describeDestination",
+            "captureDestinationLedgerGuard",
+            "getSweepQuote",
+            "reconcileSweepLock",
+            "prepareNativeDirectSweep",
+            "loadDestLedger",
+            "readBalance",
+            "checkDestination",
+            "reconcileRelayedOrder",
+            "NATIVE_SWEEP_REVIEW_MS",
+            "DEST_LEDGER_KEY",
+            "destinationWarning",
+            "DirectSweepOutcomeUnknownError",
+            "confirmNativeDirectSweep",
+            "sweepPermitRefusalKey",
+            "deriveVerifiedSweepKey",
+            "directSweep",
+            "sweepPermitSuggestsDirect",
+            "relayedSweep",
+            "assertNativeSweepReview",
+            "cancelNativeSweepReview"
+          ]
+        },
+        {
+          "id": "src/lib/sweepAttemptJournal.ts",
+          "renderedLength": 5770,
+          "renderedExports": [
+            "SWEEP_JOURNAL_KEY",
+            "readSweepAttempts",
+            "toSweepLock",
+            "SweepJournalUnavailableError",
+            "browserSweepStorage",
+            "sweepAttemptKey",
+            "writeSweepAttempt"
+          ]
+        },
+        {
+          "id": "src/lib/tags.ts",
+          "renderedLength": 18891,
+          "renderedExports": [
+            "TagVault",
+            "tagSnapshotsEqual",
+            "validatePayload",
+            "MemoryTagStore"
+          ]
+        },
+        {
+          "id": "src/lib/transactionOutcome.ts",
+          "renderedLength": 2007,
+          "renderedExports": [
+            "WalletRequestRejectedError",
+            "reportTransactionStatus",
+            "approvedPaymentOutcome",
+            "TransactionOutcomeError"
+          ]
+        },
+        {
+          "id": "src/lib/txGuard.ts",
+          "renderedLength": 3255,
+          "renderedExports": [
+            "MAX_REVIEW_DEADLINE_SECONDS",
+            "guardRouterPayment",
+            "MAX_DIRECT_GAS_LIMIT",
+            "DIRECT_MAX_FEE_SHARE_BPS",
+            "guardApprove",
+            "guardTx",
+            "guardTypedData",
+            "MAX_DIRECT_FEE_PER_GAS_WEI",
+            "simulateCall",
+            "reviewPolicy",
+            "reportsRevert"
+          ]
+        },
+        {
+          "id": "src/lib/wallet.ts",
+          "renderedLength": 15477,
+          "renderedExports": [
+            "WalletSubmissionUnknownError",
+            "signTypedDataViaWallet",
+            "walletAttemptKey",
+            "WalletCallError",
+            "connectWallet",
+            "walletWarnings",
+            "WalletBroadcastError",
+            "sendViaWallet",
+            "pollReceipt",
+            "recheckWallet",
+            "SubmissionMismatchError",
+            "discoverWallets",
+            "verifySubmission"
+          ]
+        },
+        {
+          "id": "src/lib/workerFactory.ts",
+          "renderedLength": 227,
+          "renderedExports": [
+            "createBrowserScanWorker"
+          ]
+        },
+        {
+          "id": "src/main.tsx",
+          "renderedLength": 1297,
+          "renderedExports": [
+            "ROOT_ERROR_HANDLERS",
+            "rootErrorClass"
+          ]
+        },
+        {
+          "id": "src/state.tsx",
+          "renderedLength": 4563,
+          "renderedExports": [
+            "useSweepJournalBroken",
+            "getSweepAttempt",
+            "AppContext",
+            "isSweepJournalBroken",
+            "VIEW_LABELS",
+            "useApp",
+            "useSweepAttempt",
+            "resolveSweepAttempt",
+            "recordSweepAttempt",
+            "beginSweepAttempt"
+          ]
+        },
+        {
+          "id": "src/styles/app.css",
+          "renderedLength": 0,
+          "renderedExports": []
+        },
+        {
+          "id": "src/styles/print.css",
+          "renderedLength": 68,
+          "renderedExports": []
+        },
+        {
+          "id": "src/styles/qr.css",
+          "renderedLength": 0,
+          "renderedExports": []
+        },
+        {
+          "id": "src/views/About.tsx",
+          "renderedLength": 1996,
+          "renderedExports": [
+            "About"
+          ]
+        },
+        {
+          "id": "src/views/CreateInvoice.tsx",
+          "renderedLength": 25408,
+          "renderedExports": [
+            "CreateInvoice"
+          ]
+        },
+        {
+          "id": "src/views/Home.tsx",
+          "renderedLength": 4379,
+          "renderedExports": [
+            "Home"
+          ]
+        },
+        {
+          "id": "src/views/Pay.tsx",
+          "renderedLength": 79797,
+          "renderedExports": [
+            "Pay"
+          ]
+        },
+        {
+          "id": "src/views/Scan.tsx",
+          "renderedLength": 50164,
+          "renderedExports": [
+            "AUTO_RESCAN_MAX_MS",
+            "Scan",
+            "AUTO_RESCAN_MIN_MS"
+          ]
+        },
+        {
+          "id": "src/views/SellerKeys.tsx",
+          "renderedLength": 41881,
+          "renderedExports": [
+            "SellerKeys",
+            "BackupGate"
+          ]
+        },
+        {
+          "id": "src/views/SellerPairing.tsx",
+          "renderedLength": 7155,
+          "renderedExports": [
+            "SellerPairing",
+            "pairingChainIds"
+          ]
+        },
+        {
+          "id": "src/views/Settings.tsx",
+          "renderedLength": 54823,
+          "renderedExports": [
+            "Settings"
+          ]
+        },
+        {
+          "id": "src/views/Sweep.tsx",
+          "renderedLength": 40174,
+          "renderedExports": [
+            "Sweep"
+          ]
+        },
+        {
+          "id": "../../node_modules/@adraffy/ens-normalize/dist/index.mjs",
+          "renderedLength": 46066,
+          "renderedExports": [
+            "nfc",
+            "ens_normalize",
+            "should_escape",
+            "is_combining_mark",
+            "nfd",
+            "safe_str_from_cps"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/curves/abstract/curve.js",
+          "renderedLength": 10325,
+          "renderedExports": [
+            "ScalarMultiplier",
+            "probeRandomBytes",
+            "createKeygen",
+            "validatePointCons",
+            "normalizeZ",
+            "createCurveFields",
+            "mulAddUnsafe"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/curves/abstract/der.js",
+          "renderedLength": 3940,
+          "renderedExports": [
+            "DER",
+            "DERErr"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/curves/abstract/modular.js",
+          "renderedLength": 12591,
+          "renderedExports": [
+            "Field",
+            "invertCt",
+            "mod",
+            "mapHashToField",
+            "FpLegendre",
+            "nLength",
+            "tonelliShanks",
+            "invert",
+            "getFieldBytesLength",
+            "validateField",
+            "pow2",
+            "FpInvertBatch",
+            "FpSqrt",
+            "pow",
+            "getMinHashLength"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/curves/abstract/weierstrass.js",
+          "renderedLength": 23984,
+          "renderedExports": [
+            "_splitEndoScalar",
+            "ecdsa",
+            "weierstrass",
+            "ecdh"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/curves/secp256k1.js",
+          "renderedLength": 1914,
+          "renderedExports": [
+            "secp256k1"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/curves/utils.js",
+          "renderedLength": 5711,
+          "renderedExports": [
+            "numberToBytesBE",
+            "createHmacDrbg",
+            "randomBytes",
+            "inRange",
+            "abytes",
+            "abignumber",
+            "numberToHexUnpadded",
+            "hexToNumber",
+            "concatBytes",
+            "bytesToNumberLE",
+            "copyBytes",
+            "bitMask",
+            "isPosBig",
+            "astring",
+            "hexToBytes",
+            "aarray",
+            "isBytes",
+            "asafenumber",
+            "anumber",
+            "abool",
+            "numberToBytesLE",
+            "bytesToHex",
+            "validateObject",
+            "bitLen",
+            "afunction",
+            "aInRange",
+            "bytesToNumberBE",
+            "aobject"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/_md.js",
+          "renderedLength": 2593,
+          "renderedExports": [
+            "Chi",
+            "HashMD",
+            "SHA256_IV",
+            "Maj"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/_u64.js",
+          "renderedLength": 973,
+          "renderedExports": [
+            "fromNumH",
+            "fromNumL",
+            "fromBig",
+            "split",
+            "setU64FromNum"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/hkdf.js",
+          "renderedLength": 1886,
+          "renderedExports": [
+            "expand",
+            "hkdf"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/hmac.js",
+          "renderedLength": 1947,
+          "renderedExports": [
+            "hmac",
+            "_HMAC"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/pbkdf2.js",
+          "renderedLength": 2156,
+          "renderedExports": [
+            "pbkdf2"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/scrypt.js",
+          "renderedLength": 5689,
+          "renderedExports": [
+            "scryptAsync"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/sha2.js",
+          "renderedLength": 3083,
+          "renderedExports": [
+            "_SHA256",
+            "sha256"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/sha3.js",
+          "renderedLength": 6558,
+          "renderedExports": [
+            "sha3_256",
+            "keccak_256",
+            "Keccak",
+            "keccakP"
+          ]
+        },
+        {
+          "id": "../../node_modules/@noble/hashes/utils.js",
+          "renderedLength": 7348,
+          "renderedExports": [
+            "aoutput",
+            "isLE",
+            "clean",
+            "randomBytes",
+            "createHasher",
+            "abytes",
+            "createView",
+            "aexists",
+            "byteSwap32",
+            "concatBytes",
+            "asyncLoop",
+            "hexToBytes",
+            "rotr",
+            "checkOpts",
+            "byteSwap",
+            "isBytes",
+            "abool",
+            "anumber",
+            "bytesToHex",
+            "utf8ToBytes",
+            "kdfInputToBytes",
+            "swap32IfBE",
+            "nextTick",
+            "u32",
+            "oidNist",
+            "ahash",
+            "rotl"
+          ]
+        },
+        {
+          "id": "../../node_modules/@scure/base/lib/esm/index.js",
+          "renderedLength": 13834,
+          "renderedExports": [
+            "base58",
+            "bech32",
+            "bech32m",
+            "createBase58check"
+          ]
+        },
+        {
+          "id": "../../node_modules/abitype/dist/esm/human-readable/formatAbiItem.js",
+          "renderedLength": 934,
+          "renderedExports": [
+            "formatAbiItem"
+          ]
+        },
+        {
+          "id": "../../node_modules/abitype/dist/esm/human-readable/formatAbiParameter.js",
+          "renderedLength": 832,
+          "renderedExports": [
+            "formatAbiParameter"
+          ]
+        },
+        {
+          "id": "../../node_modules/abitype/dist/esm/human-readable/formatAbiParameters.js",
+          "renderedLength": 363,
+          "renderedExports": [
+            "formatAbiParameters"
+          ]
+        },
+        {
+          "id": "../../node_modules/abitype/dist/esm/regex.js",
+          "renderedLength": 122,
+          "renderedExports": [
+            "execTyped"
+          ]
+        },
+        {
+          "id": "../../node_modules/ox/_esm/core/Ens.js",
+          "renderedLength": 102,
+          "renderedExports": [
+            "normalize"
+          ]
+        },
+        {
+          "id": "../../node_modules/qrcode-generator/dist/qrcode.mjs",
+          "renderedLength": 43680,
+          "renderedExports": [
+            "qrcode",
+            "default"
+          ]
+        },
+        {
+          "id": "../../node_modules/react-dom/cjs/react-dom-client.production.js",
+          "renderedLength": 529542,
+          "renderedExports": [
+            "createRoot"
+          ]
+        },
+        {
+          "id": "../../node_modules/react-dom/cjs/react-dom.production.js",
+          "renderedLength": 6256,
+          "renderedExports": [
+            "preinitModule",
+            "__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE",
+            "createPortal",
+            "useFormState",
+            "useFormStatus",
+            "preconnect",
+            "preload",
+            "requestFormReset",
+            "version",
+            "flushSync",
+            "preinit",
+            "preloadModule",
+            "browser",
+            "prefetchDNS",
+            "unstable_batchedUpdates"
+          ]
+        },
+        {
+          "id": "../../node_modules/react-dom/client.js",
+          "renderedLength": 459,
+          "renderedExports": [
+            "createRoot"
+          ]
+        },
+        {
+          "id": "../../node_modules/react-dom/index.js",
+          "renderedLength": 454,
+          "renderedExports": [
+            "preinitModule",
+            "__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE",
+            "createPortal",
+            "useFormState",
+            "useFormStatus",
+            "preconnect",
+            "preload",
+            "requestFormReset",
+            "version",
+            "flushSync",
+            "preinit",
+            "preloadModule",
+            "browser",
+            "prefetchDNS",
+            "unstable_batchedUpdates"
+          ]
+        },
+        {
+          "id": "../../node_modules/react/cjs/react-jsx-runtime.production.js",
+          "renderedLength": 857,
+          "renderedExports": [
+            "Fragment",
+            "jsxs",
+            "jsx"
+          ]
+        },
+        {
+          "id": "../../node_modules/react/cjs/react.production.js",
+          "renderedLength": 15985,
+          "renderedExports": [
+            "createContext",
+            "Activity",
+            "Children",
+            "cacheSignal",
+            "createRef",
+            "useEffect",
+            "useOptimistic",
+            "isValidElement",
+            "ViewTransition",
+            "Component",
+            "forwardRef",
+            "cloneElement",
+            "startTransition",
+            "useState",
+            "useReducer",
+            "useTransition",
+            "cache",
+            "version",
+            "StrictMode",
+            "__COMPILER_RUNTIME",
+            "useDebugValue",
+            "memo",
+            "__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE",
+            "unstable_useCacheRefresh",
+            "useActionState",
+            "useDeferredValue",
+            "useInsertionEffect",
+            "Fragment",
+            "useLayoutEffect",
+            "createElement",
+            "useImperativeHandle",
+            "useContext",
+            "useCallback",
+            "useMemo",
+            "addTransitionType",
+            "PureComponent",
+            "useId",
+            "Profiler",
+            "Suspense",
+            "useEffectEvent",
+            "useSyncExternalStore",
+            "lazy",
+            "useRef",
+            "use"
+          ]
+        },
+        {
+          "id": "../../node_modules/react/index.js",
+          "renderedLength": 162,
+          "renderedExports": [
+            "use",
+            "Activity",
+            "Children",
+            "cacheSignal",
+            "createRef",
+            "useEffect",
+            "useOptimistic",
+            "isValidElement",
+            "ViewTransition",
+            "Component",
+            "forwardRef",
+            "cloneElement",
+            "startTransition",
+            "useState",
+            "useReducer",
+            "useTransition",
+            "cache",
+            "version",
+            "StrictMode",
+            "__COMPILER_RUNTIME",
+            "useDebugValue",
+            "memo",
+            "__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE",
+            "unstable_useCacheRefresh",
+            "useActionState",
+            "useDeferredValue",
+            "useInsertionEffect",
+            "Fragment",
+            "useLayoutEffect",
+            "createElement",
+            "useImperativeHandle",
+            "useContext",
+            "useCallback",
+            "useMemo",
+            "addTransitionType",
+            "PureComponent",
+            "useId",
+            "Profiler",
+            "Suspense",
+            "useEffectEvent",
+            "useSyncExternalStore",
+            "lazy",
+            "useRef",
+            "createContext"
+          ]
+        },
+        {
+          "id": "../../node_modules/react/jsx-runtime.js",
+          "renderedLength": 186,
+          "renderedExports": [
+            "Fragment",
+            "jsxs",
+            "jsx"
+          ]
+        },
+        {
+          "id": "../../node_modules/scheduler/cjs/scheduler.production.js",
+          "renderedLength": 9050,
+          "renderedExports": [
+            "unstable_Profiling",
+            "unstable_runWithPriority",
+            "unstable_wrapCallback",
+            "unstable_ImmediatePriority",
+            "unstable_shouldYield",
+            "unstable_requestPaint",
+            "unstable_cancelCallback",
+            "unstable_next",
+            "unstable_getCurrentPriorityLevel",
+            "unstable_UserBlockingPriority",
+            "unstable_NormalPriority",
+            "unstable_IdlePriority",
+            "unstable_LowPriority",
+            "unstable_scheduleCallback",
+            "unstable_forceFrameRate"
+          ]
+        },
+        {
+          "id": "../../node_modules/scheduler/index.js",
+          "renderedLength": 174,
+          "renderedExports": [
+            "unstable_Profiling",
+            "unstable_runWithPriority",
+            "unstable_wrapCallback",
+            "unstable_ImmediatePriority",
+            "unstable_shouldYield",
+            "unstable_requestPaint",
+            "unstable_cancelCallback",
+            "unstable_next",
+            "unstable_getCurrentPriorityLevel",
+            "unstable_UserBlockingPriority",
+            "unstable_NormalPriority",
+            "unstable_IdlePriority",
+            "unstable_LowPriority",
+            "unstable_scheduleCallback",
+            "unstable_forceFrameRate"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/accounts/utils/publicKeyToAddress.js",
+          "renderedLength": 226,
+          "renderedExports": [
+            "publicKeyToAddress"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/constants/blob.js",
+          "renderedLength": 307,
+          "renderedExports": [
+            "bytesPerBlob",
+            "fieldElementsPerBlob",
+            "maxBytesPerTransaction"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/constants/number.js",
+          "renderedLength": 2530,
+          "renderedExports": [
+            "maxUint256"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/abi.js",
+          "renderedLength": 4832,
+          "renderedExports": [
+            "InvalidAbiDecodingTypeError",
+            "AbiFunctionSignatureNotFoundError",
+            "AbiFunctionOutputsNotFoundError",
+            "AbiDecodingZeroDataError",
+            "AbiItemAmbiguityError",
+            "AbiEncodingBytesSizeMismatchError",
+            "InvalidAbiEncodingTypeError",
+            "AbiEncodingLengthMismatchError",
+            "AbiFunctionNotFoundError",
+            "AbiEncodingArrayLengthMismatchError",
+            "BytesSizeMismatchError",
+            "InvalidDefinitionTypeError",
+            "InvalidArrayError",
+            "AbiDecodingDataSizeTooSmallError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/address.js",
+          "renderedLength": 354,
+          "renderedExports": [
+            "InvalidAddressError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/base.js",
+          "renderedLength": 2329,
+          "renderedExports": [
+            "BaseError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/blob.js",
+          "renderedLength": 955,
+          "renderedExports": [
+            "BlobSizeTooLargeError",
+            "EmptyBlobError",
+            "InvalidVersionedHashVersionError",
+            "InvalidVersionedHashSizeError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/chain.js",
+          "renderedLength": 268,
+          "renderedExports": [
+            "InvalidChainIdError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/cursor.js",
+          "renderedLength": 688,
+          "renderedExports": [
+            "NegativeOffsetError",
+            "RecursiveReadLimitExceededError",
+            "PositionOutOfBoundsError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/data.js",
+          "renderedLength": 596,
+          "renderedExports": [
+            "SizeExceedsPaddingSizeError",
+            "SliceOffsetOutOfBoundsError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/encoding.js",
+          "renderedLength": 1728,
+          "renderedExports": [
+            "InvalidHexValueError",
+            "SizeOverflowError",
+            "IntegerOutOfRangeError",
+            "InvalidBytesBooleanError",
+            "RlpDepthLimitExceededError",
+            "RlpListBoundaryExceededError",
+            "RlpTrailingBytesError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/node.js",
+          "renderedLength": 5966,
+          "renderedExports": [
+            "FeeCapTooHighError",
+            "IntrinsicGasTooHighError",
+            "ExecutionRevertedError",
+            "FeeCapTooLowError",
+            "NonceMaxValueError",
+            "NonceTooLowError",
+            "TransactionTypeNotSupportedError",
+            "IntrinsicGasTooLowError",
+            "NonceTooHighError",
+            "TipAboveFeeCapError",
+            "InsufficientFundsError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/transaction.js",
+          "renderedLength": 3095,
+          "renderedExports": [
+            "InvalidSerializableTransactionError",
+            "prettyPrint",
+            "InvalidYParityError",
+            "InvalidSerializedTransactionTypeError",
+            "InvalidSerializedTransactionError",
+            "InvalidLegacyVError",
+            "InvalidStorageKeySizeError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/typedData.js",
+          "renderedLength": 1306,
+          "renderedExports": [
+            "InvalidPrimaryTypeError",
+            "InvalidDomainError",
+            "InvalidStructTypeError",
+            "InvalidTypedDataTypeError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/errors/version.js",
+          "renderedLength": 75,
+          "renderedExports": [
+            "version"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/decodeAbiParameters.js",
+          "renderedLength": 6916,
+          "renderedExports": [
+            "decodeAbiParameters",
+            "AbiDecodingSizeLimitExceededError"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/decodeFunctionData.js",
+          "renderedLength": 624,
+          "renderedExports": [
+            "decodeFunctionData"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/decodeFunctionResult.js",
+          "renderedLength": 823,
+          "renderedExports": [
+            "decodeFunctionResult"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/encodeAbiParameters.js",
+          "renderedLength": 6229,
+          "renderedExports": [
+            "encodeAbiParameters",
+            "getArrayComponents"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/encodeFunctionData.js",
+          "renderedLength": 548,
+          "renderedExports": [
+            "encodeFunctionData"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/formatAbiItem.js",
+          "renderedLength": 792,
+          "renderedExports": [
+            "formatAbiParams",
+            "formatAbiItem"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/getAbiItem.js",
+          "renderedLength": 5212,
+          "renderedExports": [
+            "isArgOfType",
+            "getAbiItem",
+            "getAmbiguousTypes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/abi/prepareEncodeFunctionData.js",
+          "renderedLength": 621,
+          "renderedExports": [
+            "prepareEncodeFunctionData"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/address/getAddress.js",
+          "renderedLength": 1062,
+          "renderedExports": [
+            "checksumAddress",
+            "getAddress"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/address/isAddress.js",
+          "renderedLength": 617,
+          "renderedExports": [
+            "isAddress",
+            "isAddressCache"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/authorization/serializeAuthorizationList.js",
+          "renderedLength": 772,
+          "renderedExports": [
+            "serializeAuthorizationList"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/blob/blobsToCommitments.js",
+          "renderedLength": 548,
+          "renderedExports": [
+            "blobsToCommitments"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/blob/blobsToProofs.js",
+          "renderedLength": 758,
+          "renderedExports": [
+            "blobsToProofs"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/blob/commitmentToVersionedHash.js",
+          "renderedLength": 409,
+          "renderedExports": [
+            "commitmentToVersionedHash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/blob/commitmentsToVersionedHashes.js",
+          "renderedLength": 411,
+          "renderedExports": [
+            "commitmentsToVersionedHashes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/blob/toBlobSidecars.js",
+          "renderedLength": 559,
+          "renderedExports": [
+            "toBlobSidecars"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/blob/toBlobs.js",
+          "renderedLength": 988,
+          "renderedExports": [
+            "toBlobs"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/cursor.js",
+          "renderedLength": 4722,
+          "renderedExports": [
+            "createCursor"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/data/concat.js",
+          "renderedLength": 535,
+          "renderedExports": [
+            "concat",
+            "concatHex",
+            "concatBytes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/data/isHex.js",
+          "renderedLength": 314,
+          "renderedExports": [
+            "isHex"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/data/pad.js",
+          "renderedLength": 1016,
+          "renderedExports": [
+            "padHex",
+            "pad",
+            "padBytes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/data/size.js",
+          "renderedLength": 178,
+          "renderedExports": [
+            "size"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/data/slice.js",
+          "renderedLength": 1160,
+          "renderedExports": [
+            "slice",
+            "sliceBytes",
+            "sliceHex"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/data/trim.js",
+          "renderedLength": 627,
+          "renderedExports": [
+            "trim"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/encoding/fromBytes.js",
+          "renderedLength": 960,
+          "renderedExports": [
+            "bytesToBool",
+            "bytesToNumber",
+            "bytesToString",
+            "bytesToBigInt"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/encoding/fromHex.js",
+          "renderedLength": 924,
+          "renderedExports": [
+            "assertSize",
+            "hexToBigInt",
+            "hexToNumber"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/encoding/fromRlp.js",
+          "renderedLength": 2015,
+          "renderedExports": [
+            "fromRlp"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/encoding/toBytes.js",
+          "renderedLength": 2116,
+          "renderedExports": [
+            "stringToBytes",
+            "boolToBytes",
+            "toBytes",
+            "numberToBytes",
+            "hexToBytes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/encoding/toHex.js",
+          "renderedLength": 1994,
+          "renderedExports": [
+            "boolToHex",
+            "numberToHex",
+            "stringToHex",
+            "toHex",
+            "bytesToHex"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/encoding/toRlp.js",
+          "renderedLength": 2308,
+          "renderedExports": [
+            "toRlp"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/ens/encodeLabelhash.js",
+          "renderedLength": 126,
+          "renderedExports": [
+            "encodeLabelhash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/ens/encodedLabelToLabelhash.js",
+          "renderedLength": 328,
+          "renderedExports": [
+            "encodedLabelToLabelhash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/ens/labelhash.js",
+          "renderedLength": 266,
+          "renderedExports": [
+            "labelhash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/ens/namehash.js",
+          "renderedLength": 546,
+          "renderedExports": [
+            "namehash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/ens/normalize.js",
+          "renderedLength": 111,
+          "renderedExports": [
+            "normalize"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/ens/packetToBytes.js",
+          "renderedLength": 698,
+          "renderedExports": [
+            "packetToBytes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/hashSignature.js",
+          "renderedLength": 166,
+          "renderedExports": [
+            "hashSignature"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/isHash.js",
+          "renderedLength": 124,
+          "renderedExports": [
+            "isHash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/keccak256.js",
+          "renderedLength": 263,
+          "renderedExports": [
+            "keccak256"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/normalizeSignature.js",
+          "renderedLength": 934,
+          "renderedExports": [
+            "normalizeSignature"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/sha256.js",
+          "renderedLength": 255,
+          "renderedExports": [
+            "sha256"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/toEventSelector.js",
+          "renderedLength": 101,
+          "renderedExports": [
+            "toEventSelector"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/toFunctionSelector.js",
+          "renderedLength": 132,
+          "renderedExports": [
+            "toFunctionSelector"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/toSignature.js",
+          "renderedLength": 228,
+          "renderedExports": [
+            "toSignature"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/hash/toSignatureHash.js",
+          "renderedLength": 414,
+          "renderedExports": [
+            "toSignatureHash"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/lru.js",
+          "renderedLength": 663,
+          "renderedExports": [
+            "LruMap"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/regex.js",
+          "renderedLength": 253,
+          "renderedExports": [
+            "bytesRegex",
+            "integerRegex"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/signature/hashTypedData.js",
+          "renderedLength": 2944,
+          "renderedExports": [
+            "hashTypedData",
+            "encodeType",
+            "hashDomain",
+            "hashStruct"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/signature/parseSignature.js",
+          "renderedLength": 742,
+          "renderedExports": [
+            "parseSignature"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/signature/recoverAddress.js",
+          "renderedLength": 199,
+          "renderedExports": [
+            "recoverAddress"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/signature/recoverPublicKey.js",
+          "renderedLength": 1410,
+          "renderedExports": [
+            "recoverPublicKey"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/stringify.js",
+          "renderedLength": 290,
+          "renderedExports": [
+            "stringify"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/transaction/assertTransaction.js",
+          "renderedLength": 2694,
+          "renderedExports": [
+            "assertTransactionEIP1559",
+            "assertTransactionEIP4844",
+            "assertTransactionEIP2930",
+            "assertTransactionLegacy",
+            "assertTransactionEIP7702"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/transaction/getSerializedTransactionType.js",
+          "renderedLength": 567,
+          "renderedExports": [
+            "getSerializedTransactionType"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/transaction/getTransactionType.js",
+          "renderedLength": 808,
+          "renderedExports": [
+            "getTransactionType"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/transaction/parseTransaction.js",
+          "renderedLength": 10777,
+          "renderedExports": [
+            "parseTransaction",
+            "toTransactionArray",
+            "parseAccessList"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/transaction/serializeAccessList.js",
+          "renderedLength": 638,
+          "renderedExports": [
+            "serializeAccessList"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/transaction/serializeTransaction.js",
+          "renderedLength": 6498,
+          "renderedExports": [
+            "serializeTransaction",
+            "toYParitySignatureArray"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/typedData.js",
+          "renderedLength": 2799,
+          "renderedExports": [
+            "validateTypedData",
+            "getTypesForEIP712Domain"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/unit/Value.js",
+          "renderedLength": 1081,
+          "renderedExports": [
+            "formatGwei",
+            "format"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/_esm/utils/unit/formatGwei.js",
+          "renderedLength": 133,
+          "renderedExports": [
+            "formatGwei"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/curves/esm/_shortw_utils.js",
+          "renderedLength": 373,
+          "renderedExports": [
+            "getHash",
+            "createCurve"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/curves/esm/abstract/curve.js",
+          "renderedLength": 5434,
+          "renderedExports": [
+            "pippenger",
+            "validateBasic",
+            "wNAF"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js",
+          "renderedLength": 7247,
+          "renderedExports": [
+            "Field",
+            "mod",
+            "mapHashToField",
+            "FpLegendre",
+            "nLength",
+            "tonelliShanks",
+            "invert",
+            "getFieldBytesLength",
+            "validateField",
+            "pow2",
+            "FpInvertBatch",
+            "FpPow",
+            "FpSqrt",
+            "getMinHashLength"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js",
+          "renderedLength": 6413,
+          "renderedExports": [
+            "numberToBytesBE",
+            "hexToBytes",
+            "createHmacDrbg",
+            "isBytes",
+            "abool",
+            "numberToBytesLE",
+            "bytesToHex",
+            "memoized",
+            "inRange",
+            "abytes",
+            "numberToHexUnpadded",
+            "hexToNumber",
+            "bitLen",
+            "validateObject",
+            "concatBytes",
+            "bytesToNumberLE",
+            "bytesToNumberBE",
+            "aInRange",
+            "bitMask",
+            "ensureBytes"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/curves/esm/abstract/weierstrass.js",
+          "renderedLength": 23517,
+          "renderedExports": [
+            "weierstrassPoints",
+            "weierstrass",
+            "DER",
+            "DERErr"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/curves/esm/secp256k1.js",
+          "renderedLength": 2525,
+          "renderedExports": [
+            "secp256k1"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/_md.js",
+          "renderedLength": 3102,
+          "renderedExports": [
+            "Chi",
+            "HashMD",
+            "SHA256_IV",
+            "Maj",
+            "setBigUint64"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/_u64.js",
+          "renderedLength": 823,
+          "renderedExports": [
+            "rotlBL",
+            "fromBig",
+            "rotlSH",
+            "rotlBH",
+            "rotlSL",
+            "split"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/crypto.js",
+          "renderedLength": 170,
+          "renderedExports": [
+            "crypto"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/hmac.js",
+          "renderedLength": 1836,
+          "renderedExports": [
+            "HMAC",
+            "hmac"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/sha2.js",
+          "renderedLength": 2791,
+          "renderedExports": [
+            "SHA256",
+            "sha256"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/sha256.js",
+          "renderedLength": 93,
+          "renderedExports": [
+            "sha256"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/sha3.js",
+          "renderedLength": 4899,
+          "renderedExports": [
+            "keccak_256",
+            "Keccak",
+            "keccakP"
+          ]
+        },
+        {
+          "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/utils.js",
+          "renderedLength": 3118,
+          "renderedExports": [
+            "aoutput",
+            "isLE",
+            "clean",
+            "toBytes",
+            "randomBytes",
+            "createHasher",
+            "abytes",
+            "createView",
+            "Hash",
+            "aexists",
+            "concatBytes",
+            "byteSwap32",
+            "rotr",
+            "byteSwap",
+            "isBytes",
+            "anumber",
+            "utf8ToBytes",
+            "swap32IfBE",
+            "u32",
+            "ahash"
+          ]
+        },
+        {
+          "id": "../../packages/address-safety/dist/address.js",
+          "renderedLength": 1954,
+          "renderedExports": [
+            "classifyDestination",
+            "parseStrictAddress",
+            "lookalikeScore",
+            "findLookalikes"
+          ]
+        },
+        {
+          "id": "../../packages/address-safety/dist/errors.js",
+          "renderedLength": 387,
+          "renderedExports": [
+            "reject",
+            "AddressSafetyError",
+            "isReason"
+          ]
+        },
+        {
+          "id": "../../packages/address-safety/dist/meta.js",
+          "renderedLength": 377,
+          "renderedExports": [
+            "metaAddressFingerprint"
+          ]
+        },
+        {
+          "id": "../../packages/address-safety/dist/text.js",
+          "renderedLength": 1644,
+          "renderedExports": [
+            "sanitizeDisplayText"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/chainlinkAggregator.js",
+          "renderedLength": 1839,
+          "renderedExports": [
+            "chainlinkAggregatorAbi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/erc20.js",
+          "renderedLength": 2780,
+          "renderedExports": [
+            "erc20Abi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/erc20Metadata.js",
+          "renderedLength": 3331,
+          "renderedExports": [
+            "erc20MetadataAbi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/erc2612.js",
+          "renderedLength": 1230,
+          "renderedExports": [
+            "erc2612PermitAbi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/erc6538Registry.js",
+          "renderedLength": 2826,
+          "renderedExports": [
+            "erc6538RegistryAbi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/router.js",
+          "renderedLength": 6044,
+          "renderedExports": [
+            "ghostPayRouterAbi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/abi/sweepRelayer.js",
+          "renderedLength": 6490,
+          "renderedExports": [
+            "ghostPaySweepRelayerAbi"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/adapter.js",
+          "renderedLength": 5212,
+          "renderedExports": [
+            "createEvmAdapter"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/config/chains.js",
+          "renderedLength": 3038,
+          "renderedExports": [
+            "CHAINS",
+            "findChain",
+            "requireEnabledChain"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/config/tokens.js",
+          "renderedLength": 1750,
+          "renderedExports": [
+            "findToken",
+            "TOKENS",
+            "tokensForChain"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/deepscan.js",
+          "renderedLength": 361,
+          "renderedExports": [
+            "checkAnnouncementDeep"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/deployments.js",
+          "renderedLength": 6131,
+          "renderedExports": [
+            "validateManifest",
+            "MAX_MANIFEST_BYTES",
+            "loadDeployment"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/deploymentsVerify.js",
+          "renderedLength": 2448,
+          "renderedExports": [
+            "verifyManifestOnChain"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/errors.js",
+          "renderedLength": 470,
+          "renderedExports": [
+            "ChainAdapterError",
+            "fail"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/fees.js",
+          "renderedLength": 2279,
+          "renderedExports": [
+            "routerFee",
+            "routerNet",
+            "grossForNet",
+            "calculateBuffer",
+            "MAX_ROUTER_GROSS",
+            "FEE_SCHEDULE",
+            "assertSponsorFeeAcceptable",
+            "routerSplit"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/logs.js",
+          "renderedLength": 12575,
+          "renderedExports": [
+            "ANNOUNCEMENT_TOPIC",
+            "routerAnnouncementTopics",
+            "rawCallerTopic",
+            "mayBeRateLimit",
+            "isLogLimitError",
+            "validateAnnouncementLog",
+            "MAX_PLAUSIBLE_HEAD",
+            "isLogSizeError",
+            "fetchAnnouncements"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/payments.js",
+          "renderedLength": 15818,
+          "renderedExports": [
+            "selectEvidenceTargets",
+            "verifyClaimedPayment",
+            "fetchRouterEvidence",
+            "claimPairKey",
+            "dedupeClaims"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/permit.js",
+          "renderedLength": 2428,
+          "renderedExports": [
+            "splitPermitSignature",
+            "classifyPermit"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/quote.js",
+          "renderedLength": 8091,
+          "renderedExports": [
+            "findFeed",
+            "FEEDS",
+            "isQuoteAvailable",
+            "createAggregatorReader",
+            "readPrice",
+            "fiatToTokenAmount"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/registry.js",
+          "renderedLength": 5021,
+          "renderedExports": [
+            "ERC6538_SCHEME_SECP256K1",
+            "lookupMetaAddress",
+            "metaAddressToRegistryBytes",
+            "verifyRegistry",
+            "erc6538RegistryAbi",
+            "buildLookupCall",
+            "assertRegistryDeployed",
+            "ERC6538_REGISTRY",
+            "buildRegisterKeysCall",
+            "ERC6538_ENTRY_TYPEHASH",
+            "registryBytesToMetaAddress",
+            "ERC6538_REGISTRY_ADDRESS"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/registryEns.js",
+          "renderedLength": 2525,
+          "renderedExports": [
+            "resolveRegistryRegistrant"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/router.js",
+          "renderedLength": 10669,
+          "renderedExports": [
+            "assertPreviewMatchesCalldata",
+            "buildPaymentTx",
+            "decodePaymentCalldata"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/rpc.js",
+          "renderedLength": 9439,
+          "renderedExports": [
+            "RpcHttpError",
+            "createClient",
+            "fetchTransport",
+            "parseQuantity",
+            "validateRpcUrl"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/scanVerify.js",
+          "renderedLength": 4671,
+          "renderedExports": [
+            "compareProviders"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/sweep.js",
+          "renderedLength": 6469,
+          "renderedExports": [
+            "permitDigest",
+            "SWEEP_TYPES",
+            "buildPermitTypedData",
+            "buildSweepTypedData",
+            "SWEEP_DOMAIN_NAME",
+            "addressOfSecret",
+            "sweepDigest",
+            "sweepDigestManual",
+            "eip712DomainSeparator",
+            "signDigest",
+            "signSweep",
+            "signPermit",
+            "SWEEP_TYPE_STRING",
+            "PERMIT_TYPES"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/types.js",
+          "renderedLength": 151,
+          "renderedExports": [
+            "MAX_UINT256",
+            "ZERO_ADDRESS"
+          ]
+        },
+        {
+          "id": "../../packages/chain-adapters/dist/verify.js",
+          "renderedLength": 2569,
+          "renderedExports": [
+            "STRUCTURED_MANIFEST_SIGNING_DOMAIN",
+            "canonicalManifestJson",
+            "manifestDigest",
+            "verifyManifestSignature"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/errors.js",
+          "renderedLength": 1217,
+          "renderedExports": [
+            "GhostPayCryptoError",
+            "fail"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/hex.js",
+          "renderedLength": 388,
+          "renderedExports": [
+            "assertAddress",
+            "strictHexToBytes"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/keys.js",
+          "renderedLength": 1395,
+          "renderedExports": [
+            "generateKeySet",
+            "publicKeyOf",
+            "encodeMetaAddress",
+            "decodeMetaAddress"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/metadata.js",
+          "renderedLength": 2264,
+          "renderedExports": [
+            "parseMetadata",
+            "buildNativeMetadata",
+            "NATIVE_TOKEN_ADDRESS",
+            "ERC20_TRANSFER_SELECTOR",
+            "NATIVE_SELECTOR",
+            "buildErc20Metadata"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/rng.js",
+          "renderedLength": 598,
+          "renderedExports": [
+            "resolveRng",
+            "randomScalar"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/secret.js",
+          "renderedLength": 1728,
+          "renderedExports": [
+            "CURVE_ORDER",
+            "secretScalarFromBytes",
+            "zeroize",
+            "parseCompressedPoint",
+            "isScalarBytes",
+            "wrapSecret",
+            "unsafeRevealSecret"
+          ]
+        },
+        {
+          "id": "../../packages/core-crypto/dist/stealth.js",
+          "renderedLength": 3557,
+          "renderedExports": [
+            "deriveStealthPayment",
+            "checkAnnouncement",
+            "deriveStealthSecret"
+          ]
+        },
+        {
+          "id": "../../packages/hygiene/dist/addr.js",
+          "renderedLength": 488,
+          "renderedExports": [
+            "normAddress"
+          ]
+        },
+        {
+          "id": "../../packages/hygiene/dist/errors.js",
+          "renderedLength": 276,
+          "renderedExports": [
+            "HygieneError",
+            "fail"
+          ]
+        },
+        {
+          "id": "../../packages/hygiene/dist/guard.js",
+          "renderedLength": 552,
+          "renderedExports": [
+            "fundingGuard",
+            "FUNDING_GUARD_MESSAGE"
+          ]
+        },
+        {
+          "id": "../../packages/hygiene/dist/ledger.js",
+          "renderedLength": 4820,
+          "renderedExports": [
+            "DestLedger"
+          ]
+        },
+        {
+          "id": "../../packages/hygiene/dist/testnet.js",
+          "renderedLength": 295,
+          "renderedExports": [
+            "assertTestnetChain",
+            "ALLOWED_CHAIN_IDS"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/base64url.ts",
+          "renderedLength": 1492,
+          "renderedExports": [
+            "encodeBase64Url",
+            "decodeBase64Url"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/envelope.ts",
+          "renderedLength": 11408,
+          "renderedExports": [
+            "openFragment",
+            "MAX_DECODED_BYTES",
+            "encodeFragment",
+            "FRAGMENT_PREFIX"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/errors.ts",
+          "renderedLength": 3087,
+          "renderedExports": [
+            "FragmentFormatError",
+            "FragmentTooLargeError",
+            "DecryptionError",
+            "WrongPassphraseError",
+            "SigningError",
+            "JsonParseError",
+            "UnsupportedError",
+            "NonCanonicalError",
+            "ForbiddenCharacterError",
+            "RandomnessError",
+            "Base64UrlError",
+            "SchemaError",
+            "Utf8Error",
+            "PassphraseRequiredError",
+            "PassphraseUnexpectedError",
+            "MissingSignatureError",
+            "VerificationUnavailableError",
+            "UntrustedSignerError",
+            "InvoiceError",
+            "PassphrasePolicyError",
+            "InvalidSignatureError"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/expiry.ts",
+          "renderedLength": 365,
+          "renderedExports": [
+            "checkExpiry"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/json.ts",
+          "renderedLength": 4791,
+          "renderedExports": [
+            "canonicalize",
+            "parseStrictJson"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/passphrase.ts",
+          "renderedLength": 1767,
+          "renderedExports": [
+            "isAllowedScrypt",
+            "derivePassphraseKey",
+            "SCRYPT_ALLOWED_N",
+            "MAX_PASSPHRASE_BYTES",
+            "PASSPHRASE_ALG",
+            "buildPassphraseAad",
+            "passphraseToBytes",
+            "SCRYPT_DEFAULT_N"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/receipts.ts",
+          "renderedLength": 6585,
+          "renderedExports": [
+            "receiptDigest",
+            "signReceipt",
+            "receiptJson",
+            "MAX_RECEIPT_JSON_BYTES",
+            "canonicalReceiptPayload",
+            "validateReceiptPayload",
+            "RECEIPT_DOMAIN",
+            "SignedReceiptError",
+            "verifyReceipt",
+            "bindReceiptToInvoice",
+            "parseVerifiedReceipt"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/schema.ts",
+          "renderedLength": 8573,
+          "renderedExports": [
+            "PRIVATE_KEYS",
+            "validatePrivatePart",
+            "resolveRng",
+            "validateInvoice",
+            "createInvoice",
+            "randomBytes"
+          ]
+        },
+        {
+          "id": "../../packages/invoice-schema/src/sign.ts",
+          "renderedLength": 1174,
+          "renderedExports": [
+            "canonicalInvoiceBytes",
+            "signInvoice",
+            "signerPublicKeyHex",
+            "SIGNING_DOMAIN",
+            "invoiceDigest",
+            "verifyInvoiceSignature"
+          ]
+        },
+        {
+          "id": "../../packages/metadata-hardening/dist/guard.js",
+          "renderedLength": 545,
+          "renderedExports": [
+            "requireInput",
+            "resolveRng",
+            "MetadataHardeningError"
+          ]
+        },
+        {
+          "id": "../../packages/metadata-hardening/dist/release.js",
+          "renderedLength": 1096,
+          "renderedExports": [
+            "DEFAULT_BODY_BUCKETS",
+            "padBody"
+          ]
+        },
+        {
+          "id": "../../packages/net-transport/dist/claims.js",
+          "renderedLength": 6172,
+          "renderedExports": [
+            "FIRST_USE_NOTICE",
+            "TOR_BROWSER_NOTICE",
+            "PROFILE_VERIFICATION",
+            "PROFILE_LABELS",
+            "COMMON_NOT_HIDDEN",
+            "UNVERIFIED_NOTICE"
+          ]
+        },
+        {
+          "id": "../../packages/net-transport/dist/errors.js",
+          "renderedLength": 209,
+          "renderedExports": [
+            "NetTransportError"
+          ]
+        },
+        {
+          "id": "../../packages/net-transport/dist/fetchTransport.js",
+          "renderedLength": 3050,
+          "renderedExports": [
+            "createFetchTransport"
+          ]
+        },
+        {
+          "id": "../../packages/net-transport/dist/onion.js",
+          "renderedLength": 872,
+          "renderedExports": [
+            "isValidV3OnionHost"
+          ]
+        },
+        {
+          "id": "../../packages/net-transport/dist/selection.js",
+          "renderedLength": 1849,
+          "renderedExports": [
+            "firstUseNotices",
+            "WEB_NETWORK_SELECTION_KEY",
+            "WEB_SELECTABLE_PROFILES",
+            "WEB_RPC_MODES",
+            "parseWebNetworkSelection",
+            "isNonDefaultSelection",
+            "DEFAULT_WEB_NETWORK_SELECTION"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/addresses.js",
+          "renderedLength": 4215,
+          "renderedExports": [
+            "parseSolanaAddress",
+            "parseBtcAddress",
+            "parseTronAddress",
+            "parseSilentPaymentAddress",
+            "parseEvmAddress"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/bitcoin.js",
+          "renderedLength": 2684,
+          "renderedExports": [
+            "parseBitcoinUri"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/decimal.js",
+          "renderedLength": 938,
+          "renderedExports": [
+            "parseDecimal",
+            "toAtomic"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/eip3770.js",
+          "renderedLength": 915,
+          "renderedExports": [
+            "parseChainAddress",
+            "DEFAULT_CHAIN_SHORT_NAMES"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/eip681.js",
+          "renderedLength": 3450,
+          "renderedExports": [
+            "parseEip681",
+            "parseEip681Number"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/errors.js",
+          "renderedLength": 1085,
+          "renderedExports": [
+            "PaymentUriError",
+            "fail"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/invoice-link.js",
+          "renderedLength": 1536,
+          "renderedExports": [
+            "MAX_INVOICE_LINK_LENGTH",
+            "parseInvoiceLink",
+            "INVOICE_FRAGMENT_PREFIX"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/parse.js",
+          "renderedLength": 1002,
+          "renderedExports": [
+            "parsePaymentUri"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/query.js",
+          "renderedLength": 2300,
+          "renderedExports": [
+            "parseQuery",
+            "splitUri",
+            "pctDecode",
+            "MAX_URI_LENGTH"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/recipient.js",
+          "renderedLength": 479,
+          "renderedExports": [
+            "recipientInfo"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/solana.js",
+          "renderedLength": 1801,
+          "renderedExports": [
+            "parseSolanaPay"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/text.js",
+          "renderedLength": 690,
+          "renderedExports": [
+            "checkText",
+            "hasMixedScript"
+          ]
+        },
+        {
+          "id": "../../packages/payment-uri/dist/tron.js",
+          "renderedLength": 1558,
+          "renderedExports": [
+            "parseTronUri"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/assembler.ts",
+          "renderedLength": 2608,
+          "renderedExports": [
+            "Assembler",
+            "DEFAULT_ASSEMBLY_MAX_AGE_MS"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/base64url.ts",
+          "renderedLength": 1963,
+          "renderedExports": [
+            "b64urlEncode",
+            "b64urlDecode"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/camera.ts",
+          "renderedLength": 5167,
+          "renderedExports": [
+            "startCamera",
+            "activeDeviceId",
+            "listVideoInputs",
+            "MAX_SCAN_TEXT_LEN",
+            "scanFromVideo",
+            "stopVideo"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/errors.ts",
+          "renderedLength": 1103,
+          "renderedExports": [
+            "QrExchangeError"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/multipart.ts",
+          "renderedLength": 2500,
+          "renderedExports": [
+            "encodeMultipart",
+            "parseChunk",
+            "crc32Ascii",
+            "sessionIdOf",
+            "MAX_PAYLOAD_BYTES"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/readers.ts",
+          "renderedLength": 7092,
+          "renderedExports": [
+            "MAX_IMAGE_PIXELS",
+            "MAX_IMAGE_BYTES",
+            "loadJsQrDecoder",
+            "createDecoderReader",
+            "createCanvasGrabber",
+            "HEADER_PROBE_BYTES",
+            "imageHeaderDimensions",
+            "createDefaultReader",
+            "decodeQrImage",
+            "MAX_IMAGE_DIM",
+            "createPlatformReader"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/seller.ts",
+          "renderedLength": 4067,
+          "renderedExports": [
+            "compareToLoaded",
+            "parseSellerPairing",
+            "exportSellerPairing",
+            "SELLER_PAIRING_FORMAT",
+            "PublicSellerError",
+            "parsePublicMetaQr",
+            "MAX_SELLER_PAIRING_BYTES"
+          ]
+        },
+        {
+          "id": "../../packages/qr-exchange/src/settings-exchange.ts",
+          "renderedLength": 6840,
+          "renderedExports": [
+            "validateDeviceSettings",
+            "SettingsExchangeError",
+            "validateSettingsDelayRange",
+            "MAX_DEVICE_SETTINGS_URL_CHARS",
+            "MAX_DEVICE_SETTINGS_EXCHANGE_BYTES",
+            "exportDeviceSettingsExchange",
+            "validateSharedSettings",
+            "exportSettingsExchange",
+            "DEVICE_SETTINGS_SECTIONS",
+            "SETTINGS_EXCHANGE_FORMAT",
+            "parseDeviceSettingsExchange"
+          ]
+        },
+        {
+          "id": "../../packages/scan-source/dist/errors.js",
+          "renderedLength": 306,
+          "renderedExports": [
+            "ScanSourceError",
+            "requireArg"
+          ]
+        },
+        {
+          "id": "../../packages/scan-source/dist/guard.js",
+          "renderedLength": 311,
+          "renderedExports": [
+            "TESTNET_CHAIN_IDS",
+            "assertTestnetChainId"
+          ]
+        },
+        {
+          "id": "../../packages/scan-source/dist/indexer.js",
+          "renderedLength": 4665,
+          "renderedExports": [
+            "createIndexerSource"
+          ]
+        },
+        {
+          "id": "../../packages/scan-source/dist/padded.js",
+          "renderedLength": 869,
+          "renderedExports": [
+            "DEFAULT_MAX_PADDED_SPAN",
+            "padRange"
+          ]
+        },
+        {
+          "id": "../../packages/scan-source/dist/validate.js",
+          "renderedLength": 2263,
+          "renderedExports": [
+            "normalizeSet",
+            "parseAnnouncement"
+          ]
+        },
+        {
+          "id": "../../packages/scan-source/dist/window.js",
+          "renderedLength": 558,
+          "renderedExports": [
+            "padWindow"
+          ]
+        },
+        {
+          "id": "../../packages/secret-box/dist/secretBox.js",
+          "renderedLength": 3478,
+          "renderedExports": [
+            "SecretBoxError",
+            "wipe",
+            "SecretBox"
+          ]
+        },
+        {
+          "id": "../../packages/tx-review/dist/decode.js",
+          "renderedLength": 7367,
+          "renderedExports": [
+            "decodeTx",
+            "decodeTypedData"
+          ]
+        },
+        {
+          "id": "../../packages/tx-review/dist/errors.js",
+          "renderedLength": 517,
+          "renderedExports": [
+            "ReviewRefusedError",
+            "TxReviewError",
+            "require_"
+          ]
+        },
+        {
+          "id": "../../packages/tx-review/dist/review.js",
+          "renderedLength": 5850,
+          "renderedExports": [
+            "review",
+            "assertReviewed"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/keystore-portable.ts",
+          "renderedLength": 19851,
+          "renderedExports": [
+            "createKeystoreApi"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/portable-errors.ts",
+          "renderedLength": 279,
+          "renderedExports": [
+            "PortableVaultError"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/reconciliation-amounts.ts",
+          "renderedLength": 2377,
+          "renderedExports": [
+            "createInvoicePaymentSummarizer"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/reconciliation-portable.ts",
+          "renderedLength": 39653,
+          "renderedExports": [
+            "createReconciliationApi"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/seller-scope.ts",
+          "renderedLength": 244,
+          "renderedExports": [
+            "checkpointKeyId"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/stealth-export-portable.ts",
+          "renderedLength": 26708,
+          "renderedExports": [
+            "createStealthExportApi"
+          ]
+        },
+        {
+          "id": "../../packages/ux-vault/src/tag-archive-portable.ts",
+          "renderedLength": 8132,
+          "renderedExports": [
+            "createTagArchiveApi"
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "assets/ja-CwSzae9l.js",
+      "modules": [
+        {
+          "id": "locales/ja.json",
+          "renderedLength": 200432,
+          "renderedExports": [
+            "_meta",
+            "messages",
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "assets/jsQR-DMfxOdIb.js",
+      "modules": [
+        {
+          "id": "../../node_modules/jsqr/dist/jsQR.js",
+          "renderedLength": 232853,
+          "renderedExports": [
+            "jsQR"
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "assets/rolldown-runtime-XKyaHtl9.js",
+      "modules": [
+        {
+          "id": "virtual:rolldown/runtime.js",
+          "renderedLength": 1419,
+          "renderedExports": [
+            "__getProtoOf",
+            "__getOwnPropNames",
+            "__defProp",
+            "__commonJSMin",
+            "__hasOwnProp",
+            "__toESM",
+            "__copyProps",
+            "__getOwnPropDesc",
+            "__create",
+            "__exportAll"
+          ]
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "chunks": [
+        {
+          "fileName": "assets/scanner.worker-CAQQ64R_.js",
+          "modules": [
+            {
+              "id": "src/lib/scanner.worker.ts",
+              "renderedLength": 179,
+              "renderedExports": []
+            },
+            {
+              "id": "src/lib/scannerCore.ts",
+              "renderedLength": 4403,
+              "renderedExports": [
+                "REPLAY_MEMO_LIMIT",
+                "ScanSession",
+                "ScanProtocol"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/curves/abstract/curve.js",
+              "renderedLength": 20376,
+              "renderedExports": [
+                "ScalarMultiplier",
+                "probeRandomBytes",
+                "createKeygen",
+                "validatePointCons",
+                "normalizeZ",
+                "createCurveFields",
+                "mulAddUnsafe"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/curves/abstract/der.js",
+              "renderedLength": 4813,
+              "renderedExports": [
+                "DER",
+                "DERErr"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/curves/abstract/modular.js",
+              "renderedLength": 22777,
+              "renderedExports": [
+                "Field",
+                "invertCt",
+                "mod",
+                "mapHashToField",
+                "FpLegendre",
+                "nLength",
+                "tonelliShanks",
+                "invert",
+                "getFieldBytesLength",
+                "validateField",
+                "pow2",
+                "FpInvertBatch",
+                "FpSqrt",
+                "pow",
+                "getMinHashLength"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/curves/abstract/weierstrass.js",
+              "renderedLength": 32694,
+              "renderedExports": [
+                "_splitEndoScalar",
+                "ecdsa",
+                "weierstrass",
+                "ecdh"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/curves/secp256k1.js",
+              "renderedLength": 3022,
+              "renderedExports": [
+                "secp256k1"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/curves/utils.js",
+              "renderedLength": 16146,
+              "renderedExports": [
+                "numberToBytesBE",
+                "createHmacDrbg",
+                "randomBytes",
+                "inRange",
+                "abytes",
+                "abignumber",
+                "numberToHexUnpadded",
+                "hexToNumber",
+                "concatBytes",
+                "bytesToNumberLE",
+                "copyBytes",
+                "bitMask",
+                "isPosBig",
+                "astring",
+                "hexToBytes",
+                "aarray",
+                "isBytes",
+                "asafenumber",
+                "anumber",
+                "abool",
+                "numberToBytesLE",
+                "bytesToHex",
+                "validateObject",
+                "bitLen",
+                "afunction",
+                "aInRange",
+                "bytesToNumberBE",
+                "aobject"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/hashes/_md.js",
+              "renderedLength": 4680,
+              "renderedExports": [
+                "Chi",
+                "HashMD",
+                "SHA256_IV",
+                "Maj"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/hashes/_u64.js",
+              "renderedLength": 907,
+              "renderedExports": [
+                "fromNumH",
+                "fromNumL",
+                "fromBig",
+                "split",
+                "setU64FromNum"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/hashes/hmac.js",
+              "renderedLength": 2135,
+              "renderedExports": [
+                "hmac",
+                "_HMAC"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/hashes/sha2.js",
+              "renderedLength": 4339,
+              "renderedExports": [
+                "_SHA256",
+                "sha256"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/hashes/sha3.js",
+              "renderedLength": 8436,
+              "renderedExports": [
+                "keccak_256",
+                "Keccak",
+                "keccakP"
+              ]
+            },
+            {
+              "id": "../../node_modules/@noble/hashes/utils.js",
+              "renderedLength": 14550,
+              "renderedExports": [
+                "aoutput",
+                "isLE",
+                "clean",
+                "randomBytes",
+                "createHasher",
+                "abytes",
+                "createView",
+                "aexists",
+                "byteSwap32",
+                "concatBytes",
+                "hexToBytes",
+                "rotr",
+                "checkOpts",
+                "byteSwap",
+                "isBytes",
+                "abool",
+                "anumber",
+                "bytesToHex",
+                "swap32IfBE",
+                "u32",
+                "oidNist",
+                "ahash"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/errors/address.js",
+              "renderedLength": 354,
+              "renderedExports": [
+                "InvalidAddressError"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/errors/base.js",
+              "renderedLength": 2329,
+              "renderedExports": [
+                "BaseError"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/errors/data.js",
+              "renderedLength": 324,
+              "renderedExports": [
+                "SizeExceedsPaddingSizeError"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/errors/encoding.js",
+              "renderedLength": 580,
+              "renderedExports": [
+                "SizeOverflowError",
+                "IntegerOutOfRangeError"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/errors/version.js",
+              "renderedLength": 77,
+              "renderedExports": [
+                "version"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/address/getAddress.js",
+              "renderedLength": 1060,
+              "renderedExports": [
+                "checksumAddress",
+                "getAddress"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/address/isAddress.js",
+              "renderedLength": 636,
+              "renderedExports": [
+                "isAddress",
+                "isAddressCache"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/data/isHex.js",
+              "renderedLength": 314,
+              "renderedExports": [
+                "isHex"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/data/pad.js",
+              "renderedLength": 1014,
+              "renderedExports": [
+                "padHex",
+                "pad",
+                "padBytes"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/data/size.js",
+              "renderedLength": 361,
+              "renderedExports": [
+                "size"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/encoding/fromHex.js",
+              "renderedLength": 228,
+              "renderedExports": [
+                "assertSize"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/encoding/toBytes.js",
+              "renderedLength": 4960,
+              "renderedExports": [
+                "stringToBytes",
+                "boolToBytes",
+                "toBytes",
+                "numberToBytes",
+                "hexToBytes"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/encoding/toHex.js",
+              "renderedLength": 4700,
+              "renderedExports": [
+                "boolToHex",
+                "numberToHex",
+                "stringToHex",
+                "toHex",
+                "bytesToHex"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/hash/keccak256.js",
+              "renderedLength": 261,
+              "renderedExports": [
+                "keccak256"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/_esm/utils/lru.js",
+              "renderedLength": 788,
+              "renderedExports": [
+                "LruMap"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/_u64.js",
+              "renderedLength": 1017,
+              "renderedExports": [
+                "rotlBL",
+                "fromBig",
+                "rotlSH",
+                "rotlBH",
+                "rotlSL",
+                "split"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/sha3.js",
+              "renderedLength": 5611,
+              "renderedExports": [
+                "keccak_256",
+                "Keccak",
+                "keccakP"
+              ]
+            },
+            {
+              "id": "../../node_modules/viem/node_modules/@noble/hashes/esm/utils.js",
+              "renderedLength": 3102,
+              "renderedExports": [
+                "aoutput",
+                "isLE",
+                "clean",
+                "toBytes",
+                "createHasher",
+                "abytes",
+                "Hash",
+                "aexists",
+                "byteSwap32",
+                "byteSwap",
+                "isBytes",
+                "anumber",
+                "utf8ToBytes",
+                "swap32IfBE",
+                "u32"
+              ]
+            },
+            {
+              "id": "../../packages/core-crypto/dist/errors.js",
+              "renderedLength": 1329,
+              "renderedExports": [
+                "GhostPayCryptoError",
+                "fail"
+              ]
+            },
+            {
+              "id": "../../packages/core-crypto/dist/hex.js",
+              "renderedLength": 499,
+              "renderedExports": [
+                "assertAddress",
+                "strictHexToBytes"
+              ]
+            },
+            {
+              "id": "../../packages/core-crypto/dist/secret.js",
+              "renderedLength": 3159,
+              "renderedExports": [
+                "CURVE_ORDER",
+                "secretScalarFromBytes",
+                "zeroize",
+                "parseCompressedPoint",
+                "isScalarBytes",
+                "wrapSecret"
+              ]
+            },
+            {
+              "id": "../../packages/core-crypto/dist/stealth.js",
+              "renderedLength": 3673,
+              "renderedExports": [
+                "checkAnnouncement"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "publicCopied": [
+    "_headers",
+    "deployments/README.md",
+    "favicon.svg",
+    "help.css"
+  ]
+}

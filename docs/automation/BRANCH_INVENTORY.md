@@ -1,5 +1,29 @@
 # Branch inventory
 
+## Current reconciliation — 20261120T0115Z
+
+Initial live census: 79 open PRs, including the latest completed external automation's #293.
+This cycle creates only isolated continuations of existing work; no other owner's branch was edited.
+
+| Candidate | Exact head | Current disposition |
+|---|---|---|
+| #278 | 417f7c71daf8645e1432f2ec8f070110879b80bd | Existing integration owner; all eleven earlier priority fixes already accounted for |
+| #292 | 936d054ed067d89c773310d42e33939c1129bbfa | Existing Pages gate owner reconciled current #278; old 814950a1 failure is historical |
+| #293 | 6c648770f5647ca7993cc108ef9e5ede9b46b4c9 | Existing clipboard helper owner; incomplete Settings, lint/test defects repaired by dependent #297 |
+| #297 | 04910f65dc0268e41519c4b1a44e83264272f0bf | New test-only correction, based exactly on #293; no duplicate helper |
+| #298 | acbf39ee21ad35e9d14df958fa16fbcc2e230cae | New receipt correlation repair, based exactly on current #278 |
+| #290 / #295 | ec546311 /4493793a | Existing runtime guard plus distinct prior-cycle coverage; #290 target conflict remains |
+| #294 | 172695efb41665a4e50d335029e54184bbb5b328 | Existing QR deadline owner; target conflict remains |
+| This checkpoint | Parent #296 a47648872e648fe7848a17080a5ffa1473e98e8b | Additive continuation of canonical #261 ledgers; no application consolidation |
+
+Fresh source/target pins, mergeability, workflows and checks are in
+[data/cycle-20261120T0115Z/exact-head-state.json](data/cycle-20261120T0115Z/exact-head-state.json).
+Source pins and local/published tree mappings are in the two new committed handoffs.
+Older #238/#262/#264/#249/#251/#222 Settings/AppShell overlap was inspected before assigning scope.
+No overlapping active clipboard Settings implementation was found, but that work was deferred in
+favor of transaction correctness and qualification. All original branches and unique changes remain.
+
+
 ## Current reconciliation — 20261120T0035Z
 
 Main c977b5d6; initial source audit #278 d74af79e; initial inventory 73 open PRs.

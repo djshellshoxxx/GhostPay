@@ -1,5 +1,30 @@
 # Merge queue
 
+## Current dependency queue — 20261120T0115Z
+
+No candidate is authorized for integration by this checkpoint. Main remains c977b5d6; the durable lock
+is released generation 5 at c8517beb and was never acquired by this cycle. Protection read still fails 403.
+
+1. Preserve #278 417f7c71 and its existing owners. Pages/Beta/Integration succeed at this source;
+   full CI, CodeQL and Mythril remain pending. No merge with missing/failed/skipped-required gates.
+2. Qualify #298 acbf39ee against exact parent 417f7c71. Runtime a221a9d5/local d08 has independent
+   180-test and19-failure reproduction evidence. Require final-head hosted browser/full CI/security.
+3. Qualify #297 04910f65 on #293 6c648770. Its24-test and scoped lint results repair existing
+   qualification defects. #293 also needs its owner's reconciliation of the old preflight failure with #278.
+4. Keep #290 ec546311 and #294 172695ef conflicts with their owners. Distinct prior #295 4493793a
+   remains stacked on #290. Do not merge the closed/preserved duplicate #291 or overlapping old fixes.
+5. Keep #292 936d054e with its Pages gate owner. Its older814950a1 browser failure is preserved;
+   the newer merged target needs its own complete exact-head qualification.
+6. This documentation delta continues #296 a4764887 and the existing #261 ledger lineage. Reconcile
+   only unique documentation/evidence into an eligible application integration; do not import its older app tree.
+7. Before shared updates, independently revalidate target/source SHAs, formal required reviews/protections,
+   downstream triggers and atomic integration-lock ownership. Native scoped review is not a GitHub approval.
+
+No main merge or deployment was attempted. Observed Pages publication requires explicit main dispatch
+with deploy=true; releases use version tags. No workflow, production configuration or schedule changed.
+Evidence and direct workflow links: [exact-head state](data/cycle-20261120T0115Z/exact-head-state.json).
+
+
 ## Current dependency queue — 20261120T0035Z
 
 1. Preserve original branches and handoffs. All eleven requested source fixes were already found in

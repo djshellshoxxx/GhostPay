@@ -1,0 +1,17 @@
+{
+  "reviewer": "/root/final_checkpoint_review",
+  "source_sha": "be7fb39bc7bb6e66b54f89bdd3628d308fb9c676",
+  "baseline_wallet_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+  "command": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/lib/wallet.test.ts",
+    "src/lib/payExec.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-receipt-review/apps/web",
+  "exit_code": 1,
+  "duration_seconds": 3.43,
+  "observed_at": "2026-11-20T01:32:45.256829+00:00",
+  "scope": "Committed test-first source with unchanged baseline runtime; expected regression failure."
+}

@@ -1,0 +1,77 @@
+{
+  "cycle": "20261120T0115Z",
+  "reviewer": "/root/final_checkpoint_review",
+  "state": "source and standards review completed; frozen patch execution pending",
+  "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "wallet_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+  "same_wallet_blob_on_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "finding": {
+    "title": "Receipt status is not bound to the requested transaction hash",
+    "confidence": "high; source-confirmed",
+    "severity_assessment": "Conditional transaction-status integrity defect; no demonstrated fund theft, signing bypass, or protection against a consistently lying RPC.",
+    "source": "apps/web/src/lib/wallet.ts:478–499",
+    "consumer_paths": [
+      "apps/web/src/lib/payExec.ts:115–147",
+      "apps/web/src/lib/payExec.ts:203–212",
+      "apps/web/src/lib/payExec.ts:224–231",
+      "apps/web/src/lib/payExec.ts:340–356",
+      "apps/web/src/views/Pay.tsx:1394–1427"
+    ],
+    "observed_behavior": "The baseline checks status, blockNumber and optional destination but never reads transactionHash. submitTx can combine a correctly looked-up submitted transaction with a different receipt. buildReceipt then maps the submitted hash to included/reverted based on that receipt.",
+    "mitigations": [
+      "Wallet-returned transaction hash is already validated and normalized.",
+      "verifySubmission compares hash/sender/destination/calldata/value and any supplied chain ID.",
+      "Approval/revoke additionally verify allowance state.",
+      "PostBroadcastError retains the original submitted hash and classifies verification as incomplete.",
+      "Local receipt is inclusion/status information, not confirmation-depth/finality proof."
+    ]
+  },
+  "primary_sources": [
+    {
+      "url": "https://ethereum.github.io/execution-apis/api/methods/eth_getTransactionReceipt/",
+      "facts": [
+        "Receipt is null or object.",
+        "transactionHash is a required string matching 0x plus 64 hexadecimal characters in the current schema.",
+        "Receipt status distinguishes success and failure; it is not confirmation depth."
+      ]
+    },
+    {
+      "url": "https://ethereum.org/developers/docs/apis/json-rpc/#eth_gettransactionreceipt",
+      "facts": [
+        "Method returns the receipt for the transaction specified by its 32-byte hash.",
+        "The receipt contains the transaction's 32-byte transactionHash.",
+        "Pending transactions do not have receipts."
+      ]
+    },
+    {
+      "url": "https://eips.ethereum.org/EIPS/eip-1474#eth_gettransactionreceipt",
+      "status": "Stagnant proposal; corroborating, not presented as finalized standard.",
+      "facts": [
+        "Receipt identifies the transaction specified by hash; null when no transaction is found.",
+        "Data is 0x-prefixed hexadecimal with two digits per byte."
+      ]
+    }
+  ],
+  "required_review_cases": [
+    "Different valid hash must fail before success or reverted classification.",
+    "Missing/malformed/non-string hash must fail with stable safe receipt-shape error; no String coercion.",
+    "Matching canonical and supported uppercase-equivalent hash must preserve outcomes.",
+    "Pending null response, bounded retry count and sleep behavior remain unchanged.",
+    "Post-broadcast errors preserve submitted hash and cause; no automatic resubmission.",
+    "Existing destination, status and block-number handling remains scoped and unchanged.",
+    "RPC rejection/cancellation and sleep rejection preserve existing handling.",
+    "No added claim of finality, confirmation depth, cross-provider honesty or cryptographic receipt authenticity."
+  ],
+  "compatibility_fixtures": [
+    "apps/web/src/lib/wallet.test.ts",
+    "apps/web/src/lib/payExec.test.ts",
+    "apps/web/src/lib/payExec.acceptance.test.ts:62",
+    "apps/web/src/views/Pay.test.tsx:58,595",
+    "apps/web/e2e/flowMocks.ts:135"
+  ],
+  "actions": {
+    "source_edits": false,
+    "remote_mutations": false,
+    "tests_executed": false
+  }
+}

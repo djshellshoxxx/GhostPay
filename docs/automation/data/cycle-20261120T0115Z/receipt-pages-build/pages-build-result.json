@@ -1,0 +1,11 @@
+{
+  "source": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+  "command": [
+    "bash",
+    "scripts/pages/build-pages.sh",
+    "/workspace/scratch/a13b43b0f3c9/receipt-pages-20261120T0115Z"
+  ],
+  "mode": "payments-disabled development build; no manifest/release keys/origin",
+  "exit_code": 0,
+  "duration_seconds": 26.96
+}

@@ -1,0 +1,713 @@
+[
+  {
+    "number": 296,
+    "title": "docs: preserve verified engineering cycle and consolidation evidence",
+    "head": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+    "branch": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+    "base": "automation/20261119T073600Z/coordinator/integration-lock",
+    "base_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+    "updated": "2026-11-20T01:11:53Z"
+  },
+  {
+    "number": 295,
+    "title": "test(web): complete unverified QR and flag-combination coverage",
+    "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+    "branch": "automation/20261120T0035Z/worker/qr-flag-coverage",
+    "base": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+    "base_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "updated": "2026-11-20T01:11:51Z"
+  },
+  {
+    "number": 290,
+    "title": "fix(web): reject non-string QR classification keys before coercion",
+    "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+    "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+    "base": "release/ghostpay-beta-qualification-20261119",
+    "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "updated": "2026-11-20T01:10:26Z"
+  },
+  {
+    "number": 292,
+    "title": "Gate Pages artifact promotion and qualify adversarial security fixtures",
+    "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+    "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+    "base": "release/ghostpay-beta-qualification-20261119",
+    "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "updated": "2026-11-20T01:09:14Z"
+  },
+  {
+    "number": 278,
+    "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+    "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "branch": "release/ghostpay-beta-qualification-20261119",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-20T01:03:30Z"
+  },
+  {
+    "number": 294,
+    "title": "fix(qr-exchange): preserve idle deadline after rejected conflicts",
+    "head": "172695efb41665a4e50d335029e54184bbb5b328",
+    "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+    "base": "release/ghostpay-beta-qualification-20261119",
+    "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "updated": "2026-11-20T00:56:45Z"
+  },
+  {
+    "number": 293,
+    "title": "feat(web): add opt-in race-aware clipboard cleanup primitive",
+    "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+    "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+    "base": "release/ghostpay-beta-qualification-20261119",
+    "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "updated": "2026-11-20T00:51:17Z"
+  },
+  {
+    "number": 289,
+    "title": "fix(invoice-schema): reject non-string runtime base64url decoder inputs",
+    "head": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+    "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T22:47:59Z"
+  },
+  {
+    "number": 285,
+    "title": "fix(web): reject unclassified QR payload and frame kinds",
+    "head": "89942105c48df03b9351f777278b6a992e35a95e",
+    "branch": "automation/20261119T204728Z/bug/qr-kind-failclosed",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T20:53:52Z"
+  },
+  {
+    "number": 282,
+    "title": "fix(web): reject ambiguous duplicate JSON fields in saved merchant signer pins",
+    "head": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+    "branch": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T18:42:24Z"
+  },
+  {
+    "number": 281,
+    "title": "fix(privacy): warn when the 30-day anonymity-set history is incomplete",
+    "head": "0041514a630398c89693498d9b5e44ef562d9c61",
+    "branch": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T16:44:29Z"
+  },
+  {
+    "number": 280,
+    "title": "fix(web): fail closed on unknown runtime build-profile values",
+    "head": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+    "branch": "automation/20261119-c977/bug/build-profile-failclosed",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T14:48:12Z"
+  },
+  {
+    "number": 262,
+    "title": "Consolidate GhostPay feature sources and close authority-boundary gaps",
+    "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+    "branch": "codex/ghostpay-feature-consolidation-20261119",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T13:23:18Z"
+  },
+  {
+    "number": 279,
+    "title": "fix(web): reject lossy Unicode when building multipart QR codes",
+    "head": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+    "branch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T12:50:43Z"
+  },
+  {
+    "number": 277,
+    "title": "fix(pages): bind artifact checks to verified bytes and file identities",
+    "head": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+    "branch": "repair/ghostpay-276-artifact-races-20261119",
+    "base": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+    "base_sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+    "updated": "2026-11-19T11:49:25Z"
+  },
+  {
+    "number": 275,
+    "title": "test(policy-scheme): repair mismatched-leaf Anvil fixture",
+    "head": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+    "branch": "repair/ghostpay-270-policy-fixture-20261119",
+    "base": "codex/ghostpay-consolidation-followthrough-20261119",
+    "base_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+    "updated": "2026-11-19T11:49:24Z"
+  },
+  {
+    "number": 272,
+    "title": "Prevent stale Sweep quotes and signing handoffs; preserve explicit balance consent",
+    "head": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+    "branch": "review/ghostpay-sweep-quote-lifecycle-20261119",
+    "base": "main",
+    "base_sha": "8f56376427c96881f49590920ff0bf8543ec81b4",
+    "updated": "2026-11-19T11:49:23Z"
+  },
+  {
+    "number": 271,
+    "title": "Repair historical adapter qualification without weakening TRON completeness",
+    "head": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+    "branch": "integration/ghostpay-adapter-qualification-20261119",
+    "base": "main",
+    "base_sha": "8f56376427c96881f49590920ff0bf8543ec81b4",
+    "updated": "2026-11-19T11:49:22Z"
+  },
+  {
+    "number": 273,
+    "title": "Preserve complete consolidation records and recovered documentation history",
+    "head": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+    "branch": "codex/ghostpay-consolidation-records-20261119",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T11:48:48Z"
+  },
+  {
+    "number": 267,
+    "title": "Fix static-export timestamp precision and HTTP validator parity",
+    "head": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+    "branch": "codex/ghostpay-hosting-timestamp-main-20261119",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T11:31:13Z"
+  },
+  {
+    "number": 276,
+    "title": "feat(pages): independently verify release artifact integrity before promotion",
+    "head": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+    "branch": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+    "base": "main",
+    "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "updated": "2026-11-19T11:26:14Z"
+  },
+  {
+    "number": 270,
+    "title": "Harden canonical arrays and skip unsupported scanner schemes",
+    "head": "73545f63112910d46002718354ab5e99f8652e1f",
+    "branch": "codex/ghostpay-consolidation-followthrough-20261119",
+    "base": "codex/ghostpay-feature-consolidation-20261119",
+    "base_sha": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+    "updated": "2026-11-19T11:09:55Z"
+  },
+  {
+    "number": 274,
+    "title": "fix(web): keep jittered invoice expiry monotonic across clock rollback",
+    "head": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+    "branch": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+    "base": "main",
+    "base_sha": "8f56376427c96881f49590920ff0bf8543ec81b4",
+    "updated": "2026-11-19T10:57:36Z"
+  },
+  {
+    "number": 252,
+    "title": "fix(web): repair standalone Sweep consent disclosure and reconcile main",
+    "head": "4085622463411d3ba27f4efb7b73a70575170535",
+    "branch": "repair/ghostpay-pr-231-20261118",
+    "base": "main",
+    "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+    "updated": "2026-11-19T10:53:24Z"
+  },
+  {
+    "number": 269,
+    "title": "fix(web): complete payment-key exports and consolidate private-scan repairs",
+    "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+    "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+    "base": "codex/ghostpay-feature-consolidation-20261119",
+    "base_sha": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+    "updated": "2026-11-19T10:39:25Z"
+  },
+  {
+    "number": 268,
+    "title": "fix(invoice-schema): reject invalid merchant profile verification clocks",
+    "head": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+    "branch": "automation/20261119T095600Z/bug/merchant-profile-clock",
+    "base": "main",
+    "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "updated": "2026-11-19T09:58:53Z"
+  },
+  {
+    "number": 244,
+    "title": "Complete Bitcoin spent-output detection and private scan consent",
+    "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+    "branch": "chatgpt/btc-spent-private-scan-20261118",
+    "base": "main",
+    "base_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+    "updated": "2026-11-19T09:39:50Z"
+  },
+  {
+    "number": 264,
+    "title": "Consolidate reviewed recovery, privacy, scanning and custody safeguards",
+    "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+    "branch": "integration/ghostpay-master-consolidation-20261118",
+    "base": "main",
+    "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+    "updated": "2026-11-19T09:35:13Z"
+  },
+  {
+    "number": 210,
+    "title": "deps: bump the npm-minor-patch group across 1 directory with 9 updates",
+    "head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+    "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+    "base": "main",
+    "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+    "updated": "2026-11-19T09:35:12Z"
+  },
+  {
+    "number": 246,
+    "title": "Complete remaining GhostPay fixes and reviewed completion ledger",
+    "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+    "branch": "chatgpt/ghostpay-remaining-work-20261119",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "updated": "2026-11-19T09:35:11Z"
+  },
+  {
+    "number": 238,
+    "title": "Consolidate Pages beta security, privacy, and recovery",
+    "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "branch": "integration/ghostpay-pages-completion-20261118",
+    "base": "main",
+    "base_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "updated": "2026-11-19T09:30:31Z"
+  },
+  {
+    "number": 254,
+    "title": "Spec 12: complete Bitcoin spentness evidence and private scan consent",
+    "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+    "branch": "chatgpt/btc-spentness-private-scan-20261118",
+    "base": "main",
+    "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+    "updated": "2026-11-19T09:15:11Z"
+  },
+  {
+    "number": 243,
+    "title": "feat(web): complete selected invoice signer pin validation",
+    "head": "276aed60f19671cc6fa551be616b61041cb45b50",
+    "branch": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "updated": "2026-11-19T09:08:03Z"
+  },
+  {
+    "number": 256,
+    "title": "Consolidate sleep-aware session locking and checkpoint revocation",
+    "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+    "branch": "integration/ghostpay-idle-session-completion-20261119",
+    "base": "main",
+    "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "updated": "2026-11-19T08:58:40Z"
+  },
+  {
+    "number": 265,
+    "title": "fix(invoice-schema): reject sparse or decorated arrays during canonical JSON encoding",
+    "head": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+    "branch": "automation/20261119T083600Z/bug/json-canonical-array",
+    "base": "main",
+    "base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+    "updated": "2026-11-19T08:45:58Z"
+  },
+  {
+    "number": 251,
+    "title": "feat(privacy): enforce browser network authorization and cancellation",
+    "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+    "branch": "codex/network-isolation-complete-20261119",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "updated": "2026-11-19T08:42:29Z"
+  },
+  {
+    "number": 263,
+    "title": "Record current branch audit, recovery evidence and consolidation checkpoint",
+    "head": "55e7799574d9ab978c24e48addf6792f84e76a56",
+    "branch": "maintenance/ghostpay-branch-audit-20261119",
+    "base": "main",
+    "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+    "updated": "2026-11-19T08:32:51Z"
+  },
+  {
+    "number": 249,
+    "title": "Close TM privacy consent, CSP and scan scheduling gaps",
+    "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+    "branch": "chatgpt/ghostpay-tm-hardening-20261118",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "updated": "2026-11-19T08:17:58Z"
+  },
+  {
+    "number": 258,
+    "title": "fix(web): cancel QR imports when the page becomes hidden",
+    "head": "84398a79e18673f3e371a405931bc464e1cca99a",
+    "branch": "automation/20261119T073600Z/bug/camera-visibility",
+    "base": "main",
+    "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+    "updated": "2026-11-19T08:16:49Z"
+  },
+  {
+    "number": 261,
+    "title": "feat(automation): coordinate GhostPay integration cycles and persist verified progress",
+    "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+    "branch": "automation/20261119T073600Z/coordinator/integration-lock",
+    "base": "main",
+    "base_sha": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+    "updated": "2026-11-19T08:14:19Z"
+  },
+  {
+    "number": 260,
+    "title": "Reconcile Spec 18 backup-byte validation and unload custody safeguards",
+    "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+    "branch": "integration/ghostpay-recovery-reconciled-20261119",
+    "base": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+    "base_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+    "updated": "2026-11-19T08:10:15Z"
+  },
+  {
+    "number": 240,
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+    "branch": "chatgpt/spec18-recovery-completion-20261118",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "updated": "2026-11-19T08:09:14Z"
+  },
+  {
+    "number": 259,
+    "title": "Recover historical documentation and reconcile current Pages guidance",
+    "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+    "branch": "integration/ghostpay-docs-recovery-20261119",
+    "base": "main",
+    "base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+    "updated": "2026-11-19T08:00:18Z"
+  },
+  {
+    "number": 248,
+    "title": "Complete private seller scan checkpoints and durable discovery",
+    "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+    "branch": "chatgpt/ghostpay-private-scan-completion-20261119",
+    "base": "main",
+    "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+    "updated": "2026-11-19T07:54:56Z"
+  },
+  {
+    "number": 255,
+    "title": "Close Mythril evidence gaps and bind Factory freeze-risk acknowledgments",
+    "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+    "branch": "integration/ghostpay-mythril-security-closure-20261118",
+    "base": "main",
+    "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+    "updated": "2026-11-19T07:41:28Z"
+  },
+  {
+    "number": 253,
+    "title": "fix(net-harness): reject decoded SOCKS chunks in major dependency candidate",
+    "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+    "branch": "repair/ghostpay-pr-87-20261119",
+    "base": "main",
+    "base_sha": "e454de6abfefda70d82784fafc1d8949b277c334",
+    "updated": "2026-11-19T07:06:03Z"
+  },
+  {
+    "number": 250,
+    "title": "Recover historical adapter date, retry and TRON completeness safeguards",
+    "head": "22af2074a086d9957a18e310ef8572b28d1facd0",
+    "branch": "integration/ghostpay-historical-promotion-20261118",
+    "base": "main",
+    "base_sha": "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+    "updated": "2026-11-19T06:45:01Z"
+  },
+  {
+    "number": 215,
+    "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+    "head": "362dfa999a96dc615a1d146b4f37f8325268a595",
+    "branch": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-19T05:44:03Z"
+  },
+  {
+    "number": 239,
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+    "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+    "base": "integration/ghostpay-pages-completion-20261118",
+    "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+    "updated": "2026-11-19T00:09:14Z"
+  },
+  {
+    "number": 232,
+    "title": "docs: preserve beta execution results, source pins and remaining gates",
+    "head": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+    "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
+    "base": "main",
+    "base_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "updated": "2026-11-18T13:55:58Z"
+  },
+  {
+    "number": 228,
+    "title": "fix(privacy): enforce own-node selection on cached RPC clients",
+    "head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+    "branch": "chatgpt/ghostpay-own-node-guard-20261118",
+    "base": "privacy/hardening-recommendations",
+    "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "updated": "2026-11-18T12:43:20Z"
+  },
+  {
+    "number": 222,
+    "title": "privacy: implement threat-model recommendations TM1-TM15",
+    "head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "branch": "privacy/hardening-recommendations",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T12:43:06Z"
+  },
+  {
+    "number": 233,
+    "title": "test(e2e): honor encrypted invoices, minimized receipts and balance consent",
+    "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+    "branch": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+    "base": "privacy/hardening-recommendations",
+    "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "updated": "2026-11-18T12:28:10Z"
+  },
+  {
+    "number": 231,
+    "title": "fix(web): ask before refreshing the displayed Sweep balance",
+    "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+    "branch": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+    "base": "main",
+    "base_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "updated": "2026-11-18T12:07:31Z"
+  },
+  {
+    "number": 230,
+    "title": "fix(privacy): remove plaintext sweep history and retain session-only warnings",
+    "head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+    "branch": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+    "base": "privacy/hardening-recommendations",
+    "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+    "updated": "2026-11-18T11:36:01Z"
+  },
+  {
+    "number": 229,
+    "title": "fix(recovery): bind import consent to the selected export and disclose key boundaries",
+    "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+    "branch": "chatgpt/ghostpay-recovery-review-20261118",
+    "base": "claude/ghostpay-consolidation-9xhtxg-spec18",
+    "base_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+    "updated": "2026-11-18T11:30:45Z"
+  },
+  {
+    "number": 226,
+    "title": "fix(audit): contain static helper symlinks and malformed requests",
+    "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+    "branch": "chatgpt/ghostpay-sonar-review-20261118",
+    "base": "nodata/jolly-rubin-u4zd45",
+    "base_sha": "1054daabc5cabe958466ec144582d76137b54910",
+    "updated": "2026-11-18T11:24:15Z"
+  },
+  {
+    "number": 225,
+    "title": "fix(security): reject analyzer process failures in proposed Mythril checker",
+    "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+    "branch": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+    "base": "claude/ghostpay-consolidation-9xhtxg-security",
+    "base_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+    "updated": "2026-11-18T11:20:15Z"
+  },
+  {
+    "number": 209,
+    "title": "Completion run 2026-11-18: claims + integration",
+    "head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+    "branch": "claude/ghostpay-completion-audit-ot5jjm",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T09:51:27Z"
+  },
+  {
+    "number": 224,
+    "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+    "head": "1054daabc5cabe958466ec144582d76137b54910",
+    "branch": "nodata/jolly-rubin-u4zd45",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T09:49:48Z"
+  },
+  {
+    "number": 218,
+    "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+    "head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+    "branch": "claude/exciting-brown-7v69cr",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T09:48:02Z"
+  },
+  {
+    "number": 223,
+    "title": "docs: sync docs with current code (2026-11-18)",
+    "head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+    "branch": "nodata/doc-sweep-20261118",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T09:45:36Z"
+  },
+  {
+    "number": 211,
+    "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+    "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+    "branch": "nodata/wonderful-darwin-kd1h22",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T09:44:09Z"
+  },
+  {
+    "number": 217,
+    "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+    "head": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+    "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T09:19:05Z"
+  },
+  {
+    "number": 213,
+    "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+    "head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+    "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T08:46:38Z"
+  },
+  {
+    "number": 205,
+    "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+    "head": "b2604949ae3cfae493bcfb0213d390a213e63037",
+    "branch": "nodata/zealous-hopper-lr0nxe",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T08:43:32Z"
+  },
+  {
+    "number": 221,
+    "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+    "head": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+    "branch": "nodata/wizardly-allen-qwol6u",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T08:40:29Z"
+  },
+  {
+    "number": 220,
+    "title": "Security remediation 2026-11-18: Mythril re-evaluation, red-team fixes (CI policy, RPC egress, confidential router, ledger), key-boundary docs",
+    "head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+    "branch": "security/mythril-full-remediation-20261118",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T08:33:01Z"
+  },
+  {
+    "number": 219,
+    "title": "Bitcoin scan: recognise spent outputs locally; per-outpoint provider query becomes opt-in (spec 12)",
+    "head": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+    "branch": "claude/vibrant-cori-scu18b",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T08:28:06Z"
+  },
+  {
+    "number": 212,
+    "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+    "head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+    "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T07:43:00Z"
+  },
+  {
+    "number": 87,
+    "title": "deps: bump the npm-major group across 1 directory with 11 updates",
+    "head": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+    "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T07:27:34Z"
+  },
+  {
+    "number": 207,
+    "title": "ci: bump the actions group across 1 directory with 2 updates",
+    "head": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+    "branch": "dependabot/github_actions/actions-b9ade1236b",
+    "base": "main",
+    "base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "updated": "2026-11-18T07:06:33Z"
+  },
+  {
+    "number": 153,
+    "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+    "head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+    "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+    "base": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+    "base_sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+    "updated": "2026-11-18T06:46:23Z"
+  },
+  {
+    "number": 140,
+    "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+    "head": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+    "branch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+    "base": "claude/ghostpay-github-pages-up6cj6",
+    "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+    "updated": "2026-11-18T06:45:33Z"
+  },
+  {
+    "number": 139,
+    "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+    "head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+    "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
+    "base": "claude/ghostpay-github-pages-up6cj6",
+    "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+    "updated": "2026-11-18T06:43:36Z"
+  },
+  {
+    "number": 160,
+    "title": "docs(pages): source-pinned integration and release-gate inventory",
+    "head": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+    "branch": "chatgpt/pages-release-gate-audit-20261114",
+    "base": "integration/consolidated-2026-11-14",
+    "base_sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+    "updated": "2026-11-15T01:22:27Z"
+  },
+  {
+    "number": 82,
+    "title": "Configure OpenAI autonomous development workflow and prompts",
+    "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+    "branch": "codex/setup-autonomous-agent-20261104",
+    "base": "main",
+    "base_sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+    "updated": "2026-11-04T21:21:00Z"
+  },
+  {
+    "number": 52,
+    "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+    "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+    "branch": "automation/ghostpay-parallel-four-agents-20261103",
+    "base": "main",
+    "base_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+    "updated": "2026-11-04T00:41:30Z"
+  },
+  {
+    "number": 51,
+    "title": "ci: continue GhostPay API-funded backlog development twice daily",
+    "head": "5835736c12968231ac7b3152e394077bee453622",
+    "branch": "automation/ghostpay-recurrent-backlog-20261103",
+    "base": "main",
+    "base_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+    "updated": "2026-11-04T00:23:22Z"
+  }
+]

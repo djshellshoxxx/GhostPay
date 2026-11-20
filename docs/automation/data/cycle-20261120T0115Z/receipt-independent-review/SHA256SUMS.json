@@ -1,0 +1,35 @@
+{
+  "cycle": "20261120T0115Z",
+  "files": [
+    {
+      "path": "independent-green-d08b8ec3.json",
+      "bytes": 673,
+      "sha256": "b0461ab27d05ee749af665ee6c6c7aa17084e76dd13fc780e1b244667bf0a373"
+    },
+    {
+      "path": "independent-green-d08b8ec3.log",
+      "bytes": 235,
+      "sha256": "4587a4c9ccdc3c8fd4bfd007a14fdc70841dc457b6f63417541853574229f2b0"
+    },
+    {
+      "path": "independent-red-be7fb39b.json",
+      "bytes": 611,
+      "sha256": "12d54ad89761ad18472a8af11d9e2237743a009a1c81a0f1274a91bf7f8709a6"
+    },
+    {
+      "path": "independent-red-be7fb39b.log",
+      "bytes": 8099,
+      "sha256": "226dbb2104469f7d1030c7aff4b7661d1fd01ceb7ed68d96a6dc376eb5a6ec3f"
+    },
+    {
+      "path": "independent-review.json",
+      "bytes": 5452,
+      "sha256": "29c26858655645ecf9e0ad9705f7248c8977e675da6a729c0e9539004ca52171"
+    },
+    {
+      "path": "source-standards-review.json",
+      "bytes": 4031,
+      "sha256": "95628daa8fa0156d88f138bbcf125abcecb9acb5ab08d0df0719c30a248ffee8"
+    }
+  ]
+}
