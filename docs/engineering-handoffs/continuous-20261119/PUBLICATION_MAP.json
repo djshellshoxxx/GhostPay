@@ -1,0 +1,381 @@
+{
+  "schema": "ghostpay-publication-map/1",
+  "repository": "djshellshoxxx/GhostPay",
+  "canonical_branch": "release/ghostpay-beta-qualification-20261119",
+  "base": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "frozen_local_head": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "frozen_remote_head": "db6956dbcc635694ffa103a2a70f82da1baacf4c",
+  "frozen_tree": "7a7b189be05b802d3545e8823230076125d7bbf6",
+  "ref_updated": false,
+  "limits": "Git Data reconstruction changes metadata. All30 commits were fetched back: exact trees and ordered mapped parents independently verified. Local author and commit retained in trailers. Later documentation commits descend from this frozen source checkpoint.",
+  "entries": [
+    {
+      "local_sha": "2923cbe16b13bb4fad684de7845cdcd5fbdb4c3d",
+      "published_sha": "23d0c97cb9e30b230fff237c197079473264deee",
+      "tree": "2bc2a841f103f3104f10e3e6fe181dcb6438f5dc",
+      "local_parents": [
+        "c993bb2340942c85dbf10303b61f69a91c4944e0"
+      ],
+      "published_parents": [
+        "c993bb2340942c85dbf10303b61f69a91c4944e0"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "fe5b1288070ab51d5ddae912ff77c5971dfcb00a",
+      "published_sha": "1aabacd380e115af458de909efbc943682574e2b",
+      "tree": "507246007f937c158066d080464fae99574b38b5",
+      "local_parents": [
+        "2923cbe16b13bb4fad684de7845cdcd5fbdb4c3d"
+      ],
+      "published_parents": [
+        "23d0c97cb9e30b230fff237c197079473264deee"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "50b790d5d81d44340b904c5c3126db6e0f2b8f62",
+      "published_sha": "b972eb1becee33a1b1af6171ce0bc7733d70d521",
+      "tree": "9a8eea9ba821232c9009982ec5154afa2ade27af",
+      "local_parents": [
+        "fe5b1288070ab51d5ddae912ff77c5971dfcb00a"
+      ],
+      "published_parents": [
+        "1aabacd380e115af458de909efbc943682574e2b"
+      ],
+      "original_author": "sheldon <127660907+djshellshoxxx@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "ae303a91ebff4b24ebe5da5e7b8d03e82e15577d",
+      "published_sha": "2b2be2450e856651a68f18b95ca849362e51105e",
+      "tree": "0ffd99ab6ca3607d3943d78fe0fa43e74cf7e8e7",
+      "local_parents": [
+        "50b790d5d81d44340b904c5c3126db6e0f2b8f62"
+      ],
+      "published_parents": [
+        "b972eb1becee33a1b1af6171ce0bc7733d70d521"
+      ],
+      "original_author": "sheldon <127660907+djshellshoxxx@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "82d7f89cd293daba2e1c1d0413cbc24c3a1895d7",
+      "published_sha": "0f57a1d2b43353137e451d72562051ee864e4d7f",
+      "tree": "c6769a05f31b6a620986f029b9cdf8fb4467d9ca",
+      "local_parents": [
+        "ae303a91ebff4b24ebe5da5e7b8d03e82e15577d"
+      ],
+      "published_parents": [
+        "2b2be2450e856651a68f18b95ca849362e51105e"
+      ],
+      "original_author": "sheldon <127660907+djshellshoxxx@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "b9e7940d113cbe7f864df02fde4c050db17150a1",
+      "published_sha": "33d6cc0c8eb985788ed4af12537a7fc08515736d",
+      "tree": "43da198a9e535ced39a5aaea94c80225c7173f52",
+      "local_parents": [
+        "82d7f89cd293daba2e1c1d0413cbc24c3a1895d7"
+      ],
+      "published_parents": [
+        "0f57a1d2b43353137e451d72562051ee864e4d7f"
+      ],
+      "original_author": "sheldon <127660907+djshellshoxxx@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "17467d9ac644c341609dd51a8992dd11c2cc4daa",
+      "published_sha": "8a703e31c4438c68342eadb1eb89562c0ed1dc8a",
+      "tree": "e9cf75ebddabacc5d0e9db43e3a2c53489c59c0a",
+      "local_parents": [
+        "b9e7940d113cbe7f864df02fde4c050db17150a1"
+      ],
+      "published_parents": [
+        "33d6cc0c8eb985788ed4af12537a7fc08515736d"
+      ],
+      "original_author": "sheldon <127660907+djshellshoxxx@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "a080c2db54d79a280def1f1ed365637d16180e44",
+      "published_sha": "7d135b9885a0605058908d1e3769d582e7af5880",
+      "tree": "68e43dc8d0f42549601dbd37ee2585473685890f",
+      "local_parents": [
+        "17467d9ac644c341609dd51a8992dd11c2cc4daa"
+      ],
+      "published_parents": [
+        "8a703e31c4438c68342eadb1eb89562c0ed1dc8a"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "05c441b5cd67a20c4c5332ce143f47ef1b5600d5",
+      "published_sha": "b92cd51fbfaefb10547bdc45a74b21ed084f5b29",
+      "tree": "c2ac6536a148e30cbb585149c000e26d050a7295",
+      "local_parents": [
+        "a080c2db54d79a280def1f1ed365637d16180e44"
+      ],
+      "published_parents": [
+        "7d135b9885a0605058908d1e3769d582e7af5880"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "a1386906c264e2353e39ff8143083b0bbf107395",
+      "published_sha": "2ba8b00563a852eb21abbd4a25c319e29c82ab35",
+      "tree": "a386655a87e345bd036cf2d600aa1a1d4f0f1359",
+      "local_parents": [
+        "05c441b5cd67a20c4c5332ce143f47ef1b5600d5"
+      ],
+      "published_parents": [
+        "b92cd51fbfaefb10547bdc45a74b21ed084f5b29"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "7abf4e0091730dad343e3ee9c834f0ce85c8d56b",
+      "published_sha": "a757db361509a88d42321636d298a24a3a4533ea",
+      "tree": "a6474b987ebd6a9328fd10af0df68ca80793fc5d",
+      "local_parents": [
+        "c993bb2340942c85dbf10303b61f69a91c4944e0"
+      ],
+      "published_parents": [
+        "c993bb2340942c85dbf10303b61f69a91c4944e0"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "84f39e41ef132af88b4ca3280818ed701026d412",
+      "published_sha": "05432357bedfa8e7630042f3a7c24a94b9e79adf",
+      "tree": "7464404a02b68532b399eb0e080744412140b86f",
+      "local_parents": [
+        "7abf4e0091730dad343e3ee9c834f0ce85c8d56b"
+      ],
+      "published_parents": [
+        "a757db361509a88d42321636d298a24a3a4533ea"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "fe1f8d2367e9c9efa375b6a20c5bd22a2182c93a",
+      "published_sha": "4f140594dc8cdc2974860190d4429d3fb034bc19",
+      "tree": "60050d90ea60d178da5ae0dd9be17887490bfa45",
+      "local_parents": [
+        "84f39e41ef132af88b4ca3280818ed701026d412"
+      ],
+      "published_parents": [
+        "05432357bedfa8e7630042f3a7c24a94b9e79adf"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "dfd6fa31ecfd8205a2e892382c858e2e1f0dc04a",
+      "published_sha": "fe2fdbeb5315db24fa63bbb18c43ef53a606de6f",
+      "tree": "037d9549e36fb948618e967448d6eb9480b8cdf3",
+      "local_parents": [
+        "fe1f8d2367e9c9efa375b6a20c5bd22a2182c93a"
+      ],
+      "published_parents": [
+        "4f140594dc8cdc2974860190d4429d3fb034bc19"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "d553630c064f2874df1c9ee32f0d70719abdfb32",
+      "published_sha": "411f89361b9e0eb228a0a7b03c9d5007dc54e39e",
+      "tree": "6dee1506d738316c6e63db83019353a03c44d108",
+      "local_parents": [
+        "dfd6fa31ecfd8205a2e892382c858e2e1f0dc04a"
+      ],
+      "published_parents": [
+        "fe2fdbeb5315db24fa63bbb18c43ef53a606de6f"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "fcb25666d6aaf25bf23f76e64d95b74241b15eeb",
+      "published_sha": "1f6417da85707ac9916bd293dfc69369266431fa",
+      "tree": "b5b09a595beba2da7f62f1f53a76fc58604a03d9",
+      "local_parents": [
+        "a1386906c264e2353e39ff8143083b0bbf107395",
+        "d553630c064f2874df1c9ee32f0d70719abdfb32"
+      ],
+      "published_parents": [
+        "2ba8b00563a852eb21abbd4a25c319e29c82ab35",
+        "411f89361b9e0eb228a0a7b03c9d5007dc54e39e"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "27b6a8a6f416fe0db09aa15a7ddfbe282951d42d",
+      "published_sha": "b8c53198639c2597ad6c1058b7a2ea5cf2e6284a",
+      "tree": "3adba0cccc87e8a331e37431702f79ae2d7e8362",
+      "local_parents": [
+        "84f39e41ef132af88b4ca3280818ed701026d412"
+      ],
+      "published_parents": [
+        "05432357bedfa8e7630042f3a7c24a94b9e79adf"
+      ],
+      "original_author": "GhostPay independent review <ghostpay-review@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "0ee5ecf3dd6ff095783fd7165d9bba6876f11660",
+      "published_sha": "941620086e316c77fe9099a0eaf7dbc4416dca05",
+      "tree": "3199389f9b2495c3c220ea9f3a2399c04ceea25d",
+      "local_parents": [
+        "27b6a8a6f416fe0db09aa15a7ddfbe282951d42d"
+      ],
+      "published_parents": [
+        "b8c53198639c2597ad6c1058b7a2ea5cf2e6284a"
+      ],
+      "original_author": "GhostPay independent review <ghostpay-review@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "767cebd1a7c519e622435053457d8ae46b94d95e",
+      "published_sha": "401bda27eaa5234df5c9ac773e012308d3a1e4c2",
+      "tree": "dd7f0a55836a9e9008a69f093e912f4d1448b90a",
+      "local_parents": [
+        "0ee5ecf3dd6ff095783fd7165d9bba6876f11660"
+      ],
+      "published_parents": [
+        "941620086e316c77fe9099a0eaf7dbc4416dca05"
+      ],
+      "original_author": "GhostPay independent review <ghostpay-review@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "bd24d2a3453dc2407a75ca280aaeeb7fb6198209",
+      "published_sha": "829ea1e6ae223bc2b9d52cbdf19e813e13c04e1f",
+      "tree": "ecd17eda057f940df2bdce6b4eeba0b2720510f0",
+      "local_parents": [
+        "fcb25666d6aaf25bf23f76e64d95b74241b15eeb",
+        "767cebd1a7c519e622435053457d8ae46b94d95e"
+      ],
+      "published_parents": [
+        "1f6417da85707ac9916bd293dfc69369266431fa",
+        "401bda27eaa5234df5c9ac773e012308d3a1e4c2"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "b2711401af5f3786ef1685bb8e1ebd98b29c9e7d",
+      "published_sha": "1c1369c1d5a86d6db42ddc72bf7b910a2ca2a0f8",
+      "tree": "3913527b52c3476164244f0c9fa7f2016bc79ece",
+      "local_parents": [
+        "bd24d2a3453dc2407a75ca280aaeeb7fb6198209"
+      ],
+      "published_parents": [
+        "829ea1e6ae223bc2b9d52cbdf19e813e13c04e1f"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "e47f7518cd51e46cb12e27808d7d889b2bbd1536",
+      "published_sha": "7929ce378c8b6de5f90bcbde95d79ce4585c25cd",
+      "tree": "8c2bfb379e6b0ea3923f9dc1eb7f800ee3de3c84",
+      "local_parents": [
+        "a1386906c264e2353e39ff8143083b0bbf107395"
+      ],
+      "published_parents": [
+        "2ba8b00563a852eb21abbd4a25c319e29c82ab35"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "aa9a66905022311a5861b04ff7ee05836c3c1d8d",
+      "published_sha": "1bb9a60d62d3a60e2e6d11197f1f1247d0682a93",
+      "tree": "187445eec17b85c3efe1654af6f992bfcc879bcd",
+      "local_parents": [
+        "b2711401af5f3786ef1685bb8e1ebd98b29c9e7d",
+        "e47f7518cd51e46cb12e27808d7d889b2bbd1536"
+      ],
+      "published_parents": [
+        "1c1369c1d5a86d6db42ddc72bf7b910a2ca2a0f8",
+        "7929ce378c8b6de5f90bcbde95d79ce4585c25cd"
+      ],
+      "original_author": "GhostPay engineering <ghostpay-engineering@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "762e753ba71b4afd8eba1d5bfb80cfb05ca71c7c",
+      "published_sha": "083226c7b61f49c4be9b420e3d34ce754d7e9b24",
+      "tree": "f8d84f54b46c52b6b943748b0095dad9d85f41d0",
+      "local_parents": [
+        "c993bb2340942c85dbf10303b61f69a91c4944e0"
+      ],
+      "published_parents": [
+        "c993bb2340942c85dbf10303b61f69a91c4944e0"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "95f28a0411a01dc1d4d44c836e258ab214a07bbe",
+      "published_sha": "fe7d9b5272cec816c14763588089d6ae667f2ad1",
+      "tree": "b39f013e353aa1b9cbf31d07e76a36afe4f22bc5",
+      "local_parents": [
+        "762e753ba71b4afd8eba1d5bfb80cfb05ca71c7c"
+      ],
+      "published_parents": [
+        "083226c7b61f49c4be9b420e3d34ce754d7e9b24"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "45a5dcf7f3a37a44e252db6f2b902aeb02981206",
+      "published_sha": "d81264b49eee8fd01f99579114920e93dbfc3a92",
+      "tree": "6a84a3269b18a0ed0904a983af95c3b91241a607",
+      "local_parents": [
+        "95f28a0411a01dc1d4d44c836e258ab214a07bbe"
+      ],
+      "published_parents": [
+        "fe7d9b5272cec816c14763588089d6ae667f2ad1"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "dd43dce7d8129262e58371db747d3d67323ecc45",
+      "published_sha": "8ebd8868ab661e8300f4f0e1d5e7260fca352c6f",
+      "tree": "9bb9cb82e3ead62c11e85c88a463a8b354303790",
+      "local_parents": [
+        "45a5dcf7f3a37a44e252db6f2b902aeb02981206"
+      ],
+      "published_parents": [
+        "d81264b49eee8fd01f99579114920e93dbfc3a92"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "415f6c70db465eaa511b4e0927d56a84274a9ff6",
+      "published_sha": "aaa43a1c1a25b7fa27cbaa9cefb16b71023216cd",
+      "tree": "eb72f50a03c49f7a44e93ec72ac96c9b84c9282b",
+      "local_parents": [
+        "aa9a66905022311a5861b04ff7ee05836c3c1d8d",
+        "dd43dce7d8129262e58371db747d3d67323ecc45"
+      ],
+      "published_parents": [
+        "1bb9a60d62d3a60e2e6d11197f1f1247d0682a93",
+        "8ebd8868ab661e8300f4f0e1d5e7260fca352c6f"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    },
+    {
+      "local_sha": "b695eeafc3e09aacc5cef32d602559dd13d87ce4",
+      "published_sha": "6a73a6f06edc8b68cdd68421bf94f8f6f0277048",
+      "tree": "d7bee37f23de6eeb5cd11b6bcc3fbd3241c0eab6",
+      "local_parents": [
+        "415f6c70db465eaa511b4e0927d56a84274a9ff6"
+      ],
+      "published_parents": [
+        "aaa43a1c1a25b7fa27cbaa9cefb16b71023216cd"
+      ],
+      "original_author": "GhostPay independent QA <ghostpay-review@users.noreply.github.com>"
+    },
+    {
+      "local_sha": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+      "published_sha": "db6956dbcc635694ffa103a2a70f82da1baacf4c",
+      "tree": "7a7b189be05b802d3545e8823230076125d7bbf6",
+      "local_parents": [
+        "b695eeafc3e09aacc5cef32d602559dd13d87ce4"
+      ],
+      "published_parents": [
+        "6a73a6f06edc8b68cdd68421bf94f8f6f0277048"
+      ],
+      "original_author": "Codex <codex@openai.com>"
+    }
+  ]
+}

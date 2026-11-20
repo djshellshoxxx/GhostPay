@@ -1,6 +1,6 @@
 {
-  "schema": "ghostpay-continuous-engineering/1",
-  "generation": 1,
+  "schema": "ghostpay-continuous-engineering/2",
+  "generation": 4,
   "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
   "observed_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
   "branch": "integration/ghostpay-continuous-20261119",
@@ -9,31 +9,152 @@
       "id": "CE-001",
       "worker": "archaeology_gen1",
       "scope": "complete refs inventory and semantic uniqueness",
-      "status": "in_progress"
+      "status": "completed_with_explicit_unknowns",
+      "branch": "read-only",
+      "tests": "299 branches and282 PRs mechanically inventoried; prioritized source/patch comparisons",
+      "review": "Root and independent security review all five extracted product fixes",
+      "integration_commit": "a1386906",
+      "remaining": "Null semantic fields remain UNKNOWN; not every historical branch has fresh semantic review or CI.",
+      "dependencies": []
     },
     {
       "id": "CE-002",
       "worker": "root",
       "scope": "individually reproduce, integrate, and qualify newer unique small fixes",
-      "status": "in_progress"
+      "status": "integrated_reviewed",
+      "branch": "integration/ghostpay-continuous-20261119",
+      "tests": "Web baseline50pass5fail ->73pass; base64url4pass1fail ->5pass; lease10pass",
+      "review": "security_gen1 and generation4 exact-source review",
+      "integration_commits": [
+        "50b790d5",
+        "ae303a91",
+        "82d7f89c",
+        "b9e7940d",
+        "17467d9a",
+        "05c441b5"
+      ],
+      "remaining": "Final combined hosted qualification",
+      "dependencies": []
     },
     {
       "id": "CE-003",
       "worker": "qa_bug_gen1",
       "scope": "browser/payment export/private checkpoint qualification and defect repair",
-      "status": "in_progress"
+      "status": "integrated_reviewed_pending_hosted",
+      "branch": "fix/ghostpay-continuous-qa-20261119",
+      "implementation_commits": [
+        "95f28a04",
+        "45a5dcf7"
+      ],
+      "integration_commit": "415f6c70",
+      "tests": "3RED/1PASS ->4GREEN;122 and138 focused suites overlap4; lint/typecheck pass",
+      "review": "qa_review_gen3 independently reproduced3RED/1PASS->4GREEN;66Pay and8lifecycle pass",
+      "remaining": "Final hosted full/lean browser acceptance",
+      "dependencies": []
     },
     {
       "id": "CE-004",
       "worker": "security_gen1",
       "scope": "independent security review and confirmed defect repair",
-      "status": "in_progress"
+      "status": "integrated_reviewed",
+      "branch": "review/ghostpay-continuous-security-20261119",
+      "implementation_commit": "84f39e41ef132af88b4ca3280818ed701026d412",
+      "integration_commits": [
+        "fcb25666",
+        "bd24d2a3"
+      ],
+      "tests": "Genuine export3RED/1PASS->4GREEN;59initial and62independent selected tests overlap",
+      "review": "review_gen2 independent reproduction and silent-clear/reentrant/throwing-observer probes",
+      "remaining": "Release-wide contract security clearance recorded separately",
+      "dependencies": []
     },
     {
       "id": "CE-005",
       "worker": "root",
       "scope": "original build/type/lint/coverage and static artifact qualification",
-      "status": "in_progress"
+      "status": "in_progress",
+      "branch": "integration/ghostpay-continuous-20261119",
+      "tests": "Clean install;65final libraries, fullworkspace typecheck, fullworkspace lint and fullwebbuild passed;invoice804passed98.07statements97.6branches;final webcoverage andPagesbuild running",
+      "review": "Generation4 verified23changed blobs,15unchanged control scopes;Pages112 andlease10 passed",
+      "integration_commit": null,
+      "remaining": "Complete coverage/nocov/static checks and exact-head hosted qualification",
+      "dependencies": []
+    },
+    {
+      "id": "CE-006",
+      "worker": "review_gen2",
+      "branch": "review/ghostpay-continuous-gen2-20261119",
+      "scope": "independent export-expiry verification",
+      "status": "completed_integrated",
+      "dependencies": [],
+      "tests": "62selected tests;independentRED/GREEN;upstream73web/29invoice",
+      "review": "Independent of implementation; bounded source-pinned assessment",
+      "integration_commit": "bd24d2a3",
+      "evidence": "generation-2-review/",
+      "remaining": "Root final combined/external gates remain separate"
+    },
+    {
+      "id": "CE-007",
+      "worker": "completion_gen3",
+      "branch": "review/ghostpay-completion-gen3-20261119",
+      "scope": "nine required Pages feature families and actual lean reachability",
+      "status": "completed_integrated",
+      "dependencies": [],
+      "tests": "48tests/5files;34sourcepins;no additional confirmed required feature gap",
+      "review": "Independent of implementation; bounded source-pinned assessment",
+      "integration_commit": "aa9a6690",
+      "evidence": "generation-3-completeness/",
+      "remaining": "Root final combined/external gates remain separate"
+    },
+    {
+      "id": "CE-008",
+      "worker": "qa_review_gen3",
+      "branch": "review/ghostpay-qa-gen3-20261119",
+      "scope": "independent manifest and browser fixture repair review",
+      "status": "completed_integrated",
+      "dependencies": [],
+      "tests": "3RED/1PASS->4GREEN;66Pay;8supplied/lifecycle;webtypecheck",
+      "review": "Independent of implementation; bounded source-pinned assessment",
+      "integration_commit": "c93f4644",
+      "evidence": "generation-3-qa-review/",
+      "remaining": "Root final combined/external gates remain separate"
+    },
+    {
+      "id": "CE-009",
+      "worker": "security_findings_gen4",
+      "branch": "review/ghostpay-contract-findings-gen4-20261119",
+      "scope": "10 exact-source Mythril findings, traces and residual limits",
+      "status": "completed_integrated",
+      "dependencies": [],
+      "tests": "241sourcehashes independently match;64 original Foundry tests including4x10000fuzz;6current-artifact/residual probes;zero skips",
+      "review": "Internal finding-specific assessment; no blanket waiver or external signoff",
+      "implementation_commit": "72ed613b178637df6c70d87b8bc56360b39f4888",
+      "integration_commit": "2bc4ff2d4c5ec0eb78a602ff76e1e5cf30fe4878",
+      "evidence": "generation-4-contract-review/",
+      "remaining": "StrictMythril remains exit1; required independent release/security acceptance and external review"
+    },
+    {
+      "id": "CE-010",
+      "worker": "integration_review_gen4",
+      "branch": "review/ghostpay-combined-gen4-20261119",
+      "scope": "final combined source identity and original static tooling",
+      "status": "completed_integrated",
+      "dependencies": [],
+      "tests": "23/23reviewedblobmatches;15unchangedcontrolscopes;Pages112/112;lease10/10",
+      "review": "Independent of implementation; bounded source-pinned assessment",
+      "integration_commit": "526f7c1e",
+      "evidence": "generation-4-integration-review/",
+      "remaining": "Root final combined/external gates remain separate"
     }
+  ],
+  "frozen_implementation": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "canonical_branch": "release/ghostpay-beta-qualification-20261119",
+  "pr": 278,
+  "release_status": "BLOCKED",
+  "limits": [
+    "Overlapping test counts must not be summed.",
+    "No main merge,release,deployment,fee change,real-fund transaction,workflow gate weakening or source branch deletion.",
+    "Unknown candidates require current uniqueness proof.",
+    "Completed native agents do not keep running; update existing scheduled continuation only with verified published checkpoint."
   ]
 }

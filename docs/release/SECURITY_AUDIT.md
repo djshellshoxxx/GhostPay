@@ -1,5 +1,15 @@
 # Security audit and finding dispositions
 
+## Current continuation — 2026-11-19
+
+The export-expiry race was reproduced with real key-export work, fixed at `84f39e41` and independently verified by generation 2. Final result acceptance now samples synchronous session authority. The manifest-generation fix also prevents a stale manifest from authorizing provisional replacement preflight. See [current handoff](../engineering-handoffs/continuous-20261119/README.md) for exact commits and independent evidence.
+
+[Fresh Mythril assessment](../engineering-handoffs/continuous-20261119/generation-4-contract-review/ASSESSMENT.md):10 records,3 Medium/7 Low;241 source hashes verified against unchanged contracts. Seven model constructor tuples fail the real implementation code check; three expiry payloads reject;64 existing native disposition tests and 6 exact-current-artifact/residual probes pass. Strict Mythril still exits1. The older11-record result is historical, and the count reduction is not a repaired vulnerability. Configured hosted Echidna passed on c993.
+
+A failing immutable fee-token view can prevent deployment at a prefunded counterfactual address; another factory cannot recover that original address. Intentional fee-waiver economics and timestamp/inclusion assumptions remain deployment/policy decisions. No fee behavior, contract, analyzer gate or exception mechanism was changed. Required external review and security/release acceptance remain open.
+
+## Historical security evidence
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 This is an AI-assisted engineering review with separately assigned source reviewers and regression reproduction. It is **not the independent external audit required by release policy**. No zero-vulnerability or complete anonymity claim is made.

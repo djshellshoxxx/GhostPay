@@ -1,5 +1,17 @@
 # Final engineering handoff — current qualification checkpoint
 
+## Current continuation — 2026-11-19
+
+The authoritative current index is [continuous engineering](../engineering-handoffs/continuous-20261119/README.md), with [task ledger](../engineering-handoffs/continuous-20261119/TASK_LEDGER.json) and [publication mapping](../engineering-handoffs/continuous-20261119/PUBLICATION_MAP.json). Frozen combined implementation: `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`. Continue existing draft PR #278; no main merge or deployment has occurred.
+
+**Release remains BLOCKED.** This cycle integrated five proven unique upstream runtime fixes, an independently reproduced export-expiry security fix, and a manifest generation race fix. Three browser fixtures and lint errors were repaired without weakening assertions or gates. Four worker generations completed source-pinned discovery, repair and independent verification. The fresh census covers 299 branches / 282 PRs; explicit UNKNOWN semantic classifications remain.
+
+Full workspace typecheck and lint, all 65 rebuilt libraries, full web build and a16-file payments-disabled Pages build passed. Invoice coverage passed 804 cases with original thresholds. Full web coverage and final-source hosted checks remain in progress. Previous candidate CI already passed Echidna, Pages acceptance and other recorded jobs; it failed four browser scenarios per profile, lint, and strict Mythril. Mythril's current unchanged-contract artifact has 10 records (3 Medium/7 Low), now assessed individually with 64 original native tests plus 6 current-trace/residual probes. No blanket waiver or external approval is claimed.
+
+The detailed earlier checkpoint below is historical. Its old292-branch census, zero-browser statement, failed initial Echidna attempt and11-record Mythril status must not be treated as current results.
+
+## Historical qualification checkpoint
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 **Release verdict: BLOCKED.** Real implementation, consolidation and regression-backed repair are complete for the changes described below. Full verification and mandatory external gates remain unfinished; no public milestone is claimed.

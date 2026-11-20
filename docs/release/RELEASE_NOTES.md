@@ -1,5 +1,11 @@
 # GhostPay 1.0.0-beta.1 — prepared release notes
 
+## Unreleased continuation — 2026-11-19
+
+Draft PR #278 now stages five unique validation/privacy edge-case fixes, the final key-export session-deadline guard and a same-chain manifest freshness repair, with independent regression evidence. Browser fixtures retain their original security/request/download checks; developer lease tooling is selectively recovered. [Current handoff](../engineering-handoffs/continuous-20261119/README.md) governs exact source, verification and unresolved security/deployment requirements. These remain prepared notes: no release/tag/deployment is published.
+
+## Previously prepared release notes
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 **Unpublished draft; not a release announcement.** Root and web application metadata are 1.0.0-beta.1. The proposed tag follows the existing `v1.0.0-beta.1` convention; no tag or Release has been created.

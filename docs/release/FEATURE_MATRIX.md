@@ -1,5 +1,11 @@
 # GhostPay 1.0 Beta feature matrix
 
+## Current continuation — 2026-11-19
+
+[Generation 3 completeness review](../engineering-handoffs/continuous-20261119/generation-3-completeness/ASSESSMENT.md) maps nine required feature families to actual lean routes, source and tests;48 focused tests passed. No additional confirmed required feature gap was found beyond the now-integrated export-expiry and manifest repairs. Source presence and unit evidence do not certify complete browser/wallet/testnet behavior. [Current status](../engineering-handoffs/continuous-20261119/README.md) supersedes older checkpoint counts below; release remains BLOCKED.
+
+## Historical feature checkpoint
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 **Demonstration: BLOCKED. Testnet beta: BLOCKED.** Implementation, scoped tests, full qualification and published acceptance are distinct.

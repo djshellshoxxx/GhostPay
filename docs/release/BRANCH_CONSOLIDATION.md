@@ -1,5 +1,11 @@
 # Branch consolidation and source provenance
 
+## Current continuation — 2026-11-19
+
+[Complete current mechanical census](../engineering-handoffs/continuous-20261119/archaeology/REPORT.md):299 branches,282 PRs, with full compressed changed/test-path inventory retained. Five missing runtime fixes (#280,#281,#282,#285,#289) were behaviorally reproduced and integrated; only the two missing lease-tool files were extracted from#261. Already represented, superseded, unsafe wholesale and future scopes are classified explicitly. This is not 299 fresh semantic audits; null classifications remain UNKNOWN. No source branches or PRs were deleted/closed. See the [current handoff and exact publication mapping](../engineering-handoffs/continuous-20261119/README.md).
+
+## Historical consolidation checkpoint
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 ## Selection and preservation

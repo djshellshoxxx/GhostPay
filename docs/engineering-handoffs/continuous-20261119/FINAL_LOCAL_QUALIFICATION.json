@@ -1,0 +1,66 @@
+{
+  "schema": "ghostpay-final-local-qualification/1",
+  "frozen_implementation": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "frozen_tree": "7a7b189be05b802d3545e8823230076125d7bbf6",
+  "pages_recorded_commit": "526f7c1eb563434e476133ae87af8d79a1262d7e",
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "checks": [
+    {
+      "id": "final-build-libs",
+      "exit_code": 0,
+      "command": "npm run build:libs",
+      "evidence": "final-evidence/final-build-libs.log.gz",
+      "raw_sha256": "70ad710c76013439b659a717c3bd33e86e0b5665e85c1c7c7545ef4b1e3853ba",
+      "compressed_sha256": "feaef7f2bcb81538fa56d68e18539749c075d7d6749c4370b82fa396099819be"
+    },
+    {
+      "id": "final-workspace-typecheck",
+      "exit_code": 0,
+      "command": "npm run typecheck",
+      "evidence": "final-evidence/final-workspace-typecheck.log.gz",
+      "raw_sha256": "09a94e122bcb41f4f6ad5ee591b8ac3211d605a6c60aca36d576cf5c3c821ec5",
+      "compressed_sha256": "18b60a0f4759929e8b891c97f0e49930a69e5289ee6e0f0124440a37d4964e4d"
+    },
+    {
+      "id": "final-workspace-lint",
+      "exit_code": 0,
+      "command": "npm run lint",
+      "evidence": "final-evidence/final-workspace-lint.log.gz",
+      "raw_sha256": "ea3822dbce32e67240287ccc160de1a3879cb8c4348ad542cffdc83105bfd7d9",
+      "compressed_sha256": "4d0f22f910f9b4cd7e7a856748a85c84df0a6b87c1b3daa48c03ac625ce436d9"
+    },
+    {
+      "id": "final-web-build",
+      "exit_code": 0,
+      "command": "npm run build --workspace @ghostpay/web",
+      "evidence": "final-evidence/final-web-build.log.gz",
+      "raw_sha256": "23658fd7ff84b21e53937037ba0f0b686321d6a967dadcb1e7f15b11772d99a1",
+      "compressed_sha256": "d8c022396f5a754a766b9dda751b766436482b1a2ae580b4676779fd575c9423"
+    },
+    {
+      "id": "final-pages-build",
+      "exit_code": 0,
+      "command": "bash scripts/pages/build-pages.sh /workspace/scratch/0a7bc3583588/pages-final-c93",
+      "evidence": "final-evidence/final-pages-build.log.gz",
+      "raw_sha256": "7568b950a9a3e002ae755eac39a9aaf22c0c2885a4236e3955d67e9cee9ca646",
+      "compressed_sha256": "bd71b834fc9c1d1fd2182684faa9b06ab16974e99ad21d193dc3cd6066b557dd"
+    },
+    {
+      "id": "invoice-full-coverage",
+      "exit_code": 0,
+      "command": "cd packages/invoice-schema; node ../../node_modules/vitest/vitest.mjs run --coverage --maxWorkers=1",
+      "evidence": "final-evidence/invoice-full-coverage.log.gz",
+      "raw_sha256": "655ef3ce71a9a9a95e12e1692c32f180a1bbdace0f760eb7e0234889ad9f88c1",
+      "compressed_sha256": "449e65ecd1fe4f65d83e41be3fe40de9ff34e2e8e1c1dc0e5eb1c7f7bec978c4"
+    }
+  ],
+  "limits": [
+    "All final application/package/script inputs remain unchanged from frozen implementation; later source commits are documentation/evidence only.",
+    "Invoice run804passed used stable production source; unused test parameter changed while in progress, then5cases andlint reran. Not immutable whole-tree final receipt.",
+    "Full workspace lint exit0 retains nonfailing pre-existing generated BTC unused-disable warning.",
+    "Full web build and Pages demo have default broad connect-src; no approved deployment origin, tight release RPC list or signed manifest supplied. Demo payments disabled.",
+    "Full web coverage/nocov and final exact-source hosted checks are pending.",
+    "Local browser could not start; no browser pass inferred."
+  ]
+}

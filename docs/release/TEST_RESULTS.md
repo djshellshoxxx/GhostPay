@@ -1,5 +1,13 @@
 # Test results and qualification limits
 
+## Current continuation — 2026-11-19
+
+See the [current source-pinned matrix](../engineering-handoffs/continuous-20261119/README.md#verification-checkpoint) and [retrieved hosted baseline](../engineering-handoffs/continuous-20261119/HOSTED_BASELINE.json). Final combined workspace typecheck/lint,65 library builds, full web build with bundle scan and payments-disabled16-file Pages build passed. Original invoice coverage:804/804,98.07% statements,97.6% branches; the receipt discloses the concurrent behavior-preserving test-fixture edit. Original full web coverage/nocov and final hosted qualification are still pending; no immutable final whole-suite pass is inferred.
+
+Independent generation 4 checks:112 Pages tooling tests and 10 real-Git lease tests passed, no skips. Current contract evidence:64 original disposition tests with unchanged four 10,000-run fuzz budgets and 6 exact-trace/residual probes passed. Focused worker results overlap and are not summed. Local Chromium failed before page startup due socket permission denial; hosted c993 full/lean jobs actually ran, with four failures each now targeted by reviewed repairs. Echidna on c993 passed; strict Mythril did not. These source-qualified observations supersede conflicting historical counts below.
+
+## Historical qualification evidence
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 Each result identifies its execution source. Identical component inputs can demonstrate applicability to later integration, but do not turn an earlier run into a fresh whole-candidate run. Counts overlap; no combined grand total is claimed.

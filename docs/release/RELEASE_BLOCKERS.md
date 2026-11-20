@@ -1,5 +1,22 @@
 # Release blocker queue
 
+## Current continuation — 2026-11-19
+
+**Release remains BLOCKED.** The current [handoff](../engineering-handoffs/continuous-20261119/README.md) and [task ledger](../engineering-handoffs/continuous-20261119/TASK_LEDGER.json) supersede outdated statuses below.
+
+| Requirement | Current evidence / exact next step |
+| --- | --- |
+| Final original combined gates | Full workspace typecheck/lint,65 library builds, full web and16-file payments-disabled Pages build passed. Finish full web coverage/nocov and final exact-source hosted checks; retain failures/skips |
+| Browser acceptance | Local Chromium cannot start. Prior hosted full/lean jobs completed with four failures per profile; reviewed manifest and fixture repairs must pass fresh hosted jobs. Prior Pages/beta acceptance passed on c993 |
+| Strict security clearance | Hosted c993 Echidna passed. Strict Mythril reports 10 findings,3 Medium/7 Low. All ten now have individual source/replay assessments;64 original native tests and 6 fresh probes pass. Required release/security acceptance and external review remain; no blanket waiver |
+| Residual deployment constraints | Fee-token liveness at prefunded counterfactual addresses, intentional fee-waiver economics and timestamp/inclusion assumptions require actual deployment/policy decisions where applicable |
+| Artifact/reproduction | Local static demo verified; final artifact, required independent-machine reproduction, authenticated testnet manifest and full actual wallet/browser acceptance remain separate |
+| Owner-controlled release decisions | ADR decision; dedicated domain/account and verified DNS/HTTPS; Pages environment and exact publication approval; authorized testnet contracts and signing process; real-wallet testnet payment/recovery/sweep; approved final release/tag |
+
+No unavailable-Action-service claim remains: prior candidate jobs executed and their results were retrieved. There is no currently proven whole-repository engineering fixed point. Continue actionable repair and preserve UNKNOWN branch scopes. The following older queue is retained as history; its initial failed Echidna attempt,11-record Mythril count and lack of candidate CI must not be read as the current state.
+
+## Historical blocker checkpoint
+
 Checkpoint: 2026-11-19. Integration branch: `release/ghostpay-beta-qualification-20261119`; implementation checkpoint `c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a`; evidence checkpoint `4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a`. Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`. [Draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278) is the review entry point. Local and connector-published commits have identical trees and ordered source parents but different metadata; use [PUBLICATION_MAP.json](PUBLICATION_MAP.json) for their exact mapping.
 
 **Both public milestones remain BLOCKED.** Completed native fee review, QR input integrity and six lint repairs are no longer missing-feature items. Their full integrated qualification remains required.
