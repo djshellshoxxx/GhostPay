@@ -661,3 +661,21 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Dependencies/other owners: PR #309 documentation-only evidence; PR #278 recovery integration, PR #293 privacy and ongoing integration PRs #306/#307 are separate, active branches. Do not edit those branches or shared ledgers.
 - Acceptance: deterministic held-operation regressions for both action orders and late settlement; correct controls after cancellation; no stale status; normal operation and explicit cancellation unchanged; source review, focused tests and hosted qualification on exact candidate. No production deployment or main merge.
 - State: ownership registered before product or regression changes; code/test execution and independent review not yet claimed.
+
+# SellerKeys operation completion — 2026-11-20
+
+Worker: backup_completion, delegated by the unique-code consolidation coordinator.
+Branch: `fix/ghostpay-backup-completion-20261120`.
+Base: PR #314 `740efcf061c1ca97a562b85be742dd59f3ad0911`; main at discovery
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/views/SellerKeys.tsx`,
+`apps/web/src/views/SellerKeys.operation.test.tsx`, this additive claim, and
+`docs/handoffs/SELLERKEYS_OPERATION_COMPLETION_20261120.md`.
+Acceptance: independently verify the existing export/verification supersession repair;
+separate cancellable unlock state from durable vault-write state if controlled tests
+confirm the adjacent lifetime defect. Superseding an unlock must release only unlock
+controls. An unrelated edit, session change or cancellable operation must not label a
+pending vault save/delete complete or permit a duplicate. Preserve generation,
+controller, session, reauthentication, and vault-write integrity guards.
+Run focused original-config regressions, relevant TypeScript and lint; record actual
+outcomes. Root owns remote publication and integration. Other branches remain untouched.
