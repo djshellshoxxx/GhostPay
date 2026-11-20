@@ -60,7 +60,7 @@ it('retires a rejected archive of A without reporting an error for newly signed 
   expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Archive in encrypted vault' }).disabled).toBe(true);
   expect(archiveReceipt).toHaveBeenCalledTimes(1);
 
-  await act(async () => { rejectArchiveA(new UserFacingError('The first receipt archive failed.')); });
+  await act(() => Promise.resolve(rejectArchiveA(new UserFacingError('The first receipt archive failed.'))));
   await waitFor(() => expect(vault.lock).toHaveBeenCalledTimes(1));
   expect(screen.queryByRole('alert')).toBeNull();
   expect(screen.queryByRole('button', { name: 'Receipt archived' })).toBeNull();
