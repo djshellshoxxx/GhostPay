@@ -523,6 +523,13 @@ The existing owners retain their source branches; the QR repair is separately cl
 Acceptance: record real repository Vitest/type/lint/build evidence, exact-head hosted checks,
 ancestry plus blob equivalence, separate author/reviewer identities, current integration-lock state,
 and actionable blockers. No duplicate implementation of the already integrated base64url fixture fix.
+Additional owned preservation scope: copy the five exact historical handoffs absent from #278:
+`BUILD_PROFILE_FAILCLOSED_20261119.md` from #280 `25c380f2`,
+`SCAN_SPAM_PARTIAL_30D_20261119.md` from #281 `0041514a`,
+`MERCHANT_PIN_STRICT_JSON_20261119.md` from #282 `9fbf3312`,
+`QR_KIND_FAILCLOSED_20261119.md` from #285 `89942105`, and
+`BASE64URL_INPUT_TYPE_20261119.md` from #289 `856b2d60`, all under `docs/handoffs/`.
+Preserve their exact bytes and original source pins; do not rewrite historical test claims.
 Expected checks: Markdown target validation, source/commit identity checks, `git diff --check`,
 independent documentation review, and exact-head hosted qualification after draft publication.
 No application, workflow, dependency, production configuration, release, or deployment changes.
