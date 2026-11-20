@@ -728,3 +728,14 @@ units, UTC schedule reuse, staged snapshot identities, explicit local review and
 revocation; replay maintained focused tests; record incomplete integration and
 qualification honestly. No remote writes, production activation, new test probes,
 full-web typecheck or typed lint; coordinator owns the serialized broader gates.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `a76e89f538314e8d8d292a4caa7c281ef82e64d8`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
