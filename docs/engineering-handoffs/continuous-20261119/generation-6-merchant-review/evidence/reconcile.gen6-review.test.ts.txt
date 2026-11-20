@@ -1,0 +1,60 @@
+import { describe, expect, it } from 'vitest';
+import { reconcile, type LedgerInvoice, type ObservedPayment, type Tolerance } from './reconcile.js';
+
+const invoice = (id = 'a', amountMinor = '50'): LedgerInvoice => ({ id, currency: 'USD', amountMinor, expiresAt: 1000 });
+const payment = (overrides: Partial<ObservedPayment> = {}): ObservedPayment => ({
+  id: 'p', invoiceId: 'a', currency: 'USD', amountMinor: '1', observedAt: 999, ...overrides,
+});
+
+describe('generation 6 independent tolerance boundaries', () => {
+  it('requires counted value for equality and above in both absolute and relative tolerance', () => {
+    for (const tolerance of [{ absoluteMinor: 50n }, { absoluteMinor: 51n }, { bps: 10_000 }, { bps: 20_000 }] satisfies Tolerance[]) {
+      const result = reconcile([invoice()], [], { now: 999, tolerance });
+      expect(result.invoices[0]).toMatchObject({ status: 'unmatched', paidMinor: '0', deltaMinor: '-50', paymentIds: [] });
+    }
+  });
+
+  it('does not settle either invoice when a positive observation has ambiguous amount-only matching', () => {
+    const result = reconcile([invoice('a'), invoice('b')], [{ id: 'p', currency: 'USD', amountMinor: '1', observedAt: 999 }], {
+      now: 999, tolerance: { absoluteMinor: 100n },
+    });
+    expect(result.invoices.map((entry) => entry.status)).toEqual(['unmatched', 'unmatched']);
+    expect(result.invoices.map((entry) => entry.paidMinor)).toEqual(['0', '0']);
+    expect(result.unmatchedPayments).toEqual([{ paymentId: 'p', reason: 'ambiguous' }]);
+  });
+
+  it('does not mistake a positive duplicate of a rejected first row for counted value', () => {
+    const result = reconcile([invoice()], [payment({ amountMinor: '0', observedAt: 998 }), payment()], {
+      now: 999, tolerance: { absoluteMinor: 100n },
+    });
+    expect(result.invoices[0]).toMatchObject({ status: 'unmatched', paidMinor: '0', paymentIds: [] });
+    expect(result.unmatchedPayments).toEqual([
+      { paymentId: 'p', reason: 'bad-amount' }, { paymentId: 'p', reason: 'duplicate' },
+    ]);
+  });
+
+  it('keeps unique amount-only matching and positive pre-expiry settlement valid after expiry', () => {
+    const result = reconcile([invoice()], [{ id: 'p', currency: 'USD', amountMinor: '1', observedAt: 999 }], {
+      now: 1000, tolerance: { absoluteMinor: 100n },
+    });
+    expect(result.invoices[0]).toMatchObject({ status: 'paid', paidMinor: '1', deltaMinor: '-49', paymentIds: ['p'] });
+    expect(result.unmatchedPayments).toEqual([]);
+  });
+
+  it('keeps the exact expiry instant uncounted under relative tolerance', () => {
+    const result = reconcile([invoice()], [payment({ observedAt: 1000 })], { now: 1000, tolerance: { bps: 10_000 } });
+    expect(result.invoices[0]).toMatchObject({ status: 'expired', paidMinor: '0', paymentIds: [], latePaymentIds: ['p'] });
+  });
+
+  it('retains overpayment precedence for zero-due invoices', () => {
+    expect(reconcile([invoice('a', '0')], [payment()], { now: 1000 }).invoices[0]?.status).toBe('over');
+    expect(reconcile([invoice('a', '0')], [payment()], { now: 1000, tolerance: { absoluteMinor: 1n } }).invoices[0]?.status).toBe('paid');
+    expect(reconcile([invoice('a', '0')], [], { now: 1000 }).invoices[0]?.status).toBe('paid');
+  });
+
+  it('preserves bigint boundaries beyond Number precision', () => {
+    const amount = 10n ** 40n;
+    expect(reconcile([invoice('a', amount.toString())], [], { now: 999, tolerance: { absoluteMinor: amount } }).invoices[0]?.status).toBe('unmatched');
+    expect(reconcile([invoice('a', amount.toString())], [payment()], { now: 999, tolerance: { absoluteMinor: amount - 1n } }).invoices[0]?.status).toBe('paid');
+  });
+});
