@@ -97,7 +97,9 @@ describe('print.css', () => {
 describe('PrintBillButton', () => {
   it('prints the page when pressed', async () => {
     const inv = await invoice();
-    const print = vi.fn();
+    const print = vi.fn(() => {
+      expect([...document.querySelectorAll('[data-print-target]')]).toEqual([screen.getByTestId('printable-bill')]);
+    });
     vi.stubGlobal('print', print);
     render(<PrintBillButton invoice={inv} link="#gpi=v1.x" passphraseProtected chainName="C" tokenLabel="T" />);
     expect(screen.queryByTestId('printable-bill')).toBeNull();
@@ -106,6 +108,17 @@ describe('PrintBillButton', () => {
     expect(screen.getByTestId('printable-bill')).toBeTruthy();
     act(() => { window.dispatchEvent(new Event('afterprint')); });
     expect(screen.queryByTestId('printable-bill')).toBeNull();
+    expect(document.querySelector('[data-print-target]')).toBeNull();
+    vi.unstubAllGlobals();
+  });
+
+  it('removes its temporary sheet when afterprint fires before window.print returns', async () => {
+    const inv = await invoice();
+    vi.stubGlobal('print', () => { window.dispatchEvent(new Event('afterprint')); });
+    render(<PrintBillButton invoice={inv} link={undefined} passphraseProtected chainName="C" tokenLabel="T" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Print bill' }));
+    expect(screen.queryByTestId('printable-bill')).toBeNull();
+    expect(document.querySelector('[data-print-target]')).toBeNull();
     vi.unstubAllGlobals();
   });
 });

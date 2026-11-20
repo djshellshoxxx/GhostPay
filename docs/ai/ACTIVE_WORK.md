@@ -1,3 +1,35 @@
+# Receipt print isolation continuation — 2026-11-20
+
+Worker: ChatGPT lead `/root`, with independent `print_isolation_review` worker.
+Branch: `fix/receipt-print-isolation-312-20261120`.
+Base: PR #316 `56b76e8fbae0aa0d3e9c9394616d4aa600d70fb7`, based on main
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; original finding GP-BUG-02 in #312.
+Owned paths: `apps/web/src/styles/{app,print}.css`, printable bill/receipt component
+print wiring and focused tests, a shared print-target lifecycle helper and its tests,
+`apps/web/e2e/print-targets.spec.ts`, this additive registry entry and the existing
+`docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` continuation.
+Acceptance: reproduce the original invisible receipt in Chromium print media;
+select only the clicked receipt or bill; exclude other receipts, wallet UI, receipt
+JSON/actions and secret QR; clean up after print/cancel, exceptions and unmount;
+preserve normal screen output; pass focused regression tests, typecheck, lint,
+static Pages build/bundle checks and independent review. Preserve the prior PR's
+history and inspect its live head before publishing a continuation. No deployment,
+contract, dependency, fee, wallet/signing or unrelated feature changes.
+Status: implementation and independent source review complete; 53 focused tests,
+typed lint, original-head regression comparison, lean Vite/bundle scan and secret
+scan passed. Final hosted browser/typecheck/full CI remain pending; local Chromium
+was socket-blocked and full-web TypeScript exited 137. Existing PR #316 hosted
+CI/Pages/Beta acceptance/Hosting kit are green only at the starting base.
+
+# Receipt/bill print-target isolation — 2026-11-20T12:41Z
+
+Worker: ChatGPT automation cycle 20261120T1241Z, sequential implementer/auditor (no independent worker available).
+Branch: `automation/20261120T1241Z/bug/receipt-print-css`; exact main base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/styles/print.css` and new `apps/web/e2e/print-targets.spec.ts`, plus a source-pinned `docs/handoffs/RECEIPT_PRINT_TARGETS_20261120.md` and this additive ownership entry. Do not modify adjacent active source branches.
+Evidence: GP-BUG-02 in PR #312, independently source-confirmed; `print.css` applies `body * {visibility:hidden!important}` globally whereas `app.css` receipt override lacks `!important`. A bill sheet is mounted only during bill printing; a receipt print target is otherwise suppressed.
+Acceptance: reproduce both print modes with print-media computed styles in a browser fixture; ensure receipt is visible without a bill, bill is visible without a receipt, and bill remains exclusive when both exist; all other UI stays print-hidden; retain sensitive-data print restrictions; source review against exact main files; run available tests or record unexecuted checks; preserve the branch as draft pending hosted qualification and separate review. No contracts, workflows, dependencies, Pages settings or deployments.
+Status: implementation and six print-media fixture cases committed. Exact-source static/PostCSS syntax checks passed; repository Playwright, typecheck, lint, hosted CI and independent verification remain outstanding. Lock metadata is separate; no shared integration or protected-main merge attempted.
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
