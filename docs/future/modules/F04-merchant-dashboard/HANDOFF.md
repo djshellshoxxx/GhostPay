@@ -1,5 +1,22 @@
 # F04 source-pinned implementation handoff — 2026-11-20
 
+## Latest review correction
+
+Product correction: **`966f415e520298310efd1f03883ea69844ea5eed`**.
+Independent review identified that the five new canonical-field regular
+expressions used a line-ending-permissive end assertion. They now require the
+end of the entire input, preserving valid canonical values and rejecting trailing
+LF, CR, CRLF, U+2028 and U+2029 in references, amounts, chains, assets and hashes.
+
+The final focused suite passes **61/61 tests**. Scoped strict TypeScript and
+typed ESLint also pass, using the same temporary scoped configuration documented
+below with all repository lint rules retained. All three commands ran sequentially
+under the shared validation lock with a 768 MiB heap; the combined fail-fast
+command exited 0. Temporary validation files were removed. No feature activation
+or additional scope was introduced. The earlier source and qualification record
+below remains historical provenance; independent review and broad qualification
+remain coordinator-owned.
+
 ## Source and ownership
 
 - Branch: `future/f04-merchant-dashboard`.
