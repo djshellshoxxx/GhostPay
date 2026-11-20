@@ -1013,8 +1013,13 @@ test.describe('GitHub Pages artifact: refusals', () => {
       expect(parsed.invoice.expiresAt - createdAt).toBeGreaterThan(3_500);
       expect(parsed.invoice.expiresAt - createdAt).toBeLessThanOrEqual(3_600);
       const past = new Date((parsed.invoice.expiresAt + 300) * 1000);
-      const payer = await openPayer(c, ACCOUNTS.expiryPayer);
+      // Keep the seller's clock unchanged and begin this payer's lease shortly before invoice expiry.
+      // The later ten-minute jump crosses the invoice deadline within the normal fifteen-minute idle limit.
+      const clocked = await newContext(browser, baseURL, net);
+      extra.push(clocked);
+      const payer = await openPayer(clocked, ACCOUNTS.expiryPayer);
       const p = payer.page;
+      await p.clock.install({ time: new Date((parsed.invoice.expiresAt - 300) * 1000) });
       const nonce = await anvil.nonce(ACCOUNTS.expiryPayer);
 
       // 1. Valid when prepared, expired by the time of the send click: refused before the wallet is asked.
