@@ -1,3 +1,24 @@
+# PR #310 invoice-file memo browser checks — 2026-11-20
+
+Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.
+Task branch: `fix/pr310-invoice-file-memo`; publication target: existing PR #310
+branch `future/f03-private-payment-links`.
+Base: `976d26ee791836c176431c8a5d0b825486f78caf`; observed main:
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/e2e/payment-request-file.spec.ts`, this additive claim,
+and `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+Acceptance: match complete labeled memo text in the payment-review region;
+ensure locked and superseded memo absence checks detect labeled text; pass all
+six invoice-file browser cases in both original full and lean configurations,
+web typecheck and scoped typed lint; retain all existing assertions and gates.
+Evidence: CI run `44692101562`, full job `136181689920` and lean job `136181689927`,
+each failed the same four memo checks. Reinspect the PR head before publication.
+Scope: test assertions only; preserve the F03 implementation and other workers.
+Status: independent source review, full web typecheck, scoped typed lint, original
+full/lean collection (six cases each), secret scan and whitespace check pass.
+Local Chromium is blocked before assertions by socket permissions; hosted full/lean
+browser qualification is required. See `docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md`.
+
 # F03 payment request interchange — 2026-11-19
 
 Coordinator: ChatGPT `/root`; workers: `request_codec`, `request_browser`, `request_qa`.
