@@ -731,3 +731,14 @@ format correction, replay existing focused tests, and record exact results and
 remaining provider/browser/release limits. Product source stays read-only.
 No remote mutation, deployment, exploit tooling, full-web typed-lint retry,
 or change to qualification gates.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `49088efa043ca3f016e0b802f8b7bf51bf18a97a`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
