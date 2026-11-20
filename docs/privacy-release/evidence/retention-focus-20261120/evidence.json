@@ -1,0 +1,329 @@
+{
+  "base": {
+    "commit": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+    "tree": "b277d0b71b0b6d9242d2d36cdfcadc3b1296f5d3"
+  },
+  "contract_commit": "88d78a91aa92b72974c9444fccfb5013dbf263df",
+  "runtime": {
+    "commit": "acd584f07e0636697f5ecc0067dafc52c262727d",
+    "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009"
+  },
+  "review": {
+    "agent": "/root/ci_triage_r2",
+    "source": "acd584f07e0636697f5ecc0067dafc52c262727d",
+    "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+    "result": "No blocking source finding; approved before GREEN execution. Reviewer performed source review and diff check, not test execution."
+  },
+  "dependency_reuse": {
+    "previous_local_source": "8833c56df0fbc791fcb69784cfc69724b3e672db",
+    "previous_tree": "b277d0b71b0b6d9242d2d36cdfcadc3b1296f5d3",
+    "base_has_identical_complete_tree": true,
+    "fresh_install": false,
+    "new_dependency_copy": false,
+    "configuration_sha256": {
+      "package.json": "45148392cfa33376c21adab08c11ae342d9b6b0d4074aa3690812446e81a6c76",
+      "package-lock.json": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+      "apps/web/package.json": "8dc92a2cb449e4ed9661c24a7265da5f912836ca0d82bf593ae643897f8f9ad9",
+      "eslint.config.js": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+      "apps/web/tsconfig.json": "2dbde0db311ded87820fae0f2f058df7f80f40d9ea1b7bcad64d552c7e440325"
+    }
+  },
+  "runs": [
+    {
+      "phase": "tests-only RED",
+      "source": "5961e0e936357d761aa26f538b59800d01bafead",
+      "tree": "2065233c1b4255ec723d8c01a1bb118dfd4af966",
+      "cwd": "apps/web",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "argv": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/components/MetadataRetentionControls.test.tsx",
+        "src/components/PaymentProofQr.retention.test.tsx",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/retention-focus-red.json"
+      ],
+      "exit_code": 1,
+      "started_at": "2026-11-20T17:50:55.825000+00:00",
+      "tests": {
+        "numTotalTests": 33,
+        "numPassedTests": 24,
+        "numFailedTests": 9,
+        "numPendingTests": 0
+      },
+      "files": [
+        {
+          "path": "src/components/MetadataRetentionControls.test.tsx",
+          "passed": 6,
+          "failed": 8,
+          "failures": [
+            {
+              "name": "invoice preference reconciliation on returning focus reconciles a missed cross-tab change and invalidates manual approval without closing a preview",
+              "diagnostic": "AssertionError: expected '0' to be '900000' // Object.is equality"
+            },
+            {
+              "name": "invoice preference reconciliation on returning focus shows off and revokes stale approval when the current read is denied",
+              "diagnostic": "AssertionError: expected '300000' to be '0' // Object.is equality"
+            },
+            {
+              "name": "invoice preference reconciliation on returning focus shows off and revokes stale approval when the current read is malformed",
+              "diagnostic": "AssertionError: expected '300000' to be '0' // Object.is equality"
+            },
+            {
+              "name": "proof preference reconciliation on returning focus reconciles a missed cross-tab change and invalidates manual approval without closing a preview",
+              "diagnostic": "AssertionError: expected '0' to be '900000' // Object.is equality"
+            },
+            {
+              "name": "proof preference reconciliation on returning focus shows off and revokes stale approval when the current read is denied",
+              "diagnostic": "AssertionError: expected '300000' to be '0' // Object.is equality"
+            },
+            {
+              "name": "proof preference reconciliation on returning focus shows off and revokes stale approval when the current read is malformed",
+              "diagnostic": "AssertionError: expected '300000' to be '0' // Object.is equality"
+            },
+            {
+              "name": "retention preference control lifetime reads persisted values across category replacement and actual remount without inheriting approval",
+              "diagnostic": "AssertionError: expected '900000' to be '0' // Object.is equality"
+            },
+            {
+              "name": "retention preference control lifetime withdraws its focus observer when the control unmounts",
+              "diagnostic": "AssertionError: expected undefined to be type of 'function'"
+            }
+          ]
+        },
+        {
+          "path": "src/components/PaymentProofQr.retention.test.tsx",
+          "passed": 18,
+          "failed": 1,
+          "failures": [
+            {
+              "name": "included-payment proof presentation retention reconciles a missed policy revocation on focus without closing the proof or losing receipt exports",
+              "diagnostic": "AssertionError: expected '300000' to be '0' // Object.is equality"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "retention-focus-red.json",
+          "bytes": 24324,
+          "sha256": "d71f0c4dffe6c7f8fa90fb9ea3dc8edcc1e06f915f18a262afb9a97d08d7b346",
+          "artifact": "retention-focus-red.json"
+        },
+        {
+          "name": "retention-focus-red.log",
+          "bytes": 80,
+          "sha256": "3f9018cac9037c9c53bb15f6724ad4ec9ca2e20a5fda4aaffb68b26542221fb3",
+          "artifact": "retention-focus-red.log.json",
+          "artifact_encoding": "Decode the JSON text field as UTF-8 to recover the original output bytes.",
+          "artifact_sha256": "1e8cacc95050cbd345bdea78e7f071c3762850dc96577b321110cead8c958396"
+        }
+      ]
+    },
+    {
+      "phase": "reviewed runtime GREEN",
+      "source": "acd584f07e0636697f5ecc0067dafc52c262727d",
+      "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+      "cwd": "apps/web",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "argv": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/lib/metadataRetention.test.ts",
+        "src/components/MetadataRetentionControls.test.tsx",
+        "src/components/PaymentProofQr.retention.test.tsx",
+        "src/views/CreateInvoice.retention.test.tsx",
+        "src/components/MerchantTemplateIssuer.retention.test.tsx",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/retention-focus-green.json"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-20T17:52:42.730000+00:00",
+      "last_file_completed_at": "2026-11-20T17:52:52.692438+00:00",
+      "tests": {
+        "numTotalTests": 51,
+        "numPassedTests": 51,
+        "numFailedTests": 0,
+        "numPendingTests": 0
+      },
+      "files": [
+        {
+          "path": "src/components/MerchantTemplateIssuer.retention.test.tsx",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "src/components/MetadataRetentionControls.test.tsx",
+          "passed": 14,
+          "failed": 0
+        },
+        {
+          "path": "src/components/PaymentProofQr.retention.test.tsx",
+          "passed": 19,
+          "failed": 0
+        },
+        {
+          "path": "src/lib/metadataRetention.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "src/views/CreateInvoice.retention.test.tsx",
+          "passed": 1,
+          "failed": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "retention-focus-green.json",
+          "bytes": 21787,
+          "sha256": "a23e72356df0b5f415a63adefc1d0b8ee9bf8a497d3b3e9da13361702923ba44",
+          "artifact": "retention-focus-green.json"
+        },
+        {
+          "name": "retention-focus-green.log",
+          "bytes": 82,
+          "sha256": "6b144bb842cdfd42ec3a5c6ba576e6a177595307404f3b7711b1730657916e40",
+          "artifact": "retention-focus-green.log.json",
+          "artifact_encoding": "Decode the JSON text field as UTF-8 to recover the original output bytes.",
+          "artifact_sha256": "deae8ffc56a69d3b262e0fc7cf4651bea40310087efe0700e51756484c559cd4"
+        }
+      ]
+    },
+    {
+      "phase": "secret_scan",
+      "source": "acd584f07e0636697f5ecc0067dafc52c262727d",
+      "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+      "argv": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "cwd": "repository root",
+      "environment": {},
+      "started_at": "2026-11-20T17:53:33.991774+00:00",
+      "completed_at": "2026-11-20T17:53:34.110812+00:00",
+      "duration_seconds": 0.119,
+      "exit_code": 0,
+      "output": {
+        "name": "retention-focus-secret_scan.log",
+        "bytes": 50,
+        "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+        "artifact": "retention-focus-secret_scan.log.json",
+        "artifact_encoding": "Decode the JSON text field as UTF-8 to recover the original output bytes.",
+        "artifact_sha256": "4e24baccaa937ad30cbfef4093ef333e3c457d4526bcb7b289d50e3ca376529b"
+      }
+    },
+    {
+      "phase": "whitespace",
+      "source": "acd584f07e0636697f5ecc0067dafc52c262727d",
+      "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1..HEAD"
+      ],
+      "cwd": "repository root",
+      "environment": {},
+      "started_at": "2026-11-20T17:53:34.111042+00:00",
+      "completed_at": "2026-11-20T17:53:34.117154+00:00",
+      "duration_seconds": 0.006,
+      "exit_code": 0,
+      "output": {
+        "name": "retention-focus-whitespace.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "artifact": "retention-focus-whitespace.log.json",
+        "artifact_encoding": "Decode the JSON text field as UTF-8 to recover the original output bytes.",
+        "artifact_sha256": "33780dfdb55b34cbbe4e576c6ccff3997d822d1c72cea4c945e970eb2fb6ba22"
+      }
+    },
+    {
+      "phase": "typecheck",
+      "source": "acd584f07e0636697f5ecc0067dafc52c262727d",
+      "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+      "argv": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "repository root",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "started_at": "2026-11-20T17:53:34.117297+00:00",
+      "completed_at": "2026-11-20T17:53:55.414387+00:00",
+      "duration_seconds": 21.297,
+      "exit_code": 0,
+      "output": {
+        "name": "retention-focus-typecheck.log",
+        "bytes": 223,
+        "sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+        "artifact": "retention-focus-typecheck.log.json",
+        "artifact_encoding": "Decode the JSON text field as UTF-8 to recover the original output bytes.",
+        "artifact_sha256": "15619b49902a12f6f633c087ec00074c7982cf538194f1f383e9aefe17950ff4"
+      }
+    },
+    {
+      "phase": "lint",
+      "source": "acd584f07e0636697f5ecc0067dafc52c262727d",
+      "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+      "argv": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "repository root",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=1536"
+      },
+      "started_at": "2026-11-20T17:53:55.414605+00:00",
+      "completed_at": "2026-11-20T17:54:57.920206+00:00",
+      "duration_seconds": 62.505,
+      "exit_code": 0,
+      "output": {
+        "name": "retention-focus-lint.log",
+        "bytes": 235,
+        "sha256": "7cbadbf1a6ff02d2113d440f21ca3a66760872f7a7686b8d6364848aaac17fbf",
+        "artifact": "retention-focus-lint.log.json",
+        "artifact_encoding": "Decode the JSON text field as UTF-8 to recover the original output bytes.",
+        "artifact_sha256": "8753b890aff30bc58f6ce7463c2641ee95cbecbdece5b69da2f2b39e4159307c"
+      }
+    }
+  ],
+  "limits": [
+    "The RED cases are part of the later 51-case GREEN selection; counts are not additive.",
+    "Focused coverage-disabled tests do not qualify full web coverage.",
+    "No browser execution, new build, hosted qualification, release or deployment is claimed.",
+    "Persistent transaction/invoice and terminal-record retention remains unimplemented."
+  ],
+  "artifact_packaging": {
+    "initial_check": {
+      "source": "988d9df0295143040c04f72b38f8697e12dc5f8d",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1..HEAD"
+      ],
+      "exit_code": 2,
+      "diagnostics": [
+        "retention-focus-lint.log.txt:5: new blank line at EOF.",
+        "retention-focus-typecheck.log.txt:5: new blank line at EOF."
+      ]
+    },
+    "repair": "Preserve each complete stdout byte stream inside a JSON text wrapper instead of trimming original command output. This changes only evidence artifacts and their index; runtime and tests remain acd584f0."
+  }
+}

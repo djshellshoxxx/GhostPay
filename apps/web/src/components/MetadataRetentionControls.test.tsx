@@ -2,8 +2,8 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { invoicePreviewRetention, RETENTION_KEY } from '../lib/metadataRetention';
-import { useInvoicePreviewRetention } from '../lib/useInvoicePreviewRetention';
+import { invoicePreviewRetention, PROOF_RETENTION_KEY, RETENTION_KEY, type RetentionScope } from '../lib/metadataRetention';
+import { useInvoicePreviewRetention, usePresentationRetention } from '../lib/useInvoicePreviewRetention';
 import { MetadataRetentionControls } from './MetadataRetentionControls';
 
 function Fixture() {
@@ -12,6 +12,17 @@ function Fixture() {
   return <><MetadataRetentionControls />{preview !== undefined && <p>Disposable generated preview</p>}
     <button onClick={() => { setPreview({}); }}>Replace preview</button></>;
 }
+
+function ScopedFixture({ scope }: { readonly scope: RetentionScope }) {
+  const [preview, setPreview] = useState<object | undefined>({});
+  usePresentationRetention(preview, () => { setPreview(undefined); }, scope);
+  return <><MetadataRetentionControls scope={scope} />{preview !== undefined && <p>Disposable generated preview</p>}</>;
+}
+
+const scopes = [
+  { scope: 'invoice', key: RETENTION_KEY, otherKey: PROOF_RETENTION_KEY, label: 'Clear generated invoice previews automatically', preview: 'Preview screen-data cleanup', confirm: 'Clear previewed screen data' },
+  { scope: 'proof', key: PROOF_RETENTION_KEY, otherKey: RETENTION_KEY, label: 'Close payment proof previews automatically', preview: 'Preview proof cleanup', confirm: 'Close previewed proofs' },
+] as const;
 
 beforeEach(() => { localStorage.clear(); });
 afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
@@ -65,5 +76,96 @@ describe('invoice presentation retention controls', () => {
     expect(invoicePreviewRetention.preview().count).toBe(0);
     expect(vi.getTimerCount()).toBe(0);
     denied.mockRestore();
+  });
+});
+
+describe.each(scopes)('$scope preference reconciliation on returning focus', ({ scope, key, otherKey, label, preview, confirm }) => {
+  beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(1_000); });
+
+  it('reconciles a missed cross-tab change and invalidates manual approval without closing a preview', () => {
+    render(<ScopedFixture scope={scope} />);
+    fireEvent.click(screen.getByRole('button', { name: preview }));
+    expect(screen.getByRole('button', { name: confirm })).toBeTruthy();
+    localStorage.setItem(key, '{"delay":900000}');
+    act(() => { window.dispatchEvent(new Event('focus')); });
+    expect(screen.getByLabelText<HTMLSelectElement>(label).value).toBe('900000');
+    expect(screen.queryByRole('button', { name: confirm })).toBeNull();
+    expect(screen.getByText('Disposable generated preview')).toBeTruthy();
+    expect(localStorage.getItem(key)).toBe('{"delay":900000}');
+  });
+
+  it('preserves current manual approval when only the other category changes', () => {
+    localStorage.setItem(key, '{"delay":900000}');
+    render(<ScopedFixture scope={scope} />);
+    fireEvent.click(screen.getByRole('button', { name: preview }));
+    localStorage.setItem(otherKey, '{"delay":300000}');
+    act(() => { window.dispatchEvent(new Event('focus')); });
+    expect(screen.getByLabelText<HTMLSelectElement>(label).value).toBe('900000');
+    expect(screen.getByRole('button', { name: confirm })).toBeTruthy();
+    expect(screen.getByText('Disposable generated preview')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: confirm }));
+    expect(screen.queryByText('Disposable generated preview')).toBeNull();
+    expect(localStorage.getItem(otherKey)).toBe('{"delay":300000}');
+  });
+
+  it.each(['denied', 'malformed'] as const)('shows off and revokes stale approval when the current read is %s', (failure) => {
+    localStorage.setItem(key, '{"delay":300000}');
+    render(<ScopedFixture scope={scope} />);
+    fireEvent.click(screen.getByRole('button', { name: preview }));
+    const denied = failure === 'denied'
+      ? vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('synthetic storage denial'); })
+      : undefined;
+    if (failure === 'malformed') localStorage.setItem(key, '{"delay":300000,"delay":0}');
+    act(() => { window.dispatchEvent(new Event('focus')); });
+    expect(screen.getByLabelText<HTMLSelectElement>(label).value).toBe('0');
+    expect(screen.queryByRole('button', { name: confirm })).toBeNull();
+    act(() => { vi.advanceTimersByTime(301_000); });
+    expect(screen.getByText('Disposable generated preview')).toBeTruthy();
+    denied?.mockRestore();
+  });
+});
+
+describe('retention preference control lifetime', () => {
+  it('reads persisted values across category replacement and actual remount without inheriting approval', () => {
+    vi.useFakeTimers(); vi.setSystemTime(1_000);
+    localStorage.setItem(RETENTION_KEY, '{"delay":300000}');
+    localStorage.setItem(PROOF_RETENTION_KEY, '{"delay":900000}');
+    const view = render(<ScopedFixture scope="invoice" />);
+    expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe('300000');
+    fireEvent.click(screen.getByRole('button', { name: 'Preview screen-data cleanup' }));
+    view.rerender(<ScopedFixture scope="proof" />);
+    expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe('900000');
+    expect(screen.queryByRole('button', { name: 'Clear previewed screen data' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview proof cleanup' }));
+    localStorage.setItem(RETENTION_KEY, '{"delay":3600000}');
+    act(() => { window.dispatchEvent(new Event('focus')); });
+    expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe('900000');
+    expect(screen.getByRole('button', { name: 'Close previewed proofs' })).toBeTruthy();
+    localStorage.setItem(PROOF_RETENTION_KEY, '{"delay":0}');
+    act(() => { window.dispatchEvent(new Event('focus')); });
+    expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe('0');
+    expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
+    expect(screen.getByText('Disposable generated preview')).toBeTruthy();
+    view.unmount();
+    const invoice = render(<ScopedFixture scope="invoice" />);
+    expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe('3600000');
+    expect(screen.queryByRole('button', { name: 'Clear previewed screen data' })).toBeNull();
+    invoice.unmount();
+    const proof = render(<ScopedFixture scope="proof" />);
+    expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe('0');
+    expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
+    proof.unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('withdraws its focus observer when the control unmounts', () => {
+    const add = vi.spyOn(window, 'addEventListener');
+    const remove = vi.spyOn(window, 'removeEventListener');
+    const view = render(<MetadataRetentionControls scope="proof" />);
+    const focus = add.mock.calls.find(([name]) => name === 'focus')?.[1];
+    expect(focus).toBeTypeOf('function');
+    view.unmount();
+    expect(remove.mock.calls.some(([name, listener]) => name === 'focus' && listener === focus)).toBe(true);
   });
 });

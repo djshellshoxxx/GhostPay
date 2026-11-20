@@ -219,6 +219,26 @@ describe('included-payment proof presentation retention', () => {
     expect(proofText()).not.toBeNull();
   });
 
+  it('reconciles a missed policy revocation on focus without closing the proof or losing receipt exports', () => {
+    vi.useFakeTimers(); vi.setSystemTime(1_000);
+    localStorage.setItem(PROOF_POLICY, '{"delay":300000}');
+    render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={{}} />);
+    show(); preview();
+    const displayed = proofText()?.value;
+    localStorage.setItem(PROOF_POLICY, '{"delay":0}');
+    act(() => { window.dispatchEvent(new Event('focus')); });
+    expect(screen.getByLabelText<HTMLSelectElement>('Close payment proof previews automatically').value).toBe('0');
+    expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
+    act(() => { vi.advanceTimersByTime(301_000); });
+    expect(proofText()?.value).toBe(displayed);
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
+    expect(proofText()?.value).toContain(RECEIPT.txHash);
+    preview();
+    fireEvent.click(screen.getByRole('button', { name: 'Close previewed proofs' }));
+    expect(proofText()).toBeNull();
+  });
+
   it.each(['{"delay":0,"delay":300000}', '{', '{"delay":300000,"extra":true}'])('keeps malformed proof policy off: %s', (raw) => {
     vi.useFakeTimers(); vi.setSystemTime(1_000);
     localStorage.setItem(PROOF_POLICY, raw);
