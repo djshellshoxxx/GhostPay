@@ -4,13 +4,20 @@ import { parseStrictJson } from '@ghostpay/invoice-schema';
 export type RetentionDelay = 0 | 300_000 | 900_000 | 3_600_000;
 export const RETENTION_KEY = 'ghostpay.invoice-preview-retention.v1';
 export const RETENTION_EVENT = 'ghostpay:invoice-preview-retention';
+export const PROOF_RETENTION_KEY = 'ghostpay.proof-preview-retention.v1';
+export const PROOF_RETENTION_EVENT = 'ghostpay:proof-preview-retention';
+export const RETENTION_POLICIES = {
+  invoice: { key: RETENTION_KEY, event: RETENTION_EVENT },
+  proof: { key: PROOF_RETENTION_KEY, event: PROOF_RETENTION_EVENT },
+} as const;
+export type RetentionScope = keyof typeof RETENTION_POLICIES;
 interface ReadStorage { getItem(key: string): string | null }
 interface WriteStorage { setItem(key: string, value: string): void }
 const validDelay = (value: unknown): value is RetentionDelay => value === 0 || value === 300_000 || value === 900_000 || value === 3_600_000;
 
-export function readRetentionDelay(storage?: ReadStorage): RetentionDelay {
+export function readRetentionDelay(storage?: ReadStorage, scope: RetentionScope = 'invoice'): RetentionDelay {
   try {
-    const raw = (storage ?? globalThis.localStorage).getItem(RETENTION_KEY);
+    const raw = (storage ?? globalThis.localStorage).getItem(RETENTION_POLICIES[scope].key);
     // A retention policy is tiny untrusted input; ambiguous or oversized data must never enable deletion.
     if (raw === null || raw.length > 128) return 0;
     const value: unknown = parseStrictJson(raw);
@@ -20,11 +27,12 @@ export function readRetentionDelay(storage?: ReadStorage): RetentionDelay {
   } catch { return 0; }
 }
 
-export function writeRetentionDelay(delay: RetentionDelay, storage?: WriteStorage): boolean {
+export function writeRetentionDelay(delay: RetentionDelay, storage?: WriteStorage, scope: RetentionScope = 'invoice'): boolean {
   if (!validDelay(delay)) return false;
   try {
-    (storage ?? globalThis.localStorage).setItem(RETENTION_KEY, JSON.stringify({ delay }));
-    if (typeof window !== 'undefined') window.dispatchEvent(new Event(RETENTION_EVENT));
+    const policy = RETENTION_POLICIES[scope];
+    (storage ?? globalThis.localStorage).setItem(policy.key, JSON.stringify({ delay }));
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event(policy.event));
     return true;
   } catch { return false; }
 }
@@ -100,3 +108,6 @@ export class InvoicePreviewRetention {
 }
 
 export const invoicePreviewRetention = new InvoicePreviewRetention();
+export const proofPreviewRetention = new InvoicePreviewRetention();
+/** Consent and manual plans never cross presentation categories. */
+export const RETENTION_REGISTRIES = { invoice: invoicePreviewRetention, proof: proofPreviewRetention } as const;

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { InvoicePreviewRetention, RETENTION_KEY, readRetentionDelay, writeRetentionDelay } from './metadataRetention';
+import { InvoicePreviewRetention, RETENTION_KEY, PROOF_RETENTION_KEY, invoicePreviewRetention, proofPreviewRetention, readRetentionDelay, writeRetentionDelay } from './metadataRetention';
 
 describe('nonessential invoice presentation retention', () => {
   it('requires the exact preview, rejects stale previews and cannot replay approval', () => {
@@ -106,6 +106,29 @@ describe('nonessential invoice presentation retention', () => {
 });
 
 describe('nonsecret retention preference', () => {
+  it('keeps proof consent and manual authority separate from the invoice policy', () => {
+    const values = new Map<string, string>();
+    const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); } };
+    expect(writeRetentionDelay(300_000, storage)).toBe(true);
+    expect(readRetentionDelay(storage, 'proof')).toBe(0);
+    expect(writeRetentionDelay(900_000, storage, 'proof')).toBe(true);
+    expect(readRetentionDelay(storage)).toBe(300_000);
+    expect(readRetentionDelay(storage, 'proof')).toBe(900_000);
+    expect([...values.keys()]).toEqual([RETENTION_KEY, PROOF_RETENTION_KEY]);
+    const clearInvoice = vi.fn();
+    const clearProof = vi.fn();
+    const disposeInvoice = invoicePreviewRetention.register(clearInvoice);
+    const disposeProof = proofPreviewRetention.register(clearProof);
+    try {
+      const invoicePlan = invoicePreviewRetention.preview();
+      expect(proofPreviewRetention.confirm(invoicePlan)).toEqual({ kind: 'stale' });
+      expect(proofPreviewRetention.confirm(proofPreviewRetention.preview())).toEqual({ kind: 'cleared', count: 1, failed: 0 });
+      expect(clearProof).toHaveBeenCalledOnce();
+      expect(clearInvoice).not.toHaveBeenCalled();
+      expect(invoicePreviewRetention.confirm(invoicePlan)).toEqual({ kind: 'cleared', count: 1, failed: 0 });
+    } finally { disposeInvoice(); disposeProof(); }
+  });
+
   it('accepts only supported delays and touches only its dedicated preference key', () => {
     const values = new Map<string, string>([['vault', 'keep'], ['pending', 'keep']]);
     const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); } };
