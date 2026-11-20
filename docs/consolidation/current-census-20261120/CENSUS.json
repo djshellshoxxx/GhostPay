@@ -258,7 +258,7 @@
       "compare": {
         "ahead_by": 4,
         "behind_by": 102,
-        "changed_files_returned": 62,
+        "changed_files_returned": 37,
         "application_paths_returned": 0
       }
     },
