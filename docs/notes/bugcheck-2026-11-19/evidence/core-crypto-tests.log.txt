@@ -1,0 +1,28 @@
+
+ RUN  v5.0.5 /workspace/scratch/72c433175c66/GhostPay-bugcheck/packages/core-crypto
+
+ ❯ src/independent.test.ts (16 tests | 1 failed) 84454ms
+   ❯ differential: package vs bigint reference on 150 random key sets (1)
+     × sender derivation, recipient check and stealth key agree byte for byte 71337ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/independent.test.ts > differential: package vs bigint reference on 150 random key sets > sender derivation, recipient check and stealth key agree byte for byte
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/independent.test.ts:126:3
+    124|
+    125| describe('differential: package vs bigint reference on 150 random key …
+    126|   it('sender derivation, recipient check and stealth key agree byte fo…
+       |   ^
+    127|     const next = scalarStream('extra05-independent');
+    128|     for (let i = 0; i < 150; i++) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 8 passed (9)
+      Tests  1 failed | 74 passed (75)
+   Start at  22:11:49
+   Duration  155.32s (tests 87%, import 8%, transform 5%)
+

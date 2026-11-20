@@ -1,0 +1,16 @@
+import { afterEach, beforeEach, expect, it } from 'vitest';
+import { CHAINS } from '@ghostpay/chain-adapters';
+import { clearSession, generateSession } from '../GhostPay-latest/apps/web/src/lib/session';
+import { destinationWarning, loadDestLedger, recordSweepDestination } from '../GhostPay-latest/apps/web/src/lib/sweep';
+
+const DEST = '0x6666666666666666666666666666666666666666';
+const OWNER = '0x1111111111111111111111111111111111111111';
+const OTHER = '0x2222222222222222222222222222222222222222';
+beforeEach(() => { generateSession(); });
+afterEach(() => { clearSession(); });
+
+// Local memory-only helper checks: no RPC, wallet, signatures or funds.
+it.each(CHAINS.filter(c => c.enabled).map(c => [c.name, c.chainId] as const))('retains destination advisory on %s', (_name, chainId) => {
+  recordSweepDestination(undefined, chainId, DEST, OWNER);
+  expect(destinationWarning(DEST, OTHER, chainId, loadDestLedger(undefined))).toBe('used');
+});

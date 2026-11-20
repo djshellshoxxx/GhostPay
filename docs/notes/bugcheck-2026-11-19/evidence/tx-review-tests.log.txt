@@ -1,0 +1,12 @@
+
+ RUN  v5.0.5 /workspace/scratch/72c433175c66/GhostPay-bugcheck/packages/tx-review
+
+
+ Test Files  5 passed (5)
+      Tests  160 passed (160)
+   Start at  22:15:26
+   Duration  7.96s (import 65%, transform 25%, tests 10%)
+
+    Isolate  5 workers spawned · ~352ms startup each (spawn + environment, per file)
+             at least ~528ms faster with isolate: false — reuses workers across files instead of one per file
+

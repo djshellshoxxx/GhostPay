@@ -1,0 +1,31 @@
+// Benign local functional regression: two synthetic payments in one in-memory block.
+import { pathToFileURL } from 'node:url';
+const root = process.argv[2];
+const mod = (name) => import(pathToFileURL(`${root}/packages/${name}/dist/index.js`).href);
+const core = await mod('core-crypto');
+const tron = await mod('tron-adapter');
+const keys = core.generateKeySet();
+const adapter = tron.createTronAdapter({ network: 'nile' });
+const recipient = tron.encodeTronMetaAddress(keys);
+const payer = 'TMVQGm1qAQYVdetCeGRRkTWYYrLXuHK2HC';
+const blockId = '00'.repeat(32);
+function payment(amount) {
+  const built = adapter.buildPaymentRequest({ chainId: 'tron-nile', recipient, asset: { kind: 'native' }, amount }).build({ payer, refBlock: { number: 100n, blockId }, timestampMs: 1700000000000n });
+  const d = tron.decodeRawTx(built.tx.rawData);
+  return {
+    txID: built.tx.txID, raw_data_hex: built.tx.rawDataHex, ret: [{ contractRet: 'SUCCESS' }],
+    raw_data: { data: Buffer.from(d.memo).toString('hex'), contract: [{ type: 'TransferContract', parameter: { value: { owner_address: tron.tronAddressToHex(d.owner), to_address: tron.tronAddressToHex(d.to), amount: Number(d.amount) } } }] },
+  };
+}
+const block = { blockID: blockId, block_header: { raw_data: { number: 100 } }, transactions: [payment(1n), payment(2n)] };
+let requests = 0;
+const rpc = { async post(path) { requests++; if (path !== '/wallet/getblockbylimitnext') throw new Error('unexpected local method'); return { block: [block] }; } };
+const controller = new AbortController();
+const iterator = tron.scanTron(rpc, { fromBlock: 100n, toBlock: 100n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: controller.signal });
+const first = await iterator.next();
+controller.abort();
+let second;
+try { second = await iterator.next(); } catch (error) { second = { rejected: error.code }; }
+console.log(JSON.stringify({ firstAmount: first.value?.amount?.toString(), aborted: controller.signal.aborted, secondAmount: second.value?.amount?.toString(), secondDone: second.done, rejected: second.rejected, requests }));
+await iterator.return();
+core.zeroize(keys.viewingSecret, keys.spendingSecret);

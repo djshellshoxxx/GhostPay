@@ -1,3 +1,22 @@
+# Core and latest-feature bugcheck audit — 2026-11-19
+
+Worker: ChatGPT audit coordinator with fresh independent review workers.
+Branch: `audit/bugcheck-core-latest-20261120`.
+Base: `c977b5d6723f6822c3b5d86cd6b231712c53c395` (live main at scope freeze).
+Owned paths: this additive ownership entry and `docs/notes/bugcheck-2026-11-19/**`.
+Acceptance: review the current browser core, reachable library packages and latest
+feature branch variants; document exact revision/file coverage, concrete bugs,
+existing fixes, executed checks and residual limits. Preserve all product source.
+All other branches and active work are read-only audit inputs. No release,
+deployment, real-funds operation, contract change, or security-gate change.
+Status: source review complete; 945 revision/path records, 482 distinct paths,
+595 distinct path/blob versions, zero pending. Fifteen new and two existing
+unresolved findings are recorded in `docs/notes/bugcheck-2026-11-19/` with pinned
+source, review ledgers and actual validation results. Main advanced to
+`773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`; all 446 audited baseline blobs are
+unchanged. This branch publishes documentation only. Product fixes and their
+qualification remain separate follow-up work.
+
 # Focused hosting main reconciliation — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.

@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /workspace/scratch/72c433175c66/GhostPay-bugcheck/packages/ux-vault
+
+
+ Test Files  7 passed (7)
+      Tests  284 passed (284)
+   Start at  22:15:43
+   Duration  44.03s (tests 85%, transform 9%, import 6%)
+

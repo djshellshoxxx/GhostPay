@@ -1,0 +1,53 @@
+// @vitest-environment jsdom
+import { buildErc20Metadata, deriveStealthPayment, parseMetadata } from '@ghostpay/core-crypto';
+import { grossForNet, routerSplit } from '@ghostpay/chain-adapters';
+import { bytesToHex } from '@noble/hashes/utils.js';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { makeParsed, NOW } from '../GhostPay-latest/apps/web/src/test/invoiceFixtures';
+import { clearSession, getSessionPublic } from '../GhostPay-latest/apps/web/src/lib/session';
+import * as vaultModule from '../GhostPay-latest/apps/web/src/lib/reconciliationVault';
+import type { ScanMatch } from '../GhostPay-latest/apps/web/src/lib/scanClient';
+import { ReceiptPanel } from '../GhostPay-latest/apps/web/src/components/ReceiptPanel';
+
+beforeEach(() => { clearSession(); vi.spyOn(Date, 'now').mockReturnValue(NOW * 1000); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); clearSession(); });
+
+it('a regenerated invoice-bound receipt must not inherit the previous receipt archival state', async () => {
+  const archiveReceipt = vi.fn().mockResolvedValue(undefined);
+  vi.spyOn(vaultModule, 'createCurrentReconciliationVault').mockResolvedValue({ archiveReceipt, lock: vi.fn() } as unknown as vaultModule.ReconciliationVault);
+  const { parsed, link } = await makeParsed({ feePolicy: 'payer_pays' });
+  const seller = getSessionPublic()!;
+  const payment = deriveStealthPayment(parsed.invoice.metaAddress);
+  const amount = parsed.invoice.amountPolicy.mode === 'fixed_token' ? BigInt(parsed.invoice.amountPolicy.tokenAmount) : 0n;
+  const metadata = `0x${bytesToHex(buildErc20Metadata(payment.viewTag, parsed.invoice.token, routerSplit(grossForNet(amount)).net))}`;
+  const match = {
+    chainId: parsed.invoice.chainId, stealthAddress: payment.stealthAddress, metadata: parseMetadata(metadata),
+    receipt: 'verified', viaRouter: true, tagMatches: true,
+    announcement: { id: 'fixture', schemeId: 1n, stealthAddress: payment.stealthAddress, ephemeralPublicKey: `0x${bytesToHex(payment.ephemeralPublicKey)}`, metadata, transactionHash: `0x${'c'.repeat(64)}` },
+  } as unknown as ScanMatch;
+  render(<ReceiptPanel profile="lean" match={match} sellerSignerPublicKey={seller.signerPublicKey} />);
+  const user = userEvent.setup();
+  fireEvent.change(screen.getByLabelText('Signed invoice link or fragment'), { target: { value: link } });
+  await user.click(screen.getByLabelText('I consent to opening this invoice locally to bind the receipt.'));
+  const sign = async () => {
+    await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
+    await screen.findByText(/Validated invoice matches this scan/);
+    await user.click(screen.getByLabelText('I consent to signing these invoice and payment facts.'));
+    await user.click(screen.getByRole('button', { name: 'Sign receipt' }));
+    return JSON.parse(screen.getByLabelText<HTMLTextAreaElement>('Signed receipt JSON').value);
+  };
+  const first = await sign();
+  await user.click(screen.getByRole('button', { name: 'Archive in encrypted vault' }));
+  await screen.findByRole('button', { name: 'Receipt archived' });
+  expect(archiveReceipt).toHaveBeenCalledTimes(1);
+  await user.click(screen.getByRole('button', { name: 'Clear invoice binding' }));
+  vi.mocked(Date.now).mockReturnValue((NOW + 1) * 1000);
+  const second = await sign();
+  expect(second.signature).not.toBe(first.signature);
+  expect(archiveReceipt).toHaveBeenCalledTimes(1);
+  expect(archiveReceipt.mock.calls[0]![0].signature).toBe(first.signature);
+  expect(screen.queryByRole('button', { name: 'Receipt archived' })).toBeNull();
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Archive in encrypted vault' }).disabled).toBe(false);
+});

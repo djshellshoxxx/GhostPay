@@ -1,0 +1,61 @@
+// @vitest-environment jsdom
+import { fireEvent, render, screen, within, waitFor, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
+import { afterEach, beforeEach, expect, it } from 'vitest';
+import { DEFAULT_SETTINGS, type Settings as SettingsData } from '../GhostPay-latest/apps/web/src/lib/settings';
+import { exportSettingsExchange } from '../GhostPay-latest/apps/web/src/lib/settingsExchange';
+import { ServicesContext } from '../GhostPay-latest/apps/web/src/lib/services';
+import { AppContext, type AppState } from '../GhostPay-latest/apps/web/src/state';
+import { makeServices, renderApp } from '../GhostPay-latest/apps/web/src/test/render';
+import { Settings } from '../GhostPay-latest/apps/web/src/views/Settings';
+import { clearSession, generateSession } from '../GhostPay-latest/apps/web/src/lib/session';
+
+beforeEach(() => { clearSession(); localStorage.clear(); history.replaceState(null, '', '/'); });
+afterEach(() => { cleanup(); clearSession(); });
+
+function SettingsHarness() {
+  const [settings, setSettings] = useState<SettingsData>(DEFAULT_SETTINGS);
+  const [services] = useState(makeServices);
+  const app: AppState = {
+    view: 'settings', setView: () => undefined, settings,
+    updateSettings: next => { setSettings(next); return true; },
+    session: undefined, fragment: undefined, setFragment: () => undefined,
+    matches: [], setMatches: () => undefined, sweepTarget: undefined,
+    selectForSweep: () => undefined, getRpc: async () => undefined,
+    getSecondaryRpc: async () => undefined, announce: () => undefined,
+  };
+  return <ServicesContext.Provider value={services}><AppContext.Provider value={app}><Settings /></AppContext.Provider></ServicesContext.Provider>;
+}
+
+it('keeps an unrelated draft RPC when only preferences are imported', async () => {
+  const user = userEvent.setup();
+  render(<SettingsHarness />);
+  const rpc = screen.getByLabelText('Base Sepolia RPC URL') as HTMLInputElement;
+  fireEvent.change(rpc, { target: { value: 'https://draft.example/' } });
+  const panel = screen.getByRole('region', { name: 'Move settings to your other devices' });
+  const text = exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }, ['preferences'], makeServices().chains.map(c => c.chainId));
+  fireEvent.change(within(panel).getByLabelText('Or paste QR text'), { target: { value: text } });
+  await user.click(within(panel).getByRole('button', { name: 'Use pasted text' }));
+  await user.click(within(panel).getByRole('button', { name: 'Apply selected settings' }));
+  await waitFor(() => expect((screen.getByLabelText('Theme') as HTMLSelectElement).value).toBe('dark'));
+  expect(rpc.value).toBe('https://draft.example/');
+});
+
+it('does not display tags from the previous selected chain', async () => {
+  const user = userEvent.setup();
+  generateSession();
+  const services = makeServices();
+  const oldList = services.vault.list.bind(services.vault);
+  services.vault.list = async chainId => chainId === 84532
+    ? [{ stealthAddress: `0x${'11'.repeat(20)}`, announcementId: 'audit-row-a', logIndex: 0, clientLabel: 'Audit tag chain A' }]
+    : oldList(chainId);
+  renderApp(services);
+  await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
+  await user.selectOptions(screen.getByLabelText('Chain'), '84532');
+  await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+  expect(await screen.findByText('Audit tag chain A')).toBeTruthy();
+  await user.selectOptions(screen.getByLabelText('Chain'), '11155111');
+  expect((screen.getByLabelText('Chain') as HTMLSelectElement).value).toBe('11155111');
+  expect(screen.queryByText('Audit tag chain A')).toBeNull();
+});

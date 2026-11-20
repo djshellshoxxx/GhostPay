@@ -1,0 +1,26 @@
+{
+  "baseline": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "observed_main": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+  "audited_baseline_paths_compared": 446,
+  "changed_audited_paths": [],
+  "all_changed_paths": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md",
+    "docs/consolidation/hosting-timestamp-20261119/evidence/full-kit.log",
+    "docs/consolidation/hosting-timestamp-20261119/evidence/kit-lint.log",
+    "docs/consolidation/hosting-timestamp-20261119/evidence/kit-typecheck.log",
+    "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-green.log",
+    "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-red.log",
+    "docs/consolidation/hosting-timestamp-20261119/evidence/unused-time-wrapper.log",
+    "docs/consolidation/hosting-timestamp-20261119/receipt.json",
+    "docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md",
+    "docs/consolidation/hosting-timestamp-main-20261119/provenance.json",
+    "docs/consolidation/hosting-timestamp-reconciliation-20261119/RECONCILIATION.md",
+    "docs/consolidation/hosting-timestamp-reconciliation-20261119/config-inputs.json",
+    "docs/consolidation/hosting-timestamp-reconciliation-20261119/receipt.json",
+    "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+    "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+    "tools/portable-hosting-kit/test/profiles/static-export.test.mjs"
+  ],
+  "disposition": "Main advanced with documentation and portable-hosting-kit changes outside the frozen core scope; all audited baseline blobs remain identical."
+}

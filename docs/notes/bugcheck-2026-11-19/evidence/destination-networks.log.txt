@@ -1,0 +1,50 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../GhostPay-latest/apps/web/vite.config" without a file extension (../chain-core-qa/vitest.config.mts:1:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /workspace/scratch/72c433175c66/GhostPay-latest/apps/web
+
+ ✓ ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Ethereum Sepolia 75ms
+ ✓ ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Base Sepolia 6ms
+ × ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on OP Sepolia 10ms
+   → expected undefined to be 'used' // Object.is equality
+ × ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Arbitrum Sepolia 7ms
+   → expected undefined to be 'used' // Object.is equality
+ × ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Polygon Amoy 6ms
+   → expected undefined to be 'used' // Object.is equality
+ × ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on BNB Smart Chain Testnet 2ms
+   → expected undefined to be 'used' // Object.is equality
+ × ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Avalanche Fuji 7ms
+   → expected undefined to be 'used' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on OP Sepolia
+ FAIL  ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Arbitrum Sepolia
+ FAIL  ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Polygon Amoy
+ FAIL  ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on BNB Smart Chain Testnet
+ FAIL  ../../../chain-core-qa/destination-networks.test.ts > retains destination advisory on Avalanche Fuji
+AssertionError: expected undefined to be 'used' // Object.is equality
+
+- Expected:
+"used"
+
++ Received:
+undefined
+
+ ❯ ../../../chain-core-qa/destination-networks.test.ts:15:79
+     13| it.each(CHAINS.filter(c => c.enabled).map(c => [c.name, c.chainId] as …
+     14|   recordSweepDestination(undefined, chainId, DEST, OWNER);
+     15|   expect(destinationWarning(DEST, OTHER, chainId, loadDestLedger(undef…
+       |                                                                               ^
+     16| });
+     17|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 2 passed (7)
+   Start at  22:22:42
+   Duration  5.23s (transform 66%, import 32%, tests 2%)
+

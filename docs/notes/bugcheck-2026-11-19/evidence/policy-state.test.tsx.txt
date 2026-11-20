@@ -1,0 +1,55 @@
+// @vitest-environment jsdom
+import { act, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { clearSession } from '../GhostPay-latest/apps/web/src/lib/session';
+import { SETTINGS_KEY } from '../GhostPay-latest/apps/web/src/lib/settings';
+import { MockWallet } from '../GhostPay-latest/apps/web/src/test/mockWallet';
+import { makeServices, renderApp } from '../GhostPay-latest/apps/web/src/test/render';
+import { POLICY_FLAG } from '../GhostPay-latest/apps/web/src/features/policy/flag';
+import * as chainModule from '../GhostPay-latest/apps/web/src/features/policy/chain';
+import { createPolicyMetaAddress } from '../GhostPay-latest/apps/web/src/features/policy/create';
+import { serializePolicyRecord } from '@ghostpay/policy-scheme';
+import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, deploymentCalls, fakeChain, walletMirror, limitRows } from '../GhostPay-latest/apps/web/src/features/policy/fixtures.testutil';
+const realVerify=chainModule.verifyPolicyDeployment;
+const a1=account('acct-001'), a2=account('acct-002');
+beforeEach(()=>{clearSession();window.localStorage.clear();window.sessionStorage.clear();window.history.replaceState(null,'','/');vi.stubEnv(POLICY_FLAG,'1');});
+afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks();});
+async function open(services:ReturnType<typeof makeServices>){
+ const user=userEvent.setup();renderApp(services);
+ await user.click(within(screen.getByRole('navigation',{name:'Main'})).getByRole('button',{name:'Policy accounts (experimental)'}));
+ return user;
+}
+it('retains two distinct seller records with the same policy terms',async()=>{
+ const rec=(a:typeof a1)=>createPolicyMetaAddress({spendingPublicKeyHex:a.spendingPublicKey,viewingPublicKeyHex:a.viewingPublicKey,destination:a1.policy.destination,delaySeconds:BigInt(a1.policy.delaySeconds),limits:limitRows(a1)});
+ const one=rec(a1),two=rec(a2);
+ expect(one.policyHash).toBe(two.policyHash);expect(one.metaAddress).not.toBe(two.metaAddress);
+ const user=await open(makeServices());
+ for(const r of [one,two]){
+  await user.clear(screen.getByLabelText('Paste a policy record (JSON)'));
+  await user.click(screen.getByLabelText('Paste a policy record (JSON)'));
+  await user.paste(serializePolicyRecord(r));await user.click(screen.getByRole('button',{name:'Import record'}));
+ }
+ expect(screen.queryByText(two.metaAddress,{exact:true})).not.toBeNull();
+});
+it('invalidates pending payment send when the reviewed amount is edited',async()=>{
+ vi.spyOn(chainModule,'verifyPolicyDeployment').mockImplementation((client,chain,input)=>realVerify(client,chain,input,LOCAL_POLICY_PROFILE));
+ const w=new MockWallet({chainId:SEPOLIA});
+ const rpc=fakeChain(SEPOLIA,{...deploymentCalls(),extra:walletMirror(w)});
+ let pause=false, requested=false;
+ let release!:()=>void;
+ const gate=new Promise<void>(r=>{release=r;});
+ const original=w.request.bind(w);w.request=async(args)=>{if(pause && args.method==='eth_accounts'){requested=true;await gate;}return original(args);};
+ window.localStorage.setItem(SETTINGS_KEY,JSON.stringify({rpcUrls:{[String(SEPOLIA)]:'https://rpc.test'}}));
+ const user=await open(makeServices({createRpc:async()=>rpc,discoverWallets:()=>Promise.resolve([{id:'mock',name:'Mock Wallet',kind:'eip6963',provider:w}])}));
+ await user.click(screen.getByLabelText('PolicyAccountFactory address'));await user.paste(DEPLOYMENT.factory);
+ await user.click(screen.getByLabelText('GhostPayPolicyRouter address'));await user.paste(ROUTER);
+ await user.click(screen.getByRole('button',{name:'Verify on-chain'}));await screen.findByLabelText('Verified policy deployment');
+ await user.click(screen.getByRole('button',{name:'Find wallets'}));await user.click(await screen.findByRole('button',{name:'Connect Mock Wallet'}));await screen.findByText(/Connected:/);
+ await user.click(screen.getByLabelText(/Payee policy meta-address/));await user.paste(a1.metaAddress);
+ await user.type(screen.getByLabelText('Amount (base units)'),'1000');await user.click(screen.getByRole('button',{name:'Review payment'}));
+ pause=true;await user.click(screen.getByRole('button',{name:'Send payment'}));await vi.waitFor(()=>expect(requested).toBe(true));
+ await user.clear(screen.getByLabelText('Amount (base units)'));await user.type(screen.getByLabelText('Amount (base units)'),'2000');
+ await act(async()=>{release();await new Promise(r=>setTimeout(r,200));});
+ expect(w.calls.filter(c=>c.method==='eth_sendTransaction')).toHaveLength(0);
+});
