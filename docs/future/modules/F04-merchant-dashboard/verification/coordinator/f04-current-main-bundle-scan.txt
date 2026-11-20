@@ -1,0 +1,6 @@
+Head: 19b47216b1c41653913196dd231f40faaa2d76a1
+Main: aa3df1cb37274fae73af0ca957183c15c51b62d3
+Command: ["node", "scripts/scan-bundle.mjs"]
+Bundle scan passed: 17 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.
+
+Exit: 0; seconds: 2.01
