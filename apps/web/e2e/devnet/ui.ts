@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { approveWalletDisclosure } from '../helpers';
 
 /*
  * Page drivers for the devnet journey. They follow e2e/helpers.ts and e2e/core-journey.spec.ts step for step; the only
@@ -39,12 +40,13 @@ export async function createInvoiceAt(page: Page, origin: string, description: s
   return link;
 }
 
-/** Payer: review -> Continue -> connect the injected wallet -> prepare -> final check (nothing sent yet). */
+/** Payer: review -> Continue -> approve account disclosure -> prepare -> final check (nothing sent yet). */
 export async function reviewToFinalCheck(payer: Page, router: string, walletName: string): Promise<void> {
   await expect(payer.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(payer.getByText(router).first()).toBeVisible();
   await payer.getByRole('button', { name: 'Continue' }).click();
   await payer.getByRole('button', { name: `Connect ${walletName}` }).click();
+  await approveWalletDisclosure(payer, 'eth_requestAccounts');
   await payer.getByRole('button', { name: 'Prepare payment' }).click();
   await expect(payer.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
   await expect(payer.getByText('payNative')).toBeVisible();

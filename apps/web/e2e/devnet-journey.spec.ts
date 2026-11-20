@@ -4,7 +4,7 @@ import { ANNOUNCEMENT_TOPIC, decodePaymentCalldata, type Address, type Hex } fro
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
-import { generateKeys, openFresh } from './helpers';
+import { approveWalletDisclosure, generateKeys, openFresh } from './helpers';
 import { ANVIL_ACCOUNTS, Anvil, DevnetNetwork, DevnetWallet, loadDevnet, type DevnetState } from './devnet/chain';
 import { createInvoiceAt, identityOf, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
 
@@ -94,6 +94,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     // 3. Real transaction: held in anvil's mempool first (automine off), so the app's pending state is observable.
     await anvil.automine(false);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect.poll(() => payer.wallet.hashes.length).toBe(1);
     const payHash = payer.wallet.hashes[0] as Hex;
     // Pending: the app waits for inclusion, the send control is disarmed and the returned hash is journaled in the tab.
@@ -142,9 +143,11 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect(await anvil.nonce(ANVIL_ACCOUNTS.payer)).toBe(payerNonce + 1);
@@ -256,6 +259,7 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
     await anvil.automine(false);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect.poll(() => payer.wallet.hashes.length).toBe(1);
     const hash = payer.wallet.hashes[0] as Hex;
     await expect(p.getByRole('status').filter({ hasText: 'Waiting for inclusion…' })).toBeVisible();
@@ -270,9 +274,11 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
     expect(payer.wallet.sends).toHaveLength(1);
     expect((await anvil.tx(hash))?.blockNumber).toBeNull();
@@ -300,6 +306,8 @@ test('real chain: a wallet on the wrong chain cannot connect, and a network chan
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
+    await approveWalletDisclosure(p, 'eth_requestAccounts');
+    await approveWalletDisclosure(p, 'wallet_switchEthereumChain');
     await expect(p.getByText('Your wallet is on chain 31337 but this invoice requires chain 84532.', { exact: false })).toBeVisible();
     await expect(p.getByRole('button', { name: 'Prepare payment' })).toHaveCount(0);
 
@@ -309,6 +317,7 @@ test('real chain: a wallet on the wrong chain cannot connect, and a network chan
     await reviewToFinalCheck(p, dn.router, payer.wallet.name);
     payer.wallet.chainOverride = '0x7a69';
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
+    await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('The wallet network changed. Reconnect and review again.', { exact: false })).toBeVisible();
     await expect(p.getByRole('heading', { name: 'Payment sent, verifying' })).toHaveCount(0);
     expect(payer.wallet.sends).toHaveLength(0);
