@@ -694,3 +694,33 @@ Status: main reconciled at `7d64e0f4`; product/tests complete at
 pass 62/62; scoped coverage, strict TypeScript and repository ESLint pass.
 Source-pinned evidence and remaining scope: `docs/future/modules/F05-ghostproof/HANDOFF.md`.
 Full feature, production activation, independent review and hosted/browser gates remain pending.
+
+
+## F05 independent milestone review — 2026-11-20
+
+Worker: `future_features/f05_independent_review`; branch `future/f05-ghostproof`.
+Starting head: `160acff6dfa40491d36aea151b0e7aa679f05307`.
+Product/test source: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: this additive claim, `docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md`,
+and the coordinator-requested correction summary in the F05 handoff.
+Product code is read-only. Review assurance, signer/invoice binding, strict input
+limits, immutable state and cancellation; replay only the existing focused tests.
+Do not run whole-web TypeScript or typed lint while another worker owns the heavy
+validation slot. No remote mutation, production activation, deployment or payment.
+Status: initial review passed 62/62 focused tests. The canonical-format observation
+was corrected by the coordinator at `d44604ce463cec708c77a230b068f0ac44669280` and independently
+re-reviewed; final focused replay passed 67/67. No remaining introduced blocking
+defect found. Whole-web, browser and release gates remain separate.
+
+
+## F05 canonical binding correction — 2026-11-20
+
+Worker: ChatGPT coordinator, independent-review follow-up.
+Base product: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: GhostProof `review.ts` and `review.test.ts` only.
+Acceptance: canonical binding strings must match their complete input; retain
+explicit whitespace normalization of caller-configured signer pins. Add ordinary
+malformed-format coverage and rerun focused checks before independent re-review.
+
+Correction source: `d44604ce463cec708c77a230b068f0ac44669280`. Independent source review and 67/67
+focused tests pass; full integration qualification remains coordinator-owned.

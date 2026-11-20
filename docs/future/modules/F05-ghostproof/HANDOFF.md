@@ -14,6 +14,19 @@ change declares the existing workspace `@ghostpay/ux-receipts` for the web app a
 adds its matching lockfile entry. No external dependency version or integrity
 changed. Existing receipt providers, live receipt UI and active fixes remain separate.
 
+## Independent review correction — 2026-11-20
+
+- Latest product correction: `d44604ce463cec708c77a230b068f0ac44669280`.
+- Complete canonical invoice-binding strings are now required; deliberate trimming
+  of caller-configured trusted signer pins is preserved.
+- The independent reviewer inspected the full milestone and this two-file follow-up.
+  Final focused replay passes **67/67 tests in 2 files**; the original 62-test and
+  coverage results below remain pinned to the initial product commit.
+- [Independent review](INDEPENDENT_REVIEW.md) records source identities, the resolved
+  observation and both actual replay results. No introduced blocking defect remains
+  in the reviewed milestone. Whole-web checks, browser/provider integration and
+  production activation remain separate gates.
+
 ## Delivered behavior
 
 `reviewReceipt(text, options)` checks serialized receipts with the shared strict
