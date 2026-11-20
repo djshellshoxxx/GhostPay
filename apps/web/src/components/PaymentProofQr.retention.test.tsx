@@ -64,13 +64,13 @@ describe('included-payment proof presentation retention', () => {
     const source = {};
     const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
     show();
-    const displayed = proofText()?.value;
     fireEvent.change(screen.getByLabelText('Close payment proof previews automatically'), { target: { value: '300000' } });
     expect(localStorage.getItem(PROOF_POLICY)).toBe('{"delay":300000}');
     expect(localStorage.getItem(RETENTION_KEY)).toBeNull();
     act(() => { vi.advanceTimersByTime(299_000); });
-    view.rerender(<PaymentProofQr receipt={{ ...RECEIPT, createdAt: '2026-10-25T00:04:59.000Z' }} sourceIdentity={source} />);
-    expect(proofText()?.value).toBe(displayed);
+    const current = { ...RECEIPT, createdAt: '2026-10-25T00:04:59.000Z' };
+    view.rerender(<PaymentProofQr receipt={current} sourceIdentity={source} />);
+    expect(proofText()?.value).toBe(JSON.stringify(current, null, 2));
     act(() => { vi.advanceTimersByTime(1_000); });
     expect(proofText()).toBeNull();
     expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
@@ -91,19 +91,19 @@ describe('included-payment proof presentation retention', () => {
     expect(proofText()).toBeNull();
   });
 
-  it('keeps manual confirmation bound to the shown snapshot across ordinary same-source rerenders', () => {
+  it('keeps manual confirmation bound to the displayed payment across ordinary same-source rerenders', () => {
     const source = {};
     const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
     show(); preview();
-    const displayed = proofText()?.value;
-    view.rerender(<PaymentProofQr receipt={{ ...RECEIPT, createdAt: '2026-10-25T00:00:01.000Z' }} sourceIdentity={source} />);
-    expect(proofText()?.value).toBe(displayed);
+    const current = { ...RECEIPT, createdAt: '2026-10-25T00:00:01.000Z' };
+    view.rerender(<PaymentProofQr receipt={current} sourceIdentity={source} />);
+    expect(proofText()?.value).toBe(JSON.stringify(current, null, 2));
     expect(screen.getByText('Payment proof previews to close: 1')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Close previewed proofs' }));
     expect(proofText()).toBeNull();
   });
 
-  it('preserves current receipt copy/download bytes across snapshot rerenders and cleanup', async () => {
+  it('preserves live receipt display and copy/download bytes across rerenders and cleanup', async () => {
     const source = {};
     const writeText = vi.fn(() => Promise.resolve());
     const originalClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
@@ -123,11 +123,10 @@ describe('included-payment proof presentation retention', () => {
     try {
       const view = render(<PaymentProofQr receipt={RECEIPT} sourceIdentity={source} />);
       show();
-      const displayed = proofText()?.value;
       const current = { ...RECEIPT, createdAt: '2026-10-25T00:00:01.000Z' };
       const expected = JSON.stringify(current, null, 2);
       view.rerender(<PaymentProofQr receipt={current} sourceIdentity={source} />);
-      expect(proofText()?.value).toBe(displayed);
+      expect(proofText()?.value).toBe(expected);
       const copy = screen.getByRole('button', { name: 'Copy proof JSON' });
       fireEvent.click(copy);
       await waitFor(() => { expect(writeText).toHaveBeenCalledExactlyOnceWith(expected); });
@@ -153,9 +152,8 @@ describe('included-payment proof presentation retention', () => {
     act(() => { vi.advanceTimersByTime(299_000); });
     const replacement = { ...RECEIPT, txHash: `0x${'ef'.repeat(32)}` as const };
     view.rerender(<PaymentProofQr receipt={replacement} sourceIdentity={{}} />);
-    expect(proofText()).toBeNull();
+    expect(proofText()?.value).toContain(replacement.txHash);
     expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
-    show();
     expect(proofText()?.value).toContain(replacement.txHash);
     act(() => { vi.advanceTimersByTime(1_000); });
     expect(proofText()?.value).toContain(replacement.txHash);
@@ -183,8 +181,8 @@ describe('included-payment proof presentation retention', () => {
     act(() => { vi.advanceTimersByTime(299_000); });
     view.rerender(<PaymentProofQr receipt={{ ...RECEIPT, status: status as LocalReceipt['status'] }} sourceIdentity={source} />);
     expect(screen.queryByRole('button', { name: 'Close previewed proofs' })).toBeNull();
-    expect(proofText()).toBeNull();
-    show(); preview();
+    expect(proofText()?.value).toContain(`"status": "${status}"`);
+    preview();
     expect(screen.getByText('Payment proof previews to close: 0')).toBeTruthy();
     act(() => { vi.advanceTimersByTime(301_000); });
     expect(proofText()).not.toBeNull();
