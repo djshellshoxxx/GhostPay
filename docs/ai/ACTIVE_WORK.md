@@ -508,3 +508,24 @@ Run real local Git concurrency regressions and obtain independent source/test re
 Only then establish or adopt the remote coordination ref before shared tracking or
 integration. Do not bypass required CI/review, force-push, deploy, or rewrite other branches.
 Status: implementation d3749e45633bd1825b5b773b11a9a975476e2ffe independently reviewed; 10/10 real-Git tests pass locally and independently. Two reviewer-found tag/clock issues were reproduced and fixed before remote use. Remote establishment and cycle evidence are tracked in docs/automation/CYCLE_HISTORY.md.
+# Bounded native verification and cycle checkpoint — 2026-11-19 Pacific
+
+Cycle: `20261120T0035Z`; worker: native ChatGPT `/root` coordinator.
+Branch: `automation/20261120T0035Z/coordinator/cycle-checkpoint`.
+Exact branch base: `61f2b3729fa4b78c90d43a1ecd8c351e9c22f577` (existing ledger PR #261).
+Observed application main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: additive updates to the nine existing `docs/automation/` ledgers, one source-pinned
+evidence snapshot under its existing `data/` directory, this ownership claim, and the existing
+`docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md`. Preserve every historical record.
+Dependencies: read-only PR #289 `856b2d60`, #285 `89942105`, #278 `d74af79e`, and #261 `61f2b372`.
+The existing owners retain their source branches; the QR repair is separately claimed by
+`/root/spec_verification_review` on `automation/20261120T0035Z/worker/qr-kind-primitives`.
+Acceptance: record real repository Vitest/type/lint/build evidence, exact-head hosted checks,
+ancestry plus blob equivalence, separate author/reviewer identities, current integration-lock state,
+and actionable blockers. No duplicate implementation of the already integrated base64url fixture fix.
+Expected checks: Markdown target validation, source/commit identity checks, `git diff --check`,
+independent documentation review, and exact-head hosted qualification after draft publication.
+No application, workflow, dependency, production configuration, release, or deployment changes.
+Acquire and revalidate the durable integration lock before shared ledger publication; no main merge
+without visible required protections and all mandatory independent/security qualification.
+
