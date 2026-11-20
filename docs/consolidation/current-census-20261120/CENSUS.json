@@ -275,71 +275,176 @@
     },
     {
       "name": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 35,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "automation/20261119T204728Z/bug/qr-kind-failclosed",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 35,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 6,
+        "behind_by": 76,
+        "changed_files_returned": 70,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T0035Z/worker/qr-flag-coverage",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 403,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 258,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "automation/20261120T0035Z/worker/qr-kind-primitives",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 35,
+        "changed_files_returned": 5,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T0115Z/coordinator/clipboard-qualification",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 406,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 262,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 10,
+        "behind_by": 76,
+        "changed_files_returned": 136,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T0115Z/worker/receipt-hash-validation",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 430,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 265,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "automation/20261120T0243Z/worker/format-units-validation",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 39,
+        "changed_files_returned": 4,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T0434Z/bug/erc20-simulation-result",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 39,
+        "changed_files_returned": 4,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 25,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 32,
+        "changed_files_returned": 4,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 8,
+        "behind_by": 0,
+        "changed_files_returned": 5,
+        "application_paths_returned": 3
+      }
     },
     {
       "name": "automation/20261120T1042Z/bug/ledger-actionable-activation",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 32,
+        "changed_files_returned": 3,
+        "application_paths_returned": 1
+      }
     },
     {
       "name": "automation/20261120T1241Z/bug/receipt-print-css",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 8,
+        "behind_by": 0,
+        "changed_files_returned": 11,
+        "application_paths_returned": 9
+      }
     },
     {
       "name": "automation/20261120T1435Z/bug/chain-scoped-tags",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 9,
+        "behind_by": 32,
+        "changed_files_returned": 5,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 9,
+        "behind_by": 32,
+        "changed_files_returned": 5,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "automation/20261120T1635Z/bug/tron-scan-abort",
