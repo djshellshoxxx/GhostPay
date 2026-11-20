@@ -11,8 +11,8 @@ import type { Translator } from '../i18n/translator';
 /** Minimal EIP-1193 provider surface. */
 export interface Eip1193Provider {
   request(args: { readonly method: string; readonly params?: readonly unknown[] | object }): Promise<unknown>;
-  on?(event: string, listener: () => void): void;
-  removeListener?(event: string, listener: () => void): void;
+  on?: (this: Eip1193Provider, event: string, listener: () => void) => void;
+  removeListener?: (this: Eip1193Provider, event: string, listener: () => void) => void;
 }
 
 export interface WalletInfo {

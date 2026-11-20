@@ -144,7 +144,7 @@ describe('merchant invoice presentation retention', () => {
     expect(invoicePreviewRetention.confirm(plan)).toEqual({ kind: 'stale' });
     act(() => { window.dispatchEvent(new Event('focus')); });
     expect(invoicePreviewRetention.preview().count).toBe(0);
-    await act(async () => { pending.resolve(true); });
+    await act(async () => { pending.resolve(true); await pending.promise; });
     const replacement = (await screen.findByRole<HTMLTextAreaElement>('textbox', { name: 'New signed invoice link' })).value;
     expect(replacement).not.toBe(first);
     expect(invoicePreviewRetention.preview().count).toBe(1);
@@ -170,8 +170,9 @@ describe('merchant invoice presentation retention', () => {
     vi.spyOn(keyVault, 'loadedKeysRecoverable').mockReturnValueOnce(pending.promise);
     const build = vi.spyOn(merchantTemplate, 'buildMerchantTemplateInvoice');
     fireEvent.click(issueButton());
-    const completion = build.mock.results[0]?.value;
-    if (completion === undefined) throw new Error('Expected the actual issuer operation.');
+    const result = build.mock.results[0];
+    if (result?.type !== 'return') throw new Error('Expected the actual issuer operation.');
+    const completion = result.value;
     expect(invoicePreviewRetention.preview().count).toBe(0);
     const seller = getSessionPublic();
     const before = stored();
