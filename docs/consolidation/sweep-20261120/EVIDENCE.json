@@ -1,0 +1,422 @@
+{
+  "format": "ghostpay-sweep-consolidation/1",
+  "base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+  "donor": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+  "tested_source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+  "tested_tree": "fa45263d31b3c92dc0c3f45e179697a18af33e56",
+  "successor_sources": [
+    "6ed5c66b514e11eaca1817c6b83a863b2ebaf89e",
+    "d14ac788da5254890e683f191a91ba619d1dd102",
+    "ba6b6d44a16d151b53f104715754c4a9bfd9610b",
+    "a603603d5e84814451c6f77945871e9224467b32"
+  ],
+  "review_authority_test_source": "8ca38218ba87a5cee479ea5885b6a00bc0791f28",
+  "review_authority_test_blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+  "baseline": [
+    {
+      "name": "sweep-review-baseline",
+      "source": "bd1d4265731d46f621021417ef46e13699b3eda2",
+      "exit_code": 1,
+      "passed": 4,
+      "failed": 15,
+      "filtered": 0,
+      "log_sha256": "1165a9861b493688011fbd5a5bcfe685682bbfe804a38c0fdb55bc6f531550e7"
+    },
+    {
+      "name": "sweep-session-baseline",
+      "source": "bd1d4265731d46f621021417ef46e13699b3eda2",
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 1,
+      "filtered": 70,
+      "log_sha256": "f59ab23c1a90fab2ca178f2d0397f53762c46e2f748a22342a4cf60a42a7e1c0"
+    }
+  ],
+  "focused_checks": [
+    {
+      "file": "src/lib/sweep.reviewAuthority.test.ts",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 19,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-1.log",
+      "log_sha256": "3e0d2f7a91384a0bc0658c8d7cd5cdbe78a003e2d77ec89875ea0eb595aa89b0",
+      "log_bytes": 345,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/lib/sweep.reviewAuthority.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "src/views/Sweep.quoteLifecycle.test.tsx",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 71,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-2.log",
+      "log_sha256": "97b688cae9534e8bf12e0270b4e6bfc384158ebf550de0225ac44bed94f94ba8",
+      "log_bytes": 365,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/views/Sweep.quoteLifecycle.test.tsx",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "src/lib/sweep.test.ts",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 99,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-3.log",
+      "log_sha256": "94282c0e33e898830a0aa010bfac88d6c3230b8a1b73491662fa6914584e97a3",
+      "log_bytes": 330,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/lib/sweep.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "src/views/Sweep.test.tsx",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 55,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-4.log",
+      "log_sha256": "f6921bed1b83070572aa5813f01f29d56f61b056eddba1eee9e3501dbb9bc48c",
+      "log_bytes": 4990,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/views/Sweep.test.tsx",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "src/views/Sweep.privacy.test.tsx",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 17,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-5.log",
+      "log_sha256": "3538e6bf97421934b5188ea60cedbacbf4086e9cefa52d6cf840e8dfb7f44f42",
+      "log_bytes": 533,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/views/Sweep.privacy.test.tsx",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "src/lib/scanPrivacy.test.ts",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 32,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-6.log",
+      "log_sha256": "0ef600504fcd0be16f7cfe31f69ffd6adeb700942afc6725e3744b85b3dead41",
+      "log_bytes": 335,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/lib/scanPrivacy.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "src/i18n/securityKeys.test.ts",
+      "exit_code": 0,
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "passed": 12,
+      "failed": 0,
+      "pending": 0,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-qualified-7.log",
+      "log_sha256": "dc192b1d573bcf3f49003fe899bca87fb96eb657290267d18c3ed31331161d43",
+      "log_bytes": 348,
+      "node_options": "--max-old-space-size=512",
+      "arguments": [
+        "run",
+        "src/i18n/securityKeys.test.ts",
+        "--coverage.enabled=false",
+        "--maxWorkers=1",
+        "--reporter=default",
+        "--reporter=json"
+      ]
+    }
+  ],
+  "distinct_focused_passes": 305,
+  "dependency_reuse": {
+    "observed_at": "2026-11-20T17:04:32.590591+00:00",
+    "source_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+    "target_sha": "d1d9cc3efa325f9ad03450f6e892c66059e76a40",
+    "package_lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+    "copied_paths": [
+      "node_modules",
+      "packages/btc-payjoin/dist",
+      "packages/merchant-ledger/dist",
+      "packages/btc-family/dist",
+      "packages/ux-guide/dist",
+      "packages/secret-box/dist",
+      "packages/pool-relayer/dist",
+      "packages/invoice-schema/dist",
+      "packages/chain-solana/dist",
+      "packages/hygiene/dist",
+      "packages/privacy-pipeline/dist",
+      "packages/chain-evm-extra/dist",
+      "packages/core-crypto/dist",
+      "packages/address-safety/dist",
+      "packages/scan-source/dist",
+      "packages/external-pools-privacypools/dist",
+      "packages/pool-prover/dist",
+      "packages/ux-sandbox/dist",
+      "packages/confidential-contracts/node_modules",
+      "packages/net-harness/dist",
+      "packages/payment-uri/dist",
+      "packages/ux-notify/dist",
+      "packages/ux-vault/dist",
+      "packages/chain-tron/dist",
+      "packages/ux-privacy/dist",
+      "packages/sdk/dist",
+      "packages/ux-intake/dist",
+      "packages/external-pools-railgun/dist",
+      "packages/plugin-api/dist",
+      "packages/policy-scheme/dist",
+      "packages/ops-monitor/dist",
+      "packages/chain-adapters/dist",
+      "packages/relayer-guard/dist",
+      "packages/privacy-profiles/dist",
+      "packages/metadata-hardening/dist",
+      "packages/pool-sdk/dist",
+      "packages/ux-presets/dist",
+      "packages/ux-flow/dist",
+      "packages/ux-connect/dist",
+      "packages/qr-exchange/dist",
+      "packages/sandbox/dist",
+      "packages/ux-fiat/dist",
+      "packages/payer-sponsor/dist",
+      "packages/pir-two-server/dist",
+      "packages/ux-schedule/dist",
+      "packages/merchant-billing/dist",
+      "packages/net-transport/dist",
+      "packages/ux-i18n/dist",
+      "packages/ux-fees/dist",
+      "packages/ux-core/dist",
+      "packages/cli/dist",
+      "packages/ux-links/dist",
+      "packages/amount-blur/dist",
+      "packages/external-pools/dist",
+      "packages/merchant-multisig/dist",
+      "packages/pool-circuits/dist",
+      "packages/confidential-amounts/dist",
+      "packages/tron-adapter/dist",
+      "packages/tx-review/dist",
+      "packages/i18n/dist",
+      "packages/solana-stealth/dist",
+      "packages/btc-silent-payments/dist",
+      "packages/ux-export/dist",
+      "packages/ux-receipts/dist",
+      "packages/hops/dist",
+      "packages/donation/dist",
+      "packages/merchant-hooks/dist",
+      "apps/relayer/node_modules"
+    ],
+    "verification": "Complete locked installation and built dependency outputs reused from exact qualified source; package source, manifests and root build configuration match. Workspace symlinks resolve inside the target worktree. Not a fresh installation or build."
+  },
+  "product_sources": [
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9ffde108dc29cdb99d36a9333cdebd4b7f1d1415"
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0b37e89513340df81a1c0dbf3410ff9e474df6c5"
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46dabb22224684a8638a26c536c53db4aea605ea"
+    },
+    {
+      "path": "apps/web/e2e/sweep.spec.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "782aa57661a8ce4d8db0e98789d6ce5b58c35d25"
+    },
+    {
+      "path": "apps/web/locales/ar.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "734af2fb7f17e150d7235b15d9c007f896a2dd3b"
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "afd359647e11d684096774a0c711c997a7319ef1"
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ff38b5bab8ba0a9833d338a6369c49583a146bc"
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2758d892030bac000259d02dfe627eced61c234d"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3cdc5ce0fb5b8d96487dff6479d2595d1ecbb3cf"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "929e8059142d482e4130e0103d821161280bf8cd"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b95a021577597705c25510534ac98bbe994292a0"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c45152ff8babdb2b1039cdc414ccde0fd5f71819"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a351684b70b84a73705c7aed73dee65bd45cf36c"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "13a977cbfa59ee1d7c8c688afa74e9fc8c981f4e"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "586cd0d242378e486f22e5a5ae5a2533bacbe9ae"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4b6a65c45863f2b312f2f5383d17f7c21bf21649"
+    }
+  ],
+  "independent_review": {
+    "reviewer": "integration_review",
+    "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+    "result": "No blocking source finding; approved for draft publication and qualification. No independent test execution."
+  },
+  "limits": [
+    "No browser execution on this composition; current local Chromium cannot create its required process-singleton socket.",
+    "Focused files ran with coverage disabled; repository coverage thresholds remain unchanged.",
+    "Full original web typecheck and typed lint passed; complete combined-head hosted, browser and integration checks remain required."
+  ],
+  "full_web_gates": [
+    {
+      "gate": "typecheck",
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "exit_code": 0,
+      "seconds": 19.223,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-web-typecheck.log",
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "gate": "lint",
+      "source": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "exit_code": 0,
+      "seconds": 44.16,
+      "log": "/workspace/scratch/994a0d214fb9/sweep-web-lint.log",
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    }
+  ],
+  "publication_mapping": [
+    {
+      "local": "d1d9cc3efa325f9ad03450f6e892c66059e76a40",
+      "public": "62b2cd1e6623ccbb1ff5e395fd673a1a9a17e396",
+      "tree": "f250c6f72ad2aeeeaf2f724a3e28692ed24fcca9"
+    },
+    {
+      "local": "bd1d4265731d46f621021417ef46e13699b3eda2",
+      "public": "8d7adf85dcf10f37d7e1b4e9380a7a809725a5ee",
+      "tree": "5e1a310590b0fd12206abc655050087d64e9a07d"
+    },
+    {
+      "local": "8b5035eaa47f2bf73504a583cbc6a489b705a7eb",
+      "public": "f2344b379bcf69d2dbaa3ef038dba89207b9ca4d",
+      "tree": "e0f3537a6d10b1259ab47dc81fef42abe38c563a"
+    },
+    {
+      "local": "6efed5795dba2c8adf7127b37d0b7a951cbf309b",
+      "public": "0f22c3702d15ebd832d7fc72938c9f2a7438d6f2",
+      "tree": "bf43169aa200ede3bc066b27e58f4b3f3f4f5325"
+    },
+    {
+      "local": "9e5e436bc09432f4644de1383ad74bc0b3bac4c8",
+      "public": "cc192b1e230af1cf751357279ae10f04a0038b06",
+      "tree": "fa45263d31b3c92dc0c3f45e179697a18af33e56"
+    }
+  ],
+  "published_tested_product_head": "cc192b1e230af1cf751357279ae10f04a0038b06",
+  "published_product_tree": "fa45263d31b3c92dc0c3f45e179697a18af33e56"
+}
