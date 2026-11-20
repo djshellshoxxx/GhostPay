@@ -41,6 +41,15 @@ Source review at `8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9` identifies the exist
 5. Close only the QR/textarea presentation and keep the original result, receipt-copy/download, exact hash and every invoice, vault, backup, attempt, recovery, trust and security record. UI copy must describe closing previews, not erasure or settlement. No new sensitive persistent collection or origin-wide deletion is permitted.
 6. Execute controlled component and actual-Pay regressions for consent, source replacement, stale confirmation, fresh Show lifetime, ordinary rerenders, pending exclusion, denied/malformed policy, failed explicit Show, unmount and preservation of payment authority/journal bytes. Record exact-source results; browser/full release gates remain separate until executed.
 
+## Preference focus and reload acceptance
+
+The existing M2 reload/concurrency contract also applies to displayed presentation preferences. A returning tab may have missed or not yet received a storage notification; expiry already rereads policy on focus. Controls must reconcile the same effective policy before presenting stale consent.
+
+1. On window focus, reread only the control's current invoice or proof preference. Update its displayed effective value. Denied or malformed reads retain the existing off fallback.
+2. Invalidate an open manual confirmation if that effective value changed. Preserve a current manual plan when the effective value is unchanged. A focus event never confirms a manual plan or creates an independent cleanup capability.
+3. Keep category changes isolated: the old category's plan, preference and focus listener cannot affect the replacement control. A real remount reads the persisted choice; all added listeners are removed on unmount.
+4. Preserve existing expiry timing, registration identity, cross-category consent, receipt exports, transaction state and every protected persistent store. This follow-through completes the bounded preference-concurrency behavior; it does not establish persistent-retention or browser/release completion.
+
 ## Architecture and quality
 
 Static, browser-only, non-custodial Pages scope. No contract, fee, dependency, network, deployment or future-suite changes. Preserve all security gates. Policy modules separate from side effects; bounded inputs/collections; neutral errors; explicit cancellation; accessible UI and existing localization conventions. Pure helpers must be wired before claiming feature completion.
