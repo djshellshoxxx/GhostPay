@@ -45,4 +45,3 @@ The broad malformed-value matrices overlap and need not be copied. Keep #290's m
 ## Gate decision
 
 A supplementary branch must start at a freshly verified #290 head and contain no new runtime guard or competing guide rewrite. Qualify the added tests against that base with repository Vitest/lint/type checking and independent review. Preserve external integration-lock ownership and all existing CI/protection/security restrictions. No merge, branch deletion, workflow retry or deployment was performed by this reviewer.
-
