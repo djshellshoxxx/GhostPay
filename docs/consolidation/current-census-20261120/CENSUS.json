@@ -458,15 +458,36 @@
     },
     {
       "name": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 400,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 258,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "automation/20261120T003500Z/coordinator/qualification-evidence",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 403,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 258,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "automation/20261120T004531Z/feature/clipboard-guard",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 403,
+        "behind_by": 34,
+        "changed_files_returned": 300,
+        "application_paths_returned": 262,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "backup/codex-observed-pr37-915d710-20261028",
@@ -500,19 +521,43 @@
     },
     {
       "name": "chatgpt/btc-spent-private-scan-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 18,
+        "behind_by": 97,
+        "changed_files_returned": 63,
+        "application_paths_returned": 39
+      }
     },
     {
       "name": "chatgpt/btc-spent-qualification-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 20,
+        "behind_by": 97,
+        "changed_files_returned": 64,
+        "application_paths_returned": 39
+      }
     },
     {
       "name": "chatgpt/btc-spentness-private-scan-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 15,
+        "behind_by": 61,
+        "changed_files_returned": 57,
+        "application_paths_returned": 38
+      }
     },
     {
       "name": "chatgpt/consolidation-reconciliation-20261113",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1595,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-beta-consolidation-20261118",
@@ -526,19 +571,43 @@
     },
     {
       "name": "chatgpt/ghostpay-beta-log-artifact-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 101,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-beta-qualification-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 718,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-billing-horizon-port-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 839,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-cli-sentinel-port-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 838,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-historical-consolidation-20261115",
@@ -552,27 +621,64 @@
     },
     {
       "name": "chatgpt/ghostpay-idle-lifecycle-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 84,
+        "behind_by": 98,
+        "changed_files_returned": 300,
+        "application_paths_returned": 130,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 92,
+        "changed_files_returned": 21,
+        "application_paths_returned": 15
+      }
     },
     {
       "name": "chatgpt/ghostpay-integration-matrix-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 839,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-invoice-validation-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 101,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-merchant-csv-port-20261112",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 839,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 106,
+        "changed_files_returned": 16,
+        "application_paths_returned": 5
+      }
     },
     {
       "name": "chatgpt/ghostpay-onion-canonical-port-20261112",
