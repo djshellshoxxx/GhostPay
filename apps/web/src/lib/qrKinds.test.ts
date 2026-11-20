@@ -1,9 +1,26 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contrastRatio, deltaE, type Cvd } from './qrContrast';
 import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrPalette } from './qrKinds';
 
 const css = readFileSync(new URL('../styles/qr.css', import.meta.url), 'utf8');
+
+function nonStringKeys(validKey: string): readonly (readonly [string, unknown])[] {
+  return [
+    ['number', 1],
+    ['boolean', true],
+    ['bigint', 1n],
+    ['symbol', Symbol(validKey)],
+    ['null', null],
+    ['undefined', undefined],
+    ['empty array', []],
+    ['array containing a valid key', [validKey]],
+    ['array-like object', { 0: validKey, length: 1 }],
+    ['boxed string', Object(validKey) as unknown],
+    ['coercible object', { toString: () => validKey }],
+    ['null-prototype object', Object.create(null) as unknown],
+  ];
+}
 
 describe('taxonomy', () => {
   it('table snapshot', () => {
@@ -39,6 +56,26 @@ describe('taxonomy', () => {
     for (const raw of ['unknown', '__proto__', 'constructor']) {
       expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0])).toThrow('unknown QR kind');
     }
+  });
+  it.each(nonStringKeys('invoice-link'))('rejects a non-string payload type: %s', (_label, raw) => {
+    const type = raw as Parameters<typeof kindForPayload>[0];
+    expect(() => kindForPayload(type)).toThrowError(new TypeError('unknown QR payload type'));
+    expect(() => kindForPayload(type, { unverified: true })).toThrowError(new TypeError('unknown QR payload type'));
+  });
+  it.each(nonStringKeys('secret'))('rejects a non-string frame kind: %s', (_label, raw) => {
+    expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0])).toThrowError(new TypeError('unknown QR kind'));
+  });
+  it('rejects payload objects without invoking a changing conversion hook', () => {
+    const convert = vi.fn().mockReturnValueOnce('keystore-backup').mockReturnValue('invoice-link');
+    const type = { [Symbol.toPrimitive]: convert } as unknown as Parameters<typeof kindForPayload>[0];
+    expect(() => kindForPayload(type)).toThrowError(new TypeError('unknown QR payload type'));
+    expect(convert).not.toHaveBeenCalled();
+  });
+  it('rejects frame objects without invoking a changing conversion hook', () => {
+    const convert = vi.fn().mockReturnValueOnce('secret').mockReturnValue('shareable');
+    const kind = { [Symbol.toPrimitive]: convert } as unknown as Parameters<typeof qrKindClass>[0];
+    expect(() => qrKindClass(kind)).toThrowError(new TypeError('unknown QR kind'));
+    expect(convert).not.toHaveBeenCalled();
   });
   it('maps payloads to kinds; secret is never downgraded', () => {
     expect(kindForPayload('keystore-backup')).toBe('secret');
