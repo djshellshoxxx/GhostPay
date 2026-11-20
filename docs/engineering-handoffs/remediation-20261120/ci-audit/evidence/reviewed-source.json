@@ -1,0 +1,45 @@
+{
+  "source_commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "files": [
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "git_blob": "251fdedabf2f2be66ce1a0b48946ee5721fe7691",
+      "sha256": "24a7310711a50671fd0147ef5e227e9fd2964964ed8938d2c42eb2796b7289e0"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.ts",
+      "git_blob": "1fbaa3af3f200622596bd552d7af6e330d1c2fb8",
+      "sha256": "fa3b4db0e0fff247939f16965d4d59df04831a3e6a5391ca6ce939719512b9f3"
+    },
+    {
+      "path": "packages/chain-adapters/src/fixtures.testutil.ts",
+      "git_blob": "e7fe0201cbbc0f7581baabf25e67a1c951707f6f",
+      "sha256": "943c6b0f2e1cf85cc32df51ec97b5f0e8a6f6150504658260826f6a724535d8f"
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "git_blob": "d86959ef4ba6418eec5737fdb9e54db7d2859a1f",
+      "sha256": "0d184d94dd418d5b897e1436815f1e1859c152ab3cc888dd5e6e45dd442418a8"
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "git_blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d",
+      "sha256": "5fb3017bcf62f924ab1461f05ab16a4bdf74bc8edcd4451f511a8a2987481c8f"
+    },
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "git_blob": "6657fd5eb74278a37355c56847d47e6affb92c7e",
+      "sha256": "c4ceb6648fe16697e0a53aa5b688dda8b28c5dd79be9ca0215c283b5fc7d4e3f"
+    },
+    {
+      "path": "apps/web/scripts/apply-csp.mjs",
+      "git_blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+      "sha256": "914a80cab61dbe0a3f203a6cd2b6b305de63ebe224a0dd2979c969e52dea7139"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+    }
+  ]
+}

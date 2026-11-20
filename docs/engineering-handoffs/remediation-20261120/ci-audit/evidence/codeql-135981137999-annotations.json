@@ -1,0 +1,26 @@
+[
+  {
+    "path": "packages/chain-adapters/src/deployments.test.ts",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/d74af79ebabdc8cead843361c3497b46d8c421f9/packages/chain-adapters/src/deployments.test.ts",
+    "start_line": 96,
+    "start_column": 33,
+    "end_line": 96,
+    "end_column": 71,
+    "annotation_level": "failure",
+    "title": "Incomplete string escaping or encoding",
+    "message": "This replaces only the first occurrence of '{{'.",
+    "raw_details": null
+  },
+  {
+    "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+    "blob_href": "https://github.com/djshellshoxxx/GhostPay/blob/d74af79ebabdc8cead843361c3497b46d8c421f9/scripts/tests/privacy-csp-bundle.test.mjs",
+    "start_line": 130,
+    "start_column": 53,
+    "end_line": 130,
+    "end_column": 64,
+    "annotation_level": "failure",
+    "title": "Incomplete string escaping or encoding",
+    "message": "This replaces only the first occurrence of '>'.",
+    "raw_details": null
+  }
+]

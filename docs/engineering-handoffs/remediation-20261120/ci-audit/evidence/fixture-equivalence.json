@@ -1,0 +1,27 @@
+{
+  "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "node": "v22.23.4",
+  "result": "PASS",
+  "fixtures": [
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "byte_identical": true,
+      "bytes": 760,
+      "sha256": "a98b16b14e498d5598beb530caeaa0d1273e59ced23b19f8fff158bf7fd90281",
+      "controls": [
+        "own top-level __proto__ member retained",
+        "nested deployTx unchanged"
+      ]
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "byte_identical": true,
+      "bytes": 250,
+      "sha256": "8d1df43e5446dde7b518b47c8f8fd1b399669c7f8ba8b7080afc7d18ef70386a",
+      "controls": [
+        "single original closing angle bracket",
+        "two content attributes retained"
+      ]
+    }
+  ]
+}
