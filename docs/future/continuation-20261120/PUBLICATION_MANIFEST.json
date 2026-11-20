@@ -1,0 +1,184 @@
+{
+  "schema": "ghostpay.future-feature-publication/v1",
+  "observed_at_utc": "2026-11-20 16:49:51 UTC",
+  "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "features": [
+    {
+      "module": "F04",
+      "branch": "future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "tree": "c86aa72024bc1fd4bd0f7686546acc725417701c",
+      "local": "b21b012fd8e1340a455e4466ff2a2bc22c5a2e62",
+      "pull_request": {
+        "number": 322,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/322",
+        "draft": true
+      },
+      "commits": [
+        {
+          "local": "1dc3b8aca2eeea10a35aaa7ec511ae3ad494e227",
+          "published": "2d7120fb3491e312dbb2129b8c548b5ac2a9036a",
+          "tree": "3a5ceb1b68093696d910ccd1e72681d3b271ab55"
+        },
+        {
+          "local": "b0cedd6470aa770a7b2eb3fa3c54c88e6aee08dd",
+          "published": "4c884663af81f9624b11d0294dd99a7ce6072e7f",
+          "tree": "db8064b903f4facec2d6255cb1c33b3695f09eaf"
+        },
+        {
+          "local": "be37f79df4d60e2d87cd845fbf8e6f0fa117b135",
+          "published": "62312ba0f0fb1c84abfce0ea7cab467aaea98753",
+          "tree": "a00350a2230da989b92046238affd4db806bc599"
+        },
+        {
+          "local": "81ff020105231b0fba82798a6f1356ad1f18b409",
+          "published": "e35b1b3a73b5803a37c8fa1f8804a043c732854d",
+          "tree": "48cf22bd8d81cf198c9aba76d4e5b8581a4e8ea5"
+        },
+        {
+          "local": "966f415e520298310efd1f03883ea69844ea5eed",
+          "published": "7aa093817d3f71cee0c69301a22bfa0c91b93373",
+          "tree": "78b153dca133f9882c40c5f6c80a2d0539965362"
+        },
+        {
+          "local": "b2dcc7a843dfc89bed6fc8926b3d904d7b365920",
+          "published": "3ff7a3489bb9899071589279e4a5bdc1acdba446",
+          "tree": "377083041a23ec87a748c223ea96e6613ea61a4b"
+        },
+        {
+          "local": "49088efa043ca3f016e0b802f8b7bf51bf18a97a",
+          "published": "9f3ae17894607b986192d7129a069ab8ae73f160",
+          "tree": "d9bb38f57b42fdc91f87f18db5c3a989075f3cd1"
+        },
+        {
+          "local": "cde7944c9391a899acb388d5859ea728831eff18",
+          "published": "a7a8328ee206062916bca1bea5c456f08b00bb03",
+          "tree": "d1570d9f031a97dc3d42b34d9f982e2076d79cdb"
+        },
+        {
+          "local": "19b47216b1c41653913196dd231f40faaa2d76a1",
+          "published": "69fc05b82e944c7d399162e028a6c6a2eaf8284c",
+          "tree": "37396a9f071851cde08e0a948560a0b74a400b4a"
+        },
+        {
+          "local": "b21b012fd8e1340a455e4466ff2a2bc22c5a2e62",
+          "published": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+          "tree": "c86aa72024bc1fd4bd0f7686546acc725417701c"
+        }
+      ]
+    },
+    {
+      "module": "F05",
+      "branch": "future/f05-ghostproof",
+      "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "tree": "21900227e76ee68e390ff7e31dcbd4576b0e7b18",
+      "local": "ca3ce0741233c0fd813c86b7c735717e50021c3c",
+      "pull_request": {
+        "number": 323,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/323",
+        "draft": true
+      },
+      "commits": [
+        {
+          "local": "3ae524e3325cf2b3efbdf6d88e36f73e71c8b433",
+          "published": "16b4864d5aa72e4cc42118d780140d4217ee5ed1",
+          "tree": "92e792cfc8ed7c6c00a6cf6fd663b962ddd5fd00"
+        },
+        {
+          "local": "7d64e0f48273640a5d00cfcfda529f68378593f9",
+          "published": "31b439ec1fb88b7eb71160d5fcb3d1a5874b1648",
+          "tree": "3720fef45987f1e1b90c86c9ae28864320ea045a"
+        },
+        {
+          "local": "726d16dc560f8b12e4c71f6c04895fd1dcbd34f4",
+          "published": "f6eeba53982e2cd1cf580c359bec0f48a476a3b5",
+          "tree": "65a05d5fbf60808f5a34489b944ad84ab1205f4f"
+        },
+        {
+          "local": "160acff6dfa40491d36aea151b0e7aa679f05307",
+          "published": "4f91a0d5b864ab86d66c08c6103c92b2082a2c17",
+          "tree": "e0a30b3d112380eecb61dc73045742f2cacbfb78"
+        },
+        {
+          "local": "d44604ce463cec708c77a230b068f0ac44669280",
+          "published": "035f946313c450e4db35c54dcb66021ea2cb13dd",
+          "tree": "d104bb2809584380426b57ff663c190ba0382c33"
+        },
+        {
+          "local": "f8aab16068bfd55210e0acbcf5bb8492f8c8f472",
+          "published": "1d949cf739fd40f5e607632d71d9d6187c27efdc",
+          "tree": "0dc180b13c04a5b65c439d253d1832cd00690f67"
+        },
+        {
+          "local": "840cddb59dc61411997182bff9dacdbe421574fe",
+          "published": "4df15e5f4e1a5709f8b1e58704b8aab8c93f4d61",
+          "tree": "b11da3a6fde53576e1cc963448d2fe736de645bc"
+        },
+        {
+          "local": "e08333af3eb830a36d375ecf2174db955f559d64",
+          "published": "1590e2c913dd1a5cd1aecf429e9d9b14d894e1e3",
+          "tree": "7db9d71c1a4b74fd411fb5af982991e29dc5569b"
+        },
+        {
+          "local": "ca3ce0741233c0fd813c86b7c735717e50021c3c",
+          "published": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+          "tree": "21900227e76ee68e390ff7e31dcbd4576b0e7b18"
+        }
+      ]
+    },
+    {
+      "module": "F10",
+      "branch": "future/f10-private-recurring",
+      "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "tree": "66aa383fd9d5e065815c28da5a6f9470cc8b74a1",
+      "local": "ebcfb608eccbdbcfa97ff826c5c3bb4f9cecf77d",
+      "pull_request": {
+        "number": 324,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/324",
+        "draft": true
+      },
+      "commits": [
+        {
+          "local": "03f27f61fbd06c839a5aa61783a5f50eb5d7d15f",
+          "published": "c46cca6490544e424cacef7f65c6f83ede60d166",
+          "tree": "024ca9cef34740aa2721c2c2fd0eb73529f9ceee"
+        },
+        {
+          "local": "6d71e9ab2f0fad7ab08777ca31a8eed9e16538ca",
+          "published": "62d3711febd626cacfe6006bb5471a6cf10ab67b",
+          "tree": "1c04b834fe09e46c9406b8727b4891f16443a2b7"
+        },
+        {
+          "local": "e0b6e44379447037be09d20934972d8afc7a6600",
+          "published": "54902b99e1dfac19011d9aaadd032431bc0801f1",
+          "tree": "cc691580e01f14c14cab657b1597e083d2633034"
+        },
+        {
+          "local": "e7991b659fb77c748bf82de6f2e4fe7f8242cc57",
+          "published": "1f8f74cea95f201744ca38e60dcc0c3046751990",
+          "tree": "eb5d68c85f5e170e27fae9e1d1400ccf9f8720d5"
+        },
+        {
+          "local": "a76e89f538314e8d8d292a4caa7c281ef82e64d8",
+          "published": "bea3546ed8fe54c6633b4c5267540d009f15c2fb",
+          "tree": "5a4bca60d91de1417b880f8c8c18277ec8167647"
+        },
+        {
+          "local": "6c579c7a0e74f842200bf2078c5137451bc2c08a",
+          "published": "05a6907eea59d48fe3553b1beaa305fb4392b49f",
+          "tree": "d627e5ffef12c65e5356046c61a763495117b349"
+        },
+        {
+          "local": "e134147beb21b7f71d4776def94cd4e24b83346b",
+          "published": "9bdf6d9a4d74a8afa4560571fb01bc242cf2b61a",
+          "tree": "debd5972dc36dfa7d26323a0f6a85c41b37c441f"
+        },
+        {
+          "local": "ebcfb608eccbdbcfa97ff826c5c3bb4f9cecf77d",
+          "published": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+          "tree": "66aa383fd9d5e065815c28da5a6f9470cc8b74a1"
+        }
+      ]
+    }
+  ]
+}

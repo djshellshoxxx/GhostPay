@@ -1,0 +1,185 @@
+{
+  "observed_at_utc": "2026-11-20 16:49:51 UTC",
+  "note": "Initial post-publication snapshot. Queued or pending workflows are not passes. This wrapper lists pull-request-triggered runs on its first page.",
+  "features": [
+    {
+      "module": "F04",
+      "head": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "workflow_runs": [
+        {
+          "id": 44777150502,
+          "name": "Beta acceptance",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 316,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150502/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150502/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44777150413,
+          "name": "Pages",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 311,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150413/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150413/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44777150449,
+          "name": "Hosting kit",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 433,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150449/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150449/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44777150648,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1566,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150648/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150648/logs",
+          "workflow_id": 391558649
+        }
+      ],
+      "statuses": [
+        {
+          "context": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/0242c779-c796-4406-b969-4a4a8bab320a"
+        }
+      ]
+    },
+    {
+      "module": "F05",
+      "head": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "workflow_runs": [
+        {
+          "id": 44777154841,
+          "name": "CLI operator qualification",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 289,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777154841/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777154841/logs",
+          "workflow_id": 412675588
+        },
+        {
+          "id": 44777155100,
+          "name": "Hosting kit",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 434,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155100/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155100/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44777155138,
+          "name": "Pages",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 312,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155138/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155138/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44777155115,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1567,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155115/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155115/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44777155003,
+          "name": "Beta acceptance",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 317,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155003/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155003/logs",
+          "workflow_id": 414091144
+        }
+      ],
+      "statuses": [
+        {
+          "context": "security/snyk (djshellshoxxx)",
+          "state": "success",
+          "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/0783be5f-4ba5-4801-bac3-6dce0c777efe"
+        }
+      ]
+    },
+    {
+      "module": "F10",
+      "head": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "workflow_runs": [
+        {
+          "id": 44777159934,
+          "name": "Pages",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 313,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159934/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159934/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44777159458,
+          "name": "CLI operator qualification",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 290,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159458/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159458/logs",
+          "workflow_id": 412675588
+        },
+        {
+          "id": 44777159872,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1568,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159872/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159872/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44777159422,
+          "name": "Beta acceptance",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 318,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159422/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159422/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44777159361,
+          "name": "Hosting kit",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 435,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159361/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159361/logs",
+          "workflow_id": 398745505
+        }
+      ],
+      "statuses": [
+        {
+          "context": "security/snyk (djshellshoxxx)",
+          "state": "pending",
+          "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/71ad5a7e-5806-433d-a224-0b2e516c760e"
+        }
+      ]
+    }
+  ]
+}

@@ -736,7 +736,12 @@ Acceptance: preserve original branch ancestry; reconcile current main in each la
 complete bounded independently reviewed milestones; retain exact source/test evidence;
 publish qualified source checkpoints without activating future features or deploying.
 Other active F03, beta, privacy and repair streams remain independently owned.
-Status: discovery and assignment complete; implementation underway.
+Status: implementation, independent review and current-main compatibility checks
+complete. F04/F05/F10 are published separately as draft PRs #322/#323/#324;
+focused tests pass 61/67/84 respectively. Final publication trees were fetched
+and checked for exact identity. Remaining full-feature/hosted acceptance work
+is recorded in `docs/future/continuation-20261120/README.md` and each module's
+handoff. These milestones remain disabled in the production composition.
 
 
 ## Future-feature current-main reconciliation — 2026-11-20

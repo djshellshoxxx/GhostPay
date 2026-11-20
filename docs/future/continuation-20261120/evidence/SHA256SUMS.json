@@ -1,0 +1,9 @@
+{
+  "baseline-bundle-scan.txt": "18d2c8b4b1c8423e1518cc65bd3b46c1cb224fed8e6a51d431382eb8b8d73b33",
+  "baseline-current-main-bundle-scan.txt": "c8391c808cd1f5289191aeaef2ae66e6598a89ac1c7daf5a832dc9cbe91610b4",
+  "baseline-current-main-lean-build.txt": "6ca70e57303041955163b3bb2993e2de89bf2365c7ff02bcee0214a4d239eead",
+  "baseline-lean-build.txt": "98eaf4ce4b6329b210cf9642e3c7f102058cc3c8d3f4475ba5dce4f30858dc05",
+  "baseline-lean-sha256.json": "066f42a2861e87d39a494950bb5c2d28ba65b92c047dafff8135ae10ecc6fcf8",
+  "current-main-validation.json": "ee2e828eb0216c6ce8750895b328c8b5153329d24b2ea40a7a6fd599c75afe42",
+  "libraries-build.txt": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913"
+}
