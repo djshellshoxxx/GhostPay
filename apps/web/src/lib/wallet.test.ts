@@ -270,6 +270,13 @@ describe('pollReceipt', () => {
     await expect(pollReceipt(rpc(() => receipt({ status: 'x' })), HASH as `0x${string}`, ROUTER, noSleep)).rejects.toThrow(/receipt shape/);
     await expect(pollReceipt(rpc(() => receipt({ to: '0x2222222222222222222222222222222222222222' })), HASH as `0x${string}`, ROUTER, noSleep)).rejects.toThrow(SubmissionMismatchError);
   });
+  it.each(['0x2', '0x3', '0xf', '0x10', '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'])(
+    'rejects unsupported EIP-658 status %s without claiming a revert', async (status) => {
+      await expect(pollReceipt(rpc(() => receipt({ status })), HASH as `0x${string}`, ROUTER, noSleep)).rejects.toMatchObject({
+        translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' },
+      });
+    },
+  );
   it.each(['0x1', '0x0'])('rejects a receipt for another transaction with status %s', async (status) => {
     const p = pollReceipt(rpc(() => receipt({ transactionHash: `0x${'8'.repeat(64)}`, status })), HASH as `0x${string}`, ROUTER, noSleep);
     await expect(p).rejects.toThrow(SubmissionMismatchError);

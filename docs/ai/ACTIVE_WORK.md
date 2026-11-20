@@ -2154,3 +2154,13 @@ Inputs: frozen scoped head `814950a1cf99e68765b85f241e6f4a0fc55ea9c6` and publis
 Owned operation: merge the published canonical baseline into this existing scoped PR; resolve only additive ownership-log conflicts and preserve both parents plus every source/test/config blob. No new production implementation, QR extraction, assertion, gate, fee or policy change.
 Acceptance: independent input compatibility and final combined-source review, focused affected checks, then one expected-head non-force update and fresh exact-source hosted qualification. Preserve old artifact evidence at its actual source; do not relabel it as combined-source qualification. Keep subsequent receipts off the frozen PR head.
 Coordination: generation5 canonical lease explicitly released at `2026-11-20T01:00:43Z`; this operation does not acquire or update the shared canonical ref, main, integration lock, deployment or release.
+
+
+# Fresh generation 2 receipt-status bug hunt — 2026-11-20
+
+Worker: /root/bug_hunt_gen2.
+Branch: fix/ghostpay-receipt-status-20261120.
+Base: 9e062b7150e74d1b20e34b0f120add660d9ef02e, the coordinator's isolated combined candidate.
+Owned paths: apps/web/src/lib/wallet.ts, apps/web/src/lib/wallet.test.ts, apps/web/src/lib/payExec.test.ts, this additive claim, and docs/engineering-handoffs/completion-20261120/receipt-status/.
+Acceptance: reproduce unsupported EIP-658 receipt statuses without claiming a revert, preserve valid zero/one, hash correlation, null-pending and legacy destination semantics, then verify the submitted transaction hash/journal remain authoritative and resend stays blocked. Run original focused suites, scoped typed lint and typecheck where executable; record infrastructure failures separately. Independent source review and exact-source hosted qualification remain required.
+Boundaries: no remote/shared-branch changes, fees, contracts, deployment, gate changes or mutation of the concurrently active original privacy branches. Root owns integration.

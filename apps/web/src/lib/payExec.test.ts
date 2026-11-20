@@ -147,6 +147,32 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
   });
 
+  it.each(['0x2', '0xf', '0xffffffffffffffff'])(
+    'keeps an unsupported receipt status %s unconfirmed and prevents another wallet send', async (status) => {
+      const journal = stubAttemptJournal();
+      const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+      const rpc = chainSeeing(wallet, (method, params) => (method === 'eth_getTransactionReceipt'
+        ? { transactionHash: params[0], status, blockNumber: '0x64', to: FAKE_ROUTER }
+        : undefined));
+      const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+      const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+      const hash = `0x${'9'.repeat(64)}`;
+      const payment = sendPayment(session, ctx, built, rt, noStatus);
+      await expect(payment).rejects.toThrow(PostBroadcastError);
+      await expect(payment).rejects.toMatchObject({
+        hash,
+        outcome: { phase: 'verification-incomplete', hash },
+        cause: { translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' } },
+      });
+      expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'payment', status: 'submitted', hash }]);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionByHash')).toHaveLength(1);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionReceipt')).toHaveLength(1);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+      await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    },
+  );
+
   it('refuses when the invoice authority changes during the final wallet recheck', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
     let current = true;
