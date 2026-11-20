@@ -11,6 +11,11 @@ reuse documented, independent branch/spec publication verified, documentation-on
 diffs. No implementation, main merge, deployment, activation, fee decisions or release
 changes. Feature branches append their own claim before their specification commit.
 
+Status: specification drafting, independent contract review and all 40 feature-branch
+publication checks completed. Exact branch heads, spec blob hashes and documentation
+validation are recorded in docs/future/modules/PUBLICATION.md and PUBLICATION.json.
+Runtime implementation and qualification remain separate, unperformed work.
+
 # Historical security promotion — 2026-11-19
 
 Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.

@@ -1,0 +1,1288 @@
+{
+  "schema_version": "ghostpay.future-publication/v1",
+  "date": "2026-11-19",
+  "display_timezone": "America/Los_Angeles",
+  "recorded_at_utc": "2026-11-20T06:42:25.460Z",
+  "repository": "djshellshoxxx/GhostPay",
+  "source_base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "source_root_tree": "2634456ffa35681e799f71b72bb907f946a77618",
+  "shared_foundation_commit": "524aa18bdcd307a3129bbb7a6b7e74838819331e",
+  "index_branch": "docs/ghostpay-future-module-specs-20261119",
+  "scope": "40 specification-only feature branches and one complete review index; no implementation, merge, release, deployment, fee selection or activation",
+  "counts": {
+    "modules": 40,
+    "product_workflows": 18,
+    "privacy_platform_modules_including_research_and_optional_service": 19,
+    "transfer_workflows": 2,
+    "fee_policy_modules": 1,
+    "acceptance_cases": 445,
+    "whitespace_delimited_words": 61958,
+    "source_paths_checked": 183,
+    "npm_script_and_workspace_pairs_checked": 91,
+    "dependency_waves": 5
+  },
+  "static_validation_passed": true,
+  "runtime_tests_executed": false,
+  "concurrent_implementation_preserved": {
+    "branch": "future/f03-private-payment-links",
+    "head": "dd665344d6290c109d2292093e01903e4770adff",
+    "observed_at": "2026-11-20T06:38:03.669Z"
+  },
+  "modules": [
+    {
+      "id": "F01",
+      "title": "GhostTips private donations and tips",
+      "branch": "future/f01-ghosttips",
+      "spec_path": "docs/future/modules/F01-ghosttips/SPEC.md",
+      "claim_commit": "5b5d0273279a670ea7e12363e7719b63023abc5a",
+      "spec_commit": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "verified_branch_head": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "verified_spec_blob": "8aaf9e7b51d954a4b69a63d4331795d527ab46bd",
+      "verified_at_utc": "2026-11-20T06:37:02.124Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F01-ghosttips/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "F03",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F08",
+        "FEE01"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F02",
+      "title": "GhostStore static private storefronts",
+      "branch": "future/f02-ghoststore",
+      "spec_path": "docs/future/modules/F02-ghoststore/SPEC.md",
+      "claim_commit": "ffa1a1fc8e032d48de77eafb11bebd753c2958a6",
+      "spec_commit": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "verified_branch_head": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "verified_spec_blob": "f3a2764f5f5e02a8845adc402ebf51cb08c62c78",
+      "verified_at_utc": "2026-11-20T06:37:02.719Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F02-ghoststore/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "F03",
+        "F08",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F07",
+        "FEE01"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F03",
+      "title": "Private payment links and QR exchange",
+      "branch": "future/f03-private-payment-links-spec",
+      "spec_path": "docs/future/modules/F03-private-payment-links/SPEC.md",
+      "claim_commit": "d473c6b2f37fc846a435e4f2c773c016d9090730",
+      "spec_commit": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "verified_branch_head": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "verified_spec_blob": "6b5b2fde362f21974057fd45cc4ee0165f5fba98",
+      "verified_at_utc": "2026-11-20T06:37:02.737Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F03-private-payment-links/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P04"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "F04",
+      "title": "Private local merchant dashboard",
+      "branch": "future/f04-merchant-dashboard",
+      "spec_path": "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+      "claim_commit": "ae874d7d097696b0c203fb123f720501cf146941",
+      "spec_commit": "711e9e8f7e2b32431353b82c4e39e184d3ba0b58",
+      "verified_branch_head": "711e9e8f7e2b32431353b82c4e39e184d3ba0b58",
+      "verified_spec_blob": "33acde4d1ecf20a6d5d9f653f191332ba100eb22",
+      "verified_at_utc": "2026-11-20T06:37:02.848Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P03"
+      ],
+      "optional_integrations": [
+        "F05",
+        "F06"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F05",
+      "title": "GhostProof selective-disclosure evidence workflow",
+      "branch": "future/f05-ghostproof",
+      "spec_path": "docs/future/modules/F05-ghostproof/SPEC.md",
+      "claim_commit": "ea51653016b34597fd48e3efc01a1101e054c4b9",
+      "spec_commit": "a241d0a5556c23bf2670f6ba17e7c928b41d7eb4",
+      "verified_branch_head": "a241d0a5556c23bf2670f6ba17e7c928b41d7eb4",
+      "verified_spec_blob": "835f180ff3b57f71b40fffba1347ab33098927d9",
+      "verified_at_utc": "2026-11-20T06:37:02.817Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F05-ghostproof/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P12",
+        "P05"
+      ],
+      "optional_integrations": [
+        "P14",
+        "FEE01"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F06",
+      "title": "Encrypted backup and independent recovery workflow",
+      "branch": "future/f06-encrypted-backups",
+      "spec_path": "docs/future/modules/F06-encrypted-backups/SPEC.md",
+      "claim_commit": "689c8057ae182178d244079bffb3493b0d41f58a",
+      "spec_commit": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "verified_branch_head": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "verified_spec_blob": "dd4606355a64cf12a00484229c59fc949781cc64",
+      "verified_at_utc": "2026-11-20T06:37:02.995Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F06-encrypted-backups/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P07"
+      ],
+      "acceptance_cases": 12
+    },
+    {
+      "id": "F07",
+      "title": "GhostPayouts private multi-recipient payouts",
+      "branch": "future/f07-ghostpayouts",
+      "spec_path": "docs/future/modules/F07-ghostpayouts/SPEC.md",
+      "claim_commit": "60dab991976ea50fc36590a08dcd6f368c385ad8",
+      "spec_commit": "90b86766119d3f72870948ee83d039b989659b5f",
+      "verified_branch_head": "90b86766119d3f72870948ee83d039b989659b5f",
+      "verified_spec_blob": "f0a587aa0b3df16cd96c83364ad0a23766e09b6f",
+      "verified_at_utc": "2026-11-20T06:37:02.963Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F07-ghostpayouts/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10",
+        "T01"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F08",
+      "title": "GhostID independent merchant identities",
+      "branch": "future/f08-ghostid",
+      "spec_path": "docs/future/modules/F08-ghostid/SPEC.md",
+      "claim_commit": "c66197e12179febda7d5be63e99aafc77631cb71",
+      "spec_commit": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "verified_branch_head": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "verified_spec_blob": "bb0503aa370b20da049b4b4d50dccf64d5d169e6",
+      "verified_at_utc": "2026-11-20T06:37:02.761Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F08-ghostid/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F16"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F09",
+      "title": "GhostPOS private in-person checkout",
+      "branch": "future/f09-ghostpos",
+      "spec_path": "docs/future/modules/F09-ghostpos/SPEC.md",
+      "claim_commit": "342973b55d00bcde8c3193baaef7e858dd95998d",
+      "spec_commit": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "verified_branch_head": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "verified_spec_blob": "931e1e2360a3027603dc36a35261cacca2809638",
+      "verified_at_utc": "2026-11-20T06:37:02.848Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F09-ghostpos/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "F03",
+        "P03",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F08",
+        "FEE01"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "F10",
+      "title": "Private recurring invoices and subscriptions",
+      "branch": "future/f10-private-recurring",
+      "spec_path": "docs/future/modules/F10-private-recurring/SPEC.md",
+      "claim_commit": "481d10d1c704a519f0f684e7ccfd1add7fef4423",
+      "spec_commit": "1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9",
+      "verified_branch_head": "1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9",
+      "verified_spec_blob": "290217d77665dbbd46b66de66179d0e002f02783",
+      "verified_at_utc": "2026-11-20T06:37:02.726Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F10-private-recurring/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P04",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F03",
+        "FEE01"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "F11",
+      "title": "GhostTeams encrypted merchant collaboration",
+      "branch": "future/f11-ghostteams",
+      "spec_path": "docs/future/modules/F11-ghostteams/SPEC.md",
+      "claim_commit": "240997c718884e2277c3d559b6eb4e1e3889d510",
+      "spec_commit": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "verified_branch_head": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "verified_spec_blob": "feb39d7ae0ee08ede01c1ed415e2c892da84af24",
+      "verified_at_utc": "2026-11-20T06:40:12.181Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F11-ghostteams/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P07",
+        "F08"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F12",
+      "title": "GhostBridge optional P2P-Offramp handoff",
+      "branch": "future/f12-ghostbridge",
+      "spec_path": "docs/future/modules/F12-ghostbridge/SPEC.md",
+      "claim_commit": "fea6fe13b0ee332df94a5bf3a544d638e17947de",
+      "spec_commit": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "verified_branch_head": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "verified_spec_blob": "49156d84d4ce7758da0e8bf2313b645a04ff3dd9",
+      "verified_at_utc": "2026-11-20T06:40:12.186Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F12-ghostbridge/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P04",
+        "P06"
+      ],
+      "optional_integrations": [
+        "FEE01"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "F13",
+      "title": "Privacy-aware optional fiat conversion",
+      "branch": "future/f13-fiat-conversion",
+      "spec_path": "docs/future/modules/F13-fiat-conversion/SPEC.md",
+      "claim_commit": "d1ea8f383ac950a478ec2140e3f819b010bb538a",
+      "spec_commit": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "verified_branch_head": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "verified_spec_blob": "c870fdcc2dfed0cb8f629c1ca4baca2d46178100",
+      "verified_at_utc": "2026-11-20T06:40:13.129Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F13-fiat-conversion/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P02",
+        "P11"
+      ],
+      "optional_integrations": [
+        "FEE01"
+      ],
+      "acceptance_cases": 12
+    },
+    {
+      "id": "F14",
+      "title": "Privacy-aware multi-chain route comparison",
+      "branch": "future/f14-multichain-routing",
+      "spec_path": "docs/future/modules/F14-multichain-routing/SPEC.md",
+      "claim_commit": "c40b07655e2d4ddb0c5c7b1dc051b9c3cf428c46",
+      "spec_commit": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "verified_branch_head": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "verified_spec_blob": "7b00e78b0b875dcd6e5bf70ce260156da8c95002",
+      "verified_at_utc": "2026-11-20T06:40:12.276Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F14-multichain-routing/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P02",
+        "P08",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P13",
+        "P14",
+        "P16"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F15",
+      "title": "Private RPC and scanning configuration workflow",
+      "branch": "future/f15-private-rpc",
+      "spec_path": "docs/future/modules/F15-private-rpc/SPEC.md",
+      "claim_commit": "f8f01a81abefb60dadc248acf02206a0da945462",
+      "spec_commit": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "verified_branch_head": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "verified_spec_blob": "51d86cc277470f5d14a223e6ec4e416b92427f4c",
+      "verified_at_utc": "2026-11-20T06:40:12.516Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F15-private-rpc/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P02",
+        "P03",
+        "P10"
+      ],
+      "optional_integrations": [
+        "P01",
+        "P07"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "F16",
+      "title": "Per-client payment identity separation",
+      "branch": "future/f16-per-client-identities",
+      "spec_path": "docs/future/modules/F16-per-client-identities/SPEC.md",
+      "claim_commit": "88c6890a01b18892b34593fe020d18b4beb39aa8",
+      "spec_commit": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "verified_branch_head": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "verified_spec_blob": "e421729a372dc944b8674a1dd2949fb71cb1084d",
+      "verified_at_utc": "2026-11-20T06:40:12.573Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F16-per-client-identities/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06",
+        "P05"
+      ],
+      "optional_integrations": [
+        "F08"
+      ],
+      "acceptance_cases": 12
+    },
+    {
+      "id": "F17",
+      "title": "Private sweeping and offline fund management",
+      "branch": "future/f17-private-funds",
+      "spec_path": "docs/future/modules/F17-private-funds/SPEC.md",
+      "claim_commit": "574936925b54a0cb62eed5607420e8f587bb6219",
+      "spec_commit": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "verified_branch_head": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "verified_spec_blob": "7c65e1704e16611acba1427cc37d14dc0739ec3d",
+      "verified_at_utc": "2026-11-20T06:40:12.234Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F17-private-funds/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "P08"
+      ],
+      "optional_integrations": [
+        "P03",
+        "P09",
+        "P10",
+        "FEE01",
+        "T02"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "F18",
+      "title": "Editable privacy presets and capability selection",
+      "branch": "future/f18-privacy-modes",
+      "spec_path": "docs/future/modules/F18-privacy-modes/SPEC.md",
+      "claim_commit": "5f1760470657843825dc44d72b424b03cc55e2a1",
+      "spec_commit": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "verified_branch_head": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "verified_spec_blob": "97643a9028dea42661c00ed3de51edb0d63fcee1",
+      "verified_at_utc": "2026-11-20T06:40:12.394Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/F18-privacy-modes/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P11",
+        "FEE01",
+        "P18"
+      ],
+      "optional_integrations": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P12",
+        "P13",
+        "P14",
+        "P15",
+        "P16",
+        "P17",
+        "P19",
+        "T01",
+        "T02"
+      ],
+      "acceptance_cases": 12
+    },
+    {
+      "id": "P01",
+      "title": "HTTPS and Tor-compatible static hosting",
+      "branch": "future/p01-tor-onion-hosting",
+      "spec_path": "docs/future/modules/P01-tor-onion-hosting/SPEC.md",
+      "claim_commit": "65124550f4a940498a29baa09c597577a08f3fa2",
+      "spec_commit": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "verified_branch_head": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "verified_spec_blob": "826773bdf9a68d1d9f0aa58ae96f006287376636",
+      "verified_at_utc": "2026-11-20T06:37:09.079Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P01-tor-onion-hosting/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P18"
+      ],
+      "optional_integrations": [],
+      "acceptance_cases": 9
+    },
+    {
+      "id": "P02",
+      "title": "User-selected RPC policy and consent enforcement",
+      "branch": "future/p02-rpc-policy",
+      "spec_path": "docs/future/modules/P02-rpc-policy/SPEC.md",
+      "claim_commit": "d6b515d5813935c98d580bf4cfa85f1a04e44b52",
+      "spec_commit": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "verified_branch_head": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "verified_spec_blob": "025f30d08eb39f17b4eabdb9c4b34c5afa98b29a",
+      "verified_at_utc": "2026-11-20T06:37:08.930Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P02-rpc-policy/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [],
+      "optional_integrations": [
+        "P01"
+      ],
+      "acceptance_cases": 12
+    },
+    {
+      "id": "P03",
+      "title": "Local stealth discovery and private retrieval",
+      "branch": "future/p03-local-stealth-scanning",
+      "spec_path": "docs/future/modules/P03-local-stealth-scanning/SPEC.md",
+      "claim_commit": "4dd26ee82990373bc3ac1ee8514accf411ebb9ae",
+      "spec_commit": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "verified_branch_head": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "verified_spec_blob": "7878d62b59dc9aeddd04c89817fdc395507d3555",
+      "verified_at_utc": "2026-11-20T06:37:08.964Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P03-local-stealth-scanning/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P02",
+        "P06"
+      ],
+      "optional_integrations": [],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "P04",
+      "title": "Encrypted authenticated offline invoices",
+      "branch": "future/p04-encrypted-offline-invoices",
+      "spec_path": "docs/future/modules/P04-encrypted-offline-invoices/SPEC.md",
+      "claim_commit": "b194ed31d753dcba6083b512bb6c48c12a09a597",
+      "spec_commit": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "verified_branch_head": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "verified_spec_blob": "08577495a6c53732e093858ee11cd3815dc90c27",
+      "verified_at_utc": "2026-11-20T06:37:09.082Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P04-encrypted-offline-invoices/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06",
+        "P11"
+      ],
+      "optional_integrations": [],
+      "acceptance_cases": 13
+    },
+    {
+      "id": "P05",
+      "title": "Encrypted local state and recovery primitives",
+      "branch": "future/p05-encrypted-local-state",
+      "spec_path": "docs/future/modules/P05-encrypted-local-state/SPEC.md",
+      "claim_commit": "49e6c2003afb5347f5a66a19c147133ba1e64d3a",
+      "spec_commit": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "verified_branch_head": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "verified_spec_blob": "e3d7f87964e97ff9127910b8b9c09a5fd416385a",
+      "verified_at_utc": "2026-11-20T06:37:09.020Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P05-encrypted-local-state/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [],
+      "acceptance_cases": 13
+    },
+    {
+      "id": "P06",
+      "title": "Independent key roles and scoped delegation",
+      "branch": "future/p06-key-role-separation",
+      "spec_path": "docs/future/modules/P06-key-role-separation/SPEC.md",
+      "claim_commit": "95d33f38fccad3a16408b9f818e3c2d87dfa9b02",
+      "spec_commit": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "verified_branch_head": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "verified_spec_blob": "2fce92e65f946ba2c5516320c853b972b1d9ba25",
+      "verified_at_utc": "2026-11-20T06:37:08.998Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P06-key-role-separation/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [],
+      "optional_integrations": [],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P07",
+      "title": "Optional encrypted device synchronization",
+      "branch": "future/p07-encrypted-device-sync",
+      "spec_path": "docs/future/modules/P07-encrypted-device-sync/SPEC.md",
+      "claim_commit": "1e46202bd26586c5d7b3c1badd25bdd97caa1c23",
+      "spec_commit": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "verified_branch_head": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "verified_spec_blob": "888f0ad5df7d96cca69f8fb04a712b347944ba53",
+      "verified_at_utc": "2026-11-20T06:37:08.934Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P07-encrypted-device-sync/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P02"
+      ],
+      "acceptance_cases": 13
+    },
+    {
+      "id": "P08",
+      "title": "Local payment linkability analysis",
+      "branch": "future/p08-linkability-analysis",
+      "spec_path": "docs/future/modules/P08-linkability-analysis/SPEC.md",
+      "claim_commit": "24136a7eba6337838568dc2416c3dcecfb466929",
+      "spec_commit": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "verified_branch_head": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "verified_spec_blob": "8cb178cbe161c2b8a7fd14308a680eb312420f3d",
+      "verified_at_utc": "2026-11-20T06:37:08.964Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P08-linkability-analysis/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [],
+      "optional_integrations": [
+        "P05"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "P09",
+      "title": "Optional non-custodial gas service adapters",
+      "branch": "future/p09-noncustodial-gas-services",
+      "spec_path": "docs/future/modules/P09-noncustodial-gas-services/SPEC.md",
+      "claim_commit": "caa085f37a8f4f40fb3d020d7e3d18154d18184d",
+      "spec_commit": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "verified_branch_head": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "verified_spec_blob": "08745e53f401aef50c3e6f59237ef100a1de20bb",
+      "verified_at_utc": "2026-11-20T06:37:09.028Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P09-noncustodial-gas-services/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P02",
+        "P06",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P10",
+        "P17"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P10",
+      "title": "Explicit private transaction submission",
+      "branch": "future/p10-private-submission",
+      "spec_path": "docs/future/modules/P10-private-submission/SPEC.md",
+      "claim_commit": "b6a25c61b537144033cc36b2a61ad830e6e66614",
+      "spec_commit": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "verified_branch_head": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "verified_spec_blob": "4f0dacb73c0a31f1871322349a315a6570a81d5d",
+      "verified_at_utc": "2026-11-20T06:37:08.980Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P10-private-submission/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P02"
+      ],
+      "optional_integrations": [
+        "P09"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P11",
+      "title": "Metadata minimization and bounded timing policy",
+      "branch": "future/p11-metadata-timing-policy",
+      "spec_path": "docs/future/modules/P11-metadata-timing-policy/SPEC.md",
+      "claim_commit": "09f3c9643b027b471fde9ed7438a5fff5f7b2cba",
+      "spec_commit": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "verified_branch_head": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "verified_spec_blob": "15ec260a9dddde84c97adc230d789426c714d5c1",
+      "verified_at_utc": "2026-11-20T06:37:15.116Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P11-metadata-timing-policy/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [],
+      "optional_integrations": [],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "P12",
+      "title": "Selective-disclosure proof provider",
+      "branch": "future/p12-selective-disclosure-proofs",
+      "spec_path": "docs/future/modules/P12-selective-disclosure-proofs/SPEC.md",
+      "claim_commit": "64d9f4f3bd8302b697461c485699fb6b6f9eaf4c",
+      "spec_commit": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "verified_branch_head": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "verified_spec_blob": "5709cf974f5ae0202e322d398272b5d66e36581d",
+      "verified_at_utc": "2026-11-20T06:37:15.146Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P12-selective-disclosure-proofs/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [
+        "P13",
+        "P14"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P13",
+      "title": "Confidential amount settlement research",
+      "branch": "future/p13-confidential-amounts",
+      "spec_path": "docs/future/modules/P13-confidential-amounts/SPEC.md",
+      "claim_commit": "1ad40079e6c2668a4bb4fb25ed7a0d437abe86ce",
+      "spec_commit": "8846d5553469753d963258023974ea044467cd6c",
+      "verified_branch_head": "8846d5553469753d963258023974ea044467cd6c",
+      "verified_spec_blob": "aa1cb257b7649fd6c0965ca9d8f2513bff1fc1f3",
+      "verified_at_utc": "2026-11-20T06:37:15.112Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P13-confidential-amounts/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P14",
+      "title": "Non-custodial shielded payment research",
+      "branch": "future/p14-shielded-payments",
+      "spec_path": "docs/future/modules/P14-shielded-payments/SPEC.md",
+      "claim_commit": "b31a2f8dc43f001ff9b7b6d2d25ce58f8b3b1b0f",
+      "spec_commit": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "verified_branch_head": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "verified_spec_blob": "be22afbca59817c52e21f885d9e5a2f772a166b2",
+      "verified_at_utc": "2026-11-20T06:37:15.340Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P14-shielded-payments/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P13",
+        "P06"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P15",
+      "title": "User-controlled shielded exit research",
+      "branch": "future/p15-anonymous-withdrawals",
+      "spec_path": "docs/future/modules/P15-anonymous-withdrawals/SPEC.md",
+      "claim_commit": "1ad267501958767b920993344f556b1130d8abf8",
+      "spec_commit": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "verified_branch_head": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "verified_spec_blob": "d75af8a16412f9d6b4fcb41ed78615d2440a3475",
+      "verified_at_utc": "2026-11-20T06:37:15.633Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P15-anonymous-withdrawals/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P14"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P16",
+      "title": "Shielded cross-chain transfer research",
+      "branch": "future/p16-shielded-cross-chain",
+      "spec_path": "docs/future/modules/P16-shielded-cross-chain/SPEC.md",
+      "claim_commit": "069c9ec313154d486f07fd35d4a7bd3c3ebc7a8a",
+      "spec_commit": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "verified_branch_head": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "verified_spec_blob": "35d3f6a2de5f88888c187e1024af03c2d29cf2ba",
+      "verified_at_utc": "2026-11-20T06:37:15.642Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P16-shielded-cross-chain/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P14",
+        "P15"
+      ],
+      "optional_integrations": [
+        "P09"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "P17",
+      "title": "Privacy-preserving fee settlement outputs",
+      "branch": "future/p17-private-fee-outputs",
+      "spec_path": "docs/future/modules/P17-private-fee-outputs/SPEC.md",
+      "claim_commit": "374abe0a4d7829a792dc884096ae046d71dcfa1e",
+      "spec_commit": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "verified_branch_head": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "verified_spec_blob": "e4f18e677b5abfedc2bcbf851f230a11e6b9eb83",
+      "verified_at_utc": "2026-11-20T06:37:15.226Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P17-private-fee-outputs/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P14",
+        "FEE01"
+      ],
+      "optional_integrations": [],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "P18",
+      "title": "Telemetry minimization and release integrity",
+      "branch": "future/p18-telemetry-release-integrity",
+      "spec_path": "docs/future/modules/P18-telemetry-release-integrity/SPEC.md",
+      "claim_commit": "b0e9c4ba11e9305e089b95cef93c51464afd3ae4",
+      "spec_commit": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "verified_branch_head": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "verified_spec_blob": "a7927c971c10f8eb1714f893c931ce681953cf30",
+      "verified_at_utc": "2026-11-20T06:37:15.182Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P18-telemetry-release-integrity/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [],
+      "optional_integrations": [],
+      "acceptance_cases": 11
+    },
+    {
+      "id": "P19",
+      "title": "Optional self-hosted fee enforcement gateway",
+      "branch": "future/p19-optional-fee-gateway",
+      "spec_path": "docs/future/modules/P19-optional-fee-gateway/SPEC.md",
+      "claim_commit": "b3f55e26ada113af0c6ab65ea45596351ddeb4d3",
+      "spec_commit": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "verified_branch_head": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "verified_spec_blob": "c4e6ce81673108af502576f9aad433d2ec0b1590",
+      "verified_at_utc": "2026-11-20T06:37:15.200Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/P19-optional-fee-gateway/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "FEE01",
+        "P18"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P17"
+      ],
+      "acceptance_cases": 10
+    },
+    {
+      "id": "T01",
+      "title": "User-controlled staggered transfers",
+      "branch": "future/t01-staggered-transfers",
+      "spec_path": "docs/future/modules/T01-staggered-transfers/SPEC.md",
+      "claim_commit": "ff2b9237793a8792c88d9e04ce80e7f2e0bbe191",
+      "spec_commit": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "verified_branch_head": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "verified_spec_blob": "17db135afc9a2ef2743b28bf08f6159ca208ed26",
+      "verified_at_utc": "2026-11-20T06:41:13.772Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/T01-staggered-transfers/SPEC.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "P11",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10",
+        "T02"
+      ],
+      "acceptance_cases": 14
+    },
+    {
+      "id": "T02",
+      "title": "Self-controlled intermediary-address routing",
+      "branch": "future/t02-intermediary-routing",
+      "spec_path": "docs/future/modules/T02-intermediary-routing/SPEC.md",
+      "claim_commit": "c66f6f648699930c54f0e5673d573b6227ef1fc0",
+      "spec_commit": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "verified_branch_head": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "verified_spec_blob": "947190903f5c4402672ae9323838a23c86532240",
+      "verified_at_utc": "2026-11-20T06:41:13.550Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/T02-intermediary-routing/SPEC.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P05",
+        "P06",
+        "P08",
+        "FEE01"
+      ],
+      "optional_integrations": [
+        "P09",
+        "P10"
+      ],
+      "acceptance_cases": 14
+    },
+    {
+      "id": "FEE01",
+      "title": "Modular fee quotes, authorization and accounting",
+      "branch": "future/fee01-modular-fee-policy",
+      "spec_path": "docs/future/modules/FEE01-modular-fee-policy/SPEC.md",
+      "claim_commit": "fe900f2431732e8e6f10deb97b4620531534f700",
+      "spec_commit": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "verified_branch_head": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "verified_spec_blob": "5b6f5a1fc2c7c7243fc784f8d6506f3c55c4f37f",
+      "verified_at_utc": "2026-11-20T06:37:15.949Z",
+      "exact_content_verified": true,
+      "branch_head_verified": true,
+      "source_ancestor_verified": true,
+      "documentation_only_diff_verified": true,
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/future/modules/COMMON.md",
+        "docs/future/modules/FEE01-modular-fee-policy/SPEC.md",
+        "docs/future/modules/README.md",
+        "docs/future/modules/SOURCES.md",
+        "docs/future/modules/modules.json"
+      ],
+      "hard_dependencies": [
+        "P06"
+      ],
+      "optional_integrations": [
+        "P17",
+        "P19"
+      ],
+      "acceptance_cases": 16
+    }
+  ]
+}

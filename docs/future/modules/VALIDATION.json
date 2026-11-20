@@ -1,0 +1,894 @@
+{
+  "module_count": 40,
+  "word_count": 61958,
+  "acceptance_cases": 445,
+  "unique_source_paths_checked": 183,
+  "unique_npm_commands_checked": 91,
+  "dependency_waves": [
+    [
+      "P02",
+      "P06",
+      "P08",
+      "P11",
+      "P18"
+    ],
+    [
+      "F13",
+      "FEE01",
+      "P01",
+      "P03",
+      "P04",
+      "P05",
+      "P10",
+      "P12",
+      "P13"
+    ],
+    [
+      "F03",
+      "F04",
+      "F05",
+      "F06",
+      "F07",
+      "F08",
+      "F10",
+      "F11",
+      "F12",
+      "F14",
+      "F15",
+      "F16",
+      "F17",
+      "F18",
+      "P07",
+      "P09",
+      "P14",
+      "P19",
+      "T01",
+      "T02"
+    ],
+    [
+      "F01",
+      "F02",
+      "F09",
+      "P15",
+      "P17"
+    ],
+    [
+      "P16"
+    ]
+  ],
+  "issues": [],
+  "modules": [
+    {
+      "id": "F01",
+      "words": 1509,
+      "lines": 148,
+      "acceptance_cases": 10,
+      "blob_sha": "8aaf9e7b51d954a4b69a63d4331795d527ab46bd"
+    },
+    {
+      "id": "F02",
+      "words": 1448,
+      "lines": 151,
+      "acceptance_cases": 10,
+      "blob_sha": "f3a2764f5f5e02a8845adc402ebf51cb08c62c78"
+    },
+    {
+      "id": "F03",
+      "words": 1533,
+      "lines": 145,
+      "acceptance_cases": 11,
+      "blob_sha": "6b5b2fde362f21974057fd45cc4ee0165f5fba98"
+    },
+    {
+      "id": "F04",
+      "words": 1430,
+      "lines": 146,
+      "acceptance_cases": 10,
+      "blob_sha": "33acde4d1ecf20a6d5d9f653f191332ba100eb22"
+    },
+    {
+      "id": "F05",
+      "words": 1422,
+      "lines": 150,
+      "acceptance_cases": 10,
+      "blob_sha": "835f180ff3b57f71b40fffba1347ab33098927d9"
+    },
+    {
+      "id": "F06",
+      "words": 1516,
+      "lines": 147,
+      "acceptance_cases": 12,
+      "blob_sha": "dd4606355a64cf12a00484229c59fc949781cc64"
+    },
+    {
+      "id": "F07",
+      "words": 1438,
+      "lines": 152,
+      "acceptance_cases": 10,
+      "blob_sha": "f0a587aa0b3df16cd96c83364ad0a23766e09b6f"
+    },
+    {
+      "id": "F08",
+      "words": 1427,
+      "lines": 149,
+      "acceptance_cases": 10,
+      "blob_sha": "bb0503aa370b20da049b4b4d50dccf64d5d169e6"
+    },
+    {
+      "id": "F09",
+      "words": 1508,
+      "lines": 151,
+      "acceptance_cases": 11,
+      "blob_sha": "931e1e2360a3027603dc36a35261cacca2809638"
+    },
+    {
+      "id": "F10",
+      "words": 1555,
+      "lines": 155,
+      "acceptance_cases": 11,
+      "blob_sha": "290217d77665dbbd46b66de66179d0e002f02783"
+    },
+    {
+      "id": "F11",
+      "words": 1696,
+      "lines": 166,
+      "acceptance_cases": 10,
+      "blob_sha": "feb39d7ae0ee08ede01c1ed415e2c892da84af24"
+    },
+    {
+      "id": "F12",
+      "words": 1788,
+      "lines": 171,
+      "acceptance_cases": 11,
+      "blob_sha": "49156d84d4ce7758da0e8bf2313b645a04ff3dd9"
+    },
+    {
+      "id": "F13",
+      "words": 2025,
+      "lines": 180,
+      "acceptance_cases": 12,
+      "blob_sha": "c870fdcc2dfed0cb8f629c1ca4baca2d46178100"
+    },
+    {
+      "id": "F14",
+      "words": 1744,
+      "lines": 170,
+      "acceptance_cases": 10,
+      "blob_sha": "7b00e78b0b875dcd6e5bf70ce260156da8c95002"
+    },
+    {
+      "id": "F15",
+      "words": 1764,
+      "lines": 171,
+      "acceptance_cases": 10,
+      "blob_sha": "51d86cc277470f5d14a223e6ec4e416b92427f4c"
+    },
+    {
+      "id": "F16",
+      "words": 2148,
+      "lines": 177,
+      "acceptance_cases": 12,
+      "blob_sha": "e421729a372dc944b8674a1dd2949fb71cb1084d"
+    },
+    {
+      "id": "F17",
+      "words": 2004,
+      "lines": 180,
+      "acceptance_cases": 11,
+      "blob_sha": "7c65e1704e16611acba1427cc37d14dc0739ec3d"
+    },
+    {
+      "id": "F18",
+      "words": 2030,
+      "lines": 185,
+      "acceptance_cases": 12,
+      "blob_sha": "97643a9028dea42661c00ed3de51edb0d63fcee1"
+    },
+    {
+      "id": "P01",
+      "words": 1156,
+      "lines": 126,
+      "acceptance_cases": 9,
+      "blob_sha": "826773bdf9a68d1d9f0aa58ae96f006287376636"
+    },
+    {
+      "id": "P02",
+      "words": 1377,
+      "lines": 143,
+      "acceptance_cases": 12,
+      "blob_sha": "025f30d08eb39f17b4eabdb9c4b34c5afa98b29a"
+    },
+    {
+      "id": "P03",
+      "words": 1121,
+      "lines": 127,
+      "acceptance_cases": 10,
+      "blob_sha": "7878d62b59dc9aeddd04c89817fdc395507d3555"
+    },
+    {
+      "id": "P04",
+      "words": 1568,
+      "lines": 155,
+      "acceptance_cases": 13,
+      "blob_sha": "08577495a6c53732e093858ee11cd3815dc90c27"
+    },
+    {
+      "id": "P05",
+      "words": 1449,
+      "lines": 143,
+      "acceptance_cases": 13,
+      "blob_sha": "e3d7f87964e97ff9127910b8b9c09a5fd416385a"
+    },
+    {
+      "id": "P06",
+      "words": 1393,
+      "lines": 137,
+      "acceptance_cases": 11,
+      "blob_sha": "2fce92e65f946ba2c5516320c853b972b1d9ba25"
+    },
+    {
+      "id": "P07",
+      "words": 1524,
+      "lines": 148,
+      "acceptance_cases": 13,
+      "blob_sha": "888f0ad5df7d96cca69f8fb04a712b347944ba53"
+    },
+    {
+      "id": "P08",
+      "words": 1181,
+      "lines": 129,
+      "acceptance_cases": 10,
+      "blob_sha": "8cb178cbe161c2b8a7fd14308a680eb312420f3d"
+    },
+    {
+      "id": "P09",
+      "words": 1288,
+      "lines": 129,
+      "acceptance_cases": 11,
+      "blob_sha": "08745e53f401aef50c3e6f59237ef100a1de20bb"
+    },
+    {
+      "id": "P10",
+      "words": 1355,
+      "lines": 137,
+      "acceptance_cases": 11,
+      "blob_sha": "4f0dacb73c0a31f1871322349a315a6570a81d5d"
+    },
+    {
+      "id": "P11",
+      "words": 1290,
+      "lines": 135,
+      "acceptance_cases": 10,
+      "blob_sha": "15ec260a9dddde84c97adc230d789426c714d5c1"
+    },
+    {
+      "id": "P12",
+      "words": 1446,
+      "lines": 156,
+      "acceptance_cases": 11,
+      "blob_sha": "5709cf974f5ae0202e322d398272b5d66e36581d"
+    },
+    {
+      "id": "P13",
+      "words": 1295,
+      "lines": 134,
+      "acceptance_cases": 11,
+      "blob_sha": "aa1cb257b7649fd6c0965ca9d8f2513bff1fc1f3"
+    },
+    {
+      "id": "P14",
+      "words": 1326,
+      "lines": 136,
+      "acceptance_cases": 11,
+      "blob_sha": "be22afbca59817c52e21f885d9e5a2f772a166b2"
+    },
+    {
+      "id": "P15",
+      "words": 1254,
+      "lines": 136,
+      "acceptance_cases": 11,
+      "blob_sha": "d75af8a16412f9d6b4fcb41ed78615d2440a3475"
+    },
+    {
+      "id": "P16",
+      "words": 1251,
+      "lines": 132,
+      "acceptance_cases": 10,
+      "blob_sha": "35d3f6a2de5f88888c187e1024af03c2d29cf2ba"
+    },
+    {
+      "id": "P17",
+      "words": 1288,
+      "lines": 133,
+      "acceptance_cases": 10,
+      "blob_sha": "e4f18e677b5abfedc2bcbf851f230a11e6b9eb83"
+    },
+    {
+      "id": "P18",
+      "words": 1284,
+      "lines": 142,
+      "acceptance_cases": 11,
+      "blob_sha": "a7927c971c10f8eb1714f893c931ce681953cf30"
+    },
+    {
+      "id": "P19",
+      "words": 1512,
+      "lines": 141,
+      "acceptance_cases": 10,
+      "blob_sha": "c4e6ce81673108af502576f9aad433d2ec0b1590"
+    },
+    {
+      "id": "T01",
+      "words": 2323,
+      "lines": 183,
+      "acceptance_cases": 14,
+      "blob_sha": "17db135afc9a2ef2743b28bf08f6159ca208ed26"
+    },
+    {
+      "id": "T02",
+      "words": 2475,
+      "lines": 192,
+      "acceptance_cases": 14,
+      "blob_sha": "947190903f5c4402672ae9323838a23c86532240"
+    },
+    {
+      "id": "FEE01",
+      "words": 1817,
+      "lines": 177,
+      "acceptance_cases": 16,
+      "blob_sha": "5b6f5a1fc2c7c7243fc784f8d6506f3c55c4f37f"
+    }
+  ],
+  "source_paths_checked": [
+    "apps/relayer/Dockerfile",
+    "apps/relayer/deploy/ghostpay-relayer.service",
+    "apps/relayer/src/config.ts",
+    "apps/relayer/src/server.ts",
+    "apps/web/package.json",
+    "apps/web/scripts/localBuildProfile.mjs",
+    "apps/web/scripts/scan-bundle.mjs",
+    "apps/web/src/components/InvoicePaymentSummary.tsx",
+    "apps/web/src/components/MerchantProfilePanel.tsx",
+    "apps/web/src/components/PaymentRequestQr.tsx",
+    "apps/web/src/lib/appLock.ts",
+    "apps/web/src/lib/defaultServices.ts",
+    "apps/web/src/lib/duplicateAttemptJournal.ts",
+    "apps/web/src/lib/fragment.ts",
+    "apps/web/src/lib/invoiceCreate.ts",
+    "apps/web/src/lib/keyVault.ts",
+    "apps/web/src/lib/keystore.ts",
+    "apps/web/src/lib/merchantIdentity.ts",
+    "apps/web/src/lib/merchantTemplate.ts",
+    "apps/web/src/lib/qrPayload.ts",
+    "apps/web/src/lib/receipts.ts",
+    "apps/web/src/lib/reconciliationLedger.ts",
+    "apps/web/src/lib/relayerClient.ts",
+    "apps/web/src/lib/scanClient.ts",
+    "apps/web/src/lib/scanCursorSlot.ts",
+    "apps/web/src/lib/scanPrivacy.ts",
+    "apps/web/src/lib/scannerCore.ts",
+    "apps/web/src/lib/sellerPairing.ts",
+    "apps/web/src/lib/services.ts",
+    "apps/web/src/lib/session.ts",
+    "apps/web/src/lib/settings.ts",
+    "apps/web/src/lib/settingsExchange.ts",
+    "apps/web/src/lib/sweep.ts",
+    "apps/web/src/lib/sweepAttemptJournal.ts",
+    "apps/web/src/lib/transactionOutcome.ts",
+    "apps/web/src/lib/txGuard.ts",
+    "apps/web/src/lib/wallet.ts",
+    "docs/FEE_SCHEDULE.md",
+    "docs/future/privacy-architecture/5a.md",
+    "docs/future/privacy-architecture/5b.md",
+    "docs/future/privacy-architecture/5c.md",
+    "docs/future/privacy-architecture/5d.md",
+    "docs/future/privacy-architecture/5e.md",
+    "docs/future/privacy-architecture/5f.md",
+    "docs/future/privacy-architecture/5g.md",
+    "docs/future/privacy-architecture/5h.md",
+    "docs/future/privacy-architecture/5i.md",
+    "docs/future/privacy-architecture/5j.md",
+    "docs/future/privacy-architecture/5l.md",
+    "docs/future/privacy-first/01-ghosttips.md",
+    "docs/future/privacy-first/02-ghoststore.md",
+    "docs/future/privacy-first/03-private-payment-links.md",
+    "docs/future/privacy-first/04-merchant-dashboard.md",
+    "docs/future/privacy-first/05-ghostproof.md",
+    "docs/future/privacy-first/06-encrypted-backups.md",
+    "docs/future/privacy-first/07-ghostpayouts.md",
+    "docs/future/privacy-first/08-ghostid.md",
+    "docs/future/privacy-first/09-ghostpos.md",
+    "docs/future/privacy-first/10-private-recurring.md",
+    "docs/future/privacy-first/11-ghostteams.md",
+    "docs/future/privacy-first/12-ghostbridge.md",
+    "docs/future/privacy-first/13-fiat-conversion.md",
+    "docs/future/privacy-first/14-multichain-routing.md",
+    "docs/future/privacy-first/15-private-rpc.md",
+    "docs/future/privacy-first/16-per-client-identities.md",
+    "docs/future/privacy-first/17-private-funds.md",
+    "docs/future/privacy-first/18-privacy-modes.md",
+    "docs/privacy/browser-network-isolation.md",
+    "docs/privacy/network-egress-inventory.json",
+    "docs/remote/privacy-specs/amount-blurring.md",
+    "docs/remote/privacy-specs/hops.md",
+    "docs/specs/18-stealth-keypair-export.md",
+    "docs/user/sweep-and-gas-privacy.md",
+    "packages/amount-blur/DEVIATIONS.md",
+    "packages/amount-blur/package.json",
+    "packages/amount-blur/src/index.ts",
+    "packages/amount-blur/src/schedule.ts",
+    "packages/amount-blur/src/split.ts",
+    "packages/chain-adapters/package.json",
+    "packages/chain-adapters/src/config/chains.ts",
+    "packages/chain-adapters/src/deployments.ts",
+    "packages/chain-adapters/src/fees.ts",
+    "packages/chain-adapters/src/quote.ts",
+    "packages/chain-adapters/src/verify.ts",
+    "packages/confidential-amounts/DEVIATIONS.md",
+    "packages/confidential-amounts/src/index.ts",
+    "packages/confidential-contracts/README.md",
+    "packages/core-crypto/package.json",
+    "packages/core-crypto/src/index.ts",
+    "packages/core-crypto/src/keys.ts",
+    "packages/core-crypto/src/stealth.ts",
+    "packages/donation/src/index.ts",
+    "packages/external-pools/src/index.ts",
+    "packages/external-pools/src/types.ts",
+    "packages/hops/DEVIATIONS.md",
+    "packages/hops/package.json",
+    "packages/hops/src/execute.ts",
+    "packages/hops/src/plan.ts",
+    "packages/hops/src/store.ts",
+    "packages/hygiene/src/hop-source.ts",
+    "packages/hygiene/src/index.ts",
+    "packages/hygiene/src/ledger.ts",
+    "packages/invoice-schema/src/envelope.ts",
+    "packages/invoice-schema/src/index.ts",
+    "packages/invoice-schema/src/merchantProfile.ts",
+    "packages/invoice-schema/src/passphrase.ts",
+    "packages/invoice-schema/src/receipts.ts",
+    "packages/invoice-schema/src/sign.ts",
+    "packages/merchant-billing/src/address.ts",
+    "packages/merchant-billing/src/csv.ts",
+    "packages/merchant-billing/src/operator-state.ts",
+    "packages/merchant-billing/src/payouts.ts",
+    "packages/merchant-billing/src/schedule.ts",
+    "packages/merchant-billing/src/subscription.ts",
+    "packages/merchant-hooks/src/button.ts",
+    "packages/merchant-hooks/src/link.ts",
+    "packages/merchant-hooks/src/pos.ts",
+    "packages/merchant-ledger/src/decimal.ts",
+    "packages/merchant-ledger/src/export.ts",
+    "packages/merchant-ledger/src/reconcile.ts",
+    "packages/merchant-multisig/README.md",
+    "packages/merchant-multisig/package.json",
+    "packages/merchant-multisig/src/approvals.ts",
+    "packages/merchant-multisig/src/exchange.ts",
+    "packages/merchant-multisig/src/policy.ts",
+    "packages/metadata-hardening/README.md",
+    "packages/metadata-hardening/src/index.ts",
+    "packages/net-transport/package.json",
+    "packages/net-transport/src/browser.ts",
+    "packages/net-transport/src/settings.ts",
+    "packages/payer-sponsor/src/chainGuard.ts",
+    "packages/payer-sponsor/src/index.ts",
+    "packages/payer-sponsor/src/sponsor/types.ts",
+    "packages/payment-uri/src/index.ts",
+    "packages/pool-circuits/INTERFACE.md",
+    "packages/pool-contracts/README.md",
+    "packages/pool-prover/README.md",
+    "packages/pool-relayer/README.md",
+    "packages/pool-relayer/src/index.ts",
+    "packages/pool-sdk/src/flows.ts",
+    "packages/pool-sdk/src/index.ts",
+    "packages/privacy-pipeline/src/executor.ts",
+    "packages/privacy-pipeline/src/index.ts",
+    "packages/privacy-pipeline/src/ports.ts",
+    "packages/privacy-pipeline/src/steps.ts",
+    "packages/privacy-pipeline/src/validate.ts",
+    "packages/privacy-profiles/package.json",
+    "packages/privacy-profiles/src/catalogue.ts",
+    "packages/privacy-profiles/src/evaluate.ts",
+    "packages/privacy-profiles/src/resolve.ts",
+    "packages/qr-exchange/src/index.ts",
+    "packages/relayer-guard/src/index.ts",
+    "packages/scan-source/src/create.ts",
+    "packages/scan-source/src/types.ts",
+    "packages/sdk/package.json",
+    "packages/sdk/src/builder.ts",
+    "packages/sdk/src/merchant.ts",
+    "packages/sdk/src/verify.ts",
+    "packages/secret-box/src/index.ts",
+    "packages/tx-review/package.json",
+    "packages/tx-review/src/index.ts",
+    "packages/ux-fees/src/preview.ts",
+    "packages/ux-fiat/package.json",
+    "packages/ux-fiat/src/convert.ts",
+    "packages/ux-fiat/src/rate.ts",
+    "packages/ux-fiat/src/view.ts",
+    "packages/ux-links/src/tip.ts",
+    "packages/ux-receipts/src/index.ts",
+    "packages/ux-receipts/src/verify.ts",
+    "packages/ux-schedule/src/scheduled.ts",
+    "packages/ux-vault/src/backup.ts",
+    "packages/ux-vault/src/envelope.ts",
+    "packages/ux-vault/src/keystore-portable.ts",
+    "packages/ux-vault/src/merge.ts",
+    "packages/ux-vault/src/portable.ts",
+    "packages/ux-vault/src/vault.ts",
+    "scripts/pages/build-pages.sh",
+    "scripts/pages/verify-pages-site.mjs",
+    "scripts/repro-check.sh",
+    "scripts/verify-release.sh",
+    "tools/portable-hosting-kit/README.md",
+    "tools/portable-hosting-kit/src/adapters/tor.mjs",
+    "tools/portable-hosting-kit/src/core/verify.mjs"
+  ],
+  "npm_commands_checked": [
+    {
+      "workspace": "<root>",
+      "script": "build:libs"
+    },
+    {
+      "workspace": "<root>",
+      "script": "ci:check-actions"
+    },
+    {
+      "workspace": "<root>",
+      "script": "ci:scan-secrets"
+    },
+    {
+      "workspace": "@ghostpay/amount-blur",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/amount-blur",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/amount-blur",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/chain-adapters",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/chain-adapters",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/chain-adapters",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/confidential-amounts",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/confidential-amounts",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/confidential-amounts",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/confidential-contracts",
+      "script": "compile"
+    },
+    {
+      "workspace": "@ghostpay/confidential-contracts",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/core-crypto",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/core-crypto",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/core-crypto",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/external-pools",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/hops",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/hops",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/hops",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/hygiene",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/hygiene",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/hygiene",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/invoice-schema",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/invoice-schema",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/invoice-schema",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/merchant-billing",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/merchant-hooks",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/merchant-ledger",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/merchant-multisig",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/merchant-multisig",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/merchant-multisig",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/metadata-hardening",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/metadata-hardening",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/metadata-hardening",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/net-transport",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/net-transport",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/net-transport",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/payer-sponsor",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/payer-sponsor",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/payer-sponsor",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/payment-uri",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/pool-circuits",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/pool-prover",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/pool-prover",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/pool-relayer",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/pool-sdk",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/pool-sdk",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/pool-sdk",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/privacy-pipeline",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/privacy-pipeline",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/privacy-pipeline",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/privacy-profiles",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/privacy-profiles",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/privacy-profiles",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/qr-exchange",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/relayer",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/relayer",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/relayer-guard",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/relayer-guard",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/scan-source",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/scan-source",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/scan-source",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/sdk",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/sdk",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/sdk",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/secret-box",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/secret-box",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/secret-box",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/tx-review",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/tx-review",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/tx-review",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/ux-fees",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/ux-fees",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/ux-fees",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/ux-fiat",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/ux-fiat",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/ux-fiat",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/ux-links",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/ux-receipts",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/ux-receipts",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/ux-vault",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/ux-vault",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/ux-vault",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "@ghostpay/web",
+      "script": "build"
+    },
+    {
+      "workspace": "@ghostpay/web",
+      "script": "lint"
+    },
+    {
+      "workspace": "@ghostpay/web",
+      "script": "test"
+    },
+    {
+      "workspace": "@ghostpay/web",
+      "script": "test:e2e"
+    },
+    {
+      "workspace": "@ghostpay/web",
+      "script": "typecheck"
+    },
+    {
+      "workspace": "tools/portable-hosting-kit",
+      "script": "check"
+    }
+  ],
+  "runtime_tests_executed": false
+}
