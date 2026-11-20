@@ -724,3 +724,14 @@ malformed-format coverage and rerun focused checks before independent re-review.
 
 Correction source: `d44604ce463cec708c77a230b068f0ac44669280`. Independent source review and 67/67
 focused tests pass; full integration qualification remains coordinator-owned.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `f8aab16068bfd55210e0acbcf5bb8492f8c8f472`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
