@@ -1,0 +1,44 @@
+{
+  "base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "reviewed_fix": "d694ce1c98056690fd104c08f80e9c7190e779e4",
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "paths": {
+    "packages/merchant-ledger/src/reconcile.ts": {
+      "3dc86fbc49e919e664230b63dae372ff79430fc5": {
+        "blob": "9e8b5e310e0c445c954e43de3ad712a1a88512b2",
+        "sha256": "fbf84e968397514c2c782fede254ad560e7d2a026e4f545b1c79b1be31ea03ce"
+      },
+      "d694ce1c98056690fd104c08f80e9c7190e779e4": {
+        "blob": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a",
+        "sha256": "90b0f13a954d758426e7b9c2e5be13871044283d18bd0f6bf2d2776c4244b678"
+      },
+      "origin/main": {
+        "blob": "9e8b5e310e0c445c954e43de3ad712a1a88512b2",
+        "sha256": "fbf84e968397514c2c782fede254ad560e7d2a026e4f545b1c79b1be31ea03ce"
+      },
+      "origin/security/mythril-full-remediation-20261118": {
+        "blob": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a",
+        "sha256": "90b0f13a954d758426e7b9c2e5be13871044283d18bd0f6bf2d2776c4244b678"
+      }
+    },
+    "packages/merchant-ledger/src/ledger.test.ts": {
+      "3dc86fbc49e919e664230b63dae372ff79430fc5": {
+        "blob": "91712cbb9561ba9d660d8ac10892c8c96e5942c3",
+        "sha256": "39ca1b9774f86fb8b6ef1a920d57b11fda23f794c5431050af2faf93964f925f"
+      },
+      "d694ce1c98056690fd104c08f80e9c7190e779e4": {
+        "blob": "ee0270fc6fbd7402262c89b33f4213a03bd294e3",
+        "sha256": "8fcbada49e6a524f5d4c1a9702a939394016e9ef3f0ea048c423f03ad8b0faa4"
+      },
+      "origin/main": {
+        "blob": "91712cbb9561ba9d660d8ac10892c8c96e5942c3",
+        "sha256": "39ca1b9774f86fb8b6ef1a920d57b11fda23f794c5431050af2faf93964f925f"
+      },
+      "origin/security/mythril-full-remediation-20261118": {
+        "blob": "d8959a4f94d75da8c84f72fae204f749ff569379",
+        "sha256": "f84beb457729b5e0ebc63373c2588e3d54834197768cf8e2ba7c98a8f54ec60a"
+      }
+    }
+  }
+}

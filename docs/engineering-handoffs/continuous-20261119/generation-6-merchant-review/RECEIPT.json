@@ -1,0 +1,151 @@
+{
+  "schema": "ghostpay-independent-merchant-review/1",
+  "reviewer": "merchant_review_gen6",
+  "recorded_at": "2026-11-20T00:23:18.974022+00:00",
+  "review_base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "claim_commit": "91420f25",
+  "reviewed_implementation": "d694ce1c98056690fd104c08f80e9c7190e779e4",
+  "reviewed_upstream": "6db114920589a38dbbb5d52f45bb7a52be98d9b6",
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "dependency_provenance": "Own worktree with node_modules symlink to coordinator installed pinned graph. Source tests local; invoice-schema runtime imports use unchanged coordinator compiled package. Normal build separately rebuilt invoice-schema and merchant-ledger into own worktree dist.",
+  "commands": [
+    {
+      "id": "original-control",
+      "exit_code": 0,
+      "command": "node ../../node_modules/vitest/vitest.mjs run --maxWorkers=1 --reporter=json --outputFile=<evidence>/baseline.json (initial staging failed; this executed the original27-case test source)",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/original-control.log.gz",
+      "raw_sha256": "151a59daa28af138a04d8e7bcac534fa83d5849ea30d5823357b40e456b0f652",
+      "compressed_sha256": "aff2c1435685baaabd54fd3da118f448e465b61915d021aa13d829a12d8a17ae"
+    },
+    {
+      "id": "baseline-red",
+      "exit_code": 1,
+      "command": "node ../../node_modules/vitest/vitest.mjs run --maxWorkers=1 --reporter=json --outputFile=<evidence>/baseline-red.json",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/baseline-red.log.gz",
+      "raw_sha256": "758ae2613a87109330c73b1ce7dcc217caea31cbe1ea815361787ddd2f73d88f",
+      "compressed_sha256": "4c69cc364be1da6f11118900cd360493ee2a0a9e28bf7ecfa20aa2f1b8544f5d"
+    },
+    {
+      "id": "fixed-coverage",
+      "exit_code": 0,
+      "command": "npm test -- --maxWorkers=1 --reporter=json --outputFile=<evidence>/fixed-coverage.json",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/fixed-coverage.log.gz",
+      "raw_sha256": "ca631ede5513852dd5ade007903d7f1b31ce3a46fb36472231a3ae2b124adcb9",
+      "compressed_sha256": "687c6b4c45b03e07e20b4f438046b5c1db63b354c236d2df999a2f8615e06374"
+    },
+    {
+      "id": "probes-fixed",
+      "exit_code": 0,
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/reconcile.gen6-review.test.ts --maxWorkers=1 --reporter=json --outputFile=<evidence>/probes-fixed.json",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/probes-fixed.log.gz",
+      "raw_sha256": "ccde023ded2dbaa350425f526e1751971408a629fbdd4145984e0da5dcdaf0d3",
+      "compressed_sha256": "28c1c810f2af4fd8a423e27074bc9b8b2749b99c3ce04fda94200022218707bc"
+    },
+    {
+      "id": "typecheck",
+      "exit_code": 0,
+      "command": "npm run typecheck",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/typecheck.log.gz",
+      "raw_sha256": "ec88f6611ec1457cf0ac8c0d9c598b7eb3c6b7c436869e6774e0488927b9b32e",
+      "compressed_sha256": "5a5b2e00f7f533cbb81f5262954448178ca845eb226636ddbb9fd8dcbc50c854"
+    },
+    {
+      "id": "lint",
+      "exit_code": 0,
+      "command": "npm run lint",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/lint.log.gz",
+      "raw_sha256": "9dd11a6ff4d79bac3a1a6fa8469f267c354071a8f3bad2897c30df99c2fab59a",
+      "compressed_sha256": "0cf9340aec9465098060db530016ef9c827ed8cabed15e8307404adc8822ad29"
+    },
+    {
+      "id": "probes-baseline",
+      "exit_code": 1,
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/reconcile.gen6-review.test.ts --maxWorkers=1 --reporter=json --outputFile=<evidence>/probes-baseline.json",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/probes-baseline.log.gz",
+      "raw_sha256": "4b08381cc559575bbbe2f47b7ec8bd63269248d0ce0f5f2b3d5feb5a9a5d246d",
+      "compressed_sha256": "5da293dd17dba4651a1353356e13ca4e8f138867f6cf2691c492d9ffe10f57b9"
+    },
+    {
+      "id": "build",
+      "exit_code": 0,
+      "command": "npm run build",
+      "cwd": "packages/merchant-ledger",
+      "log": "evidence/build.log.gz",
+      "raw_sha256": "cbc9bdf5526de16674bcee3c401e021f2c2abc312b26c3b038795f8d6e6ffa75",
+      "compressed_sha256": "965448c84ad6fadac86b2e9c4eb2d4f1ea53ad76ace127d6c95340845370f21f"
+    }
+  ],
+  "results": {
+    "baseline-original-control": {
+      "numTotalTests": 27,
+      "numPassedTests": 27,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "baseline-red": {
+      "numTotalTests": 30,
+      "numPassedTests": 28,
+      "numFailedTests": 2,
+      "numPendingTests": 0,
+      "success": false
+    },
+    "fixed-coverage": {
+      "numTotalTests": 30,
+      "numPassedTests": 30,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "probes-baseline": {
+      "numTotalTests": 7,
+      "numPassedTests": 2,
+      "numFailedTests": 5,
+      "numPendingTests": 0,
+      "success": false
+    },
+    "probes-fixed": {
+      "numTotalTests": 7,
+      "numPassedTests": 7,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  },
+  "coverage": {
+    "statements": "100% (175/175)",
+    "branches": "99.32% (147/148)",
+    "functions": "100% (40/40)",
+    "lines": "100% (149/149)"
+  },
+  "unchanged_controls": {
+    "package.json": "3cb706b2a695b959d6d261323174de61c2439e34",
+    "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36",
+    "tsconfig.base.json": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+    "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+    "packages/merchant-ledger/package.json": "c33d6ba91260a3cedaca1bcc5b1f8f14097379e6",
+    "packages/merchant-ledger/vitest.config.ts": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+    "packages/merchant-ledger/tsconfig.json": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+    "packages/merchant-ledger/tsconfig.build.json": "7cd92421109e2b1988a7e547ec0860610aa5460a"
+  },
+  "limits": [
+    "Initial staging script used the wrong working directory and did not copy the new tests. Its27-passing original-control run is not RED evidence; both later RED receipts are independent complete executions.",
+    "Coverage pass is original package suite30tests only, before adding temporary reviewer probes. Seven independent probes run separately; no single37-test suite is claimed.",
+    "No observed reconcile consumer exists in checked application/CLI source; package imports supply exports/error mapping. This is a pure API bug, not demonstrated browser or wallet failure.",
+    "No hosted/browser/release/deployment acceptance is claimed. No product/test/config changes are committed by this reviewer."
+  ],
+  "observed_live_refs": {
+    "refs/heads/main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "refs/heads/release/ghostpay-beta-qualification-20261119": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "refs/heads/security/mythril-full-remediation-20261118": "16c48521f99903ccd2e584df5d00a9dec5ef754c"
+  },
+  "live_refs_sha256": "a101100941ad9246bb96330f8654edf6f94f193bab3c34625e7f94dd0a3999cd"
+}

@@ -1,0 +1,171 @@
+{
+  "schema": "ghostpay-ledger-zero-payment/1",
+  "baseline": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "upstream": "6db114920589a38dbbb5d52f45bb7a52be98d9b6",
+  "upstream_branch_head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+  "claim_commit": "265265fd",
+  "original_regression_commit": "59120724",
+  "boundary_regression_commit": "0d72fc86",
+  "implementation_commit": "d694ce1c98056690fd104c08f80e9c7190e779e4",
+  "spec_clarification_commit": "13bb06ef67e2088a5b8f1e074a05c3aee5a1a2f2",
+  "baseline_and_main_reconcile_blob": "9e8b5e310e0c445c954e43de3ad712a1a88512b2",
+  "fixed_reconcile_blob": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a",
+  "fixed_test_blob": "ee0270fc6fbd7402262c89b33f4213a03bd294e3",
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "checks": [
+    {
+      "id": "upstream-red",
+      "exit_code": 1,
+      "evidence": "ledger-zero-red.json.gz",
+      "raw_sha256": "e43e09ca0b740232a49267f0eaa84d40730b3a98ca2e6ee7d39af4a5a8d9869f",
+      "compressed_sha256": "d3df83c238cde900b72a51e22cb7b8a85b9497dbb7a22eda03605c19badee322",
+      "counts": {
+        "numTotalTests": 28,
+        "numPassedTests": 27,
+        "numFailedTests": 1,
+        "numPendingTests": 0,
+        "success": false
+      }
+    },
+    {
+      "id": "upstream-red-log",
+      "exit_code": 1,
+      "evidence": "ledger-zero-red.log.gz",
+      "raw_sha256": "64f99b12fd0bce1b5cb0d4396bc510490106043c0641dd6744e2fcb79ce4a413",
+      "compressed_sha256": "bd49d10a861c06ff1262cdee0cfffe81beb501103d9ade9c0bee5de939096e77"
+    },
+    {
+      "id": "boundary-red",
+      "exit_code": 1,
+      "evidence": "ledger-boundary-red.json.gz",
+      "raw_sha256": "a8db92914d9ad34d68d15f70a74a85f057dde6beee134e5eddd083c9551c9b6f",
+      "compressed_sha256": "98b6211bf9b731fe87f0a5aefccde9998e9aaeae2267ead78db779af23e3cdb0",
+      "counts": {
+        "numTotalTests": 30,
+        "numPassedTests": 28,
+        "numFailedTests": 2,
+        "numPendingTests": 0,
+        "success": false
+      }
+    },
+    {
+      "id": "boundary-red-log",
+      "exit_code": 1,
+      "evidence": "ledger-boundary-red.log.gz",
+      "raw_sha256": "735b892c9a53f524630ef05b24387226cb2184608081b6f5f0f49cbd4163701b",
+      "compressed_sha256": "695069d7a43d17c7fd6ea9df075926bfbcc8636e60af81b674484b951dd8ef6b"
+    },
+    {
+      "id": "original-full-coverage",
+      "exit_code": 0,
+      "evidence": "ledger-zero-full-coverage.log.gz",
+      "raw_sha256": "0af91534df966e220c9cc6ccabcdfd75f871c5646c1f37fd91e1be92f29b2b30",
+      "compressed_sha256": "31385c61326b9a1f634d81d54dc0b768e495ed518e51794002f27d812de5a9bc"
+    },
+    {
+      "id": "typecheck",
+      "exit_code": 0,
+      "evidence": "ledger-zero-typecheck.log.gz",
+      "raw_sha256": "ec88f6611ec1457cf0ac8c0d9c598b7eb3c6b7c436869e6774e0488927b9b32e",
+      "compressed_sha256": "5a5b2e00f7f533cbb81f5262954448178ca845eb226636ddbb9fd8dcbc50c854"
+    },
+    {
+      "id": "lint",
+      "exit_code": 0,
+      "evidence": "ledger-zero-lint.log.gz",
+      "raw_sha256": "060dabff65bf919e5a55059b4fed6c9fc276d650612d5d5b52802992e6614b12",
+      "compressed_sha256": "4a2a87d0b93fbe0ca3928052ad8e6f6ac27fe4d22a9562c031bb571079bc28b0"
+    },
+    {
+      "id": "build",
+      "exit_code": 0,
+      "evidence": "ledger-zero-build.log.gz",
+      "raw_sha256": "8c514927f906e1a64281e763e6319246127f372cc7de86882ac93c6e56d56479",
+      "compressed_sha256": "16fa49b49aa8df9f9f9287616bc78c0b359a9769be9d062441dc654fb82ed947"
+    }
+  ],
+  "green_counts": {
+    "files": 1,
+    "tests": 30,
+    "failed": 0,
+    "skipped": 0
+  },
+  "coverage": {
+    "statements": {
+      "percent": 100,
+      "covered": 175,
+      "total": 175
+    },
+    "branches": {
+      "percent": 99.32,
+      "covered": 147,
+      "total": 148
+    },
+    "functions": {
+      "percent": 100,
+      "covered": 40,
+      "total": 40
+    },
+    "lines": {
+      "percent": 100,
+      "covered": 149,
+      "total": 149
+    }
+  },
+  "original_coverage_thresholds": {
+    "statements": 95,
+    "branches": 90,
+    "functions": 95,
+    "lines": 95
+  },
+  "commands": {
+    "red": "node ../../node_modules/vitest/vitest.mjs run --coverage=false --maxWorkers=1 --reporter=json --outputFile=<receipt.json>",
+    "green": "npm run test --workspace @ghostpay/merchant-ledger -- --maxWorkers=1",
+    "typecheck": "npm run typecheck --workspace @ghostpay/merchant-ledger",
+    "lint": "npm run lint --workspace @ghostpay/merchant-ledger",
+    "build": "npm run build --workspace @ghostpay/merchant-ledger"
+  },
+  "consumer_inventory": {
+    "web_imports": [],
+    "package_dependents": [
+      "packages/cli/package.json"
+    ],
+    "imports": [
+      "packages/cli/src/commands/export.ts imports exportCsv/exportIif/exportJson/exportXeroCsv/fromSchemaInvoice and types",
+      "packages/cli/src/run.ts imports LedgerError"
+    ],
+    "reconcile_production_callers_in_repository": [],
+    "browser_ledger": "Separate apps/web/lib reconciliation implementation; not claimed fixed by this patch"
+  },
+  "source_pins": {
+    "packages/merchant-ledger/src/reconcile.ts": {
+      "blob": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a",
+      "sha256": "90b0f13a954d758426e7b9c2e5be13871044283d18bd0f6bf2d2776c4244b678"
+    },
+    "packages/merchant-ledger/src/ledger.test.ts": {
+      "blob": "ee0270fc6fbd7402262c89b33f4213a03bd294e3",
+      "sha256": "8fcbada49e6a524f5d4c1a9702a939394016e9ef3f0ea048c423f03ad8b0faa4"
+    },
+    "packages/merchant-ledger/vitest.config.ts": {
+      "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c"
+    },
+    "packages/merchant-ledger/package.json": {
+      "blob": "c33d6ba91260a3cedaca1bcc5b1f8f14097379e6",
+      "sha256": "c570cdd0ca4f30e17ad5454fa4bf51ce609dfcac8a47b089ac4365bfeaf1a485"
+    },
+    "docs/remote/usability/specs/reconciliation.md": {
+      "blob": "b816a1276e7cfacbef653190755822296de96a53",
+      "sha256": "7304eb60c7b51f8927d86653d79cd01d57d3dab9e9a0540ff94bb50c2ddaa415"
+    }
+  },
+  "limits": [
+    "Original package configuration/thresholds retained; only worker count limited.",
+    "Dependencies reused by node_modules symlink to root pinned clean install; invoice-schema dependency rebuilt by normal package build.",
+    "No whole-workspace or hosted pass inferred. This library API is not the active Pages reconciliation implementation.",
+    "Fresh independent review is a separate generation6 task and is not claimed completed by implementer.",
+    "A preparatory git add from the package cwd failed path lookup; rerun at worktree root committed identical boundary tests before product change."
+  ]
+}

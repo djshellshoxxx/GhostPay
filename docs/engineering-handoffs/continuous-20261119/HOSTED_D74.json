@@ -1,0 +1,249 @@
+{
+  "schema": "ghostpay-hosted-continuation/1",
+  "associated_pr_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "execution_merge": "a7ceff94269cddfbc725677dd03737d96a449039",
+  "source_tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+  "tree_equivalence_verified": true,
+  "runs": [
+    {
+      "id": 44643709199,
+      "name": "GhostPay Parallel Research and Verification",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709199"
+    },
+    {
+      "id": 44643709093,
+      "name": "Contract analysis",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709093"
+    },
+    {
+      "id": 44643709382,
+      "name": "Hosting kit",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709382"
+    },
+    {
+      "id": 44643709159,
+      "name": "Integration",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709159"
+    },
+    {
+      "id": 44643709322,
+      "name": "Pages",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709322"
+    },
+    {
+      "id": 44643709094,
+      "name": "CLI operator qualification",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709094"
+    },
+    {
+      "id": 44643709101,
+      "name": "Beta acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709101"
+    },
+    {
+      "id": 44643709383,
+      "name": "CI",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709383"
+    }
+  ],
+  "ci_jobs": [
+    {
+      "id": 135980875241,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135980875647,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981022990,
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135981023016,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023023,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023063,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023065,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023084,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023122,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023125,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023126,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023128,
+      "name": "e2e (full)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135981023136,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023209,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023211,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023274,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023292,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023314,
+      "name": "ts-test (confidential-contracts)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023357,
+      "name": "ts-test (rest-1)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023380,
+      "name": "ts-test (core-crypto)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135981023399,
+      "name": "ts-test (web)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135981023693,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135985375119,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135995823033,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "browser": {
+    "lean": {
+      "job": 135981022990,
+      "passed": 115,
+      "failed": 1,
+      "skipped": 5
+    },
+    "full": {
+      "job": 135981023128,
+      "passed": 128,
+      "failed": 1,
+      "skipped": 2
+    },
+    "remaining_failure": "Confirmed observation race: current replacement manifest had six legitimate pending reads at the snapshot. Exact89e163fc awaits enabled Continue, preserves original no-growth/two-chain assertions, adds exact method equality. Independent review passed; hosted follow-up required."
+  },
+  "limits": "CI completed failure on this d74 source. Browser and signer failures are preserved and repaired later; no retroactive full pass. Contract analysis still in progress at snapshot; c993 findings remain separate source-pinned evidence. Follow-up candidate requires its own original hosted gates.",
+  "web": {
+    "job": 135981023399,
+    "passed": 3849,
+    "failed": 1,
+    "skipped": 1,
+    "files": 269,
+    "failure": "Pay.signer.test.tsx:89 queried Continue before refreshed manifest completed. Independently reproduced; exact fixture repair f2b991f7 approved."
+  },
+  "analysis_jobs": [
+    {
+      "id": 135980874253,
+      "name": "echidna",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135980874961,
+      "name": "mythril",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ]
+}

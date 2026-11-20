@@ -1,5 +1,11 @@
 # GhostPay 1.0.0-beta.1 — prepared release notes
 
+## Latest engineering follow-up — 2026-11-20 UTC
+
+The [current handoff](../engineering-handoffs/continuous-20261119/README.md) and [follow-up qualification receipt](../engineering-handoffs/continuous-20261119/FOLLOWUP_QUALIFICATION.json) supersede earlier status below. Eight demonstrated runtime defects are repaired, including the independently verified pure merchant-ledger guard. Existing composite-action discovery is recovered without changing update cadence or action versions. Six fresh generations and explicitly reused independent follow-up reviewers contributed.
+
+Published d74 CI failed only the invoice-replacement browser observation (both profiles) and signer fixture synchronization; those exact failures are retained and their focused repairs independently approved. Original local web coverage was3837passed/1failed/13skipped; hosted d74 web3849passed/1failed/1skipped. Follow-up focused tests, full web typecheck/lint and merchant original coverage pass; full original hosted qualification on the follow-up head remains required. Strict Mythril, required external review and owner-controlled origin/testnet/release acceptance remain unresolved. No deployment, release, main merge, fee activation, source-branch deletion or weakened gate is implied.
+
 ## Unreleased continuation — 2026-11-19
 
 Draft PR #278 now stages five unique validation/privacy edge-case fixes, the final key-export session-deadline guard and a same-chain manifest freshness repair, with independent regression evidence. Browser fixtures retain their original security/request/download checks; developer lease tooling is selectively recovered. [Current handoff](../engineering-handoffs/continuous-20261119/README.md) governs exact source, verification and unresolved security/deployment requirements. These remain prepared notes: no release/tag/deployment is published.

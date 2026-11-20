@@ -1,0 +1,10 @@
+2026-11-20T00:43:26.8664319Z
+2026-11-20T00:43:26.8670958Z  FAIL  src/views/Pay.signer.test.tsx > invoice signer verification lifecycle > compares only the selected seller even when both distinct seller keys are saved
+2026-11-20T00:43:26.8680374Z TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Continue"
+2026-11-20T00:43:26.8681356Z
+2026-11-20T00:43:26.8681630Z Here are the accessible roles:
+2026-11-20T00:43:26.8681939Z
+2026-11-20T00:43:26.8682095Z   link:
+2026-11-20T00:43:26.8682285Z
+2026-11-20T00:43:26.9104368Z  ❯ src/views/Pay.signer.test.tsx:89:19
+2026-11-20T00:43:26.9120143Z       Tests  1 failed | 3849 passed | 1 skipped (3851)

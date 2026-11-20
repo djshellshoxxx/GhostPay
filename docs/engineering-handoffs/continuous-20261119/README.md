@@ -1,89 +1,106 @@
-# Continuous engineering handoff — 2026-11-19
+# Continuous engineering handoff — 2026-11-19/20
 
-Repository: https://github.com/djshellshoxxx/GhostPay. Canonical review entry: [draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278), branch `release/ghostpay-beta-qualification-20261119`. The coordinator's isolated branch is `integration/ghostpay-continuous-20261119`.
+Repository: https://github.com/djshellshoxxx/GhostPay. Canonical review entry: [draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278), branch `release/ghostpay-beta-qualification-20261119`. Coordinator branch: `integration/ghostpay-continuous-followup-20261119`.
 
-**Release status: BLOCKED.** Seven demonstrated runtime defects are repaired and independently reviewed. Final combined typecheck, lint, library/full web/Pages builds passed; original full web coverage and hosted qualification remain in progress. This is an engineering checkpoint, not release, deployment, external-audit or whole-repository completion approval.
+**Release status: BLOCKED. Eight demonstrated runtime defects have been repaired and independently reviewed.** The follow-up also repairs two test synchronization defects exposed by the original full qualification runs and restores discovery of three existing composite actions to the existing weekly Dependabot job. Final exact-source hosted qualification and security/release clearance remain separate gates. No engineering fixed point or complete semantic audit of every historical branch is claimed.
 
-## Source identity and current state
+## Source identity
 
 - Observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
-- Selected existing candidate baseline: `c993bb2340942c85dbf10303b61f69a91c4944e0`.
-- Frozen combined implementation and reviewed test source: `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`, tree `7a7b189be05b802d3545e8823230076125d7bbf6`.
-- Connector reconstruction of that checkpoint: `db6956dbcc635694ffa103a2a70f82da1baacf4c`; identical tree and ordered mapped parents. Publication metadata differs; exact local author and commit provenance are retained as commit trailers and in `PUBLICATION_MAP.json`.
-- The shared branch still requires a fresh lease/head assertion before its advance. Read the live PR and current handoff before resuming; a staged Git object is not proof of a branch update.
-- Root checkout: `/workspace/scratch/0a7bc3583588/GhostPay`. No unresolved source conflict. Additive ownership-claim conflicts were resolved by preserving both sides.
+- Original selected candidate: `c993bb2340942c85dbf10303b61f69a91c4944e0`.
+- Initial reviewed implementation: `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`, tree `7a7b189be05b802d3545e8823230076125d7bbf6`.
+- Verified published initial continuation: `d74af79ebabdc8cead843361c3497b46d8c421f9`, tree `e76c03d9dba595ff1171577139c1628c4ad45f5b`, equivalent to local `3dc86fbc49e919e664230b63dae372ff79430fc5`. [PUBLICATION_VERIFICATION.json](PUBLICATION_VERIFICATION.json) records actual publication, rather than only staging.
+- **Follow-up implementation and tests:** `2b7c015e28aa23f63ba39486ae7345983ce9ff97`, tree `cfb76c46e40ba32916e385083738036ed12e33af`. Subsequent receipts do not change these product/test inputs. [FOLLOWUP_QUALIFICATION.json](FOLLOWUP_QUALIFICATION.json) pins the six changed non-documentation blobs and actual checks.
+- Read the live PR head and most recent publication receipt before a shared update. Git Data publication preserves exact trees and ordered parent relationships; connector-created metadata differs, with original local commit/author attribution retained in trailers and the publication map. A staged object alone is not a published branch.
 
-## Verified unique work and repairs
+All local source integrations preserved the reviewed blobs. Conflicts were confined to additive ownership claims and resolved by retaining both contributions. Shared updates use the cooperative integration lease and expected-head, non-forced branch movement. Main, source branches, release tags and deployment state remain outside this engineering update.
 
-| Task | Original problem and necessary change | Source / integration | Evidence and review |
-| --- | --- | --- | --- |
-| PR #280 | Unknown runtime build-profile values could select the wrong profile; explicitly supported full/absent values retain their behavior, otherwise lean is selected | Original `c6d16c25`, local `50b790d5` | Original baseline regression; archaeology blob comparison and independent security review |
-| PR #281 | A shorter-than-30-day scan could display privacy counts without their partial qualifier | Original `be74b36e`, local `ae303a91` | Baseline RED and full affected scanSpam selection GREEN |
-| PR #282 | Stored merchant signer-pin JSON accepted duplicate member names | Original `4c4b221e`, local `82d7f89c` | Existing strict parser reused; meaningful short duplicate-v baseline failure; independent source review |
-| PR #285 | Unknown or inherited QR payload/frame classification was not rejected consistently | Original `613f1d90`, local `b9e7940d` | Original malformed-kind regressions RED/GREEN; fail-closed review |
-| PR #289 | Public base64url API accepted non-string runtime values into its decoder path | Original `401b2e77`, local `17467d9a` | 4/1 baseline to5/0 fixed; later test-only unused parameter removal `b2711401` independently reviewed |
-| Export expiry | A raw-key download could pass the final UI handoff after the session deadline but before the delayed lock notification | `84f39e41`, integrated `fcb25666`; independent additional tests integrated `bd24d2a3` | Genuine export pipeline3 RED/1 control→4 GREEN; generation 2 independent replay and silent-clear/reentrant/throwing-observer probes |
-| Manifest freshness | Same-chain invoice reentry or service replacement temporarily exposed a previous loaded manifest and started a third preflight | `95f28a04`, integrated `415f6c70` |3 RED/1 retained cancellation guard→4 GREEN independently repeated; lifecycle probes and existing Pay tests pass |
-| Browser fixtures | Three hosted scenarios had stale/invalid fixtures: short ABI balance words, obsolete refusal text, and scan authority assumed after suspension | `95f28a04` + `45a5dcf7`, integrated `415f6c70` | ABI-correct balance data, authority-boundary assertions and explicit backup reimport/fresh scan; request counts, no-download checks and timeouts preserved; hosted confirmation remains required |
-| Lint fixtures | Original JSON array-delete lint errors, then an incoming base64url unused parameter | `a080c2db` + `b2711401` | Sparse-array semantics/assertions preserved with Reflect.deleteProperty; focused lint/tests pass; full workspace lint subsequently passed |
-| PR #261 extraction | Cooperative integration-lease CLI/tests were genuinely absent | `05c441b5`, only the two exact source files |10 original real-Git tests pass; independent security review and generation 4 rerun; metadata control branch remains separate |
+## Verified repairs and consolidation
 
-Focused root upstream evidence is in [GENERATION_1_EVIDENCE.json](GENERATION_1_EVIDENCE.json). It records web baseline50 passed/5 failed, fixed expanded selection73 passed; base64url baseline4 passed/1 failed then5 passed; JSON fixtures24 passed. These selections overlap later suites and must not be summed into an inflated total.
+| Change | Demonstrated missing behavior | Source and verification |
+| --- | --- | --- |
+| Build-profile validation, PR #280 | Unknown runtime profile values could select the wrong build profile | Original `c6d16c25`, local `50b790d5`; baseline regression, exact source comparison and independent security review |
+| Partial scan qualifier, PR #281 | A scan shorter than 30 days could display counts without their partial qualifier | Original `be74b36e`, local `ae303a91`; original regression RED, affected scan tests GREEN |
+| Merchant signer-pin JSON, PR #282 | Duplicate JSON member names were accepted in stored signer pins | Original `4c4b221e`, local `82d7f89c`; existing strict parser reused, meaningful baseline failure and independent review |
+| QR kind validation, PR #285 | Unknown or inherited payload/frame classifications were not consistently rejected | Original `613f1d90`, local `b9e7940d`; malformed-kind RED/GREEN, fail-closed source review |
+| Base64url runtime types, PR #289 | Non-string values could enter the public decoder path | Original `401b2e77`, local `17467d9a`; baseline 4 passed/1 failed, fixed 5 passed |
+| Export session deadline | Raw-key download could complete after expiry but before delayed lock notification | `84f39e41`, integrated `fcb25666`; genuine export 3 RED/1 control to 4 GREEN, independent generation 2 replay plus silent-clear, reentrant-reset and throwing-observer probes |
+| Manifest ownership | Same-chain invoice reentry or service replacement exposed an old loaded manifest and started an extra preflight | `95f28a04`, integrated `415f6c70`; 3 RED/1 retained cancellation control to 4 GREEN, independently repeated |
+| Unpaid invoice tolerance | A nonzero invoice with no counted payment could become paid when tolerance covered the amount due | Exact recovered guard `d694ce1c`, integrated `182ae0e1`; baseline 28 passed/2 failed to 30 passed, independent generation 6 and seven additional boundary probes. This repairs the existing pure merchant API; no lean/CLI reconciliation caller or new payment flow is claimed |
+| Existing action update discovery | Root-only Actions configuration omitted three nested composite-action manifests | `ed98fde7`, integrated `8f31941e`; current primary discovery semantics independently checked, exact semantic config comparison and 113 action pins passed. Existing weekly cadence, grouping, PR limit and npm config retained |
+| Cooperative lease tooling, PR #261 | Integration lease CLI and real-Git guards were absent | Exact selective extraction `05c441b5`; 10 original tests passed and independently rerun. Metadata lease history remains separate from source |
 
-## Discovery, preservation and remaining classification
+The five upstream changes were individually reproduced before integration. Root initial selections were web 50 passed/5 failed to 73 passed, and base64url 4 passed/1 failed to 5 passed. These overlap subsequent suites and must not be summed. Original authors/provenance were preserved; broad source branches were not merged to recover these small changes.
 
-The complete mechanical census covers **299 branches and 282 pull requests**:177 branch heads already ancestors of main,32 additional ancestors of candidate,89 other related heads, and one unrelated `gh-pages` history. PR snapshot:73 open,67 merged,142 closed without merge. No tags were found. [Archaeology report](archaeology/REPORT.md), [branch summary](archaeology/branch-summary.json), full compressed inventory and [PR inventory](archaeology/pull-request-complete-inventory.json) preserve exact sampled identities.
+### Qualification repairs
 
-This is not 299 fresh semantic audits or current CI certification for every historical branch. Null semantic fields explicitly remain UNKNOWN. Prior dated dispositions are evidence to recheck, not blanket approval. The full inventory retains changed/test paths and patch/ancestry evidence.
+The initial browser repairs fixed ABI balance-word fixtures, obsolete refusal-message expectations and recovery tests that assumed suspended scan authority survived. They retain explicit backup reimport, a fresh scan and no-download/network boundaries. Hosted d74 confirmed those scenarios passed, leaving one invoice-replacement observation failure.
 
-Already represented: #269/#270/#274/#279 ancestry, #267 hosting fix, and current beta behavior in the prioritized #218/#211/#260 branches. #262 has two best merge bases; a naive triple-dot diff overcounts already retained source. #264 wholesale integration would regress current payment-export method/address binding and monotonic authority. #249's old scanner is superseded by the current AST scanner. #251's direct-fallback expectations are obsolete. #250/#271 are represented with stronger RPC privacy controls.
+The remaining browser test captured a request count before the replacement manifest finished. A deterministic test using the real RPC/authorization pipeline establishes 9 requests while pending, then 15 when ready; the six reads belong to the new grant. Releasing the revoked old fetch adds none. Commit `89e163fc`, integrated `4b679218`, waits for the existing Continue control to become enabled before sampling. Every original request, chain, raw-transaction, unexpected-method and timeout assertion remains; exact method-list equality is added. Independent review `97fd030a`, integrated `2b7c015e`, reproduces the premature observation and passes an additional late-success revoked-fetch control. [Implementation](../continuous-20261120/preflight-observation/README.md) and [independent review](browser-followup-review/README.md) retain exact evidence. The hosted artifact has no request trace; precise request attribution comes from the controlled source reproduction.
 
-Preserve source branches and open PRs. No source branch was deleted or PR closed. #209 release/nightly tooling remains a separately scoped optional candidate; do not activate new schedules merely to clear its diff. Non-EVM, policy, relayer, gas sponsorship and paid privacy work remain future/optional. Dependency/action updater branches require their own current compatibility review. No fee, custody, signing identity, deployment, workflow, dependency or release-policy change is part of this cycle.
+The original full web run then exposed a signer fixture that queried Continue before the refreshed manifest rendered the review controls. Commit `f2b991f7` waits for that same button, still asserts it is disabled, retains the selected-seller mismatch and zero RPC/wallet assertions, and adds a mismatch check after the wait. Root baseline 10 passed/1 failed becomes 11 passed. The independent reviewer reproduces the failure and passes all 11 fixed cases. [Signer review](signer-fixture-followup-review/README.md) records the source and limits. No runtime or timeout change was needed for either follow-up fixture.
 
-## Verification checkpoint
+Two earlier lint-only fixture repairs preserve behavior: `a080c2db` uses Reflect.deleteProperty for intentional array holes, and `b2711401` removes an unused malformed-input test parameter. Original assertions remain.
 
-| Scope | Observed result and limits |
+## Discovery and remaining uncertainty
+
+The mechanical census covers **299 branches and 282 PRs**: 177 branch heads already ancestors of main, 32 additional ancestors of the selected candidate, 89 other related heads and one unrelated gh-pages history. The PR snapshot has 73 open, 67 merged and 142 closed without merge; no tags were present. The [archaeology report](archaeology/REPORT.md), compressed full inventory and its digest preserve exact sampled heads, merge bases, paths and patch evidence.
+
+Generation 5 refreshed the original 70 nonancestor rows whose fresh semantic fields were null: an initial 11-head matrix, followed by a bounded 59-head continuation. This provides live heads, all merge-base path unions and exact final blobs; it is **not 70 exhaustive new semantic audits**. [Generation 5 report](generation-5-remaining-uniqueness/REPORT.md) retains explicit UNKNOWN/FUTURE entries and the narrower behavior actually inspected. Only the merchant guard and composite-action discovery became confirmed recoveries in this pass.
+
+Two viem/minor-update candidates already retain all 752 locked node_modules entries exactly (684 external packages and 68 workspace links). Current private scanning preserves the older checkpoint/replay behavior and adds bulk evidence, cancellation and action authority. The older policy remediation's broad legacy-payer guard conflicts with current tests that permit unrelated scoped payments while rejecting same-scope duplicates. These observations justify skipping those proposed changes; they do not certify all unrelated contents of broad historical branches.
+
+Prior exact comparisons establish represented #269/#270/#274/#279, hosting #267, and stronger current scan/RPC/privacy implementations in prioritized candidates. #262 has two merge bases; naive triple-dot counts overstate missing work. Wholesale #264 would regress current export method/address binding and monotonic authority. Old #249 scanning and #251 direct-fallback assumptions are superseded. Recovery snapshots, unsupported major dependency migrations and uninspected broad histories remain scoped UNKNOWN. Non-EVM, policy, relayer, gas sponsorship and paid privacy work remain preserved future/optional modules. No source branch was deleted or PR closed to clear the inventory.
+
+## Actual verification results
+
+| Scope | Observed result and practical limit |
 | --- | --- |
-| Toolchain/dependencies | Node22.23.4, npm10.9.11; clean npm ci with ignore-scripts and unchanged lockfile. All65 workspace libraries freshly rebuilt after final product integration, exit0 |
-| Invoice schema original coverage |14 files /804 tests passed; statements98.07%, branches97.60%, functions100%, lines99.29%; original thresholds unchanged. Runtime source remained stable; a behavior-preserving unused test parameter was removed while the run was in progress, then its5 cases and lint reran successfully. Do not describe this run as an immutable final whole-tree CI receipt |
-| Root final web coverage/nocov | Running/pending on frozen combined product source; no pass inferred |
-| Workspace typecheck/lint | Final full workspace typecheck and lint passed, exit0 each. Earlier full lint found the now-corrected unused test parameter; that failure is retained |
-| QA focused support |122/122 in 7 files;138/138 in 5 files, overlap 4 new regression cases. Web typecheck/scoped lint pass. Playwright discovery is not browser execution |
-| Independent security | Generation2 replay and 62 focused tests passed; original upstream source independently checked. Counts overlap root/worker checks |
-| Feature completeness | Generation 3 mapped nine maintained feature families to reachable lean implementation and tests;48/48 focused tests, no additional confirmed core feature gap. Actual end-to-end release acceptance still separate |
-| Final integration reviewer | All23 changed non-documentation blobs match their reviewed inputs;15 control scopes unchanged. Pages tooling112/112 and lease10/10 passed; includes native local HTTP tests, not browser scenarios |
-| Local Chromium | Startup blocked before assertions by socket() permission denial. No local browser scenario pass claimed; use configured hosted jobs |
-| Native contracts | Generation 4 completed64 original disposition tests with exact pinned Forge1.8.5/solc0.8.28 and unchanged10,000 fuzz-run setting. Six further exact-artifact/residual probes passed; [finding-level report](generation-4-contract-review/ASSESSMENT.md) and reproducible harness are integrated |
+| Clean setup and initial combined build | Pinned Node 22.23.4/npm 10.9.11, unchanged lockfile, clean npm ci with ignore-scripts; all 65 libraries, full workspace typecheck/lint, full web build/bundle scan and a payments-disabled 16-file Pages artifact passed |
+| Original invoice coverage | 804 tests/14 files passed; statements 98.07%, branches 97.60%, functions 100%, lines 99.29%; original thresholds retained. A behavior-preserving test parameter edit occurred while this run was active, then its five tests/lint reran; this is not an immutable final whole-tree receipt |
+| Original local web coverage | **3837 passed, 1 failed, 13 skipped**, 269 files, exit 1. Failure is the now-repaired signer fixture. No full coverage-threshold pass inferred |
+| Original web nocov | 4/4 passed, including the million-log scan, unchanged budgets |
+| Combined follow-up | 13 tests/3 files passed; full web typecheck and lint passed; root merchant original coverage 30/30, statements 100%, branches 99.32%, functions/lines 100%; merchant library build and 113 action pins passed |
+| Browser follow-up evidence | Implementer 10/10 source tests; independent 11/11 including late-success variation; controlled premature snapshot fails 9 versus 15. Selections overlap and are not aggregated |
+| Independent merchant review | Original 30/30 coverage suite; seven added boundary probes, baseline five RED/two controls then seven GREEN; typecheck/lint/build passed |
+| Initial independent source/tooling review | 23/23 changed blobs matched reviewed inputs; 15 control scopes unchanged; 112 Pages tooling and 10 real-Git lease tests passed, no skips. Native HTTP tests are not browser execution |
+| Feature completeness | Nine maintained feature families mapped to reachable lean source/tests, 34 source pins and 48 focused tests passed. No additional required core feature defect demonstrated; real testnet/release acceptance remains separate |
+| Native contract review | 64 original disposition tests with unchanged four 10,000-run fuzz budgets plus six exact-artifact/residual probes passed using pinned Forge 1.8.5/solc 0.8.28 |
+| Dependency audit | Production audit zero reported vulnerabilities; full audit 17 low package entries from two advisories, exit 1. All affected entries are development-only in confidential-contract tooling and absent from the 374-record lean module report |
+| Local browser | Chromium cannot start because socket creation is denied before assertions. No local browser pass claimed; original hosted suites are the execution gate |
 
-## Hosted baseline and security status
+Sources: [initial qualification](FINAL_LOCAL_QUALIFICATION.json), [follow-up qualification](FOLLOWUP_QUALIFICATION.json), and scoped worker receipts. Exact logs/digests retain failures and skips. Reused dependency installations and overlapping test selections are disclosed.
 
-[HOSTED_BASELINE.json](HOSTED_BASELINE.json) records retrieved jobs and workflow conclusions for PR head `c993bb23`. CI executed synthetic merge `5c1ff468974b20d7160b2cf12776b3b82a69b537`; both commits have tree `dc2e653671506663df8e077153b06787929d37af`. This establishes baseline source equivalence, not final-source qualification.
+## Hosted checks and security gate
 
-- [Baseline CI44539518256](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518256): unit groups, full typecheck/build, reproducible lean candidate, contract/static/coverage and secrets jobs passed. Lint failed on the two corrected array deletes. Lean browser112 passed/4 failed/5 skipped; full125 passed/4 failed/2 skipped. The four failing scenarios are the QA repair targets.
-- [Pages44539518286](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518286), [beta acceptance44539518215](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518215), [CLI44539518311](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518311), [hosting44539518228](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518228) and [integration44539518360](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518360) passed. Pages publication/release-only gates were skipped; this was not deployment.
-- [Contract analysis44539518235](https://github.com/djshellshoxxx/GhostPay/actions/runs/44539518235): configured Echidna passed. Fresh strict Mythril completed all 5 instrumented targets but failed with **10 findings:3 Medium and 7 Low**. The artifact's241 source hashes match unchanged candidate contracts. This supersedes the older11-record checkpoint for this source; it does not clear the findings.
-- Generation 4 mapped all exact traces, guards, rejection controls and residual design limits. All seven factory constructor tuples reject implementation address0x1; all three expiry payloads reject. A failing immutable fee-token view can prevent deployment at a prefunded counterfactual address, and intentional fee-waiver/timestamp dependencies remain policy constraints. Internal reproduction cannot substitute for the required external review. No strict analyzer configuration, failure gate, fee model or contract was changed.
+The initial published d74 continuation ran as synthetic merge `a7ceff94269cddfbc725677dd03737d96a449039`, verified to have the identical tree. [CI 44643709383](https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709383) completed the following source-specific observations:
 
-## Worker generations and durable evidence
+- Full browser: **128 passed, 1 failed, 2 skipped**; lean browser: **115 passed, 1 failed, 5 skipped**. Both failures were the repaired premature request snapshot.
+- Web unit suite: **3849 passed, 1 failed, 1 skipped**. Its single failure matches the repaired signer fixture. Other configured unit groups, TypeScript, lint, build, secret checks, native contract tests/static/coverage, Slither and reproducible lean builds passed.
+- [Pages 44643709322](https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709322), beta acceptance, integration, hosting, CLI and research workflows passed. Pages included its actual artifact browser check. Manual release/approval/deployment steps were skipped; no deployment occurred.
+- Fresh follow-up full/lean browser and full unit/coverage results must come from the new published head. Earlier passing scopes do not turn d74 into a passing complete CI run or qualify a later whole tree.
 
-Generation1 archaeology, QA/bug and security repairs are complete and integrated. Generation2 independently verified the security fix. Generation 3 independently reviewed QA and feature completeness. Generation 4 final source/tooling review and contract finding-level assessment are complete and integrated. Root owns combined qualification, source-preserving publication and final ledger updates. Agent completion does not imply a continuously running background agent.
+[HOSTED_D74.json](HOSTED_D74.json) preserves the observed job snapshot. [HOSTED_BASELINE.json](HOSTED_BASELINE.json) separately records c993 baseline failures and source equivalence; those are historical evidence, not final results.
 
-- [Security generation1](../generation1-security/README.md) and source-pinned Mythril artifact/receipts.
-- [Generation2 review](generation-2-review/) for independent expiry probes and upstream verification.
-- [QA implementation](qa-gen1/README.md), [generation3 independent QA](generation-3-qa-review/README.md) and [generation3 completeness](generation-3-completeness/ASSESSMENT.md).
-- `TASK_LEDGER.json` records ownership, review, integration and unfinished scope. `PUBLICATION_MAP.json` records metadata-preserving tree/parent reconstruction.
+Strict Mythril remains unresolved. The completed c993 artifact contains **10 records: 3 Medium and 7 Low**, with all five instrumented targets complete. All 241 recorded source hashes match the unchanged candidate contracts. [Generation 4 assessment](generation-4-contract-review/ASSESSMENT.md) maps exact traces: seven constructor tuples reject implementation address 0x1, and three expiry payloads reject. The assessment also preserves a genuine design limit: failure of the immutable fee token's balanceOf view can prevent deployment at a prefunded counterfactual address; another factory does not recover that original address. Intentional fee-waiver behavior and timestamp/inclusion assumptions remain decisions for security/release clearance. No contract or analyzer failure gate was changed, and the 11-to-10 historical record change is not represented as a repaired vulnerability. Current later analyzer results must be recorded separately when completed.
 
-## Remaining beta blockers and next authorized work
+[Dependency review](generation-5-dependency-review/ASSESSMENT.md) establishes why an automatic full-audit update is not a supported drop-in: current FHEVM tooling requires Hardhat 2 while the suggested ethers plugin upgrade requires Hardhat 3; elliptic's affected current version has no patched replacement. A nested cookie override is an optional separately qualified compatibility change, not an applied or proven-safe fix. Neither audit result is a general vulnerability-free guarantee.
 
-1. Advance the existing draft PR through the fresh integration lease after rechecking live head; do not create a redundant broad PR. Obtain final exact-source hosted results, inspect the four repaired browser scenarios and repair any new demonstrated failures.
-2. Finish original local coverage/nocov/type/lint/static builds, retaining all failures/skips and source identities. Record the final source tested by Actions separately from its associated PR head.
-3. Complete finding-level security disposition and required external review. The strict Mythril gate remains failed until the repository's actual clearance requirements are satisfied; do not suppress or broadly waive findings.
-4. Owner-controlled deployment decisions remain: ADR decision, dedicated origin and verified DNS/HTTPS, Pages environment/exact approval, authorized testnet contracts and manifest signing identity, real wallet/testnet payment/recovery/sweep acceptance, then approved release assets/tag. No real-fund transaction is authorized by these QA steps.
-5. Revisit UNKNOWN historical candidates only when their behavior is potentially relevant and missing; prove uniqueness before any extraction. Preserve future scopes. No engineering fixed point is claimed.
+## Generations, execution limits and next work
 
-## Exact continuation commands
+Six successive fresh worker generations contributed implementation, independent security/QA/completeness review, final source/tooling/contract assessment, remaining uniqueness/dependency assessment and independent merchant verification. A further native-agent spawn was refused by the execution thread limit. The browser and signer follow-ups therefore reused the already independent reviewer and are explicitly described as follow-up turns, not new fresh generations. Completed agents are not represented as continuously running. [TASK_LEDGER.json](TASK_LEDGER.json) records ownership, source, evidence, integration and unfinished scope.
 
-Refresh live refs first; do not overwrite another worker's worktree. Use the pinned Node/npm versions and unchanged lockfile. In a clean checkout of the actual published candidate:
+1. Verify the latest candidate and owned lease, publish only reviewed follow-up inputs to existing draft PR #278, and retain exact tree/ordered-parent verification. Never force over a changed shared head.
+2. Obtain the original full/lean browser and full unit/coverage results on that exact published candidate. Diagnose any new failure before altering source or tests. Preserve all failed prior runs and original gates.
+3. Retain strict analyzer failure and finding-specific limits until the required security clearance/external review is actually satisfied. Inspect the later analyzer's exact artifact if it completes; do not infer its record count from c993.
+4. Owner-controlled release prerequisites remain: ADR decision, dedicated origin and verified DNS/HTTPS, Pages environment/approval, authorized testnet deployment and manifest signing identity, real-wallet testnet payment/recovery/sweep acceptance, then approved release assets/tag. No real funds, public release or deployment is part of these internal checks.
+5. Continue UNKNOWN branch work only where current behavior might be missing; establish uniqueness and useful integration value before another extraction. Preserve future scopes. No fabricated completion percentage or engineering fixed point.
+
+The existing two-hour continuation automation is the durable successor mechanism. Read its live run and lease before overlapping a shared update; do not assume a scheduler has completed work merely because it is enabled. Update only its checkpoint after verified publication, preserving cadence and scope limits.
+
+## Reproducible continuation commands
+
+Use the pinned runtime and actual latest published source. The commands below describe required original checks, not claims that every command passed on every checkpoint:
 
 ```sh
 git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/pull/*/head:refs/remotes/pr/*' --tags
@@ -95,6 +112,7 @@ npm run build:libs
 npm run typecheck
 npm run lint
 npm run test --workspace @ghostpay/invoice-schema -- --maxWorkers=1
+npm run test --workspace @ghostpay/merchant-ledger -- --maxWorkers=1
 (cd apps/web && node ../../node_modules/vitest/vitest.mjs run --coverage --maxWorkers=1)
 (cd apps/web && node ../../node_modules/vitest/vitest.mjs run --config vitest.nocov.config.ts --maxWorkers=1)
 node --test scripts/pages/*.test.mjs scripts/tests/integration-lock.test.mjs
@@ -103,6 +121,4 @@ npm run ci:scan-secrets
 npm run ci:check-actions
 ```
 
-Use the original hosted full/lean Playwright, beta acceptance, Pages artifact and contract workflows for their configured environments. For a local payments-disabled static check, `bash scripts/pages/build-pages.sh /absolute/new/output/path` creates an artifact without publishing. It must not be described as authenticated testnet acceptance. Exact successful commands/logs are retained in the accompanying receipts.
-
-Before ending a future cycle, update this index, central ledger, exact sources, CI links, worker ownership and immediately executable next steps. Update the existing two-hour continuation automation's checkpoint only after remote publication is verified; preserve its cadence and all prior scope limits.
+Run the configured hosted browser, Pages, beta acceptance and contract workflows in their original environments. A local payments-disabled Pages build is not signed testnet acceptance. Before a future cycle ends, retain exact source/results and executable successor steps without repeatedly restarting an active CI run solely for documentation.

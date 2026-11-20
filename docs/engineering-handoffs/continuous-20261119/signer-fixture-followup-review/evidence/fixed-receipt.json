@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/views/Pay.signer.test.tsx",
+    "--maxWorkers=1",
+    "--reporter=json",
+    "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/signer-fixture-followup-review/fixed.json"
+  ],
+  "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-signer-followup-review/apps/web",
+  "exit_code": 0,
+  "duration_seconds": 6.779,
+  "fixture_sha256": "85e5ad5ad8f8e70baa27efbd7370e86ba03d331db0fdd5bcb832ef6a2440a801"
+}

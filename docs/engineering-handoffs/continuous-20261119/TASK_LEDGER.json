@@ -1,9 +1,9 @@
 {
   "schema": "ghostpay-continuous-engineering/2",
-  "generation": 4,
+  "generation": 6,
   "baseline": "c993bb2340942c85dbf10303b61f69a91c4944e0",
   "observed_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
-  "branch": "integration/ghostpay-continuous-20261119",
+  "branch": "integration/ghostpay-continuous-followup-20261119",
   "tasks": [
     {
       "id": "CE-001",
@@ -72,12 +72,12 @@
       "id": "CE-005",
       "worker": "root",
       "scope": "original build/type/lint/coverage and static artifact qualification",
-      "status": "in_progress",
+      "status": "local_checks_completed_followup_hosted_pending",
       "branch": "integration/ghostpay-continuous-20261119",
-      "tests": "Clean install;65final libraries, fullworkspace typecheck, fullworkspace lint and fullwebbuild passed;invoice804passed98.07statements97.6branches;final webcoverage andPagesbuild running",
+      "tests": "65 libraries, full workspace typecheck/lint, full web build, Pages build, invoice804 and webnocov4 passed. Original full web3837passed/1failed/13skipped. Follow-up signer11 and combined13 passed; web typecheck/lint and merchant30 original coverage passed.",
       "review": "Generation4 verified23changed blobs,15unchanged control scopes;Pages112 andlease10 passed",
       "integration_commit": null,
-      "remaining": "Complete coverage/nocov/static checks and exact-head hosted qualification",
+      "remaining": "Original exact-source hosted follow-up unit/coverage and full/lean browser qualification",
       "dependencies": []
     },
     {
@@ -145,9 +145,93 @@
       "integration_commit": "526f7c1e",
       "evidence": "generation-4-integration-review/",
       "remaining": "Root final combined/external gates remain separate"
+    },
+    {
+      "id": "CE-011",
+      "worker": "dependency_review_gen5",
+      "scope": "current development dependency advisory assessment",
+      "status": "integrated_reviewed",
+      "integration_commit": "29bb7337",
+      "evidence": "generation-5-dependency-review/",
+      "tests": "Production0; full17Low package entries from2 advisories; all affected nodes dev-only, absent from374 lean module records",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "No supported drop-in update demonstrated; optional scoped override requires separate compatibility qualification",
+      "dependencies": []
+    },
+    {
+      "id": "CE-012",
+      "worker": "remaining_unique_gen5",
+      "scope": "recover unique unpaid-invoice tolerance guard",
+      "status": "integrated_reviewed",
+      "integration_commit": "182ae0e1",
+      "evidence": "generation-5-ledger-fix/",
+      "tests": "Independent28pass2fail baseline ->30pass; root30 original coverage pass",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "Pure merchant reconciliation API; no demonstrated lean/CLI reconciliation call or new user-facing flow",
+      "dependencies": []
+    },
+    {
+      "id": "CE-013",
+      "worker": "merchant_review_gen6",
+      "scope": "independent merchant boundary review",
+      "status": "integrated_reviewed",
+      "integration_commit": "f4e29ae1",
+      "evidence": "generation-6-merchant-review/",
+      "tests": "30tests original coverage;7additional probes5RED2controls->7GREEN; type/lint/build",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "External release acceptance remains separate",
+      "dependencies": []
+    },
+    {
+      "id": "CE-014",
+      "worker": "remaining_unique_gen5 and root",
+      "scope": "recover existing composite-action update discovery",
+      "status": "integrated_reviewed",
+      "integration_commit": "8f31941e",
+      "evidence": "generation-5-dependabot-fix/",
+      "tests": "Current primary-source discovery semantics verified; three extra manifests;113action pins; cadence/groups/limits/npm configuration preserved",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "No action/dependency version bump, new cadence, or workflow/gate edit",
+      "dependencies": []
+    },
+    {
+      "id": "CE-015",
+      "worker": "qa_bug_gen1 and qa_review_gen3",
+      "scope": "fix premature replacement preflight observation",
+      "status": "integrated_reviewed",
+      "integration_commit": "4b679218",
+      "evidence": "../continuous-20261120/preflight-observation/",
+      "tests": "Expected9/got15 diagnostic RED;10source tests and11independent including late-success control GREEN",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "Original hosted full/lean browser follow-up gate",
+      "dependencies": []
+    },
+    {
+      "id": "CE-016",
+      "worker": "root and qa_review_gen3",
+      "scope": "fix signer fixture before manifest completion",
+      "status": "integrated_reviewed",
+      "integration_commit": "f2b991f7",
+      "evidence": "signer-fixture-followup-review/",
+      "tests": "Root10pass1fail ->11pass; independent selected-caseRED ->11fullGREEN; combined13GREEN",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "Original hosted full web coverage follow-up gate",
+      "dependencies": []
+    },
+    {
+      "id": "CE-017",
+      "worker": "remaining_unique_gen5",
+      "scope": "bounded semantic refresh of remaining census rows",
+      "status": "integrated_reviewed",
+      "integration_commit": "8dc1cfde",
+      "evidence": "generation-5-remaining-uniqueness/",
+      "tests": "Initial11 heads and continued59 live/path comparisons; broad unknown scopes retained",
+      "review": "Independent review preserved in scoped evidence; root integration checks separate",
+      "remaining": "Mechanical freshness is not exhaustive semantic audit or historical CI recertification",
+      "dependencies": []
     }
   ],
-  "frozen_implementation": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "frozen_implementation": "2b7c015e28aa23f63ba39486ae7345983ce9ff97",
   "canonical_branch": "release/ghostpay-beta-qualification-20261119",
   "pr": 278,
   "release_status": "BLOCKED",
@@ -156,5 +240,6 @@
     "No main merge,release,deployment,fee change,real-fund transaction,workflow gate weakening or source branch deletion.",
     "Unknown candidates require current uniqueness proof.",
     "Completed native agents do not keep running; update existing scheduled continuation only with verified published checkpoint."
-  ]
+  ],
+  "worker_limit": "Six successive fresh generations completed. A further native agent spawn was refused by the execution thread limit; browser/signer follow-ups reused the already independent reviewer and are not described as new fresh generations."
 }

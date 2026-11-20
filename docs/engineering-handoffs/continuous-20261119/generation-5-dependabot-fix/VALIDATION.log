@@ -1,0 +1,10 @@
+Parsed YAML: sole structural change is github-actions.directory -> directories [/, /.github/actions/*].
+Existing schedule weekly/Monday, groups, limit, commit prefix and npm entry compare unchanged.
+Matched composite manifests:
+.github/actions/release-verify/action.yml
+.github/actions/setup-forge/action.yml
+.github/actions/setup-node-libs/action.yml
+
+Command: bash scripts/check-actions-pinned.sh
+Exit: 0
+OK: 113 'uses:' reference(s) checked, all pinned to full SHAs with version comments.

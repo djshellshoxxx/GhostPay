@@ -1,0 +1,397 @@
+{
+  "schema": "ghostpay-dependency-review/1",
+  "base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "counts": {
+    "info": 0,
+    "low": 17,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 17
+  },
+  "root_advisory_count": 2,
+  "same_as_prior_package_set": true,
+  "same_as_prior_advisory_fields": true,
+  "items": [
+    {
+      "package": "@ethersproject/abi",
+      "version": "5.8.0",
+      "lock_nodes": [
+        "node_modules/@ethersproject/abi"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "@ethersproject/hash"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@ethersproject/abstract-provider",
+      "version": "5.8.0",
+      "lock_nodes": [
+        "node_modules/@ethersproject/abstract-provider"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "@ethersproject/transactions"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@ethersproject/abstract-signer",
+      "version": "5.8.0",
+      "lock_nodes": [
+        "node_modules/@ethersproject/abstract-signer"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "@ethersproject/abstract-provider"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@ethersproject/hash",
+      "version": "5.8.0",
+      "lock_nodes": [
+        "node_modules/@ethersproject/hash"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "@ethersproject/abstract-signer"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@ethersproject/signing-key",
+      "version": "5.8.0",
+      "lock_nodes": [
+        "node_modules/@ethersproject/signing-key"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "elliptic"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@ethersproject/transactions",
+      "version": "5.8.0",
+      "lock_nodes": [
+        "node_modules/@ethersproject/transactions"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "@ethersproject/signing-key"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@fhevm/hardhat-plugin",
+      "version": "0.4.2",
+      "lock_nodes": [
+        "node_modules/@fhevm/hardhat-plugin"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": true,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84",
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        "@nomicfoundation/hardhat-ethers",
+        "hardhat"
+      ],
+      "fix_available_report": false
+    },
+    {
+      "package": "@nomicfoundation/hardhat-chai-matchers",
+      "version": "2.1.2",
+      "lock_nodes": [
+        "packages/confidential-contracts/node_modules/@nomicfoundation/hardhat-chai-matchers"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": true,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84",
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        "@nomicfoundation/hardhat-ethers",
+        "hardhat"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-chai-matchers",
+        "version": "3.0.0",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@nomicfoundation/hardhat-ethers",
+      "version": "3.1.3",
+      "lock_nodes": [
+        "node_modules/@nomicfoundation/hardhat-ethers"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": true,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84",
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        "hardhat"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@nomicfoundation/hardhat-network-helpers",
+      "version": "1.1.2",
+      "lock_nodes": [
+        "node_modules/@nomicfoundation/hardhat-network-helpers"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": true,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84",
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        "ethereumjs-util",
+        "hardhat"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-network-helpers",
+        "version": "3.0.12",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@sentry/node",
+      "version": "5.30.0",
+      "lock_nodes": [
+        "node_modules/@sentry/node"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        "cookie"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "cookie",
+      "version": "0.4.2",
+      "lock_nodes": [
+        "node_modules/cookie"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        {
+          "source": 1103907,
+          "name": "cookie",
+          "dependency": "cookie",
+          "title": "cookie accepts cookie name, path, and domain with out of bounds characters",
+          "url": "https://github.com/advisories/GHSA-pxg6-pf52-xh8x",
+          "severity": "low",
+          "cwe": [
+            "CWE-74"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<0.7.0"
+        }
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "elliptic",
+      "version": "6.6.1",
+      "lock_nodes": [
+        "node_modules/elliptic"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        {
+          "source": 1112030,
+          "name": "elliptic",
+          "dependency": "elliptic",
+          "title": "Elliptic Uses a Cryptographic Primitive with a Risky Implementation",
+          "url": "https://github.com/advisories/GHSA-848j-6mx2-7j84",
+          "severity": "low",
+          "cwe": [
+            "CWE-1240"
+          ],
+          "cvss": {
+            "score": 5.6,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L"
+          },
+          "range": "<=6.6.1"
+        }
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "ethereum-cryptography",
+      "version": "0.1.3",
+      "lock_nodes": [
+        "node_modules/ethereum-cryptography"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "secp256k1"
+      ],
+      "fix_available_report": true
+    },
+    {
+      "package": "ethereumjs-util",
+      "version": "7.1.5",
+      "lock_nodes": [
+        "node_modules/ethereumjs-util"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "ethereum-cryptography"
+      ],
+      "fix_available_report": true
+    },
+    {
+      "package": "hardhat",
+      "version": "2.29.2",
+      "lock_nodes": [
+        "node_modules/hardhat"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": true,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84",
+        "GHSA-pxg6-pf52-xh8x"
+      ],
+      "via": [
+        "@ethersproject/abi",
+        "@sentry/node"
+      ],
+      "fix_available_report": {
+        "name": "@nomicfoundation/hardhat-ethers",
+        "version": "4.2.2",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "secp256k1",
+      "version": "4.0.5",
+      "lock_nodes": [
+        "node_modules/secp256k1"
+      ],
+      "dev_only": true,
+      "direct_workspace_dependency": false,
+      "reported_severity": "low",
+      "root_advisories": [
+        "GHSA-848j-6mx2-7j84"
+      ],
+      "via": [
+        "elliptic"
+      ],
+      "fix_available_report": true
+    }
+  ]
+}

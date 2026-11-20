@@ -1,0 +1,36 @@
+{
+  "schema": "ghostpay-gen5-continuation-checks/1",
+  "checked_at_utc": "2026-11-20T00:49:34.328574+00:00",
+  "dependency_checks": [
+    {
+      "branch": "chatgpt/ghostpay-viem-alignment-20261118",
+      "head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "candidate": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+      "different_records": 0,
+      "node_modules_record_count": 752,
+      "external_package_record_count": 684,
+      "workspace_link_record_count": 68,
+      "canonical_node_modules_records_sha256": "b089c787802e1aed916fbd15cbc1c7697aa515756590a1001615a7bc7a519435",
+      "canonical_external_packages_sha256": "f6825b3330cc082211e21b25941e16d173a1e62adb8aea6deca38b170c3aa649",
+      "canonical_workspace_links_sha256": "add4bba7e82eb61867aacc768cc42346e266d5fe82abbed649b1cb4e0a651baf"
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "candidate": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+      "different_records": 0,
+      "node_modules_record_count": 752,
+      "external_package_record_count": 684,
+      "workspace_link_record_count": 68,
+      "canonical_node_modules_records_sha256": "b089c787802e1aed916fbd15cbc1c7697aa515756590a1001615a7bc7a519435",
+      "canonical_external_packages_sha256": "f6825b3330cc082211e21b25941e16d173a1e62adb8aea6deca38b170c3aa649",
+      "canonical_workspace_links_sha256": "add4bba7e82eb61867aacc768cc42346e266d5fe82abbed649b1cb4e0a651baf"
+    }
+  ],
+  "source_review_limit": "Static final-source comparison and explicit current test assertions inspected; tests were not executed in this continuation.",
+  "artifact_hashes": {
+    "continuation-live-refs.txt": "d3bea469ca500cfb425046b9395a7f124303cc0b45fd629c64e40b67380ddc49",
+    "continuation-final-blobs.json.gz": "326dc45d06d9a46d94c495cb301cb40605b88661891c46e9dcdb4758b827d425",
+    "CONTINUATION_MATRIX.json": "98e95ace21ca52a1a7c62513cf831b7b56953404e99586d13b14064432860425"
+  }
+}

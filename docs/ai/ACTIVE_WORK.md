@@ -1976,3 +1976,95 @@ Initial review base: `3814ad2efffc6588f1c176a39b1090033f2f3537` (new Sweep autho
 Owned paths: this additive claim and `docs/engineering-handoffs/remediation-20261120/final-review/` only.
 Scope: independently review the added Sweep authority tests, Pages artifact promotion gate and exact CodeQL fixture clarification, then inspect the coordinator's frozen combined source and qualification evidence. Production, existing test sources, workflow policy and shared tracking remain owned by their implementers.
 Acceptance: confirm source identities, perform meaningful focused execution, identify differences between tested behavior and release claims, and provide exactly one release-readiness verdict with precise remaining requirements. No remote mutation, shared integration, deployment, release or security-gate waiver.
+
+# Continuous generation 5 development-dependency review — 2026-11-19
+
+Worker: `/root/dependency_review_gen5`, independently delegated for current audit triage.
+Branch: `review/ghostpay-dependency-gen5-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; canonical candidate remains draft PR #278.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/` only.
+Acceptance: trace current production-zero/full-17-low npm audit results through exact installed and locked dependencies, compare earlier dispositions, inspect current primary advisories and supported fix availability, and identify a concrete minimally disruptive repair if one exists. Preserve observed failures and advisory limitations.
+Boundaries: no product, dependency, lockfile, workflow, gate, remote-ref, deployment or fee mutations. Coordinate any proposed dependency change before implementation. This is internal current advisory/graph assessment, not external security signoff or proof that dependencies contain no vulnerabilities.
+
+
+# Generation 5 unpaid invoice tolerance correction — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`, specifically authorized by the coordinator after source uniqueness review.
+Branch: `fix/ghostpay-ledger-zero-payment-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; candidate and main reconciliation blobs both `9e8b5e310e0c445c954e43de3ad712a1a88512b2`.
+Owned writes: `packages/merchant-ledger/src/reconcile.ts`, `packages/merchant-ledger/src/ledger.test.ts`, the matching R4 boundary in `docs/remote/usability/specs/reconciliation.md`, this additive claim, and `docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/`.
+Upstream: exact missing guard/regression in `6db11492` retained at `security/mythril-full-remediation-20261118` (`16c48521`). Extract only this scope; other audit changes remain separate.
+Acceptance: reproduce original upstream regression against unchanged current runtime; preserve zero-due semantics, genuine payments, expiry and tolerance behavior; add necessary boundary controls; run original package coverage, typecheck, lint and build, identify actual consumers, and submit frozen source for independent review. No Pages feature activation, fee, dependency, deployment, source-ref or release gate changes.
+
+# Continuous generation 6 merchant-ledger review — 2026-11-19
+
+Worker: `/root/merchant_review_gen6`, independent of remaining-uniqueness implementer.
+Branch: `review/ghostpay-merchant-gen6-20261119`; base `3dc86fbc49e919e664230b63dae372ff79430fc5`.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/`; temporary independent test probes may execute only in this isolated checkout and are preserved as evidence.
+Acceptance: independently reproduce nonzero invoices becoming paid solely through large tolerance; inspect zero-due/positive-payment/expiry/rejected-observation semantics; verify the exact final extracted source against baseline and original package tests, coverage, typecheck, lint and build. Identify actual consumers and scope, preserve configuration/gates, report actual source-pinned results.
+Boundaries: no remote writes, dependency/fee/feature activation or broad beta approval. Root owns integration and the existing hosted candidate; implementing worker owns the production patch.
+
+# Generation 5 composite-action dependency discovery — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`; separately authorized by root after functional uniqueness evidence.
+Branch: `fix/ghostpay-dependabot-composites-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`.
+Owned writes: `.github/dependabot.yml`, this additive claim, and `docs/engineering-handoffs/continuous-20261119/generation-5-dependabot-fix/`.
+Upstream: `b246782c`, retained at `claude/ghostpay-consolidation-9xhtxg-security` (`4894d0d8`).
+Acceptance: root Actions updater currently discovers root action.yml/yaml and workflows, leaving three existing nested composite actions outside configured update manifests. Selectively add `/.github/actions/*` to the existing Actions directory list, preserve weekly cadence/group/PR limit/npm configuration, parse both semantic mappings and inventory concrete target files. Root independently reviews current primary-source discovery semantics before publication. No added schedule, action/dependency bump, workflow/gate edit, remote-ref mutation or deployment.
+
+# Continuous qualification signer-fixture synchronization — 2026-11-19
+
+Worker: root coordinator, independent follow-up review by qa_review_gen3.
+Branch: integration/ghostpay-continuous-followup-20261119.
+Owned path: apps/web/src/views/Pay.signer.test.tsx and source-pinned failure/repair receipts.
+Acceptance: reproduce the one failing case from the original full web run (3837 pass,1 fail,13 skip); wait for the current manifest-dependent review control before asserting the existing disabled state. Retain selected-seller mismatch, absence of the prior pin, and zero RPC/wallet assertions. No production, timeout, configuration or gate changes.
+
+# Generation 5 remaining uniqueness review — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`.
+Branch: `review/ghostpay-remaining-uniqueness-gen5-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; frozen application input `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/` only.
+Acceptance: refresh the selected still-actionable non-ancestor heads, compare all merge bases and exact final blobs, inspect distinct source behavior and tests against the current static EVM candidate, and record bounded fresh semantic classifications. Report any genuinely absent required behavior before proposing changes. Prior dispositions and patch uniqueness are not functional proof.
+Boundaries: no product, dependency, test, workflow, contract, fee, remote-ref, deployment or release edits. Root owns live candidate and hosted qualification; the separate dependency worker owns current audit findings. This lane does not claim all remaining branches fully audited.
+
+2026-11-20 update: initial eleven-head matrix and full final-blob receipts complete. The two confirmed recoveries were separately authorized and implemented on `fix/ghostpay-ledger-zero-payment-20261119` and `fix/ghostpay-dependabot-composites-20261119`, with their own claims and independent review; neither change is on this documentation branch. Coordinator requested a bounded continuation across the remaining 59 dated census rows in this same generation and owned evidence directory. Broad uninspected scopes remain UNKNOWN.
+
+
+## 2026-11-20 — Replacement preflight observation follow-up
+
+Worker: `/root/qa_bug_gen1`, explicitly delegated by the coordinator after hosted PR #278 job `135981022990`.
+Branch: `fix/ghostpay-preflight-observation-20261120`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; maintained product source matches the coordinator freeze `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`.
+Owned paths: `apps/web/e2e/network-authorization.spec.ts`, a focused preflight request-order regression under `apps/web/src/views/`, and scoped evidence under `docs/engineering-handoffs/continuous-20261120/preflight-observation/`.
+Acceptance: distinguish the six late observed requests from revoked-grant retries with the real authorization/RPC pipeline; preserve exactly two completed chain checks, no late foreign requests, no unexpected methods or raw transactions, all original timeouts and project gates. Repair only a proven runtime defect or the missing observation barrier. Notify the coordinator before any production edit.
+Current evidence: hosted lean has 115 passed, one failed and five skipped; failing request snapshot is nine before release versus fifteen afterwards. Artifact `14588585398` contains a completed replacement context at failure and no trace capture. Browser startup is already known to be kernel-blocked locally, so no repeated launch or browser-pass claim is planned.
+Status: claimed; diagnosis and deterministic reproduction in progress.
+- Worker: `qa_review_gen3`, continuing an independent follow-up turn; this is not a newly spawned fresh agent. Branch: `review/ghostpay-browser-followup-20261120`; base local `3dc86fbc49e919e664230b63dae372ff79430fc5`, published equivalent `d74af79ebabdc8cead843361c3497b46d8c421f9`, tree `e76c03d9dba595ff1171577139c1628c4ad45f5b`. Previous review/worktree preserved.
+- Own paths: `docs/engineering-handoffs/continuous-20261119/browser-followup-review/` and this additive claim. Temporary independent test probes permitted in this isolated worktree, with evidence retained and probe removed afterward. Coordinate any product/test changes with `qa_bug_gen1`.
+- Acceptance: distinguish authorized replacement manifest readbacks from stale-grant retries for the one remaining hosted browser failure; independently review and execute the exact repair/probe; preserve two chain checks, no new requests after old-request release, no raw/unexpected calls, and original timeouts. No remote mutations; hosted browser qualification remains separate.
+
+### Browser follow-up independent review completed — 2026-11-20
+
+- Continuing reviewer `qa_review_gen3` approved exact `89e163fcc24f72830c0a5876486a72178a9365e7` after independently reproducing the early observation failure (expected 9, received 15), then 11/11 focused GREEN including a reviewer-only late-success revoked-fetch variation. No production or gate relaxation found.
+- Evidence and source hashes: `docs/engineering-handoffs/continuous-20261119/browser-followup-review/`. Exact committed test restored; temporary variant removed. Hosted lean/full browser rerun on the repaired combined head remains required. No remote mutation.
+- Worker: continuing independent reviewer `qa_review_gen3`; not a new fresh agent. Separate worktree/branch `review/ghostpay-signer-followup-20261120`, base `3dc86fbc49e919e664230b63dae372ff79430fc5`. Browser follow-up evidence remains separate at commit `97fd030a`.
+- Own paths: `docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/` and this additive claim. Inspect root-owned `Pay.signer.test.tsx` synchronization change, reproduce unchanged fixture, and verify same disabled-Continue, selected-pin, no-RPC/no-wallet assertions after awaiting the current manifest state. No production edits or remote operations.
+
+### Selected-signer fixture independent follow-up completed — 2026-11-20
+
+- Continuing reviewer `qa_review_gen3` approved exact `f2b991f7eb2c843e96bb533729d71b6a537b9293`. Unchanged selected-seller case independently RED (missing Continue; one case run), then full fixed signer file 11/11 GREEN. The same failure is present in hosted d74 web job `135981023399`; no production, signer, network, timeout or gate changes.
+- Source-pinned evidence: `docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/`. Browser follow-up remains independently recorded at `97fd030a`; full combined qualification remains with the root workflow. No remote mutation.
+
+### Continuous follow-up integration checkpoint — 2026-11-20
+
+Root integrated the completed generation5 dependency/uniqueness evidence, independently verified merchant guard and composite-action discovery, and both independently reviewed browser/signer fixture repairs. Product/test inputs are frozen at2b7c015e28aa23f63ba39486ae7345983ce9ff97; subsequent handoff changes are documentation/evidence only. Original full web failure is retained; combined focused web13, full web typecheck/lint, merchant30 original coverage/build and113action pins pass. Exact-head hosted qualification and security/release gates remain pending. Six fresh generations completed; follow-up reviewer turns are reused agents after an actual further-spawn thread limit. No live-background claim is made for completed workers.
+
+## Scoped remediation baseline refresh — 2026-11-20 UTC
+
+Worker: `/root` in workspace `a7189299ede1`; local branch `integration/ghostpay-remediation-successor-20261120`, publishing only to owned PR #292 branch `fix/ghostpay-pages-integrity-gate-20261120`.
+Inputs: frozen scoped head `814950a1cf99e68765b85f241e6f4a0fc55ea9c6` and published canonical successor `417f7c71daf8645e1432f2ec8f070110879b80bd`; live main remains `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned operation: merge the published canonical baseline into this existing scoped PR; resolve only additive ownership-log conflicts and preserve both parents plus every source/test/config blob. No new production implementation, QR extraction, assertion, gate, fee or policy change.
+Acceptance: independent input compatibility and final combined-source review, focused affected checks, then one expected-head non-force update and fresh exact-source hosted qualification. Preserve old artifact evidence at its actual source; do not relabel it as combined-source qualification. Keep subsequent receipts off the frozen PR head.
+Coordination: generation5 canonical lease explicitly released at `2026-11-20T01:00:43Z`; this operation does not acquire or update the shared canonical ref, main, integration lock, deployment or release.

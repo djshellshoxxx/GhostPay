@@ -1,6 +1,12 @@
 # GhostPay 1.0 Beta feature matrix
 
-## Current continuation — 2026-11-19
+## Latest engineering follow-up — 2026-11-20 UTC
+
+The [current handoff](../engineering-handoffs/continuous-20261119/README.md) and [follow-up qualification receipt](../engineering-handoffs/continuous-20261119/FOLLOWUP_QUALIFICATION.json) supersede earlier status below. Eight demonstrated runtime defects are repaired, including the independently verified pure merchant-ledger guard. Existing composite-action discovery is recovered without changing update cadence or action versions. Six fresh generations and explicitly reused independent follow-up reviewers contributed.
+
+Published d74 CI failed only the invoice-replacement browser observation (both profiles) and signer fixture synchronization; those exact failures are retained and their focused repairs independently approved. Original local web coverage was3837passed/1failed/13skipped; hosted d74 web3849passed/1failed/1skipped. Follow-up focused tests, full web typecheck/lint and merchant original coverage pass; full original hosted qualification on the follow-up head remains required. Strict Mythril, required external review and owner-controlled origin/testnet/release acceptance remain unresolved. No deployment, release, main merge, fee activation, source-branch deletion or weakened gate is implied.
+
+## Initial continuation checkpoint — 2026-11-19 (historical)
 
 [Generation 3 completeness review](../engineering-handoffs/continuous-20261119/generation-3-completeness/ASSESSMENT.md) maps nine required feature families to actual lean routes, source and tests;48 focused tests passed. No additional confirmed required feature gap was found beyond the now-integrated export-expiry and manifest repairs. Source presence and unit evidence do not certify complete browser/wallet/testnet behavior. [Current status](../engineering-handoffs/continuous-20261119/README.md) supersedes older checkpoint counts below; release remains BLOCKED.
 
