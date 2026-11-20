@@ -10,6 +10,9 @@ Owned paths: only operation ownership in `apps/web/src/views/SellerKeys.tsx`;
 new `apps/web/src/views/SellerKeys.ownership.test.tsx`;
 new `apps/web/e2e/backup-ownership.spec.ts`; this additive registry entry and
 `docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md`.
+Final evidence scope, authorized before packaging: additive
+`docs/consolidation/backup-preflight-r2-20261120/` contains source-pinned reports
+and lossless original qualification/review artifacts. Runtime remains frozen.
 Acceptance: a canceled or superseded recoverability preflight cannot begin a late
 unlock or display a stale replacement prompt; export must recheck operation and
 session ownership after authorization and before encryption; synchronous durable
@@ -28,8 +31,16 @@ backup branch, and idle/Sweep worktrees remain unchanged.
 Browser limit: original donor browser bodies did not execute because Chromium
 could not launch. The same local socket restriction remains; hosted full/lean
 browser acceptance is required and authored journeys are not passing evidence.
-Status: claim recorded before regression or runtime edits. No tests run for this
-continuation yet; no release, deployment, contracts, relayer or crypto changes.
+Status: tests-first checkpoint `1a69f706` precedes frozen runtime `fde65b79`.
+Independent source review approved that runtime. Controlled RED: 19 pass / 3 expected
+failures; same 22-case GREEN passed; separate overlapping compatibility gate passed
+246/246 across 12 complete files, all with zero skips. Original web typecheck/lint,
+lean build/postbuild and full/lean static two-case collection passed. Browser bodies
+remain unexecuted. Final documentation/evidence preserves the qualified application,
+test and configuration bytes. Required exact published-head checks and hosted browser
+acceptance remain open; parent owns the stack on PR #331. Full evidence and handoff:
+`docs/consolidation/backup-preflight-r2-20261120/REPORT.md` and
+`docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md`.
 
 ---
 
