@@ -1976,3 +1976,14 @@ Acceptance: refresh the selected still-actionable non-ancestor heads, compare al
 Boundaries: no product, dependency, test, workflow, contract, fee, remote-ref, deployment or release edits. Root owns live candidate and hosted qualification; the separate dependency worker owns current audit findings. This lane does not claim all remaining branches fully audited.
 
 2026-11-20 update: initial eleven-head matrix and full final-blob receipts complete. The two confirmed recoveries were separately authorized and implemented on `fix/ghostpay-ledger-zero-payment-20261119` and `fix/ghostpay-dependabot-composites-20261119`, with their own claims and independent review; neither change is on this documentation branch. Coordinator requested a bounded continuation across the remaining 59 dated census rows in this same generation and owned evidence directory. Broad uninspected scopes remain UNKNOWN.
+
+
+## 2026-11-20 — Replacement preflight observation follow-up
+
+Worker: `/root/qa_bug_gen1`, explicitly delegated by the coordinator after hosted PR #278 job `135981022990`.
+Branch: `fix/ghostpay-preflight-observation-20261120`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; maintained product source matches the coordinator freeze `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`.
+Owned paths: `apps/web/e2e/network-authorization.spec.ts`, a focused preflight request-order regression under `apps/web/src/views/`, and scoped evidence under `docs/engineering-handoffs/continuous-20261120/preflight-observation/`.
+Acceptance: distinguish the six late observed requests from revoked-grant retries with the real authorization/RPC pipeline; preserve exactly two completed chain checks, no late foreign requests, no unexpected methods or raw transactions, all original timeouts and project gates. Repair only a proven runtime defect or the missing observation barrier. Notify the coordinator before any production edit.
+Current evidence: hosted lean has 115 passed, one failed and five skipped; failing request snapshot is nine before release versus fifteen afterwards. Artifact `14588585398` contains a completed replacement context at failure and no trace capture. Browser startup is already known to be kernel-blocked locally, so no repeated launch or browser-pass claim is planned.
+Status: claimed; diagnosis and deterministic reproduction in progress.

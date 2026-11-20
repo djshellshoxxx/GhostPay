@@ -139,6 +139,7 @@ test('replacing an invoice aborts a renewed preflight grant before its old reque
   const replacement = await createInvoice(page, { encrypt: true, description: 'Replacement network invoice' });
   await page.goto(original);
   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeEnabled();
   await page.waitForLoadState('networkidle');
   await page.getByRole('button', { name: 'Cancel network activity', exact: true }).click();
 
@@ -162,14 +163,19 @@ test('replacing an invoice aborts a renewed preflight grant before its old reque
     const failure = heldRequest?.failure();
     return failure !== undefined && failure !== null;
   }).toBe(true);
+  // Same-document navigation can retain networkidle from the prior invoice. Continue needs the new manifest reads.
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeEnabled();
   await page.waitForLoadState('networkidle');
   expect(network.state.methods.filter((method) => method === 'eth_chainId')).toHaveLength(2);
   const before = foreign.length;
+  const completedMethods = [...network.state.methods];
   if (release === undefined) throw new Error('Expected the renewed preflight request to be held');
   release();
   await expect.poll(() => released).toBe(true);
   await page.waitForLoadState('networkidle');
   expect(foreign).toHaveLength(before);
+  expect(network.state.methods).toEqual(completedMethods);
+  expect(network.state.methods.filter((method) => method === 'eth_chainId')).toHaveLength(2);
   expect(network.state.raws).toEqual([]);
   expect(network.state.unexpected).toEqual([]);
 });
