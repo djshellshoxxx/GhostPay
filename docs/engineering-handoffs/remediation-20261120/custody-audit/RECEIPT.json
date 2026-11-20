@@ -1,0 +1,44 @@
+{
+  "format": "ghostpay-sweep-boundary-audit/1",
+  "base_commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "reviewer": "/root/custody_transaction_audit",
+  "test_runtime": "Node v22.23.4",
+  "tests": {
+    "passed": 68,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      {
+        "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+        "status": "passed",
+        "cases": 11
+      },
+      {
+        "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+        "status": "passed",
+        "cases": 38
+      },
+      {
+        "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+        "status": "passed",
+        "cases": 19
+      }
+    ]
+  },
+  "checks": {
+    "focused_tests_exit_code": 0,
+    "new_test_eslint_exit_code": 0,
+    "web_typecheck_exit_code": 0,
+    "initial_new_test_eslint_exit_code": 1
+  },
+  "confirmed_findings": [],
+  "source_changes": "new independent tests and audit evidence only; no production change",
+  "limitations": [
+    "offline authored RPC responses",
+    "no browser execution",
+    "no real development-chain transaction",
+    "no external testnet transaction",
+    "no independent clean install",
+    "not complete release qualification"
+  ]
+}

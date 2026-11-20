@@ -1,0 +1,57 @@
+{
+  "reviewed_head": "936d054ed067d89c773310d42e33939c1129bbfa",
+  "canonical_base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "node": "v24.22.3",
+  "files": [
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "git_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha256": "6402f359c4e86fbf110072befd6b1e036707befd06d413c4354b477ba91b098f"
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "git_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "sha256": "46ef7733e7e7d1cf42708d8b32ea1692b47bf19b678c7e3036eae8f8d239d59d"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "git_blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "sha256": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67"
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "git_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "sha256": "63e376af4fbc72d0629f0dd69c1810ba3b3bb82b8eb77b2ff9be556550a6bf38"
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "git_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "sha256": "c6d5625cd3e937201360f31036b386a0dc59bcb3bf32191c6d833d46104ee174"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "git_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "sha256": "8b177611e90e35d2461b5fe21739234714b676f0ec2d2a4dcf0b6d9e22593b72"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "git_blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+      "sha256": "3993ddc825b5129447fdfca89d449ecd3db9eaa524e9cc5a682c324daea48d9f"
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "git_blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "sha256": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672"
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.ts",
+      "git_blob": "000be25182a877bbab96cc3b6a0e5ac9038790ca",
+      "sha256": "88199dd26575cff4633082bf49cf4000bd6eaf84c09d7078221a7719fb5854c1"
+    },
+    {
+      "path": "packages/secret-box/src/secretBox.ts",
+      "git_blob": "14d0fb8cfd21c4b6e96d94c1e7e88c1461aa1daf",
+      "sha256": "21e03b4626a737e43940806a3c136abc7541b1a7e71f160f1b7920947ebbef24"
+    }
+  ]
+}

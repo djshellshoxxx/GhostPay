@@ -1,3 +1,27 @@
+# Final QR flag-coverage reconciliation — cycle 20261120T0035Z
+
+- Worker: native ChatGPT `/root/spec_verification_review`, delegated by coordinator `/root`.
+- Branch: `automation/20261120T0035Z/worker/qr-flag-coverage`; exact refreshed base PR #290 `ec546311f994fe1db544fe85ff2aa6db428d67d4`.
+- Owned paths: `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_FLAG_COVERAGE_20261120.md`, and this additive claim only.
+- Reconciliation: #290 has absorbed the hostile-getter cases, explicit error-class assertions and original sixteen-mapping controls. Preserve all of those tests and its production/design files. Retain only the still-missing stateful unverified case and replace the existing mapping block with a complete typed Record and all eight flag combinations.
+- Acceptance: one added test and one strengthened existing test, repository Vitest and scoped lint on the exact new source, independent review, and an accurate final handoff. No duplicate implementation or repeated generic matrix.
+- Dependencies: the earlier supplement's dependencies/build prerequisites remain applicable because #290 changed only this test file since `aaa8a7e2`; preserve previous branch `automation/20261120T0035Z/worker/qr-review-supplement` at `0c3893db` as historical evidence. Prior results do not qualify this new source without a fresh run.
+- Restrictions: no production, design, dependency, workflow, security-gate, shared integration, lock, deployment or remote changes. This is the final bounded scope; coordinator owns publication and final hosted qualification.
+
+---
+# Independent final Sweep authority review — 2026-11-20 UTC
+
+Worker: `/root/custody_transaction_audit`, delegated independent reviewer.
+Branch: `review/ghostpay-sweep-boundary-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: new reviewer-only `apps/web/src/lib/sweep.boundaryAudit.test.ts`, this additive claim, and
+`docs/engineering-handoffs/remediation-20261120/custody-audit/`.
+Acceptance: execute the existing Sweep authority tests and independently exercise the real network authorization/RPC
+client plus actual cryptographic signing across session revocation, delayed deadline checks, and the final handoff.
+Tests use offline synthetic JSON-RPC responses; they are not a browser, development-chain, or external-testnet qualification.
+No product, dependency, workflow, fee, contract, gate, remote-ref, deployment or shared-ledger mutations.
+The other coordinator owns the invoice-replacement browser failure and merchant-ledger correction.
+
 # Isolated consolidation follow-through — 2026-11-19
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
@@ -1923,6 +1947,47 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+
+## Release remediation: Pages artifact promotion gate — 2026-11-19
+
+Worker: `/root` in workspace `a7189299ede1`, separate from the continuous integration coordinator in `0a7bc3583588`.
+Branch: `fix/ghostpay-pages-integrity-gate-20261120`.
+Base: canonical PR #278, `d74af79ebabdc8cead843361c3497b46d8c421f9`; live main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: `scripts/pages/build-pages.sh`, new `scripts/pages/build-pages-artifact-gate.test.mjs`, and `docs/engineering-handoffs/remediation-20261120/` coordinator evidence only. Independent reviewer owns its own child evidence directory.
+Scope: execute the existing independent artifact verifier against the completed site, trusted build-generated SHA256SUMS, and exact expected source before promoting the site/evidence to final output. Preserve the verifier's trust assumptions and all release policies.
+Acceptance: failing regression on original builder; successful fresh 16-file artifact; tampered/missing/extra/symlink/ambiguous/wrong-source artifacts fail before promotion; original Pages tooling gates pass; independent adversarial review and exact-source qualification. No test threshold, runtime feature, privileged attestation job, signing key or deployment-policy changes.
+Coordination: the other active coordinator owns the renewed preflight browser observation repair and merchant-ledger zero-payment recovery. Those paths and shared integration refs are not modified here. The metadata lease remains separate and must be reacquired with current ownership before shared integration.
+
+# 2026-11-20 — Independent live CI and CodeQL finding reconciliation
+
+Worker: `/root/live_ci_audit`, delegated by remediation coordinator in workspace `a7189299ede1`.
+Branch: `review/ghostpay-ci-audit-20261120`; base PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/ci-audit/` only.
+Acceptance: retrieve exact-source run/job evidence, classify the current failures, independently inspect both current CodeQL annotations and execute their unchanged fixture tests, preserve raw public API responses, source hashes, commands and limitations. Distinguish analyzer alerts from demonstrated product vulnerabilities and fixture false positives. No alert suppression, dismissal, source change, dependency change, workflow mutation, remote write, deployment or release approval.
+Coordination: the earlier continuous coordinator owns the active invoice-replacement browser observation repair and merchant-ledger correction in separate `0a7bc3583588` worktrees. This audit does not duplicate either implementation. The remediation coordinator owns Pages artifact gate integration; the independent artifact reviewer owns its verification.
+
+Coordinator-authorized follow-up: this worker additionally owns exactly `packages/chain-adapters/src/deployments.test.ts` and `scripts/tests/privacy-csp-bundle.test.mjs` to express the two intentionally malformed fixed fixtures directly. Preserve byte-for-byte generated inputs and every existing assertion, run the unchanged fixture suites before and after, record independent equivalence evidence, and obtain a separate source review plus fresh hosted CodeQL. This is test-fixture clarification, not a demonstrated runtime vulnerability repair or an alert dismissal. All production, workflow and analyzer-policy files remain outside this claim.
+
+# Independent artifact security review — 2026-11-19 Vancouver
+
+Worker: `/root/artifact_security_review`; branch `review/ghostpay-artifact-remediation-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/artifact-review/` only.
+Acceptance: execute current verifier tests, independently challenge manifest/file/source identity assumptions, verify a fresh payments-disabled artifact when the coordinator's dependencies are prepared, and preserve exact evidence.
+Boundaries: read-only product, tests and workflows until an independently observed defect is reported and scoped with the coordinator. No remote mutation, integration, release-policy change, signing, deployment or funds.
+
+Additional coordinator-authorized independent review: exact CodeQL fixture correction `008ccdcf05b703cea51ffc4fdaa42fc279281d81`. Read-only source inspection, AST-derived byte-equivalence proof and original focused test replay; no production or test changes authored by this reviewer. Review and evidence remain in the owned artifact-review directory.
+
+## Independent final remediation review — 2026-11-19
+
+Worker: `/root/final_independent_review`, fresh reviewer of the bounded release-remediation cycle.
+Branch: `review/ghostpay-final-remediation-20261120`.
+Initial review base: `3814ad2efffc6588f1c176a39b1090033f2f3537` (new Sweep authority tests on PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`).
+Owned paths: this additive claim and `docs/engineering-handoffs/remediation-20261120/final-review/` only.
+Scope: independently review the added Sweep authority tests, Pages artifact promotion gate and exact CodeQL fixture clarification, then inspect the coordinator's frozen combined source and qualification evidence. Production, existing test sources, workflow policy and shared tracking remain owned by their implementers.
+Acceptance: confirm source identities, perform meaningful focused execution, identify differences between tested behavior and release claims, and provide exactly one release-readiness verdict with precise remaining requirements. No remote mutation, shared integration, deployment, release or security-gate waiver.
+
 # Continuous generation 5 development-dependency review — 2026-11-19
 
 Worker: `/root/dependency_review_gen5`, independently delegated for current audit triage.
@@ -2006,3 +2071,107 @@ Status: claimed; diagnosis and deterministic reproduction in progress.
 ### Continuous follow-up integration checkpoint — 2026-11-20
 
 Root integrated the completed generation5 dependency/uniqueness evidence, independently verified merchant guard and composite-action discovery, and both independently reviewed browser/signer fixture repairs. Product/test inputs are frozen at2b7c015e28aa23f63ba39486ae7345983ce9ff97; subsequent handoff changes are documentation/evidence only. Original full web failure is retained; combined focused web13, full web typecheck/lint, merchant30 original coverage/build and113action pins pass. Exact-head hosted qualification and security/release gates remain pending. Six fresh generations completed; follow-up reviewer turns are reused agents after an actual further-spawn thread limit. No live-background claim is made for completed workers.
+
+
+# Completion and consolidation cycle — 2026-11-20
+
+Worker: /root coordinator; independent code, security, feature and successor bug-hunt workers use dedicated worktrees.
+Branch: integration/ghostpay-completion-20261120.
+Base: 417f7c71daf8645e1432f2ec8f070110879b80bd (PR #278); main observed c977b5d6723f6822c3b5d86cd6b231712c53c395.
+Owned writes: additive ownership/handoff records under docs/engineering-handoffs/completion-20261120, scoped integration of demonstrably missing #290/#295, #294, #298 and independently verified #292 fixes, plus regression-backed conflict repairs.
+Acceptance: inspect live refs, exact changed blobs and existing implementations; retain attribution; independently review source; run original relevant tests, typecheck, lint, static build and hosted gates where available. Preserve all failing outcomes and explicit qualification limits.
+Existing local clipboard, masking, wallet and catalog branches are advancing in a separate active run; freeze-only review is allowed, but do not mutate or duplicate their work. The new-feature worker will choose a nonoverlapping static browser feature on a separate branch.
+No deployment, release, real funds, fees, contract changes, gate suppression, branch deletion or force push. This isolated candidate does not own the shared integration lease.
+
+# Bounded continuation 20261120T003500Z — QR runtime keys and qualification
+
+Worker: ChatGPT native coordinator `/root`, workspace `fc8b0b472d30`.
+Independent native workers: `/root/base64_review`, `/root/qr_security_review`,
+and `/root/ci_reconcile`; maximum concurrency is four including the coordinator.
+Branch: `automation/20261120T003500Z/coordinator/qr-runtime-qualification`.
+Exact base: published PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`;
+observed main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+
+Owned implementation: `apps/web/src/lib/qrKinds.ts` and `qrKinds.test.ts`.
+Owned documentation: this additive claim, `docs/design/qr-colors.md`, and the
+cycle-specific evidence under `docs/engineering-handoffs/continuous-20261119/`.
+Canonical handoff/ledger updates are proposals on this isolated branch only.
+No ownership of the existing release branch, browser follow-up, merchant-ledger,
+dependency, contract, or other source-owner work is claimed.
+
+Independent review confirmed that PR #285's own-key check still coerces array,
+boxed-string, and object keys. A stateful conversion can select different keys
+between validation and lookup. This is a low-severity API correctness defect;
+no reachable external-input exploit has been demonstrated.
+Acceptance: first reproduce failures through repository Vitest, reject every
+non-primitive-string payload/frame kind with the existing TypeError messages,
+never invoke conversion hooks, and preserve declared mappings, flags, warnings,
+print rules, and frame UI behavior. Run focused regression/component checks,
+applicable typecheck/lint/build and obtain separate exact-source review.
+
+Dependencies and reconciliation: #285's production/test blobs already exist in
+#278; #289's production blob also exists there and its unused test parameter is
+already removed. Do not duplicate those repairs. Recheck upstream heads and
+active local follow-ups before publication. Invoice-schema verification belongs
+to the separate reviewer; those production/test files remain unchanged here.
+Expected checks include base64url Vitest, invoice package qualification, QR
+taxonomy/frame/classification tests, web typecheck/lint and static build checks.
+
+Integration lock observed at `d6839d7c48edf5e71ddd35d3e87446b69c196b04`,
+released generation 4. This cycle has not acquired or modified it. Any shared
+integration requires a fresh valid lease and all other gates; isolated review
+work may proceed. No deployment, release, funds, paid agents, workflow changes,
+force-pushes, or security-gate waiver is authorized.
+
+# Rejected QR fragment idle deadline — 2026-11-19
+
+Worker: ChatGPT root, workspace `c374725a11b7`, with independent native reviewers.
+Branch: `fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7`.
+Base: PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`, tree `e76c03d9dba595ff1171577139c1628c4ad45f5b`.
+Owned paths: `packages/qr-exchange/src/assembler.ts`, `packages/qr-exchange/src/assembler.test.ts`, this additive claim, and `docs/handoffs/qr-conflict-expiry-20261119/`.
+Scope: rejected CRC-valid conflicting chunks must not refresh an incomplete transfer's idle deadline. The documented unchanged-state contract includes the expiry clock; accepted identical duplicates retain their existing refresh behavior.
+Acceptance: deterministic regression fails against the unchanged base and passes after the minimal repair; confirm mismatch/malformed rejection, exact expiry boundary, accepted duplicate refresh, completion and reset controls; run the original package coverage suite, typecheck, build and lint without modifying configuration or thresholds; obtain an independent review and preserve source-pinned evidence.
+Impact boundary: this is shared API contract correctness. The current browser importer already resets on `CHUNK_CONFLICT`; no browser exploit, integrity bypass or fund impact is asserted.
+Ownership check: current #278 source and open ownership records were checked before edits. Preflight-observation, merchant-ledger recovery, Pages build tooling and CodeQL fixtures remain owned by other active workers. The shared integration lease is held by the separate coordinator; this worker will publish only an isolated branch/draft and will not update the shared candidate, merge main, deploy, change contracts/fees/dependencies/gates, or create automation.
+## Cycle 20261120T0115Z — transaction receipt hash validation
+
+- Worker: native ChatGPT `/root/spec_verification_review`, explicitly assigned by the coordinator; independent review remains with `/root/final_checkpoint_review`.
+- Branch: `automation/20261120T0115Z/worker/receipt-hash-validation`.
+- Exact base: PR #278 `417f7c71daf8645e1432f2ec8f070110879b80bd`. Existing #278 ownership and all earlier claims are preserved; this isolated follow-up does not edit its remote branch.
+- Owned implementation: `apps/web/src/lib/wallet.ts` and `wallet.test.ts`. Compatibility-only scope: receipt-return fixtures in `apps/web/src/lib/payExec.acceptance.test.ts`, `apps/web/src/views/Pay.test.tsx`, and `apps/web/e2e/flowMocks.ts`, plus any directly affected receipt fixture demonstrated by focused tests. Preserve every existing assertion. Owned evidence: this additive claim and `docs/handoffs/RECEIPT_HASH_VALIDATION_20261120.md`.
+- Confirmed baseline: `pollReceipt` accepts an otherwise valid receipt for a different transaction hash. The `submitTx` consumer can then associate that unrelated receipt status with a separately verified submitted transaction. This is receipt correlation correctness, not a new finality or trustless-RPC claim.
+- Acceptance: commit and execute regressions against unchanged runtime for different, missing, non-string and malformed receipt hashes; require the existing fixed unexpected-receipt error for malformed fields and `SubmissionMismatchError('hash')` for a valid different hash. Preserve matching success/revert, case-insensitive hexadecimal identity, null/pending retries, destination checks, post-broadcast hash preservation and existing confirmation policy. Do not coerce untrusted hash values.
+- Expected checks: actual repository Vitest wallet regressions and applicable payment consumers; scoped typed ESLint; applicable TypeScript check; independent exact-source review and test rerun. Report fixture repairs and unavailable browser/build/hosted gates explicitly. Root controls dependency setup, publication and qualification.
+- Boundaries: no cryptographic, transaction construction, fee, contract, storage, dependency, workflow, release-gate, deployment, real-funds, external-schedule or shared-ref changes. No integration lock is claimed and no merge is attempted. Other active QR, clipboard, QR-expiry and Pages-artifact lanes remain untouched.
+
+- Scope addendum before implementation: coordinator explicitly authorized one regression in `apps/web/src/lib/payExec.test.ts` to prove that a mismatched receipt preserves the original post-broadcast hash and prevents an automatic or duplicate resend. The three incomplete receipt fixtures in that file are also owned for `transactionHash`-only repairs. No existing assertion is weakened.
+
+- Completion: frozen product/test `d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67` (published tree-identical counterpart `a221a9d5199bde11e45e1bc822e7305f4fe01bb9`) passes author180-test GREEN, original full web TypeScript and scoped typed lint; independent reviewer `/root/final_checkpoint_review` reproduced19-failure RED and180-test GREEN with no blocking scoped finding. Coordinator payments-disabled Pages build and16-file checksum/commit reverify pass. Full hosted/browser/coverage/integration gates remain separate. Source and failure transcripts: `docs/handoffs/RECEIPT_HASH_VALIDATION_20261120.md`. Runtime scope is frozen; root owns publication and integration.
+## Scoped remediation baseline refresh — 2026-11-20 UTC
+
+Worker: `/root` in workspace `a7189299ede1`; local branch `integration/ghostpay-remediation-successor-20261120`, publishing only to owned PR #292 branch `fix/ghostpay-pages-integrity-gate-20261120`.
+Inputs: frozen scoped head `814950a1cf99e68765b85f241e6f4a0fc55ea9c6` and published canonical successor `417f7c71daf8645e1432f2ec8f070110879b80bd`; live main remains `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned operation: merge the published canonical baseline into this existing scoped PR; resolve only additive ownership-log conflicts and preserve both parents plus every source/test/config blob. No new production implementation, QR extraction, assertion, gate, fee or policy change.
+Acceptance: independent input compatibility and final combined-source review, focused affected checks, then one expected-head non-force update and fresh exact-source hosted qualification. Preserve old artifact evidence at its actual source; do not relabel it as combined-source qualification. Keep subsequent receipts off the frozen PR head.
+Coordination: generation5 canonical lease explicitly released at `2026-11-20T01:00:43Z`; this operation does not acquire or update the shared canonical ref, main, integration lock, deployment or release.
+## 2026-11-20 — Code audit generation 1
+
+Worker: `/root/code_audit_gen1`.
+Branch: `audit/ghostpay-code-gen1-20261120`; base `417f7c71daf8645e1432f2ec8f070110879b80bd` (PR #278).
+Owned paths: this additive claim and `docs/engineering-handoffs/continuous-20261120/code-audit-gen1/` initially. Source fixes require coordinator path coordination first.
+Acceptance: compare the current source/test semantics of PRs #298, #297/#293, #295/#290/#285 and #294 with the pinned consolidation baseline; preserve and inventory relevant unpushed privacy branches without mutating them; independently review receipt/QR boundary correctness and repository/spec conformity; preserve evidence, actual test results and a fresh-successor handoff. No remote mutations, deployment, contracts, fees, workflow/gate weakening, or shared-branch edits.
+
+Audit probe scope: temporary `apps/web/src/lib/wallet.receiptStatusAudit.test.ts` on this isolated worktree only, archived under the owned evidence directory and removed after execution. No production edit is authorized by this claim. Reproduce unrecognized numeric receipt statuses against baseline #278 and exact #298 wallet source; preserve valid success/failure and absent receipt controls. Dependencies are a private reflink copy of the existing locked installation; the two lockfile SHA-256 values match. Rebuild required local library outputs before running the original Vitest configuration.
+
+## 2026-11-20 — Fresh security audit generation 1
+
+Worker: `/root/security_audit_gen1`.
+Branch: `audit/ghostpay-security-gen1-20261120`.
+Base: `936d054ed067d89c773310d42e33939c1129bbfa` (PR #292, containing canonical #278 `417f7c71daf8645e1432f2ec8f070110879b80bd`).
+Owned writes: this additive claim and `docs/engineering-handoffs/security-gen1-20261120/`; any runtime/test edit requires a distinct scoped claim and coordination before implementation.
+Acceptance: independently identify current CodeQL annotations using live authenticated/public repository interfaces; inspect #292 artifact-promotion and adversarial-fixture boundaries; run original relevant verifier/promotion/CSP tests; investigate a distinct runtime authorization/privacy boundary and report only reproducible findings. Preserve exact source identities, actual results and uncertainty.
+Boundaries: no remote writes, deployment, fee/contract changes, alert dismissal, analyzer suppression, security gate weakening, or mutation of another worker's source.
+
+Security generation 1 temporary probe extension: `apps/web/src/lib/wallet.securitygen1.test.ts` is owned only for an isolated runtime probe of `pollReceipt` destination/status shape. No production file changes; preserve the probe as evidence and remove it from the test tree after execution. The root coordinator was notified of wallet.ts overlap with #298; any implementation belongs to a separately coordinated repair after consolidation.
+
+Security generation 1 completed its bounded review: live CodeQL annotation identities resolved; #292 five-path review found no blocking scoped issue; 73 original artifact/CSP tests and 13 original deployment-manifest tests passed. Fixture equivalence is exact. Secret-export inspection is source-only; optional full library build stopped at the coordinator's freeze. The unexecuted receipt probe is evidence only and was removed from the application test tree. Handoff: `docs/engineering-handoffs/security-gen1-20261120/README.md`.

@@ -1,9 +1,31 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { contrastRatio, deltaE, type Cvd } from './qrContrast';
-import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrPalette } from './qrKinds';
+import { MAX_PRINT_QR_LINK_CHARS, printQrPolicy, QR_KIND_ORDER, QR_KINDS, QR_PALETTE_DARK, QR_PALETTE_LIGHT, kindForPayload, qrKindClass, type QrKind, type QrPalette, type QrPayloadType } from './qrKinds';
 
 const css = readFileSync(new URL('../styles/qr.css', import.meta.url), 'utf8');
+
+function nonStringKeys(validKey: string): readonly (readonly [string, unknown])[] {
+  return [
+    ['number', 1],
+    ['zero', 0],
+    ['NaN', NaN],
+    ['infinity', Infinity],
+    ['boolean', true],
+    ['false', false],
+    ['bigint', 1n],
+    ['symbol', Symbol(validKey)],
+    ['null', null],
+    ['undefined', undefined],
+    ['empty array', []],
+    ['array containing a valid key', [validKey]],
+    ['array-like object', { 0: validKey, length: 1 }],
+    ['plain object', {}],
+    ['boxed string', Object(validKey) as unknown],
+    ['coercible object', { toString: () => validKey }],
+    ['null-prototype object', Object.create(null) as unknown],
+  ];
+}
 
 describe('taxonomy', () => {
   it('table snapshot', () => {
@@ -39,6 +61,68 @@ describe('taxonomy', () => {
     for (const raw of ['unknown', '__proto__', 'constructor']) {
       expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0])).toThrow('unknown QR kind');
     }
+  });
+  it.each(nonStringKeys('invoice-link'))('rejects a non-string payload type: %s', (label, raw) => {
+    const type = raw as Parameters<typeof kindForPayload>[0];
+    expect(() => kindForPayload(type), label).toThrow(TypeError);
+    expect(() => kindForPayload(type), label).toThrowError(new TypeError('unknown QR payload type'));
+    expect(() => kindForPayload(type, { unverified: true }), label).toThrow(TypeError);
+    expect(() => kindForPayload(type, { unverified: true }), label).toThrowError(new TypeError('unknown QR payload type'));
+  });
+  it.each(nonStringKeys('secret'))('rejects a non-string frame kind: %s', (label, raw) => {
+    expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0]), label).toThrow(TypeError);
+    expect(() => qrKindClass(raw as Parameters<typeof qrKindClass>[0]), label).toThrowError(new TypeError('unknown QR kind'));
+  });
+  it('rejects payload objects without invoking a changing conversion hook', () => {
+    const convert = vi.fn().mockReturnValueOnce('keystore-backup').mockReturnValue('invoice-link');
+    const type = { [Symbol.toPrimitive]: convert } as unknown as Parameters<typeof kindForPayload>[0];
+    expect(() => kindForPayload(type)).toThrow(TypeError);
+    expect(() => kindForPayload(type)).toThrowError(new TypeError('unknown QR payload type'));
+    expect(convert).not.toHaveBeenCalled();
+  });
+  it('rejects frame objects without invoking a changing conversion hook', () => {
+    const convert = vi.fn().mockReturnValueOnce('secret').mockReturnValue('shareable');
+    const kind = { [Symbol.toPrimitive]: convert } as unknown as Parameters<typeof qrKindClass>[0];
+    expect(() => qrKindClass(kind)).toThrow(TypeError);
+    expect(() => qrKindClass(kind)).toThrowError(new TypeError('unknown QR kind'));
+    expect(convert).not.toHaveBeenCalled();
+  });
+  it('rejects unverified payload objects without invoking a changing conversion hook', () => {
+    const convert = vi.fn().mockReturnValueOnce('spend-key').mockReturnValue('invoice-link');
+    const type = { [Symbol.toPrimitive]: convert } as unknown as QrPayloadType;
+    expect(() => kindForPayload(type, { unverified: true })).toThrow(TypeError);
+    expect(() => kindForPayload(type, { unverified: true })).toThrowError(new TypeError('unknown QR payload type'));
+    expect(convert).not.toHaveBeenCalled();
+  });
+  const runtimeClassifiers = [
+    ['payload', (value: unknown) => kindForPayload(value as QrPayloadType), 'unknown QR payload type'],
+    ['unverified payload', (value: unknown) => kindForPayload(value as QrPayloadType, { unverified: true }), 'unknown QR payload type'],
+    ['frame', (value: unknown) => qrKindClass(value as QrKind), 'unknown QR kind'],
+  ] as const;
+  it.each(runtimeClassifiers)('does not inspect a hostile %s coercion hook', (name, classify, message) => {
+    const inspect = vi.fn(() => { throw new Error('private input must not escape'); });
+    const input = Object.defineProperty({}, Symbol.toPrimitive, { get: inspect });
+    expect(() => classify(input), name).toThrow(TypeError);
+    expect(() => classify(input), name).toThrow(new TypeError(message));
+    expect(inspect).not.toHaveBeenCalled();
+  });
+  it('preserves every declared payload mapping, flag combination and frame class', () => {
+    const mappings: Readonly<Record<QrPayloadType, QrKind>> = {
+      'keystore-backup': 'secret', 'recovery-data': 'secret', 'spend-key': 'secret',
+      'invoice-link': 'shareable', 'invoice-link-passphrase': 'shareable',
+      'stealth-meta-address': 'shareable', 'payment-request': 'shareable', 'registry-entry': 'shareable',
+      'invoice-link-with-key': 'bearer', settings: 'device', 'rpc-list': 'device', 'pinned-signers': 'device',
+      receipt: 'proof', 'payment-proof': 'proof', 'signed-manifest': 'proof', fingerprint: 'proof',
+    };
+    for (const [key, kind] of Object.entries(mappings)) {
+      const type = key as QrPayloadType;
+      expect(kindForPayload(type)).toBe(kind);
+      for (let mask = 0; mask < 8; mask++) {
+        const flags = { testnet: (mask & 1) !== 0, unsigned: (mask & 2) !== 0, unverified: (mask & 4) !== 0 };
+        expect(kindForPayload(type, flags)).toBe(kind === 'secret' || kind === 'bearer' || mask === 0 ? kind : 'caution');
+      }
+    }
+    for (const kind of QR_KIND_ORDER) expect(qrKindClass(kind)).toBe(`qr-kind-${kind}`);
   });
   it('maps payloads to kinds; secret is never downgraded', () => {
     expect(kindForPayload('keystore-backup')).toBe('secret');

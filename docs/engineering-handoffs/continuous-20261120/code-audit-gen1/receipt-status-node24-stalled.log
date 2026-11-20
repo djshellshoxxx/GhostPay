@@ -1,0 +1,4 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v5.1.0 /workspace/scratch/e5b5e498b785/GhostPay-code-audit-gen1/apps/web
+

@@ -1,0 +1,22 @@
+import { describe, expect, it } from 'vitest';
+import { pollReceipt } from './wallet';
+
+const hash = `0x${'ab'.repeat(32)}` as const;
+const to = '0x1111111111111111111111111111111111111111' as const;
+const receipt = { transactionHash: hash, to, status: '0x1', blockNumber: '0x123' };
+const poll = (value: unknown) => pollReceipt({ request: async () => value }, hash, to, async () => {}, 1);
+
+describe('independent security audit receipt-shape probe', () => {
+  it('accepts a correctly shaped success receipt for the expected transaction and destination', async () => {
+    await expect(poll(receipt)).resolves.toEqual({ status: 'success', blockNumber: 0x123n });
+  });
+  it('accepts a correctly shaped reverted receipt', async () => {
+    await expect(poll({ ...receipt, status: '0x0' })).resolves.toEqual({ status: 'reverted', blockNumber: 0x123n });
+  });
+  it.each([undefined, null])('refuses a success receipt with absent destination %s', async (destination) => {
+    await expect(poll({ ...receipt, to: destination })).rejects.toThrow();
+  });
+  it('refuses a receipt status outside the EVM zero-or-one domain', async () => {
+    await expect(poll({ ...receipt, status: '0x2' })).rejects.toThrow();
+  });
+});

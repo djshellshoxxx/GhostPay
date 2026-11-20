@@ -1,0 +1,33 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "publicationMethod": "Connected GitHub Git Data API; local Git push had no configured HTTPS credentials.",
+  "verification": "Every published commit was fetched back; trees and ordered parents match the local source and mapping.",
+  "verifiedAt": "2026-11-20T00:55:17.867Z",
+  "commits": [
+    {
+      "localCommit": "25dc42d29f9f91ff5519bc1cce4bdfe53de5bbab",
+      "publishedCommit": "6b683651e9795f7ece9477d5361738705ecbda44",
+      "tree": "b03ea1f3a000c01f391b5d23cd98edec3e9e0656",
+      "localParent": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "publishedParent": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "readbackVerified": true
+    },
+    {
+      "localCommit": "5d87d845537c4042dfa5eda5f45565e18973b2dc",
+      "publishedCommit": "118ae827a5244156226c48e7d4cc3eb3524810ff",
+      "tree": "d047dffc5d3c3ed70a7a25b05836f4b4232dc6fe",
+      "localParent": "25dc42d29f9f91ff5519bc1cce4bdfe53de5bbab",
+      "publishedParent": "6b683651e9795f7ece9477d5361738705ecbda44",
+      "readbackVerified": true
+    },
+    {
+      "localCommit": "30eee83e0c13adfa9e5c48e12cb4246bff4667ff",
+      "publishedCommit": "2c738df433caff04f3b98d69d2b200b25fdd08f0",
+      "tree": "73efe508c93479bfbd4984cc35e2175fd10889f3",
+      "localParent": "5d87d845537c4042dfa5eda5f45565e18973b2dc",
+      "publishedParent": "118ae827a5244156226c48e7d4cc3eb3524810ff",
+      "readbackVerified": true
+    }
+  ]
+}

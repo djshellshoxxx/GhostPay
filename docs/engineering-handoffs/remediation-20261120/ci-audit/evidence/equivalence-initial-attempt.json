@@ -1,0 +1,9 @@
+{
+  "tool": "verify-fixture-equivalence.mjs",
+  "exit_code": 1,
+  "error": "TypeError: Cannot read properties of undefined (reading 'kind')",
+  "cause": "The reviewer utility inspected an empty array before checking whether an element existed.",
+  "correction": "Require node.elements.length > 0 before calling ts.isStringLiteral.",
+  "classification": "reviewer-utility defect; neither product runtime nor original fixture suites failed",
+  "qualified_result": "See the subsequent fixture-equivalence.json; the initial attempt is not a pass."
+}

@@ -93,7 +93,9 @@ describe('loadDeployment', () => {
   it('rejects bad JSON, oversize, __proto__ keys and non-strings', () => {
     expect(() => loadDeployment('{nope', CHAIN)).toThrow(/json/);
     expect(() => loadDeployment(' '.repeat(MAX_MANIFEST_BYTES + 1), CHAIN)).toThrow(/size/);
-    expect(() => loadDeployment(JSON.stringify(manifestJson()).replace('{', '{"__proto__":{"a":1},'), CHAIN)).toThrow(ChainAdapterError);
+    // Insert one adversarial member into the known top-level object; this is fixture construction, not escaping.
+    const prototypeKeyFixture = '{"__proto__":{"a":1},' + JSON.stringify(manifestJson()).slice(1);
+    expect(() => loadDeployment(prototypeKeyFixture, CHAIN)).toThrow(ChainAdapterError);
     expect(() => loadDeployment(5 as unknown as string, CHAIN)).toThrow(/size/);
   });
 });

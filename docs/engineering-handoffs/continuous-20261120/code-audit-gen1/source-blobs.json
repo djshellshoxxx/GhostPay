@@ -1,0 +1,134 @@
+[
+  {
+    "pr": 298,
+    "path": "apps/web/e2e/flowMocks.ts",
+    "baseline_blob": "e887522e69348c3a52f4ba137b0f3bad242d9fd6",
+    "candidate_blob": "a9081deadbfac984619299d39de77c0fba3370cc"
+  },
+  {
+    "pr": 298,
+    "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+    "baseline_blob": "4dded28d0f6c9521b07c07557cf2df589ba4fdba",
+    "candidate_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227"
+  },
+  {
+    "pr": 298,
+    "path": "apps/web/src/lib/payExec.test.ts",
+    "baseline_blob": "3554a2315bfffd0116d2ec2abaaf73f7b0dbc2cd",
+    "candidate_blob": "4deb9d710209a5a83a8ae9d5dcecf3aac1058748"
+  },
+  {
+    "pr": 298,
+    "path": "apps/web/src/lib/wallet.test.ts",
+    "baseline_blob": "6416192e15102bf6725eac9b945ff45681d021ff",
+    "candidate_blob": "d76eae2520f89b14208485a79f8e686117382a55"
+  },
+  {
+    "pr": 298,
+    "path": "apps/web/src/lib/wallet.ts",
+    "baseline_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+    "candidate_blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9"
+  },
+  {
+    "pr": 298,
+    "path": "apps/web/src/views/Pay.test.tsx",
+    "baseline_blob": "7ef3db702caa56538a7fd4e82e63eafb895debd5",
+    "candidate_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c"
+  },
+  {
+    "pr": 297,
+    "path": "apps/web/src/components/Common.test.tsx",
+    "baseline_blob": "af9c2a77b7d1232b50f8861dd0793c2c0eebc240",
+    "candidate_blob": "67a93df29f2df39dbe2f4489959e5e68835e7457"
+  },
+  {
+    "pr": 297,
+    "path": "apps/web/src/components/Common.tsx",
+    "baseline_blob": "71b607b3e92f583b6bc784c7ec929567dd6f75da",
+    "candidate_blob": "6d83d05d31ce3812f3ac9faebdea994a491bf188"
+  },
+  {
+    "pr": 297,
+    "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+    "baseline_blob": null,
+    "candidate_blob": "9a3c70863ea0373a6cd9bb6adf9960116cfd4c2d"
+  },
+  {
+    "pr": 297,
+    "path": "apps/web/src/lib/clipboardPrivacy.ts",
+    "baseline_blob": null,
+    "candidate_blob": "5e55f2ca693ef3112e8d12409572b29d96ef86a8"
+  },
+  {
+    "pr": 293,
+    "path": "apps/web/src/components/Common.test.tsx",
+    "baseline_blob": "af9c2a77b7d1232b50f8861dd0793c2c0eebc240",
+    "candidate_blob": "0d7bbf035fc95e8f79c84b7766b87c7b43eaed37"
+  },
+  {
+    "pr": 293,
+    "path": "apps/web/src/components/Common.tsx",
+    "baseline_blob": "71b607b3e92f583b6bc784c7ec929567dd6f75da",
+    "candidate_blob": "6d83d05d31ce3812f3ac9faebdea994a491bf188"
+  },
+  {
+    "pr": 293,
+    "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+    "baseline_blob": null,
+    "candidate_blob": "2af15327f398c18c7dc09cb890b9008d150c4198"
+  },
+  {
+    "pr": 293,
+    "path": "apps/web/src/lib/clipboardPrivacy.ts",
+    "baseline_blob": null,
+    "candidate_blob": "5e55f2ca693ef3112e8d12409572b29d96ef86a8"
+  },
+  {
+    "pr": 295,
+    "path": "apps/web/src/lib/qrKinds.test.ts",
+    "baseline_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+    "candidate_blob": "257b634250f033ddec042b67941fec23ffba1323"
+  },
+  {
+    "pr": 295,
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "baseline_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "candidate_blob": "a85e1011cdface74c87683146ff7428654b7830d"
+  },
+  {
+    "pr": 290,
+    "path": "apps/web/src/lib/qrKinds.test.ts",
+    "baseline_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+    "candidate_blob": "af5ef89f6fba0cea13b18884df387875f064ad34"
+  },
+  {
+    "pr": 290,
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "baseline_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "candidate_blob": "a85e1011cdface74c87683146ff7428654b7830d"
+  },
+  {
+    "pr": 285,
+    "path": "apps/web/src/lib/qrKinds.test.ts",
+    "baseline_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+    "candidate_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a"
+  },
+  {
+    "pr": 285,
+    "path": "apps/web/src/lib/qrKinds.ts",
+    "baseline_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+    "candidate_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6"
+  },
+  {
+    "pr": 294,
+    "path": "packages/qr-exchange/src/assembler.test.ts",
+    "baseline_blob": "a92fec814ce83710aea14c4b0e0ededb3398f742",
+    "candidate_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd"
+  },
+  {
+    "pr": 294,
+    "path": "packages/qr-exchange/src/assembler.ts",
+    "baseline_blob": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+    "candidate_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd"
+  }
+]

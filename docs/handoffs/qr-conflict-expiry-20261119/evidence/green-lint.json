@@ -1,0 +1,39 @@
+{
+  "label": "green-lint",
+  "command": [
+    "npm",
+    "run",
+    "lint",
+    "--workspace",
+    "@ghostpay/qr-exchange"
+  ],
+  "cwd": "/workspace/scratch/c374725a11b7/GhostPay-resume",
+  "head": "5d87d845537c4042dfa5eda5f45565e18973b2dc",
+  "tree": "d047dffc5d3c3ed70a7a25b05836f4b4232dc6fe",
+  "trackedStatusBefore": "",
+  "nodeVersion": "v22.23.4",
+  "npmVersion": "10.9.11",
+  "startedAt": "2026-11-20T00:49:33.288Z",
+  "sourceBefore": {
+    "packages/qr-exchange/src/assembler.ts": "a8d5c555d4c7ccc813fff240dfe25263c929d4e3aa3c5b5a8c0535b83e1a5f74",
+    "packages/qr-exchange/src/assembler.test.ts": "0c9c155df03929dee47e6f7a778dd276286f53585b83c72d84b5bdc0b336960f",
+    "packages/qr-exchange/src/multipart.ts": "1acfe8719358f89653ebed5fe7776176f8b7a1ebe656a58b703a96c1d2866580",
+    "packages/qr-exchange/vitest.config.ts": "43cded1524616194307225da4ca5845bc4b794a994807dfdfb07a648f19de3be",
+    "packages/qr-exchange/package.json": "e5f598d93734bd135dae250a249e58500a8e8c2985bd53ae1a6e075a373433a9",
+    "package-lock.json": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+  },
+  "exitCode": 0,
+  "signal": null,
+  "endedAt": "2026-11-20T00:49:39.053Z",
+  "durationMs": 5764,
+  "sourceAfter": {
+    "packages/qr-exchange/src/assembler.ts": "a8d5c555d4c7ccc813fff240dfe25263c929d4e3aa3c5b5a8c0535b83e1a5f74",
+    "packages/qr-exchange/src/assembler.test.ts": "0c9c155df03929dee47e6f7a778dd276286f53585b83c72d84b5bdc0b336960f",
+    "packages/qr-exchange/src/multipart.ts": "1acfe8719358f89653ebed5fe7776176f8b7a1ebe656a58b703a96c1d2866580",
+    "packages/qr-exchange/vitest.config.ts": "43cded1524616194307225da4ca5845bc4b794a994807dfdfb07a648f19de3be",
+    "packages/qr-exchange/package.json": "e5f598d93734bd135dae250a249e58500a8e8c2985bd53ae1a6e075a373433a9",
+    "package-lock.json": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+  },
+  "trackedStatusAfter": "",
+  "logSha256": "5d38bccd654a2dd6a2beef03df55f27c0c0f34a7732df5742921494444e636fc"
+}
