@@ -136,8 +136,9 @@
   }
 
   function popup(el, url) {
-    var w = window.open(url, '_blank', 'popup,noopener,noreferrer');
-    if (!w) el.setAttribute('title', 'Popup blocked: allow popups for this site, then click again');
+    // No-opener navigations may legitimately return null even when the new window opened.
+    // Keep opener/referrer isolation; the return value cannot diagnose a popup block.
+    window.open(url, '_blank', 'popup,noopener,noreferrer');
   }
 
   function say(el, text) {
