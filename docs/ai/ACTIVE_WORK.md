@@ -724,3 +724,13 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## QA-02 payment URI builder length — 2026-11-20 UTC (automation cycle)
+
+- Worker: sequential ChatGPT bug-repair coordinator; no subordinate or independent worker claimed.
+- Isolated branch: `automation/20261120T0641Z/bug/payment-uri-aggregate-length`; exact base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Finding: QA-02 / CORE-QA-01, source-pinned read-only QA at PR #309 (source `c977b5d6723f6822c3b5d86cd6b231712c53c395`), applies unchanged to base.
+- Owned paths: `packages/payment-uri/src/query.ts`, `bitcoin.ts`, `solana.ts`, `tron.ts`, new `builder-length.test.ts`, and `docs/handoffs/PAYMENT_URI_LENGTH_20261120.md`. This ownership registry entry is additive.
+- Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
+- Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
+- Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.

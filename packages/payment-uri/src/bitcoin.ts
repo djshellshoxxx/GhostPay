@@ -1,7 +1,7 @@
 import { fail } from './errors.js';
 import { parseBtcAddress, parseSilentPaymentAddress, type BtcNetwork } from './addresses.js';
 import { formatAtomic, parseDecimal, toAtomic } from './decimal.js';
-import { buildQuery, parseQuery, splitUri } from './query.js';
+import { boundBuiltUri, buildQuery, parseQuery, splitUri } from './query.js';
 import { recipientInfo, type RecipientInfo } from './recipient.js';
 import { checkText, hasMixedScript, MAX_LABEL_BYTES, MAX_MESSAGE_BYTES } from './text.js';
 
@@ -138,5 +138,5 @@ export function buildBitcoinUri(p: BuildBitcoinParams): string {
   }
   if (p.label !== undefined) pairs.push(['label', checkText(p.label, MAX_LABEL_BYTES)]);
   if (p.message !== undefined) pairs.push(['message', checkText(p.message, MAX_MESSAGE_BYTES)]);
-  return `bitcoin:${head}${pairs.length === 0 ? '' : `?${buildQuery(pairs)}`}`;
+  return boundBuiltUri(`bitcoin:${head}${pairs.length === 0 ? '' : `?${buildQuery(pairs)}`}`);
 }
