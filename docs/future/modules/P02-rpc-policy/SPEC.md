@@ -47,24 +47,38 @@ interface RpcPolicyV1 {
   requirePrivatePath: boolean;
   fallback: 'none' | 'ask-again';
 }
+interface RpcDisclosurePreviewV1 {
+  version: 1; previewId: string; policyRevision: string;
+  endpointId: string; chainId: string; purpose: RpcPurpose;
+  requestDigest: string; sessionEpoch: number;
+  expiresAt: string; // Canonical unsigned decimal UTC epoch milliseconds.
+  disclosure: Disclosure;
+}
+declare const rpcConsentBrand: unique symbol;
+interface ConsentHandle { readonly [rpcConsentBrand]: true }
 interface RpcPolicyPort {
   inspect(policy: RpcPolicyV1, purpose: RpcPurpose,
-    request: unknown): ModuleResult<Disclosure>;
+    request: unknown, ctx: OperationContext): ModuleResult<RpcDisclosurePreviewV1>;
+  authorize(previewId: string, approvedRequestDigest: string,
+    ctx: OperationContext): ModuleResult<ConsentHandle>;
   request<T>(consent: ConsentHandle, method: string,
     params: readonly unknown[], ctx: OperationContext):
       Promise<ModuleResult<T>>;
+  revoke(consent: ConsentHandle): void;
   capability(): CapabilityDescriptorV1;
 }
 ```
 
-`ConsentHandle` is opaque and memory-scoped, binding policy revision, endpoint identity, chain, purpose, disclosure digest and operation. It is not an account token. A reviewed method/field allowlist rejects unknown JSON-RPC methods. Decode quantities exactly and reject duplicate or conflicting response IDs.
+`inspect` is read-only and performs no network request or authorization. Only `authorize`, after the caller presents the exact preview for an explicit user decision, mints a provider-registered `ConsentHandle`. A preview ID or TypeScript-shaped object is not authority. The handle is opaque, nonserializable and memory-scoped, binding policy revision, endpoint identity, chain, purpose, canonical method/parameter digest, session epoch, deadline and operation. It authorizes one dispatch or the exact bounded read batch shown in the preview, never an open-ended purpose grant. Recompute the actual request digest immediately before atomically consuming it; mutation, reuse or revocation refuses before transport. It is not an account token.
+
+`expiresAt` is canonical unsigned decimal UTC epoch milliseconds, with no sign, exponent, leading zeros or ISO-date parsing; compare it using an explicitly injected UTC clock and reject values outside the supported timestamp range. Preview expiry and operation deadline both apply. A detected clock rollback requires fresh preview/consent. A reviewed method/field allowlist rejects unknown JSON-RPC methods. Decode quantities exactly and reject duplicate or conflicting response IDs.
 
 ## 5. Behavior and lifecycle
 
 1. Edit settings locally; connectivity checks make no request before consent.
 2. Build a static preview: provider host, chain, method, exposed public fields and routing limitations.
-3. Confirm purpose scope and verify chain/configuration through the approved endpoint.
-4. Before dispatch, recheck operation, session epoch, policy revision and endpoint binding.
+3. Confirm the exact preview through `authorize`; any chain/configuration check must itself be a disclosed authorized request.
+4. Before dispatch, recheck operation, session epoch, policy revision, endpoint and exact request digest; consume the one-use handle before transport. Revoke outstanding handles on lock, policy change, cancellation or explicit `revoke`.
 5. Execute bounded transport, validate response envelopes and return only typed results.
 6. Timeout/refusal remains unavailable. Alternate providers require a new preview and consent.
 7. Lock, policy change or seller replacement cancels pending reads and rejects late state installation.
@@ -105,6 +119,9 @@ RPC selection, own-node settings and fail-closed policy remain free local functi
 - **P02-A07:** Exposure rendering generates no requests and displays no secret fields.
 - **P02-A08:** Lock/cancel/reload cannot replay consent; unacknowledged broadcasts remain uncertain.
 - **P02-A09:** Quorum/wallet/Tor labels describe actual observers and unattested routes.
+- **P02-A10:** Inspection alone cannot dispatch; forged/serialized preview IDs or handles cannot mint consent.
+- **P02-A11:** Method/parameter mutation, expired preview, wrong digest and consumed/revoked handle all refuse before transport.
+- **P02-A12:** Two concurrent requests sharing one dispatch handle produce at most one network effect; stale-session and clock-rollback paths require fresh consent.
 
 ## 10. Implementation slices and future verification
 
