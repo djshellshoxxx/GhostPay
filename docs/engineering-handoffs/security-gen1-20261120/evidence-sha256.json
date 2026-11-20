@@ -1,0 +1,50 @@
+[
+  {
+    "path": "README.md",
+    "sha256": "8cb6852519242ab171a81447d595bd9285c70a3936a8d5a846fd641865d03be0"
+  },
+  {
+    "path": "artifact-and-csp-ready-tests.log.gz",
+    "sha256": "a0483cc418827704d9a866cae539e4c04d4a2a14e87b190c00fe568c9f60c584"
+  },
+  {
+    "path": "artifact-and-csp-tests.log.gz",
+    "sha256": "d8b7b6416f27d8985837a023fb19b398beca607fb4930c792c5d8e26eef053f9"
+  },
+  {
+    "path": "build-libraries.log.gz",
+    "sha256": "bf5499aaeb21ba6f79f402bed061a572e66697a249d9b8d14e1155eb8936ae6c"
+  },
+  {
+    "path": "checks-936.json",
+    "sha256": "0fc7c012f860b82e71c3982e60df39ceba33c304d025e0eda2ff743ce6a3041c"
+  },
+  {
+    "path": "codeql-136021124871-annotations.json",
+    "sha256": "c7cfbc97fb52233dbc112a8806b3e002c3bd26bc93434f8e000aef796c495c6b"
+  },
+  {
+    "path": "deployments-tests.json",
+    "sha256": "a8e3cea261f3816feb3560a9d8561375330c1b4a49453bedf799723965c005f9"
+  },
+  {
+    "path": "deployments-tests.log.gz",
+    "sha256": "4ce23038c41b2a34a2c0728cdb6edf0ea908b2aaf93cb802bddb9d147df672fa"
+  },
+  {
+    "path": "fixture-equivalence.json",
+    "sha256": "31ca0721b9e10e5ee59b8212b46f236b501b839a249bd846f946a5da1c285268"
+  },
+  {
+    "path": "optional-build-stop.json",
+    "sha256": "fe6242f380cc185d7ace0abd65d03fa00ead2d80d9be3599a6678b429c89fc0b"
+  },
+  {
+    "path": "source-pins.json",
+    "sha256": "fca7cdd6d6de95ac2928d74d0a6a99dd98c176cbd7647b6250de21f23cb383b4"
+  },
+  {
+    "path": "unexecuted-receipt-shape-probe.ts.txt",
+    "sha256": "b10730f2625d173ff303d629066d4364eeb0b81deeb93194f0ff27c407d1f4c1"
+  }
+]

@@ -1,0 +1,99 @@
+{
+  "baseline": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "candidates": [
+    {
+      "pr": 298,
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "merge_base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "code_paths": [
+        "apps/web/e2e/flowMocks.ts",
+        "apps/web/src/lib/payExec.acceptance.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/lib/wallet.test.ts",
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/views/Pay.test.tsx"
+      ],
+      "equal_to_base": []
+    },
+    {
+      "pr": 297,
+      "head": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "merge_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "code_paths": [
+        "apps/web/src/components/Common.test.tsx",
+        "apps/web/src/components/Common.tsx",
+        "apps/web/src/lib/clipboardPrivacy.test.ts",
+        "apps/web/src/lib/clipboardPrivacy.ts"
+      ],
+      "equal_to_base": []
+    },
+    {
+      "pr": 293,
+      "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "merge_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "code_paths": [
+        "apps/web/src/components/Common.test.tsx",
+        "apps/web/src/components/Common.tsx",
+        "apps/web/src/lib/clipboardPrivacy.test.ts",
+        "apps/web/src/lib/clipboardPrivacy.ts"
+      ],
+      "equal_to_base": []
+    },
+    {
+      "pr": 295,
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "merge_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "code_paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts"
+      ],
+      "equal_to_base": []
+    },
+    {
+      "pr": 290,
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "merge_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "code_paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts"
+      ],
+      "equal_to_base": []
+    },
+    {
+      "pr": 285,
+      "head": "89942105c48df03b9351f777278b6a992e35a95e",
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "code_paths": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts"
+      ],
+      "equal_to_base": [
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts"
+      ]
+    },
+    {
+      "pr": 294,
+      "head": "172695efb41665a4e50d335029e54184bbb5b328",
+      "merge_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "code_paths": [
+        "packages/qr-exchange/src/assembler.test.ts",
+        "packages/qr-exchange/src/assembler.ts"
+      ],
+      "equal_to_base": []
+    },
+    {
+      "pr": 292,
+      "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "merge_base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "code_paths": [
+        "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+        "packages/chain-adapters/src/deployments.test.ts",
+        "scripts/pages/build-pages-artifact-gate.test.mjs",
+        "scripts/pages/build-pages.sh",
+        "scripts/tests/privacy-csp-bundle.test.mjs"
+      ],
+      "equal_to_base": []
+    }
+  ]
+}

@@ -1,0 +1,341 @@
+{
+  "external_dependencies": "/workspace/scratch/e5b5e498b785/GhostPay-quick-hide-review/node_modules",
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "workspace_links_resolve_locally": true,
+  "package_records": [
+    {
+      "package": "packages/relayer-guard",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/net-harness",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-core",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/core-crypto",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-connect",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/metadata-hardening",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/tron-adapter",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/chain-adapters",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": [
+        "packages/chain-adapters/src/deployments.test.ts"
+      ]
+    },
+    {
+      "package": "packages/ux-schedule",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/pool-circuits",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/merchant-hooks",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/chain-tron",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/external-pools-railgun",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/sandbox",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/external-pools-privacypools",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/solana-stealth",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-vault",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/pir-two-server",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/payment-uri",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-notify",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-intake",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/sdk",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/secret-box",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/merchant-billing",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/invoice-schema",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/payer-sponsor",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/policy-scheme",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/merchant-multisig",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/privacy-profiles",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/plugin-api",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ops-monitor",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/hops",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/pool-relayer",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/tx-review",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/confidential-amounts",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-export",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/address-safety",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/privacy-pipeline",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-fees",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/confidential-contracts",
+      "copied": false,
+      "runtime_changes": []
+    },
+    {
+      "package": "packages/cli",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/pool-prover",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-sandbox",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/external-pools",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/btc-payjoin",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/amount-blur",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-fiat",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/chain-evm-extra",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-guide",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/i18n",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/chain-solana",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/hygiene",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/scan-source",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-links",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/pool-sdk",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-privacy",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-receipts",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-flow",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/donation",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-i18n",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/ux-presets",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/btc-silent-payments",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/merchant-ledger",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/qr-exchange",
+      "copied": false,
+      "runtime_changes": [
+        "packages/qr-exchange/src/assembler.ts"
+      ]
+    },
+    {
+      "package": "packages/net-transport",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    },
+    {
+      "package": "packages/btc-family",
+      "source": "review quick-hide cache from identical runtime and package inputs",
+      "test_only_changes": []
+    }
+  ]
+}

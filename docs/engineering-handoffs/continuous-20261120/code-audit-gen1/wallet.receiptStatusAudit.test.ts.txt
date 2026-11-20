@@ -1,0 +1,29 @@
+import { describe, expect, it } from 'vitest';
+import { pollReceipt } from './wallet';
+
+const HASH = `0x${'9'.repeat(64)}` as const;
+const ROUTER = '0x1111111111111111111111111111111111111111';
+const noSleep = (): Promise<void> => Promise.resolve();
+const receipt = (status: unknown): Record<string, unknown> => ({
+  transactionHash: HASH, to: ROUTER, status, blockNumber: '0x10',
+});
+const rpc = (value: unknown) => ({ request: () => Promise.resolve(value) });
+
+describe('independent EIP-658 receipt status audit', () => {
+  it.each(['0x2', '0x3', '0xf', '0x10', '0xffffffffffffffff'])('rejects unsupported status %s without claiming a revert', async (status) => {
+    await expect(pollReceipt(rpc(receipt(status)), HASH, ROUTER, noSleep, 1)).rejects.toMatchObject({
+      translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' },
+    });
+  });
+
+  it.each([
+    ['0x0', 'reverted'],
+    ['0x1', 'success'],
+  ] as const)('preserves valid status %s', async (status, expected) => {
+    expect(await pollReceipt(rpc(receipt(status)), HASH, ROUTER, noSleep, 1)).toEqual({ status: expected, blockNumber: 16n });
+  });
+
+  it('leaves a missing receipt unconfirmed', async () => {
+    expect(await pollReceipt(rpc(null), HASH, ROUTER, noSleep, 1)).toBeUndefined();
+  });
+});

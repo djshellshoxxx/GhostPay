@@ -1,0 +1,191 @@
+{
+  "baseline": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "candidate": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+  "inputs": [
+    {
+      "source_ref": "pull/295",
+      "source_sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "source_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "candidate_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/295",
+      "source_sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "path": "apps/web/src/lib/qrKinds.test.ts",
+      "source_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "candidate_blob": "257b634250f033ddec042b67941fec23ffba1323",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/294",
+      "source_sha": "172695efb41665a4e50d335029e54184bbb5b328",
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "source_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "candidate_blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/294",
+      "source_sha": "172695efb41665a4e50d335029e54184bbb5b328",
+      "path": "packages/qr-exchange/src/assembler.test.ts",
+      "source_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "candidate_blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/298",
+      "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "path": "apps/web/e2e/flowMocks.ts",
+      "source_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "candidate_blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/298",
+      "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "source_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "candidate_blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/298",
+      "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "source_blob": "4deb9d710209a5a83a8ae9d5dcecf3aac1058748",
+      "candidate_blob": "4deb9d710209a5a83a8ae9d5dcecf3aac1058748",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/298",
+      "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "source_blob": "d76eae2520f89b14208485a79f8e686117382a55",
+      "candidate_blob": "d76eae2520f89b14208485a79f8e686117382a55",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/298",
+      "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "path": "apps/web/src/lib/wallet.ts",
+      "source_blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9",
+      "candidate_blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/298",
+      "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "source_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "candidate_blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/292",
+      "source_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "source_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "candidate_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/292",
+      "source_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "source_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "candidate_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/292",
+      "source_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "source_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "candidate_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/292",
+      "source_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "path": "scripts/pages/build-pages.sh",
+      "source_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "candidate_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "equal": true,
+      "ancestor": true
+    },
+    {
+      "source_ref": "pull/292",
+      "source_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "source_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "candidate_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "equal": true,
+      "ancestor": true
+    }
+  ],
+  "preserved_controls": [
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "baseline": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "candidate": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "equal": true
+    },
+    {
+      "path": "apps/web/src/views/Pay.signer.test.tsx",
+      "baseline": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "candidate": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "equal": true
+    },
+    {
+      "path": ".github",
+      "baseline": "00fa1135747338e2b6a3f951e002bca669560e02",
+      "candidate": "00fa1135747338e2b6a3f951e002bca669560e02",
+      "equal": true
+    },
+    {
+      "path": "package.json",
+      "baseline": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "candidate": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "equal": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseline": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "candidate": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "equal": true
+    },
+    {
+      "path": "packages/contracts",
+      "baseline": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "candidate": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "equal": true
+    },
+    {
+      "path": "apps/web/src/lib/appLock.ts",
+      "baseline": "918ea520b4867d69dbb575c0c9a14a8e336c5a2e",
+      "candidate": "918ea520b4867d69dbb575c0c9a14a8e336c5a2e",
+      "equal": true
+    },
+    {
+      "path": "apps/web/src/lib/settings.ts",
+      "baseline": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+      "candidate": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+      "equal": true
+    }
+  ]
+}

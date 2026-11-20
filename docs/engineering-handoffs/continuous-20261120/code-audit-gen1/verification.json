@@ -1,0 +1,58 @@
+{
+  "worker": "/root/code_audit_gen1",
+  "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "baseline_wallet_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+  "candidate_298": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+  "candidate_298_wallet_blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9",
+  "candidate_298_probe": "NOT_RUN: baseline original Vitest collection did not finish; no production source was replaced",
+  "dependency_provenance": {
+    "installation": "private cp -a --reflink=auto copy from /workspace/scratch/0a7bc3583588/GhostPay/node_modules; relative workspace links target this review checkout",
+    "package_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+    "source_package_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+    "clean_install": false
+  },
+  "checks": [
+    {
+      "command": "node scripts/build-workspaces.mjs --workspace @ghostpay/chain-adapters",
+      "node": "24.22.3",
+      "npm": "11.19.1",
+      "exit_code": 0,
+      "log": "build-prerequisites.log"
+    },
+    {
+      "command": "npm exec --workspace @ghostpay/web -- vitest run src/lib/wallet.receiptStatusAudit.test.ts --maxWorkers=1",
+      "node": "24.22.3",
+      "npm": "11.19.1",
+      "exit_code": 130,
+      "outcome": "Interrupted while collection stayed at RUN; zero cases reported; not a test failure reproduction",
+      "log": "receipt-status-node24-stalled.log"
+    },
+    {
+      "command": "PATH=/workspace/scratch/0a7bc3583588/toolchain/node_modules/.bin:$PATH timeout 150s npm exec --workspace @ghostpay/web -- vitest run src/lib/wallet.receiptStatusAudit.test.ts --maxWorkers=1",
+      "node": "22.23.4",
+      "npm": "10.9.11",
+      "exit_code": 124,
+      "outcome": "External time cap expired while collection stayed at RUN; zero cases reported; original project test configuration unchanged",
+      "log": "receipt-status-node22-timeout.log"
+    }
+  ],
+  "probe_case_counts": {
+    "unsupported_status": 5,
+    "valid_controls": 3,
+    "executed_reported": 0
+  },
+  "source_review_conclusion": "Unsupported parsed numeric statuses are mapped to reverted at both immutable source pins; executable verification remains uncompleted.",
+  "control_hashes": {
+    "wallet_ts_sha256": "d2f24aa7c4afcc36ea610f2636b2acafa01e9367c62b683e88f0dedcec541815",
+    "vite_config_sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+    "archived_probe_sha256": "a69b84a5e9ad9e1f4aa1a324436c7c8fe64791e472cf794042d2ddb5f9539045"
+  },
+  "log_hashes": {
+    "receipt-status-node22-timeout.log": "7ed695b6ddf726c7d733507e3853330039f940881e254da268c5fca6a9fea26d",
+    "receipt-status-node24-stalled.log": "3faa6ad99877be0cd24257c0a94e5e5d97da5710d88b61229cf48f0cc55788ea",
+    "build-prerequisites.log": "2cc728ce13d1f083de9d176c6a57346b0cb59950af2486ef0f7ddde5d6c851b2"
+  },
+  "no_product_changes": true,
+  "no_browser_execution": true,
+  "no_remote_mutations": true
+}
