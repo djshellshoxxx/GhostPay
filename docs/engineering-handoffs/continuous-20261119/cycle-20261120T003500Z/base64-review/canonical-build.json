@@ -1,0 +1,17 @@
+{
+  "label": "canonical-build",
+  "command": [
+    "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+    "/workspace/scratch/fc8b0b472d30/GhostPay-base64-review/node_modules/typescript/bin/tsc",
+    "-p",
+    "tsconfig.build.json"
+  ],
+  "cwd": "/workspace/scratch/fc8b0b472d30/GhostPay-base64-review/packages/invoice-schema",
+  "started_at": "2026-11-20T00:44:06.877207+00:00",
+  "finished_at": "2026-11-20T00:44:08.008118+00:00",
+  "exit_code": 0,
+  "node_version": "v22.23.4",
+  "base64url_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+  "test_blob": "8d959c2b144182d0d0f576214dc7b761b7166c47",
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

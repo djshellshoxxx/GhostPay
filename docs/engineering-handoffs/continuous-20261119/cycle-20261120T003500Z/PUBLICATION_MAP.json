@@ -1,0 +1,37 @@
+{
+  "source_branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+  "final_head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+  "mapping": [
+    {
+      "local": "a24b48cf74c1312d88a2968bc3c530d72c78a724",
+      "published": "2bb9168142585af3801449313a2fb3d259d77883",
+      "tree": "920a81d0d933c8b20a884dbebfb0890865c12c53"
+    },
+    {
+      "local": "084427db93d6d4c655b167aed3e99d9c40635ad2",
+      "published": "455e9c496fb9b0bb1cf7e9f835d9d6dafae295b1",
+      "tree": "a7d790ca0edf8ace8e227f5ab23168f39a56f4c0"
+    },
+    {
+      "local": "c7abdef110bf703ef3743b4cf6eea8c00d38e6f1",
+      "published": "23f792518c0358dc066f4c97211e9bd5454befe6",
+      "tree": "b50e0eeff0a200aa4021fa37dcaa14fa7955392d"
+    },
+    {
+      "local": "c70321e1e33e762fa2329f1ce86c32f9c9918b16",
+      "published": "aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da",
+      "tree": "21311091c83694984ddc5064e874797f59e8b9f8"
+    },
+    {
+      "local": "d1a9c9e41ba353b75740d0f0e0f516e40881a677",
+      "published": "41580cc98571f85414ea76ea356c5baff3e94476",
+      "tree": "adfff4d01031c1b5578bdde97f2fa3e7253c5ef8"
+    },
+    {
+      "local": "53503b41e1b459e389b8b2d2696631a47bc2298c",
+      "published": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "tree": "9c5df12a4621384323af1f4d51b1b04e37d62d3c"
+    }
+  ],
+  "verification": "All mapped trees match locally. Fresh Git fetch and git diff between published final head and local final source exited 0."
+}

@@ -1,0 +1,55 @@
+import { describe, expect, it } from 'vitest';
+import { Base64UrlError, decodeBase64Url, encodeBase64Url } from './index.js';
+import { decodeBase64Url as originalDecode, encodeBase64Url as originalEncode } from './base64url.original-review.js';
+
+describe('independent base64url runtime boundary review', () => {
+  const revoked = Proxy.revocable({}, {});
+  revoked.revoke();
+  const invalid: [string, unknown][] = [
+    ['undefined', undefined], ['null', null], ['zero', 0], ['one', 1], ['negative', -1],
+    ['NaN', NaN], ['infinity', Infinity], ['false', false], ['true', true],
+    ['empty array', []], ['one-item array', [0x41]], ['length-zero object', { length: 0 }],
+    ['byte array', new Uint8Array([0x41])], ['array-like', { length: 2, charCodeAt: () => 0x51 }],
+    ['boxed string', Object('QQ')], ['bigint', 0n], ['symbol', Symbol('sensitive')],
+    ['function', () => 'QQ'], ['null-prototype object', Object.create(null)],
+    ['date', new Date(0)], ['throwing proxy', new Proxy({}, { get() { throw new Error('accessed'); } })],
+    ['revoked proxy', revoked.proxy],
+  ];
+  it.each(invalid)('rejects %s with the documented fixed error', (_label, value) => {
+    let failure: unknown;
+    try { decodeBase64Url(value as string); } catch (error) { failure = error; }
+    expect(failure).toBeInstanceOf(Base64UrlError);
+    expect(failure).toMatchObject({ name: 'Base64UrlError', code: 'BASE64URL', message: 'invalid base64url encoding' });
+  });
+  it('rejects before reading object properties or invoking coercion', () => {
+    let touched = 0;
+    const value = {
+      get length() { touched++; throw new Error('private'); },
+      get charCodeAt() { touched++; throw new Error('private'); },
+      toString() { touched++; return 'QQ'; },
+      valueOf() { touched++; return 'QQ'; },
+      [Symbol.toPrimitive]() { touched++; return 'QQ'; },
+    };
+    expect(() => decodeBase64Url(value as unknown as string)).toThrow(Base64UrlError);
+    expect(touched).toBe(0);
+  });
+  it('preserves baseline bytes and Node canonical encoding for 513 deterministic byte strings', () => {
+    for (let length = 0; length <= 512; length++) {
+      const bytes = Uint8Array.from({ length }, (_, index) => (index * 37 + length * 17) & 0xff);
+      const encoded = encodeBase64Url(bytes);
+      expect(encoded).toBe(originalEncode(bytes));
+      expect(encoded).toBe(Buffer.from(bytes).toString('base64url'));
+      expect(decodeBase64Url(encoded)).toEqual(originalDecode(encoded));
+      expect(decodeBase64Url(encoded)).toEqual(bytes);
+    }
+  });
+  it('preserves malformed-text rejection and fixed error details', () => {
+    for (const text of ['QQ==', 'QQ=', 'a+b/', 'a b', 'ab\n', 'é', 'A', 'AAAAA', '\u0000AAA', 'ab\u{1F600}', 'QR', 'QUF']) {
+      expect(() => originalDecode(text)).toThrow(Base64UrlError);
+      expect(() => decodeBase64Url(text)).toThrow(Base64UrlError);
+      try { decodeBase64Url(text); } catch (error) {
+        expect(error).toMatchObject({ name: 'Base64UrlError', code: 'BASE64URL', message: 'invalid base64url encoding' });
+      }
+    }
+  });
+});

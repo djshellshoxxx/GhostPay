@@ -2,6 +2,14 @@
 
 Repository: https://github.com/djshellshoxxx/GhostPay. Canonical review entry: [draft PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278), branch `release/ghostpay-beta-qualification-20261119`. The coordinator's isolated branch is `integration/ghostpay-continuous-20261119`.
 
+**Additional isolated continuation:** [cycle 20261120T003500Z](cycle-20261120T003500Z/README.md)
+qualifies the retained #289/#285 fixes and publishes the independently reviewed
+QR runtime-key follow-up as draft #290. Distinct tests from concurrent #291 are
+retained without duplicating its runtime. Source head `ec546311` remains subject
+to hosted checks and the active generation-5 integration owner. This link and the
+parallel-cycle ledger entry are an isolated evidence proposal; historical results
+below retain their original source and scope.
+
 **Release status: BLOCKED.** Seven demonstrated runtime defects are repaired and independently reviewed. Final combined typecheck, lint, library/full web/Pages builds passed; original full web coverage and hosted qualification remain in progress. This is an engineering checkpoint, not release, deployment, external-audit or whole-repository completion approval.
 
 ## Source identity and current state

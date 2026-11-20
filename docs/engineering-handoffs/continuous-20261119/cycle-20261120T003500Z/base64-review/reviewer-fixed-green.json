@@ -1,0 +1,17 @@
+{
+  "label": "reviewer-fixed-green",
+  "command": [
+    "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+    "/workspace/scratch/fc8b0b472d30/GhostPay-base64-review/node_modules/vitest/vitest.mjs",
+    "run",
+    "src/base64url.native-review.test.ts"
+  ],
+  "cwd": "/workspace/scratch/fc8b0b472d30/GhostPay-base64-review/packages/invoice-schema",
+  "started_at": "2026-11-20T00:40:10.512205+00:00",
+  "finished_at": "2026-11-20T00:40:11.474186+00:00",
+  "exit_code": 0,
+  "node_version": "v22.23.4",
+  "base64url_blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+  "test_blob": "8d32596d0fa34f6ebc40f3ccae11f1d9d620e8e5",
+  "log_sha256": "0e233697e676ce8881d13c64f823d7df6bdb68e98c361548d6085c99a5262c86"
+}

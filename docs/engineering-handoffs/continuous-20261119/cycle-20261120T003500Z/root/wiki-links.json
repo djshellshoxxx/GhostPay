@@ -1,0 +1,35 @@
+{
+  "source": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "files": [
+    {
+      "file": "docs/wiki/Home.md",
+      "relative_links": 11,
+      "missing": [],
+      "user_guide_link": true,
+      "developer_guide_link": true
+    },
+    {
+      "file": "docs/wiki/_Sidebar.md",
+      "relative_links": 7,
+      "missing": [],
+      "user_guide_link": true,
+      "developer_guide_link": true
+    },
+    {
+      "file": "docs/wiki/User-Guide.md",
+      "relative_links": 4,
+      "missing": [],
+      "user_guide_link": false,
+      "developer_guide_link": true
+    },
+    {
+      "file": "docs/wiki/Developer-Guide.md",
+      "relative_links": 5,
+      "missing": [],
+      "user_guide_link": true,
+      "developer_guide_link": false
+    }
+  ],
+  "live_wiki_published": false,
+  "limits": "Only these four repository Wiki files, relative file existence and guide navigation checked; anchors and external URLs not verified. Existing Wiki owner #215 preserved."
+}

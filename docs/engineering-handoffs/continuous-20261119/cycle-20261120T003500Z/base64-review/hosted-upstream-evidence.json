@@ -1,0 +1,208 @@
+{
+  "original_pr": 289,
+  "head": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+  "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "actual_ci_checkout": "137411e42312a758d95638e6b65174c334e61763",
+  "workflow_runs": [
+    {
+      "id": 44631965553,
+      "name": "CLI operator qualification",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 258,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965553/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965553/logs",
+      "workflow_id": 412675588
+    },
+    {
+      "id": 44631965189,
+      "name": "CI",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_number": 1515,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965189/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965189/logs",
+      "workflow_id": 391558649
+    },
+    {
+      "id": 44631965076,
+      "name": "Pages",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 271,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965076/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965076/logs",
+      "workflow_id": 392799214
+    },
+    {
+      "id": 44631965578,
+      "name": "Hosting kit",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 387,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965578/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965578/logs",
+      "workflow_id": 398745505
+    },
+    {
+      "id": 44631965114,
+      "name": "Beta acceptance",
+      "status": "completed",
+      "conclusion": "success",
+      "run_number": 276,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965114/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44631965114/logs",
+      "workflow_id": 414091144
+    }
+  ],
+  "jobs": [
+    {
+      "id": 135940651192,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940651469,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701153,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701156,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701174,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701195,
+      "name": "ts-test (core-crypto)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701196,
+      "name": "e2e (full)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701200,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701214,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701216,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701252,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701265,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 135940701291,
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701305,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701322,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701347,
+      "name": "ts-test (web)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701380,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701401,
+      "name": "ts-test (confidential-contracts)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701405,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701424,
+      "name": "ts-test (rest-1)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701456,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135940701472,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135942763740,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135949308986,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "invoice_job": 135940701405,
+  "invoice_test_log": "2026-11-19T22:54:35.8665901Z > @ghostpay/invoice-schema@0.1.0 test\n2026-11-19T22:54:35.8666387Z > vitest run --coverage\n2026-11-19T22:54:36.1824024Z \n2026-11-19T22:54:36.1824038Z \n2026-11-19T22:54:36.1827621Z  RUN  v5.0.5 /home/runner/work/GhostPay/GhostPay/packages/invoice-schema\n2026-11-19T22:54:36.1828577Z       Coverage enabled with v8\n2026-11-19T22:54:36.1828932Z \n2026-11-19T22:54:37.4433288Z  ✓ src/schema.test.ts (94 tests) 846ms\n2026-11-19T22:54:37.4434557Z    ✓ createInvoice (6)\n2026-11-19T22:54:37.4435552Z      ✓ nonces are unique over 2000 draws from the real CSPRNG 792ms\n2026-11-19T22:54:40.1044197Z  ✓ src/envelope.test.ts (33 tests) 3523ms\n2026-11-19T22:54:40.1065360Z    ✓ encrypted fragments (AES-256-GCM, ADR-0005) (11)\n2026-11-19T22:54:40.1086068Z      ✓ key and GCM nonce are unique per encryption (300 encodes) 1201ms\n2026-11-19T22:54:40.1087388Z    ✓ size boundary (16 KiB decoded) (3)\n2026-11-19T22:54:40.1088660Z      ✓ exactly 16384 decoded bytes parses; 16385 fails closed 1651ms\n2026-11-19T22:55:09.2282393Z  ✓ src/pinnedSigner.test.ts (13 tests) 28878ms\n2026-11-19T22:55:09.2283883Z    ✓ opt-in trusted-signer parsing (restored from PR #218) (13)\n2026-11-19T22:55:09.2285728Z      ✓ prompts without trusting a passphrase header, then enforces the decrypted signer 14394ms\n2026-11-19T22:55:09.2287346Z      ✓ also rejects an invalid invoice signature after successful passphrase decryption 14115ms\n2026-11-19T22:55:09.9747104Z  ✓ src/sign.test.ts (42 tests) 509ms\n2026-11-19T22:55:09.9755154Z    ✓ signature rejection (5)\n2026-11-19T22:55:09.9755965Z      ✓ flipping any single signature bit invalidates it 314ms\n2026-11-19T22:55:10.2762378Z  ✓ src/receipts.test.ts (48 tests) 129ms\n2026-11-19T22:55:12.9386713Z  ✓ src/fuzz.test.ts (9 tests) 2467ms\n2026-11-19T22:55:12.9395476Z    ✓ parser fuzzing (9)\n2026-11-19T22:55:12.9396569Z      ✓ random strings (any unicode) as the whole fragment and as the payload 551ms\n2026-11-19T22:55:12.9398109Z      ✓ arbitrary valid memo text survives plain and encrypted round trips unchanged 1249ms\n2026-11-19T22:55:14.0354501Z  ✓ src/text-hygiene.test.ts (427 tests) 835ms\n2026-11-19T22:55:14.0355869Z    ✓ S3-12 forbidden characters in free text (427)\n2026-11-19T22:55:14.0357439Z      ✓ fuzz: arbitrary unicode never throws anything but SchemaError, and accepted text has no forbidden characters 725ms\n2026-11-19T22:55:14.5008049Z  ✓ src/merchantProfile.test.ts (7 tests) 220ms\n2026-11-19T22:55:14.6685803Z  ✓ src/json.test.ts (10 tests) 9ms\n2026-11-19T22:55:14.8745240Z  ✓ src/expiry.test.ts (6 tests) 7ms\n2026-11-19T22:55:15.0991952Z  ✓ src/base64url.test.ts (5 tests) 45ms\n2026-11-19T22:55:48.6314568Z  ✓ src/independent.test.ts (9 tests) 70925ms\n2026-11-19T22:55:48.6315597Z    ✓ invoice signature vs a curve-independent ECDSA verifier (4)\n2026-11-19T22:55:48.6316757Z      ✓ 20 package signatures verify under the reference (low-s, 64-byte r||s) 765ms\n2026-11-19T22:55:48.6317835Z    ✓ A256GCM and A256GCM-PW envelopes vs node:crypto (OpenSSL) (3)\n2026-11-19T22:55:48.6318892Z      ✓ A256GCM-PW: package output opens with OpenSSL scrypt + AES-GCM 2719ms\n2026-11-19T22:55:48.6320306Z      ✓ A256GCM-PW: an OpenSSL-made envelope parses; every single-byte AAD, tag or ciphertext change fails closed 65175ms\n2026-11-19T22:55:48.6321452Z    ✓ versioning and KDF bounds from untrusted links (2)\n2026-11-19T22:55:48.6322594Z      ✓ absurd scrypt N/r/p are refused quickly (no KDF run), including max-safe-integer values 1944ms\n2026-11-19T22:57:18.9196231Z  ✓ src/passphrase.test.ts (26 tests) 162354ms\n2026-11-19T22:57:18.9197256Z    ✓ passphrase-protected links (A256GCM-PW, ADR-0020) (21)\n2026-11-19T22:57:18.9200122Z      ✓ round trips; only alg, chainId, signer and KDF header are in clear 6922ms\n2026-11-19T22:57:18.9201357Z      ✓ matches an independent scrypt + AES-GCM implementation with the documented AAD 4598ms\n2026-11-19T22:57:18.9202441Z      ✓ default cost is 2^17 and round trips 17939ms\n2026-11-19T22:57:18.9203308Z      ✓ salt and nonce are fresh per encode 5250ms\n2026-11-19T22:57:18.9204561Z      ✓ openFragment reports needsPassphrase without KDF work, then opens with it 4841ms\n2026-11-19T22:57:18.9205818Z      ✓ parseFragment without a passphrase throws PassphraseRequiredError 1942ms\n2026-11-19T22:57:18.9207187Z      ✓ wrong passphrase yields one generic typed error 3879ms\n2026-11-19T22:57:18.9208393Z      ✓ tampering any authenticated field gives the same WrongPassphraseError (no oracle) 27457ms\n2026-11-19T22:57:18.9209435Z      ✓ truncated ciphertext fails closed 3890ms\n2026-11-19T22:57:18.9210540Z      ✓ KDF parameters outside the allow-list are refused before any derivation (no DoS) 1955ms\n2026-11-19T22:57:18.9211707Z      ✓ structural problems are typed schema/base64 errors 1952ms\n2026-11-19T22:57:18.9212804Z      ✓ downgrade: re-labelling a PW envelope as A256GCM or none is rejected 1950ms\n2026-11-19T22:57:18.9214107Z      ✓ signature still covers the plaintext: a re-encrypted altered invoice is invalid-signature 7355ms\n2026-11-19T22:57:18.9215555Z      ✓ authentic but malformed plaintext gives typed errors (reachable only with the passphrase) 36760ms\n2026-11-19T22:57:18.9216636Z      ✓ unicode: NFKC-equivalent passphrases open the same link 15532ms\n2026-11-19T22:57:18.9217761Z      ✓ passphrase policy: length in code points, byte cap, lone surrogates, type 1980ms\n2026-11-19T22:57:18.9218719Z      ✓ encode option conflicts are refused 3905ms\n2026-11-19T22:57:18.9219854Z      ✓ refuses an invalid signature and oversize invoices at encode 1967ms\n2026-11-19T22:57:18.9220931Z      ✓ missing Web Crypto is UnsupportedError, not a wrong-passphrase error 3883ms\n2026-11-19T22:57:18.9221730Z    ✓ passphrase internals (2)\n2026-11-19T22:57:18.9222657Z      ✓ derivePassphraseKey refuses disallowed parameters and salts (defence in depth) 3681ms\n2026-11-19T22:57:18.9223511Z    ✓ passphrase fuzzing (3)\n2026-11-19T22:57:18.9224439Z      ✓ passphraseToBytes: policy error or NFKC UTF-8 bytes; NFKC-idempotent 679ms\n2026-11-19T22:57:18.9225562Z      ✓ structurally mutated PW envelopes fail closed with typed errors 2039ms\n2026-11-19T22:57:18.9226644Z      ✓ random ciphertext bytes never open and never throw untyped errors 1960ms\n2026-11-19T22:57:19.0438092Z \n2026-11-19T22:57:19.0445611Z  Test Files  13 passed (13)\n2026-11-19T22:57:19.0446135Z       Tests  729 passed (729)\n2026-11-19T22:57:19.0446505Z    Start at  22:54:36\n2026-11-19T22:57:19.0455186Z    Duration  162.86s (tests 99%)\n2026-11-19T22:57:19.0455882Z \n2026-11-19T22:57:19.0477649Z  % Coverage report from v8\n2026-11-19T22:57:19.0505423Z -------------------|---------|----------|---------|---------|-------------------\n2026-11-19T22:57:19.0506212Z File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n2026-11-19T22:57:19.0506926Z -------------------|---------|----------|---------|---------|-------------------\n2026-11-19T22:57:19.0510677Z All files          |   98.09 |    97.74 |     100 |   99.26 |                   \n2026-11-19T22:57:19.0511343Z  base64url.ts      |     100 |      100 |     100 |     100 |                   \n2026-11-19T22:57:19.0513350Z  envelope.ts       |   98.57 |    97.52 |     100 |   99.44 | 545               \n2026-11-19T22:57:19.0513998Z  errors.ts         |     100 |      100 |     100 |     100 |                   \n2026-11-19T22:57:19.0514744Z  expiry.ts         |     100 |      100 |     100 |     100 |                   \n2026-11-19T22:57:19.0515649Z  json.ts           |     100 |      100 |     100 |     100 |                   \n2026-11-19T22:57:19.0517094Z  ...hantProfile.ts |   89.36 |    91.66 |     100 |   97.22 | 170,178           \n2026-11-19T22:57:19.0517782Z  passphrase.ts     |     100 |      100 |     100 |     100 |                   \n2026-11-19T22:57:19.0518550Z  receipts.ts       |   99.03 |    98.96 |     100 |   98.63 | 96                \n2026-11-19T22:57:19.0519740Z  schema.ts         |   99.37 |    99.21 |     100 |     100 | 361               \n2026-11-19T22:57:19.0520357Z  sign.ts           |   94.44 |      100 |     100 |   93.75 | 110               \n2026-11-19T22:57:19.0521021Z -------------------|---------|----------|---------|---------|-------------------\n2026-11-19T22:57:19.0840023Z ",
+  "lint_job": 135940701265,
+  "lint_failure_excerpt": "2026-11-19T22:53:19.8496067Z /home/runner/work/GhostPay/GhostPay/packages/invoice-schema/src/base64url.test.ts\n2026-11-19T22:53:19.8526940Z ##[error]  36:33  error  '_index' is defined but never used  @typescript-eslint/no-unused-vars\n2026-11-19T22:53:19.8898239Z npm error Lifecycle script `lint` failed with error:\n2026-11-19T22:53:19.8898710Z npm error code 1\n2026-11-19T22:53:19.8899218Z npm error path /home/runner/work/GhostPay/GhostPay/packages/invoice-schema\n2026-11-19T22:53:19.8899744Z npm error workspace @ghostpay/invoice-schema@0.1.0\n2026-11-19T22:53:19.8900297Z npm error location /home/runner/work/GhostPay/GhostPay/packages/invoice-schema\n2026-11-19T22:53:19.8900714Z npm error command failed\n2026-11-19T22:53:19.8901159Z npm error command sh -c eslint --config ../../eslint.config.js src\n2026-11-19T22:55:39.3420730Z ##[error]Process completed with exit code 1."
+}

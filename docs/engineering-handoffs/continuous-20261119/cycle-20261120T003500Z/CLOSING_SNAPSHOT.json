@@ -1,0 +1,81 @@
+{
+  "observed_at_utc": "2026-11-20 00:58:24 UTC",
+  "prs": [
+    {
+      "number": 278,
+      "head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "draft": true,
+      "mergeable": true
+    },
+    {
+      "number": 290,
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "draft": true,
+      "mergeable": true
+    },
+    {
+      "number": 291,
+      "head": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+      "base": "89942105c48df03b9351f777278b6a992e35a95e",
+      "draft": true,
+      "mergeable": true
+    }
+  ],
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "lock_ref": "2f56e26f56db57d0d4cabf646d8e0843ccb8d1e3",
+  "final_source_workflows": [
+    {
+      "id": 44649231168,
+      "name": "CLI operator qualification",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 264,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231168/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231168/logs",
+      "workflow_id": 412675588
+    },
+    {
+      "id": 44649231026,
+      "name": "Pages",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 277,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231026/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231026/logs",
+      "workflow_id": 392799214
+    },
+    {
+      "id": 44649231040,
+      "name": "CI",
+      "status": "pending",
+      "conclusion": null,
+      "run_number": 1521,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231040/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231040/logs",
+      "workflow_id": 391558649
+    },
+    {
+      "id": 44649231132,
+      "name": "Beta acceptance",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 282,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231132/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231132/logs",
+      "workflow_id": 414091144
+    },
+    {
+      "id": 44649231031,
+      "name": "Hosting kit",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 393,
+      "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231031/jobs",
+      "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44649231031/logs",
+      "workflow_id": 398745505
+    }
+  ],
+  "qualification": "Independent local qualification complete; hosted final-source qualification pending. No shared integration or lock ownership."
+}
