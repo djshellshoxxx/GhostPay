@@ -44,13 +44,13 @@ This is a standalone assembler API contract defect. The current `CameraImporter`
 | Unchanged `apps/web/src/components/CameraImporter.tsx` | `255e318fb120ef769687e0c2dfb38f2bceb9e7d9` |
 | Unchanged `apps/web/src/components/CameraImporter.multipart.test.tsx` | `58833ea84270b29d5b21eb5fb10ccb5a9928187b` |
 
-Evidence-only commits after the implementation do not change the tested product/test blobs. If publication reconstructs Git objects through the connected GitHub API, a publication map must retain local-to-published commit correspondence and exact trees/parents.
+Evidence-only commits after the implementation do not change the tested product/test blobs. Publication used the connected GitHub Git Data API because this checkout has no HTTPS push credentials. The [publication map](PUBLICATION_MAP.json) preserves local-to-published commit correspondence; every published tree and ordered parent was fetched back and verified. The published regression source is `6b683651e9795f7ece9477d5361738705ecbda44`, and the published implementation is `118ae827a5244156226c48e7d4cc3eb3524810ff`.
 
 ## Verification
 
 Environment: Node **22.23.4**, npm **10.9.11**; dependencies installed from the unchanged lockfile with `npm ci --ignore-scripts`. Lockfile SHA-256: `1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517`.
 
-All commands below ran from the repository root. Each linked JSON receipt records its exact command, source head/tree, selected input hashes before and after, timestamps, exit status and raw-log SHA-256. Tracked worktrees were clean and the recorded source inputs remained unchanged during each run.
+All commands below ran from the repository root. Each linked JSON receipt records its exact command, source head/tree, selected input hashes before and after, timestamps, exit status and raw-log SHA-256. Tracked worktrees were clean and the recorded source inputs remained unchanged during each run. Raw logs retain their original output whitespace so their bytes match the receipts; the source diff check applies to the implementation delta, not whitespace emitted in those logs.
 
 | Check | Exact command | Actual result | Receipt / raw log |
 | --- | --- | --- | --- |
