@@ -104,13 +104,16 @@ function parseOrigin(field, v) {
 /**
  * @param {string} field
  * @param {unknown} v
- * @returns {string} normalized origin
+ * @returns {string} canonical HTTP v3 onion origin on the generated service's default port
  */
 export function validateOnionOrigin(field, v) {
   const u = parseOrigin(field, v);
   // The generated profiles map HiddenServicePort 80 to a plain-HTTP listener; an https onion needs a CA certificate
   // and TLS termination that the kit does not generate, so it is refused rather than half-supported.
   if (u.protocol !== 'http:') fail(`${field} must use http:// (onion services are authenticated by the address; https onions are not supported by the generated profiles)`);
+  // URL parsing normalizes hosts, escaped bytes, whitespace and explicit default ports. Public configuration
+  // must already be canonical, and a different port would not match the generated HiddenServicePort 80.
+  if (v !== u.origin || u.port !== '') fail(`${field} must be a canonical http://<56 lowercase base32 characters>.onion origin without a port, path, query or fragment`);
   const m = /^([a-z2-7]{56})\.onion$/.exec(u.hostname);
   if (m === null || m[1] === undefined) fail(`${field} must be a v3 onion origin (56 base32 characters + .onion)`);
   if (!isValidOnionV3Label(m[1])) fail(`${field} has an invalid v3 onion checksum or version: ${u.hostname}`);

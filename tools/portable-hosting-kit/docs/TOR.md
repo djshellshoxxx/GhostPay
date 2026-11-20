@@ -31,6 +31,16 @@ Errors are `KitError`s: `E_CONFIG` (wrong transport, malformed host config), `E_
 forbidden root), `E_UNSUPPORTED` (management port as target, impossible topology), `E_NETWORK_SCOPE` (non-loopback
 listener), `E_USAGE` (bad arguments).
 
+Known onion origins use exactly `http://<56 lowercase base32 characters>.onion`.
+The host-config parser, direct Tor adapter API and `Onion-Location` header helper
+all validate the v3 version and checksum. Uppercase or escaped authority text,
+whitespace, explicit ports (including `:80`), paths, queries and fragments are
+refused instead of being normalized. The generated public origin uses port 80;
+when `publicOrigin` is configured, `virtualPort` must therefore be 80. The adapter
+can still generate a custom virtual port when `publicOrigin` is null, without
+advertising an origin that would point at a different service port. No origin
+validation establishes service ownership, reachability or artifact authenticity.
+
 ## Network namespaces: which target is reachable
 
 `127.0.0.1` means "this network namespace". Inside a container it is that container only.
