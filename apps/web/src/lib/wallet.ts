@@ -496,6 +496,9 @@ export async function pollReceipt(
         if (receiptHash.toLowerCase() !== hash.toLowerCase()) throw new SubmissionMismatchError('hash');
         to = o['to'] === null || o['to'] === undefined ? undefined : toAccount(o['to']);
         const status = parseQuantity(o['status']);
+        if (status !== 0n && status !== 1n) {
+          throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
+        }
         if (to !== undefined && to !== getAddress(expectedTo)) throw new SubmissionMismatchError('receipt destination');
         return { status: status === 1n ? 'success' : 'reverted', blockNumber: parseQuantity(o['blockNumber']) };
       } catch (e) {
