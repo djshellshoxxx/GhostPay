@@ -1,3 +1,14 @@
+# Recovery of isolated unique fixes — 2026-11-19 (Pacific)
+
+Worker: `150ffd7f8079-root`; isolated branch: `integration/ghostpay-main-recovered-fixes-20261120`.
+Base: first consolidation candidate `885b9569e6fc99e43bf01d23305494275e10120e` (PR #306), main remains `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` at claim time.
+Owned scope: exact source/test recovery for QR import visibility, canonical arrays, scanner scheme filtering, deployment dates, RPC retry/privacy options, merchant clocks, jitter expiry, base64url/QR/amount input validation, multipart idle expiry, receipt/hash validation with consumer fixture repairs, and ERC-20 simulation response validation. Detailed file/hash provenance will be under `docs/consolidation/main-unique-code-20261120/recovered-fixes/`.
+Dependencies: existing main APIs and package versions; no new dependency, workflow, contract, deployment, fee or payment activation. Larger privacy/recovery/scan feature branches remain separate. Reviewers: `release_review` and `latest_fixes_review`, plus root diff inspection. Each source module has an existing regression suite included byte-for-byte; prior donor outcomes retain their source pins.
+Acceptance: preserve current source outside the explicit 31 paths, repair known donor fixture/lint mismatches using already-reviewed final blobs, publish atomic recovery commits, inspect full resulting tree, and require hosted qualification before promotion. The #305 contribution has pending donor CI and is explicitly unqualified until this candidate passes. Never treat source extraction as the merger or qualification of all work on a broad donor branch.
+Local executor is unavailable; no local tests are claimed. Ownership recorded before source changes.
+
+---
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
