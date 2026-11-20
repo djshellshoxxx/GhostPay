@@ -4,8 +4,8 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 3691,
-      "sha256": "82ca3f66d8aebe539866576cab540e89b225154f7b4d4584d676ea857fe265f1"
+      "bytes": 3815,
+      "sha256": "2e571e19c312904cb1f9331e554be4033f160ba0b592b1f74d3df36cf11828eb"
     },
     {
       "path": "ci-ownership/README.md",
@@ -143,9 +143,19 @@
       "sha256": "02ffd48d78c06a98a5451b9ed869cad8062ea6ad5be8781a14c855f2b9d3e3bc"
     },
     {
+      "path": "privacy-spec-review/REVIEW.md",
+      "bytes": 7833,
+      "sha256": "298ca086bcb45cf7df86621c31561b3fe9e0ab1fe7ed24b22b36938be72b0214"
+    },
+    {
       "path": "publication-map.json",
       "bytes": 1936,
       "sha256": "9fce92fdcd9a75d31f41dada2b2d73e007da6d9fe9cb8b09ed8e6d786acb5272"
+    },
+    {
+      "path": "published-candidates-state.json",
+      "bytes": 12479,
+      "sha256": "0e4dba1550090cd9db5e1a4e1c54f11b33fcdfac5ceb08106ae304d3c054fd0a"
     },
     {
       "path": "receipt-author/author-qualification.json",

@@ -1,0 +1,27 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-receipt-hash/apps/web
+
+ ❯ src/lib/payExec.test.ts (0 test)
+ ❯ src/lib/wallet.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/payExec.test.ts [ src/lib/payExec.test.ts ]
+ FAIL  src/lib/wallet.test.ts [ src/lib/wallet.test.ts ]
+Error: Failed to resolve entry for package "@ghostpay/tx-review". The package may have incorrect main/module/exports specified in its package.json.
+ ❯ src/lib/txGuard.ts:2:1
+      1| import { ChainAdapterError, FEE_SCHEDULE, tokensForChain, type Address…
+      2| import {
+       | ^
+      3|   ReviewRefusedError,
+      4|   TxReviewError,
+ ❯ src/lib/pay.ts:42:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  17:25:11
+   Duration  2.40s (worker 97%, environment 3%)
+

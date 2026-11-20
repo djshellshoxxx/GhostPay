@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-receipt-review/apps/web
+
+
+ Test Files  4 passed (4)
+      Tests  180 passed (180)
+   Start at  17:31:38
+   Duration  45.97s (tests 67%, transform 19%, import 11%, environment 3%)
+

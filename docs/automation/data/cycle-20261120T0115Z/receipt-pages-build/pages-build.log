@@ -1,0 +1,6 @@
+manifests: none (payments disabled on every chain)
+== build apps/web (lean profile, relative base) at d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67
+== assemble Pages site
+== verify site
+Pages site verified: 16 files; DEVELOPMENT BUILD (not release evidence): DEMO: payments disabled on every chain (no deployment manifest)
+build-pages: OK -> /workspace/scratch/a13b43b0f3c9/receipt-pages-20261120T0115Z/site (evidence in /workspace/scratch/a13b43b0f3c9/receipt-pages-20261120T0115Z/evidence)

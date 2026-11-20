@@ -1,0 +1,190 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-receipt-hash/apps/web
+
+ ❯ src/lib/payExec.test.ts (62 tests | 1 failed) 1321ms
+   ❯ native payment end to end (mock wallet, mock RPC) (12)
+     × rejects another transaction receipt after broadcast while preserving the submitted hash and preventing resend 70ms
+ ❯ src/lib/wallet.test.ts (50 tests | 18 failed) 53ms
+   ❯ pollReceipt (23)
+     × rejects a receipt for another transaction with status 0x1 11ms
+     × rejects a receipt for another transaction with status 0x0 1ms
+     × rejects a receipt without a transaction hash 1ms
+     × rejects a malformed receipt transaction hash: undefined 1ms
+     × rejects a malformed receipt transaction hash: null 1ms
+     × rejects a malformed receipt transaction hash: number 1ms
+     × rejects a malformed receipt transaction hash: boolean 0ms
+     × rejects a malformed receipt transaction hash: array 1ms
+     × rejects a malformed receipt transaction hash: array-like object 1ms
+     × rejects a malformed receipt transaction hash: object 0ms
+     × rejects a malformed receipt transaction hash: symbol 0ms
+     × rejects a malformed receipt transaction hash: empty 1ms
+     × rejects a malformed receipt transaction hash: short 0ms
+     × rejects a malformed receipt transaction hash: long 0ms
+     × rejects a malformed receipt transaction hash: nonhex 0ms
+     × rejects a malformed receipt transaction hash: missing prefix 0ms
+     × rejects a malformed receipt transaction hash: uppercase prefix 1ms
+     × rejects an object hash without invoking its coercion hook 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/payExec.test.ts > native payment end to end (mock wallet, mock RPC) > rejects another transaction receipt after broadcast while preserving the submitted hash and preventing resend
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "hash": "0x9999999999999999999999999999999999999999999999999999999999999999",
++   "receipt": {
++     "blockNumber": 100n,
++     "status": "success",
++   },
++   "verification": "verified",
+  }
+
+ ❯ src/lib/payExec.test.ts:140:20
+    138|     const hash = `0x${'9'.repeat(64)}`;
+    139|     const p = sendPayment(session, ctx, built, rt, noStatus);
+    140|     await expect(p).rejects.toThrow(PostBroadcastError);
+       |                    ^
+    141|     await expect(p).rejects.toMatchObject({ hash, outcome: { phase: 'v…
+    142|     expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a receipt for another transaction with status 0x1
+AssertionError: promise resolved "{ status: 'success', blockNumber: 16n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "blockNumber": 16n,
++   "status": "success",
+  }
+
+ ❯ src/lib/wallet.test.ts:275:20
+    273|   it.each(['0x1', '0x0'])('rejects a receipt for another transaction w…
+    274|     const p = pollReceipt(rpc(() => receipt({ transactionHash: `0x${'8…
+    275|     await expect(p).rejects.toThrow(SubmissionMismatchError);
+       |                    ^
+    276|     await expect(p).rejects.toMatchObject({ field: 'hash' });
+    277|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯
+
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a receipt for another transaction with status 0x0
+AssertionError: promise resolved "{ status: 'reverted', blockNumber: 16n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "blockNumber": 16n,
++   "status": "reverted",
+  }
+
+ ❯ src/lib/wallet.test.ts:275:20
+    273|   it.each(['0x1', '0x0'])('rejects a receipt for another transaction w…
+    274|     const p = pollReceipt(rpc(() => receipt({ transactionHash: `0x${'8…
+    275|     await expect(p).rejects.toThrow(SubmissionMismatchError);
+       |                    ^
+    276|     await expect(p).rejects.toMatchObject({ field: 'hash' });
+    277|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯
+
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a receipt without a transaction hash
+AssertionError: promise resolved "{ status: 'success', blockNumber: 16n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "blockNumber": 16n,
++   "status": "success",
+  }
+
+ ❯ src/lib/wallet.test.ts:282:20
+    280|     delete missing['transactionHash'];
+    281|     const p = pollReceipt(rpc(() => missing), HASH as `0x${string}`, R…
+    282|     await expect(p).rejects.toThrow(UserFacingError);
+       |                    ^
+    283|     await expect(p).rejects.toMatchObject({ translation: { key: 'error…
+    284|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯
+
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: undefined
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: null
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: number
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: boolean
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: array
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: array-like object
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: object
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: symbol
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: empty
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: short
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: long
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: nonhex
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: missing prefix
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects a malformed receipt transaction hash: uppercase prefix
+AssertionError: promise resolved "{ status: 'success', blockNumber: 16n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "blockNumber": 16n,
++   "status": "success",
+  }
+
+ ❯ src/lib/wallet.test.ts:302:20
+    300|   ])('rejects a malformed receipt transaction hash: %s', async (_label…
+    301|     const p = pollReceipt(rpc(() => receipt({ transactionHash })), HAS…
+    302|     await expect(p).rejects.toThrow(UserFacingError);
+       |                    ^
+    303|     await expect(p).rejects.toMatchObject({ translation: { key: 'error…
+    304|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯
+
+ FAIL  src/lib/wallet.test.ts > pollReceipt > rejects an object hash without invoking its coercion hook
+AssertionError: promise resolved "{ status: 'success', blockNumber: 16n }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "blockNumber": 16n,
++   "status": "success",
+  }
+
+ ❯ src/lib/wallet.test.ts:308:20
+    306|     const coerce = vi.fn(() => HASH);
+    307|     const p = pollReceipt(rpc(() => receipt({ transactionHash: { [Symb…
+    308|     await expect(p).rejects.toThrow(UserFacingError);
+       |                    ^
+    309|     await expect(p).rejects.toMatchObject({ translation: { key: 'error…
+    310|     expect(coerce).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  19 failed | 93 passed (112)
+   Start at  17:25:31
+   Duration  3.53s (tests 45%, import 40%, transform 14%)
+

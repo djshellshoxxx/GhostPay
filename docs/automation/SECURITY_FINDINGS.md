@@ -23,8 +23,8 @@
 
 ### GP-CLIPBOARD-PENDING-SAME-VALUE — conditional concern, unresolved
 
-- Source: #293 6c648770f5647ca7993cc108ef9e5ede9b46b4c9, Common.tsx CopyButton write completion
-  and clipboardPrivacy.ts generation/timer handling; runtime remains identical in #297.
+- Source: #293 6c648770f5647ca7993cc108ef9e5ede9b46b4c9, Common.tsx:68–72 write completion
+  and clipboardPrivacy.ts:12–32 generation/timer handling; runtime remains identical in #297.
 - Severity: low correctness; confidence: high in the controlled interleaving, browser reachability unverified.
 - Evidence: a same-value second copy updates the mock clipboard while its promise is still unsettled;
   the older timer clears that value before the second copy records its generation. The UI can then report

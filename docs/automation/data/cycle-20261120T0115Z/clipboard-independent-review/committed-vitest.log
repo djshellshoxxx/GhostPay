@@ -1,0 +1,85 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-review/apps/web
+
+ ❯ src/lib/clipboardPrivacy.test.ts (7 tests | 1 failed) 23ms
+   ❯ opt-in clipboard cleanup (7)
+     × fails quietly when clipboard read or clear permissions are denied 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/clipboardPrivacy.test.ts > opt-in clipboard cleanup > fails quietly when clipboard read or clear permissions are denied
+AssertionError: expected { …(47) } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+{
+  "advanceTimersByTime": [Function advanceTimersByTime],
+  "advanceTimersByTimeAsync": [Function advanceTimersByTimeAsync],
+  "advanceTimersToNextFrame": [Function advanceTimersToNextFrame],
+  "advanceTimersToNextTimer": [Function advanceTimersToNextTimer],
+  "advanceTimersToNextTimerAsync": [Function advanceTimersToNextTimerAsync],
+  "clearAllMocks": [Function clearAllMocks],
+  "clearAllTimers": [Function clearAllTimers],
+  "defineHelper": [Function defineHelper],
+  "doMock": [Function doMock],
+  "doUnmock": [Function doUnmock],
+  "dynamicImportSettled": [Function dynamicImportSettled],
+  "fn": [Function fn],
+  "getMockedSystemTime": [Function getMockedSystemTime],
+  "getRealSystemTime": [Function getRealSystemTime],
+  "getTimerCount": [Function getTimerCount],
+  "hoisted": [Function hoisted],
+  "importActual": [Function importActual],
+  "importMock": [Function importMock],
+  "isFakeTimers": [Function isFakeTimers],
+  "isMockFunction": [Function isMockFunction],
+  "isWhenChain": [Function isWhenChain],
+  "mock": [Function mock],
+  "mockObject": [Function mockObject],
+  "mocked": [Function mocked],
+  "resetAllMocks": [Function resetAllMocks],
+  "resetConfig": [Function resetConfig],
+  "resetModules": [Function resetModules],
+  "restoreAllMocks": [Function restoreAllMocks],
+  "runAllTicks": [Function runAllTicks],
+  "runAllTimers": [Function runAllTimers],
+  "runAllTimersAsync": [Function runAllTimersAsync],
+  "runOnlyPendingTimers": [Function runOnlyPendingTimers],
+  "runOnlyPendingTimersAsync": [Function runOnlyPendingTimersAsync],
+  "setConfig": [Function setConfig],
+  "setSystemTime": [Function setSystemTime],
+  "setTimerTickMode": [Function setTimerTickMode],
+  "spyOn": [Function spyOn],
+  "stubEnv": [Function stubEnv],
+  "stubGlobal": [Function stubGlobal],
+  "unmock": [Function unmock],
+  "unstubAllEnvs": [Function unstubAllEnvs],
+  "unstubAllGlobals": [Function unstubAllGlobals],
+  "useFakeTimers": [Function useFakeTimers],
+  "useRealTimers": [Function useRealTimers],
+  "waitFor": [Function waitFor],
+  "waitUntil": [Function waitUntil],
+  "when": [Function when],
+}
+
+ ❯ src/lib/clipboardPrivacy.test.ts:108:54
+    106|     };
+    107|     recordClipboardCopy('private', writeDenied, 30_000);
+    108|     await expect(vi.advanceTimersByTimeAsync(30_000)).resolves.toBeUnd…
+       |                                                      ^
+    109|     expect(writeDenied.writeText).toHaveBeenCalledWith('');
+    110|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 23 passed (24)
+   Start at  17:19:28
+   Duration  1.78s (environment 36%, tests 26%, transform 22%, import 15%, worker 1%)
+
+    Isolate  2 workers spawned · ~392ms startup each (spawn + environment, per file)
+             at least ~392ms faster with isolate: false — reuses workers across files instead of one per file
+

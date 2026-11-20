@@ -1,0 +1,10 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/merchant-ledger@0.1.0 build
+> npm run build -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/invoice-schema@0.1.0 build
+> tsc -p tsconfig.build.json
+

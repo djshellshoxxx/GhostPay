@@ -571,3 +571,9 @@ Expected checks: historical-byte preservation, JSON/checksum/link validation, do
 independent evidence review, published-tree readback and exact-head CI observation.
 Lock observed released generation 5 at c8517bebd1d5218f9102ca8d1911013cf10a27fc.
 This cycle does not own it and cannot integrate without fresh atomic ownership and all other gates.
+
+Checkpoint preparation completed: new source drafts #297 04910f65 and #298 acbf39ee published with
+exact Git-tree readback; nine canonical ledgers/latest handoff updated additively, both new source
+handoffs preserved, original failure logs explicitly retained despite the repository log ignore rule.
+Independent documentation review is the remaining local qualification step before this checkpoint's
+publication. Required hosted/integration gates remain pending; no shared branch or lock change.

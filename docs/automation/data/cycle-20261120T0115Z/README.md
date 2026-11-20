@@ -13,6 +13,7 @@ See the latest handoff for exact base/local/published/final Git SHAs and limitat
 | clipboard-settings-overlap.json | Older Settings/AppShell candidate comparison before scope choice |
 | external-run-observation.json | Read-only latest completed automation result; no schedule mutation |
 | ci-ownership/ | Independent 01:17 UTC current checks, source ownership and old #292failure evidence |
+| published-candidates-state.json | Later #297/#298 exact-head CI, reviews and independently fetched publication readback |
 | exact-head-state.json | Fresh main/lock/protection and exact-head all-trigger workflows, checks and Snyk statuses |
 | ci-parent293/ | Full original failed hosted lint and browser job logs, with separate disposition |
 | clipboard-author/ | Fixed24-test/lint execution, initial failed full typecheck,65 library build and successful full typecheck |
