@@ -824,3 +824,13 @@ No new feature activation, main mutation, release or deployment.
 - Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
 - Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
 - Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
+
+
+## F04 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `19b47216b1c41653913196dd231f40faaa2d76a1`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 61 passing tests,
+current-main TypeScript/build/bundle evidence and source-publication mapping.
+Hosted checks remain separately reported. No activation or main merge.

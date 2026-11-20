@@ -1,0 +1,14 @@
+Head: 19b47216b1c41653913196dd231f40faaa2d76a1
+Main: aa3df1cb37274fae73af0ca957183c15c51b62d3
+Command: ["node", "../../node_modules/vitest/vitest.mjs", "run", "src/features/future/merchant-dashboard", "--maxWorkers=1"]
+
+ RUN  v5.0.5 /workspace/scratch/db9ec5207fdd/GhostPay-f04/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  61 passed (61)
+   Start at  08:37:53
+   Duration  2.42s (tests 97%, import 1%, transform 1%)
+
+
+Exit: 0; seconds: 2.90

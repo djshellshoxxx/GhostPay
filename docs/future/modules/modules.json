@@ -76,8 +76,10 @@
         "F05",
         "F06"
       ],
-      "status": "specification-only",
-      "implementation_authorized": false
+      "status": "milestone-1-implemented-disabled",
+      "implementation_authorized": true,
+      "implemented_milestone": "M1",
+      "qualification_path": "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md"
     },
     {
       "id": "F05",

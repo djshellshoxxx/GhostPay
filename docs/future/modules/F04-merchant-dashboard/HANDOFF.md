@@ -1,3 +1,5 @@
+> **Coordinator update — 2026-11-20:** Current-main integration, whole-web TypeScript, scoped typed lint, module coverage, lean build and bundle validation now pass. See [COORDINATOR_VERIFICATION.md](COORDINATOR_VERIFICATION.md) and [PUBLICATION.json](PUBLICATION.json). Earlier pending/resource statements below are historical; hosted CI and full feature/UI integration remain separate.
+
 # F04 source-pinned implementation handoff — 2026-11-20
 
 ## Latest review correction
