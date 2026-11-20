@@ -636,3 +636,21 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## F04 future dashboard continuation — 2026-11-20
+
+Worker: future_features/f04_dashboard, coordinated by ChatGPT root.
+Branch: `future/f04-merchant-dashboard`.
+Specification head: `711e9e8f7e2b32431353b82c4e39e184d3ba0b58`.
+Main reconciliation input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/merchant-dashboard/`,
+`docs/future/modules/F04-merchant-dashboard/`, and this additive registry claim.
+Acceptance: strict bounded atomic-unit projections, explicit invoice/evidence binding,
+duplicate/conflicting observation handling, provider-qualified finality, reorg demotion,
+asset-separated exact totals, bounded selectors and stale-session/cancellation guards.
+The existing fiat ledger remains unchanged; the new module is disconnected from
+production routes and the lean artifact. No network, wallet, persistent state, fee,
+contract, dependency or release changes. Focused tests, source checks and independent
+review are required; the coordinator owns remote publication.
+Status: ownership recorded before implementation; main reconciliation next.
