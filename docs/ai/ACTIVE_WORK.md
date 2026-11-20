@@ -22,6 +22,15 @@ expected-head lease and retain actual-current-head full/lean browser qualificati
 1de98f6c CI observations remain historical after any integration; no pass transfers automatically.
 No force update, merge to main, live transaction or deployment.
 
+Status: reviewed integration `f0968b9541dbd3234a6b0516023773845c04c4e4`, exact-tree API
+equivalent `7c30385a44d1cac76e9137eea9fc522865ac53f0`. Fresh source/standards/spec checks
+report zero findings. All 15 local commands passed: payment-URI 206 tests/coverage, package
+build/typecheck/lint, shared-web/F03/QR 294 tests, whole-web typecheck, scoped typed lint,
+full/lean static builds and original scans, both six-case collections, and scoped publication
+checks. Command records distinguish raw/normalized console bytes and preserve source pins.
+See `round3/QUALIFICATION.md` under this feature for the executed gates and successor prompt.
+Actual new published-head full/lean browser execution and required CI remain pending.
+
 # PR #310 invoice-file memo browser checks — 2026-11-20
 
 Worker: ChatGPT `/root`; independent read-only reviewer: `/root/memo_review`.

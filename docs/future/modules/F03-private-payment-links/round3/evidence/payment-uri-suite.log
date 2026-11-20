@@ -1,0 +1,38 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/payment-uri@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+
+ RUN  v5.0.5 /workspace/scratch/63789860705e/GhostPay-f03-main-reconciliation/packages/payment-uri
+      Coverage enabled with v8
+
+
+ Test Files  4 passed (4)
+      Tests  206 passed (206)
+   Start at  08:39:53
+   Duration  2.17s (tests 70%, transform 14%, import 12%, worker 4%)
+
+    Isolate  4 workers spawned · ~130ms startup each (spawn + environment, per file)
+             at least ~391ms faster with isolate: false — reuses workers across files instead of one per file
+
+ % Coverage report from v8
+-----------------|---------|----------|---------|---------|-------------------
+File             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-----------------|---------|----------|---------|---------|-------------------
+All files        |    97.5 |    97.09 |     100 |   99.08 |
+ addresses.ts    |   90.09 |    92.22 |     100 |   94.93 | 51,112,144,170
+ bitcoin.ts      |     100 |    98.78 |     100 |     100 | 141
+ eip681.ts       |   98.88 |       97 |     100 |     100 | 15,66,138
+ invoice-link.ts |     100 |    97.87 |     100 |     100 | 52
+ parse.ts        |   94.44 |    94.44 |     100 |     100 | 37
+ query.ts        |   97.43 |    95.83 |     100 |     100 | 88,105
+ recipient.ts    |     100 |    83.33 |     100 |     100 | 26
+-----------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97.5% ( 547/561 )
+Branches     : 97.09% ( 535/551 )
+Functions    : 100% ( 48/48 )
+Lines        : 99.08% ( 435/439 )
+================================================================================
