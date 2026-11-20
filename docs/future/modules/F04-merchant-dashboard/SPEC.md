@@ -3,7 +3,7 @@
 - Specification version: 1.0; prepared 2026-11-19.
 - Branch: `future/f04-merchant-dashboard`.
 - Pinned source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
-- Status: **SPECIFICATION ONLY; implementation and release remain disabled.**
+- Status: **M1 projection/selector implementation exists in isolation; product activation and release remain disabled.** See [HANDOFF.md](HANDOFF.md).
 - Shared requirements: [COMMON.md](../COMMON.md); [module catalog](../README.md).
 - This future workflow does not modify current beta gates, deployed behavior, or existing fee decisions.
 

@@ -692,3 +692,15 @@ production routes and the lean artifact. No network, wallet, persistent state, f
 contract, dependency or release changes. Focused tests, source checks and independent
 review are required; the coordinator owns remote publication.
 Status: ownership recorded before implementation; main reconciliation next.
+
+
+### F04 milestone checkpoint — 2026-11-20
+
+Product source: `be37f79df4d60e2d87cd845fbf8e6f0fa117b135`.
+Isolated evidence projection and bounded selectors implemented; final focused
+56/56 tests and scoped strict TypeScript/type-aware ESLint passed. Whole-project
+typed-lint attempts exited 137; the final scoped check retained every repository
+rule with a smaller TypeScript program. Details and incomplete acceptance:
+`docs/future/modules/F04-merchant-dashboard/HANDOFF.md`.
+No production entry point or remote ref changed. Fresh independent review,
+full-web qualification and publication remain coordinator-owned.
