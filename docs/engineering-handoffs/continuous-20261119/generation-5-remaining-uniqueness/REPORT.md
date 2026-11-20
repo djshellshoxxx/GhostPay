@@ -75,3 +75,7 @@ Finally, `security/mythril-full-remediation` has an additional `@security` warni
 ## Handoff
 
 Root owns integration, fresh combined qualification and publication. This lane made no remote mutation. Preserve original source refs, historical evidence and the listed future/tooling/test candidates. A next bounded pass can inspect the remaining 59 original rows; it must refresh their heads, keep broad unresolved scopes UNKNOWN and report a concrete missing behavior before any further production edit.
+
+## Subsequent bounded checkpoint
+
+The same worker continued across the other 59 sampled heads after this initial receipt. See [CONTINUATION.md](CONTINUATION.md) for fresh source/lock comparisons, path-only preservation decisions and explicitly unresolved scopes. The initial matrix above remains an immutable account of its original scope.
