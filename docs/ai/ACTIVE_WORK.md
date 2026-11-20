@@ -1965,3 +1965,14 @@ Worker: root coordinator, independent follow-up review by qa_review_gen3.
 Branch: integration/ghostpay-continuous-followup-20261119.
 Owned path: apps/web/src/views/Pay.signer.test.tsx and source-pinned failure/repair receipts.
 Acceptance: reproduce the one failing case from the original full web run (3837 pass,1 fail,13 skip); wait for the current manifest-dependent review control before asserting the existing disabled state. Retain selected-seller mismatch, absence of the prior pin, and zero RPC/wallet assertions. No production, timeout, configuration or gate changes.
+
+# Generation 5 remaining uniqueness review — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`.
+Branch: `review/ghostpay-remaining-uniqueness-gen5-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; frozen application input `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/` only.
+Acceptance: refresh the selected still-actionable non-ancestor heads, compare all merge bases and exact final blobs, inspect distinct source behavior and tests against the current static EVM candidate, and record bounded fresh semantic classifications. Report any genuinely absent required behavior before proposing changes. Prior dispositions and patch uniqueness are not functional proof.
+Boundaries: no product, dependency, test, workflow, contract, fee, remote-ref, deployment or release edits. Root owns live candidate and hosted qualification; the separate dependency worker owns current audit findings. This lane does not claim all remaining branches fully audited.
+
+2026-11-20 update: initial eleven-head matrix and full final-blob receipts complete. The two confirmed recoveries were separately authorized and implemented on `fix/ghostpay-ledger-zero-payment-20261119` and `fix/ghostpay-dependabot-composites-20261119`, with their own claims and independent review; neither change is on this documentation branch. Coordinator requested a bounded continuation across the remaining 59 dated census rows in this same generation and owned evidence directory. Broad uninspected scopes remain UNKNOWN.
