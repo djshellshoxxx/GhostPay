@@ -704,3 +704,14 @@ rule with a smaller TypeScript program. Details and incomplete acceptance:
 `docs/future/modules/F04-merchant-dashboard/HANDOFF.md`.
 No production entry point or remote ref changed. Fresh independent review,
 full-web qualification and publication remain coordinator-owned.
+
+
+### F04 canonical-format review correction — 2026-11-20
+
+Worker: future_features/f04_dashboard. Starting head:
+`81ff020105231b0fba82798a6f1356ad1f18b409`.
+Owned correction: the F04 reference, atomic amount, chain, asset and hash
+validators and their malformed-format tests. Require full-input matching,
+preserve valid inputs, rerun focused tests and scoped strict TypeScript/typed
+ESLint under the shared validation lock. The independent reviewer's report is
+owned separately and must not be staged by this worker.

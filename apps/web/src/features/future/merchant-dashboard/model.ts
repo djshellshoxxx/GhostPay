@@ -75,10 +75,11 @@ export interface DashboardContext {
   };
 }
 
-const REF = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
-const ATOMIC = /^(?:0|[1-9][0-9]{0,77})$/;
+// Require the complete input: `$` alone also permits a final line terminator.
+const REF = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}(?![\s\S])/;
+const ATOMIC = /^(?:0|[1-9][0-9]{0,77})(?![\s\S])/;
 const UINT256 = (1n << 256n) - 1n;
-const HASH = /^0x[0-9a-f]{64}$/;
+const HASH = /^0x[0-9a-f]{64}(?![\s\S])/;
 
 function invalid(): never { throw new DashboardError('INVALID_INPUT'); }
 
@@ -116,13 +117,13 @@ export function atomic(value: unknown, positive = false): string {
 }
 
 function chain(value: unknown): string {
-  if (typeof value !== 'string' || !/^eip155:[1-9][0-9]{0,15}$/.test(value)) return invalid();
+  if (typeof value !== 'string' || !/^eip155:[1-9][0-9]{0,15}(?![\s\S])/.test(value)) return invalid();
   if (!Number.isSafeInteger(Number(value.slice(7)))) return invalid();
   return value;
 }
 
 function asset(value: unknown): string {
-  if (value !== 'native' && (typeof value !== 'string' || !/^erc20:0x[0-9a-f]{40}$/.test(value))) return invalid();
+  if (value !== 'native' && (typeof value !== 'string' || !/^erc20:0x[0-9a-f]{40}(?![\s\S])/.test(value))) return invalid();
   return value;
 }
 

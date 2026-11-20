@@ -47,6 +47,17 @@ describe('F04 strict input boundary', () => {
     expect(() => decodeDashboardSnapshot({ ...snapshot(), invoices: [{ ...invoice(), expectedAtomic: amount }] })).toThrow(DashboardError);
   });
 
+  it.each(['\n', '\r', '\r\n', '\u2028', '\u2029'])('rejects canonical fields with a trailing line terminator %j', (suffix) => {
+    for (const patch of [
+      { invoiceRef: `invoice:1${suffix}` }, { expectedAtomic: `100${suffix}` },
+      { chainId: `eip155:1${suffix}` }, { assetId: `erc20:0x${'1'.repeat(40)}${suffix}` },
+    ]) {
+      expect(() => decodeDashboardSnapshot(snapshot([], [invoice(patch)]))).toThrow(DashboardError);
+    }
+    expect(() => decodeDashboardSnapshot(snapshot([observation({ transactionHash: `0x${'a'.repeat(64)}${suffix}` })])))
+      .toThrow(DashboardError);
+  });
+
   it('rejects duplicate invoice references, unsupported networks, noncanonical assets and unsafe timestamps', () => {
     expect(() => decodeDashboardSnapshot(snapshot([], [invoice(), invoice()]))).toThrow(expect.objectContaining({ code: 'DUPLICATE_REFERENCE' }));
     for (const patch of [{ chainId: 'eip155:01' }, { chainId: 'bitcoin:mainnet' }, { assetId: 'ETH' }, { expiresAt: Number.NaN }, { expiresAt: -0 }]) {
