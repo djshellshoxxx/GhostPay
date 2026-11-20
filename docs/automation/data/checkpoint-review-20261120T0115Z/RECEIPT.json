@@ -1,0 +1,31 @@
+{
+  "cycle": "20261120T0115Z",
+  "reviewer": "/root/final_independent_review",
+  "recorded_at_utc": "2026-11-20T01:44:35.988527+00:00",
+  "reviewed_local_sha": "4cdb6a065a6318404bc963a20f90d3b43a068bfe",
+  "reviewed_published_sha": "1aa3a5edb6f576cff59745eb2958dc496a15822f",
+  "tree": "f1b65bd76db8ddc1f41fb83776a4c8361ea8a5e2",
+  "verdict": "No blocking checkpoint finding; scoped documentation/provenance clearance only.",
+  "files": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 7396,
+      "sha256": "b7495d8a60321a351153c85e998cc9c1a7ef49ebe2d5e0fc1e862935fc4ed5ff"
+    },
+    {
+      "path": "structural-qa.json",
+      "bytes": 23550,
+      "sha256": "0d330d8255497ee1a732f94982a0dec4f5b757a89267bac2ba4f10640ba6cd74"
+    },
+    {
+      "path": "remote-readbacks.json",
+      "bytes": 1495,
+      "sha256": "3c7c713fb58488f2de69b452f7cb945a59c5a5acedcd985becf65eb0830cf47c"
+    },
+    {
+      "path": "verify_checkpoint.py",
+      "bytes": 7778,
+      "sha256": "162ba5e944d6a3f78b51232d83963289fa2c58b9e1b4fe21e3f9f2d074fcb44b"
+    }
+  ]
+}

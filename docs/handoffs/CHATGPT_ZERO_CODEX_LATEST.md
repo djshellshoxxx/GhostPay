@@ -2,10 +2,33 @@
 
 ## Latest bounded native cycle — 20261120T0115Z (2026-11-20 UTC)
 
+### Final CI update — read before older status snapshots
+
+The 01:44:38 UTC source/CI refresh found a new failed CodeQL check on current #278
+417f7c71daf8645e1432f2ec8f070110879b80bd: check 136021124871 reports two High security
+alerts and incomplete Actions/Python configuration coverage. JavaScript/TypeScript analysis/upload
+succeeded; this is a security-policy/check failure, not infrastructure. Current alert identities are
+not independently available from the blocked individual check/annotation connector endpoints. Existing
+#292 owns related fixture/security work; do not assume equivalence or false positives without confirming
+the current findings. This mandatory blocker supersedes earlier pending CodeQL statements below.
+
+Main c977b5d6, #297 04910f65, #298 acbf39ee and released lock c8517beb remain unchanged.
+Final source/CI details: [final-state-20261120T0115Z.json](../automation/data/final-state-20261120T0115Z.json).
+The independent documentation freeze was local 4cdb6a06/published 1aa3a5ed, tree f1b65bd7; its
+[review receipt](../automation/data/checkpoint-review-20261120T0115Z/REVIEW.md) is preserved.
+This final CI update and reviewer/publication metadata are additive follow-ups after that reviewed
+freeze, not an assertion of independent review of future contents. Product source remains unchanged.
+
+
 This continuation resumes completed #296 and the latest completed external automation, superseding
 older status snapshots while preserving their full historical text. Main remains
 c977b5d6723f6822c3b5d86cd6b231712c53c395. Integration #278 remains
 417f7c71daf8645e1432f2ec8f070110879b80bd. No application branch was merged or deployed.
+
+Bounded independent triage preserved a [public gate summary](../automation/data/final-codeql-20261120T0115Z/README.md). The prior
+fixture source blobs are unchanged between d74 and417, and #292 contains its recorded clarification;
+current alert identities still cannot be correlated independently. Detailed unresolved alert evidence
+remains in scratch; only the nonsensitive blocker summary is published.
 
 ### Actual engineering and durable source pins
 

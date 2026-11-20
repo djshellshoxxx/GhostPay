@@ -2,6 +2,22 @@
 
 ## Current bounded review — 20261120T0115Z
 
+### Final CodeQL gate update — unresolved, no suppression
+
+Exact head #278 417f7c71daf8645e1432f2ec8f070110879b80bd now has failed CodeQL
+check 136021124871 reporting two High alerts and incomplete Actions/Python configuration coverage.
+JavaScript/TypeScript job 136002794658 completed analysis/upload successfully. This is not classified
+as an infrastructure failure. Current annotation identities were not available through the individual
+check/annotation connector endpoints (HTTP 400 allowlist rejection); no alert is declared false positive.
+Existing #292 owns related security-fixture clarification, subject to current-alert identity verification.
+Retain this as a mandatory integration blocker. Earlier pending snapshots below are historical.
+
+
+Bounded independent triage preserved a [public gate summary](data/final-codeql-20261120T0115Z/README.md). The prior
+fixture source blobs are unchanged between d74 and417, and #292 contains its recorded clarification;
+current alert identities still cannot be correlated independently. Detailed unresolved alert evidence
+remains in scratch; only the nonsensitive blocker summary is published.
+
 ### GP-RPC-RECEIPT-HASH — confirmed and repaired in draft
 
 - Source: #278 417f7c71daf8645e1432f2ec8f070110879b80bd, apps/web/src/lib/wallet.ts:478–505;

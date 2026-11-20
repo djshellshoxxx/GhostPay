@@ -2,6 +2,15 @@
 
 ## Current dependency queue — 20261120T0115Z
 
+### Final gate change
+
+#278 417f7c71 now has a **failed CodeQL check 136021124871**, reporting two High alerts while
+Actions/Python coverage remains incomplete. Earlier pending snapshots below do not qualify this head.
+Keep #278 and dependent source drafts blocked; existing #292 security ownership requires current-alert
+confirmation and required complete analysis. Do not retry blindly, suppress alerts or infer an
+infrastructure failure from queue delays. Main and lock refs remain unchanged.
+
+
 No candidate is authorized for integration by this checkpoint. Main remains c977b5d6; the durable lock
 is released generation 5 at c8517beb and was never acquired by this cycle. Protection read still fails 403.
 

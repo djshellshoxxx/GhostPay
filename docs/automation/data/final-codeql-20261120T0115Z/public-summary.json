@@ -1,0 +1,82 @@
+{
+  "cycle": "20261120T0115Z",
+  "reviewer": "/root/final_checkpoint_review",
+  "observed_at_utc": "2026-11-20 01:46:52 UTC",
+  "repository": "djshellshoxxx/GhostPay",
+  "source_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "pr": 278,
+  "gate": {
+    "name": "CodeQL",
+    "id": 136021124871,
+    "status": "completed",
+    "conclusion": "failure",
+    "details_url": "https://github.com/djshellshoxxx/GhostPay/runs/136021124871",
+    "reported_security_alerts": {
+      "high": 2
+    },
+    "annotations_count": 2,
+    "coverage_warning": "Default setup configurations for actions and python present on main are not yet found."
+  },
+  "analysis_run": {
+    "id": 44650167834,
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44650167834",
+    "event": "dynamic",
+    "status": "queued",
+    "conclusion": null,
+    "jobs": [
+      {
+        "id": 136002794658,
+        "name": "Analyze (javascript-typescript)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44650167834/job/136002794658"
+      },
+      {
+        "id": 136002795004,
+        "name": "Analyze (actions)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44650167834/job/136002795004"
+      },
+      {
+        "id": 136002795024,
+        "name": "Analyze (python)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44650167834/job/136002795024"
+      }
+    ]
+  },
+  "classification": "Required security/code-scanning check failure with incomplete language coverage. Not an infrastructure failure. A successful JavaScript/TypeScript analyzer execution and successful upload do not clear reported alerts.",
+  "prior_owner": {
+    "pr": 292,
+    "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/292",
+    "scope": "Existing owner has clarification changes for two earlier test-fixture annotations. Exact relevant baseline source blobs are unchanged between the earlier analyzed source and current #278; the repair blobs are present in current #292.",
+    "current_alert_correspondence": "UNVERIFIED: direct current annotation retrieval is unavailable; do not assume the two current alerts are the earlier pair or mark them false positives/cleared."
+  },
+  "retrieval_limits": [
+    {
+      "operation": "Direct check-run and current annotations GET",
+      "result": "Connector rejected endpoint with HTTP400 INVALID_ARGUMENT (outside allowed GitHub fetch endpoints).",
+      "attempted_urls": [
+        "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/136021124871",
+        "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/136021124871/annotations?per_page=100"
+      ]
+    },
+    {
+      "operation": "Public PR checks URL through connector",
+      "result": "Connector returned404; no additional alert identity retrieved."
+    }
+  ],
+  "disposition": "KEEP FAIL. Preserve #292 ownership, obtain authorized current annotation access and exact-source hosted clearance. No suppression, retry, duplicate repair, branch update, merge or deployment performed.",
+  "supersedes": "Earlier cycle snapshots showing CodeQL pending for #278417f7c71.",
+  "publication_scope": "This summary and README contain nonsensitive gate status only. Detailed raw evidence remains in scratch under raw/ while current alert identities are unverified.",
+  "actions": {
+    "source_edits": false,
+    "branch_changes": false,
+    "workflow_reruns": false,
+    "suppression": false,
+    "remote_mutations": false
+  }
+}

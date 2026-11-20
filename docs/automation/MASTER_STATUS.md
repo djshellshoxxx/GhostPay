@@ -2,6 +2,18 @@
 
 ## Current bounded cycle — 20261120T0115Z
 
+### Final CI update after the reviewed documentation freeze
+
+At the 01:44:38 UTC refresh, the current #278 417f7c71 CodeQL check 136021124871 changed from
+pending to **failure**: two High security alerts, with Actions/Python analysis configurations not yet
+available for this head. The JavaScript/TypeScript analyzer job succeeded; overall language coverage
+and other required checks remain incomplete. This is a security-policy/check failure, not infrastructure.
+Current alert identities require independent confirmation; existing #292 owns related security-fixture
+work. No false-positive disposition or waiver is asserted. This update supersedes earlier pending
+CodeQL statements below. See [final state](data/final-state-20261120T0115Z.json) and the
+[failed check](https://github.com/djshellshoxxx/GhostPay/runs/136021124871).
+
+
 This continuation starts from completed checkpoint #296 a47648872e648fe7848a17080a5ffa1473e98e8b.
 Older status sections below remain historical. Main is still c977b5d6723f6822c3b5d86cd6b231712c53c395;
 current integration #278 is 417f7c71daf8645e1432f2ec8f070110879b80bd.
