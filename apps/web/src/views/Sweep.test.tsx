@@ -111,6 +111,7 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
           return encodeAbiParameters([{ type: 'uint256' }], [d.functionName === 'getL1Fee' ? (rawSink.l1Fee ?? 0n) : 0n]);
         }
         if (rawSink.dryRunBlind === true && (data === '0x' || data.startsWith('0xa9059cbb'))) throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601');
+        if (data.startsWith('0xa9059cbb')) return encodeAbiParameters([{ type: 'bool' }], [true]);
         if (data.startsWith(NONCE_USED_SELECTOR)) {
           if ((params[0] as { to: string }).to !== FAKE_SWEEP_RELAYER) throw new Error('nonceUsed must target the signed sweep relayer');
           return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: rawSink.nonceUsed === true });

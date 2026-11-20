@@ -1,0 +1,21 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "900s",
+    "node",
+    "--max-old-space-size=1024",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "--coverage",
+    "--coverage.reportsDirectory=/tmp/ghostpay-f03-complete-coverage",
+    "--maxWorkers=1",
+    "--no-file-parallelism",
+    "--reporter=verbose"
+  ],
+  "cwd": "packages/invoice-schema",
+  "environment_overrides": {},
+  "exit_code": 0,
+  "elapsed_seconds": 336.06,
+  "source_commit": "d82744017594267d9511e46beaf19e5842fb8317"
+}

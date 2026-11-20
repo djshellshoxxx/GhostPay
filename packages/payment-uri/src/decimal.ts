@@ -18,6 +18,8 @@ const DEC = /^(0|[1-9][0-9]*)(?:\.([0-9]+))?$/;
  * @param max Inclusive upper bound of the value in units of 10^-maxScale.
  */
 export function parseDecimal(s: string, maxScale: number, max: bigint): Decimal {
+  // Match the 0–77 atomic precision domain enforced by toAtomic and formatAtomic.
+  if (!Number.isInteger(maxScale) || maxScale < 0 || maxScale > 77) return fail('INVALID_AMOUNT');
   if (typeof s !== 'string' || s.length > 100) return fail('INVALID_AMOUNT');
   const m = DEC.exec(s);
   if (!m) return fail('INVALID_AMOUNT');

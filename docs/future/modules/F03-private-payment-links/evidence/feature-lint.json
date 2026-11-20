@@ -1,0 +1,32 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "180s",
+    "node",
+    "--max-old-space-size=1536",
+    "node_modules/eslint/bin/eslint.js",
+    "--config",
+    "eslint.config.js",
+    "apps/web/e2e/payment-request-file.spec.ts",
+    "apps/web/src/components/PaymentRequestDownload.test.tsx",
+    "apps/web/src/components/PaymentRequestDownload.tsx",
+    "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+    "apps/web/src/components/PaymentRequestFileInput.tsx",
+    "apps/web/src/i18n/securityKeys.ts",
+    "apps/web/src/lib/requestFileInterop.test.ts",
+    "apps/web/src/views/CreateInvoice.tsx",
+    "apps/web/src/views/Pay.invoiceQr.test.tsx",
+    "apps/web/src/views/Pay.requestFile.test.tsx",
+    "apps/web/src/views/Pay.tsx",
+    "packages/invoice-schema/src/index.ts",
+    "packages/invoice-schema/src/requestFile.interop.test.ts",
+    "packages/invoice-schema/src/requestFile.test.ts",
+    "packages/invoice-schema/src/requestFile.ts"
+  ],
+  "cwd": ".",
+  "environment_overrides": {},
+  "exit_code": 0,
+  "elapsed_seconds": 15.95,
+  "source_commit": "d82744017594267d9511e46beaf19e5842fb8317"
+}

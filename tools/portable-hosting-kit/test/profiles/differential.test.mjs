@@ -18,7 +18,7 @@ import { compareServers, requestCases } from './compare.mjs';
 
 const HAVE_NGINX = await nginxAvailable();
 const SKIP = HAVE_NGINX ? false : `nginx binary not found at ${NGINX_BIN} (set HK_NGINX_BIN); the differential test needs a real nginx`;
-const ONION = `http://${'a'.repeat(56)}.onion`;
+const ONION = 'http://2gzyxa5ihm7nsggfxnu52rck2vv4rvmdlkiu3zzui5du4xyclen53wid.onion';
 
 /**
  * @param {HostConfig} hostConfig

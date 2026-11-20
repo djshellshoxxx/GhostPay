@@ -192,7 +192,9 @@ describe('encrypted reconciliation UI', () => {
       target: { value: encrypted },
     });
     await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
-    await user.click(await screen.findByRole('button', { name: 'Activate previewed historical records' }));
+    const activateButton = await screen.findByRole<HTMLButtonElement>('button', { name: 'Activate previewed historical records' });
+    await waitFor(() => expect(activateButton.disabled).toBe(false));
+    await user.click(activateButton);
     expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
     expect(await screen.findByText(/No linked observation/)).toBeTruthy();
     expect(screen.queryByText(/Linked to a verified observation/)).toBeNull();
@@ -208,9 +210,51 @@ describe('encrypted reconciliation UI', () => {
       target: { value: backup },
     });
     await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
-    await user.click(await screen.findByRole('button', { name: 'Activate previewed historical records' }));
+    const activateButton = await screen.findByRole<HTMLButtonElement>('button', { name: 'Activate previewed historical records' });
+    await waitFor(() => expect(activateButton.disabled).toBe(false));
+    await user.click(activateButton);
     expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
+  });
+  it('waits for a delayed vault read before activating imported history exactly once', async () => {
+    await vault.save(recordFromVerifiedMatch(match(), keyId));
+    const backup = await vault.exportEncrypted();
+    await vault.clearRecords();
+    const user = userEvent.setup();
+    render(panel({ matches: [] }));
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    await screen.findByLabelText('Encrypted reconciliation backup');
+
+    // Preview is visible before run() finishes its asynchronous readState() refresh.
+    // A presence-only findByRole returns the disabled button and loses the click.
+    const realRead = vault.readState.bind(vault);
+    let finishRead!: () => void;
+    const heldRead = vi.spyOn(vault, 'readState').mockImplementationOnce(
+      () =>
+        new Promise<Awaited<ReturnType<ReconciliationVault['readState']>>>((resolve, reject) => {
+          finishRead = () => { void realRead().then(resolve, reject); };
+        }),
+    );
+    fireEvent.change(screen.getByLabelText('Encrypted reconciliation backup'), {
+      target: { value: backup },
+    });
+    await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
+    const activateButton = await screen.findByRole<HTMLButtonElement>('button', { name: 'Activate previewed historical records' });
+    await waitFor(() => expect(heldRead).toHaveBeenCalledOnce());
+    expect(activateButton.disabled).toBe(true);
+    const activation = vi.spyOn(vault, 'activateImport');
+    expect(activation).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishRead();
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(activateButton.disabled).toBe(false));
+    await user.click(activateButton);
+    await waitFor(() => expect(activation).toHaveBeenCalledOnce());
+    expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
+    expect(screen.queryByText(/Router-verified when scanned/)).toBeNull();
+    expect(activation).toHaveBeenCalledTimes(1);
   });
   it('words the preview count as what activating would mark invalid, not as a future reorg (A-R4)', async () => {
     const preview = vi.spyOn(vault, 'previewImport');

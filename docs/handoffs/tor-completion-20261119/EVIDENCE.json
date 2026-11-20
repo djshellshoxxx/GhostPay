@@ -1,0 +1,83 @@
+{
+  "format": "ghostpay-tor-qualification/1",
+  "date": "2026-11-19",
+  "runtimeSource": {
+    "local": "2509540fdd9c5f1e428fb97fe05ef860ba38936a",
+    "published": "14a7526842b3cb055452b721d237a7e68813ff0c",
+    "completeTree": "bf80afd348c3902de989edfecb7eca882b198e31",
+    "base": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+  },
+  "artifact": {
+    "buildInfoCommit": "2705e88c",
+    "archiveSha256": "f8dfa738b7ba2f2aa58c36479cbbf0f8037c1b94ba213b73b2d4ab01dfceac6a",
+    "profile": "lean",
+    "status": "local candidate, no signed manifests or production release"
+  },
+  "files": [
+    {
+      "file": "evidence/tor-independent-kit-tests.txt",
+      "bytes": 25947,
+      "sha256": "2a43c92d1248eef09434be1621683782cbe3fdfddc4ea8773ca2c09ab84c462d"
+    },
+    {
+      "file": "evidence/tor-recipe-final.txt",
+      "bytes": 1276,
+      "sha256": "e21ae84a7d5d02ec33799a4c86911a49c86bc16f48273fd964353ee52b034ea7"
+    },
+    {
+      "file": "evidence/tor-onion-crosscheck.txt",
+      "bytes": 190,
+      "sha256": "c725fdd4e21855d36d230995d4b8553df363e43484e57dfb9288587c23f5522b"
+    },
+    {
+      "file": "evidence/tor-web-tests.txt",
+      "bytes": 406,
+      "sha256": "0aec9052582d455e26e10de8d1bd2b12c250e6d679bd41ed4507870adb677d6a"
+    },
+    {
+      "file": "evidence/tor-kit-lint-final.txt",
+      "bytes": 234,
+      "sha256": "c0cb2ff1799532b8eaa501f71630c07d58e5d56097aece1ca21ded6787410bf1"
+    },
+    {
+      "file": "evidence/tor-kit-typecheck-final.txt",
+      "bytes": 224,
+      "sha256": "3ddcda4d10416e637a051f406dae148b842e77328e3fc8dee7417af1ed595653"
+    },
+    {
+      "file": "evidence/tor-bundle-scan.txt",
+      "bytes": 143,
+      "sha256": "18d2c8b4b1c8423e1518cc65bd3b46c1cb224fed8e6a51d431382eb8b8d73b33"
+    },
+    {
+      "file": "evidence/tor-vite-build.txt",
+      "bytes": 2133,
+      "sha256": "31c4efc7ae436aba115d333f26ec0e76c1c35c9e039431c298b5f77bee57d464"
+    },
+    {
+      "file": "evidence/tor-audit-production.json",
+      "bytes": 366,
+      "sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70"
+    },
+    {
+      "file": "evidence/tor-audit-all.json",
+      "bytes": 366,
+      "sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70"
+    },
+    {
+      "file": "evidence/tor-artifact-validation.json",
+      "bytes": 334,
+      "sha256": "f92077161393be28d53154dafd2790e74bcc5674d4193575ee3319fdb664da9a"
+    },
+    {
+      "file": "evidence/tor-prepare.json",
+      "bytes": 216,
+      "sha256": "bd42c25807e9a5a7d550d20ac44b2559198b0ff7427d40f8b486c7852ff95293"
+    },
+    {
+      "file": "evidence/tor-install-web.txt",
+      "bytes": 177,
+      "sha256": "318e06f78b84a91160913dc2b933a8d5fd246726475368ac5fa2585ac188ecdc"
+    }
+  ]
+}

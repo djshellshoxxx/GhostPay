@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "siteDir": "/workspace/scratch/82fb6102f244/GhostPay-tor/apps/web/dist",
+  "entrypoint": "index.html",
+  "fileCount": 17,
+  "totalBytes": 2468150,
+  "trustSensitive": [],
+  "headerSource": "site",
+  "findings": [],
+  "externalReferences": {
+    "documentation-link": 12,
+    "other": 3,
+    "xml-namespace": 4
+  }
+}
