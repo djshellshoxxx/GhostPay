@@ -11,7 +11,11 @@ interface BackupDelay {
   pending: (kind: DelayKind) => boolean;
   release: (kind: DelayKind) => Promise<void>;
 }
-type DelayWindow = Window & { backupOperationDelay: BackupDelay };
+declare global {
+  interface Window {
+    backupOperationDelay: BackupDelay;
+  }
+}
 
 // These journeys retain the production scrypt cost and native AES-GCM implementation.
 test.setTimeout(120_000);
@@ -45,7 +49,7 @@ async function installDelays(page: Page): Promise<void> {
       if (this.name === heldFile) await hold('file');
       return text;
     };
-    (window as DelayWindow).backupOperationDelay = {
+    window.backupOperationDelay = {
       arm(kind) {
         if (gates[kind].armed || gates[kind].release !== undefined) throw new Error('The delay is already armed.');
         gates[kind].armed = true;
@@ -63,17 +67,17 @@ async function installDelays(page: Page): Promise<void> {
 }
 
 async function arm(page: Page, kind: DelayKind): Promise<void> {
-  await page.evaluate((k) => { (window as DelayWindow).backupOperationDelay.arm(k); }, kind);
+  await page.evaluate((k) => { window.backupOperationDelay.arm(k); }, kind);
 }
 
 async function expectPending(page: Page, kind: DelayKind): Promise<void> {
-  await expect.poll(() => page.evaluate((k) => (window as DelayWindow).backupOperationDelay.pending(k), kind), {
+  await expect.poll(() => page.evaluate((k) => window.backupOperationDelay.pending(k), kind), {
     timeout: 60_000,
   }).toBe(true);
 }
 
 async function release(page: Page, kind: DelayKind): Promise<void> {
-  await page.evaluate((k) => (window as DelayWindow).backupOperationDelay.release(k), kind);
+  await page.evaluate((k) => window.backupOperationDelay.release(k), kind);
 }
 
 async function prepareExport(page: Page): Promise<void> {

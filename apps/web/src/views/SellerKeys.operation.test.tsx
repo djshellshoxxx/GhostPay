@@ -120,7 +120,7 @@ describe('SellerKeys operation supersession', () => {
       expect(button('Cancel verification')).toBeTruthy();
       await user.click(button('Cancel verification'));
     } finally {
-      await act(async () => { authorizationGate.resolve(); verifyGate.resolve(); });
+      await act(async () => { authorizationGate.resolve(); verifyGate.resolve(); await Promise.resolve(); });
     }
   });
 
@@ -157,7 +157,7 @@ describe('SellerKeys operation supersession', () => {
       expect(screen.queryByRole('button', { name: 'Cancel verification' })).toBeNull();
       expect(button(EXPORT).disabled).toBe(false);
     } finally {
-      await act(async () => { exportGate.resolve(SYNTHETIC); verifyGate.resolve(); });
+      await act(async () => { exportGate.resolve(SYNTHETIC); verifyGate.resolve(); await Promise.resolve(); });
     }
   });
 
@@ -191,7 +191,7 @@ describe('SellerKeys operation supersession', () => {
       expect(button(VERIFY).disabled).toBe(false);
       expect(common.downloadText).not.toHaveBeenCalled();
     } finally {
-      await act(async () => { verifyGate.resolve(); exportGate.resolve(SYNTHETIC); });
+      await act(async () => { verifyGate.resolve(); exportGate.resolve(SYNTHETIC); await Promise.resolve(); });
     }
   });
 
@@ -240,7 +240,7 @@ describe('SellerKeys operation supersession', () => {
       expect(button(DELETE).disabled).toBe(false);
       expect(screen.queryByRole('button', { name: 'Cancel verification' })).toBeNull();
     } finally {
-      await act(async () => { unlockGate.resolve(identity); nextGate.resolve(); });
+      await act(async () => { unlockGate.resolve(identity); nextGate.resolve(); await Promise.resolve(); });
     }
   });
 
@@ -277,7 +277,7 @@ describe('SellerKeys operation supersession', () => {
       expect(button(DELETE).disabled).toBe(false);
       expect(screen.queryByRole('alert')).toBeNull();
     } finally {
-      await act(async () => { verifyGate.resolve(); unlockGate.resolve(identity); });
+      await act(async () => { verifyGate.resolve(); unlockGate.resolve(identity); await Promise.resolve(); });
     }
   });
 
@@ -311,7 +311,7 @@ describe('SellerKeys operation supersession', () => {
       fireEvent.change(screen.getByLabelText('Keystore passphrase'), { target: { value: PASS } });
       expect(button(VERIFY).disabled).toBe(false);
     } finally {
-      await act(async () => { oldGate.resolve(); newGate.resolve(); });
+      await act(async () => { oldGate.resolve(); newGate.resolve(); await Promise.resolve(); });
     }
   });
 
@@ -342,7 +342,7 @@ describe('SellerKeys operation supersession', () => {
         expect(button(EXPORT).disabled).toBe(false);
       }
     } finally {
-      await act(async () => { gate.resolve(); });
+      await act(async () => { gate.resolve(); await Promise.resolve(); });
     }
   });
 });
@@ -381,7 +381,7 @@ describe('SellerKeys durable vault write ownership', () => {
       await settle(saveGate, 'reject', undefined);
       expect(button(SAVE).disabled).toBe(false);
     } finally {
-      await act(async () => { saveGate.resolve(); verifyGate.resolve(); });
+      await act(async () => { saveGate.resolve(); verifyGate.resolve(); await Promise.resolve(); });
     }
   });
 
@@ -419,7 +419,7 @@ describe('SellerKeys durable vault write ownership', () => {
       await settle(deleteGate, 'reject', undefined);
       expect(button(DELETE).disabled).toBe(false);
     } finally {
-      await act(async () => { deleteGate.resolve(); verifyGate.resolve(); });
+      await act(async () => { deleteGate.resolve(); verifyGate.resolve(); await Promise.resolve(); });
     }
   });
 
@@ -450,7 +450,7 @@ describe('SellerKeys durable vault write ownership', () => {
       await settle(deleteGate, 'reject', undefined);
       expect(button(CONFIRM_DELETE).disabled).toBe(false);
     } finally {
-      await act(async () => { preflight.resolve(true); deleteGate.resolve(); });
+      await act(async () => { preflight.resolve(true); deleteGate.resolve(); await Promise.resolve(); });
     }
   });
 });

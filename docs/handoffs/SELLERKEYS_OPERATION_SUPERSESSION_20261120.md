@@ -1,6 +1,83 @@
 # SellerKeys operation supersession — 2026-11-20 UTC
 
-## Identity
+## Current continuation — 2026-11-20
+
+This section supersedes the historical checkpoint below. The repair remains in
+[PR #314](https://github.com/djshellshoxxx/GhostPay/pull/314), addressing QA-01 from
+[the QA report #309](https://github.com/djshellshoxxx/GhostPay/pull/309).
+
+### Source and ownership
+
+- Continued original PR head `740efcf061c1ca97a562b85be742dd59f3ad0911` in isolated local branch `fix/ghostpay-309-operation-ownership-20261120`.
+- Refreshed against main `aa3df1cb37274fae73af0ca957183c15c51b62d3`; the only merge conflict was additive ownership documentation, and both entries were retained.
+- First continuation published as `49535f3bdbdda6f133e397097e56a8dde8413d94`, with tree `9fe4ead0dcc42abb3d3726c760bfd1fb63316c70` verified identical to the local candidate. Follow-up test typing/cleanup and this evidence are published on the same PR through a fast-forward update with an expected-head lease.
+- Final runtime blob: `d509e675dda2910850c4a95a5697761107807f69` (`SellerKeys.tsx`).
+- Final component-regression blob: `05c846289be5827c2e9028c28661b1c2f242c9b0` (`SellerKeys.operation.test.tsx`).
+- Final browser-regression blob: `78bc60dcd7e871166d632dd3b92302cc643eac8e` (`e2e/backup-ownership.spec.ts`).
+
+### Completed repair
+
+The original patch released export/import and verification flags but left an
+obsolete unlock owning `vaultBusy`. That same flag also represented durable
+save/delete writes, so clearing it indiscriminately was unsafe for correctness.
+
+Cancellable busy state now derives from the current `{ kind, controller }` owner.
+Cancellation retires that owner; completion releases it only when its controller
+still matches. Vault saves and deletes have a separate synchronous ownership token
+and retain their busy state across edits, cancellation, idle lock and session
+replacement. Vault controls reflect either a pending unlock or a durable write.
+
+Unlock ownership includes the asynchronous recoverability check. Its old response
+cannot restart a cancelled unlock or interrupt a later write. An export whose
+authorization finishes after supersession cannot start encryption. The session
+effect still preserves the generation needed to acknowledge an import/unlock's
+own successful key installation. No cryptography, passphrase policy, key custody,
+storage format, workflow or dependency was changed.
+
+### Executed verification
+
+| Check | Result |
+| --- | --- |
+| Negative control on main `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` | Four selected regression assertions fail as expected: export to verification and unlock to verification, with both stale-result outcomes. Other cases were deliberately filtered out. |
+| Complete SellerKeys component selection | **74/74 tests passed across 7/7 files**, with no unfinished tests or worker errors in the final run. |
+| New operation ownership cases | **17 cases**, included in that complete pass. Cover both stale success and rejection, retained newer state, authorization/preflight cancellation, lock/session/unmount and durable-write isolation. |
+| TypeScript for changed runtime, component test, browser test and imported dependency graph | **Passed**, using the repository compiler options in a temporary scoped project. This is not a full-project TypeScript pass. |
+| Repository ESLint rules on all three changed code/test files | **Passed** after explicit asynchronous test cleanup and browser-global typing corrections. |
+| Lean static build and actual postbuild checks | **Passed**; 825 modules built and 17 output files scanned. The payment-uri workspace was rebuilt after refreshing main. |
+| Committed-secret scan and whitespace check | **Passed**. |
+| Independent agent source review | Reviewed runtime blob above; no remaining correctness blocker found. This is source review, not a third-party security audit. |
+
+The final component command was:
+
+```sh
+cd apps/web
+NODE_OPTIONS=--max-old-space-size=384 ../../node_modules/.bin/vitest run src/views/SellerKeys --maxWorkers=1
+```
+
+The lower heap bound applies to the runner and its forked workers. Tests, timeouts,
+isolation and production KDF costs were unchanged. Earlier interrupted component
+runs are superseded only by this complete 74-test run. All 654 installed dependency
+versions were checked against the unchanged lockfile; no required package was missing.
+
+### Remaining qualification gates
+
+The two committed Playwright journeys delay native AES-GCM completion or the
+uploaded file read, exercise both operation orders and verify cancellation/retry
+using a real downloaded backup. Local Chromium aborted during launch with
+`socket() failed: Operation not permitted (1)`. Neither test body ran locally.
+The lean build/postbuild was executed separately; no browser assertion pass is claimed.
+
+Full-project local TypeScript runs were interrupted by SIGKILL or JavaScript heap
+exhaustion. The scoped pass above is explicitly narrower. Hosted CI must run the
+full TypeScript, web-unit and browser gates on the final PR head. At the first
+continuation checkpoint, the newly triggered hosted jobs were queued, not green.
+Inspect the live PR checks for subsequent outcomes; previous-head checks do not
+qualify the final head. Keep QA-01 awaiting browser qualification until those
+journeys execute successfully. No main merge, deployment or release was performed.
+
+## Historical checkpoint before the continuation
+
+### Identity
 
 Cycle: 20261120T0835Z. One coordinator performing sequential repair; no independent agent or reviewer executed.
 Branch: automation/20261120T0835Z/bug/sellerkeys-operation-supersession
