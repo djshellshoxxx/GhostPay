@@ -1923,3 +1923,12 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+# Generation 5 remaining uniqueness review — 2026-11-19
+
+Worker: `/root/remaining_unique_gen5`.
+Branch: `review/ghostpay-remaining-uniqueness-gen5-20261119`.
+Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`; frozen application input `c93f46441bf928d32b6809a9a5cfaf3d53e13aa6`.
+Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/` only.
+Acceptance: refresh the selected still-actionable non-ancestor heads, compare all merge bases and exact final blobs, inspect distinct source behavior and tests against the current static EVM candidate, and record bounded fresh semantic classifications. Report any genuinely absent required behavior before proposing changes. Prior dispositions and patch uniqueness are not functional proof.
+Boundaries: no product, dependency, test, workflow, contract, fee, remote-ref, deployment or release edits. Root owns live candidate and hosted qualification; the separate dependency worker owns current audit findings. This lane does not claim all remaining branches fully audited.
