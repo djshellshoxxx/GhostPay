@@ -1,0 +1,132 @@
+{
+  "source": "d5a49403809ecd92657ba29553a51d0040765c0c",
+  "exit_code": 0,
+  "raw_report_sha256": "422d6c3cf65cecba24c3b6f56de4bdb581497d485eeb8721bee1d2835dacf0af",
+  "normalization": "Relative paths; failed assertions retain only first diagnostic lines, excluding synthetic DOM dumps/stack paths.",
+  "files": [
+    {
+      "path": "apps/web/src/components/MetadataRetentionControls.test.tsx",
+      "status": "passed",
+      "startTime": 1795193712999,
+      "endTime": 1795193713356.2112,
+      "tests": [
+        {
+          "title": "invoice presentation retention controls previews without deleting, supports cancellation, then clears only after confirmation",
+          "status": "passed",
+          "duration": 274.8390089999998,
+          "failure": []
+        },
+        {
+          "title": "invoice presentation retention controls invalidates an old destructive preview after generated content changes",
+          "status": "passed",
+          "duration": 34.211019999999735,
+          "failure": []
+        },
+        {
+          "title": "invoice presentation retention controls persists only the selected nonsecret preference and expires while the view is active",
+          "status": "passed",
+          "duration": 25.05706999999984,
+          "failure": []
+        },
+        {
+          "title": "invoice presentation retention controls leaves off as the effective policy if saving is denied and removes timers on unmount",
+          "status": "passed",
+          "duration": 23.21106000000009,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/metadataRetention.test.ts",
+      "status": "passed",
+      "startTime": 1795193713738,
+      "endTime": 1795193713750.233,
+      "tests": [
+        {
+          "title": "nonessential invoice presentation retention requires the exact preview, rejects stale previews and cannot replay approval",
+          "status": "passed",
+          "duration": 3.419525999999962,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention expires only registered presentation callbacks, with opt-in and exact age boundaries",
+          "status": "passed",
+          "duration": 0.5451239999999871,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention does not expire on invalid clocks, rollback, unsupported policy or disposed ownership",
+          "status": "passed",
+          "duration": 1.479395000000011,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention preserves registrations on failed cleanup and excludes reentrant replacements from approval",
+          "status": "passed",
+          "duration": 0.723953999999992,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention isolates failed observers so registration remains disposable and cleanup can finish",
+          "status": "passed",
+          "duration": 0.9368849999999611,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention does not resurrect a failed adapter after its owner disposes during cleanup",
+          "status": "passed",
+          "duration": 0.4014060000000086,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention keeps the registration bound when a reentrant adapter fills capacity then fails",
+          "status": "passed",
+          "duration": 0.89712499999996,
+          "failure": []
+        },
+        {
+          "title": "nonessential invoice presentation retention bounds registrations without evicting existing ownership",
+          "status": "passed",
+          "duration": 0.3680570000000216,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference keeps proof consent and manual authority separate from the invoice policy",
+          "status": "passed",
+          "duration": 1.551333999999997,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference accepts only supported delays and touches only its dedicated preference key",
+          "status": "passed",
+          "duration": 0.44922800000000507,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference does not enable automatic cleanup from duplicate delay",
+          "status": "passed",
+          "duration": 0.2260519999999815,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference does not enable automatic cleanup from oversized preference",
+          "status": "passed",
+          "duration": 0.20722299999999905,
+          "failure": []
+        },
+        {
+          "title": "nonsecret retention preference handles denied or malformed storage without changing the policy or propagating input",
+          "status": "passed",
+          "duration": 0.2329819999999927,
+          "failure": []
+        }
+      ]
+    }
+  ],
+  "numTotalTests": 17,
+  "numPassedTests": 17,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "success": true,
+  "startTime": 1795193710663
+}

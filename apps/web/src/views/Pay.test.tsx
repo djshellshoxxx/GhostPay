@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
+import { ATTEMPT_JOURNAL_KEY } from '../lib/duplicateAttemptJournal';
 import type { WalletInfo } from '../lib/wallet';
 import { FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../test/fakeManifest';
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
@@ -506,9 +507,9 @@ describe('Pay: sending', () => {
     await screen.findByRole('button', { name: 'Prepare payment' });
     const settings = window.localStorage.getItem(SETTINGS_KEY);
     const banner = within(screen.getByRole('banner'));
-    await user.click(banner.getByRole('switch', { name: 'Privacy mode', exact: true }));
+    await user.click(banner.getByRole('switch', { name: 'Privacy mode' }));
     expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
-    await user.click(banner.getByRole('button', { name: 'Reveal details for 30 seconds', exact: true }));
+    await user.click(banner.getByRole('button', { name: 'Reveal details for 30 seconds' }));
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     expect(window.localStorage.getItem(SETTINGS_KEY)).toBe(settings);
@@ -623,6 +624,39 @@ describe('Pay: sending', () => {
     await user.click(screen.getByRole('button', { name: 'Print bill' }));
     expect(printSpy).toHaveBeenCalledOnce();
     expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
+  });
+
+  it('closes the included proof preview without changing the completed payment, receipt exports or attempt journal', async () => {
+    const wallet = new MockWallet();
+    const rpc = chainSeeing(wallet);
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await screen.findByText(/Independently verified on your RPC/);
+    const journal = sessionStorage.getItem(ATTEMPT_JOURNAL_KEY);
+    expect(journal).not.toBeNull();
+    const requests = wallet.calls.slice();
+    const sent = wallet.sent;
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="proof"]')).not.toBeNull();
+    const originalProof = screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value;
+    await user.click(screen.getByRole('button', { name: 'Preview proof cleanup' }));
+    expect(screen.getByText('Payment proof previews to close: 1')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Close previewed proofs' }));
+    expect(screen.queryByLabelText('Proof of payment text')).toBeNull();
+    expect(document.querySelector('[data-qr-kind="proof"]')).toBeNull();
+    expect(screen.getByText(/Independently verified on your RPC/)).toBeTruthy();
+    expect(screen.getByText(/included in block 100/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    expect(sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(journal);
+    expect(wallet.sent).toBe(sent);
+    expect(wallet.calls).toEqual(requests);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toBe(originalProof);
   });
 
   it('never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)', async () => {

@@ -1,0 +1,4 @@
+{
+  "encoding": "utf-8",
+  "text": "Listing tests:\n  [desktop] › flows.spec.ts:26:3 › with a (fake, test-only) manifest, a mock wallet and a mock RPC › pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it\nTotal: 1 test in 1 file\n"
+}

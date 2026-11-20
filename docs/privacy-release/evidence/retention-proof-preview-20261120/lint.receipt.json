@@ -1,0 +1,19 @@
+{
+  "head": "638ef16eda8161415a0d4547044af4327cd73367",
+  "tree": "00f0bc3b2ce35cc184019b5de52abaf470a2a95a",
+  "command": [
+    "npm",
+    "run",
+    "lint",
+    "--workspace",
+    "@ghostpay/web"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=1536"
+  },
+  "start_time": 1795194849.2884188,
+  "mem_available_kib_before": 4150916,
+  "seconds": 63.123,
+  "exit_code": 1,
+  "log_sha256": "ccb2243a69b8f69934cbdff4730d5f5968798e2b83c1fbb56d76fc180ebf299d"
+}

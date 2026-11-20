@@ -1,0 +1,432 @@
+{
+  "source": "03b5816e1712efb23c4c674b3ef3de04e4b53012",
+  "exit_code": 1,
+  "raw_report_sha256": "e11cfe2d4aa4c8d47de4e60f3cf49533941782f7bee4a97cfd17dab253f4a264",
+  "normalization": "Relative paths; failed assertions retain only first diagnostic lines, excluding synthetic DOM dumps/stack paths.",
+  "files": [
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "status": "failed",
+      "startTime": 1795193645424,
+      "endTime": 1795193646353.3384,
+      "tests": [
+        {
+          "title": "Pay: invoice reading and review allows the same receipt file after a failed read and preserves a newer selection while the old read finishes",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review accepts a signed receipt only when its invoice digest and expected payment fields match",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review does not read private receipt details without explicit consent",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review does not accept a receipt under a trusted key that changed during file reading",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review accepts bounded QR text only through the same strict receipt verification flow",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review keeps a late context refresh from replacing the currently opened invoice",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review opens a link, shows the review, uses the required signature wording and clears the fragment",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review keeps the fragment when the user turns auto-clear off, and offers to remove it",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review manually clears an invoice fragment on a double-slash pathname while preserving origin, path and query",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review prompts for a passphrase, rejects a wrong one, and opens the invoice only after decryption",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review says payments are disabled on a chain with no manifest and offers no way forward",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review renders hostile text from the invoice as inert text",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review fails closed on a tampered fragment (corrupted encoding)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review treats a re-signed-less edit as an INVALID signature hard stop",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review fails closed with a rejection, not a blank page, for a validly signed link whose expiry is 2^53-1 (G1-01)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review shows a fixed token amount as the total, the fiat figure as the seller’s unchecked statement, and warns on a mismatch (L2-F4)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review labels the fiat figure of a fixed-token invoice as unchecked, without a warning when it matches the stablecoin amount",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review shows the fixed amount of a token off the allowlist in base units with its address, not scaled by assumed decimals (B2-R3)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review rejects an oversized fragment",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review rejects non-invoice hashes silently and accepts pasted links",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review reacts to a link pasted into the address bar while the app is open",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review blocks expired invoices",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice reading and review shows the no-feed message for fiat-priced invoices",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending shows the connected wallet chain ID ungrouped",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending keeps a connected wallet available for new disclosure after a privacy-only hide and reveal",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending discards a deferred preparation when the opened invoice changes",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending shows decoded calldata, sends only after the explicit click, and reports an unverified result honestly (the RPC cannot see the transaction yet)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending retains a verified submission when notifying the embedding page fails",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending retains a pending submission when notifying the embedding page fails",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending verifies on the user RPC when one is configured and offers a local receipt",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending closes the included proof preview without changing the completed payment, receipt exports or attempt journal",
+          "status": "failed",
+          "duration": 929.3382629999996,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "Pay: sending never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending REFUSES (shows an error, not success) when the wallet mutates the transaction",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending REFUSES a wallet that lies about its accounts or chain",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending shows a clear message when no wallet is installed",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: sending surfaces a user rejection and blocks a blind retry until explicit clearing",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) delay: nothing is signed while waiting, can be cancelled, or skipped with \"send now\"",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) delay: revalidates at the due time and stops if the invoice expired while waiting",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) delay: becomes ready by itself after the (zero) interval",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) gas buffer: default off; enabling shows the native amount and the public-linkage notice; needs an RPC",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) gas buffer without an RPC explains what is missing",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) v2 invoice whose seller declines buffers offers none (ADR-0023)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) v2 invoice with a seller minimum raises a smaller estimate to it and says so (ADR-0023)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) native invoices offer no gas buffer",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) ERC-20 flow with a buffer: previews the exact approval, then approves and sends",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) permit token whose permit domain cannot be verified falls back to the exact approval path without a signature prompt (spec 04)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) a signed permit the token rejects is explained, nothing is sent, and the next Prepare uses an exact approval (spec 04)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) permit token with enough allowance already skips the permit signature (spec 04 already_allowed)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: optional delay (Feature 6) and gas buffer (Feature 1) ERC-20 flow with a buffer fails closed when the token transfer cannot be simulated (spec 13)",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: validity is rechecked before the initial approval P1: an invoice that expired after prepare asks the wallet for nothing, not even the approval",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: validity is rechecked before the initial approval P2: a buffer quote past its 60 s TTL asks the wallet for nothing, not even the approval",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: validity is rechecked before the initial approval keeps the confirmed approval and hash when the invoice expires before payment",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: validity is rechecked before the initial approval keeps the confirmed approval and hash when the buffer expires before payment",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: validity is rechecked before the initial approval keeps payment ambiguity when the wallet loses its payment response after confirmed approval",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: validity is rechecked before the initial approval keeps the approval hash when the invoice changes after broadcast but before confirmation",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) WEB-APP-02: after the wallet broadcast, a verification failure never re-enables Send and never says nothing was sent",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) WEB-APP-01: refuses to build a payment when the contracts on chain do not match the manifest",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) WEB-APP-01: without an RPC the manifest cannot be verified, so no payment is built",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) WEB-APP-01: shows the unsigned-dev banner",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) native payment: a failing dry run on the retry keeps the unknown-outcome warning",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) native payment: an invoice that expired before the retry keeps the unknown-outcome warning",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) ERC-2612 permit payment: a failing dry run on the retry keeps the unknown-outcome warning",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) pre-approved ERC-20 payment: a failing dry run on the retry keeps the unknown-outcome warning",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice expiry never hides a payment that was already handed to the wallet (R05-2) keeps the Submitted panel, receipt download and proof after the review tick sees the invoice expire",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: invoice expiry never hides a payment that was already handed to the wallet (R05-2) records a send that completes after the expiry tick as submitted for this invoice and leaves the busy state",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: the gas buffer opt-in belongs to one invoice (R05-3) a newly opened ERC-20 invoice starts with the gas buffer unticked and no stale estimate",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: the gas buffer opt-in belongs to one invoice (R05-3) a seller-declined v2 invoice opened after ticking the buffer elsewhere can still be prepared",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        },
+        {
+          "title": "Pay: expiry at the final send (A3-2) refuses with nothing sent when the invoice expires between final check and send, before the review tick",
+          "status": "skipped",
+          "duration": null,
+          "failure": []
+        }
+      ]
+    }
+  ],
+  "numTotalTests": 68,
+  "numPassedTests": 0,
+  "numFailedTests": 1,
+  "numPendingTests": 67,
+  "success": false,
+  "startTime": 1795193639934
+}

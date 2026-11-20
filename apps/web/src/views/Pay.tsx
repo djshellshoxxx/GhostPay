@@ -445,6 +445,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     }
   });
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
+  // buildReceipt creates fresh display timestamps; retention follows the original completed payment and scope.
+  const proofSource = useMemo(() => ({ result, resultForContext, ctx, built, session: app.session, fragment }), [result, resultForContext, ctx, built, app.session, fragment]);
   const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === executionSettings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly && latest.current.networkRevision === app.networkRevision && verificationIsCurrent() && !latest.current.signerBlocked;
   const currentNetworkSignal = useCallback((): AbortSignal => {
     if (latest.current.fragment !== fragment || preflightAuthorization.current.fragment !== fragment ||
@@ -1474,7 +1476,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               {t('pay.receipt.download')}
             </button>
           </div>
-          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} sourceIdentity={proofSource} />
         </div>
       )}
 

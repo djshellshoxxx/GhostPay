@@ -1,27 +1,34 @@
 import { useLayoutEffect, useRef } from 'react';
-import { invoicePreviewRetention, readRetentionDelay, RETENTION_EVENT, RETENTION_KEY } from './metadataRetention';
+import { readRetentionDelay, RETENTION_POLICIES, RETENTION_REGISTRIES, type RetentionScope } from './metadataRetention';
 
 /** Register only a generated screen preview. This hook never receives a vault or a transaction journal. */
 export function useInvoicePreviewRetention(identity: object | undefined, clear: () => void): void {
-  const latest = useRef({ identity, clear });
-  latest.current = { identity, clear };
+  usePresentationRetention(identity, clear, 'invoice');
+}
+
+/** The current presentation identity is the sole cleanup capability; no durable record handle enters the hook. */
+export function usePresentationRetention(identity: object | undefined, clear: () => void, scope: RetentionScope): void {
+  const latest = useRef({ identity, clear, scope });
+  latest.current = { identity, clear, scope };
   useLayoutEffect(() => {
     if (identity === undefined) return;
-    const unregister = invoicePreviewRetention.register(() => {
-      if (latest.current.identity === identity) latest.current.clear();
+    const registry = RETENTION_REGISTRIES[scope];
+    const policy = RETENTION_POLICIES[scope];
+    const unregister = registry.register(() => {
+      if (latest.current.identity === identity && latest.current.scope === scope) latest.current.clear();
     });
-    const expire = (): void => { invoicePreviewRetention.expire(readRetentionDelay()); };
-    const onStorage = (event: StorageEvent): void => { if (event.key === RETENTION_KEY || event.key === null) expire(); };
+    const expire = (): void => { registry.expire(readRetentionDelay(undefined, scope)); };
+    const onStorage = (event: StorageEvent): void => { if (event.key === policy.key || event.key === null) expire(); };
     const timer = window.setInterval(expire, 1_000);
-    window.addEventListener(RETENTION_EVENT, expire);
+    window.addEventListener(policy.event, expire);
     window.addEventListener('storage', onStorage);
     window.addEventListener('focus', expire);
     return () => {
       unregister();
       window.clearInterval(timer);
-      window.removeEventListener(RETENTION_EVENT, expire);
+      window.removeEventListener(policy.event, expire);
       window.removeEventListener('storage', onStorage);
       window.removeEventListener('focus', expire);
     };
-  }, [identity]);
+  }, [identity, scope]);
 }

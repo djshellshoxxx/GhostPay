@@ -1,0 +1,160 @@
+{
+  "source": "03b5816e1712efb23c4c674b3ef3de04e4b53012",
+  "exit_code": 1,
+  "raw_report_sha256": "e2a872f0d0c9ad9867c20a3902a0588e43809ca11cfdbf20dfb8d3e5fb3f3db7",
+  "normalization": "Relative paths; failed assertions retain only first diagnostic lines, excluding synthetic DOM dumps/stack paths.",
+  "files": [
+    {
+      "path": "apps/web/src/components/PaymentProofQr.retention.test.tsx",
+      "status": "failed",
+      "startTime": 1795193629550,
+      "endTime": 1795193630738.7332,
+      "tests": [
+        {
+          "title": "included-payment proof presentation retention previews and cancels without closing, then confirms only the QR/text while retaining exports and source data",
+          "status": "failed",
+          "duration": 286.074486,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention keeps the proof off-policy even when invoice preview cleanup was already enabled",
+          "status": "failed",
+          "duration": 49.33152700000028,
+          "failure": [
+            "TestingLibraryElementError: Unable to find a label with the text of: Close payment proof previews automatically"
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention closes at the opted-in deadline without restarting on ordinary receipt/timestamp rerenders",
+          "status": "failed",
+          "duration": 37.25126400000045,
+          "failure": [
+            "TestingLibraryElementError: Unable to find a label with the text of: Close payment proof previews automatically"
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention gives each deliberate Show a new lifetime and invalidates an older confirmation",
+          "status": "failed",
+          "duration": 63.226870999999846,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention keeps manual confirmation bound to the displayed payment across ordinary same-source rerenders",
+          "status": "failed",
+          "duration": 80.22349200000008,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention preserves live receipt display and copy/download bytes across rerenders and cleanup",
+          "status": "failed",
+          "duration": 82.89805699999988,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention withdraws replaced result/context/session source before an old plan or age can close its successor",
+          "status": "failed",
+          "duration": 46.34777299999996,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll or expire a unconfirmed proof",
+          "status": "failed",
+          "duration": 55.39738699999998,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll or expire a reverted proof",
+          "status": "failed",
+          "duration": 68.62635399999999,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll or expire a unknown proof",
+          "status": "failed",
+          "duration": 56.132382000000234,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention revokes an included preview before a same-source unconfirmed projection can be cleaned",
+          "status": "failed",
+          "duration": 55.69889599999988,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention revokes an included preview before a same-source reverted projection can be cleaned",
+          "status": "failed",
+          "duration": 129.3109599999998,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention revokes an included preview before a same-source unknown projection can be cleaned",
+          "status": "failed",
+          "duration": 57.49565100000018,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention does not enroll hidden or failed-to-render proofs and releases every timer on unmount",
+          "status": "failed",
+          "duration": 9.837072999999691,
+          "failure": [
+            "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Preview proof cleanup\""
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention fails closed when saving the separate preference is denied",
+          "status": "failed",
+          "duration": 35.80757300000005,
+          "failure": [
+            "TestingLibraryElementError: Unable to find a label with the text of: Close payment proof previews automatically"
+          ]
+        },
+        {
+          "title": "included-payment proof presentation retention keeps malformed proof policy off: {\"delay\":0,\"delay\":300000}",
+          "status": "passed",
+          "duration": 27.832568000000265,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps malformed proof policy off: {",
+          "status": "passed",
+          "duration": 21.970064999999977,
+          "failure": []
+        },
+        {
+          "title": "included-payment proof presentation retention keeps malformed proof policy off: {\"delay\":300000,\"extra\":true}",
+          "status": "passed",
+          "duration": 24.733260999999857,
+          "failure": []
+        }
+      ]
+    }
+  ],
+  "numTotalTests": 18,
+  "numPassedTests": 3,
+  "numFailedTests": 15,
+  "numPendingTests": 0,
+  "success": false,
+  "startTime": 1795193626598
+}

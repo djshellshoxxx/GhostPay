@@ -1,0 +1,19 @@
+{
+  "head": "638ef16eda8161415a0d4547044af4327cd73367",
+  "tree": "00f0bc3b2ce35cc184019b5de52abaf470a2a95a",
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "--workspace",
+    "@ghostpay/web"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=1536"
+  },
+  "start_time": 1795194690.8128457,
+  "seconds": 22.724,
+  "exit_code": 0,
+  "mem_available_kib_before": 4463100,
+  "log_sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b"
+}

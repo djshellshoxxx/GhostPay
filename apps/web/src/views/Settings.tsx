@@ -174,6 +174,7 @@ export function Settings(): ReactNode {
       <PrivacyControls />
       <ClipboardPrivacyControls />
       <MetadataRetentionControls />
+      <MetadataRetentionControls scope="proof" />
       {i18n !== undefined && <LanguagePicker />}
       <Notice kind="info">
         {t('settings.notice.plaintext')}

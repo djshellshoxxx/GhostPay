@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "name": "secret-scan",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+      "exit_code": 0,
+      "seconds": 0.146,
+      "log": "secret-scan.log.json",
+      "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "b7f9dc6e6efa70e6e3d585d664e7cec62a97b20d092b447238a1ab8e2213f568"
+    },
+    {
+      "name": "source-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9..HEAD"
+      ],
+      "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+      "exit_code": 0,
+      "seconds": 0.029,
+      "log": "source-whitespace.log.json",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+      "log_file_sha256": "29c16feeff171185ec68a5d4b6dba1ceeddce42a4a2c98e1c59fc01e20609ca6"
+    }
+  ],
+  "scope": "Committed application source at b9fd1381. This source-range check does not include the later evidence documentation."
+}

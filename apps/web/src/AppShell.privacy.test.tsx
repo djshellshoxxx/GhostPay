@@ -179,7 +179,8 @@ describe('required global privacy masking', () => {
       await user.click(control);
       expect(isInaccessible(draft)).toBe(true);
       const grant = authority.authorize({ action: 'payment-preflight', category: 'rpc', endpoint: 'https://rpc.test/', network: { kind: 'evm', chainId: 84532 } });
-      const read = Storage.prototype.getItem;
+      const storagePrototype: { getItem: (this: Storage, key: string) => string | null } = Storage.prototype;
+      const read = storagePrototype.getItem;
       act(() => {
         if (scenario === 'origin clear') localStorage.clear();
         else {
@@ -261,7 +262,8 @@ describe('required global privacy masking', () => {
       const grant = authority.authorize({ action: 'payment-preflight', category: 'rpc', endpoint: 'https://rpc.test/', network: { kind: 'evm', chainId: 84532 } });
       const newerRaw = '{ "rpcUrls": { "84532": "https://newer.test/" } }';
       localStorage.setItem(SETTINGS_KEY, newerRaw);
-      const read = Storage.prototype.getItem;
+      const storagePrototype: { getItem: (this: Storage, key: string) => string | null } = Storage.prototype;
+      const read = storagePrototype.getItem;
       let deniedRead: { mockRestore(): void } | undefined;
       if (privacyStorage === 'missing') localStorage.removeItem(UI_PRIVACY_KEY);
       else if (privacyStorage === 'corrupt') localStorage.setItem(UI_PRIVACY_KEY, '{broken');

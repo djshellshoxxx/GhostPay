@@ -1,0 +1,116 @@
+{
+  "feature": "Payment proof preview cleanup",
+  "scope": "Only shown included-payment QR/text projection; no durable record deletion",
+  "status": "Bounded presentation implementation; persistent retention remains partial",
+  "branch": "feature/ghostpay-retention-completion-20261120",
+  "canonical_base": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+  "canonical_base_refreshed_before_publication": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+  "runtime_head": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+  "runtime_tree": "2a3095a7439c4ff9c6578d3eacd9802a371a2070",
+  "browser_assertion_head": "97ffe5b98344c345ab436a5557221e5be4160cb5",
+  "proof_pay_fixture_head": "e8b8bd334d6829de3145d350bd7d682c3e771383",
+  "final_application_fixture_head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+  "final_application_fixture_tree": "f2401beadec3a4ea4d511cde7a78c7e7d4b58ff8",
+  "proof_production_blobs_unchanged_from_runtime": {
+    "apps/web/locales/ar.json": "d0affdee8417a239b45ea5411599b96761da3340",
+    "apps/web/locales/en.json": "2411a937b0dcc192fbe47954ec4611bc2cbb1796",
+    "apps/web/locales/es.json": "061060958c01f07078471e47a6441395775e45c1",
+    "apps/web/locales/ja.json": "2ab4ef07c806cc72aa9ab19715b20beb16840907",
+    "apps/web/src/components/MetadataRetentionControls.tsx": "62be8cce80855ad285f3f78ecbedc2bc6f56ba09",
+    "apps/web/src/components/PaymentRequestQr.tsx": "348f0fb38645c9add4f842c47586b8322a35abf6",
+    "apps/web/src/i18n/securityKeys.ts": "a3e5e6cc1c9d73adc3afd7480dfce316e8a24c47",
+    "apps/web/src/lib/metadataRetention.ts": "f21e7498c3f619b9fb87f1abc22872f5fd5c3378",
+    "apps/web/src/lib/useInvoicePreviewRetention.ts": "a3eaa1795391fc7c4eea9208ebc3d1d1cbdd31e7",
+    "apps/web/src/views/Pay.tsx": "213396721bb63d68bc3d0c51755f9389ab3e2746",
+    "apps/web/src/views/Settings.tsx": "70ccf62fca5aa3cfb80b18e7f543f418206f66e5"
+  },
+  "additional_wallet_change": "Receiver-typed optional event properties only; emitted JavaScript equals canonical base. See wallet-emission.receipt.json.",
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "environment": {
+    "node": "v24.22.3",
+    "npm": "11.19.1",
+    "vitest": "5.1.0",
+    "vite": "8.3.8",
+    "viem": "2.57.19",
+    "typescript": "5.9.3",
+    "eslint": "10.15.0",
+    "playwright": "1.65.1",
+    "testing_library_dom": "10.4.2"
+  },
+  "dependency_setup": "Copied an existing exact-lock installation; verified key versions and local workspace links; built prerequisites from own source. No fresh npm ci claim.",
+  "feature_green_at_runtime": {
+    "tests": 139,
+    "files": 9,
+    "passed": 139,
+    "failed": 0,
+    "skipped": 0,
+    "runs": [
+      "green-components",
+      "green-shared",
+      "green-pay"
+    ]
+  },
+  "later_overlapping_runs": [
+    {
+      "run": "green-final-proof-pay",
+      "tests": 86,
+      "files": 2,
+      "passed": 86,
+      "failed": 0,
+      "skipped": 0,
+      "overlap_with_original_feature_cases": 86
+    },
+    {
+      "run": "green-prerequisite-repairs",
+      "tests": 78,
+      "files": 5,
+      "passed": 78,
+      "failed": 0,
+      "skipped": 0,
+      "overlap_with_original_feature_cases": 4
+    }
+  ],
+  "original_full_web_gates": {
+    "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+    "typecheck": {
+      "exit_code": 0,
+      "seconds": 22.463,
+      "receipt": "typecheck-final.receipt.json"
+    },
+    "lint": {
+      "exit_code": 0,
+      "seconds": 58.094,
+      "receipt": "lint-final.receipt.json"
+    }
+  },
+  "browser": {
+    "authored": true,
+    "collected_in_full_configuration": 1,
+    "collected_in_lean_configuration": 1,
+    "executed": 0,
+    "launch_attempted_in_this_lane": false,
+    "note": "Later unused type-import removal does not change browser assertions. Collection is not acceptance."
+  },
+  "review": {
+    "root_runtime": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+    "independent_runtime_browser": "8bb5eff01c71db0fdcc73bb73bb0c6fdde9d844d",
+    "role_query_addendum": "638ef16eda8161415a0d4547044af4327cd73367",
+    "download_helper_addendum": "e8b8bd334d6829de3145d350bd7d682c3e771383",
+    "independent_prerequisites": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+    "open_blocking_source_findings": 0,
+    "reviewers_executed_checks": false,
+    "resolved_low": "Failed explicit Show does not enroll; later live QR capacity failures retain baseline shown-text behavior."
+  },
+  "catalog_scope": "Ten source-English draft keys in en/es/ja/ar with critical classification; native translation review remains open.",
+  "remaining": [
+    "Persistent invoice/transaction and terminal-record eligibility/cleanup",
+    "Complete original v1.1 coverage/nocov",
+    "Static build/CSP/bundle qualification",
+    "Executed full/lean browser and real-wallet acceptance",
+    "Hosted and existing owner-controlled release gates"
+  ],
+  "remote_mutation_at_this_evidence_checkpoint": false,
+  "execution_index": "run-index.json",
+  "prerequisite_index": "prerequisites.json",
+  "source_checks": "source-checks.receipt.json"
+}
