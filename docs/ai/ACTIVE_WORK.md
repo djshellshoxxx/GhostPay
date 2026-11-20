@@ -1,3 +1,14 @@
+# Additional isolated consolidation recoveries — 2026-11-19 (Pacific)
+
+Worker: `150ffd7f8079-root`; branch: `integration/ghostpay-main-recovered-fixes-20261120`.
+Base: `6c65cc3fd31c9ae361f932bee4a3449d89ed776c`. User authorization remains consolidation of unique code into GhostPay main.
+Additional owned paths: `scripts/automation/integration-lock.mjs`, `scripts/tests/integration-lock.test.mjs`, `scripts/pages/verify-pages-artifact.mjs`, `scripts/pages/verify-pages-artifact.test.mjs`, `scripts/pages/build-pages-artifact-gate.test.mjs`, `scripts/pages/build-pages.sh`, and `packages/chain-adapters/src/quote.test.ts`; additive consolidation provenance and this registry.
+Scope: recover the reviewed cooperative integration-lock helper and tests; independently verify staged Pages bytes before either final output move; preserve quote decimal-boundary regression coverage. Six paths are exact reviewed donor blobs. Adapt only the verifier invocation immediately after the existing builder's build-log copy; preserve all other current builder content, executable mode, workflows, dependencies, contracts and deployment settings. Together with the prior claim this is 16 isolated modules and 38 source/test paths.
+Review: `release_review` approved these seven paths and their existing dependencies. Prior donor test results are recorded as historical evidence, not qualification of this combined candidate. Require a fresh resulting-tree review and hosted CI before promotion. The lock helper must preserve its refusal to acquire any held lease, even when expired.
+Local execution remains unavailable; no local tests are claimed. This ownership extension is recorded before source changes.
+
+---
+
 # Recovery of isolated unique fixes — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`; isolated branch: `integration/ghostpay-main-recovered-fixes-20261120`.
