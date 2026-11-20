@@ -1197,71 +1197,173 @@
     },
     {
       "name": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 670,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 644,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 647,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 688,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-manifest-gates-20261117",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 654,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 682,
+        "changed_files_returned": 1,
+        "application_paths_returned": 1
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 42,
+        "behind_by": 651,
+        "changed_files_returned": 1,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 460,
+        "changed_files_returned": 3,
+        "application_paths_returned": 2
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 655,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-qr-combined-20261115",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 476,
+        "changed_files_returned": 7,
+        "application_paths_returned": 6
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 666,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 683,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 667,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 681,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 659,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 699,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 645,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
