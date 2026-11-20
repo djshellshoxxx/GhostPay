@@ -128,7 +128,7 @@ describe('addressFreeReceipt (AT-HY-5)', () => {
   it('confirmed among multiple transfers of the same tx (fee leg + net leg)', async () => {
     const rpc = mockRpc([
       log({ from: A1, to: A3, value: 30n }),
-      log({ from: A1, to: STEALTH, value: 1000n }),
+      { ...log({ from: A1, to: STEALTH, value: 1000n }), logIndex: '0x1' },
     ]);
     expect(await addressFreeReceipt(rpc, args)).toBe('confirmed');
   });
@@ -179,7 +179,7 @@ describe('sweepConfirmed (post-sweep, no getTransactionReceipt)', () => {
     head: 500n,
   };
   it('matches locally; request has only token; range head-3..head', async () => {
-    const rpc = mockRpc([log({ from: STEALTH, to: DEST, value: 970n })]);
+    const rpc = mockRpc([log({ from: STEALTH, to: DEST, value: 970n, block: '0x1f4' })]);
     expect(await sweepConfirmed(rpc, a)).toBe(true);
     const s = JSON.stringify(rpc.calls[0]?.params).toLowerCase();
     expect(s).not.toContain(STEALTH.slice(2).toLowerCase());
@@ -189,9 +189,9 @@ describe('sweepConfirmed (post-sweep, no getTransactionReceipt)', () => {
     expect(rpc.calls.every((c) => c.method === 'eth_getLogs')).toBe(true);
   });
   it('false on wrong value/from/to; true needs all three', async () => {
-    expect(await sweepConfirmed(mockRpc([log({ from: STEALTH, to: DEST, value: 971n })]), a)).toBe(false);
-    expect(await sweepConfirmed(mockRpc([log({ from: A1, to: DEST, value: 970n })]), a)).toBe(false);
-    expect(await sweepConfirmed(mockRpc([log({ from: STEALTH, to: A1, value: 970n })]), a)).toBe(false);
+    expect(await sweepConfirmed(mockRpc([log({ from: STEALTH, to: DEST, value: 971n, block: '0x1f4' })]), a)).toBe(false);
+    expect(await sweepConfirmed(mockRpc([log({ from: A1, to: DEST, value: 970n, block: '0x1f4' })]), a)).toBe(false);
+    expect(await sweepConfirmed(mockRpc([log({ from: STEALTH, to: A1, value: 970n, block: '0x1f4' })]), a)).toBe(false);
     expect(await sweepConfirmed(mockRpc([]), a)).toBe(false);
   });
   it('lookback bounds, low head clamps to 0, bad input', async () => {
@@ -218,8 +218,8 @@ describe('spentCheck (HY-VER-3)', () => {
   it('sums outflows from the stealth address, ignores others, address-free', async () => {
     const rpc = mockRpc([
       log({ from: STEALTH, to: DEST, value: 400n }),
-      log({ from: A1, to: A2, value: 7n }),
-      log({ from: A1, to: STEALTH, value: 5n }),
+      { ...log({ from: A1, to: A2, value: 7n }), logIndex: '0x1' },
+      { ...log({ from: A1, to: STEALTH, value: 5n }), logIndex: '0x2' },
     ]);
     const r = await spentCheck(rpc, { ...base, routerOnly: true });
     expect(r).toMatchObject({
