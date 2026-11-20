@@ -1,3 +1,15 @@
+# Final QR flag-coverage reconciliation — cycle 20261120T0035Z
+
+- Worker: native ChatGPT `/root/spec_verification_review`, delegated by coordinator `/root`.
+- Branch: `automation/20261120T0035Z/worker/qr-flag-coverage`; exact refreshed base PR #290 `ec546311f994fe1db544fe85ff2aa6db428d67d4`.
+- Owned paths: `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_FLAG_COVERAGE_20261120.md`, and this additive claim only.
+- Reconciliation: #290 has absorbed the hostile-getter cases, explicit error-class assertions and original sixteen-mapping controls. Preserve all of those tests and its production/design files. Retain only the still-missing stateful unverified case and replace the existing mapping block with a complete typed Record and all eight flag combinations.
+- Acceptance: one added test and one strengthened existing test, repository Vitest and scoped lint on the exact new source, independent review, and an accurate final handoff. No duplicate implementation or repeated generic matrix.
+- Dependencies: the earlier supplement's dependencies/build prerequisites remain applicable because #290 changed only this test file since `aaa8a7e2`; preserve previous branch `automation/20261120T0035Z/worker/qr-review-supplement` at `0c3893db` as historical evidence. Prior results do not qualify this new source without a fresh run.
+- Restrictions: no production, design, dependency, workflow, security-gate, shared integration, lock, deployment or remote changes. This is the final bounded scope; coordinator owns publication and final hosted qualification.
+
+---
+
 # Isolated consolidation follow-through — 2026-11-19
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.

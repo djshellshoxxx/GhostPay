@@ -87,6 +87,13 @@ describe('taxonomy', () => {
     expect(() => qrKindClass(kind)).toThrowError(new TypeError('unknown QR kind'));
     expect(convert).not.toHaveBeenCalled();
   });
+  it('rejects unverified payload objects without invoking a changing conversion hook', () => {
+    const convert = vi.fn().mockReturnValueOnce('spend-key').mockReturnValue('invoice-link');
+    const type = { [Symbol.toPrimitive]: convert } as unknown as QrPayloadType;
+    expect(() => kindForPayload(type, { unverified: true })).toThrow(TypeError);
+    expect(() => kindForPayload(type, { unverified: true })).toThrowError(new TypeError('unknown QR payload type'));
+    expect(convert).not.toHaveBeenCalled();
+  });
   const runtimeClassifiers = [
     ['payload', (value: unknown) => kindForPayload(value as QrPayloadType), 'unknown QR payload type'],
     ['unverified payload', (value: unknown) => kindForPayload(value as QrPayloadType, { unverified: true }), 'unknown QR payload type'],
@@ -99,18 +106,20 @@ describe('taxonomy', () => {
     expect(() => classify(input), name).toThrow(new TypeError(message));
     expect(inspect).not.toHaveBeenCalled();
   });
-  it('preserves every declared payload mapping, flag precedence and frame class', () => {
-    const mappings: readonly (readonly [QrPayloadType, QrKind])[] = [
-      ['keystore-backup', 'secret'], ['recovery-data', 'secret'], ['spend-key', 'secret'],
-      ['invoice-link', 'shareable'], ['invoice-link-passphrase', 'shareable'],
-      ['stealth-meta-address', 'shareable'], ['payment-request', 'shareable'], ['registry-entry', 'shareable'],
-      ['invoice-link-with-key', 'bearer'], ['settings', 'device'], ['rpc-list', 'device'], ['pinned-signers', 'device'],
-      ['receipt', 'proof'], ['payment-proof', 'proof'], ['signed-manifest', 'proof'], ['fingerprint', 'proof'],
-    ];
-    for (const [payload, kind] of mappings) {
-      expect(kindForPayload(payload)).toBe(kind);
-      for (const flags of [{ testnet: true }, { unsigned: true }, { unverified: true }, { testnet: true, unsigned: true, unverified: true }]) {
-        expect(kindForPayload(payload, flags)).toBe(kind === 'secret' || kind === 'bearer' ? kind : 'caution');
+  it('preserves every declared payload mapping, flag combination and frame class', () => {
+    const mappings: Readonly<Record<QrPayloadType, QrKind>> = {
+      'keystore-backup': 'secret', 'recovery-data': 'secret', 'spend-key': 'secret',
+      'invoice-link': 'shareable', 'invoice-link-passphrase': 'shareable',
+      'stealth-meta-address': 'shareable', 'payment-request': 'shareable', 'registry-entry': 'shareable',
+      'invoice-link-with-key': 'bearer', settings: 'device', 'rpc-list': 'device', 'pinned-signers': 'device',
+      receipt: 'proof', 'payment-proof': 'proof', 'signed-manifest': 'proof', fingerprint: 'proof',
+    };
+    for (const [key, kind] of Object.entries(mappings)) {
+      const type = key as QrPayloadType;
+      expect(kindForPayload(type)).toBe(kind);
+      for (let mask = 0; mask < 8; mask++) {
+        const flags = { testnet: (mask & 1) !== 0, unsigned: (mask & 2) !== 0, unverified: (mask & 4) !== 0 };
+        expect(kindForPayload(type, flags)).toBe(kind === 'secret' || kind === 'bearer' || mask === 0 ? kind : 'caution');
       }
     }
     for (const kind of QR_KIND_ORDER) expect(qrKindClass(kind)).toBe(`qr-kind-${kind}`);
