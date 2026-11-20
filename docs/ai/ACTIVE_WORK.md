@@ -2429,3 +2429,16 @@ discovery commands and source-pinned evidence. No local browser, server, socket,
 or RPC execution; no retry intended to conceal a failure. No release gate, workflow,
 dependency, fee, transaction behavior or privacy boundary is weakened. Source review,
 exact-successor hosted gates and parent integration qualification remain required.
+
+### Bounded wallet-disclosure focus repair
+
+At test-only source `9c1b3208`, the complete mounted disclosure file reproduced one
+failure with seven controls passing. A disclosure opened after the caller lost focus
+captures `document.body`; on quick hide, the existing cleanup considers that connected
+HTMLElement a valid opener and leaves focus on body. The initial focused-caller probe
+passed and is retained as a control, not represented as a failing reproduction.
+The hosted full/lean focus assertion remains unchanged. Worker additionally owns only
+`apps/web/src/components/WalletDisclosure.tsx` to reject document roots and disabled
+restoration targets and fall back when a still-visible opener cannot receive focus.
+Preserve dialog trapping, explicit disclosure, cancellation and provider call boundaries.
+No product edit preceded this controlled reproduction and report to the coordinator.
