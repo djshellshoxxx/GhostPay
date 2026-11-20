@@ -15,6 +15,13 @@ describe('resolveProfile (narrow-only)', () => {
     }
   }
 
+  it('fails closed when an unexpected runtime profile reaches any resolver input', () => {
+    const invalid = 'unexpected' as BuildProfile;
+    expect(resolveProfile(invalid, 'full', 'full')).toBe('lean');
+    expect(resolveProfile('full', invalid, 'full')).toBe('lean');
+    expect(resolveProfile('full', 'full', invalid)).toBe('lean');
+    expect(resolveProfile(undefined, undefined, 'full')).toBe('full');
+  });
   it('an explicit full prop never widens a lean build or a lean shell', () => {
     expect(resolveProfile(undefined, 'full', 'lean')).toBe('lean');
     expect(resolveProfile('full', 'lean', 'full')).toBe('lean');

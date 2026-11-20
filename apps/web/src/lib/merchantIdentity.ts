@@ -1,3 +1,5 @@
+import { parseStrictJson } from '@ghostpay/invoice-schema';
+
 /** Public origin/key preferences. These do not authorize invoices or identify a business independently. */
 export const MERCHANT_PIN_PREFIX = 'ghostpay.merchantKey.v1:';
 const KEY = /^(?:02|03)[0-9a-f]{64}$/;
@@ -30,7 +32,8 @@ export function readMerchantKey(origin: string, storage: PinStorage | undefined 
     const text = storage.getItem(key);
     if (text === null) return { kind: 'absent' };
     if (text.length > 128) return { kind: 'unavailable' };
-    const value: unknown = JSON.parse(text);
+    // Reject ambiguous duplicate member names before treating a locally stored pin as trusted.
+    const value: unknown = parseStrictJson(text);
     if (typeof value !== 'object' || value === null || Array.isArray(value)) return { kind: 'unavailable' };
     const record = value as Record<string, unknown>;
     if (Object.keys(record).length !== 2 || record['v'] !== 1 || typeof record['signer'] !== 'string' || !KEY.test(record['signer'])) return { kind: 'unavailable' };

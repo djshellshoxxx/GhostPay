@@ -7,7 +7,11 @@ from audit #312 on the same main baseline.
 ## Source and scope
 
 - Starting PR #316: `56b76e8fbae0aa0d3e9c9394616d4aa600d70fb7`.
-- Main: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Main at task start: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Pre-publication main reconciliation: `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+  Main added separately reviewed QR/profile/privacy/payment-URI changes. No product
+  file in this print repair overlapped; the sole registry conflict was resolved by
+  preserving both sets of additive claims and the entire shared base verbatim.
 - Local task branch: `fix/receipt-print-isolation-312-20261120`.
 - Independent workers: `print_isolation_review` (source review) and
   `print_regressions` (hook and browser regression author).
