@@ -1,0 +1,24 @@
+{
+  "source_local_commit": "f0968b9541dbd3234a6b0516023773845c04c4e4",
+  "source_tree": "6c3c65280f693bd6477218f10aff46b2a3d95e1f",
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "HEAD"
+  ],
+  "cwd": "/workspace/scratch/63789860705e/GhostPay-f03-main-reconciliation",
+  "explicit_environment": {
+    "NODE_OPTIONS": "--max-old-space-size=1024"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 0.046,
+  "max_child_rss_kib": 10368,
+  "finished_utc": "2026-11-20T16:46:11.638155+00:00",
+  "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log": "whitespace-vs-current-main.log",
+  "original_console_archive": "original-console.json",
+  "normalized_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log_formatting": "Terminal ANSI color removed; line-end spaces and blank EOF lines removed. Original bytes and output_sha256 remain in the archive."
+}

@@ -1,0 +1,10 @@
+apps/relayer/src/config.ts(17,32): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+apps/relayer/src/config.ts(415,82): error TS7006: Parameter 'x' implicitly has an 'any' type.
+apps/relayer/src/config.ts(417,43): error TS7006: Parameter 'h' implicitly has an 'any' type.
+apps/relayer/src/limiter.ts(2,36): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+apps/relayer/src/runtime.ts(4,42): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+apps/relayer/src/secrets.ts(2,61): error TS2307: Cannot find module '@ghostpay/relayer-guard/secrets' or its corresponding type declarations.
+apps/relayer/src/secrets.ts(3,40): error TS2307: Cannot find module '@ghostpay/relayer-guard/secrets' or its corresponding type declarations.
+apps/relayer/src/secrets.ts(4,35): error TS2307: Cannot find module '@ghostpay/relayer-guard/secrets' or its corresponding type declarations.
+apps/relayer/src/server.ts(12,8): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+apps/relayer/src/service.ts(19,8): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.

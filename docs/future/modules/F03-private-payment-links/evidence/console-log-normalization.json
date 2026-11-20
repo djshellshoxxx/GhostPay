@@ -1,0 +1,55 @@
+{
+  "normalization": "Only trailing spaces/tabs on lines and trailing empty lines were removed from readable log copies for git diff --check. Exact original bytes for every changed log are in the accompanying base64-encoded tar.gz archive. Other captured logs are unchanged. spec-app-lock-red.log remains a labeled transcript, not a direct capture.",
+  "archive": "original-console-logs.tar.gz.b64",
+  "decoded_archive_sha256": "96ea4c5e3993dc040598f51b61b95def0215e1fda2f7fed7553a0edfcedc0e4f",
+  "files": [
+    {
+      "file": "invoice-schema-build.log",
+      "original_bytes": 220,
+      "original_sha256": "a3328b4a4fac82d09b486fbb30d90a2dabd98532f4a28be850aa5ebcd97e55a8",
+      "normalized_sha256": "941e719c5e794177747cfd10507c4ff6232a467205aca0e8cf01d7c411f7fe60"
+    },
+    {
+      "file": "invoice-schema-coverage-initial-interrupted.log",
+      "original_bytes": 340,
+      "original_sha256": "2e229ef36b807448fe4d50ba1e8f99cd3c684580ff0b430a6cf0016393d27c3e",
+      "normalized_sha256": "6fe430e534fa727f4a589016070d63202babc3cbf27c133706b7b60413cfb363"
+    },
+    {
+      "file": "invoice-schema-coverage.log",
+      "original_bytes": 408,
+      "original_sha256": "156c31853be89674ddeea074b9cadd864b4cade3bfe704a621b6c43f4bff98c0",
+      "normalized_sha256": "4603f6f94ecaf62d93eba5917b8bb809e1c1e7680c1e64162527af7e55966f6b"
+    },
+    {
+      "file": "invoice-schema-full-coverage.log",
+      "original_bytes": 97984,
+      "original_sha256": "94e71eb45f7f9a0be1091bdfe5b9a39ade14046a7257612ab4a5ba30421b9140",
+      "normalized_sha256": "f52087e6820fd60208429b75fe88eaada6685ae36a11ad2e52df33b2ddeac91c"
+    },
+    {
+      "file": "spec-app-lock-green.log",
+      "original_bytes": 2640,
+      "original_sha256": "6c41b68b8bba9dd08d21e1727e4da7342c974b0a74a60510067cc0d264e625d7",
+      "normalized_sha256": "9bf06f2da3ac1e3239fab4b085d02b2493c6af2f0cd9d8fa8d0737b5da97c6f6"
+    },
+    {
+      "file": "spec-combined-dom.log",
+      "original_bytes": 19015,
+      "original_sha256": "38a0ee809f3e634626cb3013d2796c3b4bd8d9c084644e2f50995d46bdd3f368",
+      "normalized_sha256": "12b5f25ba85b9084048919b34fafe5a09b2e9aa4fa022028a67429fa491ff8bb"
+    },
+    {
+      "file": "web-vite-full.log",
+      "original_bytes": 2124,
+      "original_sha256": "1844fef3ec9c764a8f40c9d8a82f187e5fb1564d6874e7a12b1db4061636c9f5",
+      "normalized_sha256": "05bc150e3d8d1b63c0c9eeee80ac80be3c15f58376b2c8888a2052c703e561c6"
+    },
+    {
+      "file": "web-vite-lean.log",
+      "original_bytes": 2069,
+      "original_sha256": "3700216362eef991a1f2bcd8deb2b105c3d35f7c28fee7da4dbdee1ea4b73329",
+      "normalized_sha256": "3462f8e81d011547fb3d309b492aa9493785464eb71af73a3cedbfe3c41e6d89"
+    }
+  ]
+}

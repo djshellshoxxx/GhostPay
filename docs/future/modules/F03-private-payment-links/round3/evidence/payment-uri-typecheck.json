@@ -1,0 +1,24 @@
+{
+  "source_local_commit": "f0968b9541dbd3234a6b0516023773845c04c4e4",
+  "source_tree": "6c3c65280f693bd6477218f10aff46b2a3d95e1f",
+  "command": [
+    "npm",
+    "run",
+    "typecheck",
+    "--workspace",
+    "@ghostpay/payment-uri"
+  ],
+  "cwd": "/workspace/scratch/63789860705e/GhostPay-f03-main-reconciliation",
+  "explicit_environment": {
+    "NODE_OPTIONS": "--max-old-space-size=1024"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 2.391,
+  "max_child_rss_kib": 361428,
+  "finished_utc": "2026-11-20T16:42:06.664878+00:00",
+  "output_sha256": "5c36e3d7f1b39fce93797855345366ec233361151ef272d0f2211534c2c742fe",
+  "log": "payment-uri-typecheck.log",
+  "original_console_archive": "original-console.json",
+  "normalized_log_sha256": "33e9720d07b7447ad94e31d3c65ff81e3a1cb5c2572101bfed05885d58e56c54",
+  "log_formatting": "Terminal ANSI color removed; line-end spaces and blank EOF lines removed. Original bytes and output_sha256 remain in the archive."
+}

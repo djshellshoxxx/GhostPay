@@ -1,0 +1,23 @@
+{
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "180s",
+    "node",
+    "--max-old-space-size=1024",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/components/PaymentRequestDownload.test.tsx",
+    "src/components/PaymentRequestFileInput.test.tsx",
+    "src/views/Pay.requestFile.test.tsx",
+    "src/views/Pay.invoiceQr.test.tsx",
+    "src/i18n/securityKeys.test.ts",
+    "--maxWorkers=1",
+    "--coverage.enabled=false",
+    "--reporter=verbose"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 26.87,
+  "source_commit": "d82744017594267d9511e46beaf19e5842fb8317",
+  "log": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.log"
+}

@@ -1,0 +1,27 @@
+{
+  "source_local_commit": "f0968b9541dbd3234a6b0516023773845c04c4e4",
+  "source_tree": "6c3c65280f693bd6477218f10aff46b2a3d95e1f",
+  "command": [
+    "timeout",
+    "--kill-after=5s",
+    "240s",
+    "node",
+    "../../node_modules/vite/bin/vite.js",
+    "build"
+  ],
+  "cwd": "/workspace/scratch/63789860705e/GhostPay-f03-main-reconciliation/apps/web",
+  "explicit_environment": {
+    "NODE_OPTIONS": "--max-old-space-size=1024",
+    "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+    "RAYON_NUM_THREADS": "2"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 2.0,
+  "max_child_rss_kib": 467108,
+  "finished_utc": "2026-11-20T16:45:48.210240+00:00",
+  "output_sha256": "2ac2c689b001b2bcaa599076af71c062d3bfa678c1d1e1c05049cb8b633dd45f",
+  "log": "web-vite-full.log",
+  "original_console_archive": "original-console.json",
+  "normalized_log_sha256": "4942f891ae922f6aaa1174290861ec0874e9b38c3c4c7070bee7dcc9e818a109",
+  "log_formatting": "Terminal ANSI color removed; line-end spaces and blank EOF lines removed. Original bytes and output_sha256 remain in the archive."
+}
