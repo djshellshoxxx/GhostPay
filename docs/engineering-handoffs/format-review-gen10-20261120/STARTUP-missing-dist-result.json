@@ -1,0 +1,35 @@
+{
+  "format": "ghostpay-format-review-run/1",
+  "phase": "unchanged-runtime regression baseline",
+  "source_commit": "d2d270edd0697fa5d2b2a6a39995db2e39ebbeed",
+  "source_blobs": {
+    "apps/web/src/lib/format.ts": "18dad7e4235c922bb7f197312317cc86557a12c2",
+    "apps/web/src/lib/format.test.ts": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+    "apps/web/vite.config.ts": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+    "package-lock.json": "539274d58048bc3edf066ca1a7891f247b2aea36",
+    "eslint.config.js": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee",
+    "apps/web/tsconfig.json": "6500e86eb5839bfa98d0193c88615e7a3c13039d"
+  },
+  "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-format-review-gen10/apps/web",
+  "command": [
+    "node",
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "src/lib/format.test.ts",
+    "--maxWorkers=1"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=768"
+  },
+  "node": "v24.22.3",
+  "vitest_package": "5.1.0",
+  "runner_realpath": "/workspace/scratch/e5b5e498b785/GhostPay/node_modules/vitest/vitest.mjs",
+  "started_utc": "2026-11-20T03:13:26.476304+00:00",
+  "duration_seconds": 0.526,
+  "exit_code": 1,
+  "external_timeout_seconds": 180,
+  "log_sha256": "a55de1bf55776967e6ee2d19971849a2446ceb4689d40bbbc6603b87155ecc7b",
+  "outcome": "configuration_startup_failure",
+  "test_cases_executed": 0,
+  "is_regression_red_result": false
+}

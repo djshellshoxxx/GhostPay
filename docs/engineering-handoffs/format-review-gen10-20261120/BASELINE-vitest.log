@@ -1,0 +1,42 @@
+
+ RUN  v5.1.0 /workspace/scratch/e5b5e498b785/GhostPay-format-review-gen10/apps/web
+
+ ❯ src/lib/format.test.ts (12 tests | 2 failed) 11ms
+   ❯ formatUnits / parseUnits (5)
+     × fails closed on invalid runtime decimal precision 3ms
+     × returns undefined instead of throwing for non-string runtime amounts 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/format.test.ts > formatUnits / parseUnits > fails closed on invalid runtime decimal precision
+RangeError: The number 1.5 cannot be converted to a BigInt because it is not an integer
+ ❯ parseUnits src/lib/format.ts:23:33
+     21|   const frac = m[2] ?? '';
+     22|   if (frac.length > decimals) return undefined;
+     23|   return BigInt(whole) * 10n ** BigInt(decimals) + BigInt(frac.padEnd(…
+       |                                 ^
+     24| }
+     25|
+ ❯ src/lib/format.test.ts:19:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/format.test.ts > formatUnits / parseUnits > returns undefined instead of throwing for non-string runtime amounts
+TypeError: Cannot read properties of null (reading 'trim')
+ ❯ parseUnits src/lib/format.ts:18:34
+     16| /** Strictly parses a decimal string into base units. Returns undefine…
+     17| export function parseUnits(text: string, decimals: number): bigint | u…
+     18|   const m = DECIMAL_RE.exec(text.trim());
+       |                                  ^
+     19|   if (m === null) return undefined;
+     20|   const whole = m[1] as string;
+ ❯ src/lib/format.test.ts:27:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 10 passed (12)
+   Start at  19:14:01
+   Duration  350ms (transform 58%, import 20%, tests 14%, worker 7%)
+
