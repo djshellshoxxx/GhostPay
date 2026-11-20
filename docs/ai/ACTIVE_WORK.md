@@ -1,3 +1,15 @@
+# Cycle 20261120T2036Z — BTC silent-payment preview network guard (isolated)
+
+- Coordinator/worker: ChatGPT automation cycle 20261120T2036Z; sequential consolidation, test-first bug repair, source audit, and handoff. No independent native subagent available and self-review is not an independent approval.
+- Branch: `automation/20261120T2036Z/bug/btc-preview-network`; base main `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+- Owned paths: `packages/btc-silent-payments/src/spend.ts`, new `packages/btc-silent-payments/src/spend.preview.network.test.ts`, additive `docs/handoffs/BTC_PREVIEW_NETWORK_20261120.md`, and this additive claim.
+- Finding: GP-BUG-17 / BTC-SPEND-API-1 from audit #312: `previewSweep` accepts a correctly encoded silent-payment address belonging to the opposite Bitcoin network while transaction signing rejects it. Public-input API mismatch; existing browser checks the address before preview, so no browser funds-loss claim.
+- Acceptance: failing regression on pinned main for wrong-network testnet and mainnet silent payment destinations, valid matching-network previews unchanged, strict address decoder called before fee/amount return, no change to signing, fee policy, custody, RPC, contract or deployment; exact-head repository Vitest/typecheck/lint and independent verification before integration.
+- Current ownership/dependencies: main `aa3df1cb37274fae73af0ca957183c15c51b62d3`, broad #278 and #307 retain BTC source; #330 ancestry census is not a semantic clearance. Recent PR #334 owns `packages/metadata-hardening/src/btc.ts`, not this module; no PR search hits for `GP-BUG-17` / `previewSweep`. Integration metadata ref `automation/ghostpay-integration-lock` read as released generation 8, not acquired; no shared merge planned.
+- Execution: GitHub connector available; local `git ls-remote` fails DNS for github.com. Tests are not claimed as executed until actually run. Preserve this branch and exact source evidence for successor verification.
+
+---
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
