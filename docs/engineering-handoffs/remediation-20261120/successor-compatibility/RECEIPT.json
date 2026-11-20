@@ -1,0 +1,225 @@
+{
+  "schema": "ghostpay-successor-compatibility/1",
+  "observed_at_utc": "2026-11-20T01:06:54.406081+00:00",
+  "worker": "/root/successor_compatibility_review",
+  "git_version": "git version 2.56.1",
+  "sources": {
+    "baseline": {
+      "commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b"
+    },
+    "canonical": {
+      "commit": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "tree": "4cf2148578f83d27a61d45f480246f317c5099ff"
+    },
+    "pr292": {
+      "commit": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+      "tree": "d58874e0d4bfaace14abec3a41cbbff17d755707"
+    },
+    "pr290": {
+      "commit": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "tree": "9c5df12a4621384323af1f4d51b1b04e37d62d3c"
+    }
+  },
+  "merge_bases": {
+    "pr292": [
+      "d74af79ebabdc8cead843361c3497b46d8c421f9"
+    ],
+    "pr290": [
+      "d74af79ebabdc8cead843361c3497b46d8c421f9"
+    ]
+  },
+  "changed_file_counts": {
+    "canonical": 130,
+    "pr292": 106,
+    "pr290": 4
+  },
+  "non_documentation_paths": {
+    "canonical": [
+      ".github/dependabot.yml",
+      "apps/web/e2e/network-authorization.spec.ts",
+      "apps/web/src/views/Pay.preflightCompletion.test.tsx",
+      "apps/web/src/views/Pay.signer.test.tsx",
+      "packages/merchant-ledger/src/ledger.test.ts",
+      "packages/merchant-ledger/src/reconcile.ts"
+    ],
+    "pr292": [
+      "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "packages/chain-adapters/src/deployments.test.ts",
+      "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "scripts/pages/build-pages.sh",
+      "scripts/tests/privacy-csp-bundle.test.mjs"
+    ],
+    "pr290": [
+      "apps/web/src/lib/qrKinds.test.ts",
+      "apps/web/src/lib/qrKinds.ts"
+    ]
+  },
+  "path_overlaps": {
+    "canonical_vs_pr292": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "canonical_vs_pr290": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "canonical_vs_pr292_non_documentation": [],
+    "canonical_vs_pr290_non_documentation": []
+  },
+  "source_blobs": {
+    ".github/dependabot.yml": {
+      "baseline": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+      "canonical": "604a27d1f04a043461d0dd9adcbcfdf73234e845",
+      "pr292": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+      "pr290": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6"
+    },
+    "apps/web/e2e/network-authorization.spec.ts": {
+      "baseline": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+      "canonical": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "pr292": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+      "pr290": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b"
+    },
+    "apps/web/src/lib/qrKinds.test.ts": {
+      "baseline": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "canonical": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "pr292": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+      "pr290": "af5ef89f6fba0cea13b18884df387875f064ad34"
+    },
+    "apps/web/src/lib/qrKinds.ts": {
+      "baseline": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "canonical": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "pr292": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "pr290": "a85e1011cdface74c87683146ff7428654b7830d"
+    },
+    "apps/web/src/lib/sweep.boundaryAudit.test.ts": {
+      "baseline": null,
+      "canonical": null,
+      "pr292": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "pr290": null
+    },
+    "apps/web/src/views/Pay.preflightCompletion.test.tsx": {
+      "baseline": null,
+      "canonical": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8",
+      "pr292": null,
+      "pr290": null
+    },
+    "apps/web/src/views/Pay.signer.test.tsx": {
+      "baseline": "c93c871fb4500c1d34bcac28cedfebb2f7ab4088",
+      "canonical": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "pr292": "c93c871fb4500c1d34bcac28cedfebb2f7ab4088",
+      "pr290": "c93c871fb4500c1d34bcac28cedfebb2f7ab4088"
+    },
+    "packages/chain-adapters/src/deployments.test.ts": {
+      "baseline": "251fdedabf2f2be66ce1a0b48946ee5721fe7691",
+      "canonical": "251fdedabf2f2be66ce1a0b48946ee5721fe7691",
+      "pr292": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "pr290": "251fdedabf2f2be66ce1a0b48946ee5721fe7691"
+    },
+    "packages/merchant-ledger/src/ledger.test.ts": {
+      "baseline": "91712cbb9561ba9d660d8ac10892c8c96e5942c3",
+      "canonical": "ee0270fc6fbd7402262c89b33f4213a03bd294e3",
+      "pr292": "91712cbb9561ba9d660d8ac10892c8c96e5942c3",
+      "pr290": "91712cbb9561ba9d660d8ac10892c8c96e5942c3"
+    },
+    "packages/merchant-ledger/src/reconcile.ts": {
+      "baseline": "9e8b5e310e0c445c954e43de3ad712a1a88512b2",
+      "canonical": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a",
+      "pr292": "9e8b5e310e0c445c954e43de3ad712a1a88512b2",
+      "pr290": "9e8b5e310e0c445c954e43de3ad712a1a88512b2"
+    },
+    "scripts/pages/build-pages-artifact-gate.test.mjs": {
+      "baseline": null,
+      "canonical": null,
+      "pr292": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "pr290": null
+    },
+    "scripts/pages/build-pages.sh": {
+      "baseline": "087d5ee32ed8f3724b4cce635e2e9702d959068c",
+      "canonical": "087d5ee32ed8f3724b4cce635e2e9702d959068c",
+      "pr292": "2022cf30a0f18535131c2f9651d292226550835b",
+      "pr290": "087d5ee32ed8f3724b4cce635e2e9702d959068c"
+    },
+    "scripts/tests/privacy-csp-bundle.test.mjs": {
+      "baseline": "d86959ef4ba6418eec5737fdb9e54db7d2859a1f",
+      "canonical": "d86959ef4ba6418eec5737fdb9e54db7d2859a1f",
+      "pr292": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "pr290": "d86959ef4ba6418eec5737fdb9e54db7d2859a1f"
+    }
+  },
+  "merge_previews": {
+    "pr292": {
+      "command": "git merge-tree --write-tree 417f7c71daf8645e1432f2ec8f070110879b80bd 814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+      "exit_code": 1,
+      "preview_tree_with_unresolved_claims": "7e1e1748142f989391811699b0822dead3e72a55",
+      "conflict_paths": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "non_documentation_blobs_match_respective_source": true,
+      "preview_is_not_a_qualified_commit": true
+    },
+    "pr290": {
+      "command": "git merge-tree --write-tree 417f7c71daf8645e1432f2ec8f070110879b80bd ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "exit_code": 1,
+      "preview_tree_with_unresolved_claims": "c33a7add00763deb6d8bf3d63a6881fd56363c02",
+      "conflict_paths": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "non_documentation_blobs_match_respective_source": true,
+      "preview_is_not_a_qualified_commit": true
+    }
+  },
+  "coordination": {
+    "metadata_ref_sha": "c8517bebd1d5218f9102ca8d1911013cf10a27fc",
+    "status": "released",
+    "owner": "20261119-continuous-followup-0a7bc3583588-root",
+    "generation": 5,
+    "released_at": "2026-11-20T01:00:43.000Z",
+    "published_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "lease_acquired_by_this_worker": false,
+    "remote_writes_by_this_worker": false
+  },
+  "verification": {
+    "source_diffs_inspected": true,
+    "all_non_documentation_pins_preserved_in_merge_previews": true,
+    "product_tests_executed": 0,
+    "combined_commit_created": false,
+    "actual_merge_resolution_performed": false,
+    "expensive_suites_repeated": false,
+    "initial_prefix_check": {
+      "result": "failed for PR292 because a reviewer claim is prepended as well as claims appended",
+      "classification": "overly strict review-script assumption, not a source loss or product defect",
+      "resolution": "inspect full diff; verify baseline file is preserved contiguously and zero existing lines removed on each source"
+    }
+  },
+  "disposition": "Compatible source changes; only additive ownership-document conflict. Canonical does not yet contain PR292 or PR290 changes. Complete qualification and current ownership checks remain required before integration.",
+  "ownership_claims_are_additive": {
+    "canonical": {
+      "baseline_is_exact_prefix": true,
+      "baseline_preserved_contiguously": true,
+      "added_lines": 83,
+      "removed_lines": 0,
+      "added_bytes": 12014
+    },
+    "pr292": {
+      "baseline_is_exact_prefix": false,
+      "baseline_preserved_contiguously": true,
+      "added_lines": 53,
+      "removed_lines": 0,
+      "added_bytes": 6670
+    },
+    "pr290": {
+      "baseline_is_exact_prefix": true,
+      "baseline_preserved_contiguously": true,
+      "added_lines": 40,
+      "removed_lines": 0,
+      "added_bytes": 2565
+    }
+  },
+  "canonical_six_non_documentation_blobs_match_prior_qualification_receipt": {
+    ".github/dependabot.yml": true,
+    "apps/web/e2e/network-authorization.spec.ts": true,
+    "apps/web/src/views/Pay.preflightCompletion.test.tsx": true,
+    "apps/web/src/views/Pay.signer.test.tsx": true,
+    "packages/merchant-ledger/src/ledger.test.ts": true,
+    "packages/merchant-ledger/src/reconcile.ts": true
+  }
+}

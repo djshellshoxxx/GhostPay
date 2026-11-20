@@ -1,0 +1,10 @@
+{
+  "REVIEW.md": "611a40d52bd481232ae98bc343d61ba6e5a9c6889b5ebc8d03a710ef43482cc8",
+  "evidence/ARTIFACT_IDENTITY.json": "0904e2fbfef79b9ed749e497f177a13d3f961b46409d41dd348da855c618fa7e",
+  "evidence/build-generated-artifact-verification.log": "3741e3a0fda5781813941ef685f0ac3b9f9b321adf8f0d1ef560f3cb968beae3",
+  "evidence/hosted-SHA256SUMS": "6c974785872b0e6363cdbaba624891f53bffa485cf854efc5bef48fb901237d4",
+  "evidence/hosted-build-info.json": "d9386682e3d20d97cecc7cb8ec9ba0c78f8f4dc9cb9823c457603a07f2510736",
+  "evidence/hosted-pages-evidence.json": "6037ebc902fc889f4b8f85207804cb4a8b21da58ec2ff0f418caa75fe5fb1086",
+  "evidence/independent-artifact-verification.log": "13be6b6e25446b27a758d6bb594fad2967916bb79832884a07b59aec2d2fbe70",
+  "evidence/independent-site-verification.log": "1e83044d7827ce66de993a3f316a0088a9e0c80e9a869f48d191d580165b6d1f"
+}

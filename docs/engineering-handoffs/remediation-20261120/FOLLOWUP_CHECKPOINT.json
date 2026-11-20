@@ -1,0 +1,115 @@
+{
+  "format": "ghostpay-remediation-checkpoint/1",
+  "observed_at": "2026-11-20T01:19:37.297Z",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "canonical": {
+    "pr": 278,
+    "branch": "release/ghostpay-beta-qualification-20261119",
+    "head": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+  },
+  "combined_candidate": {
+    "pr": 292,
+    "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+    "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+    "draft": true,
+    "mergeable_at_snapshot": true,
+    "full_qualification": false
+  },
+  "pr_inventory": {
+    "initial_metadata_count": 282,
+    "initial_open": 73,
+    "initial_merged": 67,
+    "initial_closed_unmerged": 142,
+    "snapshot_time": "2026-11-20T00:37:39.303Z",
+    "followup_new_prs_examined": [
+      290,
+      292
+    ],
+    "not_all_branches_semantically_reaudited": true
+  },
+  "prs_merged_this_cycle": [],
+  "main_mutations": [],
+  "source_branches_deleted": [],
+  "remote_force_pushes": [],
+  "deployments": [],
+  "integrated_preserved_work": [
+    "Pages promotion verifier +7 regressions",
+    "Two byte-equivalent CodeQL hostile fixture clarifications",
+    "Eleven Sweep authority tests",
+    "Canonical merchant counted-payment guard",
+    "Canonical replacement-preflight observation barrier",
+    "Canonical signer fixture synchronization",
+    "Canonical composite-action dependency discovery"
+  ],
+  "new_confirmed_vulnerabilities": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "scope": "Bounded newly reviewed scopes only; repository-wide alert/count clearance unknown"
+  },
+  "ci_runs_for_936": [
+    {
+      "name": "Beta acceptance",
+      "id": 44652410998,
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410998"
+    },
+    {
+      "name": "CLI operator qualification",
+      "id": 44652410859,
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410859"
+    },
+    {
+      "name": "Hosting kit",
+      "id": 44652410995,
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410995"
+    },
+    {
+      "name": "Integration",
+      "id": 44652410979,
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410979"
+    },
+    {
+      "name": "CI",
+      "id": 44652410961,
+      "status": "pending",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410961"
+    },
+    {
+      "name": "Pages",
+      "id": 44652411300,
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652411300"
+    }
+  ],
+  "current_strict_analyzer": {
+    "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "run": 44650172375,
+    "status": "queued",
+    "previous_d74": "cancelled, partial4of5targets and3Lowrecords, not passed"
+  },
+  "required_owner_decisions": [
+    "ADR0029/ADR0015 scope and hosting acceptance",
+    "Dedicated HTTPS origin with verified DNS and approved security-header limitations",
+    "Approved public release verification identity and offline signing process",
+    "Exact testnet contract/bytecode/immutable/fee-recipient decisions and signed manifest",
+    "Applicable legal/licensing/fee/publication acceptance",
+    "Mandatory external security review and documented release acceptance",
+    "Exact demonstration publication approval after all technical gates",
+    "Separate payments-enabled testnet approval after actual wallet/testnet lifecycle evidence"
+  ],
+  "demonstration_readiness": "BLOCKED",
+  "testnet_beta_readiness": "BLOCKED",
+  "independent_verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
+  "next_priority": "Keep936frozen; inspect actual terminal hosted results and repair legitimate failures. After required gates/reviews, acquire current canonical coordination and merge292 via approved PR workflow, reconcile reviewed290 and scan probes, then requalify exact integrated source before main/deployment."
+}

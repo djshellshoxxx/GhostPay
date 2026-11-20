@@ -1,0 +1,1876 @@
+{
+  "changed_entries": {
+    ".github/dependabot.yml": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "604a27d1f04a043461d0dd9adcbcfdf73234e845"
+      }
+    },
+    "apps/web/e2e/network-authorization.spec.ts": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "19055300a98c8c9d9099baf02cc50246696b6e7b"
+      }
+    },
+    "apps/web/src/lib/sweep.boundaryAudit.test.ts": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e3813045c7975bcbd4e1201d65869e6962827c25"
+      }
+    },
+    "apps/web/src/views/Pay.preflightCompletion.test.tsx": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8"
+      }
+    },
+    "apps/web/src/views/Pay.signer.test.tsx": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "06a1750266a87afac186e7b1d8b64f4af689a9de"
+      }
+    },
+    "docs/engineering-handoffs/CURRENT.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7bff4ed94ab11852714c27b93be1b935e6822fd1"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/FINAL_LOCAL_QUALIFICATION.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d5179ce3b9238d87c99d52e70dc4b5b71e63ef85"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/FOLLOWUP_QUALIFICATION.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "a0c0009a64554cec3c36db5fc9c59f6db94bc563"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/HOSTED_D74.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c644596a9a591461a2d75a9e00f1291791c49a12"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/HOSTED_D74_LOGS.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "47d4fe682c0842d56c91af50016459843776159b"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/PUBLICATION_VERIFICATION.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5c32c5ad6ce06b88ac7b2444d122a520629bc407"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/README.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7dc0f2a20aa1d7d8dcd107ac3f1bd85afc75f038"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/TASK_LEDGER.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "410fa82a1a8f497c2a3006fe15a7c7116692bb2c"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/README.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "825bec0d2020bac5ea926e9efb6709dfbefaff00"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/hosted-error-context.txt.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f387d81126d8449030ede608817c2a9863801008"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/hosted-full-failure.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e116be350e7718c99d4e389e224b94251f2db5c8"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/hosted-input-receipt.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ba4428f3956d8252c572bb915ace02033874b868"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/hosted-lean-failure.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "55f6b90e679447d8e4070a200ed6f0976e68c83c"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/independent-green.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0c4acfabd83afe47297ab9f4ef48a998468c4369"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/independent-green.log": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "9138163790d490afe23a71ba316b4abfe89c4871"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/independent-receipt.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "201c94a09699bb07f1e90864fd199632754f8fce"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/late-success-probe.test.tsx.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1db21d0c42d7ce269e05a6f82a1a3ceb13030454"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/playwright-lifecycle-source.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "644c9a37b72e9dee7b9d40ffb3230b9625e33795"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/playwright-source-receipt.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "fe92c13a7fb67b6bd25bee2cefe2d922266a91e5"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/premature-observation-probe.test.tsx.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c73b2bab2db020d15629981bf92886742a1bf85a"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/premature-observation-red.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0857365cca321ab39baaf1dc9102711acfd886db"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/premature-observation-red.log": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "eeaf02db053eb1ceadec5b314aee08f6b3d34032"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/browser-followup-review/evidence/source-receipt.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "02caba0274e8696a5bc7c486b55e651f56e1c8ed"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-actions.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "39ccdfea3994af17128ddd11810fbc9e2b0d4e3b"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-audit-full.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "fe981b79f162a3d115cad2de9a92522d0cd70020"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-audit-production.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2b6a7a1beda4d845624db7f68e07a4e96a771288"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-merchant-coverage.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "493c5e6a4371eb0e29f5af23a6fee02c233e4b3a"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-secrets.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1afeab67f8ae3c25c3c9e5f3065f958c50558d59"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-web-coverage.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5de5911f16963c8bf108c80e874207effbf5d2f6"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/final-web-nocov.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1a3027c439e13641feb5406b070a5a2334ac8f33"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/followup-actions.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "499c372c83fbb0b5254f6e93f1deaf1349f30e15"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/followup-merchant-build.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "20ce5b2179739c601bd058a972e7bb7a0c665a89"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/followup-web-focused.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2e7a74606226302154ea6534de548a3368102592"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/followup-web-lint.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "df279f67248845c78e3717f2fd821959827e13d5"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/followup-web-typecheck.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "92d1724570de72ebb81bb4835e13f6d6f4855b40"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/hosted-d74-full-135981023128.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2d2264fd06b4b2368d81c06536e5b3f1835a2fca"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/hosted-d74-lean-135981022990.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0c6a391e8d9f989e53b60f5f3140ae8084a0d227"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/hosted-d74-web-135981023399.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d5652b37e25ca55fa56d97a23dfdb2b8f5dfe675"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/pay-signer-fixed.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "9eba69f740362cea92ca4e36f1bd34e0af530e39"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/pay-signer-lint.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "dc775c12ce98f116bf39012ffe6ba1e955f760cc"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/final-evidence/pay-signer-reproduce.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e8884d5671b179bfe4ba0e4d4a4d5e1c3924bc7f"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependabot-fix/README.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "018c0f4a6b292e9fd88a7d0fed13bf1c5e991f80"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependabot-fix/RECEIPT.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f82dfe7b2ddf89fcaaaf9632de0429bb92d27275"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependabot-fix/VALIDATION.log": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "31ecf87fbd190dbd6eb2c344eb7944de072db92a"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/ASSESSMENT.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d3637c4bc8077ad057046f12d61bad26b6a1a2d0"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/FINDINGS.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "de55f92710188505b5e71bede7840ab8d4877bff"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/RECEIPT.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d35602dda0c2212f945af3f149768baf5ccca045"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/affected-lock-entries.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1308734b495adc7d7ea906b716e23365f6c40ceb"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/audit-full.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "fe981b79f162a3d115cad2de9a92522d0cd70020"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/audit-production.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2b6a7a1beda4d845624db7f68e07a4e96a771288"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/commands.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3c22a534ec1f6fe2f7422781606fd5980b9dc211"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/cookie-explain.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ba94ca76f5a17f7512cf24ed5b7ca66c55c1c4df"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/cookie-registry-metadata.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5eb127519a413351a30d36671d300a9309936a6f"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/elliptic-explain.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "a2544783d6a9db92a06c11ed345c95d91af106f9"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/elliptic-registry-metadata.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1e8fdf5bde48577d332ab61c9bef7f63e2a93234"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-dependency-review/evidence/lean-module-check.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ce80fbc8d0894e55ec9d872c05f6648af08b3e90"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/README.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e034901811d1e29877a8c41c6a5d59713bc8b654"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/RECEIPT.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "68c7c04e241dfbf670cc74c0553f7b92be40e139"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-boundary-red.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "4278b0e88652ba7aa99e942eda0556e21f383a54"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-boundary-red.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ca974ce378ef118ef8a9d5b95271f1f2ac60c2f0"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-zero-build.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "bf51e7e177278a6b61cef155f71d935a1f461af3"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-zero-full-coverage.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e26a6386944837c864b43f589ed2d55f2dc8556d"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-zero-lint.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e60b824ae557d5880c016df8fa492fb534696e39"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-zero-red.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "68212732242c4120fc8f2367ec56491578fd63c6"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-zero-red.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2c64795fbab607d9acb20971692e4d4b3de72e81"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-ledger-fix/ledger-zero-typecheck.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e4cd29488c8c395a6cc48d37db0c2bb3b974ebd5"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/CONTINUATION.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "cf12a7d4b7a77e58ae86b954a9c2c777bf5b3a33"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/CONTINUATION_MATRIX.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c097e054210779bc95d8cd304d58353edbff82bd"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/MATRIX.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "430a7d3a68917a68553135e9852a7c57d7d4bafb"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/REPORT.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "dba9183fd0ff53283965c2e5632557eb4b91e82d"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/claude-candidate-review.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7daf2f40bd6ef9bdec56a8cc6c02fe2fe5612745"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/continuation-final-blobs.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7c5b9428ac87c2bdac184a2a409ec068c7f13fbe"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/continuation-live-refs.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c562f838c18c7960ed5e6f55f590659850fbddab"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/continuation-verification.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "97562b2d63232db96d69c0a840a5a919fc2be347"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/final-blob-comparisons.json.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0711b791e430d605c7998e1794ba81df3e34225c"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/live-refs-final.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0b872e6cffb1a91da7f9f6599f4d453c12cfe768"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/live-refs-initial.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0b872e6cffb1a91da7f9f6599f4d453c12cfe768"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-5-remaining-uniqueness/remaining-original-census-rows.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c62f1c9fd3f8e6296f393f8a12085f02f43ce2c5"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/RECEIPT.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "4132aae3da6759164700ea119a95b93a12d538e1"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/REVIEW.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "b687204b39d3bca6ab9c2dc234e26af7fddb81eb"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/baseline-original-control.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "aa9fc684d955937af63a0c2783dde1f6a187c3c9"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/baseline-red.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5dbeff37be8ad10fb1c5f048c8f99712a8050ff2"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/baseline-red.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "00008fa09a9dd27ffbb2be04775cfbee74c1fc29"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/build.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "20ce5b2179739c601bd058a972e7bb7a0c665a89"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/fixed-coverage.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c15b440729feabe7d1aa8b4c4725921e94eb6224"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/fixed-coverage.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8730d8576614bd725ba1543878addcae14dbed61"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/lint.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f63e0ca191fcc8beb2f0de06709af4b77f779da3"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/live-refs.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8ed37dd17d656a2e1882f0dbe06734e324fca7c3"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/original-control.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "79008af1064529f9dcd906337da72192dee2c8c1"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/probes-baseline.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "621a8d22165bdbe32778acbdf1ec89a3e2b2c067"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/probes-baseline.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "9d38add7d60261f2a156ba7d8f09cfa1829b5a8e"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/probes-fixed.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0f34d8c15a6040d71b073582794d9a4fb647d815"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/probes-fixed.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "06569824578018c8e7cdda0d2af26594d870195c"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/reconcile.gen6-review.test.ts.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "48dc041164366541bb6dee5d1ec5884e81ede7ab"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/source-pins.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e2008759d5c57ca3916f59586beb957daee11e19"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/generation-6-merchant-review/evidence/typecheck.log.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e4cd29488c8c395a6cc48d37db0c2bb3b974ebd5"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/README.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2c706b5e351e9bc1a51ce79bbcbfdc838fcb3e79"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/baseline.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5d598a002baaa147804cf0ca4ca024d3ff27a99c"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/baseline.log": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "b3ad2c6ff0d0ba7b13aa29f23583e248a7c1fc19"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/fixed-receipt.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0668b69e378e859e5b90b6bd99e178d147a1eae8"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/fixed.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5f148a500130cb0d913080373a7e2f4dcc15b2c2"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/fixed.log": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "303cf79488096529eaa99fd22af4c6f28c3ee028"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/hosted-web-failure.txt": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "485d6afe15f77fc4aa955e4c951bf573663ec77a"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/evidence/source-receipt.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f4be307cfefa9e4e81ecf1a8c0144c89e9a11a0d"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/README.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0a146943d54e9eaf64c556fb713195c0a0b7b6d3"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/RECEIPT.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "48e86415fb51771067d2fd984a533ac2603c77cc"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/focused-green.txt.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2e11cf23939c00507522bc329c6f3c5fc9684a0d"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/hosted-failure-excerpt.txt.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "6c0882cb1afef4d54b4980b98f3a0850c66fc56e"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/hosted-lean-artifact-14588585398.zip": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3d0fcec04bd69481a2e7b41c5c645481ae5b59ab"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/lint.txt.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8c743102dcfa804242e9cb4554f527b7e25d1542"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/premature-snapshot-red.txt.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "20329a6934313774d930e262e4c592e36347cd2c"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/premature-snapshot.patch": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "95df3e689c4a81fc0589a38e9507011b1ea712db"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/runtime.json": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "27ad9ae4010df1f20d8599f8107ede9a7fae9d86"
+      }
+    },
+    "docs/engineering-handoffs/continuous-20261120/preflight-observation/typecheck.txt.gz": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d4b9926df0b7defceb6caf0b474c4a190c5ca8f0"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/PR_INVENTORY.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d6fa8967a3927a297d779474bfdd26821b5b2e1a"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/PUBLICATION_MAP.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "11a5d9596d5511dbf08043eae54929550fdcc640"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/README.md": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e4e6c4efd9765d7bc174a2bf6e8f905a49ad88ee"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/REMEDIATION_LEDGER.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "6d44c31d636e6e8908c45505a48dc243e5dab3f1"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/LOGS.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ed188bcc1a097a169b7cdb4a12e324701e2a9ea1"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/RECEIPT.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "22a383c281b73ddfbcc538829db7fc4a4bdf8324"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/REVIEW.md": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3d07808f2881d30480cc209b740e203d13c4c5f4"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/SHA256SUMS.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "79c6465863f2d5cf8b4d4aec2fefd74e8c3f26cb"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/all-pages-fixed-node22.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7f0aa205e16f2a0d24123e414c671be090745c5a"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-baseline-deployments.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d78b39cd18557d1afe42c25ad040111ec3f09e56"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-baseline-privacy-csp.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "40a9d0e952b1af412c2c32aa0e0f0b1371f43723"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-fixed-deployments.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1206f19dc19cefbbe0b988c2ed032c5f95b3ea42"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-fixed-privacy-csp.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "89b2bcdb078217f61e6ce1454acd70079caf2fa5"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-fixture-equivalence.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c918ac47673479addbc4f1b72f0c8378794142de"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-fixture-equivalence.mjs.txt": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "348f9a087bc929ae848745f97daf8d889ab97a5a"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/codeql-focused-tests.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "609b8b6638d27710e7dab443c78b02b602a46529"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-SHA256SUMS": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5f42bc3966895fc44f6542581295b8df656f4813"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-artifact-identity.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "667e55716744e340ca9b76238880ebe3acdff284"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-artifact-probes-node22.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3266d6727de96f2c15e62eda2a2a5c239089f90c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-artifact-probes.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "184d20211329785189e19490958c76e38d9cb8cf"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-artifact-probes.mjs": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0fa08e930cff6a60d0bc87c73ef35eadec73ed7c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-build-info.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "63dad7e9d93b805ac529baf9c8ee4dc306c1473d"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-pages-evidence.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "52ddee0245491c0bb25476efd4fbbd638b00e798"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/hosted-site-verification.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0a37acbfa216ffc5ce5fa72f488d1e939885b439"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/promotion-baseline-frozen.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "09330dd3615a510cb4d62f9a41f22f37fed03f80"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/promotion-baseline-independent.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d3b68c70d5762c5ffa88abf7cc196b2aa0419bb7"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/promotion-fixed-frozen.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8d7c604c3aa65a79588d5d4757502ae6e6405d3d"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/promotion-frozen-identities.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "9b773075228ff8d577186379f8c7d48bde0da4b2"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/verifier-tests-node22.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "bd4df37c5f5b68b777916d36eed24b0354eda208"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/artifact-review/evidence/verifier-tests.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "bf205dc3978fbac7ddaf4969f3e6469b64b10ff1"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/EVIDENCE_SHA256.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5aa5bbeebc430efbc6df2aa3d59adf59b2aa9cc8"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/README.md": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "71b3a2b18d57ca82ea716ef0e794483a2d6746f2"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/SECURITY_FINDINGS.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "215defc3c0d789e534df3f90cc3458dec8c5b655"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/codeql-135981137999-annotations.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "53b30f45761ed896f5bae27830920b25b65eb12c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/codeql-response-metadata.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "a67e6909f62e20703796c5fbef0034137391082f"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/csp-clarified-tests.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3ccb027b95b459f56de49ae943b2883701921511"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/csp-original-tests.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "fc9df494e70412d215fe160dbb4dbf9413d6b849"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/deployments-clarified-tests.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "6039f4f8d33ad6ff9243c832fca6c03fff7752f2"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/deployments-clarified-tests.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "93c84f4032191c66ba715cdf83bbba4d07a04964"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/deployments-original-tests.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ce8b3d2a3c17aaa0d1d1639f1de5cd6f7d9ad7ea"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/deployments-original-tests.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "b7ee2908fdf2f05ee8befb0277d982376c00add1"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/deployments-typed-lint.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8c743102dcfa804242e9cb4554f527b7e25d1542"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/downloaded-log-manifest.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0bc27e96607cfe8abb98662e9af3bce3bbf1a92d"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/equivalence-initial-attempt.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "550fb9f1c0af241df2faa5cbe01046e1438d1cc0"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/final-qualification-snapshot.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ee39e6408f8cd7223fa9e59a8674d61db7e2fb8f"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/fixture-clarification-receipt.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "71b35c5b317e2d174454005ed2bbd11976c73768"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/fixture-equivalence.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f4c0ff25d91911b798268988ad65da9a74301f7c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/hosted-source-trees.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f553a11c9ed5344649ef772a7049834ee5a28d77"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135513367549.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "b1dcd394b963048ffa53fb06bd3df0155ce32854"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135526221010.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "4d405b73fcd485289e7b5b49fcbe113846c4d2e9"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135598774025.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "65b15ce755a6a2f4a26710aa121d51f6ba377fe6"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135598774031.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "4f59da1ee783a95eba106d67ccb1d1a34ca59bf8"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135629126056.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ef903b93047408b6f5f66278def248d665533da3"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135629126298.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "65140ca2e6ce49eab1a6e55dabfe3a10eafc5e9e"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135981022990.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0c6a391e8d9f989e53b60f5f3140ae8084a0d227"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/job-135981023128.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2d2264fd06b4b2368d81c06536e5b3f1835a2fca"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/latest-ci-jobs.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ffb91ab7b4c4ae0134837abf98f2134df56fda23"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/observed-github-results.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1fb57704e323b52b75a5633c038f8cd5e54f095a"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/reviewed-source.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "130c91e29112c14f4112ee045d760852bc02c528"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/ci-audit/evidence/verify-fixture-equivalence.mjs": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7d8f051d7b4a195f4e191040dfa0bf8ce3e564b2"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/RECEIPT.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ba8fb6acb77659d4904b64f628d65f134a19d00d"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/REMOTE_REFS.tsv": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e20b6c8d7af739931fcc75fc6d46250526f3b56b"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/SHA256SUMS": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "87b7b85a71d73fe8874a2e830f03a52628455048"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/artifact-gate-green.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e8d4e0bb64648a0767b65fecdc014d6ee2944943"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/artifact-gate-red.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "03726b2ee99ebef764e6d063c4533310adc0e178"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/audit-full.json.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "01694a60da396e8500f947e3a578b9c51b0718fd"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/audit-full.stderr.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8c743102dcfa804242e9cb4554f527b7e25d1542"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/audit-production.json.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2b6a7a1beda4d845624db7f68e07a4e96a771288"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/audit-production.stderr.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8c743102dcfa804242e9cb4554f527b7e25d1542"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/combined-deployments.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "adc58ca4155c75a729464155bfaac6a76bf5dbd6"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/combined-pages-csp.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "6e9d42183be1dab515d152480f1b8484996f877e"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/combined-sweep.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ca8f8bdb9a242461fda4e3b7bc420014b1b3e216"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/ghostpay-lean-build.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c04216bf3d87fd3578c8ae4251c726e573a10fd9"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/pages-1f82abc5.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1705a0dccb53aaa080f0870d20b1e8fa2c03f91d"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/pages-evidence.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "19db433af77569ff007b5a0abbba5f15dad797cc"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/qualification-build-libs-verified.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "274b604eef44f37e2c2458800169cb672ac2791f"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/qualification-build-libs.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "6e38fbd244bd2abaf01d5d418888ff9134390caf"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/qualification-clean-npm-ci.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ff8307738eb7c9bd3fd1eb31a0d3d94df4149abe"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/qualification-npm-ci.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3ab150b94750c18e4619ba246bc1807b0e1630a5"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/remediation-actions.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "0f0f4f2f4f20972a5f8f781a2930b7d9eab8e99e"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/remediation-dependency-tree.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d4844fa71a8c15b1cf4fb1547f3f463d5b17f85b"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/coordinator-evidence/remediation-secrets.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1afeab67f8ae3c25c3c9e5f3065f958c50558d59"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/AUDIT.md": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "e4167e643bfac48135c9e570bb819d26a74fe62c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/RECEIPT.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1b590f0ac48dc3b7e71b9bc5ef6e09a931ea0cb3"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/SOURCE_PINS.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "6a1ef3cbc99141e42a076a91b3fa0fb67a4ef00e"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/lint-final.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "8c743102dcfa804242e9cb4554f527b7e25d1542"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/lint-initial.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "da14b533c2306d9be7cf78695ef50d95e04fb904"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/results-final.json.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "2a99fbae84db01460a6c0cddb32b56a6cac4b7df"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/results.json.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "1c091c4481a543b4ccd0056eeccbc5e9eceeed0f"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/tests-final.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "22e06bcb8a71fe8c62cd71d708f464e9a8a2d211"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/tests.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c54f173d40b2aa73f0fe9910a62dd481c2e0c749"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/custody-audit/typecheck-final.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d4b9926df0b7defceb6caf0b474c4a190c5ca8f0"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/COMBINED_SOURCE.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "826067c00aac5359ce0b55bb251b16454f4b8551"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/FRESH_ARTIFACT.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "9c63bc80279c4ecdde305942661fd406a3ab544b"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/RECEIPT.json": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3c130ec88a004882bdd02d6daa582d63d4c9ff7c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/REVIEW.md": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ecc3fe7790a602174a36b153cf1281c77c185928"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/fresh-artifact-independent.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "eaa2fd5a35f0d7abaa067d3bf2124141a721b14c"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/promotion-combined-independent.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "f14c316d3a4a8e07d741d9e5c08fbd3e7de1b1c4"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/sweep-independent-results.json.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "d21c42b9c6802e634da1168766eeb5cb201d7e2f"
+      }
+    },
+    "docs/engineering-handoffs/remediation-20261120/final-review/sweep-independent.log.gz": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "29e1131f023df55150e4895ad6fa858bfe722108"
+      }
+    },
+    "docs/release/BRANCH_CONSOLIDATION.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7634f60eac93eaaf4e84974c163b3784ef81de83"
+      }
+    },
+    "docs/release/DEPLOYMENT_READINESS.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c0316c4e5fe631918e9a637a287538de71e9b777"
+      }
+    },
+    "docs/release/FEATURE_MATRIX.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "c3a0b75e9c873ea70511b5880d9b22f88e0cc349"
+      }
+    },
+    "docs/release/FINAL_HANDOFF.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "3ef893102bb719e67dbeea50db0bb6ccc2c5e315"
+      }
+    },
+    "docs/release/RELEASE_BLOCKERS.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "7a069d8a0f167a902230ec1d231c1affab864973"
+      }
+    },
+    "docs/release/RELEASE_NOTES.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "109be70fffbdfd2b5377c6961419c8c772706841"
+      }
+    },
+    "docs/release/SECURITY_AUDIT.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "05fdca7707b2700b73d57e47cfa9a5d50c9fc5a0"
+      }
+    },
+    "docs/release/TEST_RESULTS.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "a916d668db424d8bf0a85d6469b2cbd48c529f5f"
+      }
+    },
+    "docs/remote/usability/specs/reconciliation.md": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "b816a1276e7cfacbef653190755822296de96a53"
+      }
+    },
+    "packages/chain-adapters/src/deployments.test.ts": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "9a35cce7f79ef3341e73ed2b8aa140653b97756b"
+      }
+    },
+    "packages/merchant-ledger/src/ledger.test.ts": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "ee0270fc6fbd7402262c89b33f4213a03bd294e3"
+      }
+    },
+    "packages/merchant-ledger/src/reconcile.ts": {
+      "source": "canonical",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a"
+      }
+    },
+    "scripts/pages/build-pages-artifact-gate.test.mjs": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59"
+      }
+    },
+    "scripts/pages/build-pages.sh": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100755",
+        "kind": "blob",
+        "git_sha": "2022cf30a0f18535131c2f9651d292226550835b"
+      }
+    },
+    "scripts/tests/privacy-csp-bundle.test.mjs": {
+      "source": "pr292",
+      "blob": {
+        "mode": "100644",
+        "kind": "blob",
+        "git_sha": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1"
+      }
+    }
+  }
+}

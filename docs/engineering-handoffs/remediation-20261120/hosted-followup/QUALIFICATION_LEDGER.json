@@ -1,0 +1,604 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-20T00:58:06Z",
+  "verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
+  "sources": {
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "canonicalPR": 278,
+    "canonicalHead": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "scopedPR": 292,
+    "scopedHead": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+    "syntheticMerge": "4b44077fe0ef783f27c390d75472f338266fa410",
+    "scopedTree": "d58874e0d4bfaace14abec3a41cbbff17d755707",
+    "checkoutEvidenceJobIds": [
+      135998569362,
+      135998569303
+    ],
+    "syntheticMergeTreeEqualsHead": true
+  },
+  "pr292": {
+    "workflowCount": 6,
+    "checkCount": 32,
+    "counts": {
+      "queued": 25,
+      "skipped": 1,
+      "success": 5,
+      "in_progress": 1
+    },
+    "codeQLPresent": false,
+    "contractAnalysisRunPresent": false,
+    "runs": [
+      {
+        "id": 44648916722,
+        "name": "CLI operator qualification",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916722",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 44648916840,
+        "name": "CI",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 44648916459,
+        "name": "Hosting kit",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916459",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 44648916495,
+        "name": "Beta acceptance",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916495",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 44648916609,
+        "name": "Pages",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916609",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 44648916484,
+        "name": "Integration",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916484",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      }
+    ],
+    "checks": [
+      {
+        "id": 136002216684,
+        "name": "ts-test (btc-silent-payments)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216684",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216468,
+        "name": "ts-test (rest-0)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216468",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216405,
+        "name": "lean-candidate",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216405",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216394,
+        "name": "ts-test (confidential-contracts)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216394",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216384,
+        "name": "ts-test (core-crypto)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216384",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216370,
+        "name": "ts-test (web)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216370",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216357,
+        "name": "ts-test (rest-2)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216357",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216350,
+        "name": "ts-test (rest-1)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216350",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216345,
+        "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216345",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216327,
+        "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216327",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216285,
+        "name": "ts-lint",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216285",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216263,
+        "name": "ts-typecheck",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216263",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216258,
+        "name": "e2e (full)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216258",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216247,
+        "name": "contracts-slither",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216247",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216242,
+        "name": "contracts-test",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216242",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216229,
+        "name": "ts-check",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216229",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216228,
+        "name": "ts-test-relayer",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216228",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216219,
+        "name": "contracts-coverage",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216219",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216178,
+        "name": "contracts-static",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216178",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 136002216168,
+        "name": "e2e (lean)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/136002216168",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998572095,
+        "name": "Release gates (typecheck, lint, unit, mocked lean browser suite)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916609/job/135998572095",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998570503,
+        "name": "secrets-and-egress",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/135998570503",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998570495,
+        "name": "CLI (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916722/job/135998570495",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998570355,
+        "name": "CLI (macos-latest)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916722/job/135998570355",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998570222,
+        "name": "changes",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916840/job/135998570222",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998570054,
+        "name": "CLI (windows-latest)",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916722/job/135998570054",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998569639,
+        "name": "Build and verify the Pages site",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916609/job/135998569639",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998569555,
+        "name": "beta acceptance (lib + cli + browser on anvil)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916495/job/135998569555",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998569416,
+        "name": "kit",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916459/job/135998569416",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998569362,
+        "name": "Pages artifact on anvil (browser)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916609/job/135998569362",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998569303,
+        "name": "integration (anvil + bitcoind regtest + solana-test-validator)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916484/job/135998569303",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      },
+      {
+        "id": 135998568910,
+        "name": "qualify-ghostpay-web",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916459/job/135998568910",
+        "head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+      }
+    ]
+  },
+  "d74": {
+    "ci": {
+      "runId": 44643709383,
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "id": 135980875241,
+          "name": "changes",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135980875647,
+          "name": "secrets-and-egress",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981022990,
+          "name": "e2e (lean)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135981023016,
+          "name": "ts-check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023023,
+          "name": "ts-lint",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023063,
+          "name": "ts-test-relayer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023065,
+          "name": "contracts-coverage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023084,
+          "name": "contracts-test",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023122,
+          "name": "ts-typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023125,
+          "name": "lean-candidate",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023126,
+          "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023128,
+          "name": "e2e (full)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135981023136,
+          "name": "contracts-slither",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023209,
+          "name": "ts-test (rest-0)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023211,
+          "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023274,
+          "name": "contracts-static",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023292,
+          "name": "ts-test (btc-silent-payments)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023314,
+          "name": "ts-test (confidential-contracts)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023357,
+          "name": "ts-test (rest-1)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023380,
+          "name": "ts-test (core-crypto)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135981023399,
+          "name": "ts-test (web)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "id": 135981023693,
+          "name": "ts-test (rest-2)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135985375119,
+          "name": "contracts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 135995823033,
+          "name": "typescript",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ],
+      "web": {
+        "passed": 3849,
+        "failed": 1,
+        "skipped": 1,
+        "unexecutedStage": "vitest.nocov.config.ts",
+        "reason": "Coverage invocation failed before the && second command",
+        "job": 135981023399
+      },
+      "leanBrowser": {
+        "passed": 115,
+        "failed": 1,
+        "skipped": 5,
+        "job": 135981022990
+      },
+      "fullBrowser": {
+        "passed": 128,
+        "failed": 1,
+        "skipped": 2,
+        "job": 135981023128
+      }
+    },
+    "strictMythril": {
+      "runId": 44643709093,
+      "jobId": 135980874961,
+      "status": "in_progress",
+      "conclusion": null,
+      "artifactAvailable": false,
+      "findings": null,
+      "limit": "100-minute analyzer step, 120-minute job; no result inferred from elapsed time"
+    },
+    "echidna": {
+      "jobId": 135980874253,
+      "conclusion": "success",
+      "artifactId": 14587494541,
+      "artifactDigest": "sha256:8eab2127cdccdc5aef64b410a57435459a22cdc4489b13585553134a53629961",
+      "artifactDownloadedThisFollowup": false
+    }
+  },
+  "failures": [
+    {
+      "id": "CI-D74-SIGNER-SYNCHRONIZATION",
+      "kind": "test observation/synchronization defect",
+      "job": 135981023399,
+      "path": "apps/web/src/views/Pay.signer.test.tsx",
+      "case": "compares only the selected seller even when both distinct seller keys are saved",
+      "observation": "Missing Continue button at synchronous getByRole despite the mismatch result already rendered",
+      "owner": "Concurrent continuous coordinator in workspace 0a7bc3583588",
+      "disposition": "Addressed in active local successor; published combined qualification pending",
+      "implementation": "f2b991f7eb2c843e96bb533729d71b6a537b9293",
+      "independentReview": "f83dcad38ed4b2992033779eb4df921e4fc2489d",
+      "verificationSource": "Existing reviewer receipt inspected read-only; not reexecuted by this audit",
+      "verification": {
+        "baselineFailed": 1,
+        "fixedPassed": 11,
+        "fixedFailed": 0,
+        "fixedSkipped": 0
+      },
+      "duplicated": false
+    },
+    {
+      "id": "CI-D74-PREFLIGHT-OBSERVATION",
+      "kind": "test observation timing defect; no demonstrated unauthorized request exploit",
+      "jobs": [
+        135981022990,
+        135981023128
+      ],
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "owner": "Concurrent continuous coordinator in workspace 0a7bc3583588",
+      "disposition": "Reviewed repair integrated locally; published combined qualification pending",
+      "implementation": "ea7a5035",
+      "localMerge": "4b679218",
+      "independentReview": "2b7c015e",
+      "duplicated": false
+    },
+    {
+      "id": "CODEQL-D74-FIXTURE-ANNOTATIONS",
+      "kind": "Two high-severity analyzer annotations in intentionally malformed test fixture construction",
+      "baselineCheck": 135981137999,
+      "baselineHighAnnotations": 2,
+      "disposition": "Fixture construction clarified and independently reviewed in PR292; no new CodeQL check present at observation, no alert dismissed",
+      "currentCodeQLClearance": false
+    },
+    {
+      "id": "STRICT-MYTHRIL-D74",
+      "kind": "Incomplete mandatory analyzer evidence",
+      "disposition": "Current analyzer still executing; exact findings count and terminal exit unknown",
+      "historicalFindingsSubstituted": false
+    }
+  ],
+  "boundaries": {
+    "productEdits": false,
+    "testEdits": false,
+    "remoteWrites": false,
+    "reruns": false,
+    "deployments": false,
+    "policyChanges": false,
+    "localProductTestsThisFollowup": 0,
+    "claimedExternalTestnetQualification": false,
+    "privateSecurityAlertInventoryComplete": false
+  },
+  "nextSteps": [
+    "Let published PR292 qualification finish without documentation-only head changes; inspect actual failing jobs.",
+    "Integrate compatible independently reviewed fixes under the active canonical coordinator's lease, then obtain final combined exact-source CI and CodeQL.",
+    "Retrieve terminal d74 Mythril logs and full per-target artifact; preserve exit, completeness, compiler, source and findings evidence.",
+    "Keep owner/external-review/isolated-origin/manifest/deployment gates outstanding; no release or published artifact qualification is inferred."
+  ],
+  "mainBranchApiProtection": {
+    "protected": false,
+    "enabled": false,
+    "requiredStatusCheckEnforcement": "off",
+    "contexts": [],
+    "checks": [],
+    "fullRepositoryRulesetInventoryRetrieved": false,
+    "userAndRepositoryWorkflowRequirementsUnchanged": true
+  }
+}

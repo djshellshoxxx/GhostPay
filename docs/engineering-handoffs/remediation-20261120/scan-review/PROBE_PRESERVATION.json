@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "source_commit": "ed776fcb171b41c79e085c05327fa2ca1cd43a36",
+  "original_path": "apps/web/src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts",
+  "preserved_path": "privateScanLifecycle.cryptoBoundaryReview.test.ts.txt",
+  "sha256": "28efb67999a88cb9c76ed9841d657a17f8d637ba605ab25502d657853aac2a69",
+  "source_git_blob": "e581f56a3b23aeca861eaa5347f998119ad407b7",
+  "review_product_head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+  "preserved_as": "reproducible review source; not yet added to the frozen PR292 test suite",
+  "restore": "Copy the exact preserved source into original_path in an isolated checkout of review_product_head, prepare the pinned workspace dependencies and built libraries, then execute commands from RECEIPT.json.",
+  "author": "/root/scan_privacy_review",
+  "original_evidence_commits": [
+    "4b1c98450c369a2be9007234414f796132ceb39e",
+    "1b38cf835f3acd21d0ba01f42139a671bbed6d7d"
+  ],
+  "independent_review": {
+    "commit": "89d253a2d846efac1f59d6d1caf60ebba6d69327",
+    "path": "../scan-probe-review/REVIEW.md",
+    "decision": "Acceptable for future integration; independent50/50, web typecheck and new-file ESLint passed. Not yet added to frozen PR292."
+  },
+  "author_log_preservation": {
+    "raw_log": "targeted-vitest.log.gz",
+    "decompressed_sha256": "0fe6197aec74350e13e95e17daf1d61b99dfdb108e52515c1e234a4f48b4c5d2",
+    "text_log": "targeted-vitest.log",
+    "text_sha256": "f18fac083a0911741d90e40eed5b6f67876c5bd003abc37c7097ebd20928645f",
+    "normalization": "one final newline, no other text change"
+  }
+}

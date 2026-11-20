@@ -1,0 +1,149 @@
+{
+  "format": "ghostpay-independent-successor-artifact-review/1",
+  "checkedAtUtc": "2026-11-20T01:16:01.467708+00:00",
+  "reviewer": "/root/artifact_security_review",
+  "node": "v22.23.4",
+  "source": {
+    "sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+    "parents": [
+      "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+      "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    ]
+  },
+  "localSourceMatchesApiObject": true,
+  "sourceCleanBeforeAndAfter": true,
+  "verifierSources": {
+    "scripts/pages/build-pages.sh": {
+      "gitBlob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha256": "6402f359c4e86fbf110072befd6b1e036707befd06d413c4354b477ba91b098f"
+    },
+    "scripts/pages/verify-pages-artifact.mjs": {
+      "gitBlob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "sha256": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67"
+    },
+    "scripts/pages/verify-pages-site.mjs": {
+      "gitBlob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "sha256": "443cc9feb27faa65c3032c92a18a953933249f3b126707bd00570ef567abe7c0"
+    }
+  },
+  "builds": [
+    {
+      "build": "a",
+      "path": "/workspace/scratch/a7189299ede1/pages-936d054e-a",
+      "commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "paymentsEnabledChainIds": [],
+      "origin": "https://djshellshoxxx.github.io",
+      "sharedOrigin": true,
+      "releaseBuildMode": true,
+      "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "sha256sumsSha256": "dcd15d9346168f9c948614b957541371203376cc55024135b050a6138be9e7c3",
+      "files": 16,
+      "generatedVerificationReceipt": "Pages artifact verified: 16 files match trusted SHA256SUMS."
+    },
+    {
+      "build": "b",
+      "path": "/workspace/scratch/a7189299ede1/pages-936d054e-b",
+      "commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "paymentsEnabledChainIds": [],
+      "origin": "https://djshellshoxxx.github.io",
+      "sharedOrigin": true,
+      "releaseBuildMode": true,
+      "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "sha256sumsSha256": "dcd15d9346168f9c948614b957541371203376cc55024135b050a6138be9e7c3",
+      "files": 16,
+      "generatedVerificationReceipt": "Pages artifact verified: 16 files match trusted SHA256SUMS."
+    }
+  ],
+  "checks": [
+    {
+      "build": "a",
+      "kind": "artifact",
+      "command": [
+        "node",
+        "scripts/pages/verify-pages-artifact.mjs",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-a/site",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-a/evidence/SHA256SUMS",
+        "--expect-commit",
+        "936d054ed067d89c773310d42e33939c1129bbfa"
+      ],
+      "exitCode": 0,
+      "stdout": "Pages artifact verified: 16 files match trusted SHA256SUMS.",
+      "stderr": "(node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)",
+      "log": "build-a-artifact-verification.log"
+    },
+    {
+      "build": "a",
+      "kind": "site",
+      "command": [
+        "node",
+        "scripts/pages/verify-pages-site.mjs",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-a/site",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-a/evidence/ghostpay-lean-build.json",
+        "--expect-commit",
+        "936d054ed067d89c773310d42e33939c1129bbfa"
+      ],
+      "exitCode": 0,
+      "stdout": "Pages site verification passed: 16 files.",
+      "stderr": "(node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)",
+      "log": "build-a-site-verification.log"
+    },
+    {
+      "build": "b",
+      "kind": "artifact",
+      "command": [
+        "node",
+        "scripts/pages/verify-pages-artifact.mjs",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-b/site",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-b/evidence/SHA256SUMS",
+        "--expect-commit",
+        "936d054ed067d89c773310d42e33939c1129bbfa"
+      ],
+      "exitCode": 0,
+      "stdout": "Pages artifact verified: 16 files match trusted SHA256SUMS.",
+      "stderr": "(node:35) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)",
+      "log": "build-b-artifact-verification.log"
+    },
+    {
+      "build": "b",
+      "kind": "site",
+      "command": [
+        "node",
+        "scripts/pages/verify-pages-site.mjs",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-b/site",
+        "/workspace/scratch/a7189299ede1/pages-936d054e-b/evidence/ghostpay-lean-build.json",
+        "--expect-commit",
+        "936d054ed067d89c773310d42e33939c1129bbfa"
+      ],
+      "exitCode": 0,
+      "stdout": "Pages site verification passed: 16 files.",
+      "stderr": "(node:43) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)",
+      "log": "build-b-site-verification.log"
+    }
+  ],
+  "checksumManifestsByteIdentical": true,
+  "allServedFileHashesIdentical": true,
+  "servedFileHashes": {
+    ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "assets/ar-DUvT08cM.js": "101d05b6109dc3958a5906c7d56dabee1ef038c8efd545f3861cd4c4b69214a7",
+    "assets/es-C9FxJnQQ.js": "3319a093dc9c4d4c9a23bb686bbb5eae7f05a0f38d700ed35882e0671ba54aa4",
+    "assets/index-viEpJ1Ye.js": "6b2e0d11263ca042b97790c02fcf01663eef829adff5a4d9169be5eeb7980cd0",
+    "assets/ja-CwSzae9l.js": "91db9e7991bbd6de2b6010376726d2a2a18c23839b53ac9f14d4150e9fc97450",
+    "assets/jsQR-DMfxOdIb.js": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869",
+    "assets/rolldown-runtime-XKyaHtl9.js": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7",
+    "assets/scanner.worker-CAQQ64R_.js": "54119a9d91ffe1acb7e5ecde487dca6ab939245160d19951c1e26d6b4a7e8f0f",
+    "assets/style-sbKVpGL7.css": "e53f7ff69d434b5ce26d1ff469cdbad3b5b390f0b0626e30198826137ebf372c",
+    "build-info.json": "3373ae6d754e66eb33e8af81befafdf0c895e10d9bfebdd632da15c211fdf38a",
+    "favicon.svg": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab",
+    "help.css": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0",
+    "help.html": "46c3c24efec0446b3c82e8846098882ef75dbda8ccc1ac039474603852947f8a",
+    "index.html": "4e9ede046ba029bf7b2c3f968ddbd0c813d3af525a5924c84ca4ec7dbaac3a7e",
+    "pages-mirror.css": "0185b681b3e3860c2f09b4422362366ecbd95ed93864722873bd764d03f91f51",
+    "privacy.html": "579736ffba8ab486ae627043f68347ce69973c8ff1a9b28a20762bf0b2252eaf"
+  },
+  "scope": "Two existing local builds on the same machine, same source, same toolchain/dependency environment. No independent-builder or hosted/live deployment result asserted.",
+  "prBranchUpdateVerified": false,
+  "hostedQualificationClaimed": false,
+  "liveDeploymentClaimed": false,
+  "signedPaymentManifestClaimed": false
+}

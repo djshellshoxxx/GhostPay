@@ -1,0 +1,101 @@
+{
+  "d74af79ebabdc8cead843361c3497b46d8c421f9": {
+    "tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+    "files": {
+      "apps/web/src/lib/qrKinds.ts": {
+        "git_blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+        "sha256": "e2ddb9df28b89c22f0feac698ceb9c2847af5b2517f43ca44c82826dc3f6a7f2"
+      },
+      "apps/web/src/lib/qrKinds.test.ts": {
+        "git_blob": "e918e36848f4e01322afbdf41cf561b3222cc14a",
+        "sha256": "8ff18b7b804f5ad7f30d49cc9884c65ed3d3b8c1b0fa8b15b78405577843908b"
+      },
+      "apps/web/src/components/QrFrame.tsx": {
+        "git_blob": "9554db0ddd1cf4e3fcd780a99ca5598907e77249",
+        "sha256": "6c86fd7d533ac073fd2281b57fa67a71cd7fc7c65f64f3f70a9c9782f8736620"
+      },
+      "apps/web/src/lib/qrClassify.ts": {
+        "git_blob": "973c7831c4c3d81da9d99c620fd758a03e62a118",
+        "sha256": "75f241455990ba28dace7723b2506e46f65efafb73a1bc66f5c779504ab55a62"
+      },
+      "apps/web/src/lib/qrClassify.fuzz.test.ts": {
+        "git_blob": "198909c9d308d304306e0942ee15a9eb57f160b9",
+        "sha256": "72c21b077b0382776127b7a418d4e5f5b6db5e38f0b348e9258ac334fd1801fe"
+      },
+      "apps/web/vite.config.ts": {
+        "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+        "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+      },
+      "package-lock.json": {
+        "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+        "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+      }
+    }
+  },
+  "aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da": {
+    "tree": "21311091c83694984ddc5064e874797f59e8b9f8",
+    "files": {
+      "apps/web/src/lib/qrKinds.ts": {
+        "git_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+        "sha256": "c97b533ca1591281f3efc07a79013c9614ecb0469d654246ad7fc4565fc094a5"
+      },
+      "apps/web/src/lib/qrKinds.test.ts": {
+        "git_blob": "b0ceb8bbf584ead9f610471c57a3e7bc768a1c64",
+        "sha256": "b4c54383ef976b119835165c6f879f2608e90632a47f6c483b451053549dccd2"
+      },
+      "apps/web/src/components/QrFrame.tsx": {
+        "git_blob": "9554db0ddd1cf4e3fcd780a99ca5598907e77249",
+        "sha256": "6c86fd7d533ac073fd2281b57fa67a71cd7fc7c65f64f3f70a9c9782f8736620"
+      },
+      "apps/web/src/lib/qrClassify.ts": {
+        "git_blob": "973c7831c4c3d81da9d99c620fd758a03e62a118",
+        "sha256": "75f241455990ba28dace7723b2506e46f65efafb73a1bc66f5c779504ab55a62"
+      },
+      "apps/web/src/lib/qrClassify.fuzz.test.ts": {
+        "git_blob": "198909c9d308d304306e0942ee15a9eb57f160b9",
+        "sha256": "72c21b077b0382776127b7a418d4e5f5b6db5e38f0b348e9258ac334fd1801fe"
+      },
+      "apps/web/vite.config.ts": {
+        "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+        "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+      },
+      "package-lock.json": {
+        "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+        "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+      }
+    }
+  },
+  "ec546311f994fe1db544fe85ff2aa6db428d67d4": {
+    "tree": "9c5df12a4621384323af1f4d51b1b04e37d62d3c",
+    "files": {
+      "apps/web/src/lib/qrKinds.ts": {
+        "git_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+        "sha256": "c97b533ca1591281f3efc07a79013c9614ecb0469d654246ad7fc4565fc094a5"
+      },
+      "apps/web/src/lib/qrKinds.test.ts": {
+        "git_blob": "af5ef89f6fba0cea13b18884df387875f064ad34",
+        "sha256": "c1a84afd0739d73d031131165717525802900ef5630b75f77530bd1bcf92e197"
+      },
+      "apps/web/src/components/QrFrame.tsx": {
+        "git_blob": "9554db0ddd1cf4e3fcd780a99ca5598907e77249",
+        "sha256": "6c86fd7d533ac073fd2281b57fa67a71cd7fc7c65f64f3f70a9c9782f8736620"
+      },
+      "apps/web/src/lib/qrClassify.ts": {
+        "git_blob": "973c7831c4c3d81da9d99c620fd758a03e62a118",
+        "sha256": "75f241455990ba28dace7723b2506e46f65efafb73a1bc66f5c779504ab55a62"
+      },
+      "apps/web/src/lib/qrClassify.fuzz.test.ts": {
+        "git_blob": "198909c9d308d304306e0942ee15a9eb57f160b9",
+        "sha256": "72c21b077b0382776127b7a418d4e5f5b6db5e38f0b348e9258ac334fd1801fe"
+      },
+      "apps/web/vite.config.ts": {
+        "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+        "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+      },
+      "package-lock.json": {
+        "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+        "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+      }
+    }
+  }
+}

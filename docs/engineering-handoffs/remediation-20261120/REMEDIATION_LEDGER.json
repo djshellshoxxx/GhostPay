@@ -1,20 +1,25 @@
 {
   "format": "ghostpay-scoped-remediation-ledger/1",
-  "recorded_at": "2026-11-20T00:42:43.248Z",
+  "recorded_at": "2026-11-20T01:19:37.297Z",
   "canonical": {
     "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
     "pr": 278,
     "branch": "release/ghostpay-beta-qualification-20261119",
-    "head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
-    "shared_write_owner": "active continuous coordinator in workspace 0a7bc3583588",
-    "integration_lock_acquired_by_this_cycle": false
+    "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "shared_write_owner": "generation5 lease explicitly released by prior coordinator; fresh ownership check required before any shared mutation",
+    "integration_lock_acquired_by_this_cycle": false,
+    "integration_lease_status": "released",
+    "integration_lease_released_at": "2026-11-20T01:00:43.000Z"
   },
   "followup": {
     "branch": "fix/ghostpay-pages-integrity-gate-20261120",
-    "frozen_source": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
-    "tree": "80fd34834ccdbc81bf8f5fc63ba76edb52905ef1",
+    "frozen_source": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
     "disposition": "Requires regression testing",
-    "detail": "All scoped local verification and independent reviews passed; complete hosted qualification and lease-protected integration remain."
+    "detail": "Published non-force baseline refresh incorporates417canonical. Independent source/artifact reviews and focused combined qualification passed; fresh hosted qualification remains pending. No PR/main merge or deployment.",
+    "pr": 292,
+    "local_reviewed_source": "6124ded5741b2d316327bee040da8a44bb1d652c",
+    "mergeable_at_snapshot": true
   },
   "findings": [
     {
@@ -28,7 +33,9 @@
       "reproduction": "Actual original final promotion block accepted six corrupt staged artifacts; seven new expectations failed including verification receipt control.",
       "implementation_commit": "308dcbb2d40793514ea303a898282578dc17342d",
       "verification": "24 focused tests;119 Pages tooling tests;fresh16-file full build; independent baseline/fix replay and final combined-source review",
-      "status": "Fixed and independently regression-tested; hosted qualification pending"
+      "status": "Fixed and independently regression-tested; hosted qualification pending",
+      "published_implementation_commit": "94c01cac36d97e2d83ab763bf7b7a5d742217f38",
+      "present_at": "936d054ed067d89c773310d42e33939c1129bbfa"
     },
     {
       "id": "CODEQL-FIXTURE-PROTOTYPE",
@@ -40,7 +47,9 @@
       ],
       "implementation_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
       "verification": "Original and clarified13/13; two independent AST-based760-byte equivalence proofs",
-      "status": "Fixture clarified and independently reviewed; no alert suppression or dismissal; fresh hosted CodeQL required"
+      "status": "Fixture clarified and independently reviewed; no alert suppression or dismissal; fresh hosted CodeQL required",
+      "published_implementation_commit": "e250143f3c4263b9584e66acde64985a17222419",
+      "present_at": "936d054ed067d89c773310d42e33939c1129bbfa"
     },
     {
       "id": "CODEQL-FIXTURE-CSP",
@@ -52,7 +61,9 @@
       ],
       "implementation_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
       "verification": "Original and clarified49/49; two independent AST-based250-byte equivalence proofs",
-      "status": "Fixture clarified and independently reviewed; no alert suppression or dismissal; fresh hosted CodeQL required"
+      "status": "Fixture clarified and independently reviewed; no alert suppression or dismissal; fresh hosted CodeQL required",
+      "published_implementation_commit": "e250143f3c4263b9584e66acde64985a17222419",
+      "present_at": "936d054ed067d89c773310d42e33939c1129bbfa"
     }
   ],
   "additional_coverage": {
@@ -62,7 +73,9 @@
     "selection_failed": 0,
     "selection_skipped": 0,
     "transport": "authored offline RPC responses with actual cryptography and network capabilities",
-    "new_confirmed_defects": 0
+    "new_confirmed_defects": 0,
+    "published_commit": "d298547e9ca4d41ba4690b76f7f1dab95b84216b",
+    "rerun_at_936": "68 Sweep cases included in80 passing web cases"
   },
   "security_counts": {
     "new_confirmed_critical": 0,
@@ -70,20 +83,31 @@
     "new_confirmed_medium": 0,
     "scope": "This bounded cycle only; not a global clearance count",
     "current_strict_mythril_findings": null,
-    "current_strict_mythril_status": "in_progress at last retrieved snapshot; exact artifact not available",
+    "current_strict_mythril_status": "d74 cancelled;4of5targets retained,3Low partial records; full417run44650172375 queued at snapshot",
     "production_dependency_alerts": 0,
     "development_dependency_alerts": {
       "low": 17,
       "moderate": 0,
       "high": 0,
       "critical": 0
-    }
+    },
+    "repository_wide_confirmed_critical": null,
+    "repository_wide_confirmed_high": null,
+    "repository_wide_confirmed_medium": null,
+    "partial_d74_mythril": {
+      "completed_targets": 4,
+      "expected_targets": 5,
+      "low": 3,
+      "whole_campaign_complete": false
+    },
+    "private_alert_inventory_complete": false
   },
   "dispositions": [
     {
       "pr": 278,
       "status": "Requires regression testing",
-      "reason": "Canonical candidate; active coordinator owns new browser repair and integration."
+      "reason": "Canonical follow-up published; borrowed source fixes preserved in936. Full hosted/security clearance still pending; lease released.",
+      "head": "417f7c71daf8645e1432f2ec8f070110879b80bd"
     },
     {
       "pr": 276,
@@ -113,6 +137,20 @@
       "status": "Superseded",
       "scope": "Old failing qualification as current release evidence.",
       "reason": "Current candidate lint/rest-0 passes; retain historical code and current gates."
+    },
+    {
+      "pr": 292,
+      "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "status": "Requires regression testing",
+      "independent_review_complete": true,
+      "reason": "Scoped remediation and reviewed canonical successor integrated into292; focused tests and same-machine artifact reproduction pass. Full fresh hosted CI/security qualification pending; not main-merged."
+    },
+    {
+      "pr": 290,
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "status": "Requires regression testing",
+      "independent_review_complete": true,
+      "reason": "Runtime QR guards independently proven53/53 and hostile16probes; source-compatible with417/936 but additive ownership conflict remains. No product extraction or PR merge by this cycle."
     }
   ],
   "global_blockers": [
@@ -124,11 +162,26 @@
     "Actual authorized wallet/testnet payment, confirmation, scanning, sweep and recovery",
     "Live artifact integrity and post-deployment checks"
   ],
-  "release_verdict": "BLOCKED — WITH PRECISE REMAINING REQUIREMENTS",
+  "release_verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
   "schedules_changed": false,
   "main_merges": [],
   "tags_created": [],
   "deployments": [],
   "branches_deleted": [],
-  "continuation": "Read README.md, coordinator-evidence/RECEIPT.json, final-review/REVIEW.md and current live refs. Preserve canonical coordinator ownership."
+  "continuation": "Read README.md, coordinator-evidence/RECEIPT.json, final-review/REVIEW.md and current live refs. Preserve canonical coordinator ownership.",
+  "previous_snapshot": {
+    "commit": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+    "path": "docs/engineering-handoffs/remediation-20261120/REMEDIATION_LEDGER.json",
+    "recorded_at": "2026-11-20T00:42:43.248Z"
+  },
+  "latest_receipt": "successor-qualification/RECEIPT.json",
+  "latest_handoff": "FINAL_HANDOFF.md",
+  "separate_scan_probes": {
+    "source": "ed776fcb171b41c79e085c05327fa2ca1cd43a36",
+    "review": "89d253a2d846efac1f59d6d1caf60ebba6d69327",
+    "tests": 50,
+    "new_probes": 3,
+    "maintained_in_pr292": false,
+    "exact_source_preserved": "scan-review/privateScanLifecycle.cryptoBoundaryReview.test.ts.txt"
+  }
 }

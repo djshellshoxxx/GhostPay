@@ -1,0 +1,117 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { checkpointKeyId, type ReconciliationVaultStore } from '@ghostpay/ux-vault/portable';
+import { clearSession, importSession } from './session';
+import { invalidatePrivateScanHistory, openCurrentPrivateScanVault } from './privateScanLifecycle';
+import { isPrivateScanTombstone, type PrivateScanScope, type PrivateScanState } from './privateScanStore';
+
+const KEYS = { spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) };
+const STATE: PrivateScanState = {
+  startBlock: 0n,
+  cursor: { nextBlock: 4n, last: { number: 3n, hash: `0x${'ab'.repeat(32)}` } },
+  matches: [],
+};
+
+function install(): PrivateScanScope {
+  const session = importSession(KEYS);
+  return {
+    chainId: 84532,
+    sellerKeyId: checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey),
+    announcer: `0x${'12'.repeat(20)}`, router: `0x${'34'.repeat(20)}`,
+    finalityDepth: 12, deep: false, configuration: 'crypto-boundary-review',
+  };
+}
+
+class Store implements ReconciliationVaultStore {
+  readonly values = new Map<string, string>();
+  writes = 0;
+  read(key: string): Promise<string | null> { return Promise.resolve(this.values.get(key) ?? null); }
+  compareAndSwap(key: string, expected: string | null, next: string, guard: () => void): Promise<boolean> {
+    guard();
+    if ((this.values.get(key) ?? null) !== expected) return Promise.resolve(false);
+    this.values.set(key, next); this.writes++;
+    return Promise.resolve(true);
+  }
+}
+
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => { resolve = done; });
+  return { promise, resolve };
+}
+
+function bytes(value: BufferSource): Uint8Array {
+  return ArrayBuffer.isView(value)
+    ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+    : new Uint8Array(value);
+}
+
+afterEach(() => { clearSession(false); vi.restoreAllMocks(); });
+
+describe('independent private scan crypto continuation boundaries', () => {
+  it.each(['same-key replacement', 'private-history invalidation'] as const)(
+    'rejects an actual encryption result after %s before any checkpoint commit and wipes plaintext',
+    async (revocation) => {
+      const scope = install(); const store = new Store();
+      const vault = await openCurrentPrivateScanVault(scope, store, () => undefined);
+      expect(await vault.load()).toBeUndefined();
+      const before = [...store.values]; const writesBefore = store.writes;
+      expect(isPrivateScanTombstone(before[0]![1])).toBe(true);
+
+      const entered = deferred(); const release = deferred();
+      const encrypt = crypto.subtle.encrypt.bind(crypto.subtle);
+      let plaintext: Uint8Array | undefined;
+      const spy = vi.spyOn(crypto.subtle, 'encrypt').mockImplementation(async (...args) => {
+        plaintext = bytes(args[2]);
+        const result = await encrypt(...args); // Real HKDF/AES-GCM; only result delivery is gated.
+        entered.resolve(); await release.promise;
+        return result;
+      });
+      const saving = vault.save(STATE);
+      const rejected = expect(saving).rejects.toMatchObject({ code: 'stale' });
+      try {
+        await entered.promise;
+        expect(plaintext?.some((value) => value !== 0)).toBe(true);
+        if (revocation === 'same-key replacement') { clearSession(false); importSession(KEYS); }
+        else await invalidatePrivateScanHistory(() => Promise.resolve());
+      } finally { release.resolve(); }
+      await rejected;
+      expect(store.writes).toBe(writesBefore);
+      expect([...store.values]).toEqual(before);
+      expect(plaintext?.every((value) => value === 0)).toBe(true);
+      spy.mockRestore(); vault.lock();
+
+      // Positive control: explicit current authority can still restore and advance this same journal.
+      const current = await openCurrentPrivateScanVault(scope, store, () => undefined);
+      try { await current.load(); await current.save(STATE); expect(await current.load()).toEqual(STATE); }
+      finally { current.lock(); }
+    },
+  );
+
+  it('does not return decrypted state after history revocation and wipes the real decrypt buffer', async () => {
+    const scope = install(); const store = new Store();
+    const vault = await openCurrentPrivateScanVault(scope, store, () => undefined);
+    await vault.load(); await vault.save(STATE);
+    const before = [...store.values]; const writesBefore = store.writes;
+    const entered = deferred(); const release = deferred();
+    const decrypt = crypto.subtle.decrypt.bind(crypto.subtle);
+    let decrypted: Uint8Array | undefined;
+    vi.spyOn(crypto.subtle, 'decrypt').mockImplementation(async (...args) => {
+      const result = await decrypt(...args);
+      decrypted = new Uint8Array(result);
+      entered.resolve(); await release.promise;
+      return result;
+    });
+    const loading = vault.load();
+    const rejected = expect(loading).rejects.toMatchObject({ code: 'stale' });
+    try {
+      await entered.promise;
+      expect(decrypted?.some((value) => value !== 0)).toBe(true);
+      await invalidatePrivateScanHistory(() => Promise.resolve());
+    } finally { release.resolve(); }
+    await rejected;
+    expect(decrypted?.every((value) => value === 0)).toBe(true);
+    expect(store.writes).toBe(writesBefore);
+    expect([...store.values]).toEqual(before);
+    vault.lock();
+  });
+});

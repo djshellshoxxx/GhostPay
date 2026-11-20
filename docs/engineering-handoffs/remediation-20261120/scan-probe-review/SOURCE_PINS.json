@@ -1,0 +1,25 @@
+{
+  "base_commit": "ed776fcb171b41c79e085c05327fa2ca1cd43a36",
+  "runtime_commit": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+  "files_sha256": {
+    "apps/web/src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts": "28efb67999a88cb9c76ed9841d657a17f8d637ba605ab25502d657853aac2a69",
+    "apps/web/src/lib/privateScanLifecycle.test.ts": "03816efe28e84d4963a3ec4b626d8770fc782ba7659a8b93b486d43bb8edb5bb",
+    "apps/web/src/lib/privateScanStore.test.ts": "52ed3c3b231ddba4283b27a2458fe9f9d06f7fdeeeb31c5c9df3afd46f60c1bb",
+    "apps/web/src/lib/privateScanLifecycle.ts": "0e62ee5c9e926c325d9d640d28c6dbc8440c2a2eced81dc31131e5f3e393bb21",
+    "apps/web/src/lib/privateScanStore.ts": "82a9ac42f6b7588a0dc1d05094dc11ae8971d29b24e2a09de50f832b10d45e88",
+    "apps/web/src/lib/session.ts": "1c847443c605a270cddea3f7c07dc62dd2e65bfc20a12ee936206aaa59479672",
+    "apps/web/src/lib/reconciliationVault.ts": "1e077897e2da7c47f83b00461a79927ed5577f8e0bfd03914d2bf27ad70d919f",
+    "apps/web/src/lib/keyVault.ts": "88199dd26575cff4633082bf49cf4000bd6eaf84c09d7078221a7719fb5854c1",
+    "apps/web/vite.config.ts": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+    "package-lock.json": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+  },
+  "dependencies_source": "/workspace/scratch/a7189299ede1/GhostPay",
+  "linked_paths_count": 66,
+  "dependency_dist_file_count": 2289,
+  "dependency_dist_manifest_sha256": "d56312c5a5e4b5453605ae62d28dad66f024a79db0a7a4d65284bb6bbd8156ef",
+  "dependency_source_head": "a0b082520302ea10337396c64d09b61b14db5185",
+  "all_runtime_scope_diff_against_pr292": [],
+  "review_claim_commit": "97eb0e324b7febb1c7e002ea9c3aa085ce5e1508",
+  "test_file_unchanged_at_author_final_head": true,
+  "recorded_at_utc": "2026-11-20T01:06:04.744081+00:00"
+}

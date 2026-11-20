@@ -1,0 +1,15 @@
+{
+  "local_commit": "6124ded5741b2d316327bee040da8a44bb1d652c",
+  "published_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+  "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+  "ordered_parents": [
+    "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+    "417f7c71daf8645e1432f2ec8f070110879b80bd"
+  ],
+  "expected_previous_head": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+  "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+  "fast_forward": true,
+  "force": false,
+  "git_fetch_verified_tree_and_parents": true,
+  "github_ref_readback_verified": true
+}

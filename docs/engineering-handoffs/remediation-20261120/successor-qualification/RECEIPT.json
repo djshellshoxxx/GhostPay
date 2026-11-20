@@ -1,0 +1,202 @@
+{
+  "format": "ghostpay-successor-qualification/1",
+  "recorded_at": "2026-11-20T01:19:15.080880+00:00",
+  "source_commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+  "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+  "local_reviewed_equivalent": "6124ded5741b2d316327bee040da8a44bb1d652c",
+  "runtime": {
+    "node": "22.23.4",
+    "npm": "10.9.11",
+    "vitest": "5.1.0"
+  },
+  "clean_install": {
+    "exit": 0,
+    "packages": 721,
+    "source": "6124ded5741b2d316327bee040da8a44bb1d652c",
+    "same_exact_tree_as_published": true,
+    "command": "npm ci --ignore-scripts --no-audit --no-fund",
+    "lockfile_unchanged": true
+  },
+  "fresh_library_build": {
+    "exit": 0,
+    "unique_workspaces": 65,
+    "source": "6124ded5741b2d316327bee040da8a44bb1d652c",
+    "same_exact_source_tree_as_published": true,
+    "command": "npm run build:libs",
+    "limit": "Compiled before publication metadata reconstruction; independent final CLI/whole-repository qualification remains required. Subsequent actual Pages builds used HEAD936."
+  },
+  "checks_at_936": {
+    "pages_and_csp": {
+      "passed": 168,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --test scripts/pages/*.test.mjs scripts/tests/privacy-csp-bundle.test.mjs"
+    },
+    "web_selected": {
+      "passed": 80,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "src/lib/sweep.boundaryAudit.test.ts",
+        "src/lib/sweep.nativeReview.test.ts",
+        "src/lib/sweep.reviewAuthority.test.ts",
+        "src/views/Pay.signer.test.tsx",
+        "src/views/Pay.preflightCompletion.test.tsx"
+      ],
+      "command": "node ../../node_modules/vitest/vitest.mjs run [files] --coverage.enabled=false --maxWorkers=1",
+      "sweep_cases_included": 68,
+      "coverage": "focused disabled; not complete web coverage",
+      "network": "Synthetic authored offline responses; actual client/session/cryptography, not browser/live-chain acceptance"
+    },
+    "deployment_manifest": {
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/deployments.test.ts --coverage.enabled=false --maxWorkers=1"
+    },
+    "merchant_original_coverage": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "command": "npm test -w @ghostpay/merchant-ledger -- --maxWorkers=1",
+      "statements": {
+        "hit": 175,
+        "total": 175
+      },
+      "branches": {
+        "hit": 147,
+        "total": 148
+      },
+      "functions": {
+        "hit": 40,
+        "total": 40
+      },
+      "lines": {
+        "hit": 149,
+        "total": 149
+      },
+      "original_gate_passed": true
+    },
+    "web_typescript_exit": 0,
+    "affected_lint_exit": 0,
+    "source_secret_scan_exit": 0,
+    "action_pin_scan_exit": 0,
+    "action_references": 113
+  },
+  "artifact": {
+    "builds": 2,
+    "files_each": 16,
+    "commit": "936d054ed067d89c773310d42e33939c1129bbfa",
+    "build_mode": "release",
+    "enabled_payment_networks": [],
+    "declared_origin": "https://djshellshoxxx.github.io",
+    "shared_origin": true,
+    "same_environment_reproducibility": true,
+    "independent_machine_reproducibility": false,
+    "identical_full_served_bytes": true,
+    "sha256sums_sha256": "dcd15d9346168f9c948614b957541371203376cc55024135b050a6138be9e7c3",
+    "archive": "ghostpay-demo-936d054e.tar.gz",
+    "archive_bytes": 789959,
+    "archive_sha256": "c8901f8cd19e950c4c3cf1a523c64230e2e97b5c8f3c5667321e3cf9d1737454",
+    "archive_roundtrip_verified_files": 16
+  },
+  "independent_reviews": {
+    "combined_source": {
+      "local_commit": "4a81d6b07145e1f19aa81b57b54743b44fb4d4fc",
+      "reviewed_source": "6124ded5741b2d316327bee040da8a44bb1d652c",
+      "equivalent_tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+      "verified_all_tree_entries": 5104,
+      "selected_tests_passed": 24,
+      "result": "accepted scoped refresh; full qualification outstanding"
+    },
+    "artifact": {
+      "local_commit": "3931f61b7dba1b80c1a60812f132c20935d63156",
+      "source": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "result": "both builds independently verified; same-machine only"
+    }
+  },
+  "logs": [
+    {
+      "path": "successor-npm-ci.log.gz",
+      "decompressed_bytes": 426,
+      "decompressed_sha256": "b152d7849b791df268f812c5b316f35a86bf3dfc5831852b3169a3751becb8db",
+      "gzip_sha256": "257e5f060ce2b4c28e8638ec7a8e6a55ed47e0f954f4f0c8a6b6547097ef4371"
+    },
+    {
+      "path": "successor-build-libs.log.gz",
+      "decompressed_bytes": 19881,
+      "decompressed_sha256": "d00b5e50d09c161e1068cfd24e0f69bb0a3982f213e3d1acb254e68b1c7cab46",
+      "gzip_sha256": "75f615e2b6e784a855d5b40140ca92ef67d3b472668234eb7c57921c7225702c"
+    },
+    {
+      "path": "successor-pages-csp-published-object.log.gz",
+      "decompressed_bytes": 36442,
+      "decompressed_sha256": "7db646e657b606df17ce7dcb6712317db94e598e8986f06863f3c5bd6df517e1",
+      "gzip_sha256": "59998574cfbde3f1f68692c0c7b48e10570549683b29269b2ef2fe0f63d1f196"
+    },
+    {
+      "path": "successor-web-focused.log.gz",
+      "decompressed_bytes": 1584,
+      "decompressed_sha256": "008834d92dc569fe5797e93bfd10031066acc8614160dd3291548a50d27c375e",
+      "gzip_sha256": "4df689ceafddd8a7c3f6357b3dd6e8513a931b6783eda884e08496c4770e49de"
+    },
+    {
+      "path": "successor-deployment.log.gz",
+      "decompressed_bytes": 597,
+      "decompressed_sha256": "27bb361db6696f2dfaa86dc50fba79988126907ca0ceb3d806ae16254710adb8",
+      "gzip_sha256": "8b18de9358ff77ba3cce34677c883f13e4b37752f67b12ae0f65c48863c450b6"
+    },
+    {
+      "path": "successor-merchant-coverage.log.gz",
+      "decompressed_bytes": 1659,
+      "decompressed_sha256": "110e5c72bc376a73a783b015a3bbed3457c94c416fc261d6ecf4275364c2c37c",
+      "gzip_sha256": "e45e4eb4a47eea1ea602d091d9eb3b1f1cae292f68e2266f7a5e2718695f03ed"
+    },
+    {
+      "path": "successor-web-typecheck.log.gz",
+      "decompressed_bytes": 0,
+      "decompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "successor-lint.log.gz",
+      "decompressed_bytes": 174,
+      "decompressed_sha256": "db12ad97221988bf346c55d06788e21a01bb6a683d69266bf732ed4d6d9763c8",
+      "gzip_sha256": "928add1489239e1a7d61edccaf17e628cf62c3962930312ddfe3ac3a70dac87c"
+    },
+    {
+      "path": "successor-secrets-published-object.log.gz",
+      "decompressed_bytes": 50,
+      "decompressed_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "gzip_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3"
+    },
+    {
+      "path": "successor-actions-published-object.log.gz",
+      "decompressed_bytes": 85,
+      "decompressed_sha256": "b4b3abbf4e91b91dbe3fb369fb57d0acdf796404eebf31f131a98e6a49eac791",
+      "gzip_sha256": "4fc8dbf1f85eb880bfcf72d3ded86546ba4a751f0a658b02318546383e330f00"
+    },
+    {
+      "path": "successor-pages-a.log.gz",
+      "decompressed_bytes": 1534,
+      "decompressed_sha256": "a51409e1960297dc32ce48a9f05998d7564097b49c3c25d438014e223d5060f8",
+      "gzip_sha256": "5e0b51bd3f758b3998a235d88a36eea928ebb94d57eac017e35bc382b4a234cd"
+    },
+    {
+      "path": "successor-pages-b.log.gz",
+      "decompressed_bytes": 1537,
+      "decompressed_sha256": "ab47fc3f9edaed357f1b3e8345bdb761dfb953501f6dc936c6418b6268c5495b",
+      "gzip_sha256": "91e9505bd09c3d6beaa9fe221ec6ee4f1a369294348b2daade35e48ffd40a68a"
+    }
+  ],
+  "packaging_verification_note": "Initial round-trip helper used literal ./ manifest names against canonical archive member names; corrected the helper to normalize POSIX ./ while rejecting absolute/parent paths, then all21members and16hashes verified. No artifact/source modification was needed.",
+  "release_verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
+  "pending": [
+    "Complete mandatory hosted checks on936 or approved final integrated successor",
+    "Required integrated CodeQL and strict analyzer finding clearance",
+    "Full browser/local-chain matrix on final source; previous814 acceptance does not qualify936",
+    "Independent-machine artifact reproduction and approved origin",
+    "External review and owner release/signing/fee/legal/licensing/deployment decisions",
+    "Live artifact publication verification; actual external-testnet wallet acceptance"
+  ]
+}

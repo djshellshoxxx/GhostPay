@@ -1977,6 +1977,23 @@ Owned paths: this additive claim and `docs/engineering-handoffs/remediation-2026
 Scope: independently review the added Sweep authority tests, Pages artifact promotion gate and exact CodeQL fixture clarification, then inspect the coordinator's frozen combined source and qualification evidence. Production, existing test sources, workflow policy and shared tracking remain owned by their implementers.
 Acceptance: confirm source identities, perform meaningful focused execution, identify differences between tested behavior and release claims, and provide exactly one release-readiness verdict with precise remaining requirements. No remote mutation, shared integration, deployment, release or security-gate waiver.
 
+## Hosted remediation follow-up — 2026-11-20 UTC
+
+Worker: `/root/live_ci_audit`, delegated by the remediation coordinator in workspace `a7189299ede1`.
+Branch: `review/ghostpay-hosted-followup-20261120`; base published PR #292 `814950a1cf99e68765b85f241e6f4a0fc55ea9c6`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/hosted-followup/` only.
+Acceptance: preserve the current head, run/check/checkout identities, terminal job evidence and actual failure logs for PR #292 and its canonical PR #278 base; distinguish incomplete/skipped jobs from qualification; record current strict Mythril and CodeQL availability without substituting historical results. Keep hosted CI frozen by publishing any receipts separately.
+Boundaries: no product, test, dependency, workflow, shared-ref, remote, deployment, review-policy or security-alert mutation. The concurrent continuous coordinator in workspace `0a7bc3583588` owns generation-5 integration, browser preflight observation repair, merchant-ledger correction and signer-fixture synchronization; this lane does not duplicate those repairs.
+
+
+# Independent hosted artifact verification — 2026-11-19 Vancouver
+
+Worker: /root/artifact_security_review; isolated branch review/ghostpay-artifact-remediation-20261120.
+Task base: 715e1e071da73862052ccea979840e74bc01e369.
+Owned writes: this additive claim and docs/engineering-handoffs/remediation-20261120/hosted-artifact-review/ only.
+Acceptance: independently retrieve PR #292 Pages artifact 14590197888, check authenticated archive digest and safe extraction, pin source 4b44077fe0ef783f27c390d75472f338266fa410, verify all served bytes and new automatic promotion receipt, confirm payments-disabled build metadata, and retain exact evidence.
+No product, test, workflow, remote ref, release or deployment changes. This artifact is not a live deployment or qualification of later canonical source.
+
 # Continuous generation 5 development-dependency review — 2026-11-19
 
 Worker: `/root/dependency_review_gen5`, independently delegated for current audit triage.

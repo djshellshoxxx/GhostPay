@@ -1,0 +1,132 @@
+{
+  "format": "ghostpay-independent-hosted-artifact-review/1",
+  "checkedAtUtc": "2026-11-20T01:07:48.498040+00:00",
+  "reviewer": "/root/artifact_security_review",
+  "node": "v22.23.4",
+  "workflowRun": 44648916609,
+  "workflowUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44648916609",
+  "pr": 292,
+  "artifact": {
+    "id": 14590197888,
+    "name": "pages-site-4b44077fe0ef783f27c390d75472f338266fa410",
+    "size_in_bytes": 798814,
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14590197888",
+    "archive_download_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14590197888/zip",
+    "expired": false,
+    "created_at": "2026-11-20T01:03:59Z",
+    "expires_at": "2026-12-04T01:03:58Z",
+    "updated_at": "2026-11-20T01:03:59Z",
+    "digest": "sha256:aa63d415e514c8729e1c469a50c71857af1e52d8fa6d3d38809870789d61c7a3",
+    "workflow_run": {
+      "id": 44648916609,
+      "repository_id": 1428055628,
+      "head_repository_id": 1428055628,
+      "head_branch": "fix/ghostpay-pages-integrity-gate-20261120",
+      "head_sha": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+    }
+  },
+  "actualZipBytes": 798814,
+  "actualZipSha256": "aa63d415e514c8729e1c469a50c71857af1e52d8fa6d3d38809870789d61c7a3",
+  "source": {
+    "sha": "4b44077fe0ef783f27c390d75472f338266fa410",
+    "tree": "d58874e0d4bfaace14abec3a41cbbff17d755707",
+    "parents": [
+      "d74af79ebabdc8cead843361c3497b46d8c421f9",
+      "814950a1cf99e68765b85f241e6f4a0fc55ea9c6"
+    ]
+  },
+  "prHead": {
+    "sha": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+    "tree": "d58874e0d4bfaace14abec3a41cbbff17d755707",
+    "parents": [
+      "6c945e77c830d4998b02815dccb06288246c099f"
+    ]
+  },
+  "exactTreesMatch": true,
+  "zipEntries": 21,
+  "expandedBytes": 2784335,
+  "zipPaths": [
+    "evidence/SHA256SUMS",
+    "evidence/artifact-verification.log",
+    "evidence/build.log",
+    "evidence/ghostpay-lean-build.json",
+    "evidence/pages-evidence.json",
+    "site/.nojekyll",
+    "site/assets/ar-DUvT08cM.js",
+    "site/assets/es-C9FxJnQQ.js",
+    "site/assets/index-viEpJ1Ye.js",
+    "site/assets/ja-CwSzae9l.js",
+    "site/assets/jsQR-DMfxOdIb.js",
+    "site/assets/rolldown-runtime-XKyaHtl9.js",
+    "site/assets/scanner.worker-CAQQ64R_.js",
+    "site/assets/style-sbKVpGL7.css",
+    "site/build-info.json",
+    "site/favicon.svg",
+    "site/help.css",
+    "site/help.html",
+    "site/index.html",
+    "site/pages-mirror.css",
+    "site/privacy.html"
+  ],
+  "safeExtractionChecks": [
+    "unique entry names",
+    "no absolute paths or traversal",
+    "no backslashes or control characters",
+    "regular files/directories only; no symlinks",
+    "expanded bytes under50MB"
+  ],
+  "checks": [
+    {
+      "name": "independent-artifact-verification",
+      "command": [
+        "node",
+        "scripts/pages/verify-pages-artifact.mjs",
+        "/workspace/scratch/a7189299ede1/artifact-14590197888/extracted/site",
+        "/workspace/scratch/a7189299ede1/artifact-14590197888/extracted/evidence/SHA256SUMS",
+        "--expect-commit",
+        "4b44077fe0ef783f27c390d75472f338266fa410"
+      ],
+      "exitCode": 0,
+      "stdout": "Pages artifact verified: 16 files match trusted SHA256SUMS.",
+      "stderr": "(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)",
+      "log": "independent-artifact-verification.log"
+    },
+    {
+      "name": "independent-site-verification",
+      "command": [
+        "node",
+        "scripts/pages/verify-pages-site.mjs",
+        "/workspace/scratch/a7189299ede1/artifact-14590197888/extracted/site",
+        "/workspace/scratch/a7189299ede1/artifact-14590197888/extracted/evidence/ghostpay-lean-build.json",
+        "--expect-commit",
+        "4b44077fe0ef783f27c390d75472f338266fa410"
+      ],
+      "exitCode": 0,
+      "stdout": "Pages site verification passed: 16 files.",
+      "stderr": "(node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.\n(Use `node --trace-warnings ...` to show where the warning was created)",
+      "log": "independent-site-verification.log"
+    }
+  ],
+  "filesVerified": 16,
+  "generatedVerificationReceiptPresent": true,
+  "generatedReceiptMatchesIndependentVerifier": true,
+  "paymentsEnabledChainIds": [],
+  "emptyDeploymentManifestHashVerified": true,
+  "sharedOrigin": true,
+  "origin": "https://djshellshoxxx.github.io",
+  "laterCanonicalSourceQualified": false,
+  "liveDeploymentVerified": false,
+  "signedDeploymentManifestClaimed": false,
+  "verifierSource": {
+    "scripts/pages/verify-pages-artifact.mjs": {
+      "gitBlob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "matchesAssociatedPr": true,
+      "sha256": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67"
+    },
+    "scripts/pages/verify-pages-site.mjs": {
+      "gitBlob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "matchesAssociatedPr": true,
+      "sha256": "443cc9feb27faa65c3032c92a18a953933249f3b126707bd00570ef567abe7c0"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "format": "ghostpay-qr290-independent-review/1",
+  "recorded_at": "2026-11-20T01:00:22.967784+00:00",
+  "reviewer": "/root/qr290_independent_review",
+  "pr": 290,
+  "initial_head": "aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da",
+  "latest_reviewed_head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+  "canonical_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "toolchain": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "dependency_setup": "read-only link to coordinator installed dependency tree; library code unchanged; no new independent clean installation claimed"
+  },
+  "checks": {
+    "initial_original_runtime": {
+      "passed": 29,
+      "failed": 10,
+      "skipped": 0,
+      "test_commit": "aaa8a7e2091e91f17b5c6f3ca6a9e7f8bc8f27da"
+    },
+    "initial_fixed_component_selection": {
+      "passed": 116,
+      "failed": 0,
+      "skipped": 0,
+      "files": 8,
+      "includes_original_property_test_budgets": true
+    },
+    "latest_original_runtime": {
+      "passed": 40,
+      "failed": 13,
+      "skipped": 0,
+      "test_commit": "ec546311f994fe1db544fe85ff2aa6db428d67d4"
+    },
+    "latest_fixed_taxonomy": {
+      "passed": 53,
+      "failed": 0,
+      "skipped": 0
+    },
+    "independent_actual_module_probes": {
+      "original_adversarial_passed": 0,
+      "original_adversarial_failed": 16,
+      "fixed_adversarial_passed": 16,
+      "fixed_adversarial_failed": 0,
+      "valid_controls_passed_on_each": 148,
+      "copied_source_bytes_match_git_blobs": true
+    },
+    "initial_scoped_lint_exit": 0,
+    "latest_scoped_lint_exit": 0
+  },
+  "review_result": "Scoped correction accepted; exact-head CI and all canonical release gates still required",
+  "finding_classification": "Low-severity runtime API correctness defect; no demonstrated externally reachable exploit or fund-loss path",
+  "scope_limits": [
+    "Focused Vitest coverage disabled explicitly; not complete web coverage",
+    "Component tests use jsdom; not actual browser, development-chain or testnet acceptance",
+    "Full web typecheck/build and final hosted checks not independently executed in this review",
+    "Direct module probes import exact TypeScript file bytes with Node type stripping and no API shim",
+    "The latest head only adds stronger test assertions/cases; production blob and all seven other component/classification selection files are unchanged",
+    "localizedQrKind remains a typed internal rendering helper outside these two strict public lookup boundaries; no claim that every internal helper rejects arbitrary JavaScript objects"
+  ],
+  "setup_note": "An initial source-substitution command used an incorrect relative output path and left fixed source unchanged. That run is excluded from baseline evidence. Both reported baseline reruns asserted the exact original blob and restored the fixed source byte-for-byte."
+}

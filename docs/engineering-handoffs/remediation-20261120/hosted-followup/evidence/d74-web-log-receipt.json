@@ -1,0 +1,12 @@
+{
+  "source": "github.fetch_workflow_job_logs decoded text",
+  "repository": "djshellshoxxx/GhostPay",
+  "run_id": 44643709383,
+  "job_id": 135981023399,
+  "source_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "decoded_log_utf8_bytes": 357527,
+  "decoded_log_sha256": "f7dfeeef489136833ad8e9c06d2eaac3c1fb43e41b3a2b53912ff14fccdafc7f",
+  "compressed_sha256": "4897176b9d1a73b6aafabbe51dc03aacba045d879834c32695f3a4228319a80f",
+  "compression": "gzip mtime=0; lossless",
+  "transport_bytes_preserved": false
+}

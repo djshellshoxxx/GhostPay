@@ -1,5 +1,11 @@
 # Release blocker remediation — 2026-11-19 Vancouver
 
+## Latest successor checkpoint
+
+The published scoped candidate is now PR #292 `936d054ed067d89c773310d42e33939c1129bbfa`, incorporating canonical #278 `417f7c71daf8645e1432f2ec8f070110879b80bd`. See [FINAL_HANDOFF.md](FINAL_HANDOFF.md), [FOLLOWUP_CHECKPOINT.json](FOLLOWUP_CHECKPOINT.json), and [successor qualification](successor-qualification/RECEIPT.json) for current source identities, executed tests, new reproducible artifact and remaining gates. The current source stays frozen; these later receipts are published separately.
+
+Earlier sections below retain their actual historical source and observation time. In particular, d74 Mythril subsequently ended cancelled and its partial artifact is preserved in [terminal-mythril](terminal-mythril/README.md); do not reuse its former running status.
+
 This is a scoped follow-up to canonical [PR #278](https://github.com/djshellshoxxx/GhostPay/pull/278), not a replacement integration candidate. The active continuous coordinator owns the invoice-replacement browser repair, merchant-ledger recovery and shared release branch. Those paths and the metadata lease were not modified by this cycle.
 
 **Release verdict: BLOCKED — WITH PRECISE REMAINING REQUIREMENTS.** The corrections below are implemented, tested and independently reviewed. Complete exact-source hosted qualification, analyzer clearance and the documented external release gates remain necessary.

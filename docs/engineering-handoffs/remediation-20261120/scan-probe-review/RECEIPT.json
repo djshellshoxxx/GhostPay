@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-20T01:06:49.261198+00:00",
+  "reviewer": "/root/scan_probe_independent",
+  "probe_author": "/root/scan_privacy_review",
+  "reviewer_independent_of_probe_implementation": true,
+  "branch": "review/ghostpay-scan-probes-independent-20261120",
+  "review_claim_commit": "97eb0e324b7febb1c7e002ea9c3aa085ce5e1508",
+  "tested_commit": "ed776fcb171b41c79e085c05327fa2ca1cd43a36",
+  "runtime_commit": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+  "probe_author_final_commit": "1b38cf835f3acd21d0ba01f42139a671bbed6d7d",
+  "decision": "acceptable_for_future_integration",
+  "blocking_probe_findings": [],
+  "new_vulnerabilities_demonstrated": 0,
+  "runtime": {
+    "node": "22.23.4",
+    "npm": "10.9.11",
+    "vitest": "5.1.0",
+    "platform": "linux",
+    "arch": "x64",
+    "clean_install_performed": false,
+    "compiled_libraries_rebuilt": false
+  },
+  "commands": [
+    {
+      "cwd": "apps/web",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts src/lib/privateScanLifecycle.test.ts src/lib/privateScanStore.test.ts --coverage.enabled=false --maxWorkers=1",
+      "exit_code": 0,
+      "files_passed": 3,
+      "tests_passed": 50,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "new_tests": 3,
+      "existing_tests": 47,
+      "duration_seconds": 3.93,
+      "log": "targeted-vitest.log"
+    },
+    {
+      "cwd": "apps/web",
+      "command": "node ../../node_modules/eslint/bin/eslint.js --config ../../eslint.config.js src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts",
+      "exit_code": 0,
+      "log": "probe-eslint.log"
+    },
+    {
+      "cwd": "apps/web",
+      "command": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+      "exit_code": 0,
+      "log": "web-typecheck.log"
+    },
+    {
+      "cwd": ".",
+      "command": "git diff --check ed776fcb171b41c79e085c05327fa2ca1cd43a36",
+      "exit_code": 0
+    }
+  ],
+  "unchanged_controls": [
+    "existing test assertions",
+    "test timeouts",
+    "coverage thresholds",
+    "runtime code",
+    "workflows",
+    "dependencies",
+    "release gates"
+  ],
+  "production_changes": [],
+  "test_changes_by_this_reviewer": [],
+  "remote_mutations": [],
+  "release_qualified": false,
+  "limitations": [
+    "reused installed dependencies and compiled libraries",
+    "in-memory CAS storage",
+    "no-op persistence invalidation callback",
+    "no browser IndexedDB",
+    "no actual cross-tab message delivery",
+    "no browser restart or suspension",
+    "no cross-browser testing",
+    "no live RPC or chain",
+    "focused selection without coverage",
+    "no full exact-head release qualification",
+    "not an external security audit"
+  ],
+  "temporary_dependency_links_removed": 66,
+  "log_format_note": "Vitest terminal output retained; trailing empty line removed to satisfy git diff --check. Test output and outcomes unchanged."
+}

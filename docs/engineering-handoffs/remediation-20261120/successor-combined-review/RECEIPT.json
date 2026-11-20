@@ -1,0 +1,183 @@
+{
+  "schema": "ghostpay-successor-combined-review/1",
+  "reviewer": "/root/successor_compatibility_review",
+  "reviewed_at_utc": "2026-11-20T01:11:10.632895+00:00",
+  "source": {
+    "commit": "6124ded5741b2d316327bee040da8a44bb1d652c",
+    "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+    "ordered_parents": [
+      "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+      "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    ],
+    "common_base": "d74af79ebabdc8cead843361c3497b46d8c421f9"
+  },
+  "tree_verification": {
+    "total_paths_examined": 5104,
+    "only_both_changed_path": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "all_other_entries_match_expected_parent_or_base": true,
+    "all_paths_include_mode_type_and_blob": true,
+    "changed_non_documentation_entries": {
+      ".github/dependabot.yml": {
+        "source": "canonical",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "604a27d1f04a043461d0dd9adcbcfdf73234e845"
+        }
+      },
+      "apps/web/e2e/network-authorization.spec.ts": {
+        "source": "canonical",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "19055300a98c8c9d9099baf02cc50246696b6e7b"
+        }
+      },
+      "apps/web/src/lib/sweep.boundaryAudit.test.ts": {
+        "source": "pr292",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "e3813045c7975bcbd4e1201d65869e6962827c25"
+        }
+      },
+      "apps/web/src/views/Pay.preflightCompletion.test.tsx": {
+        "source": "canonical",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8"
+        }
+      },
+      "apps/web/src/views/Pay.signer.test.tsx": {
+        "source": "canonical",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "06a1750266a87afac186e7b1d8b64f4af689a9de"
+        }
+      },
+      "packages/chain-adapters/src/deployments.test.ts": {
+        "source": "pr292",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "9a35cce7f79ef3341e73ed2b8aa140653b97756b"
+        }
+      },
+      "packages/merchant-ledger/src/ledger.test.ts": {
+        "source": "canonical",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "ee0270fc6fbd7402262c89b33f4213a03bd294e3"
+        }
+      },
+      "packages/merchant-ledger/src/reconcile.ts": {
+        "source": "canonical",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a"
+        }
+      },
+      "scripts/pages/build-pages-artifact-gate.test.mjs": {
+        "source": "pr292",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59"
+        }
+      },
+      "scripts/pages/build-pages.sh": {
+        "source": "pr292",
+        "blob": {
+          "mode": "100755",
+          "kind": "blob",
+          "git_sha": "2022cf30a0f18535131c2f9651d292226550835b"
+        }
+      },
+      "scripts/tests/privacy-csp-bundle.test.mjs": {
+        "source": "pr292",
+        "blob": {
+          "mode": "100644",
+          "kind": "blob",
+          "git_sha": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1"
+        }
+      }
+    },
+    "parent_ownership_lines_preserved_in_order": {
+      "pr292": true,
+      "canonical": true
+    },
+    "unresolved_conflict_markers": [],
+    "remerge_diff_path": "merge-resolution.diff.gz",
+    "additional_resolution": "Only retains both existing claim sections and adds the scoped refresh claim",
+    "qr_guard_not_extracted": true,
+    "additional_scan_probe_not_extracted": true,
+    "remerge_diff_sha256": "a85d9241c5605153ba778aaddbb2874f6fcc56ce941af86020f24cdeda90728d",
+    "remerge_compressed_sha256": "fea4449979b0877068b45c54f486fca076a11b3e1220c1ad52b11cf91344a4a7"
+  },
+  "independent_execution": {
+    "node": "v22.23.4",
+    "command": [
+      "/workspace/scratch/a7189299ede1/toolchain/bin/node",
+      "--test",
+      "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "scripts/pages/verify-pages-artifact.test.mjs"
+    ],
+    "started_at_utc": "2026-11-20T01:11:09.442280+00:00",
+    "exit_code": 0,
+    "counts": {
+      "tests": 24,
+      "pass": 24,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "log": "promotion-and-verifier.log.gz",
+    "log_sha256": "b3ddba5bc9b0e32a8cd5d3db58fdce11a11f6663ea27c1ca569e14c681f1dd28",
+    "compressed_sha256": "d8ae8635171426814aaedd4df3a999e92dc1b0025844b78f306a70b4554cb3ab",
+    "uses_dependencies": false,
+    "production_or_test_sources_changed": false,
+    "actual_worktree_input_blobs": {
+      "scripts/pages/build-pages-artifact-gate.test.mjs": {
+        "git_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+        "sha256": "46ef7733e7e7d1cf42708d8b32ea1692b47bf19b678c7e3036eae8f8d239d59d",
+        "bytes": 4336,
+        "matches_reviewed_source": true
+      },
+      "scripts/pages/build-pages.sh": {
+        "git_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+        "sha256": "6402f359c4e86fbf110072befd6b1e036707befd06d413c4354b477ba91b098f",
+        "bytes": 15044,
+        "matches_reviewed_source": true
+      },
+      "scripts/pages/verify-pages-artifact.test.mjs": {
+        "git_blob": "d827559a5db32969b955d4f299a65db420010824",
+        "sha256": "92947b881538aec27b560236f7a8d1e452573702728bef4f315eea7981d280fa",
+        "bytes": 16171,
+        "matches_reviewed_source": true
+      },
+      "scripts/pages/verify-pages-artifact.mjs": {
+        "git_blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+        "sha256": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67",
+        "bytes": 8242,
+        "matches_reviewed_source": true
+      }
+    },
+    "reviewer_head_at_execution": "63e3e754c3547acc2f126ce6bbcae8535f40dfd5",
+    "reviewer_head_differs_only_by_additive_ownership_claim": true
+  },
+  "limits": [
+    "No full clean install or full repository qualification repeated by this reviewer. Coordinator performs fresh broader focused qualification independently.",
+    "No browser, network, local-chain, external testnet, published artifact, CodeQL or contract analyzer execution by this reviewer.",
+    "Earlier artifacts are not relabeled with this new source.",
+    "No remote writes, shared branch mutation, lease acquisition or deployment.",
+    "Publication may reconstruct commit metadata: any mapped published SHA must preserve this exact tree and ordered source parents."
+  ],
+  "disposition": "ACCEPT scoped baseline refresh: exact reviewed source preserved and sole ownership conflict safely resolved. Fresh complete exact-source CI and release gates still required."
+}

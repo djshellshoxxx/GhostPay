@@ -1,0 +1,20 @@
+[
+  {
+    "job_id": 135998569362,
+    "decoded_text_utf8_bytes": 75197,
+    "decoded_text_sha256": "896296e8757976092d640d61acd9f75b8dcb715d6a9caba366ade357f9161f6f",
+    "gzip_sha256": "caa9a8127e9e468ea1de8042dfdb6b519b6f16a09b9e6de672677f5d26c99e37",
+    "source": "github.fetch_workflow_job_logs decoded text",
+    "transport_bytes_preserved": false,
+    "compression": "gzip mtime=0; lossless"
+  },
+  {
+    "job_id": 135998569303,
+    "decoded_text_utf8_bytes": 128465,
+    "decoded_text_sha256": "247c9cf17bf9ef43f9000bb20e05a8bbc8f4d32b82c5051f177ca483e5c97684",
+    "gzip_sha256": "4fd6d169a41ca5d741de648962aad8d2bdb49b8d20d63f266e8bb312f0fdde2e",
+    "source": "github.fetch_workflow_job_logs decoded text",
+    "transport_bytes_preserved": false,
+    "compression": "gzip mtime=0; lossless"
+  }
+]

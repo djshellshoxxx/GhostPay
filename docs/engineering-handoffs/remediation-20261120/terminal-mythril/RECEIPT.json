@@ -1,0 +1,128 @@
+{
+  "format": "ghostpay-cancelled-analyzer-receipt/1",
+  "recorded_at": "2026-11-20T01:10:54.186007+00:00",
+  "source_commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "requested_commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "checkout_commit": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "run_id": 44643709093,
+  "job_id": 135980874961,
+  "artifact_id": 14590221998,
+  "artifact_bytes": 40348,
+  "artifact_sha256": "fcd3ca3ec7d216ae4abe3e401e9d9f9c1d1c2e3d888803028165e51acd9f8a9a",
+  "artifact_digest_matches_github_metadata": true,
+  "safe_archive_entries": 16,
+  "outcome": "cancelled",
+  "runner_exit_code": null,
+  "completed": false,
+  "completed_targets": 4,
+  "expected_targets": 5,
+  "missing_target": "PolicyAccountFactory",
+  "report_bytes": 64053,
+  "report_sha256": "c07a86bdaba33edd2419967482d87e7673e0e6ef4c6157f86cae68583d2862ce",
+  "truncated": false,
+  "all_recorded_output_hashes_verified": true,
+  "configuration": {
+    "compilerVersion": "0.8.28",
+    "optimizerEnabled": true,
+    "optimizerRuns": 200,
+    "evmVersion": "cancun",
+    "transactionDepth": 3,
+    "executionTimeoutSeconds": 900,
+    "modules": "default",
+    "remappings": [
+      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+    ]
+  },
+  "tools": {
+    "mythril": {
+      "argv": [
+        "myth",
+        "version"
+      ],
+      "exitCode": 0,
+      "stdout": "Mythril version v0.24.8\n",
+      "stderr": "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/eth/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n  import pkg_resources\n",
+      "executableSha256": "649afc99ebf910d7f7cc9edd7a15bff9cbabe93cba042171af10b48ff9726bcd"
+    },
+    "solc": {
+      "argv": [
+        "solc",
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++\n",
+      "stderr": "",
+      "executableSha256": "f2a4e30a36695957d14aadf89872975477169592b90a0f2e907fa34e4892906c"
+    }
+  },
+  "partial_results": [
+    {
+      "target": "GhostPayRouter",
+      "analyzer_exit_code": 0,
+      "success_reported": true,
+      "issues": []
+    },
+    {
+      "target": "GhostPaySweepRelayer",
+      "analyzer_exit_code": 1,
+      "success_reported": true,
+      "issues": [
+        {
+          "swc_id": "116",
+          "severity": "Low",
+          "title": "Dependence on predictable environment variable",
+          "filename": "src/GhostPaySweepRelayer.sol",
+          "line": 83,
+          "pc": 785,
+          "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)"
+        }
+      ]
+    },
+    {
+      "target": "GhostPayPolicyRouter",
+      "analyzer_exit_code": 0,
+      "success_reported": true,
+      "issues": []
+    },
+    {
+      "target": "PolicyAccount",
+      "analyzer_exit_code": 1,
+      "success_reported": true,
+      "issues": [
+        {
+          "swc_id": "116",
+          "severity": "Low",
+          "title": "Dependence on predictable environment variable",
+          "filename": "src/PolicyAccount.sol",
+          "line": 161,
+          "pc": 1876,
+          "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)"
+        },
+        {
+          "swc_id": "116",
+          "severity": "Low",
+          "title": "Dependence on predictable environment variable",
+          "filename": "src/PolicyAccount.sol",
+          "line": 262,
+          "pc": 5077,
+          "function": "proposeDestination(address,uint256,uint256,bytes)"
+        }
+      ]
+    }
+  ],
+  "partial_severity_counts": {
+    "low": 3,
+    "medium": 0,
+    "high": 0,
+    "critical": 0
+  },
+  "whole_campaign_finding_count": null,
+  "correspondence": "The three reported SWC116 source locations and PCs correspond to C1-C3 of continuous-20261119/generation-4-contract-review/FINDINGS.json. No new trace replay or finding dismissal is claimed.",
+  "unchanged_compiler_contract_analysis_inputs_between_d74_and_417": true,
+  "cancellation_mechanism": "Not independently established; terminal job log says operation canceled.",
+  "superseding_canonical_source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "superseding_run_id": 44650172375,
+  "superseding_run_status_at_latest_read": "queued",
+  "release_gate": "BLOCKED; partial output and cancellation are not passing qualification",
+  "counts_are_not_confirmed_exploits": true
+}

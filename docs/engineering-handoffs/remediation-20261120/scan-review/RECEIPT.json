@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-20T01:01:31.219567+00:00",
+  "worker": "/root/scan_privacy_review",
+  "branch": "review/ghostpay-scan-privacy-20261120",
+  "parent_task": "Bounded independent private scan authority verification; no production edits or remote changes",
+  "base_pr": "https://github.com/djshellshoxxx/GhostPay/pull/292",
+  "base_commit": "814950a1cf99e68765b85f241e6f4a0fc55ea9c6",
+  "local_main_observed": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "ownership_commit": "784ae58cfafdba8bcf76e45ce74e9477cd2c49f1",
+  "tested_source_commit": "ed776fcb171b41c79e085c05327fa2ca1cd43a36",
+  "new_test_path": "apps/web/src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts",
+  "production_changes": [],
+  "runtime": {
+    "node": "22.23.4",
+    "vitest": "5.1.0",
+    "platform": "linux",
+    "architecture": "x64",
+    "clean_install_performed_by_this_worker": false,
+    "dependency_source": "Shared root node_modules and package dist symlinks; source trees and built hashes pinned in SOURCE_PINS.json"
+  },
+  "commands": [
+    {
+      "cwd": "apps/web",
+      "command": "node ../../node_modules/vitest/vitest.mjs run src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts src/lib/privateScanLifecycle.test.ts src/lib/privateScanStore.test.ts --coverage.enabled=false --maxWorkers=1",
+      "exit_code": 0,
+      "test_files_passed": 3,
+      "tests_passed": 50,
+      "tests_failed": 0,
+      "new_review_probes": 3,
+      "duration_seconds_reported": 3.87,
+      "log": "targeted-vitest.log"
+    },
+    {
+      "cwd": "apps/web",
+      "command": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+      "exit_code": 0,
+      "log": "web-typecheck.log",
+      "diagnostics": []
+    },
+    {
+      "cwd": "apps/web",
+      "command": "node ../../node_modules/eslint/bin/eslint.js --config ../../eslint.config.js src/lib/privateScanLifecycle.cryptoBoundaryReview.test.ts",
+      "exit_code": 0,
+      "log": "probe-eslint.log",
+      "diagnostics": []
+    },
+    {
+      "cwd": ".",
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "real_components_executed": [
+    "session import/replacement guards",
+    "private history invalidation generation",
+    "openCurrentPrivateScanVault",
+    "PrivateScanVault",
+    "native WebCrypto HKDF and AES-GCM"
+  ],
+  "test_doubles": [
+    "Memory Map storage implementing guarded compare-and-swap",
+    "Promise gate after real WebCrypto result completion",
+    "No-op persistent deletion callback for isolating local invalidation generation"
+  ],
+  "findings": [],
+  "confirmed_new_findings_count": 0,
+  "conclusion": "All three new real-crypto continuation probes and 47 existing lifecycle/store tests pass; no new vulnerability demonstrated in this bounded scope.",
+  "not_qualified": [
+    "Native browser IndexedDB atomicity",
+    "Browser restart/suspend lifecycle",
+    "Cross-browser execution",
+    "Live chain or RPC operation",
+    "Entire application matrix",
+    "Coverage thresholds (focused no-coverage run only)",
+    "Newer integration heads",
+    "Deployment or external security review"
+  ],
+  "release_verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
+  "release_requirements": [
+    "Full mandatory exact-head qualification must pass on the integrated source",
+    "Mandatory owner approvals and external audit must be documented",
+    "Hosting/origin policy, artifact publication and payments-disabled configuration must be independently verified before demonstration readiness",
+    "Independent reviewer must review these newly authored probes before integration"
+  ],
+  "remote_mutations": []
+}

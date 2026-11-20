@@ -1,0 +1,51 @@
+{
+  "algorithm": "SHA-256",
+  "scope": "All retained files below this directory except this inventory",
+  "files": [
+    {
+      "path": "QUALIFICATION_LEDGER.json",
+      "bytes": 20933,
+      "sha256": "1f595b8e347b2493a47e3928f3e0aba8051324903ddf8af68237d864d3cd1863"
+    },
+    {
+      "path": "README.md",
+      "bytes": 12667,
+      "sha256": "2e51d684b411849f9cab55b5e58ade414803cbe1b8476f4a1a8163259404053b"
+    },
+    {
+      "path": "evidence/d74-web-job135981023399.log.gz",
+      "bytes": 71225,
+      "sha256": "4897176b9d1a73b6aafabbe51dc03aacba045d879834c32695f3a4228319a80f"
+    },
+    {
+      "path": "evidence/d74-web-log-receipt.json",
+      "bytes": 516,
+      "sha256": "bd147e79f314e86b29997de6ba02133c0428c1832c739d900209e2b4d0f0f302"
+    },
+    {
+      "path": "evidence/pr292-job135998569303.log.gz",
+      "bytes": 27211,
+      "sha256": "4fd6d169a41ca5d741de648962aad8d2bdb49b8d20d63f266e8bb312f0fdde2e"
+    },
+    {
+      "path": "evidence/pr292-job135998569362.log.gz",
+      "bytes": 16236,
+      "sha256": "caa9a8127e9e468ea1de8042dfdb6b519b6f16a09b9e6de672677f5d26c99e37"
+    },
+    {
+      "path": "evidence/pr292-log-receipts.json",
+      "bytes": 808,
+      "sha256": "a30c7ce43cd12475d1d8e031995de82a358b0753e45aaf30d0925ec042c1dc64"
+    },
+    {
+      "path": "evidence/snapshot-final.json.gz",
+      "bytes": 15894,
+      "sha256": "8c2ae9076978e50dd5e0ac308ae1bf1292223fe573d6c9a653837a7dd64c805d"
+    },
+    {
+      "path": "evidence/snapshot-initial.json.gz",
+      "bytes": 14950,
+      "sha256": "a33511c0e71b045c241510dc67eea374ba985446b4fd0b42cef5c0e999d21428"
+    }
+  ]
+}
