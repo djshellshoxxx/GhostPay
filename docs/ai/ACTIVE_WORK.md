@@ -713,3 +713,18 @@ unparsable source, and independently review before integration.
 Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+
+## F10 independent milestone review — 2026-11-20
+
+Worker: `f10_independent_review`, delegated by the future-feature coordinator.
+Branch: `future/f10-private-recurring`. Reviewed product/test source:
+`e0b6e44379447037be09d20934972d8afc7a6600`; initial documentation head:
+`e7991b659fb77c748bf82de6f2e4fe7f8242cc57`.
+Owned paths: this additive ownership record and
+`docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md`.
+Product source remains read-only. Acceptance: independently inspect canonical
+units, UTC schedule reuse, staged snapshot identities, explicit local review and
+revocation; replay maintained focused tests; record incomplete integration and
+qualification honestly. No remote writes, production activation, new test probes,
+full-web typecheck or typed lint; coordinator owns the serialized broader gates.
