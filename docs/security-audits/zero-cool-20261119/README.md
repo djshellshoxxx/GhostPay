@@ -19,6 +19,7 @@ The hosting review found incorrect generated subpath-isolation guidance, a conta
 - [FINDINGS.md](FINDINGS.md): consolidated findings, exact branch matrices, impact limits, known repairs, hosting issues and recommended repair order.
 - [COVERAGE.md](COVERAGE.md): included code, exclusions, immutable source pins, branch movement and complete coverage accounting.
 - [VALIDATION.md](VALIDATION.md): what actually ran, what did not, dependency advisories and publication boundary.
+- [CONTINUATION_PROMPT.md](CONTINUATION_PROMPT.md): ready-to-use instructions for a later feature-completion and unique-code consolidation session, with fresh-worker handoffs.
 - [finding-status.json](finding-status.json): machine-readable core and hosting dispositions by final ref.
 - [coverage-summary.json](coverage-summary.json) and [reviewed-coverage.json](reviewed-coverage.json): zero-pending coverage with source identity and reviewer traceability.
 
@@ -49,8 +50,8 @@ No application/contract/browser test suite, exploit reproduction, live endpoint 
 
 ## Repository and publication status
 
-The audit changes only this notes directory and the coordinator's appended ownership/completion entry in `docs/ai/ACTIVE_WORK.md`. Production source is unchanged. Notes are on local branch **`audit/zero-cool-core-20261119`**.
+The audit changes only this notes directory and the coordinator's appended ownership/completion entry in `docs/ai/ACTIVE_WORK.md`. Production source is unchanged. Notes are published on **[audit/zero-cool-core-20261119](https://github.com/djshellshoxxx/GhostPay/tree/audit/zero-cool-core-20261119/docs/security-audits/zero-cool-20261119)**.
 
-Public publication remains blocked. On November 20, the completed audit commit was independently rechecked after the user replied “continue” to the publication question. Automatic approval review rejected the requested push because it did not treat that response as explicit authorization to disclose the security findings and coverage metadata publicly. No remote write occurred, and no alternate publication route was attempted. See [PUBLICATION_STATUS.md](PUBLICATION_STATUS.md) for the dated result and required next authorization. The unrelated remote audit branch with a different name is not this audit.
+Public publication completed on November 20 after the user explicitly authorized publishing the audit notes to the public GitHub repository. The first published snapshot, `9c17c871ea71f23b5ce2897188086b5291917461`, has exactly the same file tree as local audit commit `d54e055cdd5fc6f5637f60cf2a542dca6211a4cd`; a public Git fetch confirmed that identity. Earlier approval-review rejections and the later successful authorization are preserved in [PUBLICATION_STATUS.md](PUBLICATION_STATUS.md). Main was not changed. The unrelated remote audit branch with a different name is not this audit.
 
-[AUDIT_HANDOFF.md](AUDIT_HANDOFF.md) records completed scope, continuation rules and the publication restriction.
+[AUDIT_HANDOFF.md](AUDIT_HANDOFF.md) records completed scope, publication and continuation boundaries.
