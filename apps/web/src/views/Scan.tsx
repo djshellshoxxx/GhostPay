@@ -424,7 +424,7 @@ export function Scan(): ReactNode {
         scanMatchesCurrentScope={scanMatchesCurrentScope}
         onAnnounce={app.announce}
       />
-      <Tags key={`${chainId}:${keyId ?? 'no-session'}`} chainId={chainId} />
+      <Tags key={chainId} chainId={chainId} sellerKeyId={keyId} />
     </section>
   );
 }
@@ -556,7 +556,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   );
 }
 
-function Tags(props: { readonly chainId: number }): ReactNode {
+function Tags(props: { readonly chainId: number; readonly sellerKeyId: string | undefined }): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
   const app = useApp();
@@ -564,7 +564,17 @@ function Tags(props: { readonly chainId: number }): ReactNode {
   const [refreshGeneration, force] = useState(0);
   const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
   const [err, setErr] = useState<ScanText | undefined>(undefined);
-  const unlocked = services.vault.unlocked;
+  const [authorizedSellerKeyId, setAuthorizedSellerKeyId] = useState(props.sellerKeyId);
+  const unlocked = services.vault.unlocked && authorizedSellerKeyId === props.sellerKeyId;
+
+  // Session revisions invalidate tag access even when the replacement has the same public keys.
+  // Keep this component mounted within a chain so a pending unlock can report its guarded failure.
+  useEffect(() => subscribeSession(() => {
+    services.vault.lock();
+    setAuthorizedSellerKeyId(undefined);
+    setList(undefined);
+    force((n) => n + 1);
+  }), [services.vault]);
 
   // Re-read the selected chain after unlocking or remounting. The parent keys this component by
   // chain and seller key identity so the previous chain's rows cannot flash during a scope switch.
@@ -592,7 +602,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
       },
     );
     return () => { live = false; };
-  }, [props.chainId, refreshGeneration, services.vault, unlocked]);
+  }, [props.chainId, props.sellerKeyId, refreshGeneration, services.vault, unlocked]);
 
   return (
     <div>
@@ -621,6 +631,8 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                       setErr({ error: captureUserMessage(e) });
                       return;
                     }
+                    setList(undefined);
+                    setAuthorizedSellerKeyId(props.sellerKeyId);
                     setErr(undefined);
                     force((n) => n + 1);
                     app.announce(latestT.current('scan.tags.unlocked'));
