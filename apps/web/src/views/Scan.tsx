@@ -424,7 +424,7 @@ export function Scan(): ReactNode {
         scanMatchesCurrentScope={scanMatchesCurrentScope}
         onAnnounce={app.announce}
       />
-      <Tags chainId={chainId} />
+      <Tags key={`${chainId}:${keyId ?? 'no-session'}`} chainId={chainId} />
     </section>
   );
 }
@@ -561,16 +561,38 @@ function Tags(props: { readonly chainId: number }): ReactNode {
   const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
-  const [, force] = useState(0);
+  const [refreshGeneration, force] = useState(0);
   const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
   const [err, setErr] = useState<ScanText | undefined>(undefined);
   const unlocked = services.vault.unlocked;
 
-  const refresh = (): void => {
-    services.vault.list(props.chainId).then(setList, (e: unknown) => {
-      setErr({ error: captureUserMessage(e) });
-    });
-  };
+  // Re-read the selected chain after unlocking or remounting. The parent keys this component by
+  // chain and seller key identity so the previous chain's rows cannot flash during a scope switch.
+  // In-flight readbacks belong to the previous effect and are never allowed to repopulate this list.
+  useEffect(() => {
+    let live = true;
+    setList(undefined);
+    if (!unlocked) return () => { live = false; };
+    let sessionGuard: () => void;
+    try {
+      sessionGuard = captureSessionGuard();
+    } catch {
+      return () => { live = false; };
+    }
+    void services.vault.list(props.chainId).then(
+      (next) => {
+        if (!live) return;
+        try { sessionGuard(); } catch { return; }
+        setList(next);
+      },
+      (e: unknown) => {
+        if (!live) return;
+        try { sessionGuard(); } catch { return; }
+        setErr({ error: captureUserMessage(e) });
+      },
+    );
+    return () => { live = false; };
+  }, [props.chainId, refreshGeneration, services.vault, unlocked]);
 
   return (
     <div>
@@ -601,7 +623,6 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                     }
                     setErr(undefined);
                     force((n) => n + 1);
-                    refresh();
                     app.announce(latestT.current('scan.tags.unlocked'));
                   },
                   (e: unknown) => {
