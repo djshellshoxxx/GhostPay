@@ -581,6 +581,11 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     assertCurrent();
     const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
     assertCurrent();
+    // The native amount is the balance the user explicitly reviewed. A new deposit or withdrawal must require a
+    // fresh balance read and consent instead of silently changing the amount this signing action will sweep.
+    if (token === 'native' && nativeBalance !== i.amount) {
+      throw new UserFacingError({ key: 'error.sweep.yourRPCReturnedAnUnexpectedBalance' });
+    }
     let to: Address;
     let data: Hex = '0x';
     let value: bigint;
