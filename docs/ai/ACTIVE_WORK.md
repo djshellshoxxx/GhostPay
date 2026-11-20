@@ -1958,3 +1958,10 @@ Base: `3dc86fbc49e919e664230b63dae372ff79430fc5`.
 Owned writes: `.github/dependabot.yml`, this additive claim, and `docs/engineering-handoffs/continuous-20261119/generation-5-dependabot-fix/`.
 Upstream: `b246782c`, retained at `claude/ghostpay-consolidation-9xhtxg-security` (`4894d0d8`).
 Acceptance: root Actions updater currently discovers root action.yml/yaml and workflows, leaving three existing nested composite actions outside configured update manifests. Selectively add `/.github/actions/*` to the existing Actions directory list, preserve weekly cadence/group/PR limit/npm configuration, parse both semantic mappings and inventory concrete target files. Root independently reviews current primary-source discovery semantics before publication. No added schedule, action/dependency bump, workflow/gate edit, remote-ref mutation or deployment.
+
+# Continuous qualification signer-fixture synchronization — 2026-11-19
+
+Worker: root coordinator, independent follow-up review by qa_review_gen3.
+Branch: integration/ghostpay-continuous-followup-20261119.
+Owned path: apps/web/src/views/Pay.signer.test.tsx and source-pinned failure/repair receipts.
+Acceptance: reproduce the one failing case from the original full web run (3837 pass,1 fail,13 skip); wait for the current manifest-dependent review control before asserting the existing disabled state. Retain selected-seller mismatch, absence of the prior pin, and zero RPC/wallet assertions. No production, timeout, configuration or gate changes.
