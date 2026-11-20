@@ -1,0 +1,9 @@
+{
+  "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/check-runs/135981137999/annotations?per_page=100",
+  "representation": "Normalized JSON copied from successful public urllib response printed by exec chunk a06b7a. Original HTTP bytes/headers were not captured. A subsequent request to persist the raw response failed HTTP403. This file is not represented as raw HTTP response bytes.",
+  "connector_result": "INVALID_ARGUMENT: endpoint family unsupported",
+  "cli_result": "gh exited4: not authenticated",
+  "first_public_request": "success; two annotations",
+  "second_public_request": "HTTP403; no additional alert state obtained",
+  "recorded_at_utc": "2026-11-20T00:30:37.892873+00:00"
+}

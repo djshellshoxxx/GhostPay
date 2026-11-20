@@ -1,0 +1,124 @@
+{
+  "format": "ghostpay-independent-combined-source/1",
+  "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "combined": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+  "tree": "80fd34834ccdbc81bf8f5fc63ba76edb52905ef1",
+  "non_documentation_changes": [
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "reviewed_commit": "3814ad2efffc6588f1c176a39b1090033f2f3537",
+      "reviewed_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "combined_blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "identical": true
+    },
+    {
+      "path": "packages/chain-adapters/src/deployments.test.ts",
+      "reviewed_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "reviewed_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "combined_blob": "9a35cce7f79ef3341e73ed2b8aa140653b97756b",
+      "identical": true
+    },
+    {
+      "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+      "reviewed_commit": "008ccdcf05b703cea51ffc4fdaa42fc279281d81",
+      "reviewed_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "combined_blob": "5ce6f210304b4c02b775a505e51ac4dd0eeba6a1",
+      "identical": true
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "reviewed_commit": "308dcbb2d40793514ea303a898282578dc17342d",
+      "reviewed_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "combined_blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "identical": true
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "reviewed_commit": "308dcbb2d40793514ea303a898282578dc17342d",
+      "reviewed_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "combined_blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "identical": true
+    }
+  ],
+  "control_scopes": [
+    {
+      "path": ".github/workflows",
+      "baseline": "715a5fdf05784180f6e59d8db9650180355b779e",
+      "combined": "715a5fdf05784180f6e59d8db9650180355b779e",
+      "unchanged": true
+    },
+    {
+      "path": ".github/actions",
+      "baseline": "f5ff0f9bc4321c39a4e89a816f1b8cce41055ffb",
+      "combined": "f5ff0f9bc4321c39a4e89a816f1b8cce41055ffb",
+      "unchanged": true
+    },
+    {
+      "path": "package-lock.json",
+      "baseline": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "combined": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "baseline": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "combined": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts",
+      "baseline": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "combined": "6c2ac4cd60aabc0ff53f6ab0819696098715f67f",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "baseline": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "combined": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "baseline": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "combined": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "baseline": "04defade63f86886f12a6299f19f46a2e562b680",
+      "combined": "04defade63f86886f12a6299f19f46a2e562b680",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "baseline": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "combined": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "baseline": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "combined": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "baseline": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "combined": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "unchanged": true
+    },
+    {
+      "path": "docs/adr/ADR-LOG.md",
+      "baseline": "af7c516f9280b3554084bb0057b971f91c9f2bf4",
+      "combined": "af7c516f9280b3554084bb0057b971f91c9f2bf4",
+      "unchanged": true,
+      "note": "ADR-0015 is a section in ADR-LOG.md, not a standalone file."
+    },
+    {
+      "path": "docs/adr/ADR-0029-github-pages-static-beta.md",
+      "baseline": "18ca7c2d4b6359e28e6c51fe11e476d3d062c5fe",
+      "combined": "18ca7c2d4b6359e28e6c51fe11e476d3d062c5fe",
+      "unchanged": true
+    }
+  ]
+}

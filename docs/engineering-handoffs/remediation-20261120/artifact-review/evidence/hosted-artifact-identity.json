@@ -1,0 +1,37 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "workflowRun": 44643709322,
+  "workflowUrl": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709322",
+  "artifact": {
+    "id": 14586739296,
+    "name": "pages-site-a7ceff94269cddfbc725677dd03737d96a449039",
+    "size_in_bytes": 798581,
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14586739296",
+    "archive_download_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/artifacts/14586739296/zip",
+    "expired": false,
+    "created_at": "2026-11-20T00:13:12Z",
+    "expires_at": "2026-12-04T00:13:10Z",
+    "updated_at": "2026-11-20T00:13:12Z",
+    "digest": "sha256:58077dbda4cad5606bb02a023f5dc86063507f158778513b853101af1b4e2df5",
+    "workflow_run": {
+      "id": 44643709322,
+      "repository_id": 1428055628,
+      "head_repository_id": 1428055628,
+      "head_branch": "release/ghostpay-beta-qualification-20261119",
+      "head_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9"
+    }
+  },
+  "source": {
+    "sha": "a7ceff94269cddfbc725677dd03737d96a449039",
+    "tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+    "parents": [
+      "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "d74af79ebabdc8cead843361c3497b46d8c421f9"
+    ]
+  },
+  "reviewedHead": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "reviewedTree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+  "exactTreeMatches": true,
+  "archiveSha256": "58077dbda4cad5606bb02a023f5dc86063507f158778513b853101af1b4e2df5",
+  "independentTrustBoundary": "Artifact archive obtained via authenticated GitHub connector. Digest matched GitHub artifact metadata. This verifies workflow artifact integrity and source identity, not a published-site deployment or mandatory external audit."
+}

@@ -1,0 +1,16 @@
+{
+  "format": "ghostpay-final-review-fresh-artifact/1",
+  "source_commit": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+  "expected_files": 16,
+  "verified_files": 16,
+  "source_and_checksum_digest_valid": true,
+  "site_safety_problems": [],
+  "payments_enabled_chain_ids": [],
+  "release_mode": true,
+  "origin": "https://djshellshoxxx.github.io",
+  "shared_origin": true,
+  "sha256sums_sha256": "ac1b4953087dc67ed59c832fe1386067190bc30b555263f9ab24c4db0abdf9f2",
+  "manifests_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "automatic_integrity_receipt_present": true,
+  "limits": "Local clean-source build only. Release mode does not confer release approval, origin isolation, manifest authenticity, independent-machine reproducibility or deployment."
+}

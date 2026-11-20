@@ -1,0 +1,77 @@
+{
+  "a7ceff94269cddfbc725677dd03737d96a449039": {
+    "sha": "a7ceff94269cddfbc725677dd03737d96a449039",
+    "node_id": "C_kwDOVR5mTNoAKGE3Y2VmZjk0MjY5Y2RkZmJjNzI1Njc3ZGQwMzczN2Q5NmE0NDkwMzk",
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/a7ceff94269cddfbc725677dd03737d96a449039",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/a7ceff94269cddfbc725677dd03737d96a449039",
+    "author": {
+      "name": "sheldon",
+      "email": "127660907+djshellshoxxx@users.noreply.github.com",
+      "date": "2026-11-20T00:10:34Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-11-20T00:10:34Z"
+    },
+    "tree": {
+      "sha": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/e76c03d9dba595ff1171577139c1628c4ad45f5b"
+    },
+    "message": "Merge d74af79ebabdc8cead843361c3497b46d8c421f9 into c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "parents": [
+      {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/d74af79ebabdc8cead843361c3497b46d8c421f9",
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/d74af79ebabdc8cead843361c3497b46d8c421f9"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq/4/6CRC1aQ7uu5UhlAAA9VsQAJYHdMqFrIIqCnd2FOlP5BJR\n+EUztf8ICFQ8veIgGeF/VU67PYSFsoSge/wkxhnlsiudBvi6N14SZTSNJAcle9rt\nKyrgUzxEth0bHFoW8IcUcJjyh4Vvei5k6Uh0bauAA6DXjYEUyMu4xZICJj8xQExg\njWuGk11uIXWBbxHWtA4EoxIyPJyoBsm2QpZKFsjFUUwoNND2e5fFnEC8wU83J53v\nOrEtWKu1cozkphThBbv6YOrsoxphiDpg5Zcwox7/cgn814TPG/Emjz2bf/ifaVg0\n7/pfl6X5oOz397f2mfbfjl4tdm7X6DNZCGCWEk3pkxs/jD7t2QBICPCPd7yunOzn\nSAEjdT0TzO0a9a+qN8xclbRLUP5+N0aSIxixC+G+weOkIEXOEYZsp0fGHe8zhVqr\nXlkNovX4nvM1J/xvLXFpAzIQ4lEQENdTCN1VCmVhIqmXxdohLIaCIvWZBHXtd5i7\n5ZP8rmNFXt6lASCBJk0uWcwvGss+HhY/QPcEAKHBnxHiOLLhIFZ1RcgozEI55ZTn\nGzMVOTdQXaaqk0gfCnvjJ5IHAzcYlqX2Hht80QNLCM3ae1eGqE96PmLyD+NulvsL\nC9D306KUx0Bz5g4CV4mV74H9pPxRRbR9uhiwzw0egpLHIqECrZtQlsHIwROeuWvk\nY3nTco7HVxf5Qu42islT\n=ks1F\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree e76c03d9dba595ff1171577139c1628c4ad45f5b\nparent c977b5d6723f6822c3b5d86cd6b231712c53c395\nparent d74af79ebabdc8cead843361c3497b46d8c421f9\nauthor sheldon <127660907+djshellshoxxx@users.noreply.github.com> 1795133434 +0000\ncommitter GitHub <noreply@github.com> 1795133434 +0000\n\nMerge d74af79ebabdc8cead843361c3497b46d8c421f9 into c977b5d6723f6822c3b5d86cd6b231712c53c395\n",
+      "verified_at": "2026-11-20T00:10:35Z"
+    }
+  },
+  "d74af79ebabdc8cead843361c3497b46d8c421f9": {
+    "sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "node_id": "C_kwDOVR5mTNoAKGQ3NGFmNzllYmFiZGM4Y2VhZDg0MzM2MWMzNDk3YjQ2ZDhjNDIxZjk",
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "author": {
+      "name": "sheldon",
+      "email": "127660907+djshellshoxxx@users.noreply.github.com",
+      "date": "2026-11-20T00:09:21Z"
+    },
+    "committer": {
+      "name": "sheldon",
+      "email": "127660907+djshellshoxxx@users.noreply.github.com",
+      "date": "2026-11-20T00:09:21Z"
+    },
+    "tree": {
+      "sha": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/e76c03d9dba595ff1171577139c1628c4ad45f5b"
+    },
+    "message": "docs: reconcile four-generation engineering evidence and current release blockers\n\nOriginal-Local-Commit: 3dc86fbc49e919e664230b63dae372ff79430fc5\nOriginal-Local-Author: Codex <codex@openai.com>\nVerified-Tree: e76c03d9dba595ff1171577139c1628c4ad45f5b",
+    "parents": [
+      {
+        "sha": "3c2a8209f63909995d5c08640eced939e173a3ed",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/3c2a8209f63909995d5c08640eced939e173a3ed",
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/3c2a8209f63909995d5c08640eced939e173a3ed"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

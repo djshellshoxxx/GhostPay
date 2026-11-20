@@ -1,3 +1,16 @@
+# Independent final Sweep authority review — 2026-11-20 UTC
+
+Worker: `/root/custody_transaction_audit`, delegated independent reviewer.
+Branch: `review/ghostpay-sweep-boundary-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: new reviewer-only `apps/web/src/lib/sweep.boundaryAudit.test.ts`, this additive claim, and
+`docs/engineering-handoffs/remediation-20261120/custody-audit/`.
+Acceptance: execute the existing Sweep authority tests and independently exercise the real network authorization/RPC
+client plus actual cryptographic signing across session revocation, delayed deadline checks, and the final handoff.
+Tests use offline synthetic JSON-RPC responses; they are not a browser, development-chain, or external-testnet qualification.
+No product, dependency, workflow, fee, contract, gate, remote-ref, deployment or shared-ledger mutations.
+The other coordinator owns the invoice-replacement browser failure and merchant-ledger correction.
+
 # Isolated consolidation follow-through — 2026-11-19
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
@@ -1923,6 +1936,47 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+
+## Release remediation: Pages artifact promotion gate — 2026-11-19
+
+Worker: `/root` in workspace `a7189299ede1`, separate from the continuous integration coordinator in `0a7bc3583588`.
+Branch: `fix/ghostpay-pages-integrity-gate-20261120`.
+Base: canonical PR #278, `d74af79ebabdc8cead843361c3497b46d8c421f9`; live main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: `scripts/pages/build-pages.sh`, new `scripts/pages/build-pages-artifact-gate.test.mjs`, and `docs/engineering-handoffs/remediation-20261120/` coordinator evidence only. Independent reviewer owns its own child evidence directory.
+Scope: execute the existing independent artifact verifier against the completed site, trusted build-generated SHA256SUMS, and exact expected source before promoting the site/evidence to final output. Preserve the verifier's trust assumptions and all release policies.
+Acceptance: failing regression on original builder; successful fresh 16-file artifact; tampered/missing/extra/symlink/ambiguous/wrong-source artifacts fail before promotion; original Pages tooling gates pass; independent adversarial review and exact-source qualification. No test threshold, runtime feature, privileged attestation job, signing key or deployment-policy changes.
+Coordination: the other active coordinator owns the renewed preflight browser observation repair and merchant-ledger zero-payment recovery. Those paths and shared integration refs are not modified here. The metadata lease remains separate and must be reacquired with current ownership before shared integration.
+
+# 2026-11-20 — Independent live CI and CodeQL finding reconciliation
+
+Worker: `/root/live_ci_audit`, delegated by remediation coordinator in workspace `a7189299ede1`.
+Branch: `review/ghostpay-ci-audit-20261120`; base PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/ci-audit/` only.
+Acceptance: retrieve exact-source run/job evidence, classify the current failures, independently inspect both current CodeQL annotations and execute their unchanged fixture tests, preserve raw public API responses, source hashes, commands and limitations. Distinguish analyzer alerts from demonstrated product vulnerabilities and fixture false positives. No alert suppression, dismissal, source change, dependency change, workflow mutation, remote write, deployment or release approval.
+Coordination: the earlier continuous coordinator owns the active invoice-replacement browser observation repair and merchant-ledger correction in separate `0a7bc3583588` worktrees. This audit does not duplicate either implementation. The remediation coordinator owns Pages artifact gate integration; the independent artifact reviewer owns its verification.
+
+Coordinator-authorized follow-up: this worker additionally owns exactly `packages/chain-adapters/src/deployments.test.ts` and `scripts/tests/privacy-csp-bundle.test.mjs` to express the two intentionally malformed fixed fixtures directly. Preserve byte-for-byte generated inputs and every existing assertion, run the unchanged fixture suites before and after, record independent equivalence evidence, and obtain a separate source review plus fresh hosted CodeQL. This is test-fixture clarification, not a demonstrated runtime vulnerability repair or an alert dismissal. All production, workflow and analyzer-policy files remain outside this claim.
+
+# Independent artifact security review — 2026-11-19 Vancouver
+
+Worker: `/root/artifact_security_review`; branch `review/ghostpay-artifact-remediation-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/artifact-review/` only.
+Acceptance: execute current verifier tests, independently challenge manifest/file/source identity assumptions, verify a fresh payments-disabled artifact when the coordinator's dependencies are prepared, and preserve exact evidence.
+Boundaries: read-only product, tests and workflows until an independently observed defect is reported and scoped with the coordinator. No remote mutation, integration, release-policy change, signing, deployment or funds.
+
+Additional coordinator-authorized independent review: exact CodeQL fixture correction `008ccdcf05b703cea51ffc4fdaa42fc279281d81`. Read-only source inspection, AST-derived byte-equivalence proof and original focused test replay; no production or test changes authored by this reviewer. Review and evidence remain in the owned artifact-review directory.
+
+## Independent final remediation review — 2026-11-19
+
+Worker: `/root/final_independent_review`, fresh reviewer of the bounded release-remediation cycle.
+Branch: `review/ghostpay-final-remediation-20261120`.
+Initial review base: `3814ad2efffc6588f1c176a39b1090033f2f3537` (new Sweep authority tests on PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`).
+Owned paths: this additive claim and `docs/engineering-handoffs/remediation-20261120/final-review/` only.
+Scope: independently review the added Sweep authority tests, Pages artifact promotion gate and exact CodeQL fixture clarification, then inspect the coordinator's frozen combined source and qualification evidence. Production, existing test sources, workflow policy and shared tracking remain owned by their implementers.
+Acceptance: confirm source identities, perform meaningful focused execution, identify differences between tested behavior and release claims, and provide exactly one release-readiness verdict with precise remaining requirements. No remote mutation, shared integration, deployment, release or security-gate waiver.
+
 # Continuous generation 5 development-dependency review — 2026-11-19
 
 Worker: `/root/dependency_review_gen5`, independently delegated for current audit triage.
@@ -2006,3 +2060,11 @@ Status: claimed; diagnosis and deterministic reproduction in progress.
 ### Continuous follow-up integration checkpoint — 2026-11-20
 
 Root integrated the completed generation5 dependency/uniqueness evidence, independently verified merchant guard and composite-action discovery, and both independently reviewed browser/signer fixture repairs. Product/test inputs are frozen at2b7c015e28aa23f63ba39486ae7345983ce9ff97; subsequent handoff changes are documentation/evidence only. Original full web failure is retained; combined focused web13, full web typecheck/lint, merchant30 original coverage/build and113action pins pass. Exact-head hosted qualification and security/release gates remain pending. Six fresh generations completed; follow-up reviewer turns are reused agents after an actual further-spawn thread limit. No live-background claim is made for completed workers.
+
+## Scoped remediation baseline refresh — 2026-11-20 UTC
+
+Worker: `/root` in workspace `a7189299ede1`; local branch `integration/ghostpay-remediation-successor-20261120`, publishing only to owned PR #292 branch `fix/ghostpay-pages-integrity-gate-20261120`.
+Inputs: frozen scoped head `814950a1cf99e68765b85f241e6f4a0fc55ea9c6` and published canonical successor `417f7c71daf8645e1432f2ec8f070110879b80bd`; live main remains `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned operation: merge the published canonical baseline into this existing scoped PR; resolve only additive ownership-log conflicts and preserve both parents plus every source/test/config blob. No new production implementation, QR extraction, assertion, gate, fee or policy change.
+Acceptance: independent input compatibility and final combined-source review, focused affected checks, then one expected-head non-force update and fresh exact-source hosted qualification. Preserve old artifact evidence at its actual source; do not relabel it as combined-source qualification. Keep subsequent receipts off the frozen PR head.
+Coordination: generation5 canonical lease explicitly released at `2026-11-20T01:00:43Z`; this operation does not acquire or update the shared canonical ref, main, integration lock, deployment or release.
