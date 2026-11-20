@@ -2582,27 +2582,64 @@
     },
     {
       "name": "codex/ghostpay-spec09-matrix-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 187,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "codex/ghostpay-unified-completion",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 179,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "codex/network-isolation-complete-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 87,
+        "behind_by": 96,
+        "changed_files_returned": 300,
+        "application_paths_returned": 154,
+        "note": "file listing may be truncated by compare API"
+      }
     },
     {
       "name": "codex/recovery-spec02-unqualified-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 213,
+        "changed_files_returned": 4,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "codex/seller-ledger-receipt-qr",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1650,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "codex/setup-autonomous-agent-20261104",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 1597,
+        "changed_files_returned": 2,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "consolidation/ops-monitor-bounded-streams-20261116",
@@ -2626,47 +2663,113 @@
     },
     {
       "name": "dependabot/github_actions/actions-b9ade1236b",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 106,
+        "changed_files_returned": 5,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 106,
+        "changed_files_returned": 69,
+        "application_paths_returned": 68
+      }
     },
     {
       "name": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 76,
+        "changed_files_returned": 88,
+        "application_paths_returned": 67
+      }
     },
     {
       "name": "docs/future-privacy-feature-specs-20261109",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 2,
+        "behind_by": 1597,
+        "changed_files_returned": 20,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/ghostpay-3q-stealth-keypair-export-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 177,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/ghostpay-core-readonly-audit-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 39,
+        "changed_files_returned": 55,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/ghostpay-deep-research-20261103",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1598,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/ghostpay-future-module-specs-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 39,
+        "changed_files_returned": 48,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 178,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/lean-release-handoff-2026-10-24",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1609,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "docs/readme-and-wiki",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 2307,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "evidence/ghostpay-completion-20261120",
