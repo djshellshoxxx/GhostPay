@@ -1015,3 +1015,20 @@ pending vault save/delete complete or permit a duplicate. Preserve generation,
 controller, session, reauthentication, and vault-write integrity guards.
 Run focused original-config regressions, relevant TypeScript and lint; record actual
 outcomes. Root owns remote publication and integration. Other branches remain untouched.
+
+
+## Consolidation continuation R2 evidence — 2026-11-20
+
+Worker: consolidation coordinator `/root`; branch `evidence/ghostpay-continuation-r2-20261120`.
+Base and frozen product source: PR #307 `2876b7db580e47a880d5951ce9e62941bcf76fdf`.
+Owned paths: this additive claim and `docs/consolidation/continuation-r2-20261120/` evidence/handoff files only.
+Acceptance: preserve exact published heads, source/evidence links, semantic branch dispositions, actual test outcomes and hosted blockers; record interrupted qualification honestly; leave all product branches frozen.
+Status: assembling evidence from completed TRON, retention, idle source, vault rekey and backup recovery work. Full idle qualification and final backup publication remain in progress. No main mutation, lease acquisition, release or deployment.
+
+
+## Consolidation continuation R2 completion record — 2026-11-20
+
+Worker: consolidation coordinator `/root`; branch `evidence/ghostpay-continuation-r2-20261120`.
+The earlier assembly status above is superseded by the finalized evidence: feature/fix candidates #327, #329, #331, #333 and #335, separate donor qualifications #321/#328/#334, completed #331 original web qualification, and the reviewed devnet acceptance correction #336 are published. Exact source/evidence mappings, lossless artifact checks, branch dispositions and hosted snapshots are indexed in `docs/consolidation/continuation-r2-20261120/REPORT.md`.
+Latest hosted read: 2026-11-20 19:47 UTC; all twelve source/base pairs unchanged, all candidates still have pending work, #326/#327 retain two failed browser jobs each, and #336 awaits corrected hosted acceptance. Main remains `aa3df1cb37274fae73af0ca957183c15c51b62d3`; released generation 8 control object remains `849b20733e6fd396a1ed354b284335019500946b`.
+No main merge, new lease acquisition, release or deployment occurred in this continuation. Broader required-v1/v1.1 reconciliation, persistent-record retention, Bitcoin/legacy migration policy and active F04/F05/F10 owners remain explicitly scoped in the handoff. This completion record changes documentation only and preserves every product source head.

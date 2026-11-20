@@ -1,0 +1,246 @@
+{
+  "format": "ghostpay-historical-browser-semantic-review/1",
+  "reviewer": "/root/remaining_branches_r3/historical_pay_r3",
+  "reviewed_at": "2026-11-20T18:13:45.964130+00:00",
+  "baselines": {
+    "sweep": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "sweep_tree": "29ebe360170da1bd1edfa046dc2271bbbf16b325",
+    "idle": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+    "idle_tree": "a349e60b012bff674530933088ed16196d701d22"
+  },
+  "decision": "No missing assigned browser-core behavior found; do not replay these historical runtime slices.",
+  "method": [
+    "Read AGENTS/workflow/handoff instructions.",
+    "Inspect donor merge bases and original behavior commits, then compare pinned current runtime and regression sources.",
+    "Verify ten reviewed current runtime blobs are unchanged between the Sweep and idle candidates."
+  ],
+  "executed_tests": false,
+  "source_mutations": false,
+  "ref_mutations": false,
+  "scope_limit": "Bounded semantic source review of four donor heads; not approval of whole branches, hosted relayer changes, workflows or current release qualification.",
+  "current_runtime_pins": [
+    {
+      "path": "apps/web/src/lib/pay.ts",
+      "sweep_blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "idle_blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "sha256": "44256ad721b864424402a40b17bf7280bb3a7b28895338030b7496634dd01c28",
+      "bytes": 34459
+    },
+    {
+      "path": "apps/web/src/lib/payExec.ts",
+      "sweep_blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "idle_blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "sha256": "9b10f6b61cbd845318fcb16558e761fea2f5fb112291bd01ff603291f2b7aedb",
+      "bytes": 20529
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.ts",
+      "sweep_blob": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+      "idle_blob": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+      "sha256": "7714b06452d5ab09376769e68f4c432061101096490b7acd9d337058618ab90a",
+      "bytes": 8695
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "sweep_blob": "a351684b70b84a73705c7aed73dee65bd45cf36c",
+      "idle_blob": "a351684b70b84a73705c7aed73dee65bd45cf36c",
+      "sha256": "f9cf3b32f817d3ff3c6f10f53c01d76918aef5e10e5d7e555f285e99ddfa9b5f",
+      "bytes": 40360
+    },
+    {
+      "path": "apps/web/src/lib/opStackFee.ts",
+      "sweep_blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "idle_blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "sha256": "7597421d72b807b08258b28acf663f097cd5ac92e77fdef94652e11bd00cc7d6",
+      "bytes": 4147
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "sweep_blob": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+      "idle_blob": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+      "sha256": "10d94ac38ec20d7e4f69d59727f70a37b8d148d38b11fa16dfd9190b5193c3d3",
+      "bytes": 9363
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "sweep_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "idle_blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "sha256": "a83618676f65d6588ebafb798884b40d2a6ffe69e00b0bf8b868e04597a09d51",
+      "bytes": 11271
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "sweep_blob": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "idle_blob": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "sha256": "8b3bcd3dedc02dee95a83bbc0bdd750a272018df472765a67f53abb5f84b73d8",
+      "bytes": 21404
+    },
+    {
+      "path": "packages/chain-adapters/src/logs.ts",
+      "sweep_blob": "4801b9589043c0d003cf1d002e745451239f6b21",
+      "idle_blob": "4801b9589043c0d003cf1d002e745451239f6b21",
+      "sha256": "18c1b927aa3911581f87db1b8ba9587bdbaa28c8ccf629f9352ccda3b7e9c1f4",
+      "bytes": 27555
+    },
+    {
+      "path": "packages/chain-adapters/src/errors.ts",
+      "sweep_blob": "3b2cb127f6bbe1f4d46987206039e06554d33038",
+      "idle_blob": "3b2cb127f6bbe1f4d46987206039e06554d33038",
+      "sha256": "b9acba56845b2da257d9244d56aacb72b842430638f84dbf10a465c642915bee",
+      "bytes": 1775
+    }
+  ],
+  "donors": [
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "disposition": "browser-payment-behavior-present-and-strengthened",
+      "runtime_paths": [
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/payExec.ts"
+      ],
+      "relevant_donor_commits": [
+        "cede5cfda895b42e28708ba99d253e976490b963",
+        "4c4baf273e009a88d564c987630444e08325e733"
+      ],
+      "evidence": [
+        "Current assertInvoiceStillPayable rechecks signed invoice and applicable fiat-quote expiry; assertPreparedBufferFresh rechecks buffer TTL.",
+        "Current boundedDeadline uses lastPayableSecond (expiresAt minus one), avoiding the donor deadline-at-expiry boundary mismatch.",
+        "buildFinal rejects an explicitly supplied deadline beyond the last payable second instead of silently clamping a signed permit deadline. preparePayment shares one bounded permit/router deadline.",
+        "sendPayment applies invoice/buffer/current-operation checks before and after asynchronous preflight and passes the guard to submitTx.",
+        "Current pay.test.ts includes A3-2 adapted expiry cases; payExec.test.ts retains invoice/buffer-after-prepare refusal assertions; deployment.test.ts and manifest.test.ts retain A7-2/A7-3 direct verification cases."
+      ],
+      "test_sources": [
+        "apps/web/src/lib/pay.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/views/Pay.test.tsx",
+        "apps/web/src/lib/deployment.test.ts",
+        "apps/web/src/lib/manifest.test.ts"
+      ],
+      "excluded": [
+        "CI/cloud automation scripts and broad lean-reachability workflow scope were not assigned for this browser-runtime review."
+      ],
+      "tree": "c4950664d5df99cf0bbcdc28d5087cdd041e67c9",
+      "merge_base_with_sweep": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+      "test_source_blobs": {
+        "apps/web/src/lib/pay.test.ts": "7e27cf90328b7d9421e394edc10515e61157a1d5",
+        "apps/web/src/lib/payExec.test.ts": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+        "apps/web/src/views/Pay.test.tsx": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+        "apps/web/src/lib/deployment.test.ts": "be90aa64969b62e5616161b848ef35e0b12b9804",
+        "apps/web/src/lib/manifest.test.ts": "0de9d50db4e0816f1fc7783919e45031a93bb38b"
+      }
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "head": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "disposition": "browser-adapter-behavior-present-and-strengthened",
+      "runtime_paths": [
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/opStackFee.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/chain-adapters/src/errors.ts",
+        "packages/chain-adapters/src/logs.ts"
+      ],
+      "relevant_donor_commits": [
+        "8daa03cf3dda60c60864a134ecb3bc5e658e1010",
+        "97787665d316395f54b3f3dbd1ef70d4beaa2959"
+      ],
+      "evidence": [
+        "B2R optional operator-fee fallback now lives in opStackFee.ts and returns zero only for ChainAdapterError.executionReverted.",
+        "Current RPC classification positively identifies plain revert text and rejects gas/opcode/unknown-halt evidence; code 3 without text remains false. This is stricter than donor reverted && !halted.",
+        "The original B2R cases are explicitly ported in rpc.test.ts and sweep.test.ts, with additional unknown-execution controls.",
+        "AR2 served-range evidence resets when a window grows. Current logs.ts additionally preserves served evidence when already at the cap.",
+        "scanHardening.test.ts retains the AR2 1000-announcement/29-refusal regression and adds a cap/regrowth transient-refusal case."
+      ],
+      "test_sources": [
+        "apps/web/src/lib/sweep.test.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/scanHardening.test.ts"
+      ],
+      "excluded": [
+        "D3 hosted-relayer queue deadline changes remain outside the static Pages browser task."
+      ],
+      "tree": "527461344789c2fd4d55e28f895047b8d13e0a1e",
+      "merge_base_with_sweep": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "test_source_blobs": {
+        "apps/web/src/lib/sweep.test.ts": "c45152ff8babdb2b1039cdc414ccde0fd5f71819",
+        "packages/chain-adapters/src/rpc.test.ts": "f7bb85cb0296ccae726859842b06c6f76b6974b8",
+        "packages/chain-adapters/src/scanHardening.test.ts": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e"
+      }
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "disposition": "same-browser-slices-present-backend-extension-outside-scope",
+      "runtime_paths": [
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/opStackFee.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/chain-adapters/src/errors.ts",
+        "packages/chain-adapters/src/logs.ts"
+      ],
+      "relevant_donor_commits": [
+        "8daa03cf3dda60c60864a134ecb3bc5e658e1010",
+        "97787665d316395f54b3f3dbd1ef70d4beaa2959"
+      ],
+      "evidence": [
+        "This head contains the preceding historical donor and adds relayer secret-file handling. Its assigned browser/adapter deltas receive the same retained/strengthened disposition."
+      ],
+      "test_sources": [
+        "apps/web/src/lib/sweep.test.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/scanHardening.test.ts"
+      ],
+      "excluded": [
+        "apps/relayer/src/secrets.ts, secrets tests, service/API deadline changes and hosted-server behavior were not reviewed for recovery."
+      ],
+      "tree": "77e62cc909a1614bbaa4417783fe413d5e7f6674",
+      "merge_base_with_sweep": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "test_source_blobs": {
+        "apps/web/src/lib/sweep.test.ts": "c45152ff8babdb2b1039cdc414ccde0fd5f71819",
+        "packages/chain-adapters/src/rpc.test.ts": "f7bb85cb0296ccae726859842b06c6f76b6974b8",
+        "packages/chain-adapters/src/scanHardening.test.ts": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e"
+      }
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "aliases": [
+        "chatgpt/pages-browser-fixes-combined-20261114"
+      ],
+      "head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "disposition": "browser-boundary-behavior-present-and-strengthened",
+      "runtime_paths": [
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "relevant_donor_commits": [
+        "b25ed7ba933dbfea9739a385fcb2705ac3aae8a1",
+        "b719e9896a58d69f6e3f59b756ad69f837d50a61",
+        "6b693bf404e423f1a19959195c9fcabd79c561be",
+        "9245659a833100db3c5f59c8265156b30e524957"
+      ],
+      "evidence": [
+        "The current bounded-response implementation is unchanged from this donor. The entire runtime file differs only by removing unauthorized from proven pre-broadcast refusal classes.",
+        "The corresponding current test explicitly preserves an unknown authorization-layer 401 as an uncertain outcome; importing the old allowlist would undo this conservative behavior.",
+        "Current relayer tests retain the streamed-response regression requiring early rejection and cancellation before all 80KiB are buffered.",
+        "Current estimateSimilarTransfers retains exact token and requested-block-window checks; the matching wrong-token/wrong-window regression remains.",
+        "Current anonymitySet additionally marks incomplete 30-day history partial, strengthening the older donor seven-day condition."
+      ],
+      "test_sources": [
+        "apps/web/src/lib/relayerClient.test.ts",
+        "apps/web/src/lib/scanSpam.test.ts"
+      ],
+      "excluded": [
+        "No server endpoints or hosted relayer behavior were probed."
+      ],
+      "tree": "54270dc91b845c9a7eaf519cd7952ee6ecf288ff",
+      "merge_base_with_sweep": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "test_source_blobs": {
+        "apps/web/src/lib/relayerClient.test.ts": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+        "apps/web/src/lib/scanSpam.test.ts": "762deed547d68f934999994d770369b2ee95c9ad"
+      }
+    }
+  ]
+}

@@ -1,0 +1,442 @@
+{
+  "schema": "ghostpay-continuation-source-map/1",
+  "checked_at_utc": "2026-11-20T19:50:38.863643+00:00",
+  "method": "Local Git object tree and ordered parent verification of previously fetched published commits; remote current-head status is separate.",
+  "sources": [
+    {
+      "pr": 307,
+      "head": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "tree": "0b5bfcd30c9b0f3c25e1bd35be1207714f711193",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "Combined recovered fixes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/307"
+    },
+    {
+      "pr": 321,
+      "head": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "tree": "a77ea829e449c412911ac67c9d1395179a079055",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "TRON cancellation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/321"
+    },
+    {
+      "pr": 325,
+      "head": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "tree": "29ebe360170da1bd1edfa046dc2271bbbf16b325",
+      "base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "purpose": "Sweep authority",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/325"
+    },
+    {
+      "pr": 326,
+      "head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "tree": "b277d0b71b0b6d9242d2d36cdfcadc3b1296f5d3",
+      "base": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "purpose": "Proof preview retention",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/326"
+    },
+    {
+      "pr": 327,
+      "head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "tree": "f57733261e325c80ef54d7d12c93deb7feee4d4b",
+      "base": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "purpose": "Retention focus reconciliation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/327"
+    },
+    {
+      "pr": 328,
+      "head": "81598d93dd82cc440526c866d42b55be0657895b",
+      "tree": "09a1504b468d7943ff5bdacd1a8c009d3681ce64",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "Vault rekey revocation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/328"
+    },
+    {
+      "pr": 329,
+      "head": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+      "tree": "0165e82eabdcf5636919475c905c1d7802f599ac",
+      "base": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "purpose": "TRON complete ordered ranges",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/329"
+    },
+    {
+      "pr": 331,
+      "head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "purpose": "Sleep-aware session idle locking",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/331"
+    },
+    {
+      "pr": 333,
+      "head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "tree": "2b91fe95c2eec65c0359dc627af400b7d1756b44",
+      "base": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "purpose": "Backup preflight and durable-write ownership",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/333"
+    },
+    {
+      "pr": 334,
+      "head": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "tree": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "Optional BTC fee floor/cap validation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/334"
+    },
+    {
+      "pr": 335,
+      "head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "tree": "41ff1ce468d95b5199808e5587a53766db472a67",
+      "base": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "purpose": "Receipt archive identity",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/335"
+    },
+    {
+      "pr": 336,
+      "head": "410353a23631234aa888e46f38df22291c699a26",
+      "tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+      "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "purpose": "Explicit wallet disclosure decisions in devnet acceptance",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/336"
+    }
+  ],
+  "publication_maps": {
+    "retention_focus": {
+      "local_base": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "public_base": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "local_head": "a8b525a91def027eee728fe701351ef520c5d0d4",
+      "public_head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "commits": [
+        {
+          "local": "88d78a91aa92b72974c9444fccfb5013dbf263df",
+          "public": "232499e796639efa02158074ae7e14fa96a16575",
+          "tree": "62bd2c2e495460045074fab38590a410448b1792",
+          "local_parents": [
+            "a34ce43e296e302e3e65ed077ea8ac892c5189a1"
+          ],
+          "public_parents": [
+            "a34ce43e296e302e3e65ed077ea8ac892c5189a1"
+          ]
+        },
+        {
+          "local": "5961e0e936357d761aa26f538b59800d01bafead",
+          "public": "6bc2b3ee5d9a00dfe7a0b3128b635a6c6615cbd1",
+          "tree": "2065233c1b4255ec723d8c01a1bb118dfd4af966",
+          "local_parents": [
+            "88d78a91aa92b72974c9444fccfb5013dbf263df"
+          ],
+          "public_parents": [
+            "232499e796639efa02158074ae7e14fa96a16575"
+          ]
+        },
+        {
+          "local": "acd584f07e0636697f5ecc0067dafc52c262727d",
+          "public": "9442492a077552c9166e956b934bcc7bbcae1a70",
+          "tree": "db63b8cfbb47e44cc0063c91dd93fcb36f0fd009",
+          "local_parents": [
+            "5961e0e936357d761aa26f538b59800d01bafead"
+          ],
+          "public_parents": [
+            "6bc2b3ee5d9a00dfe7a0b3128b635a6c6615cbd1"
+          ]
+        },
+        {
+          "local": "93379d774a933faae3e528adbcc5671e80725404",
+          "public": "1d0600d74bd69db82c56b92006ab942e825d2cf3",
+          "tree": "5515e54178a8774fc0f8bfe24efe85db0b3dd0d9",
+          "local_parents": [
+            "acd584f07e0636697f5ecc0067dafc52c262727d"
+          ],
+          "public_parents": [
+            "9442492a077552c9166e956b934bcc7bbcae1a70"
+          ]
+        },
+        {
+          "local": "988d9df0295143040c04f72b38f8697e12dc5f8d",
+          "public": "d6e6438de959a7b1a2e0f17856b68dd4ca51aabe",
+          "tree": "ecbb2e405ba1057270001052dc028f324769fba6",
+          "local_parents": [
+            "93379d774a933faae3e528adbcc5671e80725404"
+          ],
+          "public_parents": [
+            "1d0600d74bd69db82c56b92006ab942e825d2cf3"
+          ]
+        },
+        {
+          "local": "a8b525a91def027eee728fe701351ef520c5d0d4",
+          "public": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+          "tree": "f57733261e325c80ef54d7d12c93deb7feee4d4b",
+          "local_parents": [
+            "988d9df0295143040c04f72b38f8697e12dc5f8d"
+          ],
+          "public_parents": [
+            "d6e6438de959a7b1a2e0f17856b68dd4ca51aabe"
+          ]
+        }
+      ]
+    },
+    "tron_range": {
+      "local_base": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "public_base": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "local_head": "7e321dd8826bbef3f3f131287134d55e7eacbeae",
+      "public_head": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+      "commits": [
+        {
+          "local": "d0968a8753164ed7e197c539e1b02afa2833c324",
+          "public": "db42bbfa8e59b1f10d1c5c6c67e4705021a55114",
+          "tree": "cfd03c8aed742af71bfdacde8f76785768663847",
+          "local_parents": [
+            "87c3bf5a59f4d443c9e5cf81368162554a5315c3"
+          ],
+          "public_parents": [
+            "87c3bf5a59f4d443c9e5cf81368162554a5315c3"
+          ]
+        },
+        {
+          "local": "e1575f7a07c0fbe881697a0561457eae9f240523",
+          "public": "f39450312921b85ed6ae39c0aaea9a7007c287d1",
+          "tree": "a7cecddfa88beaff21019fa56582bcc3a7f833d0",
+          "local_parents": [
+            "d0968a8753164ed7e197c539e1b02afa2833c324"
+          ],
+          "public_parents": [
+            "db42bbfa8e59b1f10d1c5c6c67e4705021a55114"
+          ]
+        },
+        {
+          "local": "bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272",
+          "public": "5fddcc19c164d3a1ac03c1364123fa0183438d42",
+          "tree": "46c186bfb4f7e15b384c9a0ba361790d8c7e6876",
+          "local_parents": [
+            "e1575f7a07c0fbe881697a0561457eae9f240523"
+          ],
+          "public_parents": [
+            "f39450312921b85ed6ae39c0aaea9a7007c287d1"
+          ]
+        },
+        {
+          "local": "e1432d6fa0ca1ad346b227a30de369617b8c4f50",
+          "public": "f2d20c9a966a7b0c9cc0e00c6fbb084e6698077e",
+          "tree": "f1eefdc2a86f6da14b1fd00a756f6b6cfefe534e",
+          "local_parents": [
+            "bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272"
+          ],
+          "public_parents": [
+            "5fddcc19c164d3a1ac03c1364123fa0183438d42"
+          ]
+        },
+        {
+          "local": "7e321dd8826bbef3f3f131287134d55e7eacbeae",
+          "public": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+          "tree": "0165e82eabdcf5636919475c905c1d7802f599ac",
+          "local_parents": [
+            "e1432d6fa0ca1ad346b227a30de369617b8c4f50"
+          ],
+          "public_parents": [
+            "f2d20c9a966a7b0c9cc0e00c6fbb084e6698077e"
+          ]
+        }
+      ]
+    },
+    "idle": {
+      "local_base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "public_base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "local_head": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "public_head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "commits": [
+        {
+          "local": "178c09317c6f456b9f819fa15631595c31cacd37",
+          "public": "e0cd4887a96d870b8ab96aadad60cc67396d9f8a",
+          "tree": "218e6cbb8aa85f4a4bde74351b2e6ec8a0a86e1b",
+          "local_parents": [
+            "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a"
+          ],
+          "public_parents": [
+            "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a"
+          ]
+        },
+        {
+          "local": "c13ee784410771dc56d818fd96ac684deba2ccc3",
+          "public": "06d19d8ab7736d9f4b707737ce7e36dd8d5d0af0",
+          "tree": "7516385a230ac599bdee995dd57fea7c43fba938",
+          "local_parents": [
+            "178c09317c6f456b9f819fa15631595c31cacd37"
+          ],
+          "public_parents": [
+            "e0cd4887a96d870b8ab96aadad60cc67396d9f8a"
+          ]
+        },
+        {
+          "local": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+          "public": "86d41bf7eeb6aa5a46ba199df442fa99e7db1c63",
+          "tree": "a349e60b012bff674530933088ed16196d701d22",
+          "local_parents": [
+            "c13ee784410771dc56d818fd96ac684deba2ccc3",
+            "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+          ],
+          "public_parents": [
+            "06d19d8ab7736d9f4b707737ce7e36dd8d5d0af0",
+            "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+          ]
+        },
+        {
+          "local": "2605e1bf7a8528b0ccbf66161a17fcdf7298e541",
+          "public": "685cde324fbe5e8afae56439a2676cf80fcb3004",
+          "tree": "32aa893aa811a4d6c9fc546023e915643e212465",
+          "local_parents": [
+            "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4"
+          ],
+          "public_parents": [
+            "86d41bf7eeb6aa5a46ba199df442fa99e7db1c63"
+          ]
+        },
+        {
+          "local": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+          "public": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+          "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+          "local_parents": [
+            "2605e1bf7a8528b0ccbf66161a17fcdf7298e541"
+          ],
+          "public_parents": [
+            "685cde324fbe5e8afae56439a2676cf80fcb3004"
+          ]
+        }
+      ]
+    },
+    "backup": {
+      "local_base": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+      "public_base": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "local_head": "83193edc66e4a835835760baf70282e4c3f9dd42",
+      "public_head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "commits": [
+        {
+          "local": "1a69f706223f8bb976ec62f86d317aca8103290b",
+          "public": "64b9d8bcf81ec8f8d3683c7d44d3b7f2e59ae14c",
+          "tree": "9a23421e9d861c6781fbde4de5a76342685eeb93",
+          "local_parents": [
+            "7417881ac7f243b50f7b5c1682c66a4e3f87c736"
+          ],
+          "public_parents": [
+            "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3"
+          ]
+        },
+        {
+          "local": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+          "public": "cdff78513b2e509868adf05d85338e93b9be3e8d",
+          "tree": "bb94ccbebf3b672dbb3a726174fd1529aae510c4",
+          "local_parents": [
+            "1a69f706223f8bb976ec62f86d317aca8103290b"
+          ],
+          "public_parents": [
+            "64b9d8bcf81ec8f8d3683c7d44d3b7f2e59ae14c"
+          ]
+        },
+        {
+          "local": "83193edc66e4a835835760baf70282e4c3f9dd42",
+          "public": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+          "tree": "2b91fe95c2eec65c0359dc627af400b7d1756b44",
+          "local_parents": [
+            "fde65b79e1cb97b06f627819f70ca7c88ecafed5"
+          ],
+          "public_parents": [
+            "cdff78513b2e509868adf05d85338e93b9be3e8d"
+          ]
+        }
+      ]
+    },
+    "receipt": {
+      "local_base": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "public_base": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "local_head": "ca89f1b61f8c9e69fb2987abc7bec83c169b5051",
+      "public_head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "commits": [
+        {
+          "local": "0bbe400ec804f250f21f056117e31aca77191367",
+          "public": "a133ab31ba048d774aef2324c56520f4cd3dcd98",
+          "tree": "778df982e98dcd45f17885d87da1610b9b33d36d",
+          "local_parents": [
+            "3172a93ceb8fce5a4343a93b453dcc0e68f09d87"
+          ],
+          "public_parents": [
+            "3172a93ceb8fce5a4343a93b453dcc0e68f09d87"
+          ]
+        },
+        {
+          "local": "06c17144d3839f5a093dec3ed9041374fb2de79e",
+          "public": "4a2358df4e6fc3937a0f590366ee9fd8f1bed148",
+          "tree": "7ae1d27c8d1f70df765763165a215e06fcf1acf9",
+          "local_parents": [
+            "0bbe400ec804f250f21f056117e31aca77191367"
+          ],
+          "public_parents": [
+            "a133ab31ba048d774aef2324c56520f4cd3dcd98"
+          ]
+        },
+        {
+          "local": "a656c3e5dbc385a892e3efc9bd12389b214051b8",
+          "public": "e662bf5822554f15bc6a62c6b3f82611ae5972c6",
+          "tree": "4c5edaf70dd704336f0720415f012a07adb883ef",
+          "local_parents": [
+            "06c17144d3839f5a093dec3ed9041374fb2de79e"
+          ],
+          "public_parents": [
+            "4a2358df4e6fc3937a0f590366ee9fd8f1bed148"
+          ]
+        },
+        {
+          "local": "ca89f1b61f8c9e69fb2987abc7bec83c169b5051",
+          "public": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+          "tree": "41ff1ce468d95b5199808e5587a53766db472a67",
+          "local_parents": [
+            "a656c3e5dbc385a892e3efc9bd12389b214051b8"
+          ],
+          "public_parents": [
+            "e662bf5822554f15bc6a62c6b3f82611ae5972c6"
+          ]
+        }
+      ]
+    },
+    "devnet_wallet_consent": {
+      "local_base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "public_base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "local_head": "6ed3731bbc01a237d4a1c02c187c21f4c1419cc5",
+      "public_head": "410353a23631234aa888e46f38df22291c699a26",
+      "commits": [
+        {
+          "local": "2b8881de8be22998407d91505357771d755b680d",
+          "public": "a971db65b8b1e529b36370b21dba31f328d257de",
+          "tree": "74efd631575740db596f5aea2fcaee471d26aae6",
+          "local_parents": [
+            "9608ec996fb159f11b84b9baec0b48033a48a6a5"
+          ],
+          "public_parents": [
+            "9608ec996fb159f11b84b9baec0b48033a48a6a5"
+          ]
+        },
+        {
+          "local": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+          "public": "a09092574d98596dd139971250c81dcbb775859f",
+          "tree": "c47596d02196c1d2cb38040a2f52fe24bd4d3081",
+          "local_parents": [
+            "2b8881de8be22998407d91505357771d755b680d"
+          ],
+          "public_parents": [
+            "a971db65b8b1e529b36370b21dba31f328d257de"
+          ]
+        },
+        {
+          "local": "6ed3731bbc01a237d4a1c02c187c21f4c1419cc5",
+          "public": "410353a23631234aa888e46f38df22291c699a26",
+          "tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+          "local_parents": [
+            "420df3b55be2a4207950f312d2b0bd5b899602e2"
+          ],
+          "public_parents": [
+            "a09092574d98596dd139971250c81dcbb775859f"
+          ]
+        }
+      ]
+    }
+  },
+  "note": "API-created commit identities differ from local commits; every mapped tree is identical. Additional donor merge parents are preserved."
+}

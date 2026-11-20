@@ -1,0 +1,409 @@
+{
+  "format": "ghostpay-semantic-branch-continuation/1",
+  "reviewer": "/root/remaining_branches_r3",
+  "date": "2026-11-20",
+  "census": {
+    "file": "branch-census-r2-classified.json",
+    "refs": 387,
+    "distinct_heads": 382,
+    "captured": "17:49:34-17:49:36 UTC",
+    "code_different_heads": 107
+  },
+  "baselines": {
+    "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "combined": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+    "sweep": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "idle_runtime": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+    "idle_final": "7417881ac7f243b50f7b5c1682c66a4e3f87c736"
+  },
+  "open_pr_inventory": {
+    "file": "remaining-branches-r3-open-prs.json",
+    "pages": [
+      100,
+      1
+    ],
+    "total": 101,
+    "approximate_capture": "18:10 UTC; point-in-time snapshot"
+  },
+  "reviewed_distinct_heads": 11,
+  "reviewed_branch_refs": 12,
+  "missing_narrow_candidates": 1,
+  "source_reviews": [
+    {
+      "head": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+      "branch": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "disposition": "missing narrow behavior; root-authorized continuation",
+      "paths": [
+        "apps/web/src/views/SellerKeys.tsx",
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/e2e/backup-ownership.spec.ts"
+      ],
+      "finding": "Current unlock ownership begins after awaited recoverability, so canceled/superseded preflight can later begin unlock. Export lacks a post-authorization controller/session check before encryption. Donor also adds synchronous durable-write ownership. Recover selectively while preserving current unlockBusy/vaultWriteBusy and idle suspension.",
+      "acceptance": "Retire obsolete preflights; avoid encryption after obsolete authorization; refuse duplicate/colliding writes and unlock during writes; preserve five current regressions and recover 17 donor cases plus 2 authored browser journeys. Original e6 browser bodies remain unexecuted.",
+      "dependencies": [
+        "Frozen idle1ca7105e; final docs7417881",
+        "Refreshed314 runtime 49535f3bdbdda6f133e397097e56a8dde8413d94",
+        "Runtime blobd509e675dda2910850c4a95a5697761107807f69",
+        "Preserve325/307 guards; no wholesale SellerKeys replacement"
+      ],
+      "continuation": {
+        "branch": "fix/ghostpay-backup-preflight-20261120-r2",
+        "tests_only": "1a69f706223f8bb976ec62f86d317aca8103290b",
+        "runtime": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+        "tree": "bb94ccbebf3b672dbb3a726174fd1529aae510c4",
+        "source_blob": "eaa2b33de93edfab885ec2bbc98df6f2c8a23c19",
+        "independent_review": "backup-preflight-independent-review-r2.json",
+        "red": {
+          "total": 22,
+          "passed": 19,
+          "expected_failures": 3,
+          "skipped": 0,
+          "owner": "root"
+        },
+        "green": {
+          "total": 22,
+          "passed": 22,
+          "failed": 0,
+          "skipped": 0,
+          "owner": "remaining_branches_r3"
+        },
+        "compatibility": {
+          "total": 246,
+          "passed": 246,
+          "failed": 0,
+          "skipped": 0,
+          "complete_files": 12,
+          "owner": "remaining_branches_r3",
+          "file": "backup-preflight-r2-compat.json",
+          "note": "Overlaps the22-test gate; counts must not be summed."
+        },
+        "browser": "two authored journeys, no local execution; hosted acceptance remains",
+        "final_docs_head": "83193edc66e4a835835760baf70282e4c3f9dd42",
+        "final_tree": "2b91fe95c2eec65c0359dc627af400b7d1756b44",
+        "original_web_typecheck_lint": "passed on frozen runtime; root execution",
+        "lean_build_postbuild": "passed on frozen runtime;17files/2496711bytes",
+        "browser_collection": "full and lean each collected2cases; zero browser bodies executed",
+        "final_evidence": "GhostPay-backup/docs/consolidation/backup-preflight-r2-20261120/EVIDENCE.json"
+      }
+    },
+    {
+      "head": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "disposition": "present and strengthened",
+      "finding": "validateLineItems already uses Array.from to visit sparse slots. Current also has newer v2 buffer policy and bounded renderable timestamps; old wholesale schema would remove them.",
+      "acceptance": "Retain current schema; no runtime recovery.",
+      "branch": "codex/ghostpay-cloud-41868394956",
+      "paths": [
+        "packages/invoice-schema/src/schema.test.ts",
+        "packages/invoice-schema/src/schema.ts",
+        "packages/invoice-schema/src/sign.test.ts"
+      ]
+    },
+    {
+      "head": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "disposition": "present and strengthened",
+      "finding": "Exact token/block-window transfer filters retained. Current incomplete-history bound is30 days versus donor7 days.",
+      "acceptance": "Retain current filter and stronger30-day partial-history condition.",
+      "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "paths": [
+        "apps/web/src/lib/scanSpam.test.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ]
+    },
+    {
+      "head": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "disposition": "present with stronger successor",
+      "finding": "Current atomic report publication adds lstat regular-file validation, permission mask0o644, stricter umask, fchmod before publish and staged cleanup. Donor uses stat/mask0o777/fresh0o666 and later chmod.",
+      "acceptance": "Keep stronger current atomic publication; no donor replay.",
+      "branch": "claude/happy-maxwell-onl4x5",
+      "paths": [
+        "scripts/audit/gen-audit24-report.py",
+        "scripts/tests/audit-report-paths.test.mjs"
+      ]
+    },
+    {
+      "head": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "disposition": "present and strengthened",
+      "finding": "CreateInvoice retains submissionRun generation/scope checks; ordering-test blob5cded4b3666f14dc57f1878c245a59d6bed4192a matches. Verified-backup gate and unverified-download registry regression remain. Current adds request-file support and newer backup busy/write/suspension guards.",
+      "acceptance": "Keep current stronger source; no broad historical replay.",
+      "branch": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "paths": [
+        "apps/web/e2e/pages-devnet.spec.ts",
+        "apps/web/src/features/registry/RegistryView.test.tsx",
+        "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+        "apps/web/src/views/CreateInvoice.test.tsx",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/SellerKeys.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx"
+      ]
+    },
+    {
+      "head": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
+      "disposition": "present; shared catalogs have newer changes",
+      "finding": "All 14 relevant F03 source/test paths match candidate. All four donor catalogs have2268 keys versus current2273; none missing. Existing-value differences are the accepted Sweep disclosures; security-key additions are one Sweep and four idle keys.",
+      "acceptance": "Keep current F03 and unioned catalogs; no overwrite.",
+      "branch": "audit/f03-browser-qualification-20261120",
+      "paths": [
+        "apps/web/e2e/payment-request-file.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/PaymentRequestDownload.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/requestFileInterop.test.ts",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "apps/web/src/views/Pay.requestFile.test.tsx",
+        "apps/web/src/views/Pay.tsx",
+        "packages/invoice-schema/src/index.ts",
+        "packages/invoice-schema/src/requestFile.interop.test.ts",
+        "packages/invoice-schema/src/requestFile.test.ts",
+        "packages/invoice-schema/src/requestFile.ts"
+      ]
+    },
+    {
+      "head": "6152dd035822fe6ee97fba712ef1c37434e19035",
+      "disposition": "present; evidence-only successor",
+      "finding": "Non-doc diff from307 head2876b7db is empty. Differences versus Sweep/idle are newer current behavior, not missing donor runtime.",
+      "acceptance": "Use evidence provenance; no source replay.",
+      "branch": "evidence/ghostpay-web-qualification-20261120",
+      "paths": [
+        ".github/workflows/tor-static.yml",
+        "apps/web/e2e/flowMocks.ts",
+        "apps/web/e2e/payment-request-file.spec.ts",
+        "apps/web/e2e/print-targets.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/CameraImporter.tsx",
+        "apps/web/src/components/CameraImporter.visibility.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.tsx",
+        "apps/web/src/components/PrintableBill.test.tsx",
+        "apps/web/src/components/PrintableBill.tsx",
+        "apps/web/src/components/ReceiptPanel.test.tsx",
+        "apps/web/src/components/ReceiptPanel.tsx",
+        "apps/web/src/components/ReconciliationLedger.test.tsx",
+        "apps/web/src/features/policy/fixtures.testutil.ts",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/format.test.ts",
+        "apps/web/src/lib/format.ts",
+        "apps/web/src/lib/jitter.test.ts",
+        "apps/web/src/lib/jitter.ts",
+        "apps/web/src/lib/payExec.acceptance.test.ts",
+        "apps/web/src/lib/payExec.test.ts",
+        "apps/web/src/lib/qrKinds.test.ts",
+        "apps/web/src/lib/qrKinds.ts",
+        "apps/web/src/lib/requestFileInterop.test.ts",
+        "apps/web/src/lib/scannerCore.test.ts",
+        "apps/web/src/lib/scannerCore.ts",
+        "apps/web/src/lib/txGuard.test.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "apps/web/src/lib/usePrintTarget.test.tsx",
+        "apps/web/src/lib/usePrintTarget.ts",
+        "apps/web/src/lib/wallet.test.ts",
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/styles/app.css",
+        "apps/web/src/styles/print.css",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "apps/web/src/views/Pay.requestFile.test.tsx",
+        "apps/web/src/views/Pay.test.tsx",
+        "apps/web/src/views/Pay.tsx",
+        "apps/web/src/views/Scan.tags.scope.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/src/views/SellerKeys.tsx",
+        "apps/web/src/views/Sweep.test.tsx",
+        "deploy/tor-static/.dockerignore",
+        "deploy/tor-static/Dockerfile",
+        "deploy/tor-static/host.example.json",
+        "deploy/tor-static/prepare.mjs",
+        "deploy/tor-static/runtime-check.sh",
+        "deploy/tor-static/tor-start.sh",
+        "packages/chain-adapters/src/deployments.test.ts",
+        "packages/chain-adapters/src/deployments.ts",
+        "packages/chain-adapters/src/quote.test.ts",
+        "packages/chain-adapters/src/rpc.test.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/invoice-schema/src/base64url.test.ts",
+        "packages/invoice-schema/src/base64url.ts",
+        "packages/invoice-schema/src/index.ts",
+        "packages/invoice-schema/src/json.test.ts",
+        "packages/invoice-schema/src/json.ts",
+        "packages/invoice-schema/src/merchantProfile.test.ts",
+        "packages/invoice-schema/src/merchantProfile.ts",
+        "packages/invoice-schema/src/requestFile.interop.test.ts",
+        "packages/invoice-schema/src/requestFile.test.ts",
+        "packages/invoice-schema/src/requestFile.ts",
+        "packages/payment-uri/src/decimal-options.test.ts",
+        "packages/payment-uri/src/decimal.ts",
+        "packages/qr-exchange/src/assembler.test.ts",
+        "packages/qr-exchange/src/assembler.ts",
+        "scripts/automation/integration-lock.mjs",
+        "scripts/pages/build-pages-artifact-gate.test.mjs",
+        "scripts/pages/build-pages.sh",
+        "scripts/pages/verify-pages-artifact.mjs",
+        "scripts/pages/verify-pages-artifact.test.mjs",
+        "scripts/tests/integration-lock.test.mjs",
+        "scripts/tor/browser-acceptance.mjs",
+        "scripts/tor/hosting-config.test.mjs",
+        "tools/portable-hosting-kit/src/adapters/tor.mjs",
+        "tools/portable-hosting-kit/src/config/host-config.mjs",
+        "tools/portable-hosting-kit/src/serve/headers.mjs",
+        "tools/portable-hosting-kit/test/adapters/tor.test.mjs",
+        "tools/portable-hosting-kit/test/config/host-config.test.mjs",
+        "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+        "tools/portable-hosting-kit/test/profiles/nginx.test.mjs",
+        "tools/portable-hosting-kit/test/serve/headers.test.mjs"
+      ]
+    },
+    {
+      "head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "aliases": [],
+      "disposition": "browser-payment-behavior-present-and-strengthened",
+      "paths": [
+        "apps/web/src/lib/pay.ts",
+        "apps/web/src/lib/payExec.ts"
+      ],
+      "finding": "Current assertInvoiceStillPayable rechecks signed invoice and applicable fiat-quote expiry; assertPreparedBufferFresh rechecks buffer TTL. Current boundedDeadline uses lastPayableSecond (expiresAt minus one), avoiding the donor deadline-at-expiry boundary mismatch. buildFinal rejects an explicitly supplied deadline beyond the last payable second instead of silently clamping a signed permit deadline. preparePayment shares one bounded permit/router deadline. sendPayment applies invoice/buffer/current-operation checks before and after asynchronous preflight and passes the guard to submitTx. Current pay.test.ts includes A3-2 adapted expiry cases; payExec.test.ts retains invoice/buffer-after-prepare refusal assertions; deployment.test.ts and manifest.test.ts retain A7-2/A7-3 direct verification cases.",
+      "acceptance": "Retain stronger current browser slices. No whole-branch or hosted-backend approval.",
+      "support": "historical-pay-r3.json"
+    },
+    {
+      "head": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "branch": "claude/gifted-planck-115x2k",
+      "aliases": [],
+      "disposition": "browser-adapter-behavior-present-and-strengthened",
+      "paths": [
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/opStackFee.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/chain-adapters/src/errors.ts",
+        "packages/chain-adapters/src/logs.ts"
+      ],
+      "finding": "B2R optional operator-fee fallback now lives in opStackFee.ts and returns zero only for ChainAdapterError.executionReverted. Current RPC classification positively identifies plain revert text and rejects gas/opcode/unknown-halt evidence; code 3 without text remains false. This is stricter than donor reverted && !halted. The original B2R cases are explicitly ported in rpc.test.ts and sweep.test.ts, with additional unknown-execution controls. AR2 served-range evidence resets when a window grows. Current logs.ts additionally preserves served evidence when already at the cap. scanHardening.test.ts retains the AR2 1000-announcement/29-refusal regression and adds a cap/regrowth transient-refusal case.",
+      "acceptance": "Retain stronger current browser slices. No whole-branch or hosted-backend approval.",
+      "support": "historical-pay-r3.json"
+    },
+    {
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "aliases": [],
+      "disposition": "same-browser-slices-present-backend-extension-outside-scope",
+      "paths": [
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/opStackFee.ts",
+        "apps/web/src/lib/txGuard.ts",
+        "packages/chain-adapters/src/rpc.ts",
+        "packages/chain-adapters/src/errors.ts",
+        "packages/chain-adapters/src/logs.ts"
+      ],
+      "finding": "This head contains the preceding historical donor and adds relayer secret-file handling. Its assigned browser/adapter deltas receive the same retained/strengthened disposition.",
+      "acceptance": "Retain stronger current browser slices. No whole-branch or hosted-backend approval.",
+      "support": "historical-pay-r3.json"
+    },
+    {
+      "head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "aliases": [
+        "chatgpt/pages-browser-fixes-combined-20261114"
+      ],
+      "disposition": "browser-boundary-behavior-present-and-strengthened",
+      "paths": [
+        "apps/web/src/lib/relayerClient.ts",
+        "apps/web/src/lib/scanSpam.ts"
+      ],
+      "finding": "The current bounded-response implementation is unchanged from this donor. The entire runtime file differs only by removing unauthorized from proven pre-broadcast refusal classes. The corresponding current test explicitly preserves an unknown authorization-layer 401 as an uncertain outcome; importing the old allowlist would undo this conservative behavior. Current relayer tests retain the streamed-response regression requiring early rejection and cancellation before all 80 KiB are buffered. Current estimateSimilarTransfers retains exact token and requested-block-window checks; the matching wrong-token/wrong-window regression remains. Current anonymitySet additionally marks incomplete 30-day history partial, strengthening the older donor seven-day condition.",
+      "acceptance": "Retain stronger current browser slices. No whole-branch or hosted-backend approval.",
+      "support": "historical-pay-r3.json"
+    }
+  ],
+  "deferred_not_counted": [
+    {
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "branch": "automation/ghostpay-recurrent-backlog-20261103",
+      "paths": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ],
+      "disposition": "path/category scope deferred; no semantic approval"
+    },
+    {
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "branch": "codex/setup-autonomous-agent-20261104",
+      "paths": [
+        ".github/workflows/openai-agents.yml"
+      ],
+      "disposition": "path/category scope deferred; no semantic approval"
+    },
+    {
+      "head": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "branch": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "paths": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ],
+      "disposition": "path/category scope deferred; no semantic approval"
+    },
+    {
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "paths": [
+        ".github/workflows/ghostpay-parallel-agents.yml",
+        "scripts/tests/ghostpay-parallel-workflow.test.mjs"
+      ],
+      "disposition": "path/category scope deferred; no semantic approval"
+    },
+    {
+      "head": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "branch": "dependabot/github_actions/actions-b9ade1236b",
+      "paths": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/contract-analysis.yml",
+        ".github/workflows/ghostpay-codex-cloud.yml",
+        ".github/workflows/ghostpay-parallel-review.yml",
+        ".github/workflows/nightly.yml"
+      ],
+      "disposition": "path/category scope deferred; no semantic approval"
+    },
+    {
+      "head": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "paths": [
+        "packages/contracts/.gas-snapshot",
+        "packages/contracts/script/DeployPolicy.s.sol",
+        "packages/contracts/scripts/pre-deploy-check.sh",
+        "packages/contracts/test/DeployChecksum.t.sol",
+        "packages/contracts/test/DeployPolicy.t.sol"
+      ],
+      "disposition": "path/category scope deferred; no semantic approval"
+    }
+  ],
+  "limits": [
+    "Not a completion claim for107 code-different heads; commit inequality is not missing-feature evidence.",
+    "No whole-branch approval for bounded slices.",
+    "No legacy journal quarantine without accepted policy; no active F04/F05/F10 rewrites.",
+    "Broader BTC Spec 12/PR #244/#254 and large historical audit branch not fully source-reviewed.",
+    "No tests/builds/browser executions, source/ref changes, dependency installs or publication during this semantic pass.",
+    "Previously completed TRON abort/range, retention and idle tracks are not duplicated.",
+    "PR328 source review is separately reported, not included in this 11-head count."
+  ],
+  "support_files": [
+    "historical-pay-r3.md",
+    "historical-pay-r3.json",
+    "backup-recovery-r3-hosted-snapshot.json",
+    "remaining-branches-r3-open-prs.json",
+    "backup-preflight-independent-plan-r3.md",
+    "backup-preflight-independent-plan-r3.json",
+    "backup-preflight-independent-review-r2.md",
+    "backup-preflight-independent-review-r2.json"
+  ],
+  "review_counts_note": "Counts describe this bounded pass; do not add them to earlier priority-review counts without deduplicating heads."
+}

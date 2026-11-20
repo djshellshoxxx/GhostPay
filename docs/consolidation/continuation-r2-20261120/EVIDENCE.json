@@ -1,0 +1,307 @@
+{
+  "schema": "ghostpay-continuation-r2-evidence/1",
+  "assembled_at_utc": "2026-11-20T19:50:38.863643+00:00",
+  "state": "PUBLISHED_CANDIDATES_WITH_SOURCE_SCOPED_LOCAL_EVIDENCE; HOSTED_AND_BROAD_STACK_GATES_REMAIN",
+  "source_map": "SOURCE_MAP.json",
+  "sources": [
+    {
+      "pr": 307,
+      "head": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "tree": "0b5bfcd30c9b0f3c25e1bd35be1207714f711193",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "Combined recovered fixes",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/307"
+    },
+    {
+      "pr": 321,
+      "head": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "tree": "a77ea829e449c412911ac67c9d1395179a079055",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "TRON cancellation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/321"
+    },
+    {
+      "pr": 325,
+      "head": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "tree": "29ebe360170da1bd1edfa046dc2271bbbf16b325",
+      "base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "purpose": "Sweep authority",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/325"
+    },
+    {
+      "pr": 326,
+      "head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "tree": "b277d0b71b0b6d9242d2d36cdfcadc3b1296f5d3",
+      "base": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "purpose": "Proof preview retention",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/326"
+    },
+    {
+      "pr": 327,
+      "head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "tree": "f57733261e325c80ef54d7d12c93deb7feee4d4b",
+      "base": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "purpose": "Retention focus reconciliation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/327"
+    },
+    {
+      "pr": 328,
+      "head": "81598d93dd82cc440526c866d42b55be0657895b",
+      "tree": "09a1504b468d7943ff5bdacd1a8c009d3681ce64",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "Vault rekey revocation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/328"
+    },
+    {
+      "pr": 329,
+      "head": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+      "tree": "0165e82eabdcf5636919475c905c1d7802f599ac",
+      "base": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+      "purpose": "TRON complete ordered ranges",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/329"
+    },
+    {
+      "pr": 331,
+      "head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+      "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "purpose": "Sleep-aware session idle locking",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/331"
+    },
+    {
+      "pr": 333,
+      "head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "tree": "2b91fe95c2eec65c0359dc627af400b7d1756b44",
+      "base": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "purpose": "Backup preflight and durable-write ownership",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/333"
+    },
+    {
+      "pr": 334,
+      "head": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "tree": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+      "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "purpose": "Optional BTC fee floor/cap validation",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/334"
+    },
+    {
+      "pr": 335,
+      "head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "tree": "41ff1ce468d95b5199808e5587a53766db472a67",
+      "base": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "purpose": "Receipt archive identity",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/335"
+    },
+    {
+      "pr": 336,
+      "head": "410353a23631234aa888e46f38df22291c699a26",
+      "tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+      "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "purpose": "Explicit wallet disclosure decisions in devnet acceptance",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/336"
+    }
+  ],
+  "qualification_references": [
+    {
+      "pr": 307,
+      "evidence_commit": "6152dd035822fe6ee97fba712ef1c37434e19035",
+      "path": "docs/consolidation/continuation-20261120/WEB_QUALIFICATION_2876B7DB.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/6152dd035822fe6ee97fba712ef1c37434e19035/docs/consolidation/continuation-20261120/WEB_QUALIFICATION_2876B7DB.md",
+      "report_sha256": "07d3943dec315443cc1c77d102e3c02608ba2e040af2c0db16b69de670760bc1",
+      "summary": "Prior original web gate: 2,972 passed, 13 skipped, zero failed; not new this continuation"
+    },
+    {
+      "pr": 327,
+      "evidence_commit": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "path": "docs/privacy-release/evidence/retention-focus-20261120.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/9608ec996fb159f11b84b9baec0b48033a48a6a5/docs/privacy-release/evidence/retention-focus-20261120.md",
+      "report_sha256": "470beda4d8d399ed1c1ee88e8acecfc70535758a7b0cb5d53a11a3fd6cb9de15",
+      "summary": "51 focused tests; original web typecheck/lint"
+    },
+    {
+      "pr": 321,
+      "evidence_commit": "437cddb9e012786fe5f6cbcdc1536841aa4ce77a",
+      "path": "docs/consolidation/continuation-r2-20261120/TRON_ABORT_QUALIFICATION.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/437cddb9e012786fe5f6cbcdc1536841aa4ce77a/docs/consolidation/continuation-r2-20261120/TRON_ABORT_QUALIFICATION.md",
+      "report_sha256": "59dc2a66221f228800ef2becdb677ddb36d6a9b9d5f7a4af2295c87a4fbd004c",
+      "summary": "106 complete package tests; original coverage/typecheck/lint/build"
+    },
+    {
+      "pr": 329,
+      "evidence_commit": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+      "path": "docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/cff631b5c32a86adfa2d79c342e497e91a8573a5/docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.md",
+      "report_sha256": "9fb05c515c9c43890755a5ce44d8b9f1f49880b97bb2d2bfd3052f49f8359317",
+      "summary": "107 package and 50 web tests in separate suites; original package and web gates/full build"
+    },
+    {
+      "pr": 328,
+      "evidence_commit": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+      "path": "docs/consolidation/continuation-r2-20261120/VAULT_REKEY_QUALIFICATION.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/b9911c7228e95a3f8a6666d10aae50bcda08bd7d/docs/consolidation/continuation-r2-20261120/VAULT_REKEY_QUALIFICATION.md",
+      "report_sha256": "8865a150c9bc3ce3f83ae742dc9deac530ac0c3a24cd003fdddbc17c692f8144",
+      "summary": "285 complete package tests; original coverage/typecheck/lint/build"
+    },
+    {
+      "pr": 331,
+      "evidence_commit": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+      "path": "docs/consolidation/idle-session-r2-full-20261120/REPORT.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/ebc3fea4640e2a82585a6cfb73a97fbf0b907949/docs/consolidation/idle-session-r2-full-20261120/REPORT.md",
+      "report_sha256": "5b8ebcc91b041710dd46c85d5bdd5b3e8f3f1ccaf2a45f3608de27c79462c0f7",
+      "summary": "3,155 original web tests passed, 13 existing skips, zero failed; lean build; incomplete first attempt preserved"
+    },
+    {
+      "pr": 333,
+      "evidence_commit": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "path": "docs/consolidation/backup-preflight-r2-20261120/REPORT.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/3172a93ceb8fce5a4343a93b453dcc0e68f09d87/docs/consolidation/backup-preflight-r2-20261120/REPORT.md",
+      "report_sha256": "1cf8ef6a2ac6c5a9566de8694752b3000df9c57bb79f726693a5e712a55c0c8a",
+      "summary": "246 compatibility tests including 22 focused; original web typecheck/lint/lean build; no full web suite claim"
+    },
+    {
+      "pr": 335,
+      "evidence_commit": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "path": "docs/consolidation/receipt-identity-r2-20261120/REPORT.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e31a090501b3f5e77afcee812323e6f69e1fd565/docs/consolidation/receipt-identity-r2-20261120/REPORT.md",
+      "report_sha256": "730f617be4559f0381af7cbe6ae1a031febe2d56e0fe6b2671449566b4eeb39a",
+      "summary": "57 compatibility tests including 13 focused; original web typecheck/lint/lean build; initial failed lint retained; no full web suite claim"
+    },
+    {
+      "pr": 334,
+      "evidence_commit": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+      "path": "docs/consolidation/continuation-r2-20261120/FEE_FLOOR_QUALIFICATION.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a/docs/consolidation/continuation-r2-20261120/FEE_FLOOR_QUALIFICATION.md",
+      "report_sha256": "ecaecbd56d9cc70967096397a88c9f10c0ac44afbdc64734e59481b63f248d17",
+      "summary": "118 complete package tests; original coverage/typecheck/lint/build; nonblocking overflow-policy test gap preserved"
+    },
+    {
+      "pr": 336,
+      "evidence_commit": "410353a23631234aa888e46f38df22291c699a26",
+      "path": "docs/consolidation/devnet-wallet-consent-r2-20261120/REPORT.md",
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/410353a23631234aa888e46f38df22291c699a26/docs/consolidation/devnet-wallet-consent-r2-20261120/REPORT.md",
+      "qualified_source": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+      "public_equivalent_source": "a09092574d98596dd139971250c81dcbb775859f",
+      "summary": "Original web typecheck/lint passed; static collection only: dedicated devnet 3, Pages 16, full 136 and lean 126. Corrected browser acceptance remains pending.",
+      "report_sha256": "1466b7ada1742694dc0f3f1ebd2336e45584b98ba4d74cba1feb2867ae45acc9"
+    }
+  ],
+  "test_total_policy": "Do not sum overlapping selections, candidates or retries. Every execution belongs only to its pinned source or verified identical tree.",
+  "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "main_merges_this_continuation": 0,
+  "release_or_deployment_performed": false,
+  "local_browser_execution": false,
+  "hosted_evidence": "hosted-gate-final-r2.json",
+  "hosted_snapshot_started": "2026-11-20T19:31:59.693Z",
+  "hosted_snapshot_completed": "2026-11-20T19:38:26.494707+00:00",
+  "promotion_decision": {
+    "ready_prs": [],
+    "reason": "Every candidate has pending work and missing final aggregates; #326/#327 each retain two failed acceptance jobs; corrected #336 awaits hosted execution.",
+    "branch_protection": "Requirements not enumerated; prior403 is not absence of protection."
+  },
+  "remaining_work": [
+    "Reconcile broader required-v1/v1.1 source with the smaller recovered stack.",
+    "Persistent invoice/transaction/terminal retention remains partial.",
+    "Resolve preserved Bitcoin #244/#254 consent/spentness alternatives deliberately.",
+    "Preserve legacy-payment data through an explicit migration policy.",
+    "Retain F04/F05/F10 active ownership in #322/#323/#324.",
+    "Six workflow/dependency/contract heads have scope disposition only."
+  ],
+  "published_evidence_verification": {
+    "vault": {
+      "local": "8828037c9bbec21580681d67d6043588c4df4244",
+      "public": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+      "tree": "1095399049f483d5ef5d12021ec6bc09eb0f0b20",
+      "base": "81598d93dd82cc440526c866d42b55be0657895b",
+      "branch": "evidence/ghostpay-vault-rekey-qualification-20261120",
+      "fetched_verified_at_utc": "2026-11-20T18:46:36.408742+00:00",
+      "changed_paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/consolidation/continuation-r2-20261120/VAULT_REKEY_QUALIFICATION.json",
+        "docs/consolidation/continuation-r2-20261120/VAULT_REKEY_QUALIFICATION.md"
+      ]
+    },
+    "idle": {
+      "element_index": 28,
+      "parent": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "tree": "399a7fe21dc2f1b051a09ca1733bb23655a64bfc",
+      "local": "43f9c970fea1a7ad5796fbb6c39891fd58c7169b",
+      "expected_tree": "399a7fe21dc2f1b051a09ca1733bb23655a64bfc",
+      "map": [],
+      "public": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+      "fetched_verified_at_utc": "2026-11-20T19:25:48.478512+00:00",
+      "docs_only_paths": 28
+    },
+    "fee": {
+      "local": "c5899ba8f2a870251b7b8ab75fb91f9050c540ec",
+      "public": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+      "tree": "9e006a6b00a0ea0e294ceef582f7c4da6e733253",
+      "base": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "branch": "evidence/ghostpay-fee-floor-qualification-20261120-r2",
+      "paths": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/consolidation/continuation-r2-20261120/FEE_FLOOR_QUALIFICATION.json",
+        "docs/consolidation/continuation-r2-20261120/FEE_FLOOR_QUALIFICATION.md",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/build-log.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/coverage-log.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/dependency-provenance.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/green-results.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/independent-review-json.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/independent-review-markdown.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/lcov.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/lint-log.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/original-gates.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/red-log.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/red-results.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/red-run.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/source-provenance.raw.json",
+        "docs/consolidation/continuation-r2-20261120/fee-floor-outputs/typecheck-log.raw.json"
+      ],
+      "fetched_verified_at_utc": "2026-11-20T19:34:47.312584+00:00"
+    },
+    "devnet": {
+      "index": 3,
+      "base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "parent": "410353a23631234aa888e46f38df22291c699a26",
+      "tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+      "map": [
+        {
+          "local": "2b8881de8be22998407d91505357771d755b680d",
+          "public": "a971db65b8b1e529b36370b21dba31f328d257de",
+          "tree": "74efd631575740db596f5aea2fcaee471d26aae6"
+        },
+        {
+          "local": "420df3b55be2a4207950f312d2b0bd5b899602e2",
+          "public": "a09092574d98596dd139971250c81dcbb775859f",
+          "tree": "c47596d02196c1d2cb38040a2f52fe24bd4d3081"
+        },
+        {
+          "local": "6ed3731bbc01a237d4a1c02c187c21f4c1419cc5",
+          "public": "410353a23631234aa888e46f38df22291c699a26",
+          "tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87"
+        }
+      ],
+      "branch": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "fetched_verified_at_utc": "2026-11-20T19:45:23.879442+00:00"
+    }
+  },
+  "latest_live_status": "LIVE_STATUS.json",
+  "latest_live_status_completed_at": "2026-11-20T19:47:08.292Z",
+  "additional_failed_base_evidence": "PR327_HOSTED_FAILURES.json",
+  "final_evidence_validation": {
+    "source_pins": 12,
+    "mapped_commits": 26,
+    "verified_immutable_report_references": 10,
+    "at_utc": "2026-11-20T19:50:38.863643+00:00"
+  },
+  "documentation_validation": {
+    "at_utc": "2026-11-20T19:50:38.863643+00:00",
+    "source_pins": 12,
+    "mapped_commits": 26,
+    "immutable_report_references": 10,
+    "relative_markdown_links": 14,
+    "json_files": 11,
+    "all_checks_passed": true,
+    "original_secret_scan": "passed",
+    "staged_whitespace_check": "passed"
+  }
+}
