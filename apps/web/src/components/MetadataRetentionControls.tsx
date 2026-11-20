@@ -23,10 +23,17 @@ function PresentationRetentionControls({ scope }: { readonly scope: RetentionSco
   useEffect(() => {
     const refresh = (): void => { setDelay(readRetentionDelay(undefined, scope)); setReview(undefined); };
     const onStorage = (event: StorageEvent): void => { if (event.key === policy.key || event.key === null) refresh(); };
+    const onFocus = (): void => {
+      // A returning tab may not have received the storage event that expiry already accounts for.
+      const current = readRetentionDelay(undefined, scope);
+      setDelay(current);
+      if (current !== delay) setReview(undefined);
+    };
     window.addEventListener(policy.event, refresh);
     window.addEventListener('storage', onStorage);
-    return () => { window.removeEventListener(policy.event, refresh); window.removeEventListener('storage', onStorage); };
-  }, [policy, scope]);
+    window.addEventListener('focus', onFocus);
+    return () => { window.removeEventListener(policy.event, refresh); window.removeEventListener('storage', onStorage); window.removeEventListener('focus', onFocus); };
+  }, [delay, policy, scope]);
   return <section className="stack" aria-label={t(`${prefix}.title`)}>
     <Field label={t(`${prefix}.label`)} hint={t(`${prefix}.scope`)}>
       {(id, describedBy) => <select id={id} aria-describedby={describedBy} value={delay} onChange={(event) => {
