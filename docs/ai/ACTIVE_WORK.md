@@ -1995,3 +1995,10 @@ Status: claimed; diagnosis and deterministic reproduction in progress.
 
 - Continuing reviewer `qa_review_gen3` approved exact `89e163fcc24f72830c0a5876486a72178a9365e7` after independently reproducing the early observation failure (expected 9, received 15), then 11/11 focused GREEN including a reviewer-only late-success revoked-fetch variation. No production or gate relaxation found.
 - Evidence and source hashes: `docs/engineering-handoffs/continuous-20261119/browser-followup-review/`. Exact committed test restored; temporary variant removed. Hosted lean/full browser rerun on the repaired combined head remains required. No remote mutation.
+- Worker: continuing independent reviewer `qa_review_gen3`; not a new fresh agent. Separate worktree/branch `review/ghostpay-signer-followup-20261120`, base `3dc86fbc49e919e664230b63dae372ff79430fc5`. Browser follow-up evidence remains separate at commit `97fd030a`.
+- Own paths: `docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/` and this additive claim. Inspect root-owned `Pay.signer.test.tsx` synchronization change, reproduce unchanged fixture, and verify same disabled-Continue, selected-pin, no-RPC/no-wallet assertions after awaiting the current manifest state. No production edits or remote operations.
+
+### Selected-signer fixture independent follow-up completed — 2026-11-20
+
+- Continuing reviewer `qa_review_gen3` approved exact `f2b991f7eb2c843e96bb533729d71b6a537b9293`. Unchanged selected-seller case independently RED (missing Continue; one case run), then full fixed signer file 11/11 GREEN. The same failure is present in hosted d74 web job `135981023399`; no production, signer, network, timeout or gate changes.
+- Source-pinned evidence: `docs/engineering-handoffs/continuous-20261119/signer-fixture-followup-review/`. Browser follow-up remains independently recorded at `97fd030a`; full combined qualification remains with the root workflow. No remote mutation.

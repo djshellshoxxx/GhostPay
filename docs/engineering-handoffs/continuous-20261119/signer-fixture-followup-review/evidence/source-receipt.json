@@ -1,0 +1,78 @@
+{
+  "schema": "ghostpay-signer-fixture-independent-review/1",
+  "reviewer": "qa_review_gen3, continuing independent follow-up turn, not a fresh agent",
+  "base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "reviewed_commit": "f2b991f7eb2c843e96bb533729d71b6a537b9293",
+  "reviewed_parent": "bf8cb2dc7f51268882246309b8f3722ecaebf256",
+  "review_checkout_before_evidence": "b69d472b1a536c8fc7c90ec9ca403564df625f8a",
+  "original_fixture_sha256": "bfcd04443f0bd55bdea51df2baec6f2973b34c6a2ff0f86f961ff8a2cd028a79",
+  "source_hashes": [
+    {
+      "path": "apps/web/src/views/Pay.signer.test.tsx",
+      "git_blob": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "sha256": "85e5ad5ad8f8e70baa27efbd7370e86ba03d331db0fdd5bcb832ef6a2440a801"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "git_blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "sha256": "c850bcbaa104eb0ba5f0f8e6017a433e7b31bb1c7f85a032d73702ffbdff95e6"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.tsx",
+      "git_blob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+      "sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391"
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+      "git_blob": "9cb9a8af0d806cb3ac7c33d396113d4e8ecd787a",
+      "sha256": "8c7dc63762addd17c2583d43734f804bad944a5d410201b51ddd0298b0cf3ab2"
+    },
+    {
+      "path": "apps/web/src/test/render.tsx",
+      "git_blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+      "sha256": "a5ba7977104bbde52a557a43f53e0a848da99add86da4a5845fdd3857056878a"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+    },
+    {
+      "path": "package-lock.json",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+    }
+  ],
+  "node_version": "v22.23.4",
+  "dependencies": "Root installed/compiled dependency graph reused through node_modules symlink; no configuration or install changes",
+  "baseline_command": {
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-signer-followup-review/apps/web",
+    "argv": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/views/Pay.signer.test.tsx",
+      "-t",
+      "compares only the selected seller",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/signer-fixture-followup-review/baseline.json"
+    ],
+    "result_source": "Completed Vitest JSON: one failed, ten filtered/unexecuted. Process completion handle unavailable after review interruption; no separate baseline exit-status claim."
+  },
+  "fixed_command_receipt": "fixed-receipt.json",
+  "hosted_input": {
+    "job": "135981023399",
+    "published_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "raw_log_path": "/workspace/scratch/0a7bc3583588/run-logs/hosted-d74-web-135981023399.log",
+    "raw_sha256": "6bb4738cecade3c851511a70197838ae7aa6f316c00769228931b6dcc3dd7452",
+    "raw_bytes": 357528,
+    "excerpt": "hosted-web-failure.txt",
+    "excerpt_normalization": "ANSI colors and trailing whitespace removed; raw input hash preserved",
+    "observed_counts": {
+      "passed": 3849,
+      "failed": 1,
+      "skipped": 1
+    }
+  }
+}
