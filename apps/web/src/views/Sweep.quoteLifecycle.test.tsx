@@ -111,6 +111,19 @@ async function answer(m: ReturnType<typeof mount>, index = 0): Promise<void> {
 }
 
 describe('Sweep quote lifecycle', () => {
+  it('handles a session cleared before authorization without starting a request', async () => {
+    const m = mount();
+    await ready(m);
+    const reads = m.rpcCalls();
+    // The session store can become unavailable before this context projection is replaced.
+    act(() => { clearSession(false); });
+    fireEvent.click(screen.getByRole('button', { name: QUOTE }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/load or generate seller keys/i);
+    expect(m.requests).toEqual([]);
+    expect(m.rpcCalls()).toBe(reads);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: QUOTE }).disabled).toBe(false);
+  });
+
   it('keeps an authorized quote through an unrelated context render', async () => {
     const m = mount();
     await ready(m);
