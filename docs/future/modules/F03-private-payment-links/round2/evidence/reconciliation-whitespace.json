@@ -1,0 +1,17 @@
+{
+  "source_local_commit": "00f7619fe7167e2f9b1d2e694e5de1375395913a",
+  "canonical_commit": "1de98f6c9371010883253450446e6f7294da84fa",
+  "command": [
+    "git",
+    "diff",
+    "--check",
+    "1de98f6c9371010883253450446e6f7294da84fa",
+    "HEAD"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.007,
+  "recorded_utc": "2026-11-20T16:25:57.290539+00:00",
+  "output": "",
+  "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Documentation reconciliation; unchanged test blob085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f. Not a browser execution."
+}

@@ -1,0 +1,38 @@
+{
+  "local_head": "00f7619fe7167e2f9b1d2e694e5de1375395913a",
+  "tree": "7b9de2d9965e3e70a1dca3c4902f31bc9df3b847",
+  "parents": [
+    "be80dd261686d9f2920b27f43dce69aff3b5b7c1",
+    "1de98f6c9371010883253450446e6f7294da84fa"
+  ],
+  "canonical": "1de98f6c9371010883253450446e6f7294da84fa",
+  "diff_paths": [
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/future/modules/F03-private-payment-links/HANDOFF.md",
+    "docs/future/modules/F03-private-payment-links/QUALIFICATION.md",
+    "docs/future/modules/F03-private-payment-links/round2/HOSTED_BROWSER.md",
+    "docs/future/modules/F03-private-payment-links/round2/QUALIFICATION.md",
+    "docs/future/modules/F03-private-payment-links/round2/REPAIR_REVIEW.md",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/ci44692101562-browser-evidence.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/publication-secrets.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/publication-whitespace-initial.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/publication-whitespace.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-collection-full.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-collection-full.log",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-collection-lean.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-collection-lean.log",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-lint.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-lint.log",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-web-typecheck-bounded.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-web-typecheck-bounded.log",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-web-typecheck.json",
+    "docs/future/modules/F03-private-payment-links/round2/evidence/repair-web-typecheck.log"
+  ],
+  "only_docs_changed": true,
+  "incoming_test_and_handoff_exact": {
+    "apps/web/e2e/payment-request-file.spec.ts": "085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f",
+    "docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md": "11dcb8bdae172c1e85d7bfee51cab55a6cc49c59"
+  },
+  "base_registry_preserved": true,
+  "incoming_registry_addition_preserved": true
+}

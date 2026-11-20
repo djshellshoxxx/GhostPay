@@ -1,0 +1,175 @@
+{
+  "observed_at_utc": "2026-11-20T16:24:25Z",
+  "repository": "djshellshoxxx/GhostPay",
+  "pull_request": 310,
+  "canonical_head": "1de98f6c9371010883253450446e6f7294da84fa",
+  "run_id": 44769994546,
+  "source": "GitHub Actions workflow and latest-attempt job APIs",
+  "workflows": [
+    {
+      "id": 44769994299,
+      "name": "Pages",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 44769994604,
+      "name": "Beta acceptance",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 44769994546,
+      "name": "CI",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 44769994593,
+      "name": "Hosting kit",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 44769994493,
+      "name": "CLI operator qualification",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ],
+  "jobs": [
+    {
+      "id": 136404765392,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136404766010,
+      "name": "secrets-and-egress",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411402,
+      "name": "ts-check",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411439,
+      "name": "ts-lint",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411461,
+      "name": "e2e (lean)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411463,
+      "name": "ts-typecheck",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411466,
+      "name": "ts-test-relayer",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411475,
+      "name": "contracts-coverage",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411477,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411494,
+      "name": "e2e (full)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411513,
+      "name": "contracts-static",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411524,
+      "name": "lean-candidate",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411527,
+      "name": "contracts-slither",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411705,
+      "name": "ts-test (rest-0)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411750,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411798,
+      "name": "ts-test (rest-1)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411823,
+      "name": "ts-test (confidential-contracts)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411826,
+      "name": "ts-test (core-crypto)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411862,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413411906,
+      "name": "ts-test (web)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413412014,
+      "name": "contracts-test",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 136413412032,
+      "name": "ts-test (rest-2)",
+      "status": "queued",
+      "conclusion": null
+    }
+  ],
+  "qualification": "Pending. Only changes completed; both browser jobs are queued. Workflow summary and job list are separate API snapshots, not an atomic snapshot."
+}

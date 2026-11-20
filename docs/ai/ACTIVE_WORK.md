@@ -23,6 +23,13 @@ CI run `44769994546`. Confirm no runtime, configuration, workflow, dependency or
 difference from canonical `1de98f6c`. Inspect actual hosted outcomes before claiming browser
 qualification. No force update, main merge or deployment.
 
+Reconciliation reviewed at local `00f7619f`, exact-tree API equivalent `32efffaf`; fresh review
+reports zero findings and confirms canonical test/handoff and incoming/base registry preservation.
+Additional source and command records are under F03 `round2/evidence`. The API merge retains
+canonical `1de98f6c` as primary parent and historical evidence `aae04662` as additional parent.
+Supporting evidence publication leaves canonical CI undisturbed; its browser outcome remains
+pending until the actual full/lean jobs execute successfully.
+
 # F03 hosted-browser qualification continuation — 2026-11-20
 
 Coordinator: ChatGPT `/root`; fresh investigator: `f03_hosted_browser`; independent repair

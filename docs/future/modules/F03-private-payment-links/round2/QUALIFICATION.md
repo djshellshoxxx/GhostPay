@@ -123,6 +123,17 @@ The canonical feature branch remains the qualification target; a documentation-o
 publication must not cancel/restart its live CI or be mistaken for the tested feature head.
 Main remains outside this reconciliation.
 
+Fresh [RECONCILIATION_REVIEW.md](RECONCILIATION_REVIEW.md) reports zero findings after
+independently checking source preservation, registry conflict resolution, original source
+excerpts, historical command pins and existing remote object ancestry. Its reviewed local merge
+`00f7619fe7167e2f9b1d2e694e5de1375395913a` has exact-tree API equivalent
+`32efffaf512c1d91b821eba4e3c58e502914a1d2`, tree
+`7b9de2d9965e3e70a1dca3c4902f31bc9df3b847`. The API merge's primary parent is canonical
+`1de98f6c9371010883253450446e6f7294da84fa`; additional parent
+`aae046621f1152911d2a3f3a222b287103e40d47` retains the earlier proposal and evidence. Later
+supporting commits add the fresh report and bounded validation/status records, without changing
+the adopted test or runtime. Use this remote equivalent to reproduce the local review pin.
+
 ## Exact-current-head continuation gate
 
 The next worker must inspect PR #310's actual head and find its corresponding CI run. Both full
@@ -138,12 +149,21 @@ or independently review any later change. The existing CI upload/record steps ru
 browser execution. No real-wallet, real-payment, non-Chromium-browser or production-deployment
 qualification is inferred from these synthetic Chromium journeys.
 
-At the reconciliation observation, CI run
+At the 16:24:25 UTC reconciliation observation, CI run
 [44769994546](https://github.com/djshellshoxxx/GhostPay/actions/runs/44769994546) is queued
-for canonical head `1de98f6c9371010883253450446e6f7294da84fa`. Its initial `changes` and
-`secrets-and-egress` jobs have not started; no repaired-head browser pass is established.
+in the workflow summary for canonical head `1de98f6c9371010883253450446e6f7294da84fa`.
+Its job listing already shows `changes` successful; full browser job `136413411494`, lean
+browser job `136413411461`, and the remaining listed CI jobs are queued. The workflow and job
+APIs are separate snapshots. No repaired-head browser pass is established; the bounded snapshot
+is `evidence/ci44769994546-observation-162425Z.json`.
 Use the actual current PR head and run state before acting, rather than treating this snapshot
 as a live status or rerunning/cancelling work merely because it is queued.
+
+Root's `evidence/source-preservation.json` checks the reconciled merge tree against canonical
+`1de98f6c`: only owned documentation differs, and both the incoming test/handoff and earlier
+registry bytes are preserved. Reconciliation whitespace and repository-secret checks exited 0;
+their exact commands and outputs are in the two `evidence/reconciliation-*.json` records.
+These checks do not rerun the browser tests or reassign historical check results to a new source.
 
 Keep the PR draft while required checks are pending or failing. Update the PR's qualification
 summary from actual completed results; a later documentation-only commit must not be presented
