@@ -34,7 +34,9 @@ The delta is an explicit role/capability registry and revocable operation handle
 
 Proposed ownership is a browser-safe role/capability layer around secret-box and session adapters. P05 owns encrypted durable storage; P04 owns invoice format; signing consumers own exact intent validation. P06 imports none of its future consumers, and offers no network API.
 
-Roles are `spend`, `view`, `invoice-sign`, `identity-sign`, and `device-auth`. Each role has an explicit purpose/domain allowlist. Local viewing delegation can match announcements but cannot derive spend keys, sign payments or authorize exports. No viewing key is sent to RPC/indexer/relayer infrastructure.
+Roles are `spend`, `view`, `invoice-sign`, `identity-sign`, `device-auth`, and `service-authorize`. Each role has an explicit purpose/domain allowlist. Local viewing delegation can match announcements but cannot derive spend keys, sign payments or authorize exports. No viewing key is sent to RPC/indexer/relayer infrastructure.
+
+The service-authorize role is limited to separately reviewed fee-consent and service-entitlement protocols. An opaque local consent capability is distinct from an optional service signature, and neither grants asset-spending authority. Any transaction that moves assets still requires the spend role and its exact reviewed intent. Service signatures bind service, audience, network where applicable, nonce, purpose, maximum scope and expiry; they cannot sign invoices, arbitrary messages or transfers. P06 owns the role allowlist without importing FEE01/P19 or other consumers.
 
 Optional transfer to a user-controlled offline device must be separately specified through authenticated encrypted exchange, explicit scope and independent backup. It is not automatic cloud synchronization. Revoking a local handle cannot erase a secret already exported elsewhere; UI must state this limitation.
 
@@ -42,7 +44,7 @@ Optional transfer to a user-controlled offline device must be separately specifi
 
 ```ts
 type KeyRole = 'spend' | 'view' | 'invoice-sign'
-  | 'identity-sign' | 'device-auth';
+  | 'identity-sign' | 'device-auth' | 'service-authorize';
 interface KeyDescriptorV1 {
   version: 1; keyId: string; role: KeyRole;
   profileScope: string; personaScope?: string;
@@ -65,6 +67,8 @@ interface KeyRoleProvider {
 ```
 
 `ScopedKeyOperation` is a closed reviewed operation set, not arbitrary plugin code with raw key access. Public results may include signatures or fingerprints; secrets cannot escape in return values, errors, serialization or thenables. Handles bind role, purpose, profile, epoch and deadline and are nonserializable.
+
+In proposed KeyGrantV1, expiresAt is a canonical unsigned decimal string of UTC milliseconds since the Unix epoch. Convert only after range validation; no locale dates, seconds/milliseconds guessing or floating-point rounding. Protocol adapters with second-based wire deadlines perform explicit checked conversion. Service-authorize signatures remain scoped artifacts delivered only to the selected consumer; they are not general exportable spend authority.
 
 ## 5. Lifecycle and refusal behavior
 
@@ -111,6 +115,7 @@ Role isolation, local key generation, locking and revocation remain free securit
 - **P06-A08:** Rotation preserves old recovery needs and never silently transfers funds.
 - **P06-A09:** Published-key identity checks reject mismatches without modifying existing custody.
 - **P06-A10:** There is no guardian, publisher master key or default remote recovery path.
+- **P06-A11:** Service-authorize handles reject transfers, arbitrary signatures, invoice authentication and cross-service replay; accepted fee consent never substitutes for a reviewed spend-role authorization.
 
 ## 10. Implementation slices and future verification
 
