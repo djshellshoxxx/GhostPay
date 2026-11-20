@@ -41,26 +41,50 @@ Drafts stay in memory unless a consumer explicitly stores them through P05; P04 
 ```ts
 interface InvoiceDraftV1 {
   version: 1; chainId: string; assetId: string;
-  amountAtomic: string; expiresAt: string;
+  amountAtomic: string;
+  expiresAt: string; // Canonical unsigned decimal UTC epoch milliseconds.
   recipientMetaAddress: string;
   metadataPolicyId: string;
   privateFields?: Readonly<Record<string, string>>;
 }
-interface PreparedInvoiceV1 {
-  version: 1; envelope: string; canonicalDigest: string;
-  validation: 'offline-structural' | 'online-revalidated';
+interface InvoiceArtifactSummaryV1 {
+  version: 1; canonicalDigest: string; artifactDigest: string; encodedBytes: number;
+  validation: 'offline-structural';
   disclosureCodes: readonly string[];
+}
+interface PreparedInvoiceV1 {
+  version: 1; artifact: SecretHandle;
+  summary: InvoiceArtifactSummaryV1;
+}
+interface InvoiceExportPreviewV1 {
+  version: 1; previewId: string; canonicalDigest: string; artifactDigest: string;
+  sinkId: string;
+  medium: 'url' | 'qr' | 'file'; encodedBytes: number;
+  sessionEpoch: number; disclosureCodes: readonly string[];
+  expiresAt: string; // Canonical unsigned decimal UTC epoch milliseconds.
 }
 interface OfflineInvoiceProvider {
   prepare(draft: InvoiceDraftV1, signer: SecretHandle,
     ctx: OperationContext): Promise<ModuleResult<PreparedInvoiceV1>>;
-  open(envelope: string, passphrase: SecretHandle | undefined,
+  open(artifact: SecretHandle, passphrase: SecretHandle | undefined,
     ctx: OperationContext): Promise<ModuleResult<OpenedInvoice>>;
+  previewExport(artifact: SecretHandle, medium: 'url' | 'qr' | 'file',
+    sink: InvoiceArtifactSink, ctx: OperationContext): ModuleResult<InvoiceExportPreviewV1>;
+  authorizeExport(previewId: string, approvedArtifactDigest: string,
+    ctx: OperationContext): ModuleResult<InvoiceExportGrant>;
+  export(artifact: SecretHandle, grant: InvoiceExportGrant,
+    sink: InvoiceArtifactSink, ctx: OperationContext):
+      Promise<ModuleResult<{ published: boolean }>>;
+  revokeArtifact(artifact: SecretHandle): void;
   capability(): CapabilityDescriptorV1;
 }
 ```
 
-The facade version does not rename existing signed invoice versions or change signature bytes. `OpenedInvoice` distinguishes signature verified, signer independently trusted, expired, and online payment eligibility. Metadata minimization happens before canonicalization/signing; no signed field is removed afterward.
+The facade version does not rename existing signed invoice versions or change signature bytes. `SecretHandle` holds the bearer envelope in a provider-owned scope; no public result exposes an `envelope: string`. F03 supplies an imported bounded artifact handle, which remains untrusted until P04 validates it. `OpenedInvoice` returns a minimal authentication/expiry summary plus scoped handles for private fields, never decrypted notes or a bearer fragment in a general public result.
+
+`InvoiceExportGrant` is a provider-issued, nonserializable, single-use authority bound to artifact digest, selected medium/sink, operation and session epoch. `InvoiceArtifactSink` is a closed reviewed renderer/download/clipboard adapter, not an arbitrary plugin callback. The preview captures the selected sink identity and exact encoded `artifactDigest`; `canonicalDigest` identifies invoice semantics and cannot substitute for the artifact-byte digest. Only that explicitly approved sink receives transient bearer bytes; it cannot return them through the result. Previewing, serializing a summary or knowing its ID does not authorize export. Revoke handles/grants on lock, expiry, cancellation and disposal; a cloned/forged object never passes provider registration checks.
+
+Both `expiresAt` fields use canonical unsigned decimal UTC epoch milliseconds with bounded range and exact integer parsing. Adapt legacy signed invoice expiry in UTC seconds through exact conversion: refuse non-second-aligned draft expiry instead of rounding or extending it. Existing signed bytes remain unchanged. This network-free provider returns only `offline-structural` preparation status; current payment eligibility is computed separately by the consumer after manifest, chain and quote checks. Metadata minimization happens before canonicalization/signing; no signed field is removed afterward.
 
 ## 5. Lifecycle and failure rules
 
@@ -68,7 +92,7 @@ The facade version does not rename existing signed invoice versions or change si
 2. Validate schema and key role; show which content is public, encrypted, or available to any link holder.
 3. Capture operation/session and sign canonical bytes with invoice-authentication capability.
 4. Encrypt using the existing approved envelope and fresh randomness when selected. Recheck session before publishing.
-5. Export only after an explicit gesture; previews never auto-copy or auto-download secrets.
+5. Preview the selected artifact/medium, obtain `authorizeExport` after an explicit gesture, then consume that grant at the approved sink. Previews never auto-copy or auto-download secrets. Recheck artifact digest, session, expiry and sink binding immediately before releasing transient bytes.
 6. Import through bounded strict parsing and decrypt locally. Reject tampering before installing any draft or identity pin.
 7. Before payment, a consumer rechecks expiry, selected chain, verified manifest and applicable quote; offline success is insufficient.
 
@@ -107,6 +131,9 @@ Offline creation, opening, minimization and encrypted exchange remain free local
 - **P04-A08:** Bearer and separately conveyed secret modes have truthful exposure labels.
 - **P04-A09:** URL/history/referrer/log traces contain no unintended private fields.
 - **P04-A10:** Legacy encrypted invoices round-trip across supported browsers; actual device export/import is separately recorded.
+- **P04-A11:** Preparation/opening summaries contain no bearer envelope or decrypted private fields; artifact handles cannot be serialized or reused after disposal.
+- **P04-A12:** Export preview alone, forged grant, changed artifact/medium, or an already consumed grant produces no clipboard/download/render side effect.
+- **P04-A13:** Exact UTC-millisecond to legacy-second conversion preserves signed expiry; nonaligned/ambiguous times refuse without extending invoice lifetime.
 
 ## 10. Slices and future verification
 
