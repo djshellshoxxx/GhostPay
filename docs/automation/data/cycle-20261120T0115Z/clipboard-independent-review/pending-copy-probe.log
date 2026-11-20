@@ -1,0 +1,32 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-review/apps/web
+
+ ❯ src/components/Common.clipboardPending.probe.test.tsx (2 tests | 1 failed) 535ms
+   × does not let old cleanup erase a pending re-copy of same value 488ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/Common.clipboardPending.probe.test.tsx > does not let old cleanup erase a pending re-copy of same value
+AssertionError: expected '' to be 'same value' // Object.is equality
+
+- Expected
++ Received
+
+- same value
+
+ ❯ src/components/Common.clipboardPending.probe.test.tsx:37:21
+     35|   await act(async () => { settleSecond(); await Promise.resolve(); });
+     36|   expect(screen.getByRole('button', { name: 'Copied' })).toBeTruthy();
+     37|   expect(clipboard).toBe(nextValue);
+       |                     ^
+     38| });
+     39|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  17:20:07
+   Duration  1.82s (environment 49%, tests 34%, import 9%, transform 8%)
+

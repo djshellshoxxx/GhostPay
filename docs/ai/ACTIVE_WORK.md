@@ -549,3 +549,37 @@ the existing eight-flag-combination mapping test remain. Checkpoint scope includ
 QR_FLAG_COVERAGE_20261120.md handoff and final source/CI/provenance snapshots under the already
 owned data/ directory. External lock generation 5 was released by its owner; this cycle never owned it.
 The isolated checkpoint changes no shared branch, application, workflow, dependency or production setting.
+
+# Native continuation checkpoint — 2026-11-19 Pacific
+
+Cycle 20261120T0115Z; worker /root; isolated branch
+automation/20261120T0115Z/coordinator/cycle-checkpoint.
+Exact base: prior reviewed checkpoint #296 a47648872e648fe7848a17080a5ffa1473e98e8b.
+Current observed main c977b5d6723f6822c3b5d86cd6b231712c53c395; integration #278
+417f7c71daf8645e1432f2ec8f070110879b80bd. Preserve prior complete histories and evidence.
+Owned paths: additive current-cycle entries in the nine existing docs/automation ledgers,
+source-pinned snapshots/raw evidence under docs/automation/data/cycle-20261120T0115Z/,
+and a prepended cycle section in docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md.
+Other source owners: root owns separate #293 repository-qualification repair; delegated worker
+owns wallet receipt-hash validation on a separate branch. Existing #290/#295 QR, #292 Pages,
+#294 QR expiry and #278 integration owners retain their branches. No shared integration here.
+Acceptance: persist exact base/final SHAs, claims, defects, tests actually executed, independent
+reviews, fresh hosted CI and blocker disposition; preserve original failures and conditional
+concerns without overstating qualification. All writes on this isolated successor branch;
+no competing ledger, deployment, production setting, crypto/policy or external schedule change.
+Expected checks: historical-byte preservation, JSON/checksum/link validation, documentation diff,
+independent evidence review, published-tree readback and exact-head CI observation.
+Lock observed released generation 5 at c8517bebd1d5218f9102ca8d1911013cf10a27fc.
+This cycle does not own it and cannot integrate without fresh atomic ownership and all other gates.
+
+Checkpoint preparation completed: new source drafts #297 04910f65 and #298 acbf39ee published with
+exact Git-tree readback; nine canonical ledgers/latest handoff updated additively, both new source
+handoffs preserved, original failure logs explicitly retained despite the repository log ignore rule.
+Independent documentation review is the remaining local qualification step before this checkpoint's
+publication. Required hosted/integration gates remain pending; no shared branch or lock change.
+
+Independent documentation QA completed at frozen 4cdb6a06/published 1aa3a5ed with no blocking
+finding; reviewer evidence is preserved in docs/automation/data/checkpoint-review-20261120T0115Z/.
+Final source/CI metadata additions and publication readback are separately attributed to the coordinator.
+Task ownership is complete for this isolated checkpoint after final publication; future source integration
+remains unowned by this cycle and requires the durable lock plus all mandatory gates.

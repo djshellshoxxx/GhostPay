@@ -1,0 +1,99 @@
+{
+  "cycle": "20261120T0115Z",
+  "worker": "/root/spec_verification_review",
+  "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+  "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "claim": "0f13f0f1a31b078624306cafbfc9ee065fb3493f",
+  "tests": "be7fb39bc7bb6e66b54f89bdd3628d308fb9c676",
+  "frozen_source": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+  "environment": {
+    "node": "24.22.3",
+    "vitest": "5.1.0",
+    "execution": "native ChatGPT shell, in-process mock wallet/RPC"
+  },
+  "results": {
+    "initial_collection": {
+      "exit_code": 1,
+      "tests_run": 0,
+      "classification": "incomplete dependency copy while tx-review was building; not regression RED"
+    },
+    "red": {
+      "exit_code": 1,
+      "failed": 19,
+      "passed": 93,
+      "files": 2,
+      "runtime": "unchanged from base"
+    },
+    "green": {
+      "exit_code": 0,
+      "passed": 180,
+      "failed": 0,
+      "skipped": 0,
+      "files": 4,
+      "duration_seconds": 32.38
+    },
+    "scoped_typed_eslint": {
+      "exit_code": 0,
+      "diagnostics": 0
+    },
+    "full_web_typecheck": {
+      "exit_code": 0,
+      "config": "apps/web/tsconfig.json unchanged"
+    },
+    "merchant_prerequisite_build": {
+      "exit_code": 0,
+      "includes": "existing invoice-schema prerequisite"
+    }
+  },
+  "log_sha256": {
+    "initial-dependency-collection.log": "352f43ffcbdc807f0e55754a98a2005ee57599579e669e49b92136ffb2a4b850",
+    "regression-red-be7fb39b.log": "a687d7c239ca30e5f2d8397e1f223d3c9fbe6ef3c0895c7c52c5081d38ea9c90",
+    "regression-green-d08b8ec3.log": "0353b35cb58194ff6abd14321dcb615de57f1380f49e644de1ce2c73dedfa301",
+    "scoped-eslint-d08b8ec3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "full-web-typecheck-d08b8ec3.log": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+    "merchant-build-prerequisite.log": "28f6ecee733e62d3407d660cafab638c8a8a2a4b5022d70807c16b7e20095edf",
+    "dependency-output-provenance.log": "d6231a48990aa1b6b2f44312850245ed11636eb75c77fc6ad17b3ab5313fb869"
+  },
+  "not_claimed": [
+    "full web coverage",
+    "browser execution",
+    "hosted CI",
+    "merge qualification",
+    "deployment",
+    "real-funds operations"
+  ],
+  "handoff_local_sha": "042431b1f53a60e469b1ebd83430de5b083d056e",
+  "handoff_changes": "docs/ai/ACTIVE_WORK.md and docs/handoffs/RECEIPT_HASH_VALIDATION_20261120.md only; product/test source unchanged",
+  "published_counterparts": {
+    "claim": "e7d5ef8722f922f50cd9256150e7535c40feb657",
+    "tests": "d9e385654d7da49409991d1286a438462a5842e4",
+    "frozen_source": "a221a9d5199bde11e45e1bc822e7305f4fe01bb9",
+    "tree": "e4c236f8e03e3cb5169f4349997b14750bb0ccc7",
+    "qualification": "coordinator verified local/published tree equality; not hosted CI"
+  },
+  "independent_review": {
+    "reviewer": "/root/final_checkpoint_review",
+    "source": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+    "verdict": "no blocking scoped finding",
+    "green": {
+      "passed": 180,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "red": {
+      "failed": 19,
+      "passed": 93,
+      "exit_code": 1
+    },
+    "evidence_directory": "receipt-review-20261120T0115Z"
+  },
+  "coordinator_pages_build": {
+    "source": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+    "build_exit_code": 0,
+    "reverify_exit_code": 0,
+    "matched_checksums": 16,
+    "release": false,
+    "paymentsEnabledChainIds": [],
+    "evidence_directory": "receipt-build-20261120T0115Z"
+  }
+}

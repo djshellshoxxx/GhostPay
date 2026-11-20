@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-receipt-hash/apps/web
+
+
+ Test Files  4 passed (4)
+      Tests  180 passed (180)
+   Start at  17:25:48
+   Duration  32.38s (tests 75%, transform 10%, import 10%, environment 5%)
+
+    Isolate  4 workers spawned · ~557ms startup each (spawn + environment, per file)
+             at least ~1.67s faster with isolate: false — reuses workers across files instead of one per file
+

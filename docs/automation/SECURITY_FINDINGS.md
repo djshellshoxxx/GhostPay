@@ -1,5 +1,61 @@
 # Security review status
 
+## Current bounded review — 20261120T0115Z
+
+### Final CodeQL gate update — unresolved, no suppression
+
+Exact head #278 417f7c71daf8645e1432f2ec8f070110879b80bd now has failed CodeQL
+check 136021124871 reporting two High alerts and incomplete Actions/Python configuration coverage.
+JavaScript/TypeScript job 136002794658 completed analysis/upload successfully. This is not classified
+as an infrastructure failure. Current annotation identities were not available through the individual
+check/annotation connector endpoints (HTTP 400 allowlist rejection); no alert is declared false positive.
+Existing #292 owns related security-fixture clarification, subject to current-alert identity verification.
+Retain this as a mandatory integration blocker. Earlier pending snapshots below are historical.
+
+
+Bounded independent triage preserved a [public gate summary](data/final-codeql-20261120T0115Z/README.md). The prior
+fixture source blobs are unchanged between d74 and417, and #292 contains its recorded clarification;
+current alert identities still cannot be correlated independently. Detailed unresolved alert evidence
+remains in scratch; only the nonsensitive blocker summary is published.
+
+### GP-RPC-RECEIPT-HASH — confirmed and repaired in draft
+
+- Source: #278 417f7c71daf8645e1432f2ec8f070110879b80bd, apps/web/src/lib/wallet.ts:478–505;
+  baseline wallet blob fb1d864f3223ce007e35d81c19a308df88657121, also unchanged on observed main.
+- Severity: low security impact; confidence: high. A receipt for a different hash was accepted as the
+  requested payment's inclusion/reversion. Concrete consumer and boundary regressions reproduce it.
+- Practical impact: incorrect local transaction status under an inconsistent or mismatched RPC response.
+  No fund loss, unauthorized signing or transaction-construction bypass was demonstrated.
+- Existing mitigations: transaction preview/submission comparison, destination/chain checks, duplicate-attempt
+  journal and post-broadcast hash preservation. Hash matching does not authenticate a consistently lying RPC.
+- Repair owner: /root/spec_verification_review; five-line guard in #298, published runtime a221a9d5,
+  final head acbf39ee21ad35e9d14df958fa16fbcc2e230cae. Primitive/format rejection uses the existing
+  receipt-shape UserFacingError; mismatched valid hash uses SubmissionMismatchError('hash').
+- Required regressions: malformed/missing values, unrelated success/revert, case equivalence, null polling,
+  original broadcast hash and no resend. Author and independent /root/final_checkpoint_review reproduced
+  19 baseline failures and passed 180/180 fixed tests. Full web TypeScript/scoped lint/development Pages pass.
+- Verification state: scoped independent clearance; draft, hosted/security/integration gates pending.
+  See [independent packet](data/cycle-20261120T0115Z/receipt-independent-review/independent-review.json).
+
+### GP-CLIPBOARD-PENDING-SAME-VALUE — conditional concern, unresolved
+
+- Source: #293 6c648770f5647ca7993cc108ef9e5ede9b46b4c9, Common.tsx:68–72 write completion
+  and clipboardPrivacy.ts:12–32 generation/timer handling; runtime remains identical in #297.
+- Severity: low correctness; confidence: high in the controlled interleaving, browser reachability unverified.
+- Evidence: a same-value second copy updates the mock clipboard while its promise is still unsettled;
+  the older timer clears that value before the second copy records its generation. The UI can then report
+  copy success with an empty clipboard. Different-value control passes. This is not a proven browser exploit.
+- Existing mitigations: feature defaults off, no production caller enables it, generation checks and
+  read-before-clear protect completed copies and different values. Browser clipboard operations are non-atomic.
+- Owner/next regression: coordinate with existing #293 owner before Settings activation; define the pending-copy
+  lifetime and verify real-browser ordering. No runtime repair is claimed by #297's test-only correction.
+- Evidence: [original independent review](data/cycle-20261120T0115Z/clipboard-independent-review/REVIEW.md)
+  and preserved model probe/log beside it. No key disclosure, exfiltration or fund-loss path demonstrated.
+
+Current #278 Mythril and dynamic CodeQL remain pending; Echidna passed. Existing unrelated findings,
+external review and release requirements remain. No scanner waiver, suppression or sensitive public issue.
+
+
 ## Current bounded review — 20261120T0035Z
 
 ### GP-QR-RUNTIME-COERCION

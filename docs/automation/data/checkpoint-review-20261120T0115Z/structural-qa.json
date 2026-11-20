@@ -1,0 +1,635 @@
+{
+  "reviewer": "/root/final_independent_review",
+  "recorded_at_utc": "2026-11-20T01:42:23.116514+00:00",
+  "base": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+  "head": "4cdb6a065a6318404bc963a20f90d3b43a068bfe",
+  "tree": "f1b65bd76db8ddc1f41fb83776a4c8361ea8a5e2",
+  "changed_paths_count": 69,
+  "only_documentation_changed": true,
+  "historical_preservation": [
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/BRANCH_INVENTORY.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/BUG_BACKLOG.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/CYCLE_HISTORY.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/FEATURE_BACKLOG.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/MASTER_STATUS.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/MERGE_QUEUE.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/MISSING_IMPLEMENTATIONS.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/SECURITY_FINDINGS.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/automation/WORKER_HANDOFFS.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    },
+    {
+      "path": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+      "additions_only": true,
+      "historical_body_after_title_byte_identical": true,
+      "original_title_preserved": true
+    }
+  ],
+  "copied_handoffs": [
+    {
+      "source": "cabf8ae39c81c5c36cdf601e7b7003893e3fc2fb",
+      "path": "docs/handoffs/CLIPBOARD_REPOSITORY_QUALIFICATION_20261120.md",
+      "source_blob": "0e834d89a2f03f46e82532a127034c5fc516a4d6",
+      "checkpoint_blob": "0e834d89a2f03f46e82532a127034c5fc516a4d6",
+      "byte_identical": true
+    },
+    {
+      "source": "042431b1f53a60e469b1ebd83430de5b083d056e",
+      "path": "docs/handoffs/RECEIPT_HASH_VALIDATION_20261120.md",
+      "source_blob": "31048d39815af5e5ebca8a8ec6daba3e8c28ff97",
+      "checkpoint_blob": "31048d39815af5e5ebca8a8ec6daba3e8c28ff97",
+      "byte_identical": true
+    }
+  ],
+  "own_report_provenance": [
+    {
+      "original": "privacy-spec-review-20261120T0115Z/REVIEW.md",
+      "copy": "privacy-spec-review/REVIEW.md",
+      "byte_identical": true,
+      "sha256": "298ca086bcb45cf7df86621c31561b3fe9e0ab1fe7ed24b22b36938be72b0214"
+    },
+    {
+      "original": "clipboard-review-20261120T0115Z/REVIEW.md",
+      "copy": "clipboard-independent-review/REVIEW.md",
+      "byte_identical": true,
+      "sha256": "94e501f020291fa5096f0e015dcd4bbca80618c4c0a0e3d0b77c51d3a8a56b75"
+    },
+    {
+      "original": "clipboard-review-20261120T0115Z/FIXED_REVIEW.md",
+      "copy": "clipboard-independent-review/FIXED_REVIEW.md",
+      "byte_identical": true,
+      "sha256": "dc9fc8a4cdfb754fae03d16420bf1987ef7edc0f92ebe15e64ff54ccebe8cd4e"
+    },
+    {
+      "original": "clipboard-review-20261120T0115Z/fixed-independent-receipt.json",
+      "copy": "clipboard-independent-review/fixed-independent-receipt.json",
+      "byte_identical": true,
+      "sha256": "5cb6d77e78c62f7adde423c4c231ae5136c8a57e0669620a86ac99065f4588b1"
+    },
+    {
+      "original": "clipboard-review-20261120T0115Z/committed-vitest.log",
+      "copy": "clipboard-independent-review/committed-vitest.log",
+      "byte_identical": true,
+      "sha256": "cb0c367a698557c90a446166ed99c62a756b9836811c3ffa0e634206fecb8758"
+    },
+    {
+      "original": "clipboard-review-20261120T0115Z/fixed-independent-vitest.log",
+      "copy": "clipboard-independent-review/fixed-independent-vitest.log",
+      "byte_identical": true,
+      "sha256": "b0e3e317dddd7f7e3a9414b26f8bd56784f9d8bd27df5ee6c482c0c7d4ad1ea7"
+    },
+    {
+      "original": "clipboard-review-20261120T0115Z/pending-copy-probe.log",
+      "copy": "clipboard-independent-review/pending-copy-probe.log",
+      "byte_identical": true,
+      "sha256": "40437ad9ca1f6b07dac2c657bb738c378aaee65f7919501f6b074eed1832cb62"
+    }
+  ],
+  "evidence_inventory": {
+    "count": 53,
+    "all_bytes_and_hashes_match": true,
+    "missing_from_manifest": [],
+    "declared_but_absent": [],
+    "rows": [
+      {
+        "path": "README.md",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "ci-ownership/README.md",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "ci-ownership/ci-ownership-snapshot.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "ci-ownership/old-pr292-lean-failure-excerpt.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "ci-ownership/old-pr292-lean-job-136002216168.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "ci-parent293/job-135999786060.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "ci-parent293/job-135999786222.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/build-libs.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/build-typecheck-results.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/lint.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/results.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/typecheck-after-build.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/typecheck.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-author/vitest.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/Common.clipboardPending.probe.test.tsx",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/FIXED_REVIEW.md",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/REVIEW.md",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/committed-vitest.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/eslint.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/fixed-independent-eslint.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/fixed-independent-receipt.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/fixed-independent-vitest.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-independent-review/pending-copy-probe.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "clipboard-settings-overlap.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "exact-head-state.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "external-run-observation.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "initial-open-prs.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "privacy-requirement-286.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "privacy-spec-review/REVIEW.md",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "publication-map.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "published-candidates-state.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/author-qualification.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/dependency-output-provenance.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/full-web-typecheck-d08b8ec3.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/initial-dependency-collection.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/merchant-build-prerequisite.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/regression-green-d08b8ec3.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/regression-red-be7fb39b.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-author/scoped-eslint-d08b8ec3.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-independent-review/independent-green-d08b8ec3.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-independent-review/independent-green-d08b8ec3.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-independent-review/independent-red-be7fb39b.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-independent-review/independent-red-be7fb39b.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-independent-review/independent-review.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-independent-review/source-standards-review.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/SHA256SUMS",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/build.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/ghostpay-lean-build.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/pages-build-result.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/pages-build.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/pages-evidence.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/pages-reverify-result.json",
+        "bytes_match": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "receipt-pages-build/pages-reverify.log",
+        "bytes_match": true,
+        "sha256_matches": true
+      }
+    ]
+  },
+  "new_local_markdown_links": {
+    "occurrences": 13,
+    "distinct_source_target_pairs": 13,
+    "all_targets_present": true,
+    "rows": [
+      {
+        "source": "docs/automation/BRANCH_INVENTORY.md",
+        "target": "data/cycle-20261120T0115Z/exact-head-state.json",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/exact-head-state.json",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/FEATURE_BACKLOG.md",
+        "target": "data/cycle-20261120T0115Z/privacy-spec-review/REVIEW.md",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/privacy-spec-review/REVIEW.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/MASTER_STATUS.md",
+        "target": "data/cycle-20261120T0115Z/README.md",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/README.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/MASTER_STATUS.md",
+        "target": "data/cycle-20261120T0115Z/exact-head-state.json",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/exact-head-state.json",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/MASTER_STATUS.md",
+        "target": "../handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "resolved": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/MERGE_QUEUE.md",
+        "target": "data/cycle-20261120T0115Z/exact-head-state.json",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/exact-head-state.json",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/SECURITY_FINDINGS.md",
+        "target": "data/cycle-20261120T0115Z/receipt-independent-review/independent-review.json",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/independent-review.json",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/automation/SECURITY_FINDINGS.md",
+        "target": "data/cycle-20261120T0115Z/clipboard-independent-review/REVIEW.md",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/REVIEW.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "target": "../automation/data/cycle-20261120T0115Z/publication-map.json",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/publication-map.json",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "target": "RECEIPT_HASH_VALIDATION_20261120.md",
+        "resolved": "docs/handoffs/RECEIPT_HASH_VALIDATION_20261120.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "target": "CLIPBOARD_REPOSITORY_QUALIFICATION_20261120.md",
+        "resolved": "docs/handoffs/CLIPBOARD_REPOSITORY_QUALIFICATION_20261120.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "target": "../automation/data/cycle-20261120T0115Z/README.md",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/README.md",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      },
+      {
+        "source": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+        "target": "../automation/data/cycle-20261120T0115Z/exact-head-state.json",
+        "resolved": "docs/automation/data/cycle-20261120T0115Z/exact-head-state.json",
+        "count": 1,
+        "exists_in_frozen_tree": true,
+        "anchor": ""
+      }
+    ]
+  },
+  "json_validation": [
+    "docs/automation/data/cycle-20261120T0115Z/SHA256SUMS.json",
+    "docs/automation/data/cycle-20261120T0115Z/ci-ownership/SHA256SUMS.json",
+    "docs/automation/data/cycle-20261120T0115Z/ci-ownership/ci-ownership-snapshot.json",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/build-typecheck-results.json",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/results.json",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/eslint.json",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/fixed-independent-eslint.json",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/fixed-independent-receipt.json",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-settings-overlap.json",
+    "docs/automation/data/cycle-20261120T0115Z/exact-head-state.json",
+    "docs/automation/data/cycle-20261120T0115Z/external-run-observation.json",
+    "docs/automation/data/cycle-20261120T0115Z/initial-open-prs.json",
+    "docs/automation/data/cycle-20261120T0115Z/privacy-requirement-286.json",
+    "docs/automation/data/cycle-20261120T0115Z/publication-map.json",
+    "docs/automation/data/cycle-20261120T0115Z/published-candidates-state.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/author-qualification.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/SHA256SUMS.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/independent-green-d08b8ec3.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/independent-red-be7fb39b.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/independent-review.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/source-standards-review.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/ghostpay-lean-build.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/pages-build-result.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/pages-evidence.json",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/pages-reverify-result.json"
+  ],
+  "publication_local_tree_checks": [
+    {
+      "candidate": "clipboard",
+      "local": "bd47090fd8bbd328d1cfcfe0452519309d7d99f9",
+      "remote": "97ed96ea99f77c0e2cb86eb472ec25ba7635fe79",
+      "declared_tree": "94c68017ab689cd55d492ae11d1a744de8f8bb62",
+      "actual_local_tree": "94c68017ab689cd55d492ae11d1a744de8f8bb62",
+      "match": true
+    },
+    {
+      "candidate": "clipboard",
+      "local": "0561fc247350a5957a682bbab94a6eb0ccd4b5c8",
+      "remote": "db2ce2577b4eebc4b95f6e2ad8b8d077e58a40d1",
+      "declared_tree": "b0ac659f3945b4dd9f57e0a7daf8dae4c06236ca",
+      "actual_local_tree": "b0ac659f3945b4dd9f57e0a7daf8dae4c06236ca",
+      "match": true
+    },
+    {
+      "candidate": "clipboard",
+      "local": "cabf8ae39c81c5c36cdf601e7b7003893e3fc2fb",
+      "remote": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "declared_tree": "352654f24314d8d396ec583397f6ff568d6f8217",
+      "actual_local_tree": "352654f24314d8d396ec583397f6ff568d6f8217",
+      "match": true
+    },
+    {
+      "candidate": "receipt",
+      "local": "0f13f0f1a31b078624306cafbfc9ee065fb3493f",
+      "remote": "e7d5ef8722f922f50cd9256150e7535c40feb657",
+      "declared_tree": "7a94ad267cece7fa666cd6a0fc4330c15c951561",
+      "actual_local_tree": "7a94ad267cece7fa666cd6a0fc4330c15c951561",
+      "match": true
+    },
+    {
+      "candidate": "receipt",
+      "local": "be7fb39bc7bb6e66b54f89bdd3628d308fb9c676",
+      "remote": "d9e385654d7da49409991d1286a438462a5842e4",
+      "declared_tree": "7c2e2c9a9ab9eecd3f7ca70875ddeb35ec6724f5",
+      "actual_local_tree": "7c2e2c9a9ab9eecd3f7ca70875ddeb35ec6724f5",
+      "match": true
+    },
+    {
+      "candidate": "receipt",
+      "local": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+      "remote": "a221a9d5199bde11e45e1bc822e7305f4fe01bb9",
+      "declared_tree": "e4c236f8e03e3cb5169f4349997b14750bb0ccc7",
+      "actual_local_tree": "e4c236f8e03e3cb5169f4349997b14750bb0ccc7",
+      "match": true
+    },
+    {
+      "candidate": "receipt",
+      "local": "042431b1f53a60e469b1ebd83430de5b083d056e",
+      "remote": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "declared_tree": "94f726c2dc3656b6ec07a292c350350da1441cfe",
+      "actual_local_tree": "94f726c2dc3656b6ec07a292c350350da1441cfe",
+      "match": true
+    }
+  ],
+  "raw_log_files": [
+    "docs/automation/data/cycle-20261120T0115Z/ci-ownership/old-pr292-lean-failure-excerpt.log",
+    "docs/automation/data/cycle-20261120T0115Z/ci-ownership/old-pr292-lean-job-136002216168.log",
+    "docs/automation/data/cycle-20261120T0115Z/ci-parent293/job-135999786060.log",
+    "docs/automation/data/cycle-20261120T0115Z/ci-parent293/job-135999786222.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/build-libs.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/lint.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/typecheck-after-build.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/typecheck.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-author/vitest.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/committed-vitest.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/fixed-independent-vitest.log",
+    "docs/automation/data/cycle-20261120T0115Z/clipboard-independent-review/pending-copy-probe.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/dependency-output-provenance.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/full-web-typecheck-d08b8ec3.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/initial-dependency-collection.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/merchant-build-prerequisite.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/regression-green-d08b8ec3.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/regression-red-be7fb39b.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-author/scoped-eslint-d08b8ec3.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/independent-green-d08b8ec3.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-independent-review/independent-red-be7fb39b.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/build.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/pages-build.log",
+    "docs/automation/data/cycle-20261120T0115Z/receipt-pages-build/pages-reverify.log"
+  ],
+  "markdown_json_diffcheck_exit_code": 0,
+  "frozen_worktree_head_matches": true,
+  "worktree_clean": true
+}

@@ -1,0 +1,35 @@
+2026-11-20T01:09:22.5734968Z   1) [desktop] › e2e/network-authorization.spec.ts:133:1 › replacing an invoice aborts a renewed preflight grant before its old request can retry 
+2026-11-20T01:09:22.5735431Z 
+2026-11-20T01:09:22.5735721Z     Error: expect(received).toHaveLength(expected)
+2026-11-20T01:09:22.5736212Z 
+2026-11-20T01:09:22.5736331Z     Expected length: 9
+2026-11-20T01:09:22.5736567Z     Received length: 15
+2026-11-20T01:09:22.5740110Z     Received array:  [{"_guid": "request@19a3af2e9bb12e2a80099fc0c7480607", "_type": "Request"}, {"_guid": "request@7d7377b9d882d680eae60f8e3df33f8d", "_type": "Request"}, {"_guid": "request@a35e734ee90133ffaa47dd4603b6978e", "_type": "Request"}, {"_guid": "request@2e4add551647b98a713221d47d461108", "_type": "Request"}, {"_guid": "request@c002364c9ec98873f5dfa2dfd5c080ea", "_type": "Request"}, {"_guid": "request@a5afd1b12ddf6bd13378911480680de5", "_type": "Request"}, {"_guid": "request@e3129fe63126d92396cc256b83f28b35", "_type": "Request"}, {"_guid": "request@4bc43f5572c39e537880765c04588a71", "_type": "Request"}, {"_guid": "request@a9f0597e8b18aa69af51041c6f95947c", "_type": "Request"}, {"_guid": "request@fcca6856ccf7329e5505fc39d65ca3fb", "_type": "Request"}, …]
+2026-11-20T01:09:22.5742005Z 
+2026-11-20T01:09:22.5742185Z       170 |   await expect.poll(() => released).toBe(true);
+2026-11-20T01:09:22.5742519Z       171 |   await page.waitForLoadState('networkidle');
+2026-11-20T01:09:22.5742815Z     > 172 |   expect(foreign).toHaveLength(before);
+2026-11-20T01:09:22.5743087Z           |                   ^
+2026-11-20T01:09:22.5743816Z       173 |   expect(network.state.raws).toEqual([]);
+2026-11-20T01:09:22.5744145Z       174 |   expect(network.state.unexpected).toEqual([]);
+2026-11-20T01:09:22.5744414Z       175 | });
+2026-11-20T01:09:22.5744797Z         at /home/runner/work/GhostPay/GhostPay/apps/web/e2e/network-authorization.spec.ts:172:19
+2026-11-20T01:09:22.5745059Z 
+2026-11-20T01:09:22.5745326Z     Error Context: test-results/network-authorization-repl-e4cae-e-its-old-request-can-retry-desktop/error-context.md
+2026-11-20T01:09:22.5746035Z 
+2026-11-20T01:09:22.5746112Z   1 failed
+2026-11-20T01:09:22.5746782Z     [desktop] › e2e/network-authorization.spec.ts:133:1 › replacing an invoice aborts a renewed preflight grant before its old request can retry 
+2026-11-20T01:09:22.5747123Z   5 skipped
+2026-11-20T01:09:22.5747246Z   115 passed (3.6m)
+2026-11-20T01:09:22.5935592Z npm error Lifecycle script `test:e2e` failed with error:
+2026-11-20T01:09:22.5936002Z npm error code 1
+2026-11-20T01:09:22.5936335Z npm error path /home/runner/work/GhostPay/GhostPay/apps/web
+2026-11-20T01:09:22.5936732Z npm error workspace @ghostpay/web@1.0.0-beta.1
+2026-11-20T01:09:22.5937127Z npm error location /home/runner/work/GhostPay/GhostPay/apps/web
+2026-11-20T01:09:22.5937458Z npm error command failed
+2026-11-20T01:09:22.5937736Z npm error command sh -c playwright test
+2026-11-20T01:09:22.6006215Z ##[error]Process completed with exit code 1.
+2026-11-20T01:09:22.6062963Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+2026-11-20T01:09:22.6063210Z with:
+2026-11-20T01:09:22.6063552Z   name: playwright-test-results-lean
+2026-11-20T01:09:22.6063719Z   path: apps/web/test-results

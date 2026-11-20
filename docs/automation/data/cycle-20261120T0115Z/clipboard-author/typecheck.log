@@ -1,0 +1,292 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> @ghostpay/web@1.0.0-beta.1 typecheck
+> tsc -p tsconfig.json --noEmit
+
+../relayer/src/config.ts(17,32): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+../relayer/src/config.ts(464,82): error TS7006: Parameter 'x' implicitly has an 'any' type.
+../relayer/src/config.ts(466,43): error TS7006: Parameter 'h' implicitly has an 'any' type.
+../relayer/src/limiter.ts(2,36): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+../relayer/src/runtime.ts(4,42): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+../relayer/src/secrets.ts(2,61): error TS2307: Cannot find module '@ghostpay/relayer-guard/secrets' or its corresponding type declarations.
+../relayer/src/secrets.ts(3,40): error TS2307: Cannot find module '@ghostpay/relayer-guard/secrets' or its corresponding type declarations.
+../relayer/src/secrets.ts(4,35): error TS2307: Cannot find module '@ghostpay/relayer-guard/secrets' or its corresponding type declarations.
+../relayer/src/server.ts(13,8): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+../relayer/src/service.ts(19,8): error TS2307: Cannot find module '@ghostpay/relayer-guard' or its corresponding type declarations.
+e2e/qr-camera-multipart.spec.ts(4,33): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+e2e/qr-camera.spec.ts(6,37): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+e2e/stealth-export.spec.ts(2,40): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+e2e/stealth-export.spec.ts(65,74): error TS7006: Parameter 'p' implicitly has an 'any' type.
+e2e/stealth-export.spec.ts(65,133): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/buildScripts.test.ts(211,31): error TS2307: Cannot find module '@ghostpay/scan-source' or its corresponding type declarations.
+src/components/CameraImporter.multipart.test.tsx(5,62): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/components/CameraImporter.tsx(13,8): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/components/CameraImporter.tsx(55,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(56,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(57,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(58,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(59,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(60,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(66,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(67,9): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(71,95): error TS18046: 'error' is of type 'unknown'.
+src/components/CameraImporter.tsx(257,60): error TS7006: Parameter 'ids' implicitly has an 'any' type.
+src/components/CameraImporter.tsx(262,40): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/components/InvoicePaymentSummary.tsx(1,62): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/components/InvoicePaymentSummary.tsx(19,21): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/components/ReconciliationLedger.i18n.test.tsx(53,12): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/components/ReconciliationLedger.i18n.test.tsx(54,22): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/components/ReconciliationLedger.i18n.test.tsx(54,27): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/components/ReconciliationLedger.i18n.test.tsx(54,37): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/components/ReconciliationLedger.i18n.test.tsx(54,43): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(80,12): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(81,28): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(81,33): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(81,43): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(81,49): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(110,38): error TS7006: Parameter 'record' implicitly has an 'any' type.
+src/components/ReconciliationLedger.invoices.test.tsx(117,38): error TS7006: Parameter 'record' implicitly has an 'any' type.
+src/components/ReconciliationLedger.test.tsx(65,12): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/components/ReconciliationLedger.test.tsx(66,22): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/components/ReconciliationLedger.test.tsx(66,27): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/components/ReconciliationLedger.test.tsx(66,37): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/components/ReconciliationLedger.test.tsx(66,43): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/components/ReconciliationLedger.tsx(2,48): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/components/ReconciliationLedger.tsx(72,12): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<"multiple-invoices" | "multiple-payments" | "late-observation" | "missing-block-time", "settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | ... 2515 more ... | "btc.scan.unknownRefresh">'.
+src/components/ReconciliationLedger.tsx(73,35): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/components/ReconciliationLedger.tsx(73,38): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/components/ReconciliationLedger.tsx(264,10): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/components/ReconciliationLedger.tsx(448,29): error TS7006: Parameter 'record' implicitly has an 'any' type.
+src/components/StealthExportCommon.tsx(130,107): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/components/StealthExportRecovery.tsx(216,147): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/components/StealthExportRecovery.tsx(217,73): error TS7006: Parameter 'record' implicitly has an 'any' type.
+src/components/StealthExportRecovery.tsx(236,137): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/components/StealthExportRecovery.tsx(239,41): error TS7006: Parameter 'record' implicitly has an 'any' type.
+src/components/StealthExportRecovery.tsx(239,49): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/components/TagArchive.atomicity.test.tsx(237,87): error TS7006: Parameter 'text' implicitly has an 'any' type.
+src/features/btc/scan.spentness-completion.test.ts(95,14): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/features/btc/scan.spentness-completion.test.ts(96,24): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/features/btc/scan.spentness-completion.test.ts(96,29): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/features/btc/scan.spentness-completion.test.ts(96,39): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/features/btc/scan.spentness-completion.test.ts(96,45): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/features/chainViews.i18n.test.tsx(5,36): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/solana/SolanaView.lock.test.tsx(2,34): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/SolanaView.lock.test.tsx(15,53): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/SolanaView.tsx(4,41): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/chain.hardening.test.ts(3,52): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/chain.hardening.test.ts(71,43): error TS7006: Parameter 'byte' implicitly has an 'any' type.
+src/features/solana/chain.hardening.test.ts(72,42): error TS7006: Parameter 'byte' implicitly has an 'any' type.
+src/features/solana/chain.hardening.test.ts(148,31): error TS7006: Parameter 'byte' implicitly has an 'any' type.
+src/features/solana/chain.hardening.test.ts(197,24): error TS7006: Parameter 'method' implicitly has an 'any' type.
+src/features/solana/chain.hardening.test.ts(197,32): error TS7006: Parameter 'params' implicitly has an 'any' type.
+src/features/solana/fixtures.testutil.ts(7,8): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/network.ts(1,36): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/rpc.ts(5,74): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/rpc.ts(22,13): error TS7006: Parameter 'input' implicitly has an 'any' type.
+src/features/solana/rpc.ts(22,20): error TS7006: Parameter 'init' implicitly has an 'any' type.
+src/features/solana/rpc.ts(84,60): error TS18046: 'e' is of type 'unknown'.
+src/features/solana/scan-secrets.hardening.test.ts(11,53): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/scan.ts(8,8): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/sweep.ts(12,8): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/solana/wallet.ts(6,8): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/features/tron/TronView.test.tsx(5,29): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/TronView.tsx(4,49): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/chain.hardening.test.ts(1,48): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/chain.hardening.test.ts(217,21): error TS7006: Parameter 'path' implicitly has an 'any' type.
+src/features/tron/chain.hardening.test.ts(217,27): error TS7006: Parameter 'body' implicitly has an 'any' type.
+src/features/tron/fixtures.testutil.ts(9,8): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/rpc.ts(16,8): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/rpc.ts(29,55): error TS7006: Parameter 'input' implicitly has an 'any' type.
+src/features/tron/rpc.ts(29,62): error TS7006: Parameter 'init' implicitly has an 'any' type.
+src/features/tron/rpc.ts(116,58): error TS18046: 'e' is of type 'unknown'.
+src/features/tron/scan.ts(1,53): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/sweep.ts(13,8): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/features/tron/sweep.ts(96,25): error TS2365: Operator '+' cannot be applied to types 'number' and '0n | 1000000n'.
+src/features/tron/wallet.ts(8,39): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/lib/errors.i18n.test.ts(2,36): error TS2307: Cannot find module '@ghostpay/solana-stealth' or its corresponding type declarations.
+src/lib/errors.i18n.test.ts(3,34): error TS2307: Cannot find module '@ghostpay/tron-adapter' or its corresponding type declarations.
+src/lib/keystore.test.ts(172,36): error TS7006: Parameter 'w' implicitly has an 'any' type.
+src/lib/keystore.test.ts(184,29): error TS7006: Parameter 'w' implicitly has an 'any' type.
+src/lib/keystore.ts(1,35): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/keystore.ts(3,89): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/paymentKeyExport.expiry.test.ts(1,27): error TS2307: Cannot find module '@ghostpay/secret-box' or its corresponding type declarations.
+src/lib/paymentKeyExport.expiry.test.ts(62,55): error TS7006: Parameter 'bytes' implicitly has an 'any' type.
+src/lib/paymentKeyExport.expiry.test.ts(62,62): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/lib/paymentKeyExport.expiry.test.ts(69,71): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/lib/paymentKeyExport.expiry.test.ts(76,72): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/lib/paymentKeyExport.test.ts(2,27): error TS2307: Cannot find module '@ghostpay/secret-box' or its corresponding type declarations.
+src/lib/paymentKeyExport.test.ts(111,77): error TS7006: Parameter 'items' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(111,84): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(205,34): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(214,71): error TS7006: Parameter 'items' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(214,105): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(242,78): error TS7006: Parameter 'keys' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(242,84): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(258,37): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(258,71): error TS7006: Parameter 'byte' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(259,55): error TS7006: Parameter 'payment' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(270,55): error TS7006: Parameter 'bytes' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(270,62): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(277,41): error TS7006: Parameter 'byte' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(278,40): error TS7006: Parameter 'byte' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(289,59): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/lib/paymentKeyExport.test.ts(343,81): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/lib/paymentKeyExport.test.ts(344,82): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/lib/paymentKeyExport.test.ts(382,78): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/lib/paymentKeyExport.test.ts(396,77): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/lib/paymentKeyExport.ts(4,27): error TS2307: Cannot find module '@ghostpay/secret-box' or its corresponding type declarations.
+src/lib/paymentKeyExport.ts(261,55): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/lib/paymentKeyExport.ts(271,19): error TS7006: Parameter 'bytes' implicitly has an 'any' type.
+src/lib/privateScanLifecycle.test.ts(2,64): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/privateScanLifecycle.ts(1,64): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/privateScanLifecycle.ts(84,16): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/privateScanLifecycle.ts(90,26): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/privateScanLifecycle.ts(90,31): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/lib/privateScanLifecycle.ts(90,41): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/lib/privateScanLifecycle.ts(90,47): error TS7006: Parameter 'current' implicitly has an 'any' type.
+src/lib/qr.test.ts(1,33): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/qrClassify.fuzz.test.ts(2,33): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/qrClassify.test.ts(4,33): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/qrClassify.ts(33,121): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/qrMultipart.test.ts(1,56): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/qrMultipart.ts(1,50): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/qrPayload.ts(1,62): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/reconciliationLedger.ts(1,68): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/reconciliationLedger.ts(2,73): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/reconciliationLedger.ts(39,54): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/reconciliationLedger.ts(46,39): error TS18046: 'record' is of type 'unknown'.
+src/lib/reconciliationMatch.ts(1,41): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/reconciliationMatch.ts(3,55): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/reconciliationVault.invoices.test.ts(118,32): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(121,60): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(159,26): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(160,26): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(238,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(241,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(255,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(273,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/lib/reconciliationVault.invoices.test.ts(274,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(213,24): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(214,24): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(257,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(264,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(278,27): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(279,27): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(282,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(298,25): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(299,25): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(302,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(316,38): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(334,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(335,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/lib/reconciliationVault.test.ts(443,37): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/reconciliationVault.ts(1,104): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/reconciliationVault.ts(5,148): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/scanClient.test.ts(398,14): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(399,24): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(399,29): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(399,39): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(399,45): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1770,14): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1771,24): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1771,29): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1771,39): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1771,45): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1979,24): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/scanClient.test.ts(1980,24): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/scanClient.ts(89,33): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/scanCursorSlot.ts(1,33): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/scanCursorSlot.ts(2,22): error TS2307: Cannot find module '@ghostpay/secret-box' or its corresponding type declarations.
+src/lib/scanPrivacy.ts(28,143): error TS2307: Cannot find module '@ghostpay/scan-source' or its corresponding type declarations.
+src/lib/scanPrivacy.ts(578,19): error TS7006: Parameter 'req' implicitly has an 'any' type.
+src/lib/scanPrivacy.ts(600,21): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/lib/scanPrivacy.ts(664,94): error TS18046: 'e' is of type 'unknown'.
+src/lib/scanPrivacy.ts(669,18): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/lib/scanPrivacy.ts(670,15): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/lib/sellerPairing.ts(2,140): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/sellerPairing.ts(5,178): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/session.atomicity.test.ts(1,27): error TS2307: Cannot find module '@ghostpay/secret-box' or its corresponding type declarations.
+src/lib/session.atomicity.test.ts(23,55): error TS7006: Parameter 'source' implicitly has an 'any' type.
+src/lib/session.atomicity.test.ts(23,63): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/lib/session.ts(12,33): error TS2307: Cannot find module '@ghostpay/secret-box' or its corresponding type declarations.
+src/lib/session.ts(269,17): error TS7006: Parameter 'bytes' implicitly has an 'any' type.
+src/lib/session.ts(412,39): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/lib/session.ts(549,37): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/lib/session.ts(550,35): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/lib/session.ts(551,35): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/lib/settings.ts(2,44): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/settingsExchange.ts(5,8): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/settingsExchange.ts(9,53): error TS2307: Cannot find module '@ghostpay/qr-exchange' or its corresponding type declarations.
+src/lib/settingsExchange.ts(19,40): error TS18046: 'error' is of type 'unknown'.
+src/lib/settingsExchange.ts(20,11): error TS18046: 'error' is of type 'unknown'.
+src/lib/settingsExchange.ts(139,32): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/lib/stealthExport.ts(1,40): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/stealthExport.ts(3,150): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/sweep.ts(22,37): error TS2307: Cannot find module '@ghostpay/tx-review' or its corresponding type declarations.
+src/lib/tagArchive.ts(1,80): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/tagArchive.ts(2,54): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/tags.ts(1,77): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/tags.ts(2,51): error TS2307: Cannot find module '@ghostpay/ux-vault/portable' or its corresponding type declarations.
+src/lib/transportCancellation.test.ts(2,33): error TS2307: Cannot find module '@ghostpay/scan-source' or its corresponding type declarations.
+src/lib/transportNative.test.ts(5,33): error TS2307: Cannot find module '@ghostpay/scan-source' or its corresponding type declarations.
+src/lib/txGuard.ts(13,8): error TS2307: Cannot find module '@ghostpay/tx-review' or its corresponding type declarations.
+src/lib/txGuard.ts(54,123): error TS18046: 'e' is of type 'unknown'.
+src/lib/txGuard.ts(55,114): error TS18046: 'e' is of type 'unknown'.
+src/views/Scan.autoRescan.test.tsx(25,14): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.autoRescan.test.tsx(26,24): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.autoRescan.test.tsx(26,29): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/views/Scan.autoRescan.test.tsx(26,39): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/views/Scan.autoRescan.test.tsx(26,45): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(32,12): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(33,28): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(33,33): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(33,43): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(33,49): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(215,14): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(216,30): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(216,35): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(216,45): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(216,51): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(419,71): error TS7006: Parameter '_key' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(419,77): error TS7006: Parameter '_expected' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(419,88): error TS7006: Parameter '_next' implicitly has an 'any' type.
+src/views/Scan.privateCheckpoint.test.tsx(419,95): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/views/Scan.test.tsx(35,54): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.test.tsx(35,130): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/views/Scan.test.tsx(35,135): error TS7006: Parameter 'expected' implicitly has an 'any' type.
+src/views/Scan.test.tsx(35,145): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/views/Scan.test.tsx(35,151): error TS7006: Parameter 'guard' implicitly has an 'any' type.
+src/views/SellerPairing.tsx(99,66): error TS2345: Argument of type '`sellerKeys.pairing.compare.${any}`' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(282,81): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Readonly<Record<"system" | "light" | "dark", "settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | ... 2513 more ... | "btc.scan.unknownRefresh">>'.
+src/views/Settings.tsx(288,121): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(291,174): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/views/Settings.tsx(333,100): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(350,20): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(375,38): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(398,22): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(399,50): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(405,22): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(406,46): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(411,22): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+src/views/Settings.tsx(434,110): error TS2345: Argument of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2513 more ... | undefined' is not assignable to parameter of type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+  Type 'undefined' is not assignable to type '"settings.title" | "settings.notice.plaintext" | "settings.rpc.legend" | "settings.rpc.hint" | "settings.rpc.secretWarning" | "settings.rpc.secretStored" | "settings.rpc.sessionOnly" | ... 2512 more ... | "btc.scan.unknownRefresh"'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-qualification/apps/web
+npm error workspace @ghostpay/web@1.0.0-beta.1
+npm error location /workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-qualification/apps/web
+npm error command failed
+npm error command sh -c tsc -p tsconfig.json --noEmit

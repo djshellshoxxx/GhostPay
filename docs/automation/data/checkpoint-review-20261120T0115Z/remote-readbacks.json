@@ -1,0 +1,52 @@
+{
+  "reviewer": "/root/final_independent_review",
+  "checkpoint": {
+    "sha": "1aa3a5edb6f576cff59745eb2958dc496a15822f",
+    "tree": "f1b65bd76db8ddc1f41fb83776a4c8361ea8a5e2",
+    "parents": [
+      "8289e950de1e5128ddbe6851ae85bf6ff7511fda"
+    ]
+  },
+  "candidates": [
+    {
+      "kind": "PR",
+      "pr": 297,
+      "head": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "base": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "kind": "PR",
+      "pr": 298,
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "state": "open",
+      "draft": true,
+      "merged": false
+    },
+    {
+      "kind": "commit",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "tree": {
+        "sha": "352654f24314d8d396ec583397f6ff568d6f8217",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/352654f24314d8d396ec583397f6ff568d6f8217"
+      },
+      "parents": [
+        "db2ce2577b4eebc4b95f6e2ad8b8d077e58a40d1"
+      ]
+    },
+    {
+      "kind": "commit",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "tree": {
+        "sha": "94f726c2dc3656b6ec07a292c350350da1441cfe",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/94f726c2dc3656b6ec07a292c350350da1441cfe"
+      },
+      "parents": [
+        "a221a9d5199bde11e45e1bc822e7305f4fe01bb9"
+      ]
+    }
+  ]
+}

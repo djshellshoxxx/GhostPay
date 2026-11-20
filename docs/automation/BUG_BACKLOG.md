@@ -1,5 +1,22 @@
 # Bug backlog
 
+## Current cycle — 20261120T0115Z
+
+| Item | Evidence | Owner/disposition |
+|---|---|---|
+| GP-RPC-RECEIPT-HASH | #278 417f7c71 wallet.ts478–505; author and independent19 RED /180 GREEN | Runtime repair #298 acbf39ee; hosted qualification pending |
+| CLIPBOARD-TEST-293 | Repository Vitest23 pass / 1 fail; original typed ESLint18 errors | Test-only #297 04910f65; author/independent24 pass and lint clean |
+| CLIPBOARD-PENDING-SAME-VALUE | Controlled deferred write plus older cleanup clears same value | Conditional concern; existing #293 owner coordination before Settings activation; browser reachability unverified |
+| PREFLIGHT-OBSERVATION-293 | Current #293 full browser job135999786060: expected 9/received 15,128 pass / 1 fail / 2 skip | Existing #278417 repair; parent owner must reconcile, not duplicate implementation |
+| PARENT-LINT-293 | Hosted job135999786222 confirms exactly 18 local lint diagnostics | Already addressed by dependent #297; exact final-head hosted result pending |
+| QR-STACK-CONFLICT | #290 and #294 remain nonmergeable into current target | Existing owners retain reconciliation; #295 remains dependent |
+
+Original failed hosted logs are preserved under data/cycle-20261120T0115Z/ci-parent293/.
+Missing workspace outputs initially blocked clipboard TypeScript and receipt test collection; completed
+source-matched library outputs resolved both. Those original failures remain in the author packets,
+are not classified as source regressions, and are not counted as passing runs. No retry loop or gate change.
+
+
 ## Current cycle — 20261120T0035Z
 
 | Item | Source and concrete evidence | Owner/disposition |

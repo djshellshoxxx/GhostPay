@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /workspace/scratch/a13b43b0f3c9/GhostPay-clipboard-qualification/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  17:22:10
+   Duration  1.79s (environment 37%, tests 27%, transform 22%, import 12%, worker 1%)
+
+    Isolate  2 workers spawned · ~407ms startup each (spawn + environment, per file)
+             at least ~407ms faster with isolate: false — reuses workers across files instead of one per file
+

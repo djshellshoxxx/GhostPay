@@ -1,0 +1,96 @@
+{
+  "reviewer": "/root/final_checkpoint_review",
+  "reviewed_source": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+  "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "reviewed_at": "2026-11-20T01:33:27.478126+00:00",
+  "verdict": "No blocking scoped finding. Independent source review and focused regression execution passed; not integration/release approval.",
+  "changed_blobs": {
+    "apps/web/e2e/flowMocks.ts": "a9081deadbfac984619299d39de77c0fba3370cc",
+    "apps/web/src/lib/payExec.acceptance.test.ts": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+    "apps/web/src/lib/payExec.test.ts": "4deb9d710209a5a83a8ae9d5dcecf3aac1058748",
+    "apps/web/src/lib/wallet.test.ts": "d76eae2520f89b14208485a79f8e686117382a55",
+    "apps/web/src/lib/wallet.ts": "3320a5650eab89763e16649e05ba8b4fa2ddeab9",
+    "apps/web/src/views/Pay.test.tsx": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+    "docs/ai/ACTIVE_WORK.md": "3c9a4007d58d561c76e1fe3e73f86f139d9a847b"
+  },
+  "production_delta": "Exactly five added lines in apps/web/src/lib/wallet.ts; one captured primitive 32-byte hexadecimal transactionHash is compared case-insensitively to the requested hash before receipt status is consumed.",
+  "compatibility": "Seven preexisting consumer/browser receipt fixture sites plus the wallet receipt fixture gain transactionHash only; all existing assertions retained.",
+  "source_assessment": [
+    "Malformed or missing transactionHash receives the existing safe UserFacingError receipt-shape diagnostic.",
+    "Different valid transactionHash receives SubmissionMismatchError with field hash before success/revert classification.",
+    "Primitive-only guard prevents coercion hooks; receipt hash is read once.",
+    "Pending null handling, sleep cadence, optional destination checks, status/block parsing and request error handling remain unchanged.",
+    "Consumer regression preserves the submitted hash and submitted journal entry, reports verification-incomplete and blocks a second send.",
+    "Payment inclusion is not confirmation depth/finality; no policy change made."
+  ],
+  "execution": {
+    "node": "v24.22.3",
+    "vitest": "vitest/5.1.0 linux-x64 node-v24.22.3",
+    "fixed": {
+      "reviewer": "/root/final_checkpoint_review",
+      "source_sha": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+      "head_after": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/lib/wallet.test.ts",
+        "src/lib/payExec.test.ts",
+        "src/lib/payExec.acceptance.test.ts",
+        "src/views/Pay.test.tsx",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-receipt-review/apps/web",
+      "exit_code": 0,
+      "duration_seconds": 46.95,
+      "observed_at": "2026-11-20T01:32:24.164864+00:00",
+      "scope": "Four original repository Vitest files; focused selection, not full application coverage."
+    },
+    "fixed_results": {
+      "files_passed": 4,
+      "tests_passed": 180,
+      "tests_failed": 0,
+      "tests_skipped": 0
+    },
+    "baseline": {
+      "reviewer": "/root/final_checkpoint_review",
+      "source_sha": "be7fb39bc7bb6e66b54f89bdd3628d308fb9c676",
+      "baseline_wallet_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "src/lib/wallet.test.ts",
+        "src/lib/payExec.test.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/a13b43b0f3c9/GhostPay-receipt-review/apps/web",
+      "exit_code": 1,
+      "duration_seconds": 3.43,
+      "observed_at": "2026-11-20T01:32:45.256829+00:00",
+      "scope": "Committed test-first source with unchanged baseline runtime; expected regression failure."
+    },
+    "baseline_results": {
+      "files_failed": 2,
+      "tests_failed": 19,
+      "tests_passed": 93,
+      "tests_skipped": 0
+    },
+    "baseline_interpretation": "18 receipt-boundary regressions plus one payment-consumer regression fail against original runtime; controls continue to pass.",
+    "diff_check_exit_code": 0,
+    "restored_reviewer_head": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+    "reviewer_worktree_clean": true,
+    "author_head_after_review": "d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67",
+    "dependency_provenance": "Separate detached worktree; unchanged lockfile, installed non-workspace dependencies reused through symlinks, workspace links point to reviewer checkout; 65 compiled package dist trees copied from author-qualified prerequisites. No independent dependency rebuild claimed.",
+    "lockfile_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517"
+  },
+  "limitations": [
+    "Focused Vitest selection, not full web coverage or full workspace qualification.",
+    "No new browser acceptance, full application build, TypeScript/lint or security-scanner execution by this reviewer; author/root results must be attributed separately.",
+    "No confirmation-depth/reorg or consistently-lying-provider protection added.",
+    "No source/author-branch edits, remote writes, deployment, release, transactions or integration-lock operation by this reviewer."
+  ],
+  "primary_sources": [
+    "https://ethereum.github.io/execution-apis/api/methods/eth_getTransactionReceipt/",
+    "https://ethereum.org/developers/docs/apis/json-rpc/#eth_gettransactionreceipt",
+    "https://eips.ethereum.org/EIPS/eip-1474#eth_gettransactionreceipt"
+  ]
+}

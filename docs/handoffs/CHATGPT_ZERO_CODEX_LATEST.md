@@ -1,5 +1,171 @@
 # ChatGPT zero-Codex continuation — GhostPay
 
+## Latest bounded native cycle — 20261120T0115Z (2026-11-20 UTC)
+
+### Final CI update — read before older status snapshots
+
+The 01:44:38 UTC source/CI refresh found a new failed CodeQL check on current #278
+417f7c71daf8645e1432f2ec8f070110879b80bd: check 136021124871 reports two High security
+alerts and incomplete Actions/Python configuration coverage. JavaScript/TypeScript analysis/upload
+succeeded; this is a security-policy/check failure, not infrastructure. Current alert identities are
+not independently available from the blocked individual check/annotation connector endpoints. Existing
+#292 owns related fixture/security work; do not assume equivalence or false positives without confirming
+the current findings. This mandatory blocker supersedes earlier pending CodeQL statements below.
+
+Main c977b5d6, #297 04910f65, #298 acbf39ee and released lock c8517beb remain unchanged.
+Final source/CI details: [final-state-20261120T0115Z.json](../automation/data/final-state-20261120T0115Z.json).
+The independent documentation freeze was local 4cdb6a06/published 1aa3a5ed, tree f1b65bd7; its
+[review receipt](../automation/data/checkpoint-review-20261120T0115Z/REVIEW.md) is preserved.
+This final CI update and reviewer/publication metadata are additive follow-ups after that reviewed
+freeze, not an assertion of independent review of future contents. Product source remains unchanged.
+
+
+This continuation resumes completed #296 and the latest completed external automation, superseding
+older status snapshots while preserving their full historical text. Main remains
+c977b5d6723f6822c3b5d86cd6b231712c53c395. Integration #278 remains
+417f7c71daf8645e1432f2ec8f070110879b80bd. No application branch was merged or deployed.
+
+Bounded independent triage preserved a [public gate summary](../automation/data/final-codeql-20261120T0115Z/README.md). The prior
+fixture source blobs are unchanged between d74 and417, and #292 contains its recorded clarification;
+current alert identities still cannot be correlated independently. Detailed unresolved alert evidence
+remains in scratch; only the nonsensitive blocker summary is published.
+
+### Actual engineering and durable source pins
+
+| Item | Receipt correlation repair | Clipboard repository qualification |
+|---|---|---|
+| Draft PR | [#298](https://github.com/djshellshoxxx/GhostPay/pull/298) | [#297](https://github.com/djshellshoxxx/GhostPay/pull/297) |
+| Exact base | 417f7c71daf8645e1432f2ec8f070110879b80bd (#278) | 6c648770f5647ca7993cc108ef9e5ede9b46b4c9 (#293) |
+| Isolated branch | automation/20261120T0115Z/worker/receipt-hash-validation | automation/20261120T0115Z/coordinator/clipboard-qualification |
+| Published ownership claim | e7d5ef8722f922f50cd9256150e7535c40feb657 | 97ed96ea99f77c0e2cb86eb472ec25ba7635fe79 |
+| Published regression checkpoint | d9e385654d7da49409991d1286a438462a5842e4 | Existing committed #293 tests reproduced before repair |
+| Published correction source | a221a9d5199bde11e45e1bc822e7305f4fe01bb9 | db2ce2577b4eebc4b95f6e2ad8b8d077e58a40d1 |
+| Executed equivalent local source | d08b8ec3ea3cb01c40e1de2ab4998a1c6f546c67 | 0561fc247350a5957a682bbab94a6eb0ccd4b5c8 |
+| Final published head | acbf39ee21ad35e9d14df958fa16fbcc2e230cae | 04910f65dc0268e41519c4b1a44e83264272f0bf |
+| Final verified Git tree | 94f726c2dc3656b6ec07a292c350350da1441cfe | 352654f24314d8d396ec583397f6ff568d6f8217 |
+| Independent reviewer | /root/final_checkpoint_review | /root/final_independent_review |
+
+GitHub connector commit metadata differs from local commits; every published tree was compared with
+its exact local tree. Final handoff commits contain documentation only. Publication mapping is preserved
+in [publication-map.json](../automation/data/cycle-20261120T0115Z/publication-map.json).
+
+**Receipt defect:** at wallet.ts:478–505 on the base, pollReceipt never compared the returned
+transactionHash. An unrelated valid receipt could assign inclusion/reversion to the submitted hash.
+Five runtime lines now reject missing, malformed or nonprimitive hashes with the existing safe
+UserFacingError, and reject a different valid hash with SubmissionMismatchError('hash'). Matching case
+variants, null polling and destination/status/block checks remain compatible. The consumer regression
+preserves the broadcast hash and journal and blocks another send after verification fails.
+
+Changed code/test paths: apps/web/src/lib/wallet.ts, wallet.test.ts, payExec.test.ts,
+payExec.acceptance.test.ts, apps/web/src/views/Pay.test.tsx and apps/web/e2e/flowMocks.ts.
+The wallet unit fixture and seven consumer/browser fixture sites gain the queried hash, retaining
+existing assertions. Source, ownership and full RED transcripts:
+[RECEIPT_HASH_VALIDATION_20261120.md](RECEIPT_HASH_VALIDATION_20261120.md).
+
+**Clipboard qualification:** #293's existing tests had one incorrect expectation about the Vitest
+fake-timer driver's return value and 18 typed ESLint diagnostics. The test-only repair awaits timer
+execution, uses correctly typed Promise-returning mocks, and strengthens the denied-clear write count.
+Changed tests: apps/web/src/lib/clipboardPrivacy.test.ts and apps/web/src/components/Common.test.tsx.
+Runtime Common.tsx and clipboardPrivacy.ts, dependencies, configs and gates are unchanged.
+See [CLIPBOARD_REPOSITORY_QUALIFICATION_20261120.md](CLIPBOARD_REPOSITORY_QUALIFICATION_20261120.md).
+
+### Tests actually executed
+
+Native Linux execution, Node 24.22.3 / npm 11.19.1, repository Vitest 5.1.0. Original configs and gates
+were retained. Counts overlap and must not be summed into a product-wide coverage total.
+
+| Source/scope | Actual result | Limit |
+|---|---|---|
+| Clipboard original #293, independent repository Vitest | 23 passed / 1 failed; exit 1 | Demonstrates timer assertion defect |
+| Clipboard original typed lint | 18 errors | No suppression introduced |
+| Clipboard fixed source, author and independent reviewer separately | Each 24/24 passed, zero skips; scoped typed lint clean | Two committed suites, not full web coverage |
+| Clipboard workspace prerequisites | All65 library builds passed | Original build:libs, no new product work outside Pages |
+| Clipboard full web TypeScript | Passed after build prerequisites | Initial missing-declaration failure preserved |
+| Receipt committed test-first be7fb39b, author and independent reviewer separately | Each 19 failed / 93 passed | 18 boundary regressions plus 1 actual consumer regression |
+| Receipt fixed d08, author and independent reviewer separately | Each 180/180 passed, zero skips, 4 files | Wallet, payExec, payment acceptance and Pay jsdom UI suites |
+| Receipt full web TypeScript and scoped typed lint | Passed | Author execution; reviewer did not duplicate these |
+| Receipt prerequisite output preparation | 64 exact package-tree-matched builds reused; differing merchant-ledger and invoice-schema prerequisite rebuilt | Initial incomplete collection failure preserved, not counted as RED |
+| Receipt existing Pages development build and separate reverify | Passed; 16/16 file checksums, expected commit d08, release=false, paymentsEnabledChainIds=[] | No deployment or enabled-payment/release evidence |
+
+No local Playwright/browser run, full web coverage, new Mythril/CodeQL scan, manual wallet/device test,
+release signing or real transaction was performed by this cycle. Hosted results remain distinct.
+Raw author/reviewer commands, exit codes and original failures are in the
+[cycle evidence directory](../automation/data/cycle-20261120T0115Z/README.md).
+
+### Audit, privacy requirements and documentation
+
+The receipt defect is confirmed, low security severity/high confidence, with scoped independent
+clearance. Faulty or misrouted RPC data can mislabel local status; no fund-loss/signing-bypass path was
+demonstrated. A matching hash cannot authenticate a consistently lying RPC or establish finality.
+
+The separate clipboard reviewer modeled a conditional pending same-value copy interleaving: an older
+cleanup can clear a new identical clipboard value before its still-pending write resolves and records
+a generation. The same-value probe reproduces this; a different-value control passes. Real-browser
+reachability is unverified, so it is not labeled a proven browser exploit. The feature defaults off and
+no production caller supplies autoClearAfterMs. Coordinate with #293 before Settings activation.
+
+Owner issue [#286](https://github.com/djshellshoxxx/GhostPay/issues/286) makes global masking,
+optional configurable clipboard cleanup, account-change/lock privacy, private history, and neutral
+exports/notifications requirements for 1.0 beta. These remain incomplete. Existing authority guards,
+encrypted-ledger reveal and fixed export filenames are partial safeguards. The earlier nine-family
+assessment at a1386906 is scoped historical evidence, not completion of these later requirements.
+Settings/persistence/i18n and production clipboard call sites were deferred to prioritize the confirmed
+receipt defect and reproducible qualification failures; no feature is falsely marked complete.
+
+Wiki Home and Sidebar preserve prominent User Guide and Developer Guide links; the independent reviewer
+checked 18 relative links successfully. Active documentation owners #259/#273 retain their work.
+Home's dated November 15–16 status prose remains historical. No live Wiki publication was attempted.
+
+### Exact-head CI, consolidation and ownership
+
+Fresh metadata and all-trigger workflow/check/status results are preserved in
+[exact-head-state.json](../automation/data/cycle-20261120T0115Z/exact-head-state.json).
+The final PR bodies record any later publication-time CI observation.
+
+- Original #289 remains at 856b2d60 with the known lint failure already repaired in #278. The prior
+  cycle's actual repository729/729 coverage remains historical evidence; no decoder duplication.
+- Original #285 remains at 89942105; five PR workflows and dynamic CodeQL are successful on that head.
+  The eleven requested older fixes remain accounted for in #278 by prior ancestry/blob/functional audit.
+- #278 417f7c71 has successful Pages (including hosted browser), Beta acceptance and Integration;
+  full CI, dynamic CodeQL and Mythril remain pending. Echidna succeeded. No blanket security clearance.
+- #293 6c648770 hosted lint confirms the same 18 repaired errors. Full browser job135999786060 has
+ 128 passed /1 failed /2 skipped: the known preflight expected 9/received 15 failure. Its existing repair
+  is in #278 417f7c71; the clipboard parent owner must reconcile. No duplicate browser fix was created.
+- #297 and #298 are independently reviewed drafts; complete final-head hosted qualification is pending.
+- #292 advanced to 936d054e under its existing Pages gate owner. #290 ec546311 and #294 172695ef
+  retain target conflicts; #295 4493793a remains a distinct dependent regression draft. No owner overwrite.
+- This documentation branch continues #296 a4764887, preserving the canonical #261 ledgers and complete
+  old handoff/history. Its underlying older application tree is not a proposed replacement integration.
+
+Integration lock ref remains c8517bebd1d5218f9102ca8d1911013cf10a27fc, released generation 5
+by its recorded owner at 01:00:43 UTC. This cycle never acquired, mutated or released it. Effective main
+protection API still returns 403. Native independent review does not replace required GitHub approvals.
+Observed Pages deployment requires explicit main workflow_dispatch with deploy=true; release uses version
+tags. No merge, branch deletion, force push, workflow/config change, deployment, release or real funds.
+
+Actual maximum concurrency was four native ChatGPT workers including root. The receipt author and its
+reviewer were separate; the coordinator authored the clipboard test correction and a separate worker
+reviewed it. Existing worker identities were resumed, not presented as additional simultaneous agents.
+No Codex CLI/cloud job, paid API/external agent, automation creation/retry or schedule mutation occurred.
+The latest existing external run was read only: 00:41:50–00:52:09 UTC, delivering partial #293.
+
+### Next invocation
+
+1. Refresh exact main/target/source SHAs and CI for #298, #297 and the dependent #293/#278 stack;
+   inspect any final failures without unbounded retries. Keep all evidence pinned to the tested tree.
+2. Coordinate parent #293 reconciliation with #278's already-owned preflight repair; preserve #297's
+   minimal test correction. Resolve #290/#294 conflicts through their existing owners and retain #295.
+3. Characterize/repair the pending same-value clipboard lifetime, then finish #286 Settings, persistence,
+   translation and production activation with browser acceptance. Preserve the other four privacy requirements.
+4. Reconcile the existing documentation chain and unique older candidate evidence; keep both Wiki guide
+   sections and source-backed limitations. No duplicate ledger or application implementation.
+5. Only consider integration after readable effective requirements, complete required exact-head CI,
+   independent review, no-deployment validation and documented atomic integration-lock ownership.
+
+The final checkpoint PR supplies its immutable final SHA/tree and readback evidence after publication.
+Older cycle sections below remain unmodified.
+
+
 ## Latest bounded native cycle — 20261120T0035Z (2026-11-20 UTC)
 
 This section supersedes the status portions of older rotations below while preserving their complete

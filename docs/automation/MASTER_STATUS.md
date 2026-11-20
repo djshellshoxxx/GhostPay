@@ -1,5 +1,48 @@
 # GhostPay automation master status
 
+## Current bounded cycle — 20261120T0115Z
+
+### Final CI update after the reviewed documentation freeze
+
+At the 01:44:38 UTC refresh, the current #278 417f7c71 CodeQL check 136021124871 changed from
+pending to **failure**: two High security alerts, with Actions/Python analysis configurations not yet
+available for this head. The JavaScript/TypeScript analyzer job succeeded; overall language coverage
+and other required checks remain incomplete. This is a security-policy/check failure, not infrastructure.
+Current alert identities require independent confirmation; existing #292 owns related security-fixture
+work. No false-positive disposition or waiver is asserted. This update supersedes earlier pending
+CodeQL statements below. See [final state](data/final-state-20261120T0115Z.json) and the
+[failed check](https://github.com/djshellshoxxx/GhostPay/runs/136021124871).
+
+
+This continuation starts from completed checkpoint #296 a47648872e648fe7848a17080a5ffa1473e98e8b.
+Older status sections below remain historical. Main is still c977b5d6723f6822c3b5d86cd6b231712c53c395;
+current integration #278 is 417f7c71daf8645e1432f2ec8f070110879b80bd.
+
+**Actual engineering:** [#298](https://github.com/djshellshoxxx/GhostPay/pull/298), final head
+acbf39ee21ad35e9d14df958fa16fbcc2e230cae, binds each RPC receipt to the submitted transaction
+hash before accepting inclusion/reversion. The five-line runtime repair has committed regressions,
+19 demonstrated baseline failures, and 180/180 passing repository tests under both author and separate
+reviewer. Full web TypeScript, scoped typed lint and a payments-disabled development Pages build pass.
+
+[#297](https://github.com/djshellshoxxx/GhostPay/pull/297), head
+04910f65dc0268e41519c4b1a44e83264272f0bf, repairs #293's actual repository test qualification:
+one incorrect timer-return assertion and 18 typed-lint diagnostics. Both author and independent reviewer
+pass 24/24 tests and scoped lint; all 65 library builds and full web TypeScript pass. Clipboard runtime
+is byte-identical to #293. Settings integration and the five owner-required privacy features in #286
+remain incomplete; a modeled pending same-value copy interleaving is recorded as conditional.
+
+Hosted CI remains pending for both new drafts. Refreshed #293 has the reproduced lint failure and
+an older preflight browser failure already repaired by the #278 owner; its 128-pass/1-fail/2-skip
+browser result is not clearance. #278 Pages, Beta acceptance and Integration workflows pass at 417f7c71,
+while its full CI, dynamic CodeQL and Mythril are pending. No old result qualifies a newer source.
+
+See [cycle evidence and commands](data/cycle-20261120T0115Z/README.md),
+[exact-head snapshot](data/cycle-20261120T0115Z/exact-head-state.json), and the
+[latest source-pinned handoff](../handoffs/CHATGPT_ZERO_CODEX_LATEST.md).
+Lock generation 5 remains released at c8517beb; this cycle never owned it. Effective main protection
+read fails 403. No merge, deployment, release, real-funds operation, schedule change or gate weakening.
+
+
 ## Current bounded cycle — 20261120T0035Z
 
 Main remains c977b5d6723f6822c3b5d86cd6b231712c53c395. This checkpoint extends the
