@@ -2176,3 +2176,8 @@ Owned paths: apps/web/src/lib/wallet.ts, apps/web/src/lib/wallet.test.ts, apps/w
 Scope: reproduce the three established JSON-array hash/input/fallback-data acceptance cases, reject nonprimitive transaction fields before string normalization, preserve valid string normalization and input/data fallback semantics, and retain the original submitted hash/journal with no resend after post-broadcast verification fails.
 Acceptance: permanent original-config RED regressions, minimal production repair, GREEN affected suites, coercion-hook and compatibility controls, scoped typed lint if available, independent source/test review and source-pinned handoff. Root/integration QA owns the coordinated broad build/typecheck window.
 Boundaries: no remote or shared-branch mutation, deployment, release, real funds, contracts, fees, dependency/configuration/gate changes, unrelated cleanup or edits to actively advancing original privacy lanes.
+
+
+## Coordinator continuation of transaction-field repair
+
+The generation3 worker saved regression commit 795a3892ded8a8d20aea67b2b88d69620a4afdf5 before its turn ended. The coordinator continues this same scoped branch and owned files; no new branch or alternate security task is started. The coordinator executed the original wallet/payment regression baseline on that exact unchanged runtime, then will add only primitive-string checks before the existing normalization. Independent final_security_gen4 retains review ownership. Full combined checks remain with integration_qa_gen3.

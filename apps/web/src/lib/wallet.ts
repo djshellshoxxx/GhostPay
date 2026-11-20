@@ -425,11 +425,16 @@ function parseSeenTx(v: unknown): SeenTx | undefined {
   if (typeof v !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   const o = v as Record<string, unknown>;
   try {
+    const hash = o['hash'];
+    const input = o['input'] ?? o['data'];
+    if (typeof hash !== 'string' || typeof input !== 'string') {
+      throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
+    }
     return {
-      hash: String(o['hash']).toLowerCase() as Hex,
+      hash: hash.toLowerCase() as Hex,
       from: toAccount(o['from']),
       to: o['to'] === null ? null : toAccount(o['to']),
-      input: String(o['input'] ?? o['data']).toLowerCase() as Hex,
+      input: input.toLowerCase() as Hex,
       value: parseQuantity(o['value']),
       chainId: o['chainId'] === undefined ? undefined : parseQuantity(o['chainId']),
     };
