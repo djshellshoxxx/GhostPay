@@ -14,6 +14,8 @@ A subsequent read-only remote check confirmed the new branch at `9c17c871ea71f23
 
 The follow-up documentation adds [CONTINUATION_PROMPT.md](CONTINUATION_PROMPT.md), requested by the user, and updates publication bookkeeping. That prompt prepares a later engineering session; creating it does not mean feature implementation or consolidation was performed during this publication task. The audit's source cutoff, findings and coverage remain unchanged. The original local audit history remains preserved.
 
+The prompt/bookkeeping follow-up was published at `9db8f556fdd38189ab60d6f6757916b637c246a6`, with tree `de3633dcf7cef59aae85e87f6442da68933bc71d`, matching local commit `281e223e013e02c6098b08a986e8f6f591de7213`. Public Git fetch verified the complete tree and all 59 documentation paths against the product baseline. During that final verification, main was observed at a newer head, `aa3df1cb37274fae73af0ca957183c15c51b62d3` (observed by `2026-11-20T16:11:33Z`). This task wrote only the dedicated audit branch; it did not update main. The new main head is outside the completed audit cutoff and was not source-reviewed in this publication task. Future engineering must refresh and reconcile it as directed in the continuation prompt.
+
 ## Verified deliverable
 
 - Repository: `djshellshoxxx/GhostPay`.
