@@ -1,3 +1,19 @@
+# F03 payment request interchange — 2026-11-19
+
+Coordinator: ChatGPT `/root`; workers: `request_codec`, `request_browser`, `request_qa`.
+Branch: `future/f03-private-payment-links`.
+Base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (fresh origin/main clone).
+Authorization: the owner explicitly requested selection and implementation of one future feature,
+continuation of an existing branch if present, and fresh independent audits after completion.
+Git branch inventory and connector search found no existing F03 branch at discovery.
+Owned paths: new invoice-schema request-file module/tests/exports; new browser request-file
+components/tests; minimal CreateInvoice/Pay integration; additive English catalog entries;
+F03 specification, user guide, audit and handoff documents. No dependency, contract or fee changes.
+Acceptance: the same signed envelope round-trips unchanged through URL, QR and bounded JSON file;
+local explicit import preserves signature, signer, chain, expiry and payment review; stale reads
+cannot replace current intent; affected-package gates, browser checks and fresh audits pass.
+Existing invoice, QR and privacy work is preserved. No main merge or deployment is authorized.
+
 # Focused hosting main reconciliation — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
