@@ -1,0 +1,120 @@
+{
+  "schema": "ghostpay-dependency-review-receipt/1",
+  "captured_at_utc": "2026-11-20T00:15:47.793138+00:00",
+  "worker": "dependency_review_gen5",
+  "subreviewer": "dependency_review_gen5/elliptic_advisory",
+  "base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "source_inputs": [
+    {
+      "path": "package.json",
+      "sha256": "45148392cfa33376c21adab08c11ae342d9b6b0d4074aa3690812446e81a6c76",
+      "git_blob": "3cb706b2a695b959d6d261323174de61c2439e34"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36"
+    },
+    {
+      "path": "packages/confidential-contracts/package.json",
+      "sha256": "cdf6574799fee59f16483167efaf752aea2e6a209378ef7cfbf646c9d605b540",
+      "git_blob": "6224a2b40108fa055d29071ccab2c9553df8be9e"
+    },
+    {
+      "path": "packages/confidential-contracts/hardhat.config.ts",
+      "sha256": "54176daed08c9df73d3b7d3315739d8c38ba20b1412fbf70b8696ef82573aa36",
+      "git_blob": "b9993cb918fbff541c321c10d79987e36cee8767"
+    },
+    {
+      "path": "apps/web/package.json",
+      "sha256": "8dc92a2cb449e4ed9661c24a7265da5f912836ca0d82bf593ae643897f8f9ad9",
+      "git_blob": "dc383c41588864646c2bfa0083acc1d9d33e1f54"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+    }
+  ],
+  "installed_source_inputs": [
+    {
+      "path": "node_modules/@sentry/utils/esm/node.js",
+      "sha256": "475b9b5affb8664debc23f7a2257d582fc5b4988d1f2c82e8170792b508ddb5d"
+    },
+    {
+      "path": "node_modules/@ethersproject/signing-key/lib/index.js",
+      "sha256": "c6125296029a3c7b0a5fe6b26c3ee023fcc6d704014a0d842c7e772aa836984b"
+    },
+    {
+      "path": "node_modules/secp256k1/lib/index.js",
+      "sha256": "019a62e0da696e67f8e80033bbff54a754431b1c991d4517cd7cef7f0a1be190"
+    },
+    {
+      "path": "node_modules/secp256k1/lib/elliptic.js",
+      "sha256": "ac342a731c43be9a7526f8908a4e5683eee8f4f263c94e9109fe2bc8d8b08649"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/audit-full.json.gz",
+      "raw_sha256": "59061e7d09ab66efa0e41874ff885b8adb4c78d3d8b6102da0f21d9a3fcf640c",
+      "stored_sha256": "84d6e58fdd1af8810109f01f4f68cd7d787221e99c88555a9ee53575c3a8051d",
+      "raw_bytes": 9207
+    },
+    {
+      "path": "evidence/audit-production.json.gz",
+      "raw_sha256": "a2a9e0305caa842aa574277712005fc0600e350d218f5ae9e5d78e97256a4473",
+      "stored_sha256": "2e9d3f612e5e9a9685c7186527b409191af4a19fa2e82c020cc6ea811fe3192b",
+      "raw_bytes": 366
+    },
+    {
+      "path": "evidence/elliptic-explain.json.gz",
+      "raw_sha256": "23936aa52966090c41cdc2a13d322febe9df2ef657f59c2b4d28c72318d90d64",
+      "stored_sha256": "9fdbbfe741d941f1b42e6a04ed10a86adaf227cc6b5b8d7ad1fd05fd3fb9be15",
+      "raw_bytes": 30877
+    },
+    {
+      "path": "evidence/cookie-explain.json.gz",
+      "raw_sha256": "3e18dc2f177f983f30db6b43e4a91bfb75b7844fdd8d56d963c71069cb981a96",
+      "stored_sha256": "9cbf17d9ace7c9cc5b8d3251128ef21a47b581ec50b77beaea62aa1382a2afae",
+      "raw_bytes": 15337
+    },
+    {
+      "path": "evidence/cookie-registry-metadata.json.gz",
+      "raw_sha256": "93a191983ad793f265cc10da2af857c230810181a075564343283a17fcddd560",
+      "stored_sha256": "05a08f1fed4ce239926fb5f82e3c5a0b52016196c976756110994c6692cdc9b9",
+      "raw_bytes": 5245
+    },
+    {
+      "path": "evidence/elliptic-registry-metadata.json.gz",
+      "raw_sha256": "466081580a3cea1bc57d91d03be47ccb58e47a1d0bfcdfec7a843de8f0a14006",
+      "stored_sha256": "21e5a45d3ec0eb37072bc95dcb004c904a2aa1467f9c7b02bea202f6d6e27dc1",
+      "raw_bytes": 6332
+    }
+  ],
+  "checks": {
+    "parent_audit_production_exit": 0,
+    "parent_audit_full_exit": 1,
+    "independent_npm_explain_exits": [
+      0,
+      0
+    ],
+    "independent_cookie_registry_exits": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "all_17_lock_entries_dev_only": true,
+    "unchanged_prior_advisory_fields": true,
+    "coordinator_lean_module_records_inspected": 374,
+    "affected_package_modules_found": 0
+  },
+  "limits": [
+    "Audit commands were executed by coordinator; reviewer independently parsed and source/graph-checked their preserved results.",
+    "Registry queries and npm explain were executed independently; advisory metadata is time-sensitive.",
+    "No dependency mutation, install, exploit PoC, migrated FHEVM suite, full dependency source audit or external approval.",
+    "Inspected coordinator-built lean module report; no independent rebuild or generic claim about every possible import path.",
+    "No advisory suppression or security gate change."
+  ]
+}
