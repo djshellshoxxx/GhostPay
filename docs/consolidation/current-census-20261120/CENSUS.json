@@ -3381,7 +3381,10 @@
     },
     {
       "name": "gh-pages",
-      "assessment": "comparison_pending"
+      "assessment": "unrelated_history",
+      "compare": {
+        "error": "No common ancestor with main (GitHub compare 404)"
+      }
     },
     {
       "name": "ghostpay-cloud-recovery-2026-10-26",
@@ -3415,35 +3418,83 @@
     },
     {
       "name": "ghostpay-sbom-repro-2026-10-27",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 14,
+        "behind_by": 1608,
+        "changed_files_returned": 180,
+        "application_paths_returned": 160
+      }
     },
     {
       "name": "gpt/ghostpay-beta-spec-20261109",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1045,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "gpt/ghostpay-cli-completion-20261109",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1047,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "gpt/ghostpay-product-completion-20261109",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1050,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "haiku/ghostpay-h01-inventory-20261111",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1595,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "haiku/l1-i18n-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 659,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "haiku/l2-pkg-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 682,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "haiku/l3-ledger-20261114",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 682,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "integration/consolidated-2026-10-21",
@@ -3631,35 +3682,83 @@
     },
     {
       "name": "main",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 0,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "maintenance/ghostpay-branch-audit-20261119",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 61,
+        "changed_files_returned": 17,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "nodata/doc-sweep-20261118",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 106,
+        "changed_files_returned": 3,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "nodata/eager-babbage-0w6sf6",
-      "assessment": "comparison_pending"
+      "assessment": "ancestry_redundant",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 1590,
+        "changed_files_returned": 0,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "nodata/jolly-rubin-u4zd45",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 106,
+        "changed_files_returned": 40,
+        "application_paths_returned": 31
+      }
     },
     {
       "name": "nodata/wizardly-allen-qwol6u",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 106,
+        "changed_files_returned": 3,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "nodata/wonderful-darwin-kd1h22",
-      "assessment": "comparison_pending"
+      "assessment": "candidate_requires_semantic_diff_review",
+      "compare": {
+        "ahead_by": 48,
+        "behind_by": 106,
+        "changed_files_returned": 84,
+        "application_paths_returned": 74
+      }
     },
     {
       "name": "nodata/zealous-hopper-lr0nxe",
-      "assessment": "comparison_pending"
+      "assessment": "docs_or_nonapplication_diff_only",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 106,
+        "changed_files_returned": 58,
+        "application_paths_returned": 0
+      }
     },
     {
       "name": "privacy/hardening-recommendations",
