@@ -5,6 +5,11 @@
   @page { margin: 16mm; }
   body * { visibility: hidden !important; }
   .bill-sheet, .bill-sheet * { visibility: visible !important; }
+  /* A receipt is a separate print target. The bill sheet exists in the DOM only for a bill print.
+     Override the global important hide rule for the receipt only when no bill is mounted.
+     This leaves wallet controls hidden and prevents printing both documents together. */
+  body:not(:has(.bill-sheet)) .receipt-print,
+  body:not(:has(.bill-sheet)) .receipt-print * { visibility: visible !important; }
   .bill-sheet {
     display: block;
     position: absolute;
