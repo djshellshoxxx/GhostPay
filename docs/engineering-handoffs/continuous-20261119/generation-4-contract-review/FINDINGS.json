@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "artifact_id": 14552010877,
+  "source_commit": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "counts": {
+    "total": 10,
+    "medium": 3,
+    "low": 7
+  },
+  "strict_runner_exit_code": 1,
+  "historical_missing_record": "The older R8 allowance call at PC1781 remains in source but is absent from this current analyzer report. No fix is inferred.",
+  "findings": [
+    {
+      "target": "GhostPaySweepRelayer",
+      "issue_index": 0,
+      "title": "Dependence on predictable environment variable",
+      "severity": "Low",
+      "swc-id": "116",
+      "address": 785,
+      "sourceMap": "4414:50",
+      "filename": "src/GhostPaySweepRelayer.sol",
+      "lineno": 83,
+      "code": "if (block.timestamp > s.deadline) revert Expired()",
+      "function": "sweep((address,address,address,address,uint256,uint256,uint256,uint256),bytes)",
+      "trace_sha256": "4a38c6b809b31da45c6534e56152533d573d014c1ac3750bc0aed5e40e5a8315",
+      "id": "C1",
+      "historical_correspondence": "EXP-1 / R1",
+      "technical_assessment": "intended_signed_expiry",
+      "residual_or_limit": "Block-time versus wall-clock acceptance and chain inclusion assumptions remain.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/GhostPaySweepRelayer.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "calldata": ""
+        },
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xbad66243000000000000000000000000000000000000000000000000000000000000010004000000000000000000000000000000000000008400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "source_sha256": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccount",
+      "issue_index": 0,
+      "title": "Dependence on predictable environment variable",
+      "severity": "Low",
+      "swc-id": "116",
+      "address": 1876,
+      "sourceMap": "8390:50",
+      "filename": "src/PolicyAccount.sol",
+      "lineno": 161,
+      "code": "if (block.timestamp > w.deadline) revert Expired()",
+      "function": "requestWithdraw((address,uint256,uint256,uint256,bytes32),(uint256,uint64,bytes32[]),bytes)",
+      "trace_sha256": "da761b95973be910c630af3a0fae2aa8e238ca2da43877766ea9e68079cc0550",
+      "id": "C2",
+      "historical_correspondence": "EXP-2 / R2",
+      "technical_assessment": "intended_signed_submission_expiry",
+      "residual_or_limit": "Submission bound does not replace execution timelock; chain time and cancellation inclusion assumptions remain.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccount.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "calldata": ""
+        },
+        {
+          "origin": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0x30d513070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000067"
+        }
+      ],
+      "normalized_source": "packages/contracts/src/PolicyAccount.sol",
+      "source_sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccount",
+      "issue_index": 1,
+      "title": "Dependence on predictable environment variable",
+      "severity": "Low",
+      "swc-id": "116",
+      "address": 5077,
+      "sourceMap": "12988:48",
+      "filename": "src/PolicyAccount.sol",
+      "lineno": 262,
+      "code": "if (block.timestamp > deadline) revert Expired()",
+      "function": "proposeDestination(address,uint256,uint256,bytes)",
+      "trace_sha256": "bed5ef8c8c81513f3563e719488eb398baf49fd75530bf187ec6125ef833de71",
+      "id": "C3",
+      "historical_correspondence": "EXP-3 / R3",
+      "technical_assessment": "intended_signed_proposal_expiry",
+      "residual_or_limit": "Proposal still needs twice the delay; producer time and inclusion assumptions remain.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccount.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "calldata": ""
+        },
+        {
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xa950552f0000000000000000000000000000000000000000000000000000000000000000000000000055000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006"
+        }
+      ],
+      "normalized_source": "packages/contracts/src/PolicyAccount.sol",
+      "source_sha256": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 0,
+      "title": "Exception State",
+      "severity": "Low",
+      "swc-id": "110",
+      "address": 30,
+      "sourceMap": "1864:8148:26:-:0",
+      "filename": null,
+      "lineno": null,
+      "code": null,
+      "function": "fallback",
+      "trace_sha256": "0938c43e0a9df4d78da507bcffe5e3e0a07336c80086293c2813ecb6482cde2e",
+      "id": "C4",
+      "historical_correspondence": "R4",
+      "technical_assessment": "infeasible_current_constructor_and_unreproduced_clone_exception",
+      "residual_or_limit": "No blanket inference about unexamined clone or implementation paths.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0x0000000000000000000000000000000000000000",
+            "flat_fee": "0",
+            "fee_recipient": "0x0204040108020401080101010101011001010101"
+          },
+          "calldata_sha256": "63458be52cbace551e4fe4a807281da435ed81d64012dff7af3ad7ad074b1149"
+        },
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 1,
+      "title": "State access after external call",
+      "severity": "Medium",
+      "swc-id": "107",
+      "address": 999,
+      "sourceMap": "6237:81:26::1",
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 117,
+      "code": "PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "trace_sha256": "44560861297a23b9aa237f7913860b8bc5e623bcecd86d12bb6db2d61a21c385",
+      "id": "C5",
+      "historical_correspondence": "R5",
+      "technical_assessment": "guarded_call_order_no_exploit_demonstrated",
+      "residual_or_limit": "Fixed token and authenticated implementation selection remain trust inputs.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flat_fee": "42466053570842937252319430899433128741022514264199356410331660828949766586335",
+            "fee_recipient": "0x0101010202010101080101040101010101010201"
+          },
+          "calldata_sha256": "e97e9649ceb941af9ac631f1660f090ae51294798545df80d215e19d27a87c80"
+        },
+        {
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/src/PolicyAccountFactory.sol",
+      "source_sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 2,
+      "title": "State access after external call",
+      "severity": "Low",
+      "swc-id": "107",
+      "address": 1170,
+      "sourceMap": "3972:62",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "lineno": 99,
+      "code": "_reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "trace_sha256": "fa61c1930bcc45c5c86cfa6b1b118df05c86debcd1d6b8503d48b4c82a03a392",
+      "id": "C6",
+      "historical_correspondence": "R6",
+      "technical_assessment": "guard_release_instruction",
+      "residual_or_limit": "Optimizer source map points at ENTERED; native bytecode writes NOT_ENTERED.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0x0000000000000000000000000000000000000000",
+            "flat_fee": "0",
+            "fee_recipient": "0x4004084001010202100402028002808001020101"
+          },
+          "calldata_sha256": "67f0613a715caf2385b976c0aa955c295a55c69a0f4077990a306b021596bd56"
+        },
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol",
+      "source_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 3,
+      "title": "Multiple Calls in a Single Transaction",
+      "severity": "Low",
+      "swc-id": "113",
+      "address": 1668,
+      "sourceMap": "7118:30:26",
+      "filename": "src/PolicyAccountFactory.sol",
+      "lineno": 131,
+      "code": "token.balanceOf(FEE_RECIPIENT)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "trace_sha256": "9f8592f4ae7795affe9026e1f5bbddab163618bfba6acc75daa016940ed6781d",
+      "id": "C7",
+      "historical_correspondence": "R7",
+      "technical_assessment": "concrete_fee_token_liveness_dependency",
+      "residual_or_limit": "Permanently failing views can prevent deployment at an already funded counterfactual address.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0x0801010101010402010120010101010101400101",
+            "flat_fee": "42466053570842937233488221453789411236373699277260273224739694614160898703095",
+            "fee_recipient": "0x0201080120020401010101010210080101014040"
+          },
+          "calldata_sha256": "e0e325d43eb447fca06e7da6761544a22bd8748fede149e0ed769a7f3c9d9c92"
+        },
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/src/PolicyAccountFactory.sol",
+      "source_sha256": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 4,
+      "title": "State access after external call",
+      "severity": "Medium",
+      "swc-id": "107",
+      "address": 2887,
+      "sourceMap": "5629:32",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "lineno": 104,
+      "code": "create2(value, 0x09, 0x37, salt)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "trace_sha256": "44560861297a23b9aa237f7913860b8bc5e623bcecd86d12bb6db2d61a21c385",
+      "id": "C8",
+      "historical_correspondence": "R9",
+      "technical_assessment": "guarded_create2_after_external_call",
+      "residual_or_limit": "No successful reentry, policy substitution or squatting demonstrated; immutable deployment inputs remain trusted.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flat_fee": "42466053570842937252319430899433128741022514264199356410331660828949766586335",
+            "fee_recipient": "0x0101010202010101080101040101010101010201"
+          },
+          "calldata_sha256": "e97e9649ceb941af9ac631f1660f090ae51294798545df80d215e19d27a87c80"
+        },
+        {
+          "origin": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol",
+      "source_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 5,
+      "title": "External Call To User-Supplied Address",
+      "severity": "Low",
+      "swc-id": "107",
+      "address": 2978,
+      "sourceMap": "10660:45",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lineno": 227,
+      "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "trace_sha256": "ab2071b24d3cf2113d3000e813c0cae7e09c253c5451110a9dc8f4c7223b484b",
+      "id": "C9",
+      "historical_correspondence": "R10",
+      "technical_assessment": "immutable_call_target_not_per_call_input",
+      "residual_or_limit": "A malicious selected token can deny service or trigger permitted waiver; current trace constructor infeasible.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "flat_fee": "42466053577477610007946285914103139962104623768856854182631556546998942265327",
+            "fee_recipient": "0x0801010101048001020201010101000101020101"
+          },
+          "calldata_sha256": "3cc4f4d7297b7fca036826c3d8d229da42fe4bdcc85894b877a0493ff6d49bef"
+        },
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c00260000000000000000000000000000000000000000000000000000000000000801100000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "source_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "source_slice_matches": true
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "issue_index": 6,
+      "title": "Unchecked return value from external call.",
+      "severity": "Medium",
+      "swc-id": "104",
+      "address": 2978,
+      "sourceMap": "10660:45",
+      "filename": "/home/runner/work/GhostPay/GhostPay/packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lineno": 227,
+      "code": "call(gas(), token, 0, 0x00, 0x64, 0x00, 0x20)",
+      "function": "deploy(address,address,uint256,bytes32)",
+      "trace_sha256": "844778c4ace2d0afd32e5c889e3bfd44080bdd2683da190d53da6e01fdc5b36b",
+      "id": "C10",
+      "historical_correspondence": "R11",
+      "technical_assessment": "return_value_handled_with_intentional_waiver",
+      "residual_or_limit": "Pathological expensive transfers can be starved into the intended waiver; fee economics remain a deployment decision.",
+      "release_gate_cleared": false,
+      "artifact_entry": "mythril-evidence/PolicyAccountFactory.stdout.json",
+      "steps": [
+        {
+          "origin": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "value": "0x0",
+          "address": "",
+          "decoded_constructor": {
+            "implementation": "0x0000000000000000000000000000000000000001",
+            "fee_token": "0x0101010101010140010120010101010101010101",
+            "flat_fee": "42466053570842937239765227408198744900472378137321350156138583727826235337387",
+            "fee_recipient": "0x0101010101010101010140010104010101010101"
+          },
+          "calldata_sha256": "9839286196724613a8cb283f41a24a094f612c7e0e0aa03d1c8228b139e1923a"
+        },
+        {
+          "origin": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "value": "0x0",
+          "address": "0x901d12ebe1b195e5aa8748e62bd7734ae19b51f",
+          "calldata": "0xaffdf3370000000000000000000000000000000000000000000000000000000000000001000000000000000000000000fffffb5f430064a4401430521dcdc03b0c0026000000000000000000000000000000000000000000000000000000000000000e100000000000010000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "normalized_source": "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol",
+      "source_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "source_slice_matches": true
+    }
+  ]
+}

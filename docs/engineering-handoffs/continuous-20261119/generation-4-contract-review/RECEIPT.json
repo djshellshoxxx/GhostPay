@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "assessed_at_utc": "2026-11-20T00:03:01.366003+00:00",
+  "review_base": "aa9a66905022311a5861b04ff7ee05836c3c1d8d",
+  "claim_commit": "d570764687a714d0939821e41b8ef59e1ece5b71",
+  "coordinator_product_freeze": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "contract_source_tree": "dabfd36a98424a4184ee7e267e12815763d1157f",
+  "source_commit": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "workflow_run_id": 44539518235,
+  "artifact_id": 14552010877,
+  "archive_sha256": "7ea2f0648d3ae777ede6aebb5e8c7de81ebe20e7746f24d9b1c290ffc45fceee",
+  "full_report_sha256": "475b27ec3adae0ccdc2d7fbcd8c30c4a1b819616f65b80f2863de5d7c307cdcb",
+  "all_source_manifest_hashes_verified": 241,
+  "evidence_checks": [
+    {
+      "target": "GhostPayRouter",
+      "exit_code": 0,
+      "stdout_sha256": "8e0e13688f5b10060dc34ec868bbdcf9cd72e01f93b0ca447c33ff4e87b6be8a",
+      "stderr_sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2",
+      "completeness_sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a",
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "GhostPaySweepRelayer",
+      "exit_code": 1,
+      "stdout_sha256": "e7abeab7e68c308a883003a7521b53dba53ad8b1063be8ace9871d120586bba0",
+      "stderr_sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2",
+      "completeness_sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a",
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "GhostPayPolicyRouter",
+      "exit_code": 0,
+      "stdout_sha256": "8e0e13688f5b10060dc34ec868bbdcf9cd72e01f93b0ca447c33ff4e87b6be8a",
+      "stderr_sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2",
+      "completeness_sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a",
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "PolicyAccount",
+      "exit_code": 1,
+      "stdout_sha256": "196261724b53b8642c17c6df6cea345dda80829776b9620454ade6b7040dd191",
+      "stderr_sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2",
+      "completeness_sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a",
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    },
+    {
+      "target": "PolicyAccountFactory",
+      "exit_code": 1,
+      "stdout_sha256": "64555b1892cc04cfdaaba642aa3a53e9d0d0eca7cd98e45df9826a301bac8062",
+      "stderr_sha256": "280c4f6cd7d459fd04ebe68ea5deda89c74ff6cb1717560517f6449c6863d1d2",
+      "completeness_sha256": "737fd36c501f7f42cc8a8b5ff13759b551ca6d617112525a2b3ef138ec35a37a",
+      "completeness": {
+        "creationTimeoutObserved": false,
+        "errorLogObserved": false,
+        "exceptionCount": 0,
+        "executionTimeoutObserved": false,
+        "instrumentationReady": true,
+        "reportCount": 1,
+        "schemaVersion": 1
+      }
+    }
+  ],
+  "native_mythril_rerun": false,
+  "strict_runner_exit_code": 1,
+  "findings_cleared": 0,
+  "forge_version": "forge Version: 1.8.5\nCommit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\nBuild Timestamp: 2026-10-05T17:18:54.332175693Z (1791220734)\nBuild Profile: dist",
+  "compiler_version": "solc, the solidity compiler commandline interface\nVersion: 0.8.28+commit.7893614a.Linux.g++",
+  "binaries": {
+    "forge": {
+      "sha256": "06c477aee83d0996e57aa92b0841fdf06382cb172fd69bbb88920bb0054dfd7f",
+      "bytes": 105357792
+    },
+    "solc-0.8.28": {
+      "sha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+      "bytes": 15708640
+    }
+  },
+  "foundry_archive": {
+    "url": "https://github.com/foundry-rs/foundry/releases/download/v1.8.5/foundry_v1.8.5_linux_amd64.tar.gz",
+    "sha256": "6c66ffcc55fa4249197721baa3098bc208014ea1d8aa04b2ed50ac6bccffb226",
+    "verified_against": "https://api.github.com/repos/foundry-rs/foundry/releases/tags/v1.8.5"
+  },
+  "checks": [
+    {
+      "name": "original disposition suites",
+      "command": "FOUNDRY_SOLC=/path/to/solc-0.8.28 /path/to/forge test --match-path 'test/Mythril*Dispositions.t.sol' --threads 1 -vv",
+      "cwd": "packages/contracts (exact scratch copy)",
+      "exit_code": 0,
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 3,
+      "fuzz_runs_per_test": 10000,
+      "fuzz_tests": 4,
+      "log": "evidence/original-dispositions.log.gz"
+    },
+    {
+      "name": "current artifact exact arguments and residual probe",
+      "command": "FOUNDRY_SOLC=/path/to/solc-0.8.28 /path/to/forge test --match-path test/CurrentMythrilArtifact.t.sol --threads 1 -vv",
+      "cwd": "scratch copy of packages/contracts with separately preserved evidence harness",
+      "exit_code": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "suites": 1,
+      "log": "evidence/current-replay.log.gz"
+    }
+  ],
+  "source_hashes": {
+    "packages/contracts/foundry.toml": "07fb03295f899933c3a6e85e3cb080184f6d3f7f5f089c9528891fa2b9191f8c",
+    "packages/contracts/remappings.txt": "d8d78efc303b3d32915aff6e35ed9c36fbd6bdd5787c54613d87a68996004acb",
+    ".github/actions/setup-forge/action.yml": "538a60d1e89fa45dcfd90c7e51ee49f59a337e06d641d9cbfac7af01da9f027a",
+    ".github/workflows/contract-analysis.yml": "8581fd1d71d6aa3faa00bd532eebf2614de781a51e121f5d1a8af82b89e05cd9",
+    "packages/contracts/src/PolicyAccountFactory.sol": "7dfc32591bf991a060988a86fcdbe109155c321199c6c8a43b1f72dfe35fb94e",
+    "packages/contracts/src/PolicyAccount.sol": "c860fcf73e3cd9babd8f53b125cc02864ee28f68e59b15740b2b9a66f263c1f9",
+    "packages/contracts/src/GhostPaySweepRelayer.sol": "9943c8b4b5ac8d765ec01870b6b334a10ba7aa8c7815b071cdb2ef90c1ef080a",
+    "packages/contracts/test/MythrilFactoryDispositions.t.sol": "ebb42a034456293f976a524ba49666dfa7c8f93d22ac0e14274237b291286ba2",
+    "packages/contracts/test/MythrilExpiryDispositions.t.sol": "a3621bf774504556086c0feb1f829a58dce2e256cd4a6b9ddf7bbf3104cffbc4",
+    "packages/contracts/lib/openzeppelin-contracts/contracts/proxy/Clones.sol": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+    "packages/contracts/lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+    "packages/contracts/lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8"
+  },
+  "limitations": [
+    "Not external audit or owner acceptance.",
+    "No analyzer suppression or waiver; gate remains failed.",
+    "No whole-repository or deployment acceptance.",
+    "No chain-specific timestamp/liveness bounds or current public deployment verification.",
+    "Synthetic token/addresses/funds only; no real transactions.",
+    "Earlier execution/probe reruns are not added to counts."
+  ],
+  "evidence_hashes": {
+    "evidence/CurrentMythrilArtifact.t.sol": {
+      "sha256": "c3fcc6cce185533151d4d31ca5b6539222e5ec22dbc73e0c551a4aed6802a598",
+      "bytes": 12801
+    },
+    "evidence/current-replay.log.gz": {
+      "sha256": "f1e147c96822185928a6a52ccf6e952b29bf69f086c500700aec7cafb2bc0757",
+      "bytes": 420
+    },
+    "evidence/original-dispositions.log.gz": {
+      "sha256": "28df2eef56545c4869f79bd1b46dc46aff02354578a312d087f8490ea6579430",
+      "bytes": 2114
+    }
+  }
+}
