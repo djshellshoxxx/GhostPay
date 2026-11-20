@@ -1,3 +1,15 @@
+# Main unique-code consolidation — 2026-11-19 (Pacific)
+
+Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
+Branch: `integration/ghostpay-main-unique-code-20261120`; base main: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+User authorization: consolidate branches with unique code into GhostPay main.
+Owned paths: additive branch provenance under `docs/consolidation/main-unique-code-20261120/`, this additive registry, and exact reviewed source/test contributions from PRs #279, #280, #281, #282 and #285. Preserve every existing registry section and donor parent. PR #267 was separately merged after exact-head checks passed.
+Acceptance: compare donor source blobs and ancestry; retain all current main files except the five reviewed independent fixes; validate the combined candidate with existing CI; merge only qualified changes. Preserve blocked broad donors, runtime/payment safeguards, deployment triggers, dependency versions and security gates. No branch deletion or force update.
+Execution: local executor unavailable; use connected GitHub source/CI tools. No local test execution is claimed.
+Status: ownership recorded before source integration; integration lease generation 7.
+
+---
+
 # Focused hosting main reconciliation — 2026-11-19
 
 Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
