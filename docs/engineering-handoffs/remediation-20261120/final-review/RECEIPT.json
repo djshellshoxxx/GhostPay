@@ -1,0 +1,64 @@
+{
+  "format": "ghostpay-independent-final-review/1",
+  "reviewer": "/root/final_independent_review",
+  "baseline": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "combined_commit": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+  "combined_tree": "80fd34834ccdbc81bf8f5fc63ba76edb52905ef1",
+  "runtime": "Node v22.23.4",
+  "source_review": {
+    "non_documentation_changes": 5,
+    "all_changed_blobs_match_reviewed_inputs": true,
+    "unchanged_control_scopes": 13,
+    "confirmed_blocking_findings_in_changed_source": []
+  },
+  "executed_tests": [
+    {
+      "scope": "Sweep authority regression selection",
+      "source": "3814ad2efffc6588f1c176a39b1090033f2f3537",
+      "runtime_and_test_blobs_identical_in_combined": true,
+      "passed": 68,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": "Focused selection; coverage collection explicitly disabled; no full-package coverage result claimed.",
+      "infrastructure": "Actual key derivation/signatures, recovery, network authority and client; synthetic in-memory RPC transport."
+    },
+    {
+      "scope": "Actual final Pages promotion shell block",
+      "source": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "infrastructure": "Synthetic staged artifacts, actual builder tail and independent verifier; not a Vite build or deployed artifact."
+    }
+  ],
+  "evidence_pending": [
+    "Fresh hosted qualification of the published candidate, including CodeQL and the repaired browser scenario.",
+    "Exact-current strict contract analyzer outcome and required finding disposition/external review.",
+    "Documented owner policy/hosting/signing decisions and approved final publication.",
+    "Actual authorized EVM testnet deployment, authenticated manifest and real-wallet acceptance for the testnet milestone."
+  ],
+  "limits": [
+    "Not a complete repository security audit.",
+    "No browser or external-testnet execution by this reviewer.",
+    "No deployment, main merge, owner approval or external security signoff conferred."
+  ],
+  "fresh_artifact": {
+    "source_commit": "1f82abc5e21d745e9bf82f6de5ba9ded5fd29248",
+    "verified_files": 16,
+    "payments_enabled_chain_ids": [],
+    "sha256sums_sha256": "ac1b4953087dc67ed59c832fe1386067190bc30b555263f9ab24c4db0abdf9f2",
+    "site_safety_problems": [],
+    "automatic_integrity_receipt_present": true,
+    "shared_origin": true,
+    "origin": "https://djshellshoxxx.github.io"
+  },
+  "release_readiness_verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
+  "coordinator_reported_not_reexecuted_by_final_reviewer": {
+    "clean_install": "Node22/npm10,721 packages",
+    "libraries": "65 rebuilt with unchanged library source",
+    "combined_pages_csp_tests": 168,
+    "combined_sweep_tests": 68,
+    "deployment_fixture_tests": 13,
+    "source_secret_action_pin_and_dependency_checks": "passed; see coordinator receipts"
+  }
+}
