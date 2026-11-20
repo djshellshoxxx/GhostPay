@@ -1923,3 +1923,14 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+
+## Release remediation: Pages artifact promotion gate — 2026-11-19
+
+Worker: `/root` in workspace `a7189299ede1`, separate from the continuous integration coordinator in `0a7bc3583588`.
+Branch: `fix/ghostpay-pages-integrity-gate-20261120`.
+Base: canonical PR #278, `d74af79ebabdc8cead843361c3497b46d8c421f9`; live main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: `scripts/pages/build-pages.sh`, new `scripts/pages/build-pages-artifact-gate.test.mjs`, and `docs/engineering-handoffs/remediation-20261120/` coordinator evidence only. Independent reviewer owns its own child evidence directory.
+Scope: execute the existing independent artifact verifier against the completed site, trusted build-generated SHA256SUMS, and exact expected source before promoting the site/evidence to final output. Preserve the verifier's trust assumptions and all release policies.
+Acceptance: failing regression on original builder; successful fresh 16-file artifact; tampered/missing/extra/symlink/ambiguous/wrong-source artifacts fail before promotion; original Pages tooling gates pass; independent adversarial review and exact-source qualification. No test threshold, runtime feature, privileged attestation job, signing key or deployment-policy changes.
+Coordination: the other active coordinator owns the renewed preflight browser observation repair and merchant-ledger zero-payment recovery. Those paths and shared integration refs are not modified here. The metadata lease remains separate and must be reacquired with current ownership before shared integration.
