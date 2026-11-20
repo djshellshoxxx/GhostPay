@@ -1,3 +1,15 @@
+# Sweep consent and review lifetime consolidation — 2026-11-20 (Pacific)
+
+Worker: `994a0d214fb9-root`; source triage: `branch_inventory`; independent resulting-tree review follows composition.
+Branch: `integration/ghostpay-sweep-consent-20261120`; base: published PR #307 head `2876b7db580e47a880d5951ce9e62941bcf76fdf`. Donor: PR #272 `63ff40d57af879a3d82166450f63aadb7bf0d5ff`, retaining #231/#252 explicit balance consent and quote/direct/relayed/replacement lifetime guards.
+Owned paths: the donor's `Sweep.tsx`, Sweep tests, `scanPrivacy.ts` and test, four affected browser journeys, locale/security-key additions, additive source-pinned consolidation evidence and this registry. Existing completed invoice, backup, print and Tor work stays in the base.
+Acceptance: preserve donor ancestry, the current canonical ERC-20 transfer test fixture and every unrelated base change; resolve only additive ownership conflicts; independently review the resulting source; execute the existing Sweep/privacy/lifecycle and relevant shared regressions before draft publication. All applicable combined-head hosted checks remain required before main promotion.
+Coordination: PR #307 remains frozen while its full web suite and hosted checks are pending. This separate candidate introduces no dependency, contract, relayer-server, release or deployment change. No inherited donor result is relabeled as validation of this new composition.
+
+Accepted successor scope, recorded before edits: selectively retain `6ed5c66b514e11eaca1817c6b83a863b2ebaf89e`, `d14ac788da5254890e683f191a91ba619d1dd102`, `ba6b6d44a16d151b53f104715754c4a9bfd9610b` and `a603603d5e84814451c6f77945871e9224467b32`. Additional owned paths are `apps/web/src/lib/sweep.ts`, its original test fixtures and the exact `sweep.reviewAuthority.test.ts` donor blob from `8ca38218ba87a5cee479ea5885b6a00bc0791f28`. These complete caller review checks before local signing, preserve current-context error handling, handle a session unavailable before authorization, and bind native amount to the explicitly reviewed balance. Adapt the lock-before-authorization regression to existing session APIs. Preserve original assertions and post-handoff evidence; do not import the broader privacy network, idle-session or native-fee workflow. Execute the new regression against the unchanged helper before runtime adaptation.
+
+---
+
 # Consolidation continuation and completion — 2026-11-20 (Pacific)
 
 Worker: `994a0d214fb9-root`, with independent `branch_inventory`, `invoice_file_completion`, and `backup_completion` workers.
@@ -768,6 +780,26 @@ No deployment, release, branch deletion or shared-branch rewrite.
 
 
 
+## Sweep balance query consent — 2026-11-18
+
+Worker: ChatGPT recovery reviewer, Caveman workflow. Branch: `chatgpt/ghostpay-sweep-balance-consent-20261118`.
+Base: refreshed `main` at `dfc75ef2087fa6463ae59e0818abec01796c578d`.
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.privacy.test.tsx`, necessary balance-query messages in
+`apps/web/locales/{en,es,ja,ar}.json` and their `apps/web/src/i18n/securityKeys.ts` classification, this claim,
+and `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`. The integration owner also approved explicit read-button
+clicks in the shared `Sweep.test.tsx` setup and existing `e2e/{sweep,core-journey,pages-devnet,devnet-journey}.spec.ts`
+sweep setup points; existing signing and payment assertions remain unchanged.
+Acceptance: opening Sweep never requests a balance; one explicit click makes one balance-read invocation;
+ordinary rerenders, errors and selection changes do not repeat it; changing the payment, asset, provider or session
+invalidates pending results and requires a new click. Preserve the required-private-path warning and the existing
+sweep controls. Disclose what the Settings RPC learns. Do not import #222's destination ledger or experimental features.
+Scope distinction: the existing RPC transport has its own bounded retries; this task does not claim to change that
+shared transport policy. Exact-head hosted CI and independent integration review remain required.
+
+Milestone: runtime repair `d03d529f5b785dcd129b302d122b191d3d066214` passes 120 focused tests, whole-web typecheck
+at a 1536 MiB heap cap, scoped lint and locale validation. Independent privacy review reports no remaining source
+blocker and independently passes 72 consent/signing tests. Final E2E setup additions are reviewed and linted only;
+browser execution and exact-head hosted CI remain required. See `docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md`.
 ## Beta acceptance log artifact capture — 2026-11-18
 
 Worker: recovery_review, Caveman workflow. Branch: `chatgpt/ghostpay-beta-log-artifact-20261118`.
@@ -828,6 +860,21 @@ coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existin
 artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
 also passes all 19 helper tests. See the source-pinned handoff under
 `docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+## PR 231 standalone pre-merge disclosure repair — 2026-11-18
+
+Worker: ChatGPT pre-merge lead; independent CI/privacy review by ci_inventory.
+Branch: `repair/ghostpay-pr-231-20261118`.
+Source: #231 `d9ff386807de724eb1a1c4d400c882df0fc20bb7` (full head verified in the handoff).
+Target: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (main).
+Owned paths: `apps/web/src/lib/scanPrivacy.ts`, its existing `scanPrivacy.test.ts`
+regressions, `docs/consolidation/merge-readiness/PR231.md` and this claim.
+Acceptance: reproduce the two exact hosted disclosure-equivalence failures;
+extract only the scanPrivacy correction from `d6016a822f3bf238506ea5b426380bceb9d1ee83`;
+retain every balance-consent/session guard and disclosure assertion; verify the
+actual combined main/source tree. #222/#238 and their active source branches
+are read-only. All source commits remain ancestors. Both sides of the only
+merge conflict (independent ACTIVE_WORK claims) are retained. No contract,
+dependency, cryptographic or gate changes.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
@@ -1015,3 +1062,34 @@ pending vault save/delete complete or permit a duplicate. Preserve generation,
 controller, session, reauthentication, and vault-write integrity guards.
 Run focused original-config regressions, relevant TypeScript and lint; record actual
 outcomes. Root owns remote publication and integration. Other branches remain untouched.
+
+---
+
+## Sweep quote and signing lifecycle correction — 2026-11-19
+
+Worker: independent ChatGPT review agent, coordinated by the main consolidation agent.
+Branch: `review/ghostpay-sweep-quote-lifecycle-20261119`; draft PR #272.
+Base: `4085622463411d3ba27f4efb7b73a70575170535` (PR #252).
+Owned paths: `apps/web/src/views/Sweep.tsx`, `Sweep.quoteLifecycle.test.tsx`,
+and `docs/handoffs/agents/SWEEP_QUOTE_LIFECYCLE_20261119.md`.
+Acceptance: prevent stale quotes and stale relayed, direct and same-nonce
+replacement handoffs after balance, recipient, payment, provider, session, mode,
+manifest or transport changes; retain submitted and uncertain-outcome evidence,
+prior replacement hashes and journal compare-and-swap; preserve explicit balance
+consent and existing vault, session and fee guards.
+
+Initial quote/relayed head: `9e4ec2da024ef9a706e9d6cefa988d0a5dd9f7ac`.
+Root coordinator approved the direct/replacement extension after reviewing that
+head. This scope extension was recorded before source edits. Original #231/#252
+and broad #262/#264 remain unchanged; main integration belongs to the coordinator.
+
+Final source/test blobs: `2b832d371229385a2a1228e16320aceb9a64ee59` /
+`41baa63e14fad5ea0dcf54c202b2ef3b0faa5476`.
+Evidence: initial parent RED 28 failed/6 controls; quote/relayed GREEN 106/106;
+extension RED 30 failed/40 controls at the initial head; final GREEN 142/142,
+zero skipped; scoped type-aware lint, secret scan and diff check pass. Independent
+source review approves both final blobs and unchanged post-handoff handling.
+Prior full web build attempts were environment-limited (heap OOM 134, killed137);
+final full typecheck/build, browser acceptance and exact-head hosted gates remain.
+See the source-pinned handoff for commands and limits. Candidate remains draft.
+No deployment, release or real transaction is authorized by this worker claim.
