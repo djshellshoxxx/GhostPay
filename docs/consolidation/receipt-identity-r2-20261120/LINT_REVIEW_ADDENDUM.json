@@ -1,0 +1,71 @@
+{
+  "schema": "ghostpay-independent-receipt-identity-lint-addendum/1",
+  "reviewed_at_utc": "2026-11-20T19:09:24.378278+00:00",
+  "reviewer": "/root/backup_independent_review_r2",
+  "decision": "approve two-line callback correction; authorize nine-file compatibility rerun",
+  "blocking_findings": [],
+  "parent_reviewed_source": "06c17144d3839f5a093dec3ed9041374fb2de79e",
+  "reviewed_head": "a656c3e5dbc385a892e3efc9bd12389b214051b8",
+  "reviewed_tree": "4c5edaf70dd704336f0720415f012a07adb883ef",
+  "working_tree_clean": true,
+  "runtime_blob_unchanged": "e056b485f4dbaab5ac9fdc1af78349a8e633b516",
+  "changed_paths_and_blobs": {
+    "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx": {
+      "before": "a43a5e9e5e5c073ce96b58d001aaea6237ad879f",
+      "after": "aab9cb5ca382b5df8f08858e452c8b6d5f20106f"
+    },
+    "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx": {
+      "before": "d6ba6e2be79ca95560bf4f394fd57e0fda48ba03",
+      "after": "08234df0884ebe636af457af5eb6b300a8a29d71"
+    }
+  },
+  "exact_change_proof": "Only the two specified act callback expressions differ. Every other byte in both tests and every other repository path is unchanged from the previously reviewed runtime checkpoint.",
+  "protected_paths_rechecked": 21,
+  "semantic_review": [
+    "Both callbacks still invoke their same native Promise settlement function synchronously inside act.",
+    "Both callbacks still return a Promise fulfilled with undefined, and outer await act(...) remains present.",
+    "React therefore retains the async act boundary that flushes updates after held completion.",
+    "Resolve/reject function and arguments, all assertions, vault-lock observation, pending-state checks, valid distinct signatures and positive B archive remain unchanged.",
+    "No ESLint rule, configuration, skip, test filtering, threshold or product behavior changed."
+  ],
+  "static_diff_check_exit_code": 0,
+  "failed_lint_evidence_preserved_byte_identical": true,
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/994a0d214fb9/independent-receipt-identity-r2.md",
+      "bytes": 6814,
+      "sha256": "52576ee3d506c497ddb0d35b272c83c70233b73dba4a760e06b88aaec36e4c30"
+    },
+    {
+      "path": "/workspace/scratch/994a0d214fb9/independent-receipt-identity-r2.json",
+      "bytes": 8906,
+      "sha256": "05bff4e7b1fce35a70ea9d5208e41191ba231723c517081a914eac86b80a452c"
+    },
+    {
+      "path": "/workspace/scratch/994a0d214fb9/receipt-identity-r2-before-lint-fix-lint.log",
+      "bytes": 1049,
+      "sha256": "f6e5eee172db5335a7c84e67b69aa85aa78edfd82cfed690c3cf0d60e64c1af5"
+    },
+    {
+      "path": "/workspace/scratch/994a0d214fb9/receipt-identity-r2-before-lint-fix-original-gates.json",
+      "bytes": 1085,
+      "sha256": "63915702b2138e5ef37100ef9ebb4ca2f7bce258566e8c24e7257c77b4f5747c"
+    },
+    {
+      "path": "/workspace/scratch/994a0d214fb9/receipt-identity-r2-before-lint-fix-typecheck.log",
+      "bytes": 216,
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    }
+  ],
+  "execution": {
+    "reviewer_ran_tests": false,
+    "reviewer_ran_lint_typecheck_build": false,
+    "reviewer_ran_browser": false,
+    "green_rerun_status": "authorized; not claimed executed by this addendum"
+  },
+  "limits": [
+    "The original report remains pinned to its original source and is not overwritten.",
+    "The recovered donor test now differs only in its semantically equivalent act callback expression; do not describe the new complete file as an exact donor blob.",
+    "Original full lint failure remains recorded; passing final lint and compatibility require fresh executed results."
+  ]
+}
