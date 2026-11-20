@@ -1,0 +1,18 @@
+{
+  "source": "2149ad2814d9ae031b23322f87f74842af5dde78",
+  "baseline_evidence_commit": "758970ceab84ebc468783d136a68b31fc3882fec",
+  "reviewed_fixture_source": "898d3361af4320dccca7743d960b32a94fb66922",
+  "only_non_documentation_change_from_prior": [
+    "apps/web/src/features/policy/fixtures.testutil.ts"
+  ],
+  "fixture_blob": "6db098624324846c7a6f577a90bd35b01c80f200",
+  "original_15_input_blobs_preserved": true,
+  "original_8_control_scopes_preserved": true,
+  "reviewed_fixture_blob_matches": true,
+  "package_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "dependency_provenance": "dependency-provenance.json",
+  "notes": "No package or dependency input changed from the preceding run. Original non-documentation gates, assertions and configs remain unchanged.",
+  "prior_reviewed_source": "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+  "non_documentation_diff_from_tested_fixture_source": [],
+  "baseline_source_manifest_blob": "5af5168e8b65e5c7a3b1dd7ef4a2450942675db3"
+}

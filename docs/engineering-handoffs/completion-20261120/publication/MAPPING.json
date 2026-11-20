@@ -1,0 +1,69 @@
+{
+  "format": "ghostpay-local-publication-map/2",
+  "initial_candidate": {
+    "local": "6ca81e1bbe6767b9b8ce1a68a0026f0a7599ad0a",
+    "published": "99b923161ebe226fee5382f84efb32a1caad3dcc",
+    "tree": "7b75df2d2c288167d145ae85cc7d2dd6aa742040"
+  },
+  "consolidation": {
+    "local": "be12cd043dbfc2f562368fd0ccc1a2a8c3f7a22f",
+    "published": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "tree": "2408882ff9adcc8714c3a21b43c4074975f13c23",
+    "pr": 302,
+    "product_freeze": "2149ad2814d9ae031b23322f87f74842af5dde78"
+  },
+  "privacy_dependency": {
+    "local": "8be152897a717447e33642c99a976cdbb76b709f",
+    "published": "d6819796a9542acc488b896786faffe83b913d9b",
+    "tree": "4974a8d303880b1a491ae07881cca9d99d6c4cbb"
+  },
+  "quick_hide": {
+    "local": "c8a2d7ca7c6c1caa96256e1cd57ffd7afaafa9d5",
+    "published": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "tree": "da95c2f24426fd9dfd01e38472f07f5dc466cbf9",
+    "pr": 300
+  },
+  "source_snapshots": {
+    "9e062b7150e74d1b20e34b0f120add660d9ef02e": {
+      "published": "12d7a9b4f9aeac5c13d6df1b03beae30862db0c9",
+      "tree": "e3e9d38b7e771d136273bdd78698b999408fb614",
+      "parent": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+    },
+    "b416ea615d40f6375c868b05e8af0683cf1e10fd": {
+      "published": "ed696a87ae3c8f70e7c4f75817f2a230311f0ac3",
+      "tree": "e0bded49e45227357c3a0925b3795c2ca64b500d",
+      "parent": "12d7a9b4f9aeac5c13d6df1b03beae30862db0c9"
+    },
+    "f77fe8572f54669098ee8cb5d47a6313ef72e37b": {
+      "published": "9048c09b94d158392226590f80eea7c40144b024",
+      "tree": "c924d616025bf6cb4a1a2ea26afe9520d15df29c",
+      "parent": "ed696a87ae3c8f70e7c4f75817f2a230311f0ac3"
+    },
+    "fa5d4b143c7459c99a201433e661f6650b957e3e": {
+      "published": "62e29a5f61981f14dee842fac227ba8bb3cfb886",
+      "tree": "35648104d0ef80e04c19e8032e7ea74d03c85da6",
+      "parent": "9048c09b94d158392226590f80eea7c40144b024"
+    },
+    "795a3892ded8a8d20aea67b2b88d69620a4afdf5": {
+      "published": "e71d317995c2f23028e92fe19a908724950be059",
+      "tree": "7f6dd40258adf0e7df9cd4ce1001d400a2544b9d",
+      "parent": "62e29a5f61981f14dee842fac227ba8bb3cfb886"
+    },
+    "c344334d757db9ca51e107000b918fd23cc7397d": {
+      "published": "bc4f395d2be42a50b9be0728c36fe19be0702d4b",
+      "tree": "e51e323b9eff0576536af5bbf01659a462db545f",
+      "parent": "e71d317995c2f23028e92fe19a908724950be059"
+    },
+    "0609da66abd06f1b7e77bd208ecd3e36f390dd77": {
+      "published": "cefea1f508cc00c2af7540b0307cc7ab1240f9d5",
+      "tree": "04674a74af69e3592f69d95dc42c37511ac637f9",
+      "parent": "bc4f395d2be42a50b9be0728c36fe19be0702d4b"
+    },
+    "898d3361af4320dccca7743d960b32a94fb66922": {
+      "published": "2245045af4d15c42426279ee48df36ffd5413d44",
+      "tree": "e0adf53e06d26f21d84a2eaa47fd426742a36f0b",
+      "parent": "cefea1f508cc00c2af7540b0307cc7ab1240f9d5",
+      "parent_scope": "publication sequence; not original local merge ancestry"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "quick-hide-qualify-web",
+    "decoded_utf8_bytes": 67604,
+    "decoded_sha256": "f3357969d90058183af7fe58b23f21afe7ea79f1e98aa23814a96d8e4c2515d8",
+    "gzip_sha256": "78a703eb54a89caeb567e909f3c208428ecb1be02a92eea105057a05b562bd4f",
+    "path": "logs/quick-hide-qualify-web.log.gz"
+  },
+  {
+    "name": "quick-hide-hosting-kit",
+    "decoded_utf8_bytes": 144454,
+    "decoded_sha256": "99f146e3acd7ba4bfa8ca14b456020fd5970dc66d2bdf8383a3da615f8c426d4",
+    "gzip_sha256": "7d30d7045d8d103ae466eaeac1adb0b6ddbe7941205719d04c6046c9194c94a9",
+    "path": "logs/quick-hide-hosting-kit.log.gz"
+  }
+]

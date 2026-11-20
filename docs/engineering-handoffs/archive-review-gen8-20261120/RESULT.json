@@ -1,0 +1,280 @@
+{
+  "reviewer": "/root/archive_review_gen8",
+  "reviewed_recovery": "a4503e5c3a5b1e02bfd160f36f841dd6f5e66f58",
+  "reviewed_tree": "828f51df40a34fc56588c6bc473858d05ca1d8bb",
+  "historical_source": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+  "comparison_candidates": [
+    "53f4253bd9afc33bea43a7bdfe95ae287e035bf7",
+    "a1e5090bac39bf3841f7d0403c79163d787a9793"
+  ],
+  "later_documentation_delta": {
+    "previous_comparison": "a1e5090bac39bf3841f7d0403c79163d787a9793",
+    "later_candidate": "be12cd043dbfc2f562368fd0ccc1a2a8c3f7a22f",
+    "changed_document_paths": [
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/engineering-handoffs/completion-20261120/README.md",
+      "docs/engineering-handoffs/completion-20261120/SOURCE_INPUTS.json",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/BASELINE-coverage-partial.log.gz",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/BASELINE-outcome.json",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/DEPENDENCIES.json",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/FOCUSED-consumers.log.gz",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/FOCUSED-result.json",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/README.md",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/REPAIR.diff",
+      "docs/engineering-handoffs/completion-20261120/policy-receipt-fixture/SOURCE.json",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/RECEIPT.json",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REPORT.md",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REVIEW.json",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/SOURCE_PINS.json",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/SOURCE_PRS.json",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/live-refs-final.txt",
+      "docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/live-refs-initial.txt",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/FINAL-QUALIFICATION.md",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/HANDOFF.md",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/README.md",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/final-checks-phase1.json",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/final-checks-phase2.json",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/final-source-manifest.json",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/full-web-baseline-outcome.json",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/logs/final-web-coverage.log.gz",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/logs/final-web-lint.log.gz",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/logs/final-web-nocov.log.gz",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/logs/final-web-qr.log.gz",
+      "docs/engineering-handoffs/integration-qa-gen3-20261120/logs/final-web-typecheck.log.gz"
+    ],
+    "payloads_inspected": 147,
+    "methods": [
+      "source and archive exact text",
+      "whitespace normalization",
+      "inline Markdown-link normalization",
+      "gzip expansion and decoded JSON string values"
+    ],
+    "complete_section_matches": []
+  },
+  "result": "passed with inherited historical-link findings",
+  "verification_script_sha256": "5692ccd3115ed773c1c4bf8f9cd85716ffe57c84c10e7ef15f66b74018a16182",
+  "inherited_historical_link_findings": [
+    {
+      "section": "pr140:docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md:72-79",
+      "source_commit": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "source_file": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+      "source": "User-Guide.md",
+      "archived": "https://github.com/djshellshoxxx/GhostPay/blob/c5efadab9d9af6a0053f489ebe6c0c06e760d025/docs/handoffs/User-Guide.md",
+      "absent_path": "docs/handoffs/User-Guide.md"
+    },
+    {
+      "section": "pr140:docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md:72-79",
+      "source_commit": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "source_file": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+      "source": "Developer-Guide.md",
+      "archived": "https://github.com/djshellshoxxx/GhostPay/blob/c5efadab9d9af6a0053f489ebe6c0c06e760d025/docs/handoffs/Developer-Guide.md",
+      "absent_path": "docs/handoffs/Developer-Guide.md"
+    },
+    {
+      "section": "pr140:docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md:213-221",
+      "source_commit": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "source_file": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+      "source": "User-Guide.md",
+      "archived": "https://github.com/djshellshoxxx/GhostPay/blob/c5efadab9d9af6a0053f489ebe6c0c06e760d025/docs/handoffs/User-Guide.md",
+      "absent_path": "docs/handoffs/User-Guide.md"
+    },
+    {
+      "section": "pr140:docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md:213-221",
+      "source_commit": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "source_file": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+      "source": "Developer-Guide.md",
+      "archived": "https://github.com/djshellshoxxx/GhostPay/blob/c5efadab9d9af6a0053f489ebe6c0c06e760d025/docs/handoffs/Developer-Guide.md",
+      "absent_path": "docs/handoffs/Developer-Guide.md"
+    }
+  ],
+  "counts": {
+    "historical_comparison_file_hashes": 10,
+    "historical_link_targets_absent": 4,
+    "historical_link_targets_resolved": 39,
+    "local_markdown_links": 22,
+    "omission_retention_checks": 3,
+    "original_archive_files": 3,
+    "original_record_copies": 3,
+    "original_sections": 158,
+    "original_source_files": 10,
+    "published_commit_metadata": 4,
+    "recorded_relative_link_rewrites": 43,
+    "recovered_archive_files": 3,
+    "recovered_section_bodies": 157
+  },
+  "changed_paths": [
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/HANDOFF.md",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/README.md",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/archive/pr139-historical-evidence.md",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/archive/pr140-historical-evidence.md",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/archive/pr153-historical-evidence.md",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/provenance.json",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/source-records/provenance.json",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/source-records/publication.json",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/source-records/verification.json",
+    "A\tdocs/engineering-handoffs/archive-recovery-gen6-20261120/verification.json"
+  ],
+  "retained_sections": {
+    "139": 42,
+    "140": 74,
+    "153": 41
+  },
+  "omitted_section": "pr140:docs/design/qr-colors.md:5-17",
+  "pr140_removed_block": {
+    "start_byte": 28724,
+    "end_byte_exclusive": 30844,
+    "bytes": 2120,
+    "sha256": "5f20e9616f556e9c846e442678028be1046000b998124cd5e4f69b41b109ac7d"
+  },
+  "publication_metadata": [
+    {
+      "original_local": "c0e1ba9a20065522357a038a8a01cb65468912aa",
+      "original_available": false,
+      "published": "0fafcc0fbea6d496cfbd79e7043e7b0ae3ff6c21",
+      "tree_matches": true,
+      "parents_match": true
+    },
+    {
+      "original_local": "b729e66676574602fd61bf418af1ba213bbaf1bc",
+      "original_available": false,
+      "published": "8acd3273dfacf867b33ca89d008c3540897b9bf3",
+      "tree_matches": true,
+      "parents_match": true
+    },
+    {
+      "original_local": "562c219123de64a8089c95af1393ce955b0d4ff2",
+      "original_available": false,
+      "published": "b0617e272096c2145acd90fb00a5f8a4bac2f9cc",
+      "tree_matches": true,
+      "parents_match": true
+    },
+    {
+      "original_local": "c7bf99ad8ae7154b95ad1924c97058fa436d38fd",
+      "original_available": false,
+      "published": "62d9554d1cb4f77259a8f8463c4472c1824d1cc1",
+      "tree_matches": true,
+      "parents_match": true
+    }
+  ],
+  "local_links": [
+    {
+      "file": "HANDOFF.md",
+      "target": "README.md",
+      "exists": true
+    },
+    {
+      "file": "HANDOFF.md",
+      "target": "provenance.json",
+      "exists": true
+    },
+    {
+      "file": "HANDOFF.md",
+      "target": "verification.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "archive/pr139-historical-evidence.md",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "archive/pr140-historical-evidence.md",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "archive/pr153-historical-evidence.md",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "../../design/qr-colors.md",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "provenance.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "provenance.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "verification.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "source-records/provenance.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "source-records/publication.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "source-records/verification.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "provenance.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "verification.json",
+      "exists": true
+    },
+    {
+      "file": "README.md",
+      "target": "HANDOFF.md",
+      "exists": true
+    },
+    {
+      "file": "archive/pr139-historical-evidence.md",
+      "target": "../provenance.json",
+      "exists": true
+    },
+    {
+      "file": "archive/pr139-historical-evidence.md",
+      "target": "../README.md",
+      "exists": true
+    },
+    {
+      "file": "archive/pr140-historical-evidence.md",
+      "target": "../provenance.json",
+      "exists": true
+    },
+    {
+      "file": "archive/pr140-historical-evidence.md",
+      "target": "../README.md",
+      "exists": true
+    },
+    {
+      "file": "archive/pr153-historical-evidence.md",
+      "target": "../provenance.json",
+      "exists": true
+    },
+    {
+      "file": "archive/pr153-historical-evidence.md",
+      "target": "../README.md",
+      "exists": true
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "No application tests, builds, network requests or historical commands were executed.",
+    "This review does not repeat the predecessor full candidate-text/gzip/ZIP corpus scan; its absence/normalization result remains attributed to that scan.",
+    "All 158 original source sections and all 157 recovered bodies were independently verified against Git objects.",
+    "External URL availability and fragment anchors were not fetched; 39 of43 recorded historical link-target occurrences resolve in Git. Four occurrences resolve to two already-absent historical paths and are preserved as explicit findings.",
+    "Unavailable original local commits prevent independent local-versus-published tree equivalence; published metadata and ten comparison-file hashes were checked.",
+    "Historical status, test outcomes, ownership and release statements are evidence only and convey no present authority."
+  ]
+}

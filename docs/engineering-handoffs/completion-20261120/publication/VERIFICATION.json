@@ -1,0 +1,126 @@
+{
+  "format": "ghostpay-publication-verification/1",
+  "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "tree": "2408882ff9adcc8714c3a21b43c4074975f13c23",
+  "source_snapshot_count": 8,
+  "source_snapshots": [
+    {
+      "local": "9e062b7150e74d1b20e34b0f120add660d9ef02e",
+      "published": "12d7a9b4f9aeac5c13d6df1b03beae30862db0c9",
+      "tree": "e3e9d38b7e771d136273bdd78698b999408fb614",
+      "actual_ordered_parents": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "4493793ad2c438fcc0f45f96851eac8967cb607a",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "936d054ed067d89c773310d42e33939c1129bbfa"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "4493793ad2c438fcc0f45f96851eac8967cb607a",
+        "172695efb41665a4e50d335029e54184bbb5b328",
+        "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "936d054ed067d89c773310d42e33939c1129bbfa"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "b416ea615d40f6375c868b05e8af0683cf1e10fd",
+      "published": "ed696a87ae3c8f70e7c4f75817f2a230311f0ac3",
+      "tree": "e0bded49e45227357c3a0925b3795c2ca64b500d",
+      "actual_ordered_parents": [
+        "12d7a9b4f9aeac5c13d6df1b03beae30862db0c9"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "12d7a9b4f9aeac5c13d6df1b03beae30862db0c9"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "f77fe8572f54669098ee8cb5d47a6313ef72e37b",
+      "published": "9048c09b94d158392226590f80eea7c40144b024",
+      "tree": "c924d616025bf6cb4a1a2ea26afe9520d15df29c",
+      "actual_ordered_parents": [
+        "ed696a87ae3c8f70e7c4f75817f2a230311f0ac3"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "ed696a87ae3c8f70e7c4f75817f2a230311f0ac3"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "fa5d4b143c7459c99a201433e661f6650b957e3e",
+      "published": "62e29a5f61981f14dee842fac227ba8bb3cfb886",
+      "tree": "35648104d0ef80e04c19e8032e7ea74d03c85da6",
+      "actual_ordered_parents": [
+        "9048c09b94d158392226590f80eea7c40144b024"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "9048c09b94d158392226590f80eea7c40144b024"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "795a3892ded8a8d20aea67b2b88d69620a4afdf5",
+      "published": "e71d317995c2f23028e92fe19a908724950be059",
+      "tree": "7f6dd40258adf0e7df9cd4ce1001d400a2544b9d",
+      "actual_ordered_parents": [
+        "62e29a5f61981f14dee842fac227ba8bb3cfb886"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "62e29a5f61981f14dee842fac227ba8bb3cfb886"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "c344334d757db9ca51e107000b918fd23cc7397d",
+      "published": "bc4f395d2be42a50b9be0728c36fe19be0702d4b",
+      "tree": "e51e323b9eff0576536af5bbf01659a462db545f",
+      "actual_ordered_parents": [
+        "e71d317995c2f23028e92fe19a908724950be059"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "e71d317995c2f23028e92fe19a908724950be059"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "0609da66abd06f1b7e77bd208ecd3e36f390dd77",
+      "published": "cefea1f508cc00c2af7540b0307cc7ab1240f9d5",
+      "tree": "04674a74af69e3592f69d95dc42c37511ac637f9",
+      "actual_ordered_parents": [
+        "bc4f395d2be42a50b9be0728c36fe19be0702d4b"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "bc4f395d2be42a50b9be0728c36fe19be0702d4b"
+      ],
+      "ordered_parents_match": true
+    },
+    {
+      "local": "898d3361af4320dccca7743d960b32a94fb66922",
+      "published": "2245045af4d15c42426279ee48df36ffd5413d44",
+      "tree": "e0adf53e06d26f21d84a2eaa47fd426742a36f0b",
+      "actual_ordered_parents": [
+        "cefea1f508cc00c2af7540b0307cc7ab1240f9d5"
+      ],
+      "reachable_from_candidate": true,
+      "expected_ordered_parents": [
+        "cefea1f508cc00c2af7540b0307cc7ab1240f9d5"
+      ],
+      "ordered_parents_match": true
+    }
+  ],
+  "checkpoint_tree_comparisons": 4,
+  "candidate_ordered_parents": [
+    "99b923161ebe226fee5382f84efb32a1caad3dcc",
+    "2245045af4d15c42426279ee48df36ffd5413d44"
+  ],
+  "status": "passed"
+}

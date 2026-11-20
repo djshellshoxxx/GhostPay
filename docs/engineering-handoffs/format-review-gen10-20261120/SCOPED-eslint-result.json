@@ -1,0 +1,25 @@
+{
+  "format": "ghostpay-format-review-run/1",
+  "phase": "scoped typed ESLint with unchanged project config",
+  "source_commit": "eb969686fece9a1c89be38983b5cb4b0cae14bd8",
+  "cwd": "/workspace/scratch/e5b5e498b785/GhostPay-format-review-gen10/apps/web",
+  "command": [
+    "node",
+    "../../node_modules/eslint/bin/eslint.js",
+    "--config",
+    "../../eslint.config.js",
+    "src/lib/format.ts",
+    "src/lib/format.test.ts"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=768"
+  },
+  "node": "v24.22.3",
+  "eslint_package": "10.15.0",
+  "runner_realpath": "/workspace/scratch/e5b5e498b785/GhostPay/node_modules/eslint/bin/eslint.js",
+  "started_utc": "2026-11-20T03:14:22.353782+00:00",
+  "duration_seconds": 8.691,
+  "exit_code": 0,
+  "external_timeout_seconds": 180,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

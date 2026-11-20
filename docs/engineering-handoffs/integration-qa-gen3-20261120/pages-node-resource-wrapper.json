@@ -1,0 +1,9 @@
+{
+  "source": "2149ad2814d9ae031b23322f87f74842af5dde78",
+  "wrapper_path": "/workspace/scratch/e5b5e498b785/verification/qa-gen3-node1024-2149ad28/node",
+  "real_node": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+  "contents": "#!/bin/sh\nexec /opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node --max-old-space-size=1024 \"$@\"\n",
+  "sha256": "ceb58eabf14e1ccbbfe7941f59ab2da8105c97f7a23f5502eef94a04569a8ea4",
+  "purpose": "Heap-only resource cap retained through the original build script clean environment, which preserves PATH and does not preserve NODE_OPTIONS.",
+  "modified_product_or_gate": false
+}

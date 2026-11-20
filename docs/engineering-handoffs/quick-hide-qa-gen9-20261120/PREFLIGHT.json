@@ -1,0 +1,8 @@
+{
+  "compiler_started": false,
+  "outcome": "setup-only failure before npm/Node compiler invocation",
+  "reason": "The suggested author worktree node_modules/@ghostpay directory does not exist; subsequent ls verified node_modules itself is absent.",
+  "correction": "Use own review checkout with privately copied prior review installation and 65 source-matched package declaration directories.",
+  "first_script_exit_code": 1,
+  "followup_ls_exit_code": 2
+}

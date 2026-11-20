@@ -2231,6 +2231,12 @@ Acceptance: verify the four cumulative source candidates are ancestors; independ
 Root owns publication and integration. The separate bug-hunt worker owns receipt-status and any further wallet boundary fixes; separate reviewer owns the new quick-hide feature and its active privacy dependency. Full web qualification must wait for the final wallet freeze and an exclusive resource window.
 No shared-source or remote ref mutation, deployment, contract/fee change, real-funds operation, branch deletion, force push or security-gate weakening.
 
+## Corrected-source lint and artifact QA — generation 3
+
+The same independent worker /root/integration_qa_gen3 continues on branch review/ghostpay-final-artifact-qa-gen3-20261120, pinned to corrected product/test source 2149ad2814d9ae031b23322f87f74842af5dde78. Ownership remains this additive claim and docs/engineering-handoffs/integration-qa-gen3-20261120/ only. The earlier source 53f4253b baseline is preserved in separate checkpoint 758970ce. Verify the single-field shared policy receipt fixture correction, the original 15 source mappings and eight control scopes; then execute one approved full typed-lint retry at 1536 MiB and the original payments-disabled development Pages build with a 1024 MiB Node resource wrapper. Preserve all commands, environment overrides, exact artifacts and limits. Do not rerun the incomplete 900-second coverage command, modify gates, or deploy. Root schedules the sole execution window and owns hosted exact-head gates and publication.
+
+Completed corrected-source results: original full-lint retry terminated with exit 137 before diagnostics; original development Pages build passed, including full web TypeScript and original gates, and all 16 promoted site files passed independent verification against the exact source and checksum inventory. The complete 21-file development output and evidence are preserved in the owned report directory. Payments remain disabled and release evidence is false. The heavy execution window has been released; original exact-head hosted lint, full coverage and browser qualification remain with root.
+
 
 ## 2026-11-20 — Policy receipt fixture repair, generation 7
 
@@ -2263,3 +2269,71 @@ Acceptance: freshly verify each live ref, all best merge bases and current/sourc
 Boundaries: source-only comparison; no tests, builds, package installation, product/test/configuration changes, remote mutations, branch closure/deletion or deployment. Existing original privacy implementation remains actively owned and is not modified or duplicated. Root owns integration and full qualification.
 
 Status: Complete on 2026-11-20. All three selected scopes were compared at frozen 53f4253b; no required runtime gap was established. Report: docs/engineering-handoffs/completion-20261120/remaining-sources-gen5/REPORT.md. Fresh archive-recovery worker /root/archive_recovery_gen6 received the seven PR #259 historical artifact paths and the unverified section-overlap boundary.
+
+## 2026-11-20 — Fresh completion review, generation 8
+
+Worker: `/root/completion_review_gen8`.
+Branch: `review/ghostpay-completion-gen8-20261120`.
+Frozen reviewed candidate: `2149ad2814d9ae031b23322f87f74842af5dde78`; canonical comparison: `417f7c71daf8645e1432f2ec8f070110879b80bd`.
+Owned writes: this additive claim and `docs/engineering-handoffs/completion-review-gen8-20261120/` only.
+Acceptance: independently inspect all 16 non-documentation changes, verify their source identities and protected controls, check correctness against documented acceptance and repository standards, and record concrete remaining findings with precise qualification limits. In particular, review receipt hash/status/primitive-field handling, QR classification and idle expiry, Pages verification before promotion, and the policy receipt fixture hash.
+Boundaries: source review only; no application tests/builds, runtime/test/config edits, duplicate corpus scans, remote mutation, deployment, release, contracts, fees, gate weakening, or edits to another worker's owned paths. Integration QA retains the exclusive execution window and root owns consolidation/publication.
+# Fresh historical documentation recovery — generation 6
+
+Worker: `/root/archive_recovery_gen6`.
+Branch: `docs/ghostpay-historical-archive-gen6-20261120`.
+Frozen comparison: `53f4253bd9afc33bea43a7bdfe95ae287e035bf7`.
+Source candidate: PR #259, `4ff80733a3b36019e2f12fc21a8448e7666b6049`, declared base `ffd982a7aea2856c186b40ef236a39720a1b81f5`.
+Owned writes: this additive claim and `docs/engineering-handoffs/archive-recovery-gen6-20261120/`; only independently proven missing historical archive/provenance material may be recovered under that owned directory.
+Acceptance: compare all 158 recorded historical sections against the frozen candidate and later retained evidence; verify original source lines, hashes and archive transformations; distinguish absent filenames from absent content; preserve attribution and record exact equivalence or a minimal recovery with source-pinned verification. Historical snippets are data and will not be executed.
+Excluded: current status/ownership guidance, active Wiki navigation, runtime/test/configuration/workflow changes, builds, application tests, remote writes, deployment/release, and all active privacy work. Root owns integration and final publication.
+
+
+## 2026-11-20 — Fresh historical archive review generation 8
+
+Worker: `/root/archive_review_gen8`.
+Branch: `review/ghostpay-historical-archive-gen8-20261120`.
+Exact base and reviewed recovery: `a4503e5c3a5b1e02bfd160f36f841dd6f5e66f58`; upstream historical source PR #259 `4ff80733a3b36019e2f12fc21a8448e7666b6049`.
+Owned writes: this additive claim and `docs/engineering-handoffs/archive-review-gen8-20261120/` only.
+Acceptance: independently verify the ten-file documentation-only recovery, recorded archive/source/section hashes and byte ranges, retained QR omission, local links, exact selection boundaries, provenance attribution and historical-only framing. Inspect concrete differences and supplied manifest identities without blindly rerunning the predecessor's full content corpus. Record actual results and limits; report any blocking correction to the coordinator before integration.
+Boundaries: no product/test/config/workflow edits, application tests/builds, execution of historical snippets, remote mutations, deployment, release, or changes to another worker's branch. Root owns integration and application qualification.
+
+Completion: independent archive verification passed with four explicitly retained inherited historical-link findings (two absent original target paths). All 158 original sections, 157 recovered bodies, archive/manifest hashes, publication metadata, and 22 new local links were checked. The 30 later documentation changes through `be12cd043dbfc2f562368fd0ccc1a2a8c3f7a22f` contain no complete recovered section. No recovery bytes or product files were modified. Review evidence and the initial strict-target failure are preserved under `docs/engineering-handoffs/archive-review-gen8-20261120/`; root owns integration.
+
+
+## 2026-11-20 — Separate quick-hide full typing qualification, generation 9
+
+Worker: `/root/quick_hide_qa_gen9`.
+Branch: `review/ghostpay-quick-hide-qa-gen9-20261120`.
+Base and exact feature source: `c8a2d7ca7c6c1caa96256e1cd57ffd7afaafa9d5`; published `137628961463fc5abd8b7927b2efe6b18a0a206a`; exact common tree `da95c2f24426fd9dfd01e38472f07f5dc466cbf9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/quick-hide-qa-gen9-20261120/` only.
+Scope and acceptance: verify local versus published feature tree and execute exactly one original full web typecheck using Node 24 and a 1024 MiB heap in the coordinator-assigned sole execution window. The coordinator authorizes read-only execution in the clean feature worktree, using its existing private dependencies and declaration outputs. Preserve exact command, source, environment, duration, raw log, exit status and any limits. Release the execution window immediately afterward.
+Boundaries: no feature/runtime/test/configuration changes, dependency installation, tests or builds, active privacy lane mutation, remote writes, deployment, release, contract or fee changes, or additional retries. Prior 40-case focused runs and scoped lint are attributed to their executors; three previous full typing exit-137 failures remain historical incomplete attempts. Root retains integration/publication ownership.
+
+Preparation clarification: the suggested author worktree has no node_modules directory. The compiler did not start during that preflight. This worker instead uses its own checkout, privately copying the existing installation and 65 package dist directories from the prior independent-review worktree after verifying the identical lockfile and all 65 full Git package trees. Only the ownership claim differs from the exact feature snapshot outside this documentation record. No install or rebuild is performed.
+
+Completion: one original full web TypeScript invocation passed at execution `9a96ff659ff7295d00caf7a49a5d847d877eff9d`, exit 0 in 30.621 seconds. The execution checkout differs from feature `c8a2d7ca` / published `13762896` only by ownership documentation. All 65 declaration-source trees and copied output digests matched; all 68 workspace links resolve privately. The execution window is released. Earlier exit-137 attempts and setup-only failure remain explicit; full browser/coverage/hosted/integrated qualification stays with successors.
+
+
+## 2026-11-20 — Fresh hosted and publication review, generation 11
+
+Worker: `/root/hosted_review_gen11`. Branch: `review/ghostpay-hosted-gen11-20261120`.
+Base: `e22c1748a3de6eb02f5be3abe27d634b238c67c6`, published consolidation PR #302.
+Owned writes: this additive claim and `docs/engineering-handoffs/hosted-review-gen11-20261120/` only.
+Scope: independently read published PR #302 and separate quick-hide PR #300 heads, available synthetic merge commit trees, original workflow metadata and selected completed logs. Bind each reported result to the observed commit/tree and timestamp.
+Acceptance: preserve queued, skipped, missing and failed outcomes explicitly; distinguish completed checks from complete workflow/release qualification; retain source/metadata/log evidence and a bounded successor handoff. No application test, lint, typecheck, build, dependency copy or historical command execution.
+Boundaries: no remote mutation, workflow rerun/dispatch/cancel, settings change, source edits, shared integration update, deployment, release, contracts, fees or gate waiver. Root owns publication and integration; the format worker owns the local execution window.
+
+Completion: both published/local/synthetic merge trees and both merge parent lists were independently verified. Quick-hide's existing hosted web build and one Chromium rendering smoke passed; its separate kit job passed 296 cases with six skips. At the final 03:16 UTC observation, consolidation's six workflows and quick-hide's remaining three workflows were queued; no current CodeQL/Sonar result was observed. Full metadata, exact decoded logs, source bindings and limits are preserved in the owned review directory. No local application command or remote mutation occurred.
+
+
+## Fresh format parser candidate port and review — generation 10, 2026-11-20
+
+Worker: `/root/format_review_gen10`. Branch: `review/ghostpay-format-candidate-gen10-20261120`.
+Base: published candidate `e22c1748a3de6eb02f5be3abe27d634b238c67c6`; original proposal PR #301 at `7523da612ba365451f1d5c2dbc01d0bdeedbe8c7`.
+Owned writes: `apps/web/src/lib/format.ts`, `apps/web/src/lib/format.test.ts`, this additive claim, and `docs/engineering-handoffs/format-review-gen10-20261120/`.
+Scope: independently review and port the original proposal's exact two production/test blobs onto the current candidate. Preserve original attribution. Commit the original regressions first on unchanged candidate runtime; then port the exact one-line guard after the original-config RED run. This separate port does not modify the original PR, the frozen candidate or a shared integration branch.
+Acceptance: independently review the parseUnits runtime guard, supported precision domain, original regressions and current caller compatibility; execute bounded original-config focused RED/GREEN and scoped lint only in the coordinator's exclusive window; retain exact source/config/dependency identity and every failed or incomplete result. The PR301 main-based lock differs from the current candidate lock, so this run qualifies the isolated current-candidate port rather than claiming original-PR-lock execution.
+Boundaries: no original/shared ref mutation, remote write, automatic integration, broad tests, unrelated source expansion, dependency upgrade, assertion/gate changes, contract/fee/deployment/real-funds action, or interference with active privacy ownership. Root owns final integration and publication.
+
+Completion: original PR301 tests and runtime blobs were ported exactly onto candidate e22c1748. Tests-only d2d270ed reproduced two failures with ten controls passing; exact repair eb969686 passed all12 original repository cases and scoped typed lint. The full-disk setup refusal and zero-case missing-output startup failure are retained separately. Root independently inspected the final two-file diff, requested no source change, and retains publication/integration ownership. The exclusive execution window has been released. Evidence and successor tasks are in `docs/engineering-handoffs/format-review-gen10-20261120/README.md`.
