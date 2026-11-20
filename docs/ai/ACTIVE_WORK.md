@@ -1,3 +1,26 @@
+# F05 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f05-ghostproof`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F05-ghostproof/SPEC.md` and this additive claim.
+Acceptance: source-grounded modular contract, dependencies, failure/recovery,
+privacy/fee limits, acceptance cases and planned checks; verified remote spec.
+Documentation only: no implementation, main merge, deployment, activation or fee decision.
+Existing source and other ownership claims are preserved.
+
+# Future module specifications — 2026-11-19
+
+Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
+Branch: `docs/ghostpay-future-module-specs-20261119`.
+Base commit: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: new `docs/future/modules/**` and this additive claim.
+Scope: 40 separate module specifications covering the 18 products, P01–P19,
+T01/T02 and shared FEE01; preserve aliases and existing spec18 priority.
+Acceptance: all source IDs covered, hard dependency graph acyclic, real code
+reuse documented, independent branch/spec publication verified, documentation-only
+diffs. No implementation, main merge, deployment, activation, fee decisions or release
+changes. Feature branches append their own claim before their specification commit.
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
@@ -725,6 +748,66 @@ Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
 
+## F05 offline receipt assurance continuation — 2026-11-20
+
+Worker: future_features/f05_ghostproof, coordinated by ChatGPT root.
+Branch: `future/f05-ghostproof`; specification head `a241d0a5556c23bf2670f6ba17e7c928b41d7eb4`.
+Main input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/ghostproof/**`, F05 specification and
+handoff, minimal web dependency declaration and matching lock entry if needed.
+Acceptance: bounded offline receipt import using the existing digest and signed
+receipt providers; accurate assurance, trust, binding and unknown finality labels;
+immutable disclosure preview; rejection of unsupported claims; stale/session/abort
+lifecycle protection; deterministic tests with real signed receipts.
+Keep the feature outside production routes and the lean artifact. No provider
+cryptography, existing receipt-core changes, network access, automatic export,
+wallet access, production activation, release, main merge or remote writes.
+Status: main reconciled at `7d64e0f4`; product/tests complete at
+`726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`. Normal configured focused tests
+pass 62/62; scoped coverage, strict TypeScript and repository ESLint pass.
+Source-pinned evidence and remaining scope: `docs/future/modules/F05-ghostproof/HANDOFF.md`.
+Full feature, production activation, independent review and hosted/browser gates remain pending.
+
+
+## F05 independent milestone review — 2026-11-20
+
+Worker: `future_features/f05_independent_review`; branch `future/f05-ghostproof`.
+Starting head: `160acff6dfa40491d36aea151b0e7aa679f05307`.
+Product/test source: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: this additive claim, `docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md`,
+and the coordinator-requested correction summary in the F05 handoff.
+Product code is read-only. Review assurance, signer/invoice binding, strict input
+limits, immutable state and cancellation; replay only the existing focused tests.
+Do not run whole-web TypeScript or typed lint while another worker owns the heavy
+validation slot. No remote mutation, production activation, deployment or payment.
+Status: initial review passed 62/62 focused tests. The canonical-format observation
+was corrected by the coordinator at `d44604ce463cec708c77a230b068f0ac44669280` and independently
+re-reviewed; final focused replay passed 67/67. No remaining introduced blocking
+defect found. Whole-web, browser and release gates remain separate.
+
+
+## F05 canonical binding correction — 2026-11-20
+
+Worker: ChatGPT coordinator, independent-review follow-up.
+Base product: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: GhostProof `review.ts` and `review.test.ts` only.
+Acceptance: canonical binding strings must match their complete input; retain
+explicit whitespace normalization of caller-configured signer pins. Add ordinary
+malformed-format coverage and rerun focused checks before independent re-review.
+
+Correction source: `d44604ce463cec708c77a230b068f0ac44669280`. Independent source review and 67/67
+focused tests pass; full integration qualification remains coordinator-owned.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `f8aab16068bfd55210e0acbcf5bb8492f8c8f472`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
 ## QA-02 payment URI builder length — 2026-11-20 UTC (automation cycle)
 
 - Worker: sequential ChatGPT bug-repair coordinator; no subordinate or independent worker claimed.
@@ -734,3 +817,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
 - Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
 - Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
+
+
+## F05 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `e08333af3eb830a36d375ecf2174db955f559d64`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 67 passing tests,
+current-main TypeScript/build/bundle evidence and source-publication mapping.
+Hosted checks remain separately reported. No activation or main merge.

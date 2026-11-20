@@ -1,0 +1,14 @@
+Head: e08333af3eb830a36d375ecf2174db955f559d64
+Main: aa3df1cb37274fae73af0ca957183c15c51b62d3
+Command: ["node", "../../node_modules/vitest/vitest.mjs", "run", "src/features/future/ghostproof", "--maxWorkers=1"]
+
+ RUN  v5.0.5 /workspace/scratch/db9ec5207fdd/GhostPay-f05/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  67 passed (67)
+   Start at  08:38:19
+   Duration  667ms (import 47%, tests 33%, transform 18%, worker 2%)
+
+
+Exit: 0; seconds: 0.97
