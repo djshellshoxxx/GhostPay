@@ -1,3 +1,16 @@
+# Independent final Sweep authority review — 2026-11-20 UTC
+
+Worker: `/root/custody_transaction_audit`, delegated independent reviewer.
+Branch: `review/ghostpay-sweep-boundary-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: new reviewer-only `apps/web/src/lib/sweep.boundaryAudit.test.ts`, this additive claim, and
+`docs/engineering-handoffs/remediation-20261120/custody-audit/`.
+Acceptance: execute the existing Sweep authority tests and independently exercise the real network authorization/RPC
+client plus actual cryptographic signing across session revocation, delayed deadline checks, and the final handoff.
+Tests use offline synthetic JSON-RPC responses; they are not a browser, development-chain, or external-testnet qualification.
+No product, dependency, workflow, fee, contract, gate, remote-ref, deployment or shared-ledger mutations.
+The other coordinator owns the invoice-replacement browser failure and merchant-ledger correction.
+
 # Isolated consolidation follow-through — 2026-11-19
 
 Worker: ChatGPT follow-through coordinator; independent consolidation, merchant and scanner reviewers.
