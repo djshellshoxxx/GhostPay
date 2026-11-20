@@ -93,6 +93,14 @@
       "evidence": "final-evidence/final-audit-full.json.gz",
       "raw_sha256": "59061e7d09ab66efa0e41874ff885b8adb4c78d3d8b6102da0f21d9a3fcf640c",
       "compressed_sha256": "84d6e58fdd1af8810109f01f4f68cd7d787221e99c88555a9ee53575c3a8051d"
+    },
+    {
+      "id": "full-web-coverage-prior-source",
+      "exit_code": 1,
+      "result": "3837 passed, 1 failed, 13 skipped; original thresholds not certified because one test failed",
+      "evidence": "final-evidence/final-web-coverage.log.gz",
+      "raw_sha256": "24b97f522fe3dadcf5604dd25dc50730b0f354bfb198c931fadef47d53c476d6",
+      "compressed_sha256": "891dfbd08c69114b12df5fa5f88f06340907c5d77669cfb6c500a9612165435e"
     }
   ],
   "limits": [
@@ -100,7 +108,8 @@
     "Invoice run804passed used stable production source; unused test parameter changed while in progress, then5cases andlint reran. Not immutable whole-tree final receipt.",
     "Full workspace lint exit0 retains nonfailing pre-existing generated BTC unused-disable warning.",
     "Full web build and Pages demo have default broad connect-src; no approved deployment origin, tight release RPC list or signed manifest supplied. Demo payments disabled.",
-    "Full web nocov completed4/4; full web coverage and final exact-source hosted checks remain pending.",
+    "Full web nocov completed4/4. Full web coverage finished3837passed/1failed/13skipped; the signer fixture was repaired and independently reviewed later. No full coverage pass inferred.",
     "Local browser could not start; no browser pass inferred."
-  ]
+  ],
+  "historical_scope": "Initial c93 product checkpoint; superseded follow-up results and failures are in FOLLOWUP_QUALIFICATION.json."
 }

@@ -1,0 +1,115 @@
+{
+  "schema": "ghostpay-followup-qualification/1",
+  "frozen_implementation_and_tests": "2b7c015e28aa23f63ba39486ae7345983ce9ff97",
+  "frozen_tree": "cfb76c46e40ba32916e385083738036ed12e33af",
+  "previous_published_pr_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "previous_local_equivalent": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "changed_non_documentation_blobs": {
+    ".github/dependabot.yml": "604a27d1f04a043461d0dd9adcbcfdf73234e845",
+    "apps/web/e2e/network-authorization.spec.ts": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+    "apps/web/src/views/Pay.preflightCompletion.test.tsx": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8",
+    "apps/web/src/views/Pay.signer.test.tsx": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+    "packages/merchant-ledger/src/ledger.test.ts": "ee0270fc6fbd7402262c89b33f4213a03bd294e3",
+    "packages/merchant-ledger/src/reconcile.ts": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a"
+  },
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "checks": [
+    {
+      "id": "full-web-coverage-prior-source",
+      "exit_code": 1,
+      "result": "3837 passed, 1 failed, 13 skipped; original thresholds not certified because one test failed",
+      "evidence": "final-evidence/final-web-coverage.log.gz",
+      "raw_sha256": "24b97f522fe3dadcf5604dd25dc50730b0f354bfb198c931fadef47d53c476d6",
+      "compressed_sha256": "891dfbd08c69114b12df5fa5f88f06340907c5d77669cfb6c500a9612165435e"
+    },
+    {
+      "id": "signer-reproduction",
+      "exit_code": 1,
+      "result": "10 passed, 1 failed",
+      "evidence": "final-evidence/pay-signer-reproduce.log.gz",
+      "raw_sha256": "951d320996a5eab1cc05b9bb18b21ad7996227df15dd98f125b6536b545ded01",
+      "compressed_sha256": "e63c50a1e77aef9dec31394c7157b5903ed0b30ff97d9ad4eacd70b04bed49ef"
+    },
+    {
+      "id": "signer-fixed",
+      "exit_code": 0,
+      "result": "11 passed",
+      "evidence": "final-evidence/pay-signer-fixed.log.gz",
+      "raw_sha256": "306164656ddd1aa0589b4b59ea01adc860a6e809cdbc17f77302d5d9ebff75a0",
+      "compressed_sha256": "87ab5fa2af1965152bf8a402daca84e2bffc5e9a52ff969caedbac9a7d07db5b"
+    },
+    {
+      "id": "signer-scoped-lint",
+      "exit_code": 0,
+      "result": "passed",
+      "evidence": "final-evidence/pay-signer-lint.log.gz",
+      "raw_sha256": "3e254da8da6a5b6858761c2c1fc7b750b35c0fc4b20015125198199bf2691a07",
+      "compressed_sha256": "5ddf027c4f02fdb2218f31d06b236e1dfadd3ec744600fea881f434b3483ffa2"
+    },
+    {
+      "id": "hosted-d74-web",
+      "exit_code": 1,
+      "result": "3849 passed, 1 failed, 1 skipped; same signer fixture failure",
+      "evidence": "final-evidence/hosted-d74-web-135981023399.log.gz",
+      "raw_sha256": "6bb4738cecade3c851511a70197838ae7aa6f316c00769228931b6dcc3dd7452",
+      "compressed_sha256": "ec827328f14aeeb8a85acdc811204a129031d1de67426cd667be176b9457dde1"
+    },
+    {
+      "id": "combined-followup-web-focused",
+      "exit_code": 0,
+      "result": "13 passed, 3 files; selections overlap earlier tests",
+      "evidence": "final-evidence/followup-web-focused.log.gz",
+      "raw_sha256": "fbbcb873e1855fb390967caaef95a9eea79342ddb907c68333f0a6cf2db809f0",
+      "compressed_sha256": "abeea94f9d4f493e2930c508264a3bfc3ed422adbfae853fed73baa0b5193a24"
+    },
+    {
+      "id": "combined-followup-web-typecheck",
+      "exit_code": 0,
+      "result": "passed",
+      "evidence": "final-evidence/followup-web-typecheck.log.gz",
+      "raw_sha256": "2d8c813b3d8237eb283a4e6901aba5a9d2d32b3b2c6b757f9563f1ae398ceaaf",
+      "compressed_sha256": "c134a06b15e96504b571a843e38d8a6f63e07fea9d6af249d28f217da4cee583"
+    },
+    {
+      "id": "combined-followup-web-lint",
+      "exit_code": 0,
+      "result": "passed",
+      "evidence": "final-evidence/followup-web-lint.log.gz",
+      "raw_sha256": "452314486b00eef3e349368f993d4f8138ee69d5754d48e51e09c8c093b6fde1",
+      "compressed_sha256": "d40881fa1207a00bbf18d006b74733623d634229a13ed32e11ff60761a736321"
+    },
+    {
+      "id": "combined-merchant-coverage",
+      "exit_code": 0,
+      "result": "30 passed; statements100, branches99.32, functions100, lines100; original thresholds unchanged",
+      "evidence": "final-evidence/final-merchant-coverage.log.gz",
+      "raw_sha256": "667963557bdd195345aa783f065dbc17d3c6ec6a2a291d0c88ac1a5525cadf31",
+      "compressed_sha256": "02488994fab7767c5a0aa9799c82e952803fbe95c74b8f32c63c75acefde2053"
+    },
+    {
+      "id": "combined-merchant-build",
+      "exit_code": 0,
+      "result": "passed",
+      "evidence": "final-evidence/followup-merchant-build.log.gz",
+      "raw_sha256": "cbc9bdf5526de16674bcee3c401e021f2c2abc312b26c3b038795f8d6e6ffa75",
+      "compressed_sha256": "965448c84ad6fadac86b2e9c4eb2d4f1ea53ad76ace127d6c95340845370f21f"
+    },
+    {
+      "id": "combined-action-pins",
+      "exit_code": 0,
+      "result": "113 pins checked",
+      "evidence": "final-evidence/followup-actions.log.gz",
+      "raw_sha256": "440767222d46234730ed3c529a49d25bafb4da04329655ea7b8846b680690e8a",
+      "compressed_sha256": "7c089794bd66f458074eefe324f5dd83b2b562339665bf7cf8192ce53eadddbf"
+    }
+  ],
+  "limits": [
+    "The original full web run is retained as failed, not retrospectively relabeled after focused repair.",
+    "Hosted d74 source predates the merchant, Dependabot, browser observation and signer fixture follow-ups.",
+    "Root follow-up checks use the combined checkout and previously clean-installed dependencies; there was no new dependency or lockfile change.",
+    "The six-path follow-up changes one existing pure library implementation, four test files and Dependabot discovery configuration; no contract, payment fee, workflow gate or application runtime changed.",
+    "Original hosted full/lean browser and full unit/coverage qualification remain required on the follow-up published head.",
+    "No local Chromium execution succeeded; local socket restriction remains."
+  ]
+}

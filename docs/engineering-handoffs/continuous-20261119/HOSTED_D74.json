@@ -13,13 +13,6 @@
       "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709199"
     },
     {
-      "id": 44643709383,
-      "name": "CI",
-      "status": "queued",
-      "conclusion": null,
-      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709383"
-    },
-    {
       "id": 44643709093,
       "name": "Contract analysis",
       "status": "in_progress",
@@ -60,6 +53,13 @@
       "status": "completed",
       "conclusion": "success",
       "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709101"
+    },
+    {
+      "id": 44643709383,
+      "name": "CI",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44643709383"
     }
   ],
   "ci_jobs": [
@@ -186,20 +186,26 @@
     {
       "id": 135981023399,
       "name": "ts-test (web)",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "id": 135981023693,
       "name": "ts-test (rest-2)",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "id": 135985375119,
       "name": "contracts",
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135995823033,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "failure"
     }
   ],
   "browser": {
@@ -215,7 +221,29 @@
       "failed": 1,
       "skipped": 2
     },
-    "remaining_failure": "network-authorization invoice replacement at final total request count: expected9,actual15. Exactlytwochain assertion passed. Fresh follow-up is diagnosing the replacement preflight completion barrier."
+    "remaining_failure": "Confirmed observation race: current replacement manifest had six legitimate pending reads at the snapshot. Exact89e163fc awaits enabled Continue, preserves original no-growth/two-chain assertions, adds exact method equality. Independent review passed; hosted follow-up required."
   },
-  "limits": "Snapshot while remaining required unit/analyzer jobs run. No CI pass or release approval inferred. Prior four failures narrowed to one remaining fixture/runtime boundary; actual root cause awaits independent verification."
+  "limits": "CI completed failure on this d74 source. Browser and signer failures are preserved and repaired later; no retroactive full pass. Contract analysis still in progress at snapshot; c993 findings remain separate source-pinned evidence. Follow-up candidate requires its own original hosted gates.",
+  "web": {
+    "job": 135981023399,
+    "passed": 3849,
+    "failed": 1,
+    "skipped": 1,
+    "files": 269,
+    "failure": "Pay.signer.test.tsx:89 queried Continue before refreshed manifest completed. Independently reproduced; exact fixture repair f2b991f7 approved."
+  },
+  "analysis_jobs": [
+    {
+      "id": 135980874253,
+      "name": "echidna",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 135980874961,
+      "name": "mythril",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ]
 }
