@@ -110,11 +110,11 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     </WalletDisclosureProvider></PrivacyProvider>);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Reveal details' }));
-    await user.click(screen.getByRole('button', { name: 'Connect', exact: true }));
+    await user.click(screen.getByRole('button', { name: 'Connect' }));
     await user.click(await screen.findByRole('button', { name: 'Continue to wallet' }));
     await screen.findByText('Connected');
     const connectedCalls = [...provider.calls];
-    await user.click(screen.getByRole('button', { name: 'Send', exact: true }));
+    await user.click(screen.getByRole('button', { name: 'Send' }));
     await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
     const blockedFocus: string[] = [];
     const recordFocus = (event: FocusEvent): void => {
@@ -129,7 +129,7 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
       await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
       expect(provider.calls).toEqual(connectedCalls);
       expect(provider.sent).toBeUndefined();
-      expect(screen.queryByRole('button', { name: 'Send', exact: true })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Send' })).toBeNull();
       expect(blockedFocus).toEqual([]);
       expect(document.activeElement).toBe(screen.getByRole('switch', { name: 'Privacy mode' }));
     } finally { document.removeEventListener('focusin', recordFocus, true); }
@@ -149,12 +149,12 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     if (rootName === 'documentElement') { root.setAttribute('tabindex', '-1'); root.focus(); }
     try {
       expect(document.activeElement).toBe(root);
-      fireEvent.click(screen.getByRole('button', { name: 'Connect', exact: true }));
+      fireEvent.click(screen.getByRole('button', { name: 'Connect' }));
       await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
       await user.keyboard('{Alt>}{Shift>}H{/Shift}{/Alt}');
       await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
       expect(provider.calls).toEqual([]);
-      expect(screen.queryByRole('button', { name: 'Connect', exact: true })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Connect' })).toBeNull();
       const safe = screen.getByRole('switch', { name: 'Privacy mode' });
       expect(safe.closest('[hidden], [inert]')).toBeNull();
       expect(document.activeElement).toBe(safe);
@@ -167,7 +167,7 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     </WalletDisclosureProvider></PrivacyProvider>);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Reveal details' }));
-    const connect = screen.getByRole<HTMLButtonElement>('button', { name: 'Connect', exact: true });
+    const connect = screen.getByRole<HTMLButtonElement>('button', { name: 'Connect' });
     await user.click(connect);
     const dialog = await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
     connect.disabled = true;
