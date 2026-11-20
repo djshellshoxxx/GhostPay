@@ -1,3 +1,26 @@
+# R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
+
+Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
+Isolated branch: `integration/ghostpay-refresh-main-20261120-r3`.
+Base: qualified #325 merge `394793b1276aeac337aedde30499548bb57eadf9`, whose tree is
+exactly #325 `1788f1e0a0fe1fb22bb887427c47bdd62db78c1a`; original #307
+`2876b7db580e47a880d5951ce9e62941bcf76fdf` is retained as its first merge parent.
+Current main for this composition: `bfebea0acf213a113d2740366fd592042661ca67`,
+including the separately merged #321 TRON cancellation and #330 census.
+Owned edits: additive this ownership registry and scoped consolidation evidence.
+Integration scope: retain both complete source histories and every donor blob/mode;
+resolve only the additive ownership-document conflict by preserving both sides.
+No other source conflict was found by independent object-level merge review.
+Acceptance: verify ordered parents, all contributed source blobs and modes, both
+ownership blocks, secret/whitespace checks and unchanged original workflows/gates;
+publish a non-force successor of #307 for fresh combined-head CI before main promotion.
+Original #307 and #325 checks are source-specific historical successes, not a pass
+for the new composition. Root acquired cooperative integration generation 11 before
+shared-target updates; verify the current lease and branch heads before publication.
+No deployment, contract change, dependency change, signing or live transaction is included.
+
+---
+
 # Sweep consent and review lifetime consolidation — 2026-11-20 (Pacific)
 
 Worker: `994a0d214fb9-root`; source triage: `branch_inventory`; independent resulting-tree review follows composition.
