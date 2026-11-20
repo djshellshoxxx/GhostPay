@@ -16,7 +16,7 @@
     "frozen_source": "936d054ed067d89c773310d42e33939c1129bbfa",
     "tree": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
     "disposition": "Requires regression testing",
-    "detail": "Published non-force baseline refresh incorporates417canonical. Independent source/artifact reviews and focused combined qualification passed; fresh hosted qualification remains pending. No PR/main merge or deployment.",
+    "detail": "Published non-force refresh incorporates417; independent source/artifact reviews and focused combined qualification passed. Exact936 hosted CLI succeeded on Windows,Ubuntu,macOS; Hosting in progress; CI pending and remaining workflows queued at final snapshot. No PR/main merge or deployment.",
     "pr": 292,
     "local_reviewed_source": "6124ded5741b2d316327bee040da8a44bb1d652c",
     "mergeable_at_snapshot": true
@@ -183,5 +183,7 @@
     "new_probes": 3,
     "maintained_in_pr292": false,
     "exact_source_preserved": "scan-review/privateScanLifecycle.cryptoBoundaryReview.test.ts.txt"
-  }
+  },
+  "latest_ci_observed_at": "2026-11-20T01:29:53.308Z",
+  "latest_ci_addendum": "FINAL_STATUS_ADDENDUM.json"
 }

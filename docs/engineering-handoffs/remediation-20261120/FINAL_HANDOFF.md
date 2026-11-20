@@ -4,7 +4,7 @@
 
 This cycle implemented and published the Pages promotion gate, clarified two adversarial fixtures reported by CodeQL, added meaningful Sweep authority coverage, independently reviewed additional scan/QR work, and refreshed the same scoped PR against the newly published canonical successor. No PR was merged into main and no site, payment network, signing identity or release was activated.
 
-Use [FOLLOWUP_CHECKPOINT.json](FOLLOWUP_CHECKPOINT.json) for the exact latest observation time and machine-readable queue. [FINAL_REMOTE_SNAPSHOT.json](FINAL_REMOTE_SNAPSHOT.json) retains the corresponding API responses. Later CI progress must be read from GitHub rather than inferred from this saved snapshot.
+Use [FOLLOWUP_CHECKPOINT.json](FOLLOWUP_CHECKPOINT.json) for the exact latest observation time and machine-readable queue. [FINAL_STATUS_ADDENDUM.json](FINAL_STATUS_ADDENDUM.json) retains the final workflow/source checks; [FINAL_REMOTE_SNAPSHOT.json](FINAL_REMOTE_SNAPSHOT.json) retains the preceding API snapshot. Later CI progress must be read from GitHub rather than inferred from this saved snapshot.
 
 ## Source and ownership
 
@@ -74,7 +74,7 @@ node scripts/pages/verify-pages-artifact.mjs /absolute/extracted/site /absolute/
 
 ## Hosted CI and incomplete gates
 
-Fresh 936 workflows were queued/pending at the recorded snapshot:
+At the final workflow snapshot (`2026-11-20T01:29:53Z`), exact-936 CLI qualification succeeded on Windows, Ubuntu and macOS. Hosting was in progress; CI was pending and Pages/Beta/Integration were queued. The synthetic merge `495265f25fba558c14cfbfc945d1212661016244` independently has the same source tree as 936. These successes do not complete the mandatory matrix:
 
 | Workflow | Exact run |
 | --- | --- |
@@ -97,7 +97,7 @@ The bounded new reviews demonstrated **zero new Critical, High or Medium runtime
 
 Two High CodeQL annotations were traced to deliberate hostile fixture construction and clarified without changing the generated inputs. Fresh integrated finding-level clearance remains required. Successful language-analysis execution alone does not clear a failed findings check.
 
-The exact d74 Mythril job ended cancelled. Its recovered artifact has four of five target results and three Low SWC116 records. `PolicyAccountFactory` is missing, overall `completed` is false, and the terminal runner exit is null. All retained hashes and the full untruncated partial report were checked. The source locations correspond to existing C1–C3 assessments; this follow-up does not dismiss them or claim new counterexample replay. [Terminal evidence](terminal-mythril/README.md) and the original downloaded ZIP preserve the actual result. Current canonical [Contract analysis 44650172375](https://github.com/djshellshoxxx/GhostPay/actions/runs/44650172375) was queued. The older complete ten-record report and this partial three-record report must not be substituted for complete final-source clearance.
+The exact d74 Mythril job ended cancelled. Its recovered artifact has four of five target results and three Low SWC116 records. `PolicyAccountFactory` is missing, overall `completed` is false, and the terminal runner exit is null. All retained hashes and the full untruncated partial report were checked. The source locations correspond to existing C1–C3 assessments; this follow-up does not dismiss them or claim new counterexample replay. [Terminal evidence](terminal-mythril/README.md) and the original downloaded ZIP preserve the actual result. Current canonical [Contract analysis 44650172375](https://github.com/djshellshoxxx/GhostPay/actions/runs/44650172375) had Echidna in progress and Mythril queued at the final snapshot. The older complete ten-record report and this partial three-record report must not be substituted for complete final-source clearance.
 
 ### Additional independent work preserved for subsequent integration
 

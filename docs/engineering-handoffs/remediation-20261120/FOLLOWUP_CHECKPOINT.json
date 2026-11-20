@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-remediation-checkpoint/1",
-  "observed_at": "2026-11-20T01:19:37.297Z",
+  "observed_at": "2026-11-20T01:29:53.308Z",
   "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
   "canonical": {
     "pr": 278,
@@ -57,20 +57,6 @@
       "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410998"
     },
     {
-      "name": "CLI operator qualification",
-      "id": 44652410859,
-      "status": "queued",
-      "conclusion": null,
-      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410859"
-    },
-    {
-      "name": "Hosting kit",
-      "id": 44652410995,
-      "status": "queued",
-      "conclusion": null,
-      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410995"
-    },
-    {
       "name": "Integration",
       "id": 44652410979,
       "status": "queued",
@@ -90,13 +76,41 @@
       "status": "queued",
       "conclusion": null,
       "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652411300"
+    },
+    {
+      "name": "Hosting kit",
+      "id": 44652410995,
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410995"
+    },
+    {
+      "name": "CLI operator qualification",
+      "id": 44652410859,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44652410859"
     }
   ],
   "current_strict_analyzer": {
     "source": "417f7c71daf8645e1432f2ec8f070110879b80bd",
     "run": 44650172375,
-    "status": "queued",
-    "previous_d74": "cancelled, partial4of5targets and3Lowrecords, not passed"
+    "status": "Echidna in progress; Mythril queued",
+    "previous_d74": "cancelled, partial4of5targets and3Lowrecords, not passed",
+    "jobs": [
+      {
+        "id": 136002883648,
+        "name": "echidna",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 136002883945,
+        "name": "mythril",
+        "status": "queued",
+        "conclusion": null
+      }
+    ]
   },
   "required_owner_decisions": [
     "ADR0029/ADR0015 scope and hosting acceptance",
@@ -111,5 +125,7 @@
   "demonstration_readiness": "BLOCKED",
   "testnet_beta_readiness": "BLOCKED",
   "independent_verdict": "BLOCKED \u2014 WITH PRECISE REMAINING REQUIREMENTS",
-  "next_priority": "Keep936frozen; inspect actual terminal hosted results and repair legitimate failures. After required gates/reviews, acquire current canonical coordination and merge292 via approved PR workflow, reconcile reviewed290 and scan probes, then requalify exact integrated source before main/deployment."
+  "next_priority": "Keep936frozen; inspect actual terminal hosted results and repair legitimate failures. After required gates/reviews, acquire current canonical coordination and merge292 via approved PR workflow, reconcile reviewed290 and scan probes, then requalify exact integrated source before main/deployment.",
+  "prior_observed_at": "2026-11-20T01:19:37.297Z",
+  "latest_status_addendum": "FINAL_STATUS_ADDENDUM.json"
 }

@@ -4,16 +4,20 @@
   "source_candidate": "936d054ed067d89c773310d42e33939c1129bbfa",
   "files": {
     "FINAL_HANDOFF.md": {
-      "bytes": 16508,
-      "sha256": "92cca0e89470e1a415c9d63e10d63be9e21ac4b30fbdaa2cc7782a4d9e67729e"
+      "bytes": 16959,
+      "sha256": "618bf146bf6a551afa28b07b317705d0b787dec7324a518c6342e110ca997eb4"
     },
     "FINAL_REMOTE_SNAPSHOT.json": {
       "bytes": 24893,
       "sha256": "95fd00ec1e64ec3f555b37c4c2232cacc88d2914fa97069117b9dd98a331068d"
     },
+    "FINAL_STATUS_ADDENDUM.json": {
+      "bytes": 19861,
+      "sha256": "863e4515845a16960b963ce27ba1524843f6d6a3d759aba2d4ca7ae16c289753"
+    },
     "FOLLOWUP_CHECKPOINT.json": {
-      "bytes": 4236,
-      "sha256": "03c3f91fa5830b3c96d817ef35674577e94476e2173e543f3c2b4d56a2ba5cd5"
+      "bytes": 4666,
+      "sha256": "86913892219ce8f7cf5960218d08f14803445f7857263a19363fe1ef4bee9c34"
     },
     "PR_INVENTORY.json": {
       "bytes": 171759,
@@ -28,8 +32,8 @@
       "sha256": "a429d45e09b2b25585f6c10437e64d611ffc934be042f6d27d43936bb35965fd"
     },
     "REMEDIATION_LEDGER.json": {
-      "bytes": 8809,
-      "sha256": "86a7841367a87ae876297d7e0b7719477b02d66ca8f160eec39d09fc060aed0d"
+      "bytes": 8993,
+      "sha256": "090b379d55e9d510f3c20fd6d3747284b09b3813e2ec43ba14e979673ea49e2a"
     },
     "REMOTE_SNAPSHOT_BEFORE_REFRESH.json.gz": {
       "bytes": 3326,

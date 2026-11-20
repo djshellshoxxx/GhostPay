@@ -1,0 +1,528 @@
+{
+  "format": "ghostpay-final-live-status-addendum/1",
+  "workflow_snapshot": {
+    "observed_at": "2026-11-20T01:29:53.308Z",
+    "responses": [
+      {
+        "status": "fulfilled",
+        "value": {
+          "name": "main",
+          "data": {
+            "ref": "refs/heads/main",
+            "node_id": "REF_kwDOVR5mTK9yZWZzL2hlYWRzL21haW4",
+            "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/refs/heads/main",
+            "object": {
+              "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+              "type": "commit",
+              "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/c977b5d6723f6822c3b5d86cd6b231712c53c395"
+            }
+          }
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "name": "canonical",
+          "data": {
+            "ref": "refs/heads/release/ghostpay-beta-qualification-20261119",
+            "node_id": "REF_kwDOVR5mTNoAN3JlZnMvaGVhZHMvcmVsZWFzZS9naG9zdHBheS1iZXRhLXF1YWxpZmljYXRpb24tMjAyNjExMTk",
+            "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/refs/heads/release/ghostpay-beta-qualification-20261119",
+            "object": {
+              "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+              "type": "commit",
+              "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/417f7c71daf8645e1432f2ec8f070110879b80bd"
+            }
+          }
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "name": "head",
+          "data": {
+            "ref": "refs/heads/fix/ghostpay-pages-integrity-gate-20261120",
+            "node_id": "REF_kwDOVR5mTNoANXJlZnMvaGVhZHMvZml4L2dob3N0cGF5LXBhZ2VzLWludGVncml0eS1nYXRlLTIwMjYxMTIw",
+            "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/refs/heads/fix/ghostpay-pages-integrity-gate-20261120",
+            "object": {
+              "sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+              "type": "commit",
+              "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/936d054ed067d89c773310d42e33939c1129bbfa"
+            }
+          }
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "name": "runs",
+          "data": {
+            "workflow_runs": [
+              {
+                "id": 44652410998,
+                "name": "Beta acceptance",
+                "status": "queued",
+                "conclusion": null,
+                "run_number": 286,
+                "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410998/jobs",
+                "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410998/logs",
+                "workflow_id": 414091144
+              },
+              {
+                "id": 44652410979,
+                "name": "Integration",
+                "status": "queued",
+                "conclusion": null,
+                "run_number": 348,
+                "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410979/jobs",
+                "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410979/logs",
+                "workflow_id": 392297734
+              },
+              {
+                "id": 44652410961,
+                "name": "CI",
+                "status": "pending",
+                "conclusion": null,
+                "run_number": 1526,
+                "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410961/jobs",
+                "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410961/logs",
+                "workflow_id": 391558649
+              },
+              {
+                "id": 44652411300,
+                "name": "Pages",
+                "status": "queued",
+                "conclusion": null,
+                "run_number": 281,
+                "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652411300/jobs",
+                "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652411300/logs",
+                "workflow_id": 392799214
+              },
+              {
+                "id": 44652410995,
+                "name": "Hosting kit",
+                "status": "in_progress",
+                "conclusion": null,
+                "run_number": 397,
+                "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410995/jobs",
+                "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410995/logs",
+                "workflow_id": 398745505
+              },
+              {
+                "id": 44652410859,
+                "name": "CLI operator qualification",
+                "status": "completed",
+                "conclusion": "success",
+                "run_number": 268,
+                "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410859/jobs",
+                "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44652410859/logs",
+                "workflow_id": 412675588
+              }
+            ]
+          }
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "name": "strict",
+          "data": {
+            "jobs": [
+              {
+                "id": 136002883648,
+                "name": "echidna",
+                "status": "in_progress",
+                "conclusion": null,
+                "run_id": 44650172375,
+                "logs_url": null,
+                "steps": [
+                  {
+                    "name": "Set up job",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 1
+                  },
+                  {
+                    "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 2
+                  },
+                  {
+                    "name": "Run ./.github/actions/setup-forge",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 3
+                  },
+                  {
+                    "name": "Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 4
+                  },
+                  {
+                    "name": "Install checksum-pinned Echidna and crytic-compile",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "number": 5
+                  },
+                  {
+                    "name": "Install pinned Mythril with official compiler-host compatibility",
+                    "status": "completed",
+                    "conclusion": "skipped",
+                    "number": 6
+                  },
+                  {
+                    "name": "Execute the unchanged full analyzer runner",
+                    "status": "in_progress",
+                    "conclusion": null,
+                    "number": 7
+                  },
+                  {
+                    "name": "Preserve bounded output and exact source/outcome metadata",
+                    "status": "pending",
+                    "conclusion": null,
+                    "number": 8
+                  },
+                  {
+                    "name": "Upload analysis evidence even after a failing gate",
+                    "status": "pending",
+                    "conclusion": null,
+                    "number": 9
+                  },
+                  {
+                    "name": "Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
+                    "status": "pending",
+                    "conclusion": null,
+                    "number": 16
+                  },
+                  {
+                    "name": "Post Run ./.github/actions/setup-forge",
+                    "status": "pending",
+                    "conclusion": null,
+                    "number": 17
+                  },
+                  {
+                    "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+                    "status": "pending",
+                    "conclusion": null,
+                    "number": 18
+                  }
+                ]
+              },
+              {
+                "id": 136002883945,
+                "name": "mythril",
+                "status": "queued",
+                "conclusion": null,
+                "run_id": 44650172375,
+                "logs_url": null,
+                "steps": null
+              }
+            ]
+          }
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "name": "ci",
+          "data": {
+            "jobs": []
+          }
+        }
+      }
+    ]
+  },
+  "cli_jobs": {
+    "jobs": [
+      {
+        "id": 136010264756,
+        "name": "CLI (windows-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 44652410859,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run npm ci --ignore-scripts --no-audit --no-fund",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run npm run test:cli-build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm run build:cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npm run typecheck -w @ghostpay/cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run npm test -w @ghostpay/cli -- --maxWorkers=2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run npm run test:compiled -w @ghostpay/cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 136010265066,
+        "name": "CLI (ubuntu-24.04)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 44652410859,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run npm ci --ignore-scripts --no-audit --no-fund",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run npm run test:cli-build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm run build:cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npm run typecheck -w @ghostpay/cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run npm test -w @ghostpay/cli -- --maxWorkers=2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run npm run test:compiled -w @ghostpay/cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      },
+      {
+        "id": 136010265088,
+        "name": "CLI (macos-latest)",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 44652410859,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run npm ci --ignore-scripts --no-audit --no-fund",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run npm run test:cli-build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run npm run build:cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Run npm run typecheck -w @ghostpay/cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Run npm test -w @ghostpay/cli -- --maxWorkers=2",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Run npm run test:compiled -w @ghostpay/cli",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19
+          }
+        ]
+      }
+    ]
+  },
+  "synthetic_merge": {
+    "sha": "495265f25fba558c14cfbfc945d1212661016244",
+    "node_id": "C_kwDOVR5mTNoAKDQ5NTI2NWYyNWZiYTU1OGMxNGNmYmZjOTQ1ZDEyMTI2NjEwMTYyNDQ",
+    "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/495265f25fba558c14cfbfc945d1212661016244",
+    "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/495265f25fba558c14cfbfc945d1212661016244",
+    "author": {
+      "name": "sheldon",
+      "email": "127660907+djshellshoxxx@users.noreply.github.com",
+      "date": "2026-11-20T01:16:37Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-11-20T01:16:37Z"
+    },
+    "tree": {
+      "sha": "02b24c83c14a8af608a97ccdd7ed97b0a3351a87",
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/trees/02b24c83c14a8af608a97ccdd7ed97b0a3351a87"
+    },
+    "message": "Merge 936d054ed067d89c773310d42e33939c1129bbfa into 417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "parents": [
+      {
+        "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/417f7c71daf8645e1432f2ec8f070110879b80bd"
+      },
+      {
+        "sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+        "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/git/commits/936d054ed067d89c773310d42e33939c1129bbfa",
+        "html_url": "https://github.com/djshellshoxxx/GhostPay/commit/936d054ed067d89c773310d42e33939c1129bbfa"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq/591CRC1aQ7uu5UhlAAAK0AQAJ7OY5Zs8lvQ5VF4lhpSfeFe\nULeV9Jb7dZqGsxMxqD4IiR5WZ6XpMPBrHqQuUOfkrd/N+1YvoAAdvzE5d7MAvjwC\nGfUIV+fcTz7gVm9AIeCfPrdAkRaYyo6Gs72vf3WTvAZlpLqJ0OD+GcpLAH5H7hN1\nqdfjr7LiwHNvasW2RlR9H9LqLQOrCUiB+4O6AQ6GDaUXyuQFe89iQR51e1nF5xYV\nQePQQ0D2nNabxIU56igfMCAHXdBGZG43LhzV7qXLWsRTXMlOFJIoLB8s7oYZny4n\n+a1ULhb/BBM973FkW17AgaK1p8vW7FWU80e/upNuU13KHmh4ylqLqBbGbhpHIrv1\n4Mz+TkGcMnrmYV/GSNAubmFzo/NDwY+kwR2IYOn2Zz5bhFbjbAOMj24JIbAdZ4bb\nX8YbQwLqNGAJbGxoN7ukV93nASkYzappP6vezEkzBPrWf3Ohh4jmX3jmOsorSQWZ\n/IKMAt7MaoEyNpU3TG565BdXEdiLoqw20Iirg5TLUHp06029Q5SsIS0Oy/f0L6wd\nqMOrVinKjOywTAU0IeTjntwGuDLf4UlepRy3Lf/jnOKqCn5owH2yhItK6mwrW9FI\naW0vKL371r36X9z5Xe5MB2ZZhDDu+xmdoqda6EOm+sB7YomHJDdnoijqxFnMPUOq\n9LcKbwcWFS8q0g+DdZWf\n=uQZw\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 02b24c83c14a8af608a97ccdd7ed97b0a3351a87\nparent 417f7c71daf8645e1432f2ec8f070110879b80bd\nparent 936d054ed067d89c773310d42e33939c1129bbfa\nauthor sheldon <127660907+djshellshoxxx@users.noreply.github.com> 1795137397 +0000\ncommitter GitHub <noreply@github.com> 1795137397 +0000\n\nMerge 936d054ed067d89c773310d42e33939c1129bbfa into 417f7c71daf8645e1432f2ec8f070110879b80bd\n",
+      "verified_at": "2026-11-20T01:16:37Z"
+    }
+  },
+  "source_identity": "Synthetic merge495265f25fba558c14cfbfc945d1212661016244 has exactly the same tree as936. CLI workflow is associated with936 and all3platform jobs succeeded. No complete mandatory matrix or later status is inferred.",
+  "extra_source_and_cli_reads_recorded_at": "2026-11-20T01:31:31.958087+00:00"
+}
