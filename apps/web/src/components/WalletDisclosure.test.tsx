@@ -134,7 +134,7 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
       expect(document.activeElement).toBe(screen.getByRole('switch', { name: 'Privacy mode' }));
     } finally { document.removeEventListener('focusin', recordFocus, true); }
   });
-  it('quick hide focuses the privacy control when the caller lost focus before disclosure', async () => {
+  it.each(['body', 'documentElement'] as const)('quick hide focuses the privacy control when the caller left focus on %s', async (rootName) => {
     const provider = new MockWallet(); const scope = {};
     render(<PrivacyProvider enabled scope={scope}><WalletDisclosureProvider scope={scope}>
       <PrivateWallet provider={provider} />
@@ -144,14 +144,38 @@ describe('mounted wallet disclosure and real wallet entry points', () => {
     await user.click(reveal);
     // A real wallet caller can disable its initiating button while awaiting preflight.
     // Browsers then leave body as the active element before the disclosure is requested.
+    const root = document[rootName];
     reveal.blur();
-    expect(document.activeElement).toBe(document.body);
-    fireEvent.click(screen.getByRole('button', { name: 'Connect', exact: true }));
-    await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
-    await user.keyboard('{Alt>}{Shift>}H{/Shift}{/Alt}');
-    await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
+    if (rootName === 'documentElement') { root.setAttribute('tabindex', '-1'); root.focus(); }
+    try {
+      expect(document.activeElement).toBe(root);
+      fireEvent.click(screen.getByRole('button', { name: 'Connect', exact: true }));
+      await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+      await user.keyboard('{Alt>}{Shift>}H{/Shift}{/Alt}');
+      await waitFor(() => { expect(screen.queryByRole('dialog')).toBeNull(); });
+      expect(provider.calls).toEqual([]);
+      expect(screen.queryByRole('button', { name: 'Connect', exact: true })).toBeNull();
+      const safe = screen.getByRole('switch', { name: 'Privacy mode' });
+      expect(safe.closest('[hidden], [inert]')).toBeNull();
+      expect(document.activeElement).toBe(safe);
+    } finally { if (rootName === 'documentElement') root.removeAttribute('tabindex'); }
+  });
+  it('cancellation falls back when the real initiating button becomes disabled', async () => {
+    const provider = new MockWallet(); const scope = {};
+    render(<PrivacyProvider enabled scope={scope}><WalletDisclosureProvider scope={scope}>
+      <PrivateWallet provider={provider} />
+    </WalletDisclosureProvider></PrivacyProvider>);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Reveal details' }));
+    const connect = screen.getByRole<HTMLButtonElement>('button', { name: 'Connect', exact: true });
+    await user.click(connect);
+    const dialog = await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+    connect.disabled = true;
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel wallet request' }));
+    await screen.findByText('Cancelled');
     expect(provider.calls).toEqual([]);
-    expect(screen.queryByRole('button', { name: 'Connect', exact: true })).toBeNull();
+    expect(connect.disabled).toBe(true);
+    expect(connect.closest('[hidden], [inert]')).toBeNull();
     expect(document.activeElement).toBe(screen.getByRole('switch', { name: 'Privacy mode' }));
   });
   it('route/scope changes and unmount cancel the prompt rather than keeping its approval alive', async () => {
