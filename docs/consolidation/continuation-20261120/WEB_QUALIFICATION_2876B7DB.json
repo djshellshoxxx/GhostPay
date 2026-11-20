@@ -11,7 +11,7 @@
       "docs/consolidation/continuation-20261120/WEB_QUALIFICATION_2876B7DB.json",
       "docs/consolidation/continuation-20261120/WEB_QUALIFICATION_2876B7DB.md"
     ],
-    "acceptance": "Preserve already completed exact-source evidence only; no new tests, product changes, gate changes, existing-ref updates or PR."
+    "acceptance": "Preserve completed exact-source evidence only. Later evidence additions use a fast-forward expected-head update of this owned branch; no product/gate edits, PR creation, main/PR #307/lock mutations."
   },
   "qualified_source": {
     "commit": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
@@ -453,6 +453,16 @@
       "path": "apps/web/vitest.nocov.config.ts",
       "bytes": 551,
       "sha256": "0cda0eaabc20ac02d86a6074b17078a06ac86b4ed40b81d11550a89fcd779e07"
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "bytes": 13561,
+      "sha256": "7e91a3a7c03f0192343a65b7744f0f36d5797c9bf75239ce0b2e048f790b9aa7"
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.mjs",
+      "bytes": 14091,
+      "sha256": "7c79607f182b1d365448c61b1df30a1b018edf283b4765ee746c5c741c5e0d97"
     }
   ],
   "source_integrity": {
@@ -500,7 +510,7 @@
     },
     {
       "gate": "Full and lean browser suites; Pages build/artifact/browser acceptance",
-      "status": "Required before promotion; not executed successfully by this qualification. Existing source-pinned review records Chromium socket creation denied before page creation.",
+      "status": "The local original lean production build passed as recorded separately. Full/lean browser suites and Pages release build/artifact/browser acceptance remain required before promotion. Existing source-pinned review records Chromium socket creation denied before page creation.",
       "prior_evidence": "https://github.com/djshellshoxxx/GhostPay/blob/2876b7db580e47a880d5951ce9e62941bcf76fdf/docs/consolidation/invoice-file-20261120/REVIEW.md"
     },
     {
@@ -515,8 +525,158 @@
   ],
   "limits": [
     "Evidence applies only to the qualified commit/tree, not subsequent feature commits.",
-    "No production application build, browser run, deployment, release, merge or remote branch update was performed by the qualification runs.",
+    "The initial install/static/full-test qualification did not include an application build; the later original lean build is recorded separately here. No full-profile production build, browser run, deployment, release or merge was performed.",
     "Historical interrupted attempts remain distinct and are not counted as passes. Focused test counts overlap this full run and must not be added.",
     "The evidence publication adds documentation only and does not move main or the PR #307 head."
-  ]
+  ],
+  "lean_production_build": {
+    "source": {
+      "commit": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "tree": "0b5bfcd30c9b0f3c25e1bd35be1207714f711193"
+    },
+    "command": "NODE_OPTIONS=--max-old-space-size=1536 GHOSTPAY_LOCAL_BUILD_PROFILE=lean npm run build --workspace @ghostpay/web",
+    "cwd": ".",
+    "started_at_utc": "2026-11-20T17:25:09.701584+00:00",
+    "completed_at_utc": "2026-11-20T17:25:32.037225+00:00",
+    "seconds": 22.34,
+    "exit_code": 0,
+    "log": {
+      "path": "qualification-lean-build-2876b7db.log",
+      "bytes": 2517,
+      "sha256": "44012c86c975c045e1113222b32723c5df794cc0af26c690ea0fa9710ae6c080"
+    },
+    "source_after": {
+      "commit": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+      "tree": "0b5bfcd30c9b0f3c25e1bd35be1207714f711193",
+      "git_status_porcelain": "",
+      "package_lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+    },
+    "attempt": 1,
+    "browser_launched": false,
+    "deployment_performed": false,
+    "source_or_config_edits": false,
+    "source_unchanged": true,
+    "profile": "lean",
+    "original_build_script": "tsc -p tsconfig.json --noEmit && vite build",
+    "original_postbuild_script": "node scripts/scan-bundle.mjs",
+    "postbuild_result": "Bundle scan passed: 17 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.",
+    "artifact_scope": {
+      "directory": "apps/web/dist",
+      "file_count": 17,
+      "total_bytes": 2481926,
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 1761,
+          "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+        },
+        {
+          "path": "assets/ar-B7hqN6M8.js",
+          "bytes": 305263,
+          "sha256": "b96e832600bf1db9be47abaf08560fa86bd86543440515b56b813d33b7f1c70c"
+        },
+        {
+          "path": "assets/es-EiI9qdRS.js",
+          "bytes": 251960,
+          "sha256": "fcf3f4ac4aa94474cbf8831b52e50d584ea3e562dea5a53483313de1df8d8d2f"
+        },
+        {
+          "path": "assets/index-DyOAW80E.js",
+          "bytes": 1287286,
+          "sha256": "4d92bab6d7d7b6109aa864aa2a8bc5644ec06e2ddbd2c7f28698b92e653919c5"
+        },
+        {
+          "path": "assets/ja-Blk8DGS3.js",
+          "bytes": 298707,
+          "sha256": "83955f103046d3f2ea6d8051a3756c4c9446ca7d9c545857a52672115792e1b8"
+        },
+        {
+          "path": "assets/jsQR-Ct1FLwmy.js",
+          "bytes": 129988,
+          "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f"
+        },
+        {
+          "path": "assets/rolldown-runtime-XKyaHtl9.js",
+          "bytes": 726,
+          "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+        },
+        {
+          "path": "assets/scanner.worker-k6gTvtBx.js",
+          "bytes": 62202,
+          "sha256": "4e2d5eb463bb7e379cba83fedd952078bb17fbfbb4466897fc39ee5e13f4dc16"
+        },
+        {
+          "path": "assets/style-CF4XsaTc.css",
+          "bytes": 11888,
+          "sha256": "e49301963aa3230db49475ca90ac300577214eba0dd095a49210a33670d8201d"
+        },
+        {
+          "path": "build-info.json",
+          "bytes": 145,
+          "sha256": "53d7a38ff35cb0a9be6cd57680ae7a02c23f25d5f6b44d9dc6f368e287f44b36"
+        },
+        {
+          "path": "deployments/README.md",
+          "bytes": 861,
+          "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 332,
+          "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+        },
+        {
+          "path": "ghostpay-lean-build.json",
+          "bytes": 99273,
+          "sha256": "68da1f53b2fd1d7ab3d4e7f0b1248a90f014e09cc22cf2ddc1c180b2d60ce3af"
+        },
+        {
+          "path": "help.css",
+          "bytes": 3283,
+          "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+        },
+        {
+          "path": "help.html",
+          "bytes": 16853,
+          "sha256": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1"
+        },
+        {
+          "path": "index.html",
+          "bytes": 3369,
+          "sha256": "c2c08b24cf01b07b9083ad0277d5c5978124491e38100678d0d34b4b4a5e24c8"
+        },
+        {
+          "path": "privacy.html",
+          "bytes": 8029,
+          "sha256": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7"
+        }
+      ],
+      "build_info": {
+        "app": "ghostpay-web",
+        "version": "0.1.0",
+        "commit": "unknown",
+        "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      },
+      "note": "Local lean production artifact only. No full-profile build, browser execution, Pages publication, release or deployment. The requested command did not supply GP_COMMIT and the emitted commit label is unknown; exact source and produced bytes are bound by this external evidence record."
+    },
+    "nonfatal_warnings": [
+      "Existing npm http-proxy configuration warning.",
+      "help.css was unresolved during transformation; the final output includes help.css.",
+      "node:http was externalized for browser compatibility from packages/pir-two-server/dist/http.js.",
+      "qr-exchange readers.ts has both static and dynamic imports, so the dynamic import does not create a separate chunk.",
+      "The largest minified chunk exceeds the original 1200 kB warning threshold."
+    ],
+    "preflight": {
+      "path": "qualification-lean-build-preflight-2876b7db.json",
+      "bytes": 343,
+      "sha256": "82f07d6ded19ac75f52661bf03554a07a5f90c7f0705d8a1be2a13095e8d7d06"
+    },
+    "raw_record": {
+      "path": "qualification-lean-build-2876b7db.json",
+      "bytes": 1164,
+      "sha256": "92f98629e917e24a717f6bcbf673f7a36cbfadf3f570a714a890e2840fb79821"
+    }
+  },
+  "last_evidence_append_at_utc": "2026-11-20T17:27:06.366076+00:00",
+  "evidence_append_parent_commit": "cfd1b754e0797ae159927b8b76f09b6216a645cb"
 }

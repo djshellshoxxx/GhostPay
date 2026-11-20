@@ -12,7 +12,7 @@ The [machine-readable record](WEB_QUALIFICATION_2876B7DB.json) contains exact co
 - Original prerequisite/static evidence recorded **2026-11-20T16:38:08.485515+00:00**.
 - Full web result recorded **2026-11-20T17:11:20.958277+00:00**.
 - HEAD, source tree, lockfile and empty `git status --porcelain=v1` verified again **2026-11-20T17:15:11.519961+00:00**.
-- Worker: `combined_qualification`; evidence branch: `evidence/ghostpay-web-qualification-20261120`. Ownership is limited to this Markdown and its adjacent JSON. No new tests are run for publication.
+- Worker: `combined_qualification`; evidence branch: `evidence/ghostpay-web-qualification-20261120`. Ownership is limited to this Markdown and its adjacent JSON. No tests are rerun for evidence publication; the later separately authorized lean build is recorded below.
 
 ## Completed local gates
 
@@ -59,8 +59,27 @@ The exact expanded test names are preserved from the Vitest JSON reporter in the
 
 ## Evidence boundaries and remaining gates
 
-This completes the exact-source local locked-install, library-build, typecheck, lint and original web-unit-test gates. It does not establish hosted CI or browser success. Before main promotion, require applicable current-head hosted checks, full/lean browser suites, Pages build/artifact/browser acceptance, CodeQL, and complete Tor qualification.
+This completes the exact-source local locked-install, library-build, typecheck, lint, original web-unit-test and subsequent lean production-build gates. It does not establish hosted CI or browser success. Before main promotion, require applicable current-head hosted checks, full/lean browser suites, Pages build/artifact/browser acceptance, CodeQL, and complete Tor qualification.
 
 The existing source-pinned [invoice-file review](https://github.com/djshellshoxxx/GhostPay/blob/2876b7db580e47a880d5951ce9e62941bcf76fdf/docs/consolidation/invoice-file-20261120/REVIEW.md) records Chromium failing to create its required socket before a page exists; no new browser attempt was made here. The [Tor qualification handoff](https://github.com/djshellshoxxx/GhostPay/blob/2876b7db580e47a880d5951ce9e62941bcf76fdf/docs/handoffs/TOR_QUALIFICATION_REPAIR_20261120.md) retains its application/browser/container gates. DOM tests are not browser acceptance.
 
-No source, tests, manifests, lockfile, gate configuration, existing branch ref, PR state, release, deployment, or consolidation lock was changed by this evidence publication.
+Evidence-branch changes are limited to this Markdown and its JSON record. Source, tests, manifests, lockfile, gate configuration, main, PR #307, release/deployment state and the consolidation lock remain unchanged.
+
+## Subsequent original lean production build
+
+One separately authorized build ran on the same unchanged `2876b7db580e47a880d5951ce9e62941bcf76fdf` source:
+
+```bash
+NODE_OPTIONS=--max-old-space-size=1536 GHOSTPAY_LOCAL_BUILD_PROFILE=lean npm run build --workspace @ghostpay/web
+```
+
+- **Exit 0**, one attempt, **22.34 seconds**. Started **2026-11-20 17:25:09.701584 UTC**; completed **17:25:32.037225 UTC**.
+- The original `tsc -p tsconfig.json --noEmit && vite build` and original `node scripts/scan-bundle.mjs` postbuild both passed.
+- Postbuild verified **17 files**, validated the bundled deployment source, and found no dynamic code, unexpected origins, source maps, or loose deployment JSON.
+- Generated local `apps/web/dist` contains **17 files / 2,481,926 bytes**. Every output path, size and SHA-256 is recorded in the JSON. Raw output files are not committed.
+- Build log: `qualification-lean-build-2876b7db.log`, 2,517 bytes, SHA-256 `44012c86c975c045e1113222b32723c5df794cc0af26c690ea0fa9710ae6c080`.
+- Before and after: HEAD/tree matched the qualified source, `git status --porcelain=v1` was empty, and the lockfile hash was unchanged. No retry or source/configuration edit occurred.
+
+The exact requested command did not supply `GP_COMMIT`; generated `build-info.json` reports `commit: "unknown"`. This external evidence binds the verified source and emitted bytes; the output is not claimed as an identified release artifact. Scope is the **lean local production build**. No browser was launched, no full-profile production build was run, and nothing was deployed.
+
+Nonfatal warnings are retained: npm's existing proxy setting, late resolution of `help.css` (present in final output), browser externalization of `node:http`, mixed static/dynamic QR-reader imports, and a chunk above the original 1,200 kB warning threshold. No warning threshold or gate was changed. Browser acceptance and the hosted release gates remain separate.
