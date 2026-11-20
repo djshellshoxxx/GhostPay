@@ -1,0 +1,93 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { recordClipboardCopy, type ClipboardPort } from './clipboardPrivacy';
+
+afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
+
+function fakeClipboard(initial = ''): { port: ClipboardPort; value: () => string; overwrite: (next: string) => void; write: ReturnType<typeof vi.fn>; read: ReturnType<typeof vi.fn> } {
+  let value = initial;
+  const read = vi.fn(async () => value);
+  const write = vi.fn(async (next: string) => { value = next; });
+  return { port: { readText: read, writeText: write }, value: () => value, overwrite: (next) => { value = next; }, write, read };
+}
+
+describe('opt-in clipboard cleanup', () => {
+  it('does not read or clear the clipboard when disabled or given an invalid delay', async () => {
+    vi.useFakeTimers();
+    const c = fakeClipboard('private');
+    for (const delay of [0, -1, NaN, Infinity, 0.5, 5 * 60_000 + 1]) recordClipboardCopy('private', c.port, delay);
+    await vi.runAllTimersAsync();
+    expect(c.read).not.toHaveBeenCalled();
+    expect(c.write).not.toHaveBeenCalled();
+  });
+
+  it('clears matching content only after the configured interval', async () => {
+    vi.useFakeTimers();
+    const c = fakeClipboard('private');
+    recordClipboardCopy('private', c.port, 30_000);
+    await vi.advanceTimersByTimeAsync(29_999);
+    expect(c.read).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(c.read).toHaveBeenCalledOnce();
+    expect(c.write).toHaveBeenCalledExactlyOnceWith('');
+    expect(c.value()).toBe('');
+  });
+
+  it('never overwrites a newer external clipboard value', async () => {
+    vi.useFakeTimers();
+    const c = fakeClipboard('private');
+    recordClipboardCopy('private', c.port, 30_000);
+    c.overwrite('new text from another app');
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(c.read).toHaveBeenCalledOnce();
+    expect(c.write).not.toHaveBeenCalled();
+    expect(c.value()).toBe('new text from another app');
+  });
+
+  it('supersedes older timers, even when the user recopies the same text', async () => {
+    vi.useFakeTimers();
+    const c = fakeClipboard('private');
+    recordClipboardCopy('private', c.port, 30_000);
+    await vi.advanceTimersByTimeAsync(10_000);
+    recordClipboardCopy('private', c.port, 30_000);
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(c.read).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(c.write).toHaveBeenCalledExactlyOnceWith('');
+  });
+
+  it('does not clear after a newer copy arrives while clipboard reading is pending', async () => {
+    vi.useFakeTimers();
+    let resolveRead: ((value: string) => void) | undefined;
+    const readText = vi.fn(() => new Promise<string>((resolve) => { resolveRead = resolve; }));
+    const writeText = vi.fn(async (_value: string) => undefined);
+    const port: ClipboardPort = { readText, writeText };
+    recordClipboardCopy('older', port, 30_000);
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(readText).toHaveBeenCalledOnce();
+    recordClipboardCopy('newer', port, 30_000);
+    if (!resolveRead) throw new Error('Expected pending clipboard read');
+    resolveRead('older');
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(writeText).not.toHaveBeenCalled();
+  });
+
+  it('fails quietly when clipboard read or clear permissions are denied', async () => {
+    vi.useFakeTimers();
+    const readDenied: ClipboardPort = {
+      readText: vi.fn(async () => { throw new Error('permission denied'); }),
+      writeText: vi.fn(async (_value: string) => undefined),
+    };
+    recordClipboardCopy('private', readDenied, 30_000);
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(readDenied.writeText).not.toHaveBeenCalled();
+
+    const writeDenied: ClipboardPort = {
+      readText: vi.fn(async () => 'private'),
+      writeText: vi.fn(async (_value: string) => { throw new Error('permission denied'); }),
+    };
+    recordClipboardCopy('private', writeDenied, 30_000);
+    await expect(vi.advanceTimersByTimeAsync(30_000)).resolves.toBeUndefined();
+    expect(writeDenied.writeText).toHaveBeenCalledWith('');
+  });
+});
