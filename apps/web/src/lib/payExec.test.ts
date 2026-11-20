@@ -173,6 +173,38 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     },
   );
 
+  it.each(['hash', 'input', 'fallback data'] as const)(
+    'keeps JSON-array transaction %s unconfirmed after broadcast and prevents another send', async (field) => {
+      const journal = stubAttemptJournal();
+      const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+      const rpc = chainSeeing(wallet, (method, params) => {
+        if (method !== 'eth_getTransactionByHash') return undefined;
+        const sent = wallet.sent;
+        if (sent === undefined) return null;
+        const transaction = { hash: params[0], from: sent['from'], to: sent['to'], input: sent['data'], value: sent['value'], chainId: '0x14a34' };
+        const malformed = field === 'hash' ? { hash: [params[0]] }
+          : field === 'input' ? { input: [sent['data']] } : { input: undefined, data: [sent['data']] };
+        return { ...transaction, ...malformed };
+      });
+      const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+      const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+      const hash = `0x${'9'.repeat(64)}`;
+      const payment = sendPayment(session, ctx, built, rt, noStatus);
+      await expect(payment).rejects.toThrow(PostBroadcastError);
+      await expect(payment).rejects.toMatchObject({
+        hash,
+        outcome: { phase: 'verification-incomplete', hash },
+        cause: { translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' } },
+      });
+      expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'payment', status: 'submitted', hash }]);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionByHash')).toHaveLength(1);
+      expect(rpc.calls.filter((call) => call.method === 'eth_getTransactionReceipt')).toHaveLength(0);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+      await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    },
+  );
+
   it('refuses when the invoice authority changes during the final wallet recheck', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
     let current = true;

@@ -2166,3 +2166,13 @@ Acceptance: reproduce unsupported EIP-658 receipt statuses without claiming a re
 Boundaries: no remote/shared-branch changes, fees, contracts, deployment, gate changes or mutation of the concurrently active original privacy branches. Root owns integration.
 
 Adjacent audit scope: temporarily collect apps/web/src/lib/wallet.transactionShapeAudit.test.ts to check JSON array coercion at verifySubmission. Archive the exact probe under the owned receipt-status evidence directory and remove it from active collection afterward; no extra production change is part of the frozen receipt-status fix.
+
+# Fresh generation 3 transaction-field shape repair — 2026-11-20
+
+Worker: /root/bug_hunt_gen3.
+Branch: fix/ghostpay-transaction-field-shapes-20261120.
+Base: fa5d4b143c7459c99a201433e661f6650b957e3e; predecessor's status repair runtime f77fe8572f54669098ee8cb5d47a6313ef72e37b remains preserved.
+Owned paths: apps/web/src/lib/wallet.ts, apps/web/src/lib/wallet.test.ts, apps/web/src/lib/payExec.test.ts, this additive claim, and docs/engineering-handoffs/completion-20261120/transaction-shapes/.
+Scope: reproduce the three established JSON-array hash/input/fallback-data acceptance cases, reject nonprimitive transaction fields before string normalization, preserve valid string normalization and input/data fallback semantics, and retain the original submitted hash/journal with no resend after post-broadcast verification fails.
+Acceptance: permanent original-config RED regressions, minimal production repair, GREEN affected suites, coercion-hook and compatibility controls, scoped typed lint if available, independent source/test review and source-pinned handoff. Root/integration QA owns the coordinated broad build/typecheck window.
+Boundaries: no remote or shared-branch mutation, deployment, release, real funds, contracts, fees, dependency/configuration/gate changes, unrelated cleanup or edits to actively advancing original privacy lanes.

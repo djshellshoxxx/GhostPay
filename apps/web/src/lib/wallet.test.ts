@@ -232,6 +232,54 @@ describe('verifySubmission (provider mutation / chain lies caught on the user RP
     expect(await verifySubmission(rpc(() => seen()), HASH as `0x${string}`, EXPECT, noSleep)).toBe('verified');
     expect(await verifySubmission(rpc(() => seen({ chainId: undefined, input: undefined, data: '0xabcd' })), HASH as `0x${string}`, EXPECT, noSleep)).toBe('verified');
   });
+  const textFields = [
+    { label: 'hash', value: HASH, patch: (value: unknown) => ({ hash: value }) },
+    { label: 'input', value: EXPECT.data, patch: (value: unknown) => ({ input: value }) },
+    { label: 'fallback data', value: EXPECT.data, patch: (value: unknown) => ({ input: undefined, data: value }) },
+  ] as const;
+  it.each(textFields)('rejects a JSON array in $label before claiming verification', async ({ value, patch }) => {
+    await expect(verifySubmission(rpc(() => seen(patch([value]))), HASH as `0x${string}`, EXPECT, noSleep, 1)).rejects.toMatchObject({
+      translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' },
+    });
+  });
+  it.each(textFields)('rejects non-string $label values with a safe shape error', async ({ label, value, patch }) => {
+    const invalid: readonly (readonly [string, unknown])[] = [
+      ['number', 0], ['boolean', false], ['bigint', 1n], ['symbol', Symbol(value)],
+      ['null', null], ['undefined', undefined], ['empty array', []], ['object', {}],
+      ['array-like object', { 0: value, length: 1 }], ['boxed string', Object(value) as unknown],
+      ['coercible object', { toString: () => value }],
+    ];
+    for (const [kind, input] of invalid) {
+      await expect(verifySubmission(rpc(() => seen(patch(input))), HASH as `0x${string}`, EXPECT, noSleep, 1), `${label}: ${kind}`).rejects.toMatchObject({
+        translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' },
+      });
+    }
+  });
+  it.each(textFields)('does not inspect coercion hooks on non-string $label values', async ({ patch }) => {
+    for (const key of [Symbol.toPrimitive, 'toString']) {
+      const inspect = vi.fn(() => { throw new Error('private provider diagnostic'); });
+      const value = Object.defineProperty({}, key, { get: inspect });
+      await expect(verifySubmission(rpc(() => seen(patch(value))), HASH as `0x${string}`, EXPECT, noSleep, 1)).rejects.toMatchObject({
+        translation: { key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' },
+      });
+      expect(inspect).not.toHaveBeenCalled();
+    }
+  });
+  it('preserves case-insensitive matching of primitive hash and input strings', async () => {
+    expect(await verifySubmission(rpc(() => seen({ hash: HASH.toUpperCase(), input: EXPECT.data.toUpperCase() })), HASH as `0x${string}`, EXPECT, noSleep, 1)).toBe('verified');
+  });
+  it.each([undefined, null])('preserves valid data fallback when input is %s', async (input) => {
+    expect(await verifySubmission(rpc(() => seen({ input, data: EXPECT.data })), HASH as `0x${string}`, EXPECT, noSleep, 1)).toBe('verified');
+  });
+  it('does not read fallback data when a primitive input is present', async () => {
+    const inspect = vi.fn(() => { throw new Error('unused fallback'); });
+    const transaction = Object.defineProperty(seen(), 'data', { get: inspect });
+    expect(await verifySubmission(rpc(() => transaction), HASH as `0x${string}`, EXPECT, noSleep, 1)).toBe('verified');
+    expect(inspect).not.toHaveBeenCalled();
+  });
+  it('preserves empty primitive call data', async () => {
+    expect(await verifySubmission(rpc(() => seen({ input: '0x' })), HASH as `0x${string}`, { ...EXPECT, data: '0x' }, noSleep, 1)).toBe('verified');
+  });
   it('reports not-visible-yet after retries', async () => {
     let n = 0;
     const r = { request: () => { n++; return Promise.resolve(null); } };
