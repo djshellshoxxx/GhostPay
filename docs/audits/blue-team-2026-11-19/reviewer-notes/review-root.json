@@ -1,0 +1,2818 @@
+{
+  "lane": "root",
+  "runtime_execution": false,
+  "coverage": [
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 128,
+      "coverage": [
+        [
+          1,
+          128
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.mjs",
+      "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 274,
+      "coverage": [
+        [
+          1,
+          274
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "blob": "6cae62f1117c8cd9b23ded19c8bd8f341456704d",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 30,
+      "coverage": [
+        [
+          1,
+          30
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 238,
+      "coverage": [
+        [
+          1,
+          238
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "d64a04674ef09a8adff4ee3469694c893edb3e48",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 53,
+      "coverage": [
+        [
+          1,
+          53
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 208,
+      "coverage": [
+        [
+          1,
+          208
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "blob": "30fbe84911c51c484a966a604351ed4a395dd18e",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 291,
+      "coverage": [
+        [
+          1,
+          291
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "blob": "5ef7f8f55035f852da2e1398ae39fc6455a91ebb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 261,
+      "coverage": [
+        [
+          1,
+          261
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 359,
+      "coverage": [
+        [
+          1,
+          359
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/registry.ts",
+      "blob": "6dcd24ced090ac1009b7949f4707a3d8e1a5f8ea",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 22,
+      "coverage": [
+        [
+          1,
+          22
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/tags.ts",
+      "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 565,
+      "coverage": [
+        [
+          1,
+          565
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "blob": "c3be00ac752cebd8f0234dbfb6f275e9741bb527",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 94,
+      "coverage": [
+        [
+          1,
+          94
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/displayText.ts",
+      "blob": "2202f8e612c74efa1cd4150f53f247fbc3e5c726",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 39,
+      "coverage": [
+        [
+          1,
+          39
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.ts",
+      "blob": "e5c281aa7f8105b71ef93ea407e8dfa454892317",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 25,
+      "coverage": [
+        [
+          1,
+          25
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "blob": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 91,
+      "coverage": [
+        [
+          1,
+          91
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/fragment.ts",
+      "blob": "9f361be2be54403f1980999bb64937299760e719",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 35,
+      "coverage": [
+        [
+          1,
+          35
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "blob": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 32,
+      "coverage": [
+        [
+          1,
+          32
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 108,
+      "coverage": [
+        [
+          1,
+          108
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 250,
+      "coverage": [
+        [
+          1,
+          250
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 150,
+      "coverage": [
+        [
+          1,
+          150
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IERC5564Announcer.sol",
+      "blob": "f7e6b9e8088215cbebf9c36a98b05e3493e1cc0e",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 45,
+      "coverage": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+      "blob": "1ecd181745e4feae9ec3cd4b7b7d59a7806ddaff",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 119,
+      "coverage": [
+        [
+          1,
+          119
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+      "blob": "09b5605c6dfea8cd63310f0366a7e800c54e99ea",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "superseded-historical-attestation",
+      "line_count": 94,
+      "coverage": [
+        [
+          1,
+          94
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 128,
+      "coverage": [
+        [
+          1,
+          128
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.mjs",
+      "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 274,
+      "coverage": [
+        [
+          1,
+          274
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "blob": "6657fd5eb74278a37355c56847d47e6affb92c7e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 52,
+      "coverage": [
+        [
+          1,
+          52
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 336,
+      "coverage": [
+        [
+          1,
+          336
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "76a6132fcc692a18e657c3880427c8f60739c6b8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 101,
+      "coverage": [
+        [
+          1,
+          101
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 229,
+      "coverage": [
+        [
+          1,
+          229
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 290,
+      "coverage": [
+        [
+          1,
+          290
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 303,
+      "coverage": [
+        [
+          1,
+          303
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 375,
+      "coverage": [
+        [
+          1,
+          375
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/registry.ts",
+      "blob": "6dcd24ced090ac1009b7949f4707a3d8e1a5f8ea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 22,
+      "coverage": [
+        [
+          1,
+          22
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/tags.ts",
+      "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 565,
+      "coverage": [
+        [
+          1,
+          565
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "blob": "a1fb55a8eb9ec0270491fa4d5b2f071200d08142",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 98,
+      "coverage": [
+        [
+          1,
+          98
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/displayText.ts",
+      "blob": "2202f8e612c74efa1cd4150f53f247fbc3e5c726",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 39,
+      "coverage": [
+        [
+          1,
+          39
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.ts",
+      "blob": "e5c281aa7f8105b71ef93ea407e8dfa454892317",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 25,
+      "coverage": [
+        [
+          1,
+          25
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 94,
+      "coverage": [
+        [
+          1,
+          94
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/fragment.ts",
+      "blob": "9f361be2be54403f1980999bb64937299760e719",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 35,
+      "coverage": [
+        [
+          1,
+          35
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 36,
+      "coverage": [
+        [
+          1,
+          36
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 127,
+      "coverage": [
+        [
+          1,
+          127
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 250,
+      "coverage": [
+        [
+          1,
+          250
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 150,
+      "coverage": [
+        [
+          1,
+          150
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IERC5564Announcer.sol",
+      "blob": "f7e6b9e8088215cbebf9c36a98b05e3493e1cc0e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 45,
+      "coverage": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+      "blob": "1ecd181745e4feae9ec3cd4b7b7d59a7806ddaff",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 119,
+      "coverage": [
+        [
+          1,
+          119
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+      "blob": "09b5605c6dfea8cd63310f0366a7e800c54e99ea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 94,
+      "coverage": [
+        [
+          1,
+          94
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/scripts/apply-csp.mjs",
+      "blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 121,
+      "coverage": [
+        [
+          1,
+          121
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 153,
+      "coverage": [
+        [
+          1,
+          153
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/lean-exclusions.mjs",
+      "blob": "3eb88a297c4aaf5bb620a60e4b5503862a1daef4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 45,
+      "coverage": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/smoke.mjs",
+      "blob": "68c722f8c8ec68f844dce85e366059f88550eef3",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 137,
+      "coverage": [
+        [
+          1,
+          137
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/smoke-walk.mjs",
+      "blob": "c0f3ca90f5c76da840542904cdeeb870e08ac437",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 65,
+      "coverage": [
+        [
+          1,
+          65
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "scripts/pages/smoke-url.mjs",
+      "blob": "ddb9f17a688368c2f0f45197d7af6638f80ec0a8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "superseded-historical-attestation",
+      "line_count": 32,
+      "coverage": [
+        [
+          1,
+          32
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "status": "superseded-historical-attestation",
+      "line_count": 42,
+      "coverage": [
+        [
+          1,
+          42
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "status": "superseded-historical-attestation",
+      "line_count": 90,
+      "coverage": [
+        [
+          1,
+          90
+        ]
+      ],
+      "method": "Full source read, or full counterpart plus complete comparison of all changed/deleted lines; identical blobs reused",
+      "reviewer": "root",
+      "historical_status": "reviewed",
+      "supersession_note": "Original either/or method retained as history; final credit uses fresh review-root-provenance-round8 or separate explicit full-read evidence recorded in audit-root-provenance-residual."
+    },
+    {
+      "path": "apps/web/src/components/ContextHelp.tsx",
+      "blob": "585e403e043292496a117c174873d2b3575dd2e5",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 121,
+      "coverage": [
+        [
+          1,
+          121
+        ]
+      ],
+      "method": "Complete source read; main CI variant reviewed through complete diff against read candidate. Identical blob reuse where applicable.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.tsx",
+      "blob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 165,
+      "coverage": [
+        [
+          1,
+          165
+        ]
+      ],
+      "method": "Complete source read; main CI variant reviewed through complete diff against read candidate. Identical blob reuse where applicable.",
+      "reviewer": "root"
+    },
+    {
+      "path": ".github/actions/setup-node-libs/action.yml",
+      "blob": "ebebe8c5a8a5edf6ba749dea76aeffdc02a23fe8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 40,
+      "coverage": [
+        [
+          1,
+          40
+        ]
+      ],
+      "method": "Complete source read; main CI variant reviewed through complete diff against read candidate. Identical blob reuse where applicable.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/build-workspaces.mjs",
+      "blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 51,
+      "coverage": [
+        [
+          1,
+          51
+        ]
+      ],
+      "method": "Complete source read; main CI variant reviewed through complete diff against read candidate. Identical blob reuse where applicable.",
+      "reviewer": "root"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "blob": "5e7081f57d6a8a50c86f4efe333f967107c32e66",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 552,
+      "coverage": [
+        [
+          1,
+          552
+        ]
+      ],
+      "method": "Complete source read; main CI variant reviewed through complete diff against read candidate. Identical blob reuse where applicable.",
+      "reviewer": "root"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "blob": "3fb2f03dc8fa4f9bad1cac94bbdfe063662e58a7",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "reviewed",
+      "line_count": 552,
+      "coverage": [
+        [
+          1,
+          552
+        ]
+      ],
+      "method": "Complete source read; main CI variant reviewed through complete diff against read candidate. Identical blob reuse where applicable.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/serve-pages.mjs",
+      "blob": "760aa9b7f5cf21664dc8a6b55291c4ec6c836431",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 192,
+      "coverage": [
+        [
+          1,
+          192
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/ErrorBoundary.tsx",
+      "blob": "cd9d3e0699d7e4a1758a99736bc232dc666adb0b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 61,
+      "coverage": [
+        [
+          1,
+          61
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/ManifestBanner.tsx",
+      "blob": "1fd6d16562422c7383dd53059026a12aaa3d9e48",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 10,
+      "coverage": [
+        [
+          1,
+          10
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestQr.tsx",
+      "blob": "3fbf35a0bc17650ae04f574fe74a00f1825c0a67",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 173,
+      "coverage": [
+        [
+          1,
+          173
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/PrintableBill.tsx",
+      "blob": "64ba221722b1c88adb74c6c68960e95e48855c98",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 140,
+      "coverage": [
+        [
+          1,
+          140
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/QrView.tsx",
+      "blob": "fb4091495cf34107ae15fc11e72a6c11ec307285",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 48,
+      "coverage": [
+        [
+          1,
+          48
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/RichText.tsx",
+      "blob": "844aded5b4b601d98fb41f100f3e0e0a7b62e0de",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 24,
+      "coverage": [
+        [
+          1,
+          24
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/QrFrame.tsx",
+      "blob": "9554db0ddd1cf4e3fcd780a99ca5598907e77249",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 356,
+      "coverage": [
+        [
+          1,
+          356
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "a85e1011cdface74c87683146ff7428654b7830d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 265,
+      "coverage": [
+        [
+          1,
+          265
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qr.ts",
+      "blob": "fbdc330a993b4cc8459a5d9455217c08652503fa",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 70,
+      "coverage": [
+        [
+          1,
+          70
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qrPayload.ts",
+      "blob": "8b4cc2446b61adff4c5ba87bd454d10d2bdf72ce",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 10,
+      "coverage": [
+        [
+          1,
+          10
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/release.ts",
+      "blob": "49ef9237bd75259bb829d0d64cbc404e51ec9533",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 107,
+      "coverage": [
+        [
+          1,
+          107
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/releaseKeys.ts",
+      "blob": "333de0d81e36a86d6bbdd99c8afbbac3524911df",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 9,
+      "coverage": [
+        [
+          1,
+          9
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qrClassify.ts",
+      "blob": "973c7831c4c3d81da9d99c620fd758a03e62a118",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 452,
+      "coverage": [
+        [
+          1,
+          452
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/LanguagePicker.tsx",
+      "blob": "8d44d6e4fc813baded510922e48d93258b7b7b94",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 58,
+      "coverage": [
+        [
+          1,
+          58
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/catalog.ts",
+      "blob": "ee4e176ad1f666b14b9fdb645b36b597431bd237",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 68,
+      "coverage": [
+        [
+          1,
+          68
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/context.tsx",
+      "blob": "c8709538e3b04aa8c5ef333ce6f57d393a9be362",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 145,
+      "coverage": [
+        [
+          1,
+          145
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/source.ts",
+      "blob": "9dce3c11a7c17d30a197e521965b5e5056bc80e8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 8,
+      "coverage": [
+        [
+          1,
+          8
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/sourceCatalog.ts",
+      "blob": "6927de4a82487d7a3dcf801d707b478e1628c155",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 8,
+      "coverage": [
+        [
+          1,
+          8
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/storage.ts",
+      "blob": "acaeb89ff166a35845fa7fa36bcbb894af034d10",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 46,
+      "coverage": [
+        [
+          1,
+          46
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/translator.ts",
+      "blob": "837ddfa467ca45bd8b5becffa35e0824f84367be",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 117,
+      "coverage": [
+        [
+          1,
+          117
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/message.ts",
+      "blob": "53a1c3f90af103df6e40f6d86f515b7e9ca7b988",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 497,
+      "coverage": [
+        [
+          1,
+          497
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/languages.ts",
+      "blob": "3339adebd736a89ea3517f46d2199258d637e778",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 148,
+      "coverage": [
+        [
+          1,
+          148
+        ]
+      ],
+      "method": "Complete numbered source read in bounded output; identical blobs reused across scoped refs.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.tsx",
+      "blob": "0e822a192a2afd04bc5a1a9408ef919b066b7d08",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "status": "reviewed",
+      "line_count": 161,
+      "coverage": [
+        [
+          1,
+          161
+        ]
+      ],
+      "method": "Complete diff against fully read candidate; all changed/deleted lines reviewed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "eb60ac5a6a8e774333d12a53df4cb2c26ee5e7b9",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "status": "reviewed",
+      "line_count": 262,
+      "coverage": [
+        [
+          1,
+          262
+        ]
+      ],
+      "method": "Complete diff against fully read candidate; all changed/deleted lines reviewed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "68de6518783cc57bd7f3a66d0588d530e27d21b6",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "status": "reviewed",
+      "line_count": 265,
+      "coverage": [
+        [
+          1,
+          265
+        ]
+      ],
+      "method": "Complete diff against fully read candidate; all changed/deleted lines reviewed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/qrKinds.ts",
+      "blob": "1a4beffc898c7854f6183aac5a7e6f74f8228d63",
+      "sha": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+      "status": "reviewed",
+      "line_count": 265,
+      "coverage": [
+        [
+          1,
+          265
+        ]
+      ],
+      "method": "Complete diff against fully read candidate; all changed/deleted lines reviewed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "blob": "63e02aa59219f5ba4732c6cc0198e9c0466eaa48",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "status": "reviewed",
+      "line_count": 218,
+      "coverage": [
+        [
+          1,
+          218
+        ]
+      ],
+      "method": "Composite review: core_packages_review completely read candidate counterpart; root completely read this variant diff, including descriptor/accessor hardening differences.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/bundledManifests.ts",
+      "blob": "cd77e6a2b698c5307d1e0229f1fce6793fec1200",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 10,
+      "coverage": [
+        [
+          1,
+          10
+        ]
+      ],
+      "method": "Complete source read; security-key data reformatted by whitespace only, all literal entries and expressions inspected.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/sweepAttemptJournal.ts",
+      "blob": "18d67fec4a925411374482f1ae803eee03fd53f6",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 171,
+      "coverage": [
+        [
+          1,
+          171
+        ]
+      ],
+      "method": "Complete source read; security-key data reformatted by whitespace only, all literal entries and expressions inspected.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/embedHost.ts",
+      "blob": "cb59058a852bb3d4a204089ab46221ec3089419f",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 187,
+      "coverage": [
+        [
+          1,
+          187
+        ]
+      ],
+      "method": "Complete source read; security-key data reformatted by whitespace only, all literal entries and expressions inspected.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/views/About.tsx",
+      "blob": "8a67d3c1a175c13e12195f72c3c18d3b080c5c4d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 46,
+      "coverage": [
+        [
+          1,
+          46
+        ]
+      ],
+      "method": "Complete source read; security-key data reformatted by whitespace only, all literal entries and expressions inspected.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/views/Home.tsx",
+      "blob": "550ebea73f6626d4f71d2479b055b9581d344cea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 100,
+      "coverage": [
+        [
+          1,
+          100
+        ]
+      ],
+      "method": "Complete source read; security-key data reformatted by whitespace only, all literal entries and expressions inspected.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "blob": "41ef8337e09f6835e50a5c53e7f5f386971bf534",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "status": "reviewed",
+      "line_count": 2618,
+      "coverage": [
+        [
+          1,
+          2618
+        ]
+      ],
+      "method": "Complete source read; security-key data reformatted by whitespace only, all literal entries and expressions inspected.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/views/Home.tsx",
+      "blob": "d7d58aa33587391118c78bac04b81ebf123ed3f1",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "reviewed",
+      "line_count": 90,
+      "coverage": [
+        [
+          1,
+          90
+        ]
+      ],
+      "method": "Complete counterpart and entire main diff read.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "blob": "4a94633e89b8aa6b3455191a953e008a6399c546",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "status": "reviewed",
+      "line_count": 2335,
+      "coverage": [
+        [
+          1,
+          2335
+        ]
+      ],
+      "method": "Complete source counterpart and every changed/deleted literal reviewed through complete diff.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "blob": "2fea63c60bd21e4146d0f180b9acd718eb35921d",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "status": "reviewed",
+      "line_count": 2639,
+      "coverage": [
+        [
+          1,
+          2639
+        ]
+      ],
+      "method": "Complete source counterpart and every changed/deleted literal reviewed through complete diff.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.ts",
+      "blob": "45c84668e9fb4c185655f8d73dc3f6c58914ffb7",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "status": "reviewed",
+      "line_count": 2601,
+      "coverage": [
+        [
+          1,
+          2601
+        ]
+      ],
+      "method": "Complete source counterpart and every changed/deleted literal reviewed through complete diff.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "status": "reviewed",
+      "line_count": 511,
+      "coverage": [
+        [
+          1,
+          511
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob fb1d864f3223ce007e35d81c19a308df88657121; root read complete 16-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "6d14435b315f38646c30d6406ae358a73210d715",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "status": "reviewed",
+      "line_count": 872,
+      "coverage": [
+        [
+          1,
+          872
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a; root read complete 294-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "2b04af66b8d6b46898ba2a504527e70f9dd510df",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "status": "reviewed",
+      "line_count": 563,
+      "coverage": [
+        [
+          1,
+          563
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob 6da18522b825c99b4073fd238174f63a8a2b7b38; root read complete 307-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "3710a28fe7e90c618d0b57da1aeed9f2a9adf599",
+      "sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "status": "reviewed",
+      "line_count": 1062,
+      "coverage": [
+        [
+          1,
+          1062
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob 2acd7e6fee3f508ef5b55608c8d90fb7684852dc; root read complete 13-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "blob": "bc220c1c3300cf9856a8bc326b55201b9ddf62e9",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "status": "reviewed",
+      "line_count": 477,
+      "coverage": [
+        [
+          1,
+          477
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob 04defade63f86886f12a6299f19f46a2e562b680; root read complete 110-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "3967341575c4501ad138a8c6a096c4e017e016b8",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "status": "reviewed",
+      "line_count": 857,
+      "coverage": [
+        [
+          1,
+          857
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a; root read complete 138-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "e1e547d907f5c028065d2c55342125131d006e51",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "status": "reviewed",
+      "line_count": 517,
+      "coverage": [
+        [
+          1,
+          517
+        ]
+      ],
+      "method": "Composite: payments_network_review fully read base blob 75ea26cfa62a08cbfe001d6ac02c68c6bc210566; root read complete 316-line variant diff and integration context.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/smoke-url.mjs",
+      "blob": "344b9e2aadf0605da6f49a9779238a336bcb4449",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "reviewed",
+      "line_count": 8,
+      "coverage": [
+        [
+          1,
+          8
+        ]
+      ],
+      "method": "Complete source read",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/smoke.mjs",
+      "blob": "c8e1c672a6fbf5beea8e47b5a6071f6c28625bd6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "status": "reviewed",
+      "line_count": 109,
+      "coverage": [
+        [
+          1,
+          109
+        ]
+      ],
+      "method": "Complete source read",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "blob": "b13870688d722fe5928ed192499ae76be55554ee",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "status": "reviewed",
+      "line_count": 94,
+      "coverage": [
+        [
+          1,
+          94
+        ]
+      ],
+      "method": "Complete source read",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "087d5ee32ed8f3724b4cce635e2e9702d959068c",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "status": "reviewed",
+      "line_count": 223,
+      "coverage": [
+        [
+          1,
+          223
+        ]
+      ],
+      "method": "Complete candidate counterpart and entire variant diff read",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/script/Deploy.s.sol",
+      "blob": "a4094da4e116162e79e18bea7600663ca2996cb5",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "production",
+      "status": "reviewed",
+      "line_count": 97,
+      "coverage": [
+        [
+          1,
+          97
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/script/DeployAnnouncer.s.sol",
+      "blob": "155243a0a0df428fadc43647866a56ca541b6121",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "production",
+      "status": "reviewed",
+      "line_count": 96,
+      "coverage": [
+        [
+          1,
+          96
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/script/DeployBase.s.sol",
+      "blob": "8be0210512826f28aaec9a8be08baed672fb7056",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "production",
+      "status": "reviewed",
+      "line_count": 99,
+      "coverage": [
+        [
+          1,
+          99
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": ".github/actions/setup-forge/action.yml",
+      "blob": "3015f5ef9122e72d2452b1e78de960c970910618",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "production",
+      "status": "reviewed",
+      "line_count": 36,
+      "coverage": [
+        [
+          1,
+          36
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.test.mjs",
+      "blob": "643407f32a72012eda5aca8e34ef3c6ced4db97b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 424,
+      "coverage": [
+        [
+          1,
+          424
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "blob": "aa99b0b9c0c4e0211e5315153abd99880e2e8a59",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 84,
+      "coverage": [
+        [
+          1,
+          84
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/pages-hosting.test.mjs",
+      "blob": "73fc04f7c815b33cc3de88434c6ba06f4ed24795",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 92,
+      "coverage": [
+        [
+          1,
+          92
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/smoke-render-errors.test.mjs",
+      "blob": "d8d5b04437034c3105fc8bcee3178517fbbb7b4b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 138,
+      "coverage": [
+        [
+          1,
+          138
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/smoke-url.test.mjs",
+      "blob": "225dca95f50233db0e5d62d3393e7df32ca153f5",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 59,
+      "coverage": [
+        [
+          1,
+          59
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/smoke-walk.test.mjs",
+      "blob": "841380c524011fd305516a2e07cd69aead2354c8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 66,
+      "coverage": [
+        [
+          1,
+          66
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.test.mjs",
+      "blob": "d827559a5db32969b955d4f299a65db420010824",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 373,
+      "coverage": [
+        [
+          1,
+          373
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.test.mjs",
+      "blob": "599c9cfb857fb98bb0a228a0f1bad1d4fcfccfc5",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 204,
+      "coverage": [
+        [
+          1,
+          204
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/serve-pages.test.mjs",
+      "blob": "e50e93defc6a83c04dd67ab075a4d54ded20f5e5",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 255,
+      "coverage": [
+        [
+          1,
+          255
+        ]
+      ],
+      "method": "Complete numbered source read; no code executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/smoke-url.test.mjs",
+      "blob": "d72faa577d52484b344f6261c9b51c155b95fa72",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 36,
+      "coverage": [
+        [
+          1,
+          36
+        ]
+      ],
+      "method": "Complete read candidate counterpart and complete variant diff; no execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.test.mjs",
+      "blob": "341e14cfd555a8db44eba8861458b682dedd54ff",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 91,
+      "coverage": [
+        [
+          1,
+          91
+        ]
+      ],
+      "method": "Complete read candidate counterpart and complete variant diff; no execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.test.mjs",
+      "blob": "64f086c33ba13eaf2898ce43cf8c2e28453c0617",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test",
+      "status": "reviewed",
+      "line_count": 186,
+      "coverage": [
+        [
+          1,
+          186
+        ]
+      ],
+      "method": "Complete read candidate counterpart and complete variant diff; no execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": ".github/actions/setup-forge/action.yml",
+      "blob": "20f6075460d8cecf1a7969ce23750266d7cb66d4",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "production",
+      "status": "reviewed",
+      "line_count": 26,
+      "coverage": [
+        [
+          1,
+          26
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/utils/ERC5564Announcer.sol",
+      "blob": "d862ca8a8b63d0bf898f5df829b38a83dbcf4493",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "production",
+      "status": "reviewed",
+      "line_count": 46,
+      "coverage": [
+        [
+          1,
+          46
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+      "blob": "a0eacf06b3427ea2e6199759b89cf596760008bb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 80,
+      "coverage": [
+        [
+          1,
+          80
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+      "blob": "06203fa1f518055e6f96dc75cc915e81d246f758",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 75,
+      "coverage": [
+        [
+          1,
+          75
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/scripts/test-tags-concurrency.mjs",
+      "blob": "5b50650f09a61442a7a5c74e053f34cafad468a2",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 158,
+      "coverage": [
+        [
+          1,
+          158
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+      "blob": "c0d9374077be489078390e53d27f488da427de3e",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 95,
+      "coverage": [
+        [
+          1,
+          95
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+      "blob": "601d982e2a7cf865b1a6a301f983b2fa458b6a36",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 236,
+      "coverage": [
+        [
+          1,
+          236
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.test.ts",
+      "blob": "8d32596d0fa34f6ebc40f3ccae11f1d9d620e8e5",
+      "sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 46,
+      "coverage": [
+        [
+          1,
+          46
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "blob": "813286cc5317177fffcd5e7eac0a1907a45e5f9e",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 235,
+      "coverage": [
+        [
+          1,
+          235
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "blob": "f2b5ff6804784df1f153a60b0488f4b9b2c98f5f",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 160,
+      "coverage": [
+        [
+          1,
+          160
+        ]
+      ],
+      "method": "Full numbered Git blob source read. Truncated middle of initial test-script batch repaired with exact whole-file or missing-range reads. No target execution.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/Base.t.sol",
+      "blob": "a19078cb57b98996302592822a0981ea5b6dbe35",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 56,
+      "coverage": [
+        [
+          1,
+          56
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/Deploy.t.sol",
+      "blob": "e169168f40f6277d631a3b01c68a991842e256b8",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 157,
+      "coverage": [
+        [
+          1,
+          157
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/DeployAnnouncer.t.sol",
+      "blob": "e13c00170abfc209e28d3ee1fbce9c2195dae154",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 91,
+      "coverage": [
+        [
+          1,
+          91
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/DeployChecksum.t.sol",
+      "blob": "511d1c0801b496bcdda08015ec62e6a8014655ff",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 155,
+      "coverage": [
+        [
+          1,
+          155
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/GhostPayRouter.fuzz.t.sol",
+      "blob": "bb1ccfa26f1269852ef7b42aee16c9c5771a6a6c",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 199,
+      "coverage": [
+        [
+          1,
+          199
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/GhostPayRouter.invariant.t.sol",
+      "blob": "bd526370803a3098359f8e3d70661edf26edd2be",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 236,
+      "coverage": [
+        [
+          1,
+          236
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/GhostPayRouter.t.sol",
+      "blob": "26e5ab25cb8feb9783b4afa74eb4bf4ec5be6ef6",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 981,
+      "coverage": [
+        [
+          1,
+          981
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/GhostPaySweepRelayer.invariant.t.sol",
+      "blob": "a15de9822a482449134338e3b70f4be87eb80f02",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 122,
+      "coverage": [
+        [
+          1,
+          122
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/GhostPaySweepRelayer.t.sol",
+      "blob": "4e146f1bef4edfd2f376e4861ef3e2a127da783d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 564,
+      "coverage": [
+        [
+          1,
+          564
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/SweepBase.t.sol",
+      "blob": "59805d174463fbb2a420324189ffcc8cd430447d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 106,
+      "coverage": [
+        [
+          1,
+          106
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/TokenEdgeCases.t.sol",
+      "blob": "2e2e959efcd3616aed34989f3a7bff2a684ae1bb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 180,
+      "coverage": [
+        [
+          1,
+          180
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/DeployChecksum.t.sol",
+      "blob": "b732ef32587ac73dac65b7b3513fd799e5532769",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 162,
+      "coverage": [
+        [
+          1,
+          162
+        ]
+      ],
+      "method": "Complete numbered Git source read; DeployChecksum old counterpart via full candidate plus complete diff. Tests inspected only.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/foundry.toml",
+      "blob": "59bf7337ea5fe8526869f22e9595e022027b4712",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "kind": "supporting-config",
+      "status": "reviewed",
+      "line_count": 42,
+      "coverage": [
+        [
+          1,
+          42
+        ]
+      ],
+      "method": "Complete configuration read to verify invariant fail_on_revert policy; no target execution",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/MythrilExpiryDispositions.t.sol",
+      "blob": "b1ab1a4823f7c562f6d07e9b51bbfbeb4ca3dbb8",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 594,
+      "coverage": [
+        [
+          1,
+          594
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/audit/Review24.audit.t.sol",
+      "blob": "339a6da6e6cdd1bc3c211c51062da7253e6fa155",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 228,
+      "coverage": [
+        [
+          1,
+          228
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/audit/Router.audit.t.sol",
+      "blob": "6ec18531a16df0ea36a6fb8248656e1bf4fe558a",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 411,
+      "coverage": [
+        [
+          1,
+          411
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/audit/Sweep.audit.t.sol",
+      "blob": "5cdbe14ce27d283c74a4b36d22a2b7018f31c145",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 246,
+      "coverage": [
+        [
+          1,
+          246
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/echidna/EchidnaRouter.sol",
+      "blob": "ec05b5b11a522ab32ec666d2af277db3357d445d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 204,
+      "coverage": [
+        [
+          1,
+          204
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/echidna/EchidnaSweep.sol",
+      "blob": "ac49d4c2562392b169f7640b2f1a7362a517d263",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 191,
+      "coverage": [
+        [
+          1,
+          191
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/BlacklistToken.sol",
+      "blob": "1f5ff878276f14f504b6562490e9aa6104402437",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 37,
+      "coverage": [
+        [
+          1,
+          37
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/FalseReturnToken.sol",
+      "blob": "a05201a2b45e4ac99d5b11239512855b8d757206",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 34,
+      "coverage": [
+        [
+          1,
+          34
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/FeeOnTransferToken.sol",
+      "blob": "faaa773c23969663e2f2bfa154555dbdf2035631",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 27,
+      "coverage": [
+        [
+          1,
+          27
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/HookToken.sol",
+      "blob": "90630679505d3ae50ae7b3bf9edb83ab7e9e10f6",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 46,
+      "coverage": [
+        [
+          1,
+          46
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/MockERC20.sol",
+      "blob": "b29f1b928c8f47fabda62033eb79bf597a6c39c4",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 29,
+      "coverage": [
+        [
+          1,
+          29
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/NativeReceivers.sol",
+      "blob": "05589b7aab7fe8af87369780014c0c42823eaf34",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 61,
+      "coverage": [
+        [
+          1,
+          61
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/NoReturnToken.sol",
+      "blob": "f8d147cf45ce0c2fc51c74d33556e9015ce1df77",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 43,
+      "coverage": [
+        [
+          1,
+          43
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/PermitToken.sol",
+      "blob": "58f804b61439180a32a0f601b2efa7f8192a4f07",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 28,
+      "coverage": [
+        [
+          1,
+          28
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/RebasingToken.sol",
+      "blob": "f8eef8207f6aedbef2a6f1f33d3e9301848dd7e7",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 97,
+      "coverage": [
+        [
+          1,
+          97
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mocks/ReentrantToken.sol",
+      "blob": "4b91266798fec052d8763458e0736c64fd205180",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 59,
+      "coverage": [
+        [
+          1,
+          59
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mutation_local/NonceBitmap.t.sol",
+      "blob": "56113970f63db3eda8676eb4e572ca96a2da387b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 58,
+      "coverage": [
+        [
+          1,
+          58
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mutation_local/RouterPermitAnnounce.t.sol",
+      "blob": "9c191535095bb22d8972f672cc4b9abbb14dc15d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 48,
+      "coverage": [
+        [
+          1,
+          48
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "packages/contracts/test/mutation_local/SweepZeroFee.t.sol",
+      "blob": "0a0615d096913627d9b1ac2b93354cb91a307ed2",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "kind": "test-support",
+      "status": "reviewed",
+      "line_count": 40,
+      "coverage": [
+        [
+          1,
+          40
+        ]
+      ],
+      "method": "Complete numbered source read; all assigned core contract tests, audit regression tests, stateful harnesses and mocks. Mythril line154 repaired after narrow output truncation. Incidental policy sections of mixed files read without expanding policy production scope. No test executed.",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/styles/app.css",
+      "blob": "a1951f57c00346323b6306c3af46867dae6d6262",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 302,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          302
+        ]
+      ],
+      "method": "Complete CSS read; truncated app.css240-270 repaired",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/styles/print.css",
+      "blob": "5c803193b91431c4dd96f6421ae41b5e92740046",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 23,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          23
+        ]
+      ],
+      "method": "Complete CSS read; truncated app.css240-270 repaired",
+      "reviewer": "root"
+    },
+    {
+      "path": "apps/web/src/styles/qr.css",
+      "blob": "bc3e17953c0e3befee673fe40e0bba120d048ce7",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 124,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          124
+        ]
+      ],
+      "method": "Complete CSS read; truncated app.css240-270 repaired",
+      "reviewer": "root"
+    }
+  ],
+  "notes": [
+    "QR modules from truncated output intentionally not marked reviewed; tests tracked separately.",
+    "Core contract bodies compared by blob equality at main/candidate.",
+    "Source-only; no deployed-origin or package-advisory certification.",
+    "Core QR presentation and classification, message parser/rendering, locale registry/loader, and all four security-key classification variants fully read; no new actionable finding established. Embedded host file read conservatively though lean notification export is a no-op without full-profile start path.",
+    "All residual scoped wallet/network-authority/sweep production variants reviewed against the closest fully reviewed counterpart; no additional distinct finding. Earlier native helpers and stale-review variants inherit the main-only payment findings until their documented fixes."
+  ],
+  "observations": [
+    {
+      "id": "ROOT-Q01",
+      "classification": "Test qualification gap; not a demonstrated runtime vulnerability",
+      "summary": "Router invariant negative metadata handler reverts on unexpected success under fail_on_revert=false, instead of recording a persistent acceptance count checked by an invariant. The bad-metadata action alone therefore does not independently establish rejection. Separate unit and fuzz tests do assert metadata rejection.",
+      "evidence": [
+        "packages/contracts/test/GhostPayRouter.invariant.t.sol:103-119,185-191",
+        "packages/contracts/foundry.toml:23-26"
+      ],
+      "remediation": "Track unexpected acceptance in a persistent counter and assert zero, or make the handler report the failure through an invariant-compatible assertion policy. Keep explicit unit/fuzz guards.",
+      "validation": "Static source inference, no mutation/testing executed."
+    },
+    {
+      "id": "ROOT-Q02",
+      "classification": "Test qualification gap; not a demonstrated runtime vulnerability",
+      "summary": "EchidnaRouter.payFotToken does not record unexpected success. Its properties check fee-on-transfer token retention at the router but not recipient accounting for that token; successful lossy forwarding without router retention would not violate those properties. Separate Foundry unit/fuzz/invariant suites do assert rejection.",
+      "evidence": [
+        "packages/contracts/test/echidna/EchidnaRouter.sol:93-107,168-185"
+      ],
+      "remediation": "Record any successful lossy-token call as a property failure, and keep a reachability measure for the negative case.",
+      "validation": "Static source review; no mutation or test run."
+    },
+    {
+      "id": "ROOT-A01",
+      "classification": "Known operational/design risk",
+      "summary": "Immutable fee-recipient payment legs are an availability dependency: token freezing or a native-rejecting fee recipient can prevent fee-bearing payments. No rotation/admin escape is part of core router design. Validate the selected fee account, monitor token support, and keep a replacement deployment/manifest recovery plan.",
+      "evidence": [
+        "packages/contracts/src/GhostPayRouter.sol",
+        "packages/contracts/test/audit/Router.audit.t.sol:78-120"
+      ],
+      "validation": "Current contract source plus inspected pre-existing regression tests; not live-chain confirmation."
+    },
+    {
+      "id": "ROOT-A02",
+      "classification": "Known trust boundary",
+      "summary": "A router announcement alone authenticates neither invoice payment intent nor token identity/curve ownership; scanner verification must retain cryptographic derivation, approved contract/token and independent transfer evidence checks. Main/candidate adapters enforce additional evidence; no bypass established.",
+      "evidence": [
+        "packages/contracts/src/GhostPayRouter.sol",
+        "packages/contracts/test/audit/Router.audit.t.sol:122-186"
+      ],
+      "validation": "Static review; no test run."
+    },
+    {
+      "id": "ROOT-A03",
+      "classification": "Known economic/operational limitation",
+      "summary": "Core gas-buffer forwarding is deliberately untaxed and bounded by the payer-supplied maximum rather than a protocol cap. Fee rounding and buffer semantics are not a universal levy on native value. Relayer sponsorship also remains exposed to state changes after simulation and arbitrary token execution cost. These do not establish diversion of a valid signed sweep.",
+      "evidence": [
+        "packages/contracts/test/audit/Review24.audit.t.sol:182-205",
+        "packages/contracts/test/audit/Router.audit.t.sol:188-208",
+        "packages/contracts/test/audit/Sweep.audit.t.sol:41-68,189-246"
+      ],
+      "remediation": "Align fee claims with contract semantics; relayer services need a token allowlist, bounded simulation/gas spending and sponsor rate limits. Hosted service implementations are outside this audit.",
+      "validation": "Static contract and existing test review only."
+    }
+  ],
+  "partial_coverage": [
+    {
+      "path": "apps/web/locales/en.json",
+      "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 2530,
+      "kind": "supporting-resource",
+      "status": "partial",
+      "ranges": [
+        [
+          1,
+          300
+        ],
+        [
+          966,
+          987
+        ]
+      ],
+      "method": "Numbered source reads; range85-225 truncation repaired; PN05 wording confirmation",
+      "remaining_ranges": [
+        [
+          301,
+          965
+        ],
+        [
+          988,
+          2530
+        ]
+      ]
+    }
+  ]
+}

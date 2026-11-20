@@ -1,0 +1,2560 @@
+{
+  "schema": "ghostpay.source-review.latest-hosting.round8.v1",
+  "status": "complete",
+  "cut_utc": "2026-11-20T06:51:27Z",
+  "completed_utc": "2026-11-20T07:01:36.069666+00:00",
+  "scope": {
+    "primary_assignment_indices": [
+      0,
+      1,
+      2,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "main_sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+    "tor_feature_sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+    "refs": [
+      [
+        "main-final",
+        "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+      ],
+      [
+        "payment-uri-aggregate-length",
+        "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+      ],
+      [
+        "main-recovered-fixes",
+        "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+      ],
+      [
+        "main-unique-code",
+        "885b9569e6fc99e43bf01d23305494275e10120e"
+      ],
+      [
+        "tor-completion",
+        "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+      ]
+    ],
+    "description": "Latest static-hosting/Tor source delta plus necessary hosting and build inputs. Payment-URI rows 3-7 and Pages row 8 are owned by root.",
+    "constraints": [
+      "Immutable Git object source reads only",
+      "No target code execution, tests, builds, installs, servers, probes, proof of concept, network, Git mutations or source edits",
+      "Only these scratch review deliverables written",
+      "All evidence is static source evidence; no runtime reproduction claimed"
+    ]
+  },
+  "baseline": {
+    "path": "docs/audits/blue-team-2026-11-19/findings.md",
+    "read_as": "parent-authorized local audit metadata; not present in pinned Git main",
+    "finding_ids": [
+      "BROWSER-01",
+      "PN-01",
+      "PN-02",
+      "PN-03",
+      "PN-04",
+      "PN-05",
+      "SN-K01"
+    ],
+    "disposition": "Kept separate; this hosting lane does not revise or add to the seven baseline production findings."
+  },
+  "counts": {
+    "primary_file_versions": 20,
+    "primary_unique_paths": 19,
+    "primary_production_versions": 11,
+    "primary_test_support_versions": 9,
+    "primary_lines": 3439,
+    "primary_pending": 0,
+    "supplemental_file_versions": 36,
+    "supplemental_full_content_versions": 33,
+    "supplemental_counterpart_plus_complete_diff_versions": 3,
+    "supplemental_lines": 7967,
+    "supplemental_visited_partial": 0,
+    "total_reviewed_file_versions": 56,
+    "total_reviewed_unique_paths": 52,
+    "total_reviewed_lines": 11406,
+    "new_confirmed_production_findings": 0,
+    "unranked_documentation_observations": 1
+  },
+  "findings": [],
+  "observations": [
+    {
+      "id": "H8-DOC-01",
+      "classification": "unranked-documentation-observation",
+      "new_production_finding": false,
+      "title": "Generated archive guide still includes subpath in its origin-isolation claim",
+      "confidence": "high-source-confidence",
+      "branch_status": {
+        "present_in": [
+          {
+            "name": "main-final",
+            "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+          },
+          {
+            "name": "payment-uri-aggregate-length",
+            "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+          },
+          {
+            "name": "main-recovered-fixes",
+            "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+          },
+          {
+            "name": "main-unique-code",
+            "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+          },
+          {
+            "name": "tor-completion",
+            "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+          }
+        ],
+        "introduced_by_latest_delta": false
+      },
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/package-docs.mjs",
+          "blob": "edcbcdb2aa709a8cc3b12ddcde0925dc8e6320a8",
+          "lines": [
+            46,
+            55
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/package-docs.mjs#L46-L55"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/cli.mjs",
+          "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1",
+          "lines": [
+            641,
+            646
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/cli.mjs#L641-L646"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/cli.mjs",
+          "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1",
+          "lines": [
+            757,
+            777
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/cli.mjs#L757-L777"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/prepare.mjs",
+          "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+          "lines": [
+            82,
+            87
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/prepare.mjs#L82-L87"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/README.md",
+          "blob": "0bbb974c52f2753623dee8eaa712babdb6607f8d",
+          "lines": [
+            59,
+            61
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/README.md#L59-L61"
+        }
+      ],
+      "analysis": "operatorGuide emits an OPERATOR.md statement that includes subpath alongside clearnet/onion/I2P in a sentence asserting separate browser storage, sessions and wallet permissions. A subpath alone does not create a distinct origin. The actual CLI and Tor recipe correctly retain dedicated-origin checks and warnings, so this is a surviving documentation inconsistency, not a demonstrated isolation bypass. OPERATOR.md is archive metadata, not part of the exported website.",
+      "impact_limit": "May mislead an operator reading the archive guide in isolation; no changed browser origin policy, key disclosure, authorization bypass or tested runtime impact is established.",
+      "remediation": "Describe storage and permission separation in terms of distinct origins (scheme, hostname and port). State explicitly that paths on the same origin share origin storage, and align OPERATOR.md with the current CLI and Tor runbook."
+    }
+  ],
+  "review_conclusions": [
+    {
+      "area": "Verified archive and export path",
+      "conclusion": "The new Tor recipe requires a primitive lowercase expected archive SHA-256, checks for its matching _headers policy, and rechecks the hash on the private copy used for generation. ZIP entry/path checks and extracted-tree verification precede export. Static exports omit hidden/never-served paths and use a fresh output tree.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/prepare.mjs",
+          "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+          "lines": [
+            75,
+            99
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/prepare.mjs#L75-L99"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/prepare.mjs",
+          "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+          "lines": [
+            113,
+            146
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/prepare.mjs#L113-L146"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/cli.mjs",
+          "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1",
+          "lines": [
+            493,
+            519
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/cli.mjs#L493-L519"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/core/verify.mjs",
+          "blob": "c006df5aacaf9669d5f7cf400cfa24c8feb385eb",
+          "lines": [
+            376,
+            395
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/core/verify.mjs#L376-L395"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/core/zip.mjs",
+          "blob": "fde2f1c7c7a45a20c5820718239e564bc467de32",
+          "lines": [
+            305,
+            383
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/core/zip.mjs#L305-L383"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/core/zip.mjs",
+          "blob": "fde2f1c7c7a45a20c5820718239e564bc467de32",
+          "lines": [
+            394,
+            468
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/core/zip.mjs#L394-L468"
+        },
+        {
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+          "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+          "lines": [
+            97,
+            148
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/tools/portable-hosting-kit/src/profiles/static-export.mjs#L97-L148"
+        }
+      ]
+    },
+    {
+      "area": "Headers and canonical onion configuration",
+      "conclusion": "The feature centralizes checksum-valid, canonical HTTP onion-origin validation, rejects unsupported ports/normalization, and aligns advertised origins with virtual port 80. Export/preview/nginx all apply the shared header policy; generated transport headers are clearnet-only. The application intentionally retains https:/wss: connect sources for explicit application endpoints.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+          "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+          "lines": [
+            109,
+            120
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/config/host-config.mjs#L109-L120"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+          "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+          "lines": [
+            503,
+            524
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/adapters/tor.mjs#L503-L524"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+          "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+          "lines": [
+            315,
+            378
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/serve/headers.mjs#L315-L378"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+          "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+          "lines": [
+            394,
+            438
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/serve/headers.mjs#L394-L438"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/profiles/nginx.mjs",
+          "blob": "c932bdfb392f83fec6ff10517db40235ddbf3a4a",
+          "lines": [
+            213,
+            218
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/profiles/nginx.mjs#L213-L218"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/profiles/nginx.mjs",
+          "blob": "c932bdfb392f83fec6ff10517db40235ddbf3a4a",
+          "lines": [
+            321,
+            360
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/profiles/nginx.mjs#L321-L360"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "apps/web/public/_headers",
+          "blob": "604be638edef9d055c8c2b4f52d5988e2bbd5ee4",
+          "lines": [
+            1,
+            10
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/apps/web/public/_headers#L1-L10"
+        }
+      ]
+    },
+    {
+      "area": "Container topology and identity handling",
+      "conclusion": "Using all three documented Compose files removes published ports and the web publishing network; the web service remains on site_internal while Tor receives separate egress. The Tor build context allowlists only build/startup inputs. The identity volume is mounted only by Tor, with non-root/read-only/capability restrictions and startup ownership/mode checks.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/prepare.mjs",
+          "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+          "lines": [
+            16,
+            31
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/prepare.mjs#L16-L31"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/profiles/container.mjs",
+          "blob": "4ab2205f98233904ff02233a92987cd6daec6b8f",
+          "lines": [
+            71,
+            132
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/profiles/container.mjs#L71-L132"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+          "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+          "lines": [
+            396,
+            430
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/adapters/tor.mjs#L396-L430"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/.dockerignore",
+          "blob": "2465bc7364814b57d1b8f484e3c67148615edc08",
+          "lines": [
+            1,
+            6
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/.dockerignore#L1-L6"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/Dockerfile",
+          "blob": "8d593b9a0e419661c59a6d85d8b57ac6f498b29c",
+          "lines": [
+            18,
+            32
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/Dockerfile#L18-L32"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/tor-start.sh",
+          "blob": "811be5b8949748d34b39edd0ffa05eb82711e809",
+          "lines": [
+            10,
+            25
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/tor-start.sh#L10-L25"
+        }
+      ]
+    },
+    {
+      "area": "Workflow secret boundary and build handoff",
+      "conclusion": "The workflow is validation-only, uses a pull_request trigger rather than a privileged pull_request_target flow, declares contents:read, disables persisted checkout credentials, and supplies no deployment/signing secret to the reviewed steps. It builds the lean static workspace before packaging and tests the resulting archive. The locally computed CI checksum binds test bytes but does not establish publisher authentication.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": ".github/workflows/tor-static.yml",
+          "blob": "59e0675115a2203546a917d020c27e4d95a2913e",
+          "lines": [
+            1,
+            17
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/.github/workflows/tor-static.yml#L1-L17"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": ".github/workflows/tor-static.yml",
+          "blob": "59e0675115a2203546a917d020c27e4d95a2913e",
+          "lines": [
+            35,
+            77
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/.github/workflows/tor-static.yml#L35-L77"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": ".github/workflows/tor-static.yml",
+          "blob": "59e0675115a2203546a917d020c27e4d95a2913e",
+          "lines": [
+            78,
+            110
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/.github/workflows/tor-static.yml#L78-L110"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "scripts/build-workspaces.mjs",
+          "blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+          "lines": [
+            26,
+            50
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/scripts/build-workspaces.mjs#L26-L50"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "apps/web/vite.config.ts",
+          "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+          "lines": [
+            61,
+            101
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/apps/web/vite.config.ts#L61-L101"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "apps/web/scripts/localBuildProfile.mjs",
+          "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+          "lines": [
+            240,
+            270
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/apps/web/scripts/localBuildProfile.mjs#L240-L270"
+        }
+      ]
+    },
+    {
+      "area": "Timestamp change",
+      "conclusion": "The shared static-export change preserves source mtimeMs as string seconds, including pre-epoch values. The assigned regression sources cover fractional-second, epoch and pre-epoch cases; no test execution or runtime result is claimed.",
+      "evidence": [
+        {
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+          "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+          "lines": [
+            125,
+            139
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/tools/portable-hosting-kit/src/profiles/static-export.mjs#L125-L139"
+        },
+        {
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+          "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+          "lines": [
+            70,
+            95
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/tools/portable-hosting-kit/test/profiles/static-export.test.mjs#L70-L95"
+        },
+        {
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+          "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+          "blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+          "lines": [
+            41,
+            43
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/773a94be1c8328d6fa1720ae48f1b6a2d903f0c5/tools/portable-hosting-kit/test/profiles/differential.test.mjs#L41-L43"
+        }
+      ]
+    }
+  ],
+  "qualification_limits": [
+    {
+      "id": "H8-QUAL-01",
+      "topic": "Real Tor/runtime acceptance",
+      "description": "No repository test, build, install, server, Docker command, Tor bootstrap, network probe or browser acceptance was executed. The browser-acceptance script explicitly uses ordinary loopback Chromium, blocks external HTTP(S)/WebSocket traffic, and does not establish Tor Browser or external-wallet routing.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "scripts/tor/browser-acceptance.mjs",
+          "blob": "1f57b2d5a102f398cfc111e349dfc2684d498518",
+          "lines": [
+            1,
+            34
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/scripts/tor/browser-acceptance.mjs#L1-L34"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "scripts/tor/browser-acceptance.mjs",
+          "blob": "1f57b2d5a102f398cfc111e349dfc2684d498518",
+          "lines": [
+            85,
+            107
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/scripts/tor/browser-acceptance.mjs#L85-L107"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/README.md",
+          "blob": "0bbb974c52f2753623dee8eaa712babdb6607f8d",
+          "lines": [
+            126,
+            137
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/README.md#L126-L137"
+        }
+      ]
+    },
+    {
+      "id": "H8-QUAL-02",
+      "topic": "Upstream pins and image reproducibility",
+      "description": "The source enforces the configured Tor archive hash before extraction and the configured runtime floor/PoW/GPL checks. This review did not independently retrieve or verify upstream source/checksum/signature material or validate container image digests. The runbook itself records that upstream signature verification is still pending and that distro packages vary at build time.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/Dockerfile",
+          "blob": "8d593b9a0e419661c59a6d85d8b57ac6f498b29c",
+          "lines": [
+            3,
+            16
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/Dockerfile#L3-L16"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/runtime-check.sh",
+          "blob": "8dddbffac95e7aeb2cca04260fa0a02cd7565dc3",
+          "lines": [
+            4,
+            20
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/runtime-check.sh#L4-L20"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/README.md",
+          "blob": "0bbb974c52f2753623dee8eaa712babdb6607f8d",
+          "lines": [
+            139,
+            166
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/README.md#L139-L166"
+        }
+      ]
+    },
+    {
+      "id": "H8-QUAL-03",
+      "topic": "Operator topology and identity preservation",
+      "description": "The port/network isolation conclusion depends on applying the final compose.onion.yaml override in the documented order. Routine updates must preserve the Compose project identity volume. These requirements are explicit in the generated guide and recipe documentation; the audit did not activate any deployment.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/prepare.mjs",
+          "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+          "lines": [
+            40,
+            61
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/prepare.mjs#L40-L61"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/prepare.mjs",
+          "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+          "lines": [
+            133,
+            143
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/prepare.mjs#L133-L143"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "deploy/tor-static/README.md",
+          "blob": "0bbb974c52f2753623dee8eaa712babdb6607f8d",
+          "lines": [
+            118,
+            124
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/deploy/tor-static/README.md#L118-L124"
+        }
+      ]
+    }
+  ],
+  "primary_coverage": [
+    {
+      "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 149,
+      "kind": "production",
+      "refs": [
+        "main-final",
+        "payment-uri-aggregate-length",
+        "main-recovered-fixes",
+        "main-unique-code",
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 0,
+      "read_ranges": [
+        [
+          1,
+          149
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 140,
+      "kind": "test-support",
+      "refs": [
+        "main-final",
+        "payment-uri-aggregate-length",
+        "main-recovered-fixes",
+        "main-unique-code"
+      ],
+      "status": "fully-read",
+      "assignment_index": 1,
+      "read_ranges": [
+        [
+          1,
+          140
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 150,
+      "kind": "test-support",
+      "refs": [
+        "main-final",
+        "payment-uri-aggregate-length",
+        "main-recovered-fixes",
+        "main-unique-code",
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 2,
+      "read_ranges": [
+        [
+          1,
+          150
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": ".github/workflows/tor-static.yml",
+      "blob": "59e0675115a2203546a917d020c27e4d95a2913e",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 110,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 9,
+      "read_ranges": [
+        [
+          1,
+          110
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "deploy/tor-static/.dockerignore",
+      "blob": "2465bc7364814b57d1b8f484e3c67148615edc08",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 6,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 10,
+      "read_ranges": [
+        [
+          1,
+          6
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "deploy/tor-static/Dockerfile",
+      "blob": "8d593b9a0e419661c59a6d85d8b57ac6f498b29c",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 32,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 11,
+      "read_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "deploy/tor-static/host.example.json",
+      "blob": "bff0f3e674f504e966cfeb7523d97048f356170c",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 9,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 12,
+      "read_ranges": [
+        [
+          1,
+          9
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "deploy/tor-static/prepare.mjs",
+      "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 177,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 13,
+      "read_ranges": [
+        [
+          1,
+          177
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "deploy/tor-static/runtime-check.sh",
+      "blob": "8dddbffac95e7aeb2cca04260fa0a02cd7565dc3",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 20,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 14,
+      "read_ranges": [
+        [
+          1,
+          20
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "deploy/tor-static/tor-start.sh",
+      "blob": "811be5b8949748d34b39edd0ffa05eb82711e809",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 25,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 15,
+      "read_ranges": [
+        [
+          1,
+          25
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "scripts/tor/browser-acceptance.mjs",
+      "blob": "1f57b2d5a102f398cfc111e349dfc2684d498518",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 111,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 16,
+      "read_ranges": [
+        [
+          1,
+          111
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "scripts/tor/hosting-config.test.mjs",
+      "blob": "4ac175f883ce1760c5cf308fc385e1b8218fa81d",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 176,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 17,
+      "read_ranges": [
+        [
+          1,
+          176
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+      "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 575,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 18,
+      "read_ranges": [
+        [
+          1,
+          575
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+      "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 264,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 19,
+      "read_ranges": [
+        [
+          1,
+          264
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+      "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 455,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 20,
+      "read_ranges": [
+        [
+          1,
+          455
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/adapters/tor.test.mjs",
+      "blob": "62174c98d88122f5101ee8d9728b6747685d8a4f",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 196,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 21,
+      "read_ranges": [
+        [
+          1,
+          196
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/config/host-config.test.mjs",
+      "blob": "d702839dbaf95f62b6d86186b351817eae07fdff",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 132,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 22,
+      "read_ranges": [
+        [
+          1,
+          132
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "blob": "5721e767c46307ed6776048163ba149f2cc5987b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 140,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 23,
+      "read_ranges": [
+        [
+          1,
+          140
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/nginx.test.mjs",
+      "blob": "963eec40dfae88830f8594cc923026b671d9c0fc",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 224,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 24,
+      "read_ranges": [
+        [
+          1,
+          224
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+      "blob": "a2f499b8820e299d817520943724941e5b4cabc5",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 348,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "fully-read",
+      "assignment_index": 25,
+      "read_ranges": [
+        [
+          1,
+          348
+        ]
+      ],
+      "method": "full-content",
+      "remaining_ranges": []
+    }
+  ],
+  "supplemental_coverage": [
+    {
+      "path": "tools/portable-hosting-kit/src/cli.mjs",
+      "blob": "5b4445881537af302d3d94e6cd0c4e41aa7adaa1",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 946,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          946
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/routing.mjs",
+      "blob": "b02f9ef440c4404d0ece1480531f54efef08fe30",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 230,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          230
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/policy.mjs",
+      "blob": "4f13b17785cb53213f7dc6abce3902b34ca1fa5e",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 232,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          232
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/profiles/container.mjs",
+      "blob": "4ab2205f98233904ff02233a92987cd6daec6b8f",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 169,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          169
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/profiles/nginx.mjs",
+      "blob": "c932bdfb392f83fec6ff10517db40235ddbf3a4a",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 428,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          428
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/types.mjs",
+      "blob": "cc9c73bd51da2342eb14a71d592fcf416c577dfe",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 121,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/errors.mjs",
+      "blob": "80d71210dd00b6f03a03a41943656fc41091741c",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 55,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          55
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/version.mjs",
+      "blob": "29920000142c3aaa39de04b185e447b0255f78f1",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 7,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          7
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/preview.mjs",
+      "blob": "07d074f2a42993380714752ca01d5d6e77e8701b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 450,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          450
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/verify.mjs",
+      "blob": "c006df5aacaf9669d5f7cf400cfa24c8feb385eb",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 396,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          396
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/inventory.mjs",
+      "blob": "28b1c41bd4ea5494c772706839073087d31d88d2",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 283,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          283
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/atomic.mjs",
+      "blob": "d6099cdbaffc8767c13de1532d399b0f1d4eec46",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 328,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          328
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/hash.mjs",
+      "blob": "3d9613977e76c984329b7e3068291b8a65ee85f0",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 144,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          144
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/package.mjs",
+      "blob": "cd7207c96ed47f9c3b1effae9997eedbecab2d6b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 182,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          182
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/validate.mjs",
+      "blob": "9a9d6f655fba74d08177af0e9ae0baeed15edcc3",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 189,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          189
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/manifest.mjs",
+      "blob": "463341978463b1f4f4b4405d8ead98123dcb6143",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 378,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          378
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/overlay/mirror.mjs",
+      "blob": "dcb33bd5b7238b12e50a71268a996f3522f8638d",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 47,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          47
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/paths.mjs",
+      "blob": "8077026c02dd422a34fd4c38aa577179786bb4a6",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 137,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/zip.mjs",
+      "blob": "fde2f1c7c7a45a20c5820718239e564bc467de32",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 469,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          469
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/core/canonical-json.mjs",
+      "blob": "c3ca8a92e1178ae50befb81583276f2f042e48cf",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 73,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          73
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/privacy/external-refs.mjs",
+      "blob": "7a0616b95dd7e3510895e427b298b532cfc04fa8",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 259,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          259
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/package-docs.mjs",
+      "blob": "edcbcdb2aa709a8cc3b12ddcde0925dc8e6320a8",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 72,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          72
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "scripts/build-workspaces.mjs",
+      "blob": "08ed929620c90421f040cc0fd00adf0f30c6d9fb",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 51,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          51
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "package.json",
+      "blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 46,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          46
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/package.json",
+      "blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 56,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          56
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 128,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          128
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/public/_headers",
+      "blob": "604be638edef9d055c8c2b4f52d5988e2bbd5ee4",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 36,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          36
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "deploy/tor-static/README.md",
+      "blob": "0bbb974c52f2753623dee8eaa712babdb6607f8d",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 166,
+      "kind": "documentation",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          166
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.mjs",
+      "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 274,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          274
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 238,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          238
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "d64a04674ef09a8adff4ee3469694c893edb3e48",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 53,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          53
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/bin/ghostpay-host.mjs",
+      "blob": "b2f6082dcf9788efad1d882ae797639ed6341709",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 14,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          14
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/package.json",
+      "blob": "b454b1bdd1a93499d0a2e45b8cc782fb1ad85916",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 21,
+      "kind": "source-dependency",
+      "status": "fully-read",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          21
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        },
+        {
+          "name": "tor-completion",
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+        }
+      ]
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+      "blob": "0105435acbeb2a19bbf9b00564a0848846e2a60a",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 569,
+      "kind": "source-dependency",
+      "status": "fully-reviewed-via-full-counterpart-and-complete-diff",
+      "method": "full-feature-counterpart-plus-complete-main-to-feature-diff",
+      "read_ranges": [
+        [
+          1,
+          569
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        }
+      ],
+      "counterpart": {
+        "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+        "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+        "path": "tools/portable-hosting-kit/src/adapters/tor.mjs"
+      },
+      "complete_diff": {
+        "from": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+        "to": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+        "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+        "all_hunks_read": true
+      }
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+      "blob": "267551801dfebc4f71622a4d7aa8d9019196870a",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 261,
+      "kind": "source-dependency",
+      "status": "fully-reviewed-via-full-counterpart-and-complete-diff",
+      "method": "full-feature-counterpart-plus-complete-main-to-feature-diff",
+      "read_ranges": [
+        [
+          1,
+          261
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        }
+      ],
+      "counterpart": {
+        "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+        "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+        "path": "tools/portable-hosting-kit/src/config/host-config.mjs"
+      },
+      "complete_diff": {
+        "from": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+        "to": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+        "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+        "all_hunks_read": true
+      }
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+      "blob": "ae6571b9784a49dce019cf9776cd7f2d4b47cbc7",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 459,
+      "kind": "source-dependency",
+      "status": "fully-reviewed-via-full-counterpart-and-complete-diff",
+      "method": "full-feature-counterpart-plus-complete-main-to-feature-diff",
+      "read_ranges": [
+        [
+          1,
+          459
+        ]
+      ],
+      "remaining_ranges": [],
+      "refs": [
+        {
+          "name": "main-final",
+          "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+        },
+        {
+          "name": "payment-uri-aggregate-length",
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+        },
+        {
+          "name": "main-recovered-fixes",
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+        },
+        {
+          "name": "main-unique-code",
+          "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+        }
+      ],
+      "counterpart": {
+        "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+        "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+        "path": "tools/portable-hosting-kit/src/serve/headers.mjs"
+      },
+      "complete_diff": {
+        "from": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+        "to": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+        "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+        "all_hunks_read": true
+      }
+    }
+  ],
+  "truncation_repairs": [
+    {
+      "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+      "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+      "reread_ranges": [
+        [
+          1,
+          230
+        ],
+        [
+          231,
+          455
+        ]
+      ],
+      "resolved": true
+    },
+    {
+      "blob": "a2f499b8820e299d817520943724941e5b4cabc5",
+      "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+      "reread_ranges": [
+        [
+          173,
+          216
+        ]
+      ],
+      "resolved": true
+    },
+    {
+      "blob": "b02f9ef440c4404d0ece1480531f54efef08fe30",
+      "path": "tools/portable-hosting-kit/src/serve/routing.mjs",
+      "reread_ranges": [
+        [
+          1,
+          25
+        ]
+      ],
+      "resolved": true
+    }
+  ],
+  "search_only": [
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "command_kind": "immutable Git source search",
+      "pattern": "startPreview",
+      "paths": [
+        "tools/portable-hosting-kit/src",
+        "scripts/tor",
+        "deploy/tor-static"
+      ],
+      "result": "Only production caller found in this searched scope is cli.mjs:548, which omits hostConfig; all returned files were separately read in full."
+    }
+  ],
+  "remaining_required_reads": [],
+  "excluded_or_unexpanded_references": [
+    {
+      "path": "tools/portable-hosting-kit/src/adapters/i2p.mjs",
+      "reason": "Optional I2P generator is imported by the shared CLI but not selected by prepareStaticTor; no I2P end-to-end review claimed.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "03bd1640f26322927519c7ebb7033e16f1549c37",
+      "line_count": 226,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          226
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/wizard.mjs",
+      "reason": "Interactive configuration command is not invoked by the reviewed Tor preparation/build path.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "a6630c1762e213d650d9ab8b611d410a8912911d",
+      "line_count": 123,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+      "reason": "Demo command and test fixture helper; assigned tests were read without executing fixture generation.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+      "line_count": 161,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          161
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+      "reason": "Test execution helper; no executed-test or complete test-harness behavior claim.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+      "line_count": 242,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          242
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+      "reason": "Differential request helper; assigned differential files were read, no server comparisons executed.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+      "line_count": 123,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+      "reason": "Test fixture helper; no executed-test claim.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "18ca28d400e80731554982da12df1c539795373b",
+      "line_count": 75,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          75
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "path": "packages/chain-adapters/**",
+      "reason": "Application deployment-signature implementation remains outside this narrow hosting delta; the build script call boundary was read, not the application/business implementation."
+    },
+    {
+      "path": "package-lock.json and third-party runtime/build packages",
+      "reason": "No dependency freshness, upstream authenticity, package-install or third-party-code audit claimed."
+    }
+  ],
+  "handoff": "All 20 primary versions and 36 supplemental versions reviewed. No pending assigned or visited-file ranges. One stale generated-guide wording observation is separate from the seven baseline findings. Unexpanded references listed explicitly above are excluded from the narrow Tor call-path closure. Source-only conclusions do not establish successful build, container startup, Tor availability or browser/payment acceptance."
+}

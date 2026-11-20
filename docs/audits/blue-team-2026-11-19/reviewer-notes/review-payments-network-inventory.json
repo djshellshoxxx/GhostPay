@@ -1,0 +1,737 @@
+{
+  "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "files": [
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.test.tsx",
+      "blob": "ceb237b51e68887f5932b8a87ddf4e71a7719522",
+      "bytes": 2653,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.tsx",
+      "blob": "7d73d645f829d14179a44c952bde2cfb62f5224c",
+      "bytes": 1378,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+      "blob": "28a040d3b4b2049f97d90c6de10605aa32fd9210",
+      "bytes": 9607,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+      "blob": "9cb9a8af0d806cb3ac7c33d396113d4e8ecd787a",
+      "bytes": 7839,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+      "blob": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+      "bytes": 4707,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.i18n.test.tsx",
+      "blob": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+      "bytes": 4198,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.invoice.test.tsx",
+      "blob": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+      "bytes": 12807,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.profile.test.tsx",
+      "blob": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+      "bytes": 4470,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+      "blob": "8f14ca64dfef6668c59d280597dd252adf849bb0",
+      "bytes": 8561,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.tsx",
+      "blob": "b6cc91507f78283db57a7bb5f99b28f27711fffc",
+      "bytes": 19830,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+      "bytes": 1067,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "bytes": 2049,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.browser.test.ts",
+      "blob": "e7b54d33c2c5b22fc2fba0ff17c02a38862b3e73",
+      "bytes": 814,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.test.ts",
+      "blob": "475a53013815ba732ee5cf85bdbaaa928c97dbb8",
+      "bytes": 10531,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.ts",
+      "blob": "1867f9ad6b8913a135489ab715812851b7258f79",
+      "bytes": 6588,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+      "blob": "562e292e392c8e0292af5967c86ea471b5270d91",
+      "bytes": 5390,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+      "blob": "39bad79a85423c2d6a2a9358840b4df4bbde5347",
+      "bytes": 3372,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+      "blob": "f0b6da1a3eb205f758919e46cb007b775303ca7d",
+      "bytes": 4827,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.test.ts",
+      "blob": "3cda7fc01a8595a544248b5d48303a667cbd33b9",
+      "bytes": 5326,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+      "bytes": 5746,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/deployment.test.ts",
+      "blob": "be90aa64969b62e5616161b848ef35e0b12b9804",
+      "bytes": 3005,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/deployment.ts",
+      "blob": "6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+      "bytes": 2064,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "bytes": 3336,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "bytes": 3437,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.test.ts",
+      "blob": "b852ad654e5d78f79d971accd90810dd7d82f549",
+      "bytes": 7878,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.ts",
+      "blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+      "bytes": 9461,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.test.ts",
+      "blob": "d0f00af1cc06573870f047967b97087cc086628d",
+      "bytes": 16746,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.ts",
+      "blob": "9f870bed002dac0b809ab00f82c2b66c032f197c",
+      "bytes": 10369,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.test.ts",
+      "blob": "dc43e8c535e862c4e5798d5b757f6335d29c6ce0",
+      "bytes": 3090,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.ts",
+      "blob": "6256d5b234db85f4f7b0dfac40c4d5f55957e4ea",
+      "bytes": 2837,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/jitter.test.ts",
+      "blob": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+      "bytes": 5453,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "bytes": 5005,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.test.ts",
+      "blob": "2ac9bc61dbebd721aecab2fedf1eb3e50d501d68",
+      "bytes": 7512,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "blob": "a9565d96c42e35b57f62e7235a13aa6729c886b9",
+      "bytes": 4093,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+      "blob": "6a27d3bd41b8508001539a914eabbf0c7f138ae4",
+      "bytes": 6438,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts",
+      "blob": "f1a38a5bd5264cede57e98b1c0cb883f8bc335d6",
+      "bytes": 2384,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.test.ts",
+      "blob": "4fda284ea68de5ddbf68b5608d0a06491875153d",
+      "bytes": 38179,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "bytes": 29526,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.test.ts",
+      "blob": "bb02e38582b7b3cdf9bf638be6bd52c2129114a6",
+      "bytes": 3622,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.ts",
+      "blob": "e0cae13f36927b031b74ab2d98c1233f015a95db",
+      "bytes": 1522,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/networkSelection.ts",
+      "blob": "cd5803357898b84863f7885c9fb827b28ff2693a",
+      "bytes": 2479,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/opStackFee.ts",
+      "blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "bytes": 4147,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/pay.test.ts",
+      "blob": "7e27cf90328b7d9421e394edc10515e61157a1d5",
+      "bytes": 38291,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/pay.ts",
+      "blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "bytes": 34459,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "bytes": 8765,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "bytes": 66841,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.ts",
+      "blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "bytes": 20529,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+      "blob": "8d8f2e22bdff1be59721a9ce1a7b8ad29eaeb4ad",
+      "bytes": 10937,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.ts",
+      "blob": "4a8b9e954c6f11be7438b0d6b7a14519e4ff3c63",
+      "bytes": 4820,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.test.ts",
+      "blob": "c39c51ef15e04127ea434ed6cbb98791c7eb851d",
+      "bytes": 18220,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.ts",
+      "blob": "7d0651782bdd49927bf40630035fa8e717ea6afd",
+      "bytes": 19485,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/receipts.test.ts",
+      "blob": "d8770c168ada02cedf50ecaa8bb47060f7199a35",
+      "bytes": 10459,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/receipts.ts",
+      "blob": "a9b42e29afa652c552d17823f3d77b8eeb07cdcd",
+      "bytes": 9770,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.test.ts",
+      "blob": "6cb95e18b26429619d78a5f5ca9e11071dd497ff",
+      "bytes": 12199,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "blob": "419e5624c35dde3b5b1c4e94d2a1d09638d7b31f",
+      "bytes": 11687,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.test.ts",
+      "blob": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5",
+      "bytes": 124487,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.ts",
+      "blob": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11",
+      "bytes": 50770,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+      "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+      "bytes": 20115,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.ts",
+      "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+      "bytes": 5763,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.test.ts",
+      "blob": "2973e6da0371537fa5198bc01998f83fc49bdd40",
+      "bytes": 2153,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.ts",
+      "blob": "48da43b4c870fc9d3debaf46b00e19951d012ba5",
+      "bytes": 2284,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+      "blob": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c",
+      "bytes": 5503,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+      "blob": "5bb3480d1e52945391c83f2be161e5ddef73fe9a",
+      "bytes": 1149,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+      "blob": "42bc1709a3c13f624a7ce0865d7a08580938e37a",
+      "bytes": 5272,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.i18n.test.ts",
+      "blob": "931eeb063f1fa6855b95e757472cef69724f5d7d",
+      "bytes": 8308,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.scheduler.test.ts",
+      "blob": "6cb3f232ccffe8c453d1c977d0b80c16a483ff0e",
+      "bytes": 8764,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.test.ts",
+      "blob": "604004028b6b804b1f41f8bb62e2de61e892ea6b",
+      "bytes": 34447,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.transport.test.ts",
+      "blob": "f022052311390d7338e38f0c2a548b731ddd3093",
+      "bytes": 3121,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.ts",
+      "blob": "4dae49b9eb15d99fb5ecb34e84b76f6ac0a95c59",
+      "bytes": 41345,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+      "blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "bytes": 1500,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.test.ts",
+      "blob": "762deed547d68f934999994d770369b2ee95c9ad",
+      "bytes": 16282,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "bytes": 11271,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scanner.worker.ts",
+      "blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "bytes": 520,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+      "blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "bytes": 3659,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "bytes": 1629,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+      "blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "bytes": 12271,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+      "bytes": 13857,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.ts",
+      "blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+      "bytes": 6527,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/services.ts",
+      "blob": "fcaf46383e7fb88d2d6042af1b260713c783a432",
+      "bytes": 1749,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "bytes": 10685,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+      "blob": "8097b83ba5ce627a38ec302fd9f9b1950369ba4b",
+      "bytes": 5664,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+      "bytes": 20120,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+      "blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+      "bytes": 14509,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+      "bytes": 69009,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "bytes": 53986,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.test.ts",
+      "blob": "90b3f7c9212cedf477e37a70be285dacba302fa4",
+      "bytes": 11691,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.ts",
+      "blob": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "bytes": 6351,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.test.ts",
+      "blob": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+      "bytes": 11178,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.ts",
+      "blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "bytes": 8390,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "bytes": 22128,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "bytes": 25669,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/workerFactory.ts",
+      "blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "bytes": 347,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.buffer.test.tsx",
+      "blob": "5c4269fa33cad4250deba0b955c4a090c0b269bd",
+      "bytes": 12206,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.i18n.test.tsx",
+      "blob": "8269636eef8652821346ec8fa375671409561e21",
+      "bytes": 2472,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+      "blob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+      "bytes": 3480,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+      "blob": "e882d1107eb8a88c4583094a1081a82fc7d1f644",
+      "bytes": 6468,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+      "blob": "c0ab7561bb91cc777026c081a9ee39ff54db2e41",
+      "bytes": 4210,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.supported.test.tsx",
+      "blob": "17feff9faf1ceb38432b63cd1cf361433827b340",
+      "bytes": 9009,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.test.tsx",
+      "blob": "de1c61ddaee5a7e2ef33b41a2c02a6bbfda6569e",
+      "bytes": 16624,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.tsx",
+      "blob": "5d562426908fbffc8b9aecb4c8e4a223a3a174f2",
+      "bytes": 22630,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/Pay.i18n.test.tsx",
+      "blob": "b8d80d61869c5c0ec015302a872a63269534d6ad",
+      "bytes": 7795,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+      "blob": "3eb5ab0072c4cf5c61b7502d68d0e141dfd3b133",
+      "bytes": 24111,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.network.test.tsx",
+      "blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887",
+      "bytes": 4014,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.preflightCompletion.test.tsx",
+      "blob": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8",
+      "bytes": 7491,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.signer.test.tsx",
+      "blob": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "bytes": 14683,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.supported.test.tsx",
+      "blob": "d19f8f7efd6ca0fb5b5d6ef738e1fcf56fb8f83d",
+      "bytes": 9162,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "bytes": 85578,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "bytes": 84220,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+      "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "bytes": 8000,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.i18n.test.tsx",
+      "blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "bytes": 5660,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "146a90721ae039959af1ce4cd973c572394721f7",
+      "bytes": 6997,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+      "blob": "a704ec91667f26d087cb732e273873a2b8514560",
+      "bytes": 24060,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+      "blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+      "bytes": 10838,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+      "blob": "a386af69cb9c30910df93438cb8d589d16229980",
+      "bytes": 8335,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+      "bytes": 49401,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "bytes": 57415,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/ScanPrivacy.i18n.test.tsx",
+      "blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "bytes": 14115,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.nativeReview.test.tsx",
+      "blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+      "bytes": 12006,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "blob": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4",
+      "bytes": 10814,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+      "blob": "2da1d11b208b413377b41b8416c0909dd0deebfa",
+      "bytes": 22440,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+      "bytes": 67229,
+      "kind": "test"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "bytes": 41146,
+      "kind": "source"
+    }
+  ]
+}

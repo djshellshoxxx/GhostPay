@@ -1,0 +1,1349 @@
+{
+  "scope": "Round5 read-only static review of exact remaining payment test/support versions. No application, test, configuration, dependency or Git mutations; no target execution, builds, tests, probes or transactions.",
+  "assignment": "/workspace/scratch/e449ed9154f6/review-payments-tests-round4.json#remaining",
+  "frozen_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "primary_candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "coverage": [
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "blob": "f38c5b90985f705a8d4cfac87a897cd6ee394d1b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 1091,
+      "kind": "test-support",
+      "assignment_index": 17,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1091
+        ]
+      ],
+      "method": "complete reviewed counterpart c391e4aca34e7125383e04bb32d26f1c1b55bd4d plus all changed and deleted lines of exact git blob diff"
+    },
+    {
+      "path": "apps/web/src/lib/sweepAttemptJournal.test.ts",
+      "blob": "9bfe12a040b536bd4bc8e9016b80ad70347b767b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 161,
+      "kind": "test-support",
+      "assignment_index": 18,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          161
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "blob": "2334a9bb524127b6cc6165a857f7942e74420c27",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 84,
+      "kind": "test-support",
+      "assignment_index": 34,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          84
+        ]
+      ],
+      "method": "complete reviewed counterpart 70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4 plus all changed and deleted lines of exact git blob diff"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "blob": "17049ca012bd5bab662dd450668c64b11e7700dd",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 1012,
+      "kind": "test-support",
+      "assignment_index": 35,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1012
+        ]
+      ],
+      "method": "complete reviewed counterpart 2be1f668375db2c95f6d184514350bc0913b8685 plus all changed and deleted lines of exact git blob diff"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 215,
+      "kind": "test-support",
+      "assignment_index": 46,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+      "blob": "8097b83ba5ce627a38ec302fd9f9b1950369ba4b",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 114,
+      "kind": "test-support",
+      "assignment_index": 47,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          114
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 336,
+      "kind": "test-support",
+      "assignment_index": 48,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          336
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection",
+      "truncation_repaired": "Initial output omitted lines 173-180; separately reread complete lines 165-184 before recording coverage."
+    },
+    {
+      "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+      "blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 249,
+      "kind": "test-support",
+      "assignment_index": 49,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          249
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 1124,
+      "kind": "test-support",
+      "assignment_index": 50,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1124
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection",
+      "truncation_repaired": "Batched tool output omitted part of 801-865 and 978-983; complete 801-990 independently reread before recording coverage."
+    },
+    {
+      "path": "apps/web/src/views/Sweep.nativeReview.test.tsx",
+      "blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 188,
+      "kind": "test-support",
+      "assignment_index": 59,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          188
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "blob": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 224,
+      "kind": "test-support",
+      "assignment_index": 60,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          224
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+      "blob": "2da1d11b208b413377b41b8416c0909dd0deebfa",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 424,
+      "kind": "test-support",
+      "assignment_index": 61,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          424
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 1070,
+      "kind": "test-support",
+      "assignment_index": 62,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1070
+        ]
+      ],
+      "method": "complete immutable blob, line-numbered source inspection"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "blob": "ae39744fcef08590eaf4ffbffb1691275433860c",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 1067,
+      "kind": "test-support",
+      "assignment_index": 66,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1067
+        ]
+      ],
+      "method": "complete reviewed counterpart 2be1f668375db2c95f6d184514350bc0913b8685 plus all changed and deleted lines of exact git blob diff"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "blob": "ead0a287483a65add77eb8ce1722cc05b235ec63",
+      "sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "line_count": 335,
+      "kind": "test-support",
+      "assignment_index": 67,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          335
+        ]
+      ],
+      "method": "complete reviewed counterpart 1a57ad6d116171cc64cab5293aa572a45d22daa2 plus all changed and deleted lines of exact git blob diff"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "blob": "73c9f6fcc16280c0dbae6bfb1199034ca56d09ab",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "line_count": 1124,
+      "kind": "test-support",
+      "assignment_index": 68,
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1124
+        ]
+      ],
+      "method": "complete reviewed counterpart c391e4aca34e7125383e04bb32d26f1c1b55bd4d plus all changed and deleted lines of exact git blob diff"
+    }
+  ],
+  "findings": [],
+  "observations": [
+    {
+      "id": "PN-02-sweep-regression-evidence",
+      "type": "supporting-existing-finding",
+      "severity": "informational",
+      "text": "Complete Sweep sources include explicit refusal for both increased and decreased native balances, a delayed balance-read change, same-nonce replacement binding, and a deposit after the checked snapshot. Native fee review tests bind the final serialized transaction to the public balance/fees/net shown before separate confirmation and refuse changed fee/balance data. These support the existing PN-02 candidate disposition; assertions were read, not executed.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+          "blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              187,
+              249
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+          "blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              104,
+              144
+            ],
+            [
+              264,
+              278
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Sweep.nativeReview.test.tsx",
+          "blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              91,
+              161
+            ],
+            [
+              177,
+              187
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PN-03-sweep-regression-evidence",
+      "type": "supporting-existing-finding",
+      "severity": "informational",
+      "text": "Helper tests reject revoked direct and relayed reviews before derivation, across awaited RPC/signature steps, and before handoff; preserve submitted or uncertain outcomes after transport starts. Native confirmation tests cover copied reviews, changed fields, clock rollback/expiry, cancellation, session replacement and concurrent confirmation. Quote lifecycle view tests exercise destination, balance, endpoint, mode and selection changes while vault/RPC/helper work is pending, including same-nonce replacements and retention of prior hashes. This supplements PN-03 without adding a new defect or runtime claim.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+          "blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              96,
+              185
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+          "blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              195,
+              251
+            ],
+            [
+              280,
+              335
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+          "blob": "2da1d11b208b413377b41b8416c0909dd0deebfa",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              152,
+              220
+            ],
+            [
+              242,
+              424
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              363,
+              400
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SWEEP-boundary-and-recovery-tests",
+      "type": "reviewed-behavior",
+      "severity": "informational",
+      "text": "Boundary tests use real cryptographic implementations and the actual RPC client/network-authority adapter around synthetic transport to check late revocation and conservative unknown-outcome journaling. Journal and UI tests cover malformed/unavailable persistence, pre-handoff write failure, all hashes from same-nonce replacements, exact-hash receipt reconciliation, finalized nonce replacement, and relayed-order nonce/deadline reconciliation. Full review establishes what the test assertions specify; no tests were run.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+          "blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              109,
+              215
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/sweepAttemptJournal.test.ts",
+          "blob": "9bfe12a040b536bd4bc8e9016b80ad70347b767b",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              16,
+              161
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              350,
+              438
+            ],
+            [
+              839,
+              1015
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              408,
+              542
+            ],
+            [
+              579,
+              807
+            ],
+            [
+              854,
+              1019
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SWEEP-privacy-test-variants",
+      "type": "reviewed-version-difference",
+      "severity": "informational",
+      "text": "The older privacy test blob explicitly expects automatic Settings-RPC balance reads outside required local-proxy mode. The candidate-aligned blob expects an explicit click in all modes and covers pending-read invalidation without fallback. Destination-link tests require session-only history, removal without import of the legacy plaintext key, clearing on lock/session change, and refusal of delayed completion to repopulate it. These are exact snapshot differences, not a claim that sibling branches contain candidate fixes.",
+      "evidence": [
+        {
+          "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "blob": "2334a9bb524127b6cc6165a857f7942e74420c27",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              51,
+              84
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "blob": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              76,
+              224
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+          "blob": "8097b83ba5ce627a38ec302fd9f9b1950369ba4b",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              25,
+              114
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              177,
+              220
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SWEEP-test-assertion-scope",
+      "type": "test-quality-observation",
+      "severity": "informational",
+      "text": "Two legacy helper test titles overstate their individual assertions. The relayed failure test titled as wiping the stealth key only asserts promise rejection and does not observe the derived buffer. The feeTo-review test passes the correct manifest fee recipient and fails because the permit RPC mock always throws, so that particular assertion does not exercise fee-recipient mismatch. A separate case at 110-134 explicitly rejects a mismatched recipient, so this is not a claim that fee-recipient protection is globally untested. Strengthen the named tests with direct zeroization/specific-refusal assertions or rename them to their actual scope. No production defect is inferred.",
+      "evidence": [
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              110,
+              134
+            ],
+            [
+              233,
+              240
+            ],
+            [
+              502,
+              525
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.test.tsx",
+      "blob": "ceb237b51e68887f5932b8a87ddf4e71a7719522",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 41,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 0
+    },
+    {
+      "path": "apps/web/src/components/MerchantTemplateIssuer.test.tsx",
+      "blob": "c162fb9ca1ba5b71cbc34296172a2339883fc9a1",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 35,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 1
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+      "blob": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 92,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 2
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.i18n.test.tsx",
+      "blob": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 67,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 3
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.invoice.test.tsx",
+      "blob": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 200,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 4
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.profile.test.tsx",
+      "blob": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 85,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 5
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+      "blob": "1ba3f5cce99b7a13d2b6cb21d728bf152d283353",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 93,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "assignment_index": 6
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 78,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 8
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.test.ts",
+      "blob": "b852ad654e5d78f79d971accd90810dd7d82f549",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 149,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 9
+    },
+    {
+      "path": "apps/web/src/lib/merchantTemplate.test.ts",
+      "blob": "cfd2b73cdd1497a20e940c62ccbe59210af4f9a3",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 114,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 10
+    },
+    {
+      "path": "apps/web/src/lib/receipts.test.ts",
+      "blob": "70e1c9aed859596389f5b43b93e0d6ff26f58bec",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 135,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "assignment_index": 14
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.buffer.test.tsx",
+      "blob": "5c4269fa33cad4250deba0b955c4a090c0b269bd",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 249,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 24
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.i18n.test.tsx",
+      "blob": "8269636eef8652821346ec8fa375671409561e21",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 51,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 25
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+      "blob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 76,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 26
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+      "blob": "c0ab7561bb91cc777026c081a9ee39ff54db2e41",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 83,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 27
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.supported.test.tsx",
+      "blob": "17feff9faf1ceb38432b63cd1cf361433827b340",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 159,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 28
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.test.tsx",
+      "blob": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 267,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "assignment_index": 29
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+      "blob": "28a040d3b4b2049f97d90c6de10605aa32fd9210",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 143,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 36
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+      "blob": "8f14ca64dfef6668c59d280597dd252adf849bb0",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 142,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 37
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "blob": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 92,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation"
+      ],
+      "assignment_index": 38
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.test.ts",
+      "blob": "d0f00af1cc06573870f047967b97087cc086628d",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 306,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 39
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.test.ts",
+      "blob": "dc43e8c535e862c4e5798d5b757f6335d29c6ce0",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 54,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 40
+    },
+    {
+      "path": "apps/web/src/lib/receipts.test.ts",
+      "blob": "d8770c168ada02cedf50ecaa8bb47060f7199a35",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 149,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 43
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+      "blob": "e882d1107eb8a88c4583094a1081a82fc7d1f644",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 118,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 53
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.test.tsx",
+      "blob": "de1c61ddaee5a7e2ef33b41a2c02a6bbfda6569e",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 281,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 54
+    }
+  ],
+  "status": "checkpoint-complete-sweep-scope; fresh-worker-remainder",
+  "tests_run": false,
+  "supplemental_reads": [],
+  "handoff": "All 16 assigned Sweep-related immutable versions are fully reviewed (8,818 version-lines). No partially read source remains. Exact remaining 25 versions (3,259 version-lines) cover invoice, receipt, format and merchant test/support source. Continue full source or fully read counterpart plus every added/deleted diff line. Prioritize receipt/InvoiceSigner verification and PN-05 wording coverage. No new production finding or runtime verification. Preserve round4 BROWSER-01 correction: Pay route confirmed-clear/retry regression test already exists and has not been run.",
+  "coverage_counts": {
+    "completed_versions": 16,
+    "completed_version_lines": 8818,
+    "remaining_versions": 25,
+    "remaining_version_lines": 3259
+  },
+  "validation": "Every completed path was checked against representative sha:path blob identity and complete blob line count. Coverage/remainder partition verified against the exact round4 remaining assignment. No target tests, builds, transactions, probes, application/config/dependency edits, or Git mutations."
+}

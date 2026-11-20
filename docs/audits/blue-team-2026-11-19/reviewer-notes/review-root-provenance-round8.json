@@ -1,0 +1,3112 @@
+{
+  "report": "review-root-provenance-round8",
+  "generated_utc": "2026-11-20T07:01:54.327546+00:00",
+  "status": "complete",
+  "purpose": "Replace ambiguous historical full-read-versus-diff provenance for the exact 37 residual path/blob versions with fresh, explicitly linked source evidence.",
+  "assignment": {
+    "path": "/workspace/scratch/e449ed9154f6/audit-root-provenance-residual.json",
+    "sha256": "edcd6fa0e1e9944975cbced28f3b0bea824fd0fb35e0bf25d6a9bf71ce95ce8c",
+    "array": "residual",
+    "assigned_versions": 37,
+    "assigned_lines": 5605,
+    "separate_evidence_reused": false
+  },
+  "repository": "/workspace/scratch/e449ed9154f6/GhostPay-audit",
+  "pins": {
+    "frozen_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "combined_candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+  },
+  "methodology": {
+    "source_access": "git cat-file blob of exact assigned immutable objects; SHA:path to blob identity checked with git rev-parse",
+    "full_reads": 27,
+    "full_read_lines": 3662,
+    "complete_diffs": 10,
+    "diff_logical_version_lines": 1943,
+    "range_convention": "1-based inclusive. Full rows: read_ranges is the complete file. Diff rows: read_ranges is displayed target hunks; reviewed_ranges is complete logical coverage through the exact fresh full baseline plus all added/deleted changes.",
+    "baseline_reuse": "Only fresh full reads in this report. No inherited, rg-only or source-search evidence is used to claim coverage.",
+    "target_source_truncations": 0,
+    "metadata_truncation_repair": {
+      "initial_chunk": "764dad",
+      "repair_chunk": "0e1fa8",
+      "repair_range": [
+        135,
+        340
+      ],
+      "coverage_count_effect": 0
+    },
+    "identity_validation_chunk": "e1b1c2"
+  },
+  "coverage": [
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "blob": "6cae62f1117c8cd9b23ded19c8bd8f341456704d",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 30,
+      "id": "ROOT-R8-001",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          30
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          30
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "1ec96c",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete original origin parsing and broad/exact connect-src replacement; candidate tightening is separately traced to ROOT-R8-022."
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 238,
+      "id": "ROOT-R8-002",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          238
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          238
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "1ec96c",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete source-sink AST, emitted-code/HTML/header checks, preserved markers and deployment validation. A syntax/build gate is not general data-flow verification."
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "d64a04674ef09a8adff4ee3469694c893edb3e48",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 53,
+      "id": "ROOT-R8-003",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          53
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          53
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "1ec96c",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete deployment filename/chain parsing, configured-key requirement, signature-status check and release-key syntax parser."
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 208,
+      "id": "ROOT-R8-004",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          208
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          208
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "1ec96c",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete commit/tree gates, manifest staging, testnet/shared-origin policy, clean build environment, mirror assembly and evidence promotion. Source only."
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "blob": "30fbe84911c51c484a966a604351ed4a395dd18e",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 291,
+      "id": "ROOT-R8-005",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          291
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          291
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "3040e9",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete HTML scanner, regular-file inventory, secret patterns, lean report, testnet allowlist, build-info checks and checksum emission. No generated artifact inspected."
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "blob": "5ef7f8f55035f852da2e1398ae39fc6455a91ebb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 261,
+      "id": "ROOT-R8-006",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          261
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          261
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "3040e9",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete workflow triggers, permissions and dependencies; fresh library builds, test/release gates, main-only manual publication and smoke command. No workflow triggered."
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 359,
+      "id": "ROOT-R8-007",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          359
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          359
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "86d3f1",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete Registry authority capture, async review/publication/lookup, returned-hash preservation, QR and UI flow. WalletAttempts call shape alone does not establish BROWSER-01."
+    },
+    {
+      "path": "apps/web/src/lib/registry.ts",
+      "blob": "6dcd24ced090ac1009b7949f4707a3d8e1a5f8ea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 22,
+      "id": "ROOT-R8-008",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          22
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          22
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "86d3f1",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete zero-value canonical registerKeys overwrite-to-empty builder and preview. Current-entry clearing does not erase chain history."
+    },
+    {
+      "path": "apps/web/src/lib/tags.ts",
+      "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 565,
+      "id": "ROOT-R8-009",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          565
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          565
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "102a24",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete tag HKDF/AES/HMAC, record AAD, migration, snapshots, guarded writes, import preview/commit, rotation, key-input wiping and memory-store implementation. No additional confirmed production defect."
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "blob": "c3be00ac752cebd8f0234dbfb6f275e9741bb527",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 94,
+      "id": "ROOT-R8-010",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Fresh complete 94-line frozen-main read; no reliance on separately reviewed candidate errors.ts. Reviewed safe descriptors and unknown-error fallback."
+    },
+    {
+      "path": "apps/web/src/lib/displayText.ts",
+      "blob": "2202f8e612c74efa1cd4150f53f247fbc3e5c726",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 39,
+      "id": "ROOT-R8-011",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          39
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          39
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete clipping, hostile-code-point visibility, mixed-script reporting and fingerprint delegation; not proof of every display caller."
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.ts",
+      "blob": "e5c281aa7f8105b71ef93ea407e8dfa454892317",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 25,
+      "id": "ROOT-R8-012",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          25
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          25
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete display-only invisible-character replacement and mixed-script detection; parse validation and rendering escape are separate boundaries."
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "blob": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 91,
+      "id": "ROOT-R8-013",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          91
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          91
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete HTTPS profile/strict-origin namespace, stored pin bounds and lock-based compare/write/remove operations with current-view guards."
+    },
+    {
+      "path": "apps/web/src/lib/fragment.ts",
+      "blob": "9f361be2be54403f1980999bb64937299760e719",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 35,
+      "id": "ROOT-R8-014",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          35
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          35
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete invoice-prefix detection, preserved history state, same-origin fragment clearing and pasted-fragment extraction. No browser operation executed."
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "blob": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 32,
+      "id": "ROOT-R8-015",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete injected-profile parsing and original profile composition. Candidate strict runtime-value handling is ROOT-R8-030."
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 108,
+      "id": "ROOT-R8-016",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          108
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          108
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "dd7622",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete CSPRNG sampling, monotonic wait, wall-clock expiry, state transitions and interval cleanup. Candidate expiry-floor change is ROOT-R8-031."
+    },
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 250,
+      "id": "ROOT-R8-017",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          250
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          250
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "24a553",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete router entry points, immutable settings, reentrancy, permit fallback, recipient balance deltas, native buffer, metadata and return-data-bounded native sends. Existing operational/trust observations preserved."
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 150,
+      "id": "ROOT-R8-018",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          150
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          150
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "24a553",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete relayer EIP-712 binding, owner nonce bitmap, permit fallback, transfers and exact owner/recipient deltas. No unsigned amount/destination override found in these sources."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IERC5564Announcer.sol",
+      "blob": "f7e6b9e8088215cbebf9c36a98b05e3493e1cc0e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 45,
+      "id": "ROOT-R8-019",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "38853f",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete announcer ABI/event and comments; interface alone does not establish deployed implementation or payment authenticity."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+      "blob": "1ecd181745e4feae9ec3cd4b7b7d59a7806ddaff",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 119,
+      "id": "ROOT-R8-020",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          119
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          119
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "38853f",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete router ABI/events/errors and parameter semantics checked against freshly read implementation."
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+      "blob": "09b5605c6dfea8cd63310f0366a7e800c54e99ea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "id": "ROOT-R8-021",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "38853f",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete sweep/permit structures, ABI/events/errors checked against freshly read implementation."
+    },
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "blob": "6657fd5eb74278a37355c56847d47e6affb92c7e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 52,
+      "id": "ROOT-R8-022",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          1,
+          52
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          52
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-001",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-001",
+        "path": "apps/web/scripts/csp.mjs",
+        "blob": "6cae62f1117c8cd9b23ded19c8bd8f341456704d",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 30,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            30
+          ]
+        ],
+        "evidence_tool_chunk_id": "1ec96c"
+      },
+      "evidence": {
+        "tool_chunk_id": "c0bb8b",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 1,
+            "baseline_count": 30,
+            "target_start": 1,
+            "target_count": 52
+          }
+        ],
+        "added_target_ranges": [
+          [
+            4,
+            4
+          ],
+          [
+            7,
+            22
+          ],
+          [
+            24,
+            24
+          ],
+          [
+            26,
+            28
+          ],
+          [
+            34,
+            35
+          ],
+          [
+            41,
+            52
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            4,
+            4
+          ],
+          [
+            9,
+            19
+          ],
+          [
+            25,
+            25
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              3
+            ],
+            "target": [
+              1,
+              3
+            ]
+          },
+          {
+            "baseline": [
+              5,
+              6
+            ],
+            "target": [
+              5,
+              6
+            ]
+          },
+          {
+            "baseline": [
+              7,
+              7
+            ],
+            "target": [
+              23,
+              23
+            ]
+          },
+          {
+            "baseline": [
+              8,
+              8
+            ],
+            "target": [
+              25,
+              25
+            ]
+          },
+          {
+            "baseline": [
+              20,
+              24
+            ],
+            "target": [
+              29,
+              33
+            ]
+          },
+          {
+            "baseline": [
+              26,
+              30
+            ],
+            "target": [
+              36,
+              40
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-001: stricter origin syntax, fixed diagnostics, direct-caller validation and exact effective connect-src comparison."
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 336,
+      "id": "ROOT-R8-023",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          9,
+          18
+        ],
+        [
+          61,
+          76
+        ],
+        [
+          92,
+          172
+        ],
+        [
+          200,
+          227
+        ],
+        [
+          231,
+          237
+        ],
+        [
+          245,
+          253
+        ],
+        [
+          255,
+          285
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          336
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-002",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-002",
+        "path": "apps/web/scripts/scan-bundle.mjs",
+        "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 238,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            238
+          ]
+        ],
+        "evidence_tool_chunk_id": "1ec96c"
+      },
+      "evidence": {
+        "tool_chunk_id": "c0bb8b",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 9,
+            "baseline_count": 7,
+            "target_start": 9,
+            "target_count": 10
+          },
+          {
+            "baseline_start": 58,
+            "baseline_count": 6,
+            "target_start": 61,
+            "target_count": 16
+          },
+          {
+            "baseline_start": 79,
+            "baseline_count": 12,
+            "target_start": 92,
+            "target_count": 81
+          },
+          {
+            "baseline_start": 118,
+            "baseline_count": 10,
+            "target_start": 200,
+            "target_count": 28
+          },
+          {
+            "baseline_start": 131,
+            "baseline_count": 7,
+            "target_start": 231,
+            "target_count": 7
+          },
+          {
+            "baseline_start": 145,
+            "baseline_count": 6,
+            "target_start": 245,
+            "target_count": 9
+          },
+          {
+            "baseline_start": 152,
+            "baseline_count": 36,
+            "target_start": 255,
+            "target_count": 31
+          }
+        ],
+        "added_target_ranges": [
+          [
+            12,
+            13
+          ],
+          [
+            15,
+            15
+          ],
+          [
+            64,
+            73
+          ],
+          [
+            95,
+            95
+          ],
+          [
+            99,
+            99
+          ],
+          [
+            102,
+            169
+          ],
+          [
+            203,
+            208
+          ],
+          [
+            210,
+            210
+          ],
+          [
+            212,
+            224
+          ],
+          [
+            234,
+            234
+          ],
+          [
+            248,
+            250
+          ],
+          [
+            258,
+            282
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            82,
+            82
+          ],
+          [
+            121,
+            122
+          ],
+          [
+            134,
+            134
+          ],
+          [
+            155,
+            184
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              11
+            ],
+            "target": [
+              1,
+              11
+            ]
+          },
+          {
+            "baseline": [
+              12,
+              12
+            ],
+            "target": [
+              14,
+              14
+            ]
+          },
+          {
+            "baseline": [
+              13,
+              60
+            ],
+            "target": [
+              16,
+              63
+            ]
+          },
+          {
+            "baseline": [
+              61,
+              81
+            ],
+            "target": [
+              74,
+              94
+            ]
+          },
+          {
+            "baseline": [
+              83,
+              85
+            ],
+            "target": [
+              96,
+              98
+            ]
+          },
+          {
+            "baseline": [
+              86,
+              87
+            ],
+            "target": [
+              100,
+              101
+            ]
+          },
+          {
+            "baseline": [
+              88,
+              120
+            ],
+            "target": [
+              170,
+              202
+            ]
+          },
+          {
+            "baseline": [
+              123,
+              123
+            ],
+            "target": [
+              209,
+              209
+            ]
+          },
+          {
+            "baseline": [
+              124,
+              124
+            ],
+            "target": [
+              211,
+              211
+            ]
+          },
+          {
+            "baseline": [
+              125,
+              133
+            ],
+            "target": [
+              225,
+              233
+            ]
+          },
+          {
+            "baseline": [
+              135,
+              147
+            ],
+            "target": [
+              235,
+              247
+            ]
+          },
+          {
+            "baseline": [
+              148,
+              154
+            ],
+            "target": [
+              251,
+              257
+            ]
+          },
+          {
+            "baseline": [
+              185,
+              238
+            ],
+            "target": [
+              283,
+              336
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-002: effective CSP masking, all HTML documents, exact own-origin exemption, legacy manifest markers and shared lean exclusions."
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "76a6132fcc692a18e657c3880427c8f60739c6b8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 101,
+      "id": "ROOT-R8-024",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          35,
+          92
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          101
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-003",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-003",
+        "path": "apps/web/scripts/validate-deployments.mjs",
+        "blob": "d64a04674ef09a8adff4ee3469694c893edb3e48",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 53,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            53
+          ]
+        ],
+        "evidence_tool_chunk_id": "1ec96c"
+      },
+      "evidence": {
+        "tool_chunk_id": "c0bb8b",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 35,
+            "baseline_count": 10,
+            "target_start": 35,
+            "target_count": 58
+          }
+        ],
+        "added_target_ranges": [
+          [
+            38,
+            82
+          ],
+          [
+            86,
+            89
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            38,
+            38
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              37
+            ],
+            "target": [
+              1,
+              37
+            ]
+          },
+          {
+            "baseline": [
+              39,
+              41
+            ],
+            "target": [
+              83,
+              85
+            ]
+          },
+          {
+            "baseline": [
+              42,
+              53
+            ],
+            "target": [
+              90,
+              101
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-003: public test verification keys are refused in identified release builds; development mode remains separately classified."
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 229,
+      "id": "ROOT-R8-025",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          9,
+          20
+        ],
+        [
+          95,
+          107
+        ],
+        [
+          113,
+          132
+        ],
+        [
+          160,
+          166
+        ],
+        [
+          218,
+          229
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          229
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-004",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-004",
+        "path": "scripts/pages/build-pages.sh",
+        "blob": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 208,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            208
+          ]
+        ],
+        "evidence_tool_chunk_id": "1ec96c"
+      },
+      "evidence": {
+        "tool_chunk_id": "c0bb8b",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 9,
+            "baseline_count": 9,
+            "target_start": 9,
+            "target_count": 12
+          },
+          {
+            "baseline_start": 92,
+            "baseline_count": 6,
+            "target_start": 95,
+            "target_count": 13
+          },
+          {
+            "baseline_start": 103,
+            "baseline_count": 15,
+            "target_start": 113,
+            "target_count": 20
+          },
+          {
+            "baseline_start": 145,
+            "baseline_count": 7,
+            "target_start": 160,
+            "target_count": 7
+          },
+          {
+            "baseline_start": 203,
+            "baseline_count": 6,
+            "target_start": 218,
+            "target_count": 12
+          }
+        ],
+        "added_target_ranges": [
+          [
+            12,
+            13
+          ],
+          [
+            16,
+            17
+          ],
+          [
+            98,
+            104
+          ],
+          [
+            116,
+            117
+          ],
+          [
+            123,
+            126
+          ],
+          [
+            129,
+            129
+          ],
+          [
+            163,
+            163
+          ],
+          [
+            221,
+            226
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            14,
+            14
+          ],
+          [
+            106,
+            106
+          ],
+          [
+            114,
+            114
+          ],
+          [
+            148,
+            148
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              11
+            ],
+            "target": [
+              1,
+              11
+            ]
+          },
+          {
+            "baseline": [
+              12,
+              13
+            ],
+            "target": [
+              14,
+              15
+            ]
+          },
+          {
+            "baseline": [
+              15,
+              94
+            ],
+            "target": [
+              18,
+              97
+            ]
+          },
+          {
+            "baseline": [
+              95,
+              105
+            ],
+            "target": [
+              105,
+              115
+            ]
+          },
+          {
+            "baseline": [
+              107,
+              111
+            ],
+            "target": [
+              118,
+              122
+            ]
+          },
+          {
+            "baseline": [
+              112,
+              113
+            ],
+            "target": [
+              127,
+              128
+            ]
+          },
+          {
+            "baseline": [
+              115,
+              147
+            ],
+            "target": [
+              130,
+              162
+            ]
+          },
+          {
+            "baseline": [
+              149,
+              205
+            ],
+            "target": [
+              164,
+              220
+            ]
+          },
+          {
+            "baseline": [
+              206,
+              208
+            ],
+            "target": [
+              227,
+              229
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-004: production key parsing, CSP settings, compiled declared origin, mirror wording and independent artifact verification before promotion."
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 290,
+      "id": "ROOT-R8-026",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          8,
+          15
+        ],
+        [
+          17,
+          23
+        ],
+        [
+          47,
+          52
+        ],
+        [
+          194,
+          203
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          290
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-005",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-005",
+        "path": "scripts/pages/verify-pages-site.mjs",
+        "blob": "30fbe84911c51c484a966a604351ed4a395dd18e",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 291,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            291
+          ]
+        ],
+        "evidence_tool_chunk_id": "3040e9"
+      },
+      "evidence": {
+        "tool_chunk_id": "b82fd2",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 8,
+            "baseline_count": 8,
+            "target_start": 8,
+            "target_count": 8
+          },
+          {
+            "baseline_start": 17,
+            "baseline_count": 6,
+            "target_start": 17,
+            "target_count": 7
+          },
+          {
+            "baseline_start": 46,
+            "baseline_count": 9,
+            "target_start": 47,
+            "target_count": 6
+          },
+          {
+            "baseline_start": 196,
+            "baseline_count": 9,
+            "target_start": 194,
+            "target_count": 10
+          }
+        ],
+        "added_target_ranges": [
+          [
+            11,
+            12
+          ],
+          [
+            20,
+            20
+          ],
+          [
+            197,
+            200
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            11,
+            12
+          ],
+          [
+            49,
+            51
+          ],
+          [
+            199,
+            201
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              10
+            ],
+            "target": [
+              1,
+              10
+            ]
+          },
+          {
+            "baseline": [
+              13,
+              19
+            ],
+            "target": [
+              13,
+              19
+            ]
+          },
+          {
+            "baseline": [
+              20,
+              48
+            ],
+            "target": [
+              21,
+              49
+            ]
+          },
+          {
+            "baseline": [
+              52,
+              198
+            ],
+            "target": [
+              50,
+              196
+            ]
+          },
+          {
+            "baseline": [
+              202,
+              291
+            ],
+            "target": [
+              201,
+              290
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-005: shared lean-module rules replace local exclusions; imported helper handles module identity/rendering restrictions."
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 303,
+      "id": "ROOT-R8-027",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          4,
+          10
+        ],
+        [
+          210,
+          257
+        ],
+        [
+          291,
+          303
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          303
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-006",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-006",
+        "path": ".github/workflows/pages.yml",
+        "blob": "5ef7f8f55035f852da2e1398ae39fc6455a91ebb",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 261,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            261
+          ]
+        ],
+        "evidence_tool_chunk_id": "3040e9"
+      },
+      "evidence": {
+        "tool_chunk_id": "b82fd2",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 4,
+            "baseline_count": 7,
+            "target_start": 4,
+            "target_count": 7
+          },
+          {
+            "baseline_start": 210,
+            "baseline_count": 9,
+            "target_start": 210,
+            "target_count": 48
+          },
+          {
+            "baseline_start": 252,
+            "baseline_count": 10,
+            "target_start": 291,
+            "target_count": 13
+          }
+        ],
+        "added_target_ranges": [
+          [
+            7,
+            7
+          ],
+          [
+            213,
+            251
+          ],
+          [
+            254,
+            254
+          ],
+          [
+            294,
+            296
+          ],
+          [
+            299,
+            299
+          ],
+          [
+            303,
+            303
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            7,
+            7
+          ],
+          [
+            215,
+            215
+          ],
+          [
+            255,
+            255
+          ],
+          [
+            261,
+            261
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              6
+            ],
+            "target": [
+              1,
+              6
+            ]
+          },
+          {
+            "baseline": [
+              8,
+              212
+            ],
+            "target": [
+              8,
+              212
+            ]
+          },
+          {
+            "baseline": [
+              213,
+              214
+            ],
+            "target": [
+              252,
+              253
+            ]
+          },
+          {
+            "baseline": [
+              216,
+              254
+            ],
+            "target": [
+              255,
+              293
+            ]
+          },
+          {
+            "baseline": [
+              256,
+              257
+            ],
+            "target": [
+              297,
+              298
+            ]
+          },
+          {
+            "baseline": [
+              258,
+              260
+            ],
+            "target": [
+              300,
+              302
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-006: isolated attestation job is required before deploy; post-deploy smoke receives expected origin. No publication result claimed."
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 375,
+      "id": "ROOT-R8-028",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          70,
+          76
+        ],
+        [
+          95,
+          126
+        ],
+        [
+          128,
+          134
+        ],
+        [
+          239,
+          246
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          375
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-007",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-007",
+        "path": "apps/web/src/features/registry/RegistryView.tsx",
+        "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 359,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            359
+          ]
+        ],
+        "evidence_tool_chunk_id": "86d3f1"
+      },
+      "evidence": {
+        "tool_chunk_id": "9ece0a",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 70,
+            "baseline_count": 6,
+            "target_start": 70,
+            "target_count": 7
+          },
+          {
+            "baseline_start": 94,
+            "baseline_count": 18,
+            "target_start": 95,
+            "target_count": 32
+          },
+          {
+            "baseline_start": 113,
+            "baseline_count": 7,
+            "target_start": 128,
+            "target_count": 7
+          },
+          {
+            "baseline_start": 224,
+            "baseline_count": 7,
+            "target_start": 239,
+            "target_count": 8
+          }
+        ],
+        "added_target_ranges": [
+          [
+            73,
+            73
+          ],
+          [
+            98,
+            98
+          ],
+          [
+            100,
+            112
+          ],
+          [
+            116,
+            116
+          ],
+          [
+            123,
+            123
+          ],
+          [
+            131,
+            131
+          ],
+          [
+            242,
+            243
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            97,
+            97
+          ],
+          [
+            108,
+            108
+          ],
+          [
+            116,
+            116
+          ],
+          [
+            227,
+            227
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              72
+            ],
+            "target": [
+              1,
+              72
+            ]
+          },
+          {
+            "baseline": [
+              73,
+              96
+            ],
+            "target": [
+              74,
+              97
+            ]
+          },
+          {
+            "baseline": [
+              98,
+              98
+            ],
+            "target": [
+              99,
+              99
+            ]
+          },
+          {
+            "baseline": [
+              99,
+              101
+            ],
+            "target": [
+              113,
+              115
+            ]
+          },
+          {
+            "baseline": [
+              102,
+              107
+            ],
+            "target": [
+              117,
+              122
+            ]
+          },
+          {
+            "baseline": [
+              109,
+              115
+            ],
+            "target": [
+              124,
+              130
+            ]
+          },
+          {
+            "baseline": [
+              117,
+              226
+            ],
+            "target": [
+              132,
+              241
+            ]
+          },
+          {
+            "baseline": [
+              228,
+              359
+            ],
+            "target": [
+              244,
+              375
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-007: operation aborts, network revision invalidation, registry-read action scope and current-context lookup checks."
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "id": "ROOT-R8-029",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          1,
+          5
+        ],
+        [
+          32,
+          39
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-013",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-013",
+        "path": "apps/web/src/lib/merchantIdentity.ts",
+        "blob": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 91,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            91
+          ]
+        ],
+        "evidence_tool_chunk_id": "dd7622"
+      },
+      "evidence": {
+        "tool_chunk_id": "8597b4",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 1,
+            "baseline_count": 3,
+            "target_start": 1,
+            "target_count": 5
+          },
+          {
+            "baseline_start": 30,
+            "baseline_count": 7,
+            "target_start": 32,
+            "target_count": 8
+          }
+        ],
+        "added_target_ranges": [
+          [
+            1,
+            2
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            33,
+            33
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              32
+            ],
+            "target": [
+              3,
+              34
+            ]
+          },
+          {
+            "baseline": [
+              34,
+              91
+            ],
+            "target": [
+              37,
+              94
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-013: stored merchant pins use strict JSON parsing to reject duplicate-member ambiguity."
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 36,
+      "id": "ROOT-R8-030",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          23,
+          33
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          36
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-015",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-015",
+        "path": "apps/web/src/lib/buildProfile.ts",
+        "blob": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 32,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            32
+          ]
+        ],
+        "evidence_tool_chunk_id": "dd7622"
+      },
+      "evidence": {
+        "tool_chunk_id": "8597b4",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 23,
+            "baseline_count": 7,
+            "target_start": 23,
+            "target_count": 11
+          }
+        ],
+        "added_target_ranges": [
+          [
+            26,
+            30
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            26,
+            26
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              25
+            ],
+            "target": [
+              1,
+              25
+            ]
+          },
+          {
+            "baseline": [
+              27,
+              32
+            ],
+            "target": [
+              31,
+              36
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-015: full requires known full build and known full/absent overrides; malformed runtime values resolve to lean."
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 127,
+      "id": "ROOT-R8-031",
+      "status": "reviewed",
+      "method": "full-baseline-plus-complete-diff",
+      "read_ranges": [
+        [
+          56,
+          63
+        ],
+        [
+          66,
+          74
+        ],
+        [
+          83,
+          107
+        ],
+        [
+          116,
+          122
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          127
+        ]
+      ],
+      "full_counterpart_baseline_id": "ROOT-R8-016",
+      "full_counterpart_baseline": {
+        "report": "review-root-provenance-round8.json",
+        "id": "ROOT-R8-016",
+        "path": "apps/web/src/lib/jitter.ts",
+        "blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "line_count": 108,
+        "method": "full-numbered-source-read",
+        "read_ranges": [
+          [
+            1,
+            108
+          ]
+        ],
+        "evidence_tool_chunk_id": "dd7622"
+      },
+      "evidence": {
+        "tool_chunk_id": "8597b4",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "diff": {
+        "format": "complete difflib.unified_diff with three context lines",
+        "complete": true,
+        "all_added_and_deleted_lines_read": true,
+        "hunks": [
+          {
+            "baseline_start": 56,
+            "baseline_count": 6,
+            "target_start": 56,
+            "target_count": 8
+          },
+          {
+            "baseline_start": 64,
+            "baseline_count": 7,
+            "target_start": 66,
+            "target_count": 9
+          },
+          {
+            "baseline_start": 79,
+            "baseline_count": 10,
+            "target_start": 83,
+            "target_count": 25
+          },
+          {
+            "baseline_start": 97,
+            "baseline_count": 7,
+            "target_start": 116,
+            "target_count": 7
+          }
+        ],
+        "added_target_ranges": [
+          [
+            59,
+            60
+          ],
+          [
+            69,
+            71
+          ],
+          [
+            86,
+            100
+          ],
+          [
+            104,
+            104
+          ],
+          [
+            119,
+            119
+          ]
+        ],
+        "deleted_baseline_ranges": [
+          [
+            67,
+            67
+          ],
+          [
+            85,
+            85
+          ],
+          [
+            100,
+            100
+          ]
+        ],
+        "unchanged_lineage": [
+          {
+            "baseline": [
+              1,
+              58
+            ],
+            "target": [
+              1,
+              58
+            ]
+          },
+          {
+            "baseline": [
+              59,
+              66
+            ],
+            "target": [
+              61,
+              68
+            ]
+          },
+          {
+            "baseline": [
+              68,
+              81
+            ],
+            "target": [
+              72,
+              85
+            ]
+          },
+          {
+            "baseline": [
+              82,
+              84
+            ],
+            "target": [
+              101,
+              103
+            ]
+          },
+          {
+            "baseline": [
+              86,
+              99
+            ],
+            "target": [
+              105,
+              118
+            ]
+          },
+          {
+            "baseline": [
+              101,
+              108
+            ],
+            "target": [
+              120,
+              127
+            ]
+          }
+        ],
+        "coverage_explanation": "Every changed or deleted source line was read in the complete diff. Unchanged target lines map byte-for-byte to the explicitly identified fresh full-read baseline. reviewed_ranges records logical complete-version coverage; read_ranges records target hunk lines actually displayed."
+      },
+      "review_notes": "Complete diff from ROOT-R8-016: finite clocks and monotonic elapsed-time floor harden local waiting/send-now invoice expiry."
+    },
+    {
+      "path": "apps/web/scripts/apply-csp.mjs",
+      "blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 121,
+      "id": "ROOT-R8-032",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "54bf31",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete generated CSP rewrite/check, inert HTML/head parsing, exact attribute range and global header scope checks. No script or HTML executed."
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 153,
+      "id": "ROOT-R8-033",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          153
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          153
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "54bf31",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete path/checksum inventory, regular-file/no-follow/nonblocking reads, file snapshots and expected commit checks. Trusted sums and stable ancestor directories remain explicit prerequisites."
+    },
+    {
+      "path": "scripts/pages/lean-exclusions.mjs",
+      "blob": "3eb88a297c4aaf5bb620a60e4b5503862a1daef4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 45,
+      "id": "ROOT-R8-034",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "54bf31",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete shared lean exclusion rules, rendered-length handling and embedHost allowed exports."
+    },
+    {
+      "path": "scripts/pages/smoke.mjs",
+      "blob": "68c722f8c8ec68f844dce85e366059f88550eef3",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 137,
+      "id": "ROOT-R8-035",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "5c82bf",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete origin precheck, bounded commit polling, entry checks, fresh context and request/error collection for navigation/fixture smoke. No request/browser/test executed."
+    },
+    {
+      "path": "scripts/pages/smoke-walk.mjs",
+      "blob": "c0f3ca90f5c76da840542904cdeeb870e08ac437",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 65,
+      "id": "ROOT-R8-036",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          65
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          65
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "5c82bf",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete lean navigation walk and synthetic fixture review helper. Static acceptance intent only."
+    },
+    {
+      "path": "scripts/pages/smoke-url.mjs",
+      "blob": "ddb9f17a688368c2f0f45197d7af6638f80ec0a8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 32,
+      "id": "ROOT-R8-037",
+      "status": "reviewed",
+      "method": "full-numbered-source-read",
+      "read_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "reviewed_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "full_counterpart_baseline_id": null,
+      "full_counterpart_baseline": null,
+      "evidence": {
+        "tool_chunk_id": "5c82bf",
+        "source_read": "immutable Git blob via git cat-file blob",
+        "output_truncated": false
+      },
+      "review_notes": "Complete same-origin/project-path classifier, local data/blob exceptions and deployed-versus-declared origin comparison."
+    }
+  ],
+  "canonical_register": {
+    "path": "docs/audits/blue-team-2026-11-19/findings.md",
+    "context_read": "complete local audit-note read, tool chunk e04440; note metadata only, not a new read of every cited source",
+    "ids": [
+      "BROWSER-01",
+      "PN-01",
+      "PN-02",
+      "PN-03",
+      "PN-04",
+      "PN-05",
+      "SN-K01"
+    ],
+    "count": 7,
+    "change": "No finding added, removed or reclassified by this provenance refresh."
+  },
+  "additional_confirmed_findings": [],
+  "known_fixes_and_hardening": [
+    {
+      "id": "ROOT-R8-K01",
+      "classification": "existing candidate hardening",
+      "title": "CSP origin validation and effective-policy qualification",
+      "description": "Candidate rejects policy punctuation, wildcards and credentials in configured origins, checks effective enforcing meta/header policies and limits scanner exemptions to the configured connect-src range. Preserve the distinction between artifact policy and actual host enforcement.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-022",
+          "path": "apps/web/scripts/csp.mjs",
+          "blob": "6657fd5eb74278a37355c56847d47e6affb92c7e",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            8,
+            52
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/scripts/csp.mjs#L8-L52"
+        },
+        {
+          "coverage_id": "ROOT-R8-032",
+          "path": "apps/web/scripts/apply-csp.mjs",
+          "blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            32,
+            103
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/scripts/apply-csp.mjs#L32-L103"
+        },
+        {
+          "coverage_id": "ROOT-R8-023",
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            94,
+            141
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/scripts/scan-bundle.mjs#L94-L141"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K02",
+      "classification": "existing candidate hardening",
+      "title": "Known public test release keys excluded from release verification",
+      "description": "Candidate rejects the listed public test verification keys in identified release builds; the Pages builder explicitly requests production parsing before bundling manifests. This is a source guard; no production key inventory was inspected.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-024",
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "blob": "76a6132fcc692a18e657c3880427c8f60739c6b8",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            38,
+            95
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/scripts/validate-deployments.mjs#L38-L95"
+        },
+        {
+          "coverage_id": "ROOT-R8-025",
+          "path": "scripts/pages/build-pages.sh",
+          "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            95,
+            112
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/build-pages.sh#L95-L112"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K03",
+      "classification": "existing candidate hardening",
+      "title": "Registry read lifecycle and network revision invalidation",
+      "description": "Candidate aborts obsolete operations after lifecycle/context changes and includes network revision in review authority and lookup checks. This does not reclassify BROWSER-01 onto the assigned older snapshots.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-028",
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            72,
+            133
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/features/registry/RegistryView.tsx#L72-L133"
+        },
+        {
+          "coverage_id": "ROOT-R8-028",
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            238,
+            247
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/features/registry/RegistryView.tsx#L238-L247"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K04",
+      "classification": "existing candidate hardening",
+      "title": "Strict merchant-pin JSON and narrow profile composition",
+      "description": "Candidate rejects ambiguous duplicate pin members through strict JSON parsing and allows the wider build profile only for known full/absent inputs. These are existing changes, not new confirmed production findings.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-029",
+          "path": "apps/web/src/lib/merchantIdentity.ts",
+          "blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            28,
+            41
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/merchantIdentity.ts#L28-L41"
+        },
+        {
+          "coverage_id": "ROOT-R8-030",
+          "path": "apps/web/src/lib/buildProfile.ts",
+          "blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            21,
+            31
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/buildProfile.ts#L21-L31"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K05",
+      "classification": "existing candidate hardening",
+      "title": "Monotonic expiry floor during local delay",
+      "description": "Candidate combines finite-clock validation and monotonic elapsed time with the current wall clock for expiry while waiting or skipping the wait. This helper alone does not establish every submit-time expiry check.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-031",
+          "path": "apps/web/src/lib/jitter.ts",
+          "blob": "9845576adfb522c17db145b1772276f66523180c",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            86,
+            108
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/jitter.ts#L86-L108"
+        },
+        {
+          "coverage_id": "ROOT-R8-031",
+          "path": "apps/web/src/lib/jitter.ts",
+          "blob": "9845576adfb522c17db145b1772276f66523180c",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            116,
+            122
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/jitter.ts#L116-L122"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K06",
+      "classification": "existing candidate hardening",
+      "title": "Shared lean exclusions across artifact gates",
+      "description": "Candidate shares module-exclusion logic between the bundle scanner and Pages verifier and restricts the allowed embedHost export. Reading a generated-report gate is not evidence that a build passed.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-034",
+          "path": "scripts/pages/lean-exclusions.mjs",
+          "blob": "3eb88a297c4aaf5bb620a60e4b5503862a1daef4",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            7,
+            45
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/lean-exclusions.mjs#L7-L45"
+        },
+        {
+          "coverage_id": "ROOT-R8-026",
+          "path": "scripts/pages/verify-pages-site.mjs",
+          "blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            188,
+            204
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/verify-pages-site.mjs#L188-L204"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K07",
+      "classification": "existing candidate hardening",
+      "title": "Artifact integrity before promotion and attestation before deployment",
+      "description": "Candidate builder invokes independent exact-file/checksum/source-commit verification before promoting site/evidence. The workflow isolates attestation permissions and requires that job before deploy. Trusted checksum provenance and stable verification inputs remain explicit requirements.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-025",
+          "path": "scripts/pages/build-pages.sh",
+          "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            219,
+            229
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/build-pages.sh#L219-L229"
+        },
+        {
+          "coverage_id": "ROOT-R8-033",
+          "path": "scripts/pages/verify-pages-artifact.mjs",
+          "blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            1,
+            6
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/verify-pages-artifact.mjs#L1-L6"
+        },
+        {
+          "coverage_id": "ROOT-R8-033",
+          "path": "scripts/pages/verify-pages-artifact.mjs",
+          "blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            60,
+            138
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/verify-pages-artifact.mjs#L60-L138"
+        },
+        {
+          "coverage_id": "ROOT-R8-027",
+          "path": ".github/workflows/pages.yml",
+          "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            213,
+            267
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/.github/workflows/pages.yml#L213-L267"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-K08",
+      "classification": "existing candidate hardening",
+      "title": "Declared origin and expanded navigation smoke scope",
+      "description": "Candidate compiles its declared origin and passes it to post-deployment smoke. The smoke source visits lean views and a synthetic invoice while recording off-project requests. These scripts were read only; no deployed state was established.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-025",
+          "path": "scripts/pages/build-pages.sh",
+          "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            115,
+            131
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/build-pages.sh#L115-L131"
+        },
+        {
+          "coverage_id": "ROOT-R8-027",
+          "path": ".github/workflows/pages.yml",
+          "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            293,
+            303
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/.github/workflows/pages.yml#L293-L303"
+        },
+        {
+          "coverage_id": "ROOT-R8-035",
+          "path": "scripts/pages/smoke.mjs",
+          "blob": "68c722f8c8ec68f844dce85e366059f88550eef3",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            46,
+            51
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/smoke.mjs#L46-L51"
+        },
+        {
+          "coverage_id": "ROOT-R8-035",
+          "path": "scripts/pages/smoke.mjs",
+          "blob": "68c722f8c8ec68f844dce85e366059f88550eef3",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            89,
+            137
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/smoke.mjs#L89-L137"
+        },
+        {
+          "coverage_id": "ROOT-R8-036",
+          "path": "scripts/pages/smoke-walk.mjs",
+          "blob": "c0f3ca90f5c76da840542904cdeeb870e08ac437",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            27,
+            65
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/smoke-walk.mjs#L27-L65"
+        },
+        {
+          "coverage_id": "ROOT-R8-037",
+          "path": "scripts/pages/smoke-url.mjs",
+          "blob": "ddb9f17a688368c2f0f45197d7af6638f80ec0a8",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            1,
+            32
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/pages/smoke-url.mjs#L1-L32"
+        }
+      ]
+    }
+  ],
+  "review_boundaries": [
+    {
+      "id": "ROOT-R8-B01",
+      "classification": "existing documented operational boundary",
+      "description": "Router fee-recipient availability is immutable: native rejection or token restrictions can stop fee-bearing transfers. Metadata/announcements alone do not establish invoice authenticity, a valid ephemeral curve point or arbitrary token trust. ROOT-A01/ROOT-A02 context remains; no new bypass is claimed.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-017",
+          "path": "packages/contracts/src/GhostPayRouter.sol",
+          "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            59,
+            67
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/contracts/src/GhostPayRouter.sol#L59-L67"
+        },
+        {
+          "coverage_id": "ROOT-R8-017",
+          "path": "packages/contracts/src/GhostPayRouter.sol",
+          "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            117,
+            128
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/contracts/src/GhostPayRouter.sol#L117-L128"
+        },
+        {
+          "coverage_id": "ROOT-R8-017",
+          "path": "packages/contracts/src/GhostPayRouter.sol",
+          "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            177,
+            235
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/contracts/src/GhostPayRouter.sol#L177-L235"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-B02",
+      "classification": "source-confirmed contract authorization structure",
+      "description": "The relayer signature includes token, owner, destination, fee recipient, amount, fee, deadline and nonce. Authorization consumes the owner nonce before token calls, and execution checks exact deltas. Third-party cryptographic library internals and deployed bytecode were not re-audited.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-018",
+          "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+          "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            79,
+            115
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/contracts/src/GhostPaySweepRelayer.sol#L79-L115"
+        },
+        {
+          "coverage_id": "ROOT-R8-018",
+          "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+          "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            117,
+            148
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/contracts/src/GhostPaySweepRelayer.sol#L117-L148"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-B03",
+      "classification": "source-confirmed local custody structure",
+      "description": "Tag code derives separate nonextractable AES/HMAC keys, binds version-2 ciphertext to chain/record/lookup coordinates, and stages imports/rotation for guarded snapshot-dependent batch writes. Runtime storage durability, all caller lifecycles and WebCrypto implementation behavior were not executed or requalified here.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-009",
+          "path": "apps/web/src/lib/tags.ts",
+          "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            81,
+            113
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/tags.ts#L81-L113"
+        },
+        {
+          "coverage_id": "ROOT-R8-009",
+          "path": "apps/web/src/lib/tags.ts",
+          "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            160,
+            205
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/tags.ts#L160-L205"
+        },
+        {
+          "coverage_id": "ROOT-R8-009",
+          "path": "apps/web/src/lib/tags.ts",
+          "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            407,
+            451
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/tags.ts#L407-L451"
+        },
+        {
+          "coverage_id": "ROOT-R8-009",
+          "path": "apps/web/src/lib/tags.ts",
+          "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            461,
+            498
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/tags.ts#L461-L498"
+        }
+      ]
+    },
+    {
+      "id": "ROOT-R8-B04",
+      "classification": "canonical finding scope preservation",
+      "description": "Both assigned RegistryView versions mount WalletAttempts without a wallet prop. That call shape alone is insufficient for BROWSER-01: the canonical register confines it to the separate #300 component contract. This pass did not reread that branch or expand the finding to main/candidate.",
+      "sources": [
+        {
+          "coverage_id": "ROOT-R8-007",
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "lines": [
+            253,
+            258
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/c977b5d6723f6822c3b5d86cd6b231712c53c395/apps/web/src/features/registry/RegistryView.tsx#L253-L258"
+        },
+        {
+          "coverage_id": "ROOT-R8-028",
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "lines": [
+            269,
+            274
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/features/registry/RegistryView.tsx#L269-L274"
+        }
+      ],
+      "metadata_source": "docs/audits/blue-team-2026-11-19/findings.md, BROWSER-01"
+    }
+  ],
+  "constraints_observed": {
+    "target_code_execution": false,
+    "tests_builds_installs": false,
+    "network_requests_or_probes": false,
+    "pocs_or_transactions": false,
+    "git_mutations": false,
+    "target_source_edits": false,
+    "subagents_spawned": false,
+    "writes": [
+      "/workspace/scratch/e449ed9154f6/review-root-provenance-round8.json",
+      "/workspace/scratch/e449ed9154f6/review-root-provenance-round8.md"
+    ]
+  },
+  "scope_limits": [
+    "Only the exact 37 assigned old-main/candidate versions are covered by this pass; newer-main/release-hosting review belongs to the root lane.",
+    "No independently full-read evidence from separate reports was needed or imported for these residual rows.",
+    "Test/support sources outside the residual assignment were not reread and no passing result is claimed.",
+    "Third-party implementations, live chain state, generated artifacts, runtime behavior and published hosting configuration were not verified.",
+    "No additional confirmed production issue emerged; this is not a claim that the repository is defect-free."
+  ],
+  "pending": []
+}

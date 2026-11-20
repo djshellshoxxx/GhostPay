@@ -1,0 +1,20 @@
+{
+  "status": "source-review-complete",
+  "final_cut_utc": "2026-11-20T06:51:27Z",
+  "source_snapshots": 33,
+  "production_versions": 435,
+  "supporting_resource_versions": 8,
+  "test_support_versions": 549,
+  "unique_versions": 991,
+  "unique_paths": 770,
+  "version_lines": 222767,
+  "pending": 0,
+  "production_findings": {
+    "total": 7,
+    "medium": 4,
+    "low": 3
+  },
+  "target_execution": false,
+  "application_changes": false,
+  "publication": "blocked-by-automatic-approval-review; local notes only"
+}

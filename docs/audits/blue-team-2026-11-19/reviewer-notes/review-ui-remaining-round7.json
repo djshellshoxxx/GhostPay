@@ -1,0 +1,1371 @@
+{
+  "reviewer": "ui_remaining_round7",
+  "scope": "Read-only static review of the exact 26 immutable versions in review-ui-receipt-tests-round6.json remaining_untouched: shared/QR UI, i18n variants, About/Settings/Disclosure tests.",
+  "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+  "main_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "primary_candidate_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "coverage": [
+    {
+      "path": "apps/web/src/components/ContextHelp.test.tsx",
+      "blob": "6c282bff7a223286c431c41514351ba6c6d2b2c2",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 145,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 6,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 0,
+      "ranges": [
+        [
+          1,
+          145
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/ErrorBoundary.test.tsx",
+      "blob": "b1bdf393bac0b9fb3e576f3b526d2f78d21b9f76",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 65,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 7,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 1,
+      "ranges": [
+        [
+          1,
+          65
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+      "blob": "167776cdc0703bed151715ff619197649da0d2fe",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 138,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 8,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 2,
+      "ranges": [
+        [
+          1,
+          138
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/PrintableBill.test.tsx",
+      "blob": "4e80b81546f6d10464ef2dd25464036113d0e817",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 111,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 9,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 3,
+      "ranges": [
+        [
+          1,
+          111
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/QrFrame.i18n.test.tsx",
+      "blob": "31c15bcb5a18296b67942bf93cdc30c32426d2c3",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 42,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 10,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 4,
+      "ranges": [
+        [
+          1,
+          42
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/QrFrame.largeWarning.test.tsx",
+      "blob": "7c8c1cf7150a88a5487a8b0db9496c7287c22af3",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 21,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 11,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 5,
+      "ranges": [
+        [
+          1,
+          21
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/QrFrame.security.test.tsx",
+      "blob": "642a51e40607844f2af9e5d59a3e1a0e752b3c4f",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 106,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 12,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 6,
+      "ranges": [
+        [
+          1,
+          106
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/QrFrame.test.tsx",
+      "blob": "6f84f7e43f15afae4bc1f292a95510ead7bd2123",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 162,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 13,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 7,
+      "ranges": [
+        [
+          1,
+          162
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/QrView.i18n.test.tsx",
+      "blob": "474affeda6d8f7e68a0bd4d4a976350b92a8291f",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 56,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 14,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 8,
+      "ranges": [
+        [
+          1,
+          56
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/QrView.test.tsx",
+      "blob": "8dc103ff3c081a63bc631aa9e532fdf2de2e3bd0",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 21,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 15,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 9,
+      "ranges": [
+        [
+          1,
+          21
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+      "blob": "a48fbe04da171154ba009ce11132e30ffbcaf80f",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 238,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 16,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 10,
+      "ranges": [
+        [
+          1,
+          238
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/LanguagePicker.test.tsx",
+      "blob": "8b492301d0bd857770581acf17de66ec82883053",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 73,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 22,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 11,
+      "ranges": [
+        [
+          1,
+          73
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/Trans.test.tsx",
+      "blob": "39a69e994819cacf23d3e03c2d8f1f464302a552",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 54,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 23,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 12,
+      "ranges": [
+        [
+          1,
+          54
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/catalog.test.ts",
+      "blob": "cebbbc60c3f01698d90ddf24c08de95d8f98e8c5",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 45,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 24,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 13,
+      "ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/context.test.tsx",
+      "blob": "1ec8e02639c038ec458e762886d45cbb20ea1ca1",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 67,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 25,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 14,
+      "ranges": [
+        [
+          1,
+          67
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/languages.test.ts",
+      "blob": "68d1fed519cb0a86b8f9804bbe8f063fda455e1d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 82,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 26,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 15,
+      "ranges": [
+        [
+          1,
+          82
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/message.test.ts",
+      "blob": "6bc2e91cdf4ed5402f895f8cc8d2a296702fff1b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 216,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "assignment_index": 27,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 16,
+      "ranges": [
+        [
+          1,
+          216
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.test.ts",
+      "blob": "5efd78ea6c77a1e161a0716199e853d57138cacb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 215,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 28,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 17,
+      "ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/settings.integration.test.tsx",
+      "blob": "8142f472ee68134bf07508fab46ea5354bba67f4",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 45,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 29,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 18,
+      "ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/storage.test.ts",
+      "blob": "b02a7ca4af0c1c5cc7efb812ba545166a5d6cda1",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 41,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 30,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 19,
+      "ranges": [
+        [
+          1,
+          41
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/translator.test.ts",
+      "blob": "580a69de0a6272210fbbc3f23677b6af3ef5ed42",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 53,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 31,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 20,
+      "ranges": [
+        [
+          1,
+          53
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/views/About.test.tsx",
+      "blob": "b7efecde8c62043aa894385a3af05f91eb8382d5",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 99,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 54,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 21,
+      "ranges": [
+        [
+          1,
+          99
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.manifest.test.tsx",
+      "blob": "da7fd9a6813dc6b1ddfa1aaa5ec165d199b525e8",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 72,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard"
+      ],
+      "assignment_index": 58,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 22,
+      "ranges": [
+        [
+          1,
+          72
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    },
+    {
+      "path": "apps/web/src/i18n/message.test.ts",
+      "blob": "b9bb238e31af3b5febf5f05972da4c5f9b960649",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 216,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 60,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 23,
+      "ranges": [
+        [
+          1,
+          216
+        ]
+      ],
+      "method": "Complete reviewed counterpart 6bc2e91cdf4ed5402f895f8cc8d2a296702fff1b plus every added and deleted line of the exact git blob diff.",
+      "identity_and_line_count_verified": true,
+      "counterpart_blob": "6bc2e91cdf4ed5402f895f8cc8d2a296702fff1b",
+      "counterpart_sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "counterpart_ranges": [
+        [
+          1,
+          216
+        ]
+      ],
+      "diff_target_ranges": [
+        [
+          211,
+          211
+        ]
+      ],
+      "diff_deleted_base_ranges": [
+        [
+          211,
+          211
+        ]
+      ],
+      "complete_diff_reviewed": true
+    },
+    {
+      "path": "apps/web/src/i18n/securityKeys.test.ts",
+      "blob": "14ea92f4f68a910aadc6ac78003c4443de1ffa76",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 234,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "feat/ghostpay-privacy-quick-hide-20261120"
+      ],
+      "assignment_index": 73,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 24,
+      "ranges": [
+        [
+          1,
+          234
+        ]
+      ],
+      "method": "Complete reviewed counterpart 5efd78ea6c77a1e161a0716199e853d57138cacb plus every added and deleted line of the exact git blob diff.",
+      "identity_and_line_count_verified": true,
+      "counterpart_blob": "5efd78ea6c77a1e161a0716199e853d57138cacb",
+      "counterpart_sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "counterpart_ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "diff_target_ranges": [
+        [
+          27,
+          45
+        ]
+      ],
+      "diff_deleted_base_ranges": [],
+      "complete_diff_reviewed": true
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "226c2c17faf611a1611acc9d40665c6e07fbb450",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 436,
+      "kind": "test-support",
+      "status": "reviewed",
+      "refs": [
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "assignment_index": 79,
+      "assignment_source": "review-ui-receipt-tests-round6.json:remaining_untouched",
+      "prior_assignment_source": "review-browser-ui-tests-round5.json:remaining_untouched",
+      "round7_assignment_index": 25,
+      "ranges": [
+        [
+          1,
+          436
+        ]
+      ],
+      "method": "Complete immutable source read using git cat-file blob with explicit line numbering.",
+      "identity_and_line_count_verified": true
+    }
+  ],
+  "findings": [],
+  "test_assurance_observations": [
+    {
+      "id": "UI-REMAINING-TEST-ASSURANCE-01",
+      "title": "Existing mount can satisfy the rejected-release-hash fallback assertion",
+      "classification": "test-assurance",
+      "severity": "informational",
+      "confidence": "high",
+      "finding": "About.test.tsx first renders an App without a usable entry script and waits for the unavailable-hash message. The same test then renders a second App with a rejecting fetch and checks only that a global screen.findAllByText query returns more than zero unavailable-hash messages. renderApp and renderWith do not unmount the earlier root; cleanup is registered only after each test. The first, already-confirmed message can therefore satisfy the second assertion even if the rejecting-fetch instance remains loading or fails to render the intended fallback.",
+      "impact": "This particular assertion does not independently establish the rejected entry-script-fetch fallback. It does not establish an application defect, a runtime test failure, or a repository-wide absence of release-hash coverage.",
+      "remediation": "Unmount the first App before the rejecting-fetch case, split the cases, or retain the second RenderResult and scope the awaited fallback assertion with within(second.container). Also observe the rejecting fetch call so that the intended path is exercised.",
+      "evidence": [
+        {
+          "path": "apps/web/src/views/About.test.tsx",
+          "blob": "b7efecde8c62043aa894385a3af05f91eb8382d5",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              79,
+              91
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/test/render.tsx",
+          "blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              1,
+              13
+            ],
+            [
+              39,
+              45
+            ]
+          ]
+        }
+      ],
+      "frozen_main_and_candidate_test_blob_identical": true,
+      "helper_anchor_blobs": {
+        "frozen_main": "dbd0a6a491b6284a39a7e185847713184a97be88",
+        "combined_candidate": "dbd0a6a491b6284a39a7e185847713184a97be88"
+      },
+      "tests_run": false
+    }
+  ],
+  "supplemental_reads": [
+    {
+      "path": "apps/web/src/test/render.tsx",
+      "blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 50,
+      "ranges": [
+        [
+          1,
+          13
+        ],
+        [
+          39,
+          45
+        ]
+      ],
+      "status": "targeted-evidence-only",
+      "method": "Immutable numbered source excerpts authorized by root to verify the render/cleanup relationship; excluded from assigned completion counts."
+    }
+  ],
+  "existing_finding_evidence": [
+    {
+      "canonical_id": "BROWSER-01",
+      "path": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+      "blob": "a48fbe04da171154ba009ce11132e30ffbcaf80f",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "ranges": [
+        [
+          169,
+          177
+        ]
+      ],
+      "interpretation": "This existing shared-i18n test mounts WalletAttempts without a wallet prop and expects a clear button plus record details. The test blob is identical on frozen main, the combined candidate, and affected privacy commit 137628961463fc5abd8b7927b2efe6b18a0a206a. This is additional companion test-maintenance evidence; retain the already documented actual Pay route clearing/retry regression. No assertion that the Pay regression is absent and no runtime outcome is claimed."
+    },
+    {
+      "canonical_id": "PN-05",
+      "interpretation": "Optional one-time-address omission remains intentional per the prior completed receipt review. No wording finding or receipt-binding conclusion is changed by this test-only batch."
+    }
+  ],
+  "remaining_untouched": [],
+  "remaining": [],
+  "status": "complete",
+  "tests_run": false,
+  "counts": {
+    "assigned_versions": 26,
+    "assigned_version_lines": 3053,
+    "reviewed_versions": 26,
+    "reviewed_version_lines": 3053,
+    "reviewed_unique_paths": 24,
+    "full_source_versions": 24,
+    "counterpart_plus_complete_diff_versions": 2,
+    "remaining_versions": 0,
+    "remaining_version_lines": 0,
+    "partial_versions": 0
+  },
+  "verification": [
+    "All 26 representative commit/path/blob identities and line counts were verified with read-only Git object access.",
+    "All assigned immutable source reads and complete diff outputs were received without truncation. The initial oversized prior-checkpoint metadata read was narrowed to exact remaining rows; no truncated assigned source was credited.",
+    "All 26 path/blob assignment identities appear exactly once in completed coverage; the assigned and completed sets are equal.",
+    "Twenty-four versions were read in full; message.test.ts b9bb238e31af3b5febf5f05972da4c5f9b960649 and securityKeys.test.ts 14ea92f4f68a910aadc6ac78003c4443de1ffa76 were reviewed through a full counterpart plus the entire exact blob diff.",
+    "The narrowly authorized render-helper excerpts support the test-assurance observation and are excluded from full-file completion counts.",
+    "No target execution, tests, builds, probes, transactions, proofs of concept, dependency installation, network access, application/config/test edits, Git mutations, commits or pushes occurred. Only the requested scratch audit artifacts were written.",
+    "Current-main freshness remains root-owned; this worker preserved the frozen assignment."
+  ],
+  "review_summary": [
+    "ContextHelp tests assert keyboard focus, Escape, hover/tap dismissal ordering, safe text rendering, independent descriptions, and field-associated help while disabled. ErrorBoundary tests assert fixed redacted copy, route reset ownership, Back recovery and reload callback.",
+    "Payment request/proof and printable-bill tests assert URI families, invalid-request refusal, testnet caution, proof disclaimers and explicit reveal, oversized QR fallback, passphrase/bearer distinctions, fixed-token versus seller-stated fiat display, and print lifecycle. Source-string print CSS assertions do not establish real print layout.",
+    "QR tests assert secret reveal scope binds to kind, text and multipart bytes; changed secret payloads hide immediately, equivalent arrays and label changes do not extend the deadline, page visibility hides secrets, and large dialogs retain warnings and focus behavior. Dynamic reduced motion stops auto-advance and requires a fresh opt-in. Locale changes preserve QR bytes and selected part.",
+    "Internationalization tests assert inert interpolation and rich-text values, prototype-named tag handling, message syntax/plurals/round-tripping, complete security-key classification, English fallback for draft or unknown security messages, registry-owned review authority, and no catalog metadata or pseudo-locale bypass. The message variant only spells the bidi character as a Unicode escape; the security-key variant adds explicit privacy/clipboard classifications.",
+    "Language/context/storage tests assert persistence, browser-default reset, blocked-storage messaging, catalog-load fallback, language and direction updates, pseudo-locale filtering, and locale fallback chains. About tests assert absent/invalid/rejected manifest disablement and error-detail redaction; Disclosure tests assert same-chain replacement and service changes hide old manifests and suppress late results.",
+    "Assigned historical Settings tests assert explicit endpoint persistence choices, session-only consent surviving failed form validation, settings exchange review/confirmation and invalidation, scan privacy bounds, network-policy acknowledgement, own-node refusal before adapter creation, failed-save preservation and cross-tab conflict handling. This assigned Settings blob is a historical variant, not a claim that it equals current main or candidate.",
+    "No new production vulnerability or behavior defect was established. One bounded informational test-assurance observation is separate from the unchanged seven canonical production findings. Preserve BROWSER-01 existing Pay route regression correction."
+  ],
+  "handoff": "Exact assigned remaining set exhausted: 26 versions / 3,053 version-lines reviewed, zero remaining, zero partially reviewed assigned versions. Root owns canonical report integration and current-main freshness. Do not interpret static test-source assertions as executed results.",
+  "checkpoint": "Complete; remaining_untouched and remaining are both empty."
+}

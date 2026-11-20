@@ -1,0 +1,1163 @@
+{
+  "reviewer": "custody_tests_round3",
+  "repository": "djshellshoxxx/GhostPay",
+  "assignment_source": "review-custody-vault-round2.json",
+  "constraints": [
+    "Read-only source inspection; no target application/test/config/dependency edits.",
+    "No app, build, test, PoC, live probe, network transaction or Git mutation.",
+    "Only owned scratch audit JSON/Markdown written."
+  ],
+  "coverage": [
+    {
+      "path": "apps/web/src/test/fakeIndexedDb.ts",
+      "blob": "3424eec28ee24d9fc24f82a61e938b7970bbaa8b",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 98,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          98
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/test/keys.ts",
+      "blob": "f4235382a9d5bf11de2dbadd163cb284d38983a6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 15,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          15
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/test/memoryIndexedDb.ts",
+      "blob": "cdec2333fce7a696e75baa58b1b9132338100fe1",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 143,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          143
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/test/render.tsx",
+      "blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 50,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          50
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/idbStore.test.ts",
+      "blob": "ac35d25819dc2799b011b6e456d9fac05e1ab082",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 109,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          109
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.idb.test.ts",
+      "blob": "b15fa874bbf0397b569a7d6fcc2722da44eda0d9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 90,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          90
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+      "blob": "57f4e70f37c4319e75d0f98af3a48f445e469c06",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 132,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          132
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.test.ts",
+      "blob": "af1323436da652d8defe084464f7c252c61c7e26",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 404,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          404
+        ]
+      ],
+      "method": "Complete Git blob source read; the initial combined output omitted middle lines, then lines 200-325 were reread untruncated to fill all missing source."
+    },
+    {
+      "path": "apps/web/src/lib/keystore.test.ts",
+      "blob": "ff824086da7994ea866e6445abd4402534eb3641",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 206,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          206
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/session.test.ts",
+      "blob": "17c93c2e96814428c0ae8ac2155f937fb099ecfa",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 343,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          343
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/state.sweep.test.ts",
+      "blob": "4e70df6a705a56a4f475136fe183b6e00b943e21",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 156,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          156
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "blob": "4c52b6fe0c7224ef4812ab6d31a07b401d721862",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 200,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          200
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/sellerPairing.test.ts",
+      "blob": "59c0ff53bd9e4619adc700cd559ea00886ac7359",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 119,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          119
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "blob": "ada7cdbcd4f16163e15923f15f652dec0fcac7f6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 129,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          129
+        ]
+      ],
+      "method": "Composite read: fully read candidate counterpart blob 4c52b6fe0c7224ef4812ab6d31a07b401d721862 plus complete untruncated git diff 4c52b6fe0c7224ef4812ab6d31a07b401d721862 ada7cdbcd4f16163e15923f15f652dec0fcac7f6. Main is the identical first 129 lines; candidate-only namespace invalidation block removed."
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+      "blob": "8aadf1028cfcc92e1eb42371f6dcbe17c2085719",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 165,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          165
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+      "blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 94,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+      "blob": "826578ab8904206b22d69f4ea963648f01a5eb38",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 405,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          405
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/settings.loopback.test.ts",
+      "blob": "6bdda45ce1de594800ad1b7377d0206a93cdabdf",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 17,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          17
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "blob": "db3e1d0e58641947725dd27b3fb3e9c6cee6fada",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 153,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          153
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/settings.uiPrivacy.test.ts",
+      "blob": "d53995d69830845c7b48553bbc5c8adeb483367b",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 81,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          81
+        ]
+      ],
+      "method": "Complete Git blob source read: initial combined output truncated; entire 81-line file reread untruncated."
+    },
+    {
+      "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+      "blob": "03b845702db83998a2b578ebaa593bb1b243f28b",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 64,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          64
+        ]
+      ],
+      "method": "Complete Git blob source read: initial combined output truncated; entire 64-line file reread untruncated."
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "blob": "9ba2a5ccb59077ec6ac27c83e95ae69e10835e01",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 133,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          133
+        ]
+      ],
+      "method": "Composite read: fully read quick-hide blob db3e1d0e58641947725dd27b3fb3e9c6cee6fada plus complete untruncated git diff db3e1d0e58641947725dd27b3fb3e9c6cee6fada 9ba2a5ccb59077ec6ac27c83e95ae69e10835e01."
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "blob": "01fe046841dacb451962614ef219f1c7ab122ea8",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 92,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          92
+        ]
+      ],
+      "method": "Composite read: fully read quick-hide blob db3e1d0e58641947725dd27b3fb3e9c6cee6fada plus complete untruncated diffs db3e1d0e58641947725dd27b3fb3e9c6cee6fada -> 9ba2a5ccb59077ec6ac27c83e95ae69e10835e01 -> 01fe046841dacb451962614ef219f1c7ab122ea8."
+    },
+    {
+      "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+      "blob": "549d64d9348fe9638c04454078b08654e23077c1",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 63,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          63
+        ]
+      ],
+      "method": "Composite read: fully read quick-hide blob 03b845702db83998a2b578ebaa593bb1b243f28b plus complete untruncated git diff 03b845702db83998a2b578ebaa593bb1b243f28b 549d64d9348fe9638c04454078b08654e23077c1."
+    },
+    {
+      "path": "apps/web/src/lib/settingsExchange.test.ts",
+      "blob": "6dfda318e1ddcdc0c6d3914f8b37d92001995384",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 207,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          207
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/privacyInvariants.test.ts",
+      "blob": "f8a67c6d1df7939aad8daf57f36d3a04cfadfca7",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 231,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          231
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/settingsExchange.test.ts",
+      "blob": "5ce01111b90a7c5b938ba712790f0b7cb7660358",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 190,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          190
+        ]
+      ],
+      "method": "Composite read: fully read quick-hide blob 6dfda318e1ddcdc0c6d3914f8b37d92001995384 plus complete untruncated git diff 6dfda318e1ddcdc0c6d3914f8b37d92001995384 5ce01111b90a7c5b938ba712790f0b7cb7660358."
+    },
+    {
+      "path": "apps/web/src/privacyInvariants.test.ts",
+      "blob": "957cde23e8c602fa096e497851aed8ba96549c1c",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 219,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          219
+        ]
+      ],
+      "method": "Composite read: fully read candidate blob f8a67c6d1df7939aad8daf57f36d3a04cfadfca7 plus complete untruncated git diff f8a67c6d1df7939aad8daf57f36d3a04cfadfca7 957cde23e8c602fa096e497851aed8ba96549c1c."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+      "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 476,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          476
+        ]
+      ],
+      "method": "Complete Git blob source read using git cat-file; entire file displayed without truncation."
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.test.ts",
+      "blob": "a587e583e7ae8168a27fcdc7db414d614378290b",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 565,
+      "kind": "test",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          565
+        ]
+      ],
+      "method": "Complete Git blob source read in two untruncated numbered ranges: 1-285 and 286-565."
+    }
+  ],
+  "partial_coverage": [],
+  "findings": [],
+  "observations": [
+    {
+      "id": "CUSTODY-TEST-OBS-01",
+      "kind": "test-method-limitation",
+      "title": "Reviewed source contracts use deliberately limited storage and browser substitutes",
+      "detail": "The fakeIndexedDb and memoryIndexedDb helpers explicitly model only adapter operations; captureDownloads records anchor/Blob handoff and does not establish successful disk storage. No source-only result is reported as a runtime test pass.",
+      "evidence": [
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/test/fakeIndexedDb.ts",
+          "blob": "3424eec28ee24d9fc24f82a61e938b7970bbaa8b",
+          "lines": [
+            39,
+            98
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/test/memoryIndexedDb.ts",
+          "blob": "cdec2333fce7a696e75baa58b1b9132338100fe1",
+          "lines": [
+            35,
+            143
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+          "lines": [
+            69,
+            94
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUSTODY-TEST-OBS-02",
+      "kind": "test-contract-corroboration",
+      "title": "Export and reconciliation tests explicitly distinguish recovered data from fresh authority or payment proof",
+      "detail": "The payment export source tests check unchanged custody after verification and disposed recovery key boxes. Reconciliation source tests keep imported records as history and prevent archived receipts from serving as payment evidence or invoice links. These are reviewed test contracts, not executed outcomes or new findings.",
+      "evidence": [
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "blob": "826578ab8904206b22d69f4ea963648f01a5eb38",
+          "lines": [
+            352,
+            405
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+          "lines": [
+            144,
+            165
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+          "lines": [
+            434,
+            444
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    {
+      "path": "apps/web/src/App.test.tsx",
+      "blob": "63832b4078d23e3a8e24ba6faf63f1cbe5da9968",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 330,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/AppLean.fragment.test.tsx",
+      "blob": "f3a0bd09abada7d88f02483ef10d920fc158c038",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 170,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/AppLean.test.tsx",
+      "blob": "66de30ed6f99258b38f5cbc44e6c8a518eb341aa",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 166,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.i18n.test.tsx",
+      "blob": "be6fb9d4ffa6db300695d5b25ffc1ffa63de81e6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 135,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+      "blob": "d3f96ceebe31fa1fde01dc2dfeca427e10df24c7",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 283,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+      "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 79,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+      "blob": "eb5258cc762b0dbc4c7d9191b4fb36888ebda9e0",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 432,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+      "blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 70,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+      "blob": "b575ca653ec342ba75de1c3790172389f5c40781",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 61,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+      "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 311,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "blob": "916f471c6a9ba26c9a15f7672460896e3c8a240c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 430,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "blob": "01e4b56e692bf638fe7be61ff1149f20fd244077",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 92,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 200,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+      "blob": "96d79a91967763376e3ccbd472a0111d470be367",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 339,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.i18n.test.tsx",
+      "blob": "a5a93e5a38fbc9026c260bfc41884f5e9573ab81",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 36,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.lock.test.tsx",
+      "blob": "098c626f4c401dfea4ccc342809d4c6571e52f5c",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 65,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+      "blob": "dfaeaf232a511786fada7ca13abad49a5d067116",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 172,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+      "blob": "7231bb425a0d7132ca0dc6107ba74ddf12fe71ff",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 113,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+      "blob": "4a2aaaa6e9cca4e98481313b1afa0bb211d624eb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 129,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.test.tsx",
+      "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 942,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerPairing.test.tsx",
+      "blob": "e827e5f02f1762724dbbdec0d1cd832485f941a9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 260,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+      "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 79,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "blob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 253,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "blob": "6094ae5931e43d72b3fad9ade002275afaace426",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 254,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.race.test.tsx",
+      "blob": "5cc29989d5952ec0f60cbe8f7a82f9c307b73b1c",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 50,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+      "blob": "c3ca70c56ae0bae2e313b40d5c3f268abd30e343",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 61,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "f898ade764504ab8aee0024194afed15f35f92fb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 238,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 436,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    }
+  ],
+  "runtime_verification": "not run",
+  "batches": [
+    {
+      "batch": 1,
+      "indices": [
+        39,
+        40,
+        41,
+        42,
+        13,
+        14
+      ],
+      "detail": "Read test IndexedDB factories, render/session helpers and tag/key-store connection recovery tests. The IndexedDB substitutes model limited adapter operations and controlled event ordering; no real-browser validation is claimed. No new confirmed finding."
+    },
+    {
+      "batch": 2,
+      "indices": [
+        15,
+        16,
+        17
+      ],
+      "detail": "Read key-vault authorization/persistence and browser keystore tests completely. Source tests cover exact seller-key reauthentication, guard invalidation, no-vault refusal, cancelled/delayed operations, backup verification versus download, authenticated envelope validation, and normalized passphrase policy. No new confirmed finding; no test execution."
+    },
+    {
+      "batch": 3,
+      "indices": [
+        26,
+        38
+      ],
+      "detail": "Read session and sweep-state test source. Tests cover temporary key copy wiping, guard invalidation, backup proof state, unresolved sweep lock preservation, stale CAS results, bounded replacement hash history and fail-closed journal writes. No new confirmed finding."
+    },
+    {
+      "batch": 4,
+      "indices": [
+        22,
+        25,
+        21
+      ],
+      "detail": "Read reconciliation IndexedDB recovery/quota tests, candidate atomic namespace invalidation additions, full main/candidate diff, and seller pairing schema tests. The pairing refusal cases recompute the public checksum to isolate field validation. No new confirmed finding."
+    },
+    {
+      "batch": 5,
+      "indices": [
+        18,
+        20,
+        19
+      ],
+      "detail": "Read payment-export RPC tests, vector/download helper and payment-key export/recovery/verification tests. Source assertions cover address-bound fresh authority, chain and endpoint checks, cancellation, seller changes, no RPC before credential validation, bounded archive scope, boxed recovery-key disposal, and unchanged custody during verification. Referenced JSON vector contents are not claimed as read. No new confirmed finding."
+    },
+    {
+      "batch": 6,
+      "indices": [
+        27,
+        30,
+        31,
+        35,
+        29,
+        28,
+        34
+      ],
+      "detail": "Read all three settings core-test variants, both settingsPrivacy variants, separate privacy-store tests and own-node loopback tests via complete source/diffs. Tests explicitly distinguish session-only consent by slot/chain, omit detected credentials on export, preserve dedicated UI privacy independently and report partial full-save failure. Secret-URL heuristics are not claimed exhaustive. No new confirmed finding."
+    },
+    {
+      "batch": 7,
+      "indices": [
+        33,
+        37,
+        32,
+        36
+      ],
+      "detail": "Read both settings exchange and privacy invariant test versions through full source and complete diffs. Exchange tests bind apply to a reviewed basis and confirm trust-reducing changes. Privacy checks parse TypeScript sources and pin dispatch/CSP patterns; they are source-level guards, not proof of dynamic egress or a test run. Imported files and fixture contents gain no coverage merely by reference. No new confirmed finding."
+    },
+    {
+      "batch": 8,
+      "indices": [
+        23,
+        24
+      ],
+      "detail": "Read both remaining reconciliation library test files in full. Source contracts cover strict authenticated vault schema, seller/chain binding, exact-ciphertext CAS, stale session/scan guards, invoice matching ambiguity and canonical time, imported-history separation, bounded registrations/receipts, receipt claims not becoming payment proof, and durable reorg tombstones/saturation. No new confirmed finding."
+    }
+  ],
+  "coverage_summary": {
+    "reviewed_versions": 30,
+    "reviewed_lines": 5349,
+    "full_source_versions": 24,
+    "composite_diff_versions": 6,
+    "remaining_versions": 28,
+    "remaining_lines": 6186,
+    "partial_versions": 0,
+    "new_confirmed_findings": 0
+  },
+  "handoff": {
+    "status": "fresh_worker_required",
+    "reason": "Bounded read-only source round deliberately ended before context exhaustion; no compaction occurred during this round.",
+    "completed_scope": "All remaining assigned browser library tests/helpers, settings library variants, privacy invariants and sweep state tests. Production coverage remains in predecessor ledgers.",
+    "remaining_scope": "28 exact App, component and view test path/blob versions listed in remaining.",
+    "next_worker": "Read the remaining source completely in bounded outputs, or a complete diff against an actually fully read counterpart; preserve exact path/blob accounting. Do not execute app/test/build/PoC code or mutate Git. Parent integrates repository notes.",
+    "known_finding": "BROWSER-01 remains predecessor-owned; this round adds no duplicate finding and did not reread its WalletAttempts test evidence.",
+    "fixture_limit": "Referenced JSON fixture contents were not read as part of this round and gain no coverage from imports.",
+    "exclusions": "Optional SecretBackup, BackupPanel, full-profile MerchantProfilePanel/TagArchive UI and BTC/Solana/TRON/policy views stay excluded; portable archive/ledger primitives remain in predecessor scope."
+  },
+  "ledger_validation": {
+    "path_blob_commit_mapping": "matched all 30 reviewed entries using git rev-parse",
+    "line_counts": "matched Git blob content for all 30 reviewed entries",
+    "coverage_partition": "30 reviewed + 28 unread = exact predecessor 58-version assignment; no duplicates or partial ranges",
+    "target_execution": "none"
+  }
+}

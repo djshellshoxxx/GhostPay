@@ -1,0 +1,721 @@
+{
+  "reviewer": "custody_ui_tests_round4",
+  "repository": "djshellshoxxx/GhostPay",
+  "assignment_source": "custody_ui_tests_round4-assignment.json",
+  "constraints": [
+    "Read-only source inspection.",
+    "No app, test, build, PoC, probe, transaction or Git mutation.",
+    "Only owned scratch audit reports written."
+  ],
+  "coverage": [
+    {
+      "path": "apps/web/src/App.test.tsx",
+      "blob": "63832b4078d23e3a8e24ba6faf63f1cbe5da9968",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 330,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          330
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated; App.test.tsx lines 310-330 reread to repair initial output omission."
+    },
+    {
+      "path": "apps/web/src/AppLean.fragment.test.tsx",
+      "blob": "f3a0bd09abada7d88f02483ef10d920fc158c038",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 170,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          170
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/AppLean.test.tsx",
+      "blob": "66de30ed6f99258b38f5cbc44e6c8a518eb341aa",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 166,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          166
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.i18n.test.tsx",
+      "blob": "be6fb9d4ffa6db300695d5b25ffc1ffa63de81e6",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 135,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          135
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+      "blob": "d3f96ceebe31fa1fde01dc2dfeca427e10df24c7",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 283,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          283
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+      "blob": "eb5258cc762b0dbc4c7d9191b4fb36888ebda9e0",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 432,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          432
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+      "blob": "96d79a91967763376e3ccbd472a0111d470be367",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 339,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          339
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.i18n.test.tsx",
+      "blob": "a5a93e5a38fbc9026c260bfc41884f5e9573ab81",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 36,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          36
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.lock.test.tsx",
+      "blob": "098c626f4c401dfea4ccc342809d4c6571e52f5c",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 65,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          65
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+      "blob": "dfaeaf232a511786fada7ca13abad49a5d067116",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 172,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          172
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+      "blob": "4a2aaaa6e9cca4e98481313b1afa0bb211d624eb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 129,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          129
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.test.tsx",
+      "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 942,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          942
+        ]
+      ],
+      "method": "Full immutable Git blob source read in consecutive untruncated ranges 1-340, 341-660, 661-942."
+    },
+    {
+      "path": "apps/web/src/views/SellerPairing.test.tsx",
+      "blob": "e827e5f02f1762724dbbdec0d1cd832485f941a9",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 260,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          260
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "blob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 253,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          253
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/Settings.race.test.tsx",
+      "blob": "5cc29989d5952ec0f60cbe8f7a82f9c307b73b1c",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 50,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          50
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+      "blob": "c3ca70c56ae0bae2e313b40d5c3f268abd30e343",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 61,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          61
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "f898ade764504ab8aee0024194afed15f35f92fb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 238,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          238
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+      "blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 70,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          70
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+      "blob": "b575ca653ec342ba75de1c3790172389f5c40781",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 61,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          61
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+      "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 311,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          311
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "blob": "916f471c6a9ba26c9a15f7672460896e3c8a240c",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 430,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          430
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "blob": "01e4b56e692bf638fe7be61ff1149f20fd244077",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 92,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          92
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 200,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          200
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+      "blob": "7231bb425a0d7132ca0dc6107ba74ddf12fe71ff",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 113,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          113
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "blob": "6094ae5931e43d72b3fad9ade002275afaace426",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 254,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          254
+        ]
+      ],
+      "method": "Composite read: fully read Settings.exchange.test.tsx counterpart blob bc1344d8bc56fba59d9f126646cf9505973f0601 plus complete untruncated git diff --no-ext-diff --no-textconv bc1344d8bc56fba59d9f126646cf9505973f0601 6094ae5931e43d72b3fad9ade002275afaace426, including all added/deleted lines."
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 436,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          436
+        ]
+      ],
+      "method": "Composite read: fully read Settings.test.tsx counterpart blob f898ade764504ab8aee0024194afed15f35f92fb plus complete untruncated git diff --no-ext-diff --no-textconv f898ade764504ab8aee0024194afed15f35f92fb 7bf77779c2128ca6782f79fce0cf0600e2419360, including all added/deleted lines."
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+      "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 79,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          79
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    },
+    {
+      "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+      "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 79,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          79
+        ]
+      ],
+      "method": "Full immutable Git blob source read, line-numbered and untruncated."
+    }
+  ],
+  "partial_coverage": [],
+  "findings": [],
+  "observations": [
+    {
+      "id": "CUSTODY-UI-OBS-01",
+      "kind": "test-contract-corroboration",
+      "title": "Export UI source contracts separate generated files, initiated downloads, retention and verification",
+      "detail": "The assigned tests require a second confirmation for raw-key download; distinguish a blocked download from a generated encrypted file; check the exact saved bytes, including refusal of BOM-normalized input; and keep seller custody unchanged during verification. These are reviewed assertions, not executed outcomes.",
+      "evidence": [
+        {
+          "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+          "blob": "b575ca653ec342ba75de1c3790172389f5c40781",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "lines": [
+            18,
+            59
+          ]
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "lines": [
+            145,
+            168
+          ]
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+          "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "lines": [
+            49,
+            95
+          ]
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+          "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "lines": [
+            110,
+            129
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUSTODY-UI-OBS-02",
+      "kind": "test-contract-corroboration",
+      "title": "Seller tests bind asynchronous completion and storage changes to the reviewed identity",
+      "detail": "The test sources distinguish identical public keys installed in a new session revision, reject late cancelled recovery results, check temporary-buffer wiping, separate pre-commit write refusal from post-commit reporting, and preserve replacement ciphertext when a vault-deletion confirmation becomes stale.",
+      "evidence": [
+        {
+          "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+          "blob": "96d79a91967763376e3ccbd472a0111d470be367",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            161,
+            191
+          ]
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+          "blob": "dfaeaf232a511786fada7ca13abad49a5d067116",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            70,
+            114
+          ]
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            667,
+            712
+          ]
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            757,
+            829
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUSTODY-UI-OBS-03",
+      "kind": "test-contract-corroboration",
+      "title": "Settings tests preserve separate review, active policy and local privacy state",
+      "detail": "The source tests keep imported endpoints inactive during preview, require explicit consent for trust changes, bind endpoint status to the latest input/request, and ensure clipboard/privacy control changes do not persist unfinished sensitive endpoint edits. The candidate Settings tests additionally model blocked network actions for unacknowledged or corrupt profile storage.",
+      "evidence": [
+        {
+          "path": "apps/web/src/views/Settings.exchange.test.tsx",
+          "blob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            113,
+            195
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Settings.race.test.tsx",
+          "blob": "5cc29989d5952ec0f60cbe8f7a82f9c307b73b1c",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            17,
+            48
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "blob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "lines": [
+            304,
+            436
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+          "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "lines": [
+            57,
+            79
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUSTODY-UI-OBS-04",
+      "kind": "test-method-limitation",
+      "title": "DOM, storage, timing and download substitutes limit what this round establishes",
+      "detail": "These sources use jsdom, in-memory stores, controlled promises, mocked clipboard/RPC ports and intercepted Blob/anchor handoffs; some flows lower KDF work for tests. DOM hiddenness and autocomplete attributes are asserted, but no browser, password-manager, real-disk retention, production-cost KDF or live-network behavior was verified. Imported locale/vector contents are not covered merely because tests reference them.",
+      "evidence": [
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "blob": "eb5258cc762b0dbc4c7d9191b4fb36888ebda9e0",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            58,
+            82
+          ]
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "lines": [
+            22,
+            38
+          ]
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+          "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "lines": [
+            58,
+            78
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+          "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "lines": [
+            19,
+            41
+          ]
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "lines": [
+            911,
+            940
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining": [],
+  "batches": [
+    {
+      "batch": 1,
+      "indices": [
+        0,
+        1,
+        2
+      ],
+      "detail": "Read full App/AppLean and fragment UI tests. Source contracts cover core-route boundaries, invoice-fragment cleanup with retained navigation state, idle recoverability, downloaded-but-unverified backup distinctions, scope replacement races, focus and error recovery. No new confirmed finding."
+    },
+    {
+      "batch": 2,
+      "indices": [
+        3,
+        4,
+        5,
+        26
+      ],
+      "detail": "Read full reconciliation UI, invoice, localization and quick-hide privacy tests. Source assertions cover preview versus activation, historical receipt/import distinctions, canonical-time matching, stale scan/preview guards, guarded writes, cross-tab reorg refresh, saturation, localization with redacted errors, and explicit history reveal. No new confirmed finding."
+    },
+    {
+      "batch": 3,
+      "indices": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "detail": "Read every assigned stealth-export component/UI test and SellerKeys master/recovery integration test. Tests cover raw-key second confirmation, address-bound reauthentication, disclosure of public header and RPC privacy, exact selected-source binding, cancellation and revision guards, blocked-download retry using the same generated file, exact saved-byte matching including BOM refusal, recovery-key disposal, retention/verification distinctions, master-replacement consent and cross-tab vault-deletion re-review. No new confirmed finding; referenced vector contents are not covered by imports."
+    },
+    {
+      "batch": 4,
+      "indices": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "detail": "Read all remaining SellerKeys and SellerPairing test sources. Tests cover recovery-operation ownership by exact session revision, refusal of late key installs, observable temporary-buffer wiping, same-file cancellation retry, passphrase/DOM clearing, step-up authorization, backup versus download distinctions, storage pre-commit refusal and post-commit reporting, cross-tab replacement/deletion compare-and-swap, public pairing preview without authority changes, and obsolete preview cancellation. No new confirmed finding."
+    },
+    {
+      "batch": 5,
+      "indices": [
+        13,
+        14,
+        15,
+        16,
+        24,
+        25,
+        27
+      ],
+      "detail": "Read the full base Settings and Settings exchange UI test sources, complete main-to-candidate diffs, and full RPC-result race, scan-privacy, and clipboard-privacy tests. Source assertions cover reviewed import consent, conservative trust changes, no imported-endpoint contact during preview, session-only RPC consent retained on invalid form submissions, network policy acknowledgement and corrupt-storage refusal, stale endpoint-response rejection, bounded scan settings, and separate UI privacy persistence without saving unfinished endpoint edits. No new confirmed finding."
+    }
+  ],
+  "runtime_verification": "not run",
+  "ledger_validation": {
+    "path_blob_commit_mapping": "All 28 assignment entries matched git rev-parse SHA:path.",
+    "line_counts": "All 28 assignment entries matched immutable blob line counts.",
+    "target_execution": "none",
+    "coverage_partition": "28 reviewed + 0 remaining = exact 28-version, 6186-line assignment. Unique path/blob keys; all full ranges; no partials.",
+    "review_methods": "26 full-source entries and 2 entries based on fully read counterparts plus complete untruncated added/deleted diffs."
+  },
+  "output_repairs": [
+    "Initial assignment/predecessor metadata dump was truncated; exact assignment path/blob/SHA/line-count list and predecessor narrative were reread in bounded output.",
+    "Initial App source combined output omitted lines near 315-324; App.test.tsx lines 310-330 were reread in full."
+  ],
+  "handoff": {
+    "status": "assigned_scope_complete",
+    "completed_scope": "All 28 exact App, reconciliation component, stealth-export component, Seller and Settings test/support variants assigned to this round.",
+    "remaining_scope": "None in this 28-version assignment.",
+    "known_finding": "BROWSER-01 remains predecessor-owned and was not duplicated or revised.",
+    "fixture_limit": "Imported locale/vector/JSON fixture contents and files referenced only by imports gain no coverage.",
+    "production_limit": "No production source was reread in this round; no new test evidence required reopening the already reviewed production scope.",
+    "exclusions": "Optional SecretBackup, BackupPanel, full-profile MerchantProfilePanel/TagArchive UI and BTC/Solana/TRON/policy production views remain outside this assignment.",
+    "integration": "Merge by (path, blob) with predecessor ledgers; representative SHA differs where the same immutable blob is shared by multiple frozen refs. Only owned scratch reports were written.",
+    "fresh_worker": "This source review completed without context compaction; no unrelated next batch was started."
+  },
+  "coverage_summary": {
+    "reviewed_versions": 28,
+    "reviewed_lines": 6186,
+    "full_source_versions": 26,
+    "composite_diff_versions": 2,
+    "remaining_versions": 0,
+    "remaining_lines": 0,
+    "partial_versions": 0,
+    "new_confirmed_findings": 0
+  },
+  "frozen_refs": {
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "quick_hide": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "clipboard": "04910f65dc0268e41519c4b1a44e83264272f0bf"
+  }
+}

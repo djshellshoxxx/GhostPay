@@ -1,0 +1,481 @@
+{
+  "checked_at_utc": "2026-11-20T06:51:27.151857+00:00",
+  "method": "git ls-remote --heads origin; read-only metadata query; no fetch or remote mutation",
+  "reviewed_source_refs": 28,
+  "remote_head_count": 367,
+  "changed_selected_refs": [
+    {
+      "branch": "main",
+      "reviewed": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "current": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+    }
+  ],
+  "new_refs_since_inventory": [
+    {
+      "branch": "audit/bugcheck-core-latest-20261120",
+      "sha": "9cb8f511b0e1bd4a807fc51d569117b4e991e622"
+    },
+    {
+      "branch": "audit/ghostpay-core-latest-security-20261119",
+      "sha": "b6e484c252723fc3293c7106ce2c46069c2668a8"
+    },
+    {
+      "branch": "audit/ghostpay-qa-stress-20261119",
+      "sha": "e9643073be74dac54c2875143501451812763f9c"
+    },
+    {
+      "branch": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+    },
+    {
+      "branch": "docs/ghostpay-future-module-specs-20261119",
+      "sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52"
+    },
+    {
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+    },
+    {
+      "branch": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a"
+    },
+    {
+      "branch": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c"
+    },
+    {
+      "branch": "future/f03-private-payment-links",
+      "sha": "bd128598f1b4c5291dad5c003a4775ad47bbb888"
+    },
+    {
+      "branch": "future/f03-private-payment-links-spec",
+      "sha": "ae0bad1151625fd3453a9c684927145024fa8634"
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "sha": "711e9e8f7e2b32431353b82c4e39e184d3ba0b58"
+    },
+    {
+      "branch": "future/f05-ghostproof",
+      "sha": "a241d0a5556c23bf2670f6ba17e7c928b41d7eb4"
+    },
+    {
+      "branch": "future/f06-encrypted-backups",
+      "sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31"
+    },
+    {
+      "branch": "future/f07-ghostpayouts",
+      "sha": "90b86766119d3f72870948ee83d039b989659b5f"
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15"
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588"
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "sha": "1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9"
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f"
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e"
+    },
+    {
+      "branch": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1"
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46"
+    },
+    {
+      "branch": "future/f15-private-rpc",
+      "sha": "83898237e1b602f94f2e959ef761b5bd63db6590"
+    },
+    {
+      "branch": "future/f16-per-client-identities",
+      "sha": "4e2917416cf73eb9ca232606000a130db53dc9b0"
+    },
+    {
+      "branch": "future/f17-private-funds",
+      "sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380"
+    },
+    {
+      "branch": "future/f18-privacy-modes",
+      "sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a"
+    },
+    {
+      "branch": "future/fee01-modular-fee-policy",
+      "sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92"
+    },
+    {
+      "branch": "future/p01-tor-onion-hosting",
+      "sha": "25017e720df43d371f956830ba7fd6cb5f81590f"
+    },
+    {
+      "branch": "future/p02-rpc-policy",
+      "sha": "a453777b5b66933571294da3d9aa7be6843070a4"
+    },
+    {
+      "branch": "future/p03-local-stealth-scanning",
+      "sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464"
+    },
+    {
+      "branch": "future/p04-encrypted-offline-invoices",
+      "sha": "3090069a59d14932667acce2aeebe10e3d0f18fd"
+    },
+    {
+      "branch": "future/p05-encrypted-local-state",
+      "sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d"
+    },
+    {
+      "branch": "future/p06-key-role-separation",
+      "sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738"
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90"
+    },
+    {
+      "branch": "future/p08-linkability-analysis",
+      "sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259"
+    },
+    {
+      "branch": "future/p09-noncustodial-gas-services",
+      "sha": "36c5f3579b55f1e71117b8cc6546176392a112c7"
+    },
+    {
+      "branch": "future/p10-private-submission",
+      "sha": "8cd3f30f38006668ec6544f88d05084a1d68f369"
+    },
+    {
+      "branch": "future/p11-metadata-timing-policy",
+      "sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13"
+    },
+    {
+      "branch": "future/p12-selective-disclosure-proofs",
+      "sha": "6131e3c28e05438d8c796af74665cf74f51b7453"
+    },
+    {
+      "branch": "future/p13-confidential-amounts",
+      "sha": "8846d5553469753d963258023974ea044467cd6c"
+    },
+    {
+      "branch": "future/p14-shielded-payments",
+      "sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449"
+    },
+    {
+      "branch": "future/p15-anonymous-withdrawals",
+      "sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339"
+    },
+    {
+      "branch": "future/p16-shielded-cross-chain",
+      "sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac"
+    },
+    {
+      "branch": "future/p17-private-fee-outputs",
+      "sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee"
+    },
+    {
+      "branch": "future/p18-telemetry-release-integrity",
+      "sha": "70862d040066167bc3ba2d311913b92a6b327fc5"
+    },
+    {
+      "branch": "future/p19-optional-fee-gateway",
+      "sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7"
+    },
+    {
+      "branch": "future/t01-staggered-transfers",
+      "sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e"
+    },
+    {
+      "branch": "future/t02-intermediary-routing",
+      "sha": "b618d324df0a730650a8a6de9e0595e9f96382c0"
+    },
+    {
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+    },
+    {
+      "branch": "integration/ghostpay-main-unique-code-20261120",
+      "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+    }
+  ],
+  "scope_policy": "Final source cut extends the original frozen union through this 06:51:27 UTC metadata snapshot. Root and fresh reviewers read all new selected core/latest-feature path/blob variants and relevant hosting dependencies. Later remote activity is outside this finite cut.",
+  "selected_additional_pins": [
+    {
+      "branch": "main",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+    },
+    {
+      "branch": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+    },
+    {
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+    },
+    {
+      "branch": "integration/ghostpay-main-unique-code-20261120",
+      "sha": "885b9569e6fc99e43bf01d23305494275e10120e"
+    },
+    {
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+    }
+  ],
+  "new_ref_classification": [
+    {
+      "branch": "audit/bugcheck-core-latest-20261120",
+      "sha": "9cb8f511b0e1bd4a807fc51d569117b4e991e622",
+      "classification": "documentation/audit only or production blobs equal selected final main; see final-excluded-ref-check.json"
+    },
+    {
+      "branch": "audit/ghostpay-core-latest-security-20261119",
+      "sha": "b6e484c252723fc3293c7106ce2c46069c2668a8",
+      "classification": "documentation/audit only or production blobs equal selected final main; see final-excluded-ref-check.json"
+    },
+    {
+      "branch": "audit/ghostpay-qa-stress-20261119",
+      "sha": "e9643073be74dac54c2875143501451812763f9c",
+      "classification": "documentation/audit only or production blobs equal selected final main; see final-excluded-ref-check.json"
+    },
+    {
+      "branch": "automation/20261120T0641Z/bug/payment-uri-aggregate-length",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "classification": "selected core/latest feature or main delta"
+    },
+    {
+      "branch": "docs/ghostpay-future-module-specs-20261119",
+      "sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52",
+      "classification": "documentation/audit only or production blobs equal selected final main; see final-excluded-ref-check.json"
+    },
+    {
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "classification": "selected core/latest feature or main delta"
+    },
+    {
+      "branch": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f03-private-payment-links",
+      "sha": "bd128598f1b4c5291dad5c003a4775ad47bbb888",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f03-private-payment-links-spec",
+      "sha": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "sha": "711e9e8f7e2b32431353b82c4e39e184d3ba0b58",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f05-ghostproof",
+      "sha": "a241d0a5556c23bf2670f6ba17e7c928b41d7eb4",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f06-encrypted-backups",
+      "sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f07-ghostpayouts",
+      "sha": "90b86766119d3f72870948ee83d039b989659b5f",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "sha": "1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f15-private-rpc",
+      "sha": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f16-per-client-identities",
+      "sha": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f17-private-funds",
+      "sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/f18-privacy-modes",
+      "sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/fee01-modular-fee-policy",
+      "sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p01-tor-onion-hosting",
+      "sha": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p02-rpc-policy",
+      "sha": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p03-local-stealth-scanning",
+      "sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p04-encrypted-offline-invoices",
+      "sha": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p05-encrypted-local-state",
+      "sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p06-key-role-separation",
+      "sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p08-linkability-analysis",
+      "sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p09-noncustodial-gas-services",
+      "sha": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p10-private-submission",
+      "sha": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p11-metadata-timing-policy",
+      "sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p12-selective-disclosure-proofs",
+      "sha": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p13-confidential-amounts",
+      "sha": "8846d5553469753d963258023974ea044467cd6c",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p14-shielded-payments",
+      "sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p15-anonymous-withdrawals",
+      "sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p16-shielded-cross-chain",
+      "sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p17-private-fee-outputs",
+      "sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p18-telemetry-release-integrity",
+      "sha": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/p19-optional-fee-gateway",
+      "sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/t01-staggered-transfers",
+      "sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "future/t02-intermediary-routing",
+      "sha": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "classification": "future-only scope excluded"
+    },
+    {
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+      "classification": "selected core/latest feature or main delta"
+    },
+    {
+      "branch": "integration/ghostpay-main-unique-code-20261120",
+      "sha": "885b9569e6fc99e43bf01d23305494275e10120e",
+      "classification": "selected core/latest feature or main delta"
+    }
+  ]
+}

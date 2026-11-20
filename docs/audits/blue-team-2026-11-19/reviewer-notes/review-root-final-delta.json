@@ -1,0 +1,168 @@
+{
+  "reviewer": "root final-cut delta",
+  "coverage": [
+    {
+      "path": "packages/payment-uri/src/bitcoin.ts",
+      "blob": "64915453404d7943d6c1cfdbcce20d3de936aa66",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 142,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "reviewed",
+      "method": "Complete immutable source read with line numbers; no truncation; no target execution",
+      "read_ranges": [
+        [
+          1,
+          142
+        ]
+      ]
+    },
+    {
+      "path": "packages/payment-uri/src/builder-length.test.ts",
+      "blob": "1a7ae62c2097c5ca032345f81e936b3335e52da8",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 141,
+      "kind": "test-support",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "reviewed",
+      "method": "Complete immutable source read with line numbers; no truncation; no target execution",
+      "read_ranges": [
+        [
+          1,
+          141
+        ]
+      ]
+    },
+    {
+      "path": "packages/payment-uri/src/query.ts",
+      "blob": "72ea90b057e4fdfcf334380db4d76d19da67db64",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 123,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "reviewed",
+      "method": "Complete immutable source read with line numbers; no truncation; no target execution",
+      "read_ranges": [
+        [
+          1,
+          123
+        ]
+      ]
+    },
+    {
+      "path": "packages/payment-uri/src/solana.ts",
+      "blob": "e95dbaaca0ed19c7124affbcc3d09f1349812cc2",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 105,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "reviewed",
+      "method": "Complete immutable source read with line numbers; no truncation; no target execution",
+      "read_ranges": [
+        [
+          1,
+          105
+        ]
+      ]
+    },
+    {
+      "path": "packages/payment-uri/src/tron.ts",
+      "blob": "316b71948856d0f1784211fc6eebdec7e5928c31",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 83,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "reviewed",
+      "method": "Complete immutable source read with line numbers; no truncation; no target execution",
+      "read_ranges": [
+        [
+          1,
+          83
+        ]
+      ]
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "272d994a11987ba644f007a98a850af8e4c81650",
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+      "line_count": 214,
+      "kind": "production",
+      "refs": [
+        "main-recovered-fixes"
+      ],
+      "status": "reviewed",
+      "method": "Complete immutable source read with line numbers; no truncation; no target execution",
+      "read_ranges": [
+        [
+          1,
+          214
+        ]
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "FINAL-H01",
+      "classification": "known branch correction; unranked API consistency",
+      "title": "Payment-URI builders enforce the aggregate encoded-wire length",
+      "detail": "The recent payment-uri branch adds the parser-equivalent 2048-character aggregate limit to Bitcoin, Solana and TRON builders. Individual text-field byte bounds could previously combine into a returned link that its parser refused. These non-EVM builders were conservatively read as part of the shared package closure; this is not a demonstrated lean EVM route vulnerability. New boundary tests assert exact limit, shorter, over-limit and ordinary round trips. No tests were run.",
+      "evidence": [
+        {
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+          "path": "packages/payment-uri/src/query.ts",
+          "ranges": [
+            [
+              3,
+              10
+            ],
+            [
+              103,
+              117
+            ]
+          ]
+        },
+        {
+          "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+          "path": "packages/payment-uri/src/builder-length.test.ts",
+          "ranges": [
+            [
+              45,
+              141
+            ]
+          ]
+        }
+      ],
+      "remediation": "Retain the aggregate builder limit while preserving parser rejection of oversized inputs."
+    },
+    {
+      "id": "FINAL-H02",
+      "classification": "reviewed independent integration variant",
+      "title": "Recovered-fixes build script applies the artifact integrity gate before promotion",
+      "detail": "The newly observed integration branch keeps its own earlier build-script variant and appends independent artifact/source validation before promoting site/evidence. It does not imply every later #302 origin/key hardening change is included. Its imported verifier blob was already covered by the earlier source review. No build or publication was performed.",
+      "evidence": [
+        {
+          "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+          "path": "scripts/pages/build-pages.sh",
+          "ranges": [
+            [
+              205,
+              214
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining": [],
+  "runtime_execution": false
+}

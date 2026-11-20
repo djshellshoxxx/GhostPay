@@ -1,0 +1,2026 @@
+{
+  "reviewer": "custody_vault_round2",
+  "repository": "djshellshoxxx/GhostPay",
+  "constraints": [
+    "Read-only source inspection; no target source/tests/config/dependency changes.",
+    "No builds, tests, PoCs, live probes, transactions, pushes or Git mutations.",
+    "Only owned audit JSON/Markdown scratch notes written."
+  ],
+  "coverage": [
+    {
+      "path": "packages/ux-vault/src/portable-errors.ts",
+      "blob": "d4526d7fddc13250167595918b0179ce7462fd92",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 145,
+      "kind": "production",
+      "branches": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          145
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/portable.ts",
+      "blob": "56d5d87931cb3d508eb224565b7e60c970de3783",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 8,
+      "kind": "production",
+      "branches": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          8
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/seller-scope.ts",
+      "blob": "cdc16b0f13e5f583b49eac06005d4157a22397ca",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 10,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          10
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/reconciliation-amounts.ts",
+      "blob": "a1fd812a9b40d2c11dd1b551013062bc6eace5d4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 90,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          90
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/keystore-portable.ts",
+      "blob": "330cebb6652fa6e54a10536eec7292af5cde129d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 443,
+      "kind": "production",
+      "branches": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          443
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/keystore-portable.ts",
+      "blob": "59e998e772e26be386aea4b8369d5240222ea1f9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 439,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          439
+        ]
+      ],
+      "method": "full_counterpart_plus_complete_diff"
+    },
+    {
+      "path": "packages/ux-vault/src/portable-errors.ts",
+      "blob": "467ad1e8c606865d90947c07cfc6a13bd0d882be",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 126,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          126
+        ]
+      ],
+      "method": "full_counterpart_plus_complete_diff"
+    },
+    {
+      "path": "packages/ux-vault/src/portable.ts",
+      "blob": "a0cfff7cbfbf2a3166c03c0bf81bffacda71cde2",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 7,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          7
+        ]
+      ],
+      "method": "full_counterpart_plus_complete_diff"
+    },
+    {
+      "path": "packages/ux-vault/src/tag-archive-portable.ts",
+      "blob": "c6ff5f13cfc286921cd06f7aa036579747dd943e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 254,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          254
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "blob": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 855,
+      "kind": "production",
+      "branches": [
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          855
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/keystore-portable-memory.test.ts",
+      "blob": "83b0c06b59479d1dd1ea70f445366b0ab372b53c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 69,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          69
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/memory.testutil.ts",
+      "blob": "b796c38449ab06baedb79011bfaeeedc9ad774dc",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 43,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          43
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/portable-parity.test.ts",
+      "blob": "e33114ecaa8a4eea7b6e0cf5632fdcd2453247ef",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 45,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/reconciliation-portable.ts",
+      "blob": "78d7b8ec843514d3446b69fa22b84e35b178a694",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1146,
+      "kind": "production",
+      "branches": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1146
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/reconciliation-amounts.test.ts",
+      "blob": "45c7063b70a10720885eec7583b002d18ab05bba",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 145,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          145
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+      "blob": "f1f391fd473bcddf56ee973a7ce83c4f50fc1bd7",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 161,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          161
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.test.ts",
+      "blob": "ce875cc4b5e3607617ac6c147ad463c5de931b86",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 858,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          858
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationMatch.ts",
+      "blob": "d85d06572fa49df91f09e40ccc5336356415ad29",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 6,
+      "kind": "production",
+      "status": "reviewed",
+      "assignment": "parent-confirmed portable closure support",
+      "ranges": [
+        [
+          1,
+          6
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "blob": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 190,
+      "kind": "production",
+      "branches": [
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          190
+        ]
+      ],
+      "method": "full_counterpart_plus_complete_diff",
+      "counterpart_blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 204,
+      "kind": "production",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          204
+        ]
+      ],
+      "method": "full_source",
+      "inherited_duplicate": true
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationLedger.ts",
+      "blob": "d68324f2944fc6ec00cec8ea541020a09f8a23a7",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 84,
+      "kind": "production",
+      "status": "reviewed",
+      "assignment": "parent-confirmed portable closure support",
+      "ranges": [
+        [
+          1,
+          84
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationLedger.test.ts",
+      "blob": "2d0157b553d8b05eb04dd457d9e698a39a3c6dc9",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 224,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "assignment": "parent-confirmed portable closure support",
+      "ranges": [
+        [
+          1,
+          224
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "blob": "28a8271a7fe8ad825ecc7d709f7206d55976bc5c",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "line_count": 473,
+      "kind": "production",
+      "branches": [
+        "codex/ghostpay-feature-consolidation-20261119"
+      ],
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          473
+        ]
+      ],
+      "method": "full_counterpart_plus_complete_diff",
+      "counterpart_blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 475,
+      "kind": "production",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          475
+        ]
+      ],
+      "method": "full_source",
+      "inherited_duplicate": true
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+      "blob": "fcec62d5d4d2ff02e42b428a7e0a4b60c6c11933",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 215,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "assignment": "parent-confirmed portable closure support",
+      "ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/tagArchive.test.ts",
+      "blob": "3f4a4a046f42373a722bcb17130c7bbf459f465d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 325,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "assignment": "parent-confirmed portable closure support",
+      "ranges": [
+        [
+          1,
+          325
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/tagArchive.vectors.test.ts",
+      "blob": "ae49b5a848f8af4b61621b0b2535ff911720f891",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 35,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "assignment": "parent-confirmed portable closure support",
+      "ranges": [
+        [
+          1,
+          35
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/session.atomicity.test.ts",
+      "blob": "f6cdfc565e943ed52e4c73973cdb4398f0707430",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 64,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          64
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+      "blob": "e228abfe1c3b48b9d74c51899cd05c4a97f6af26",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 28,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          28
+        ]
+      ],
+      "method": "full_source",
+      "assignment": "support helper imported by reconciliationMatch tests"
+    },
+    {
+      "path": "apps/web/src/lib/session.idleLock.test.ts",
+      "blob": "8ae759c2e2eb6f20df73bb658a5b97fe4f4477fa",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 341,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          341
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.idleClock.test.tsx",
+      "blob": "560e879fbf8e457983b9c682157a9da56b786185",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 122,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          122
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.idleClock.test.tsx",
+      "blob": "ba81445f5861a3895a364fb0c357fe09a3842d6e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 429,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          429
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+      "blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 90,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          90
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+      "blob": "c08d77395d40d3f67b8afa58909b86ea57b992a6",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 95,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          95
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.privacy.test.tsx",
+      "blob": "d7f4b0385712dfc48c7b04412217dacba11c89de",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 195,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          195
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.quickHide.test.tsx",
+      "blob": "e524497cf602d5c08fbd15f11b7b5fd35f9e73a5",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 44,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          44
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.test.tsx",
+      "blob": "abc4394869cf13217141dcf64d98d8edefb5dabd",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 120,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          120
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/privacyMode.test.tsx",
+      "blob": "b70402daeada1ead5a91e2c6bf77ba06a61b2bdf",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 150,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          150
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+      "blob": "559b539b56213bd83f9ed5cc47c5e0d0e39a4abf",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 101,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          101
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+      "blob": "0896c29c5eeb62ed6538870e1d9ef7db4ce01cfb",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 83,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          83
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.network.test.tsx",
+      "blob": "6fed5ee88798d7871d60583e04f0d2552c30e8df",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 64,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          64
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/main.test.tsx",
+      "blob": "1e7e06a879996ebbb3dadd077d3bc2063d3c3e15",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 85,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          85
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/appLock.test.ts",
+      "blob": "906b574c2808aa8104ed568eeb488ade0332c543",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 40,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          40
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/frameGuard.test.ts",
+      "blob": "e52932be58a380e349f62fe38a34aaad1e150345",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 67,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          67
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/Common.test.tsx",
+      "blob": "af9c2a77b7d1232b50f8861dd0793c2c0eebc240",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+      ],
+      "line_count": 183,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          183
+        ]
+      ],
+      "method": "full_counterpart_plus_complete_diff",
+      "counterpart_blob": "67a93df29f2df39dbe2f4489959e5e68835e7457"
+    },
+    {
+      "path": "apps/web/src/components/Common.test.tsx",
+      "blob": "67a93df29f2df39dbe2f4489959e5e68835e7457",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 204,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          204
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/Common.clipboardPrivacy.test.tsx",
+      "blob": "8f4a9246266ee4565a9cbbce32e526f09e27b888",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 172,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          172
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/AppShell.i18n.test.tsx",
+      "blob": "00f900bf327c8079717230465d5d4654186744c0",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 88,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          88
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 18,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          18
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+      "blob": "18c81c21dfa680c5498b2f907633cbdca32c09e5",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 111,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          111
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+      "blob": "9a3c70863ea0373a6cd9bb6adf9960116cfd4c2d",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "commits": [
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 111,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          111
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/lib/executionSettings.test.ts",
+      "blob": "40d1842efa873544e01ba4bb653b5375c26e424a",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 32,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "method": "full_source"
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "blob": "d7fda34e0967a86ecd591892076d9883903c19cd",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 69,
+      "kind": "test_or_test_helper",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          69
+        ]
+      ],
+      "method": "full_source",
+      "inherited_duplicate": true,
+      "note": "Independently reread for BROWSER-01 test integration evidence; predecessor already counted this path/blob."
+    }
+  ],
+  "partial_coverage": [],
+  "findings": [],
+  "observations": [
+    {
+      "id": "CUSTODY-OBS-01",
+      "kind": "resolved-memory-hygiene",
+      "title": "Candidate keystore KDF wipes owned passphrase bytes in success and failure paths",
+      "evidence": [
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "packages/ux-vault/src/keystore-portable.ts",
+          "lines": [
+            74,
+            84
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "packages/ux-vault/src/keystore-portable.ts",
+          "lines": [
+            74,
+            81
+          ]
+        }
+      ],
+      "detail": "Main creates an unnamed UTF-8 passphrase buffer for scrypt and only wipes derived bytes after successful scrypt; the candidate captures and wipes both owned buffers in finally. No exploit or runtime execution performed; not a new candidate finding."
+    },
+    {
+      "id": "CUSTODY-OBS-02",
+      "kind": "resolved-historical-export-lifecycle",
+      "title": "Candidate export UI adds a synchronous session deadline check at final result acceptance",
+      "detail": "The earlier bc18fbc StealthExportCommon version only checks mounted state, controller cancellation, and selection identity. Candidate adds captureSessionVersionGuard and rechecks it inside current(), covering an expired result before browser event delivery. Candidate expiry tests explicitly inspect both empty/loaded sessions and final raw-key UI handoff. This is a verified source change and regression-test intent; tests were not executed. It is not a new remaining candidate finding.",
+      "evidence": [
+        {
+          "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "lines": [
+            147,
+            182
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "lines": [
+            153,
+            194
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+          "lines": [
+            34,
+            89
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CUSTODY-OBS-03",
+      "kind": "existing-finding-test-corroboration",
+      "existing_finding": "BROWSER-01",
+      "title": "Quick-hide WalletAttempts tests cover the isolated wallet prop contract, not caller wiring",
+      "detail": "Connected test passes a wallet explicitly; disconnected test omits it and asserts that records/clear controls are hidden while beginAttempt still rejects the unresolved duplicate. These tests corroborate the existing finding behavior but do not verify Pay/Registry integration. Keep the predecessor-owned BROWSER-01 rather than create a duplicate finding. No test execution performed.",
+      "evidence": [
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/components/WalletAttempts.test.tsx",
+          "lines": [
+            11,
+            36
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    {
+      "path": "apps/web/src/App.test.tsx",
+      "blob": "63832b4078d23e3a8e24ba6faf63f1cbe5da9968",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 330,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/AppLean.fragment.test.tsx",
+      "blob": "f3a0bd09abada7d88f02483ef10d920fc158c038",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 170,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/AppLean.test.tsx",
+      "blob": "66de30ed6f99258b38f5cbc44e6c8a518eb341aa",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 166,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.i18n.test.tsx",
+      "blob": "be6fb9d4ffa6db300695d5b25ffc1ffa63de81e6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 135,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+      "blob": "d3f96ceebe31fa1fde01dc2dfeca427e10df24c7",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 283,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+      "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 79,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+      "blob": "eb5258cc762b0dbc4c7d9191b4fb36888ebda9e0",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 432,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+      "blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 70,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+      "blob": "b575ca653ec342ba75de1c3790172389f5c40781",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 61,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+      "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 311,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "blob": "916f471c6a9ba26c9a15f7672460896e3c8a240c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 430,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "blob": "01e4b56e692bf638fe7be61ff1149f20fd244077",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 92,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 200,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/idbStore.test.ts",
+      "blob": "ac35d25819dc2799b011b6e456d9fac05e1ab082",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 109,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.idb.test.ts",
+      "blob": "b15fa874bbf0397b569a7d6fcc2722da44eda0d9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 90,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+      "blob": "57f4e70f37c4319e75d0f98af3a48f445e469c06",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 132,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.test.ts",
+      "blob": "af1323436da652d8defe084464f7c252c61c7e26",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 404,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/keystore.test.ts",
+      "blob": "ff824086da7994ea866e6445abd4402534eb3641",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 206,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+      "blob": "8aadf1028cfcc92e1eb42371f6dcbe17c2085719",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 165,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+      "blob": "826578ab8904206b22d69f4ea963648f01a5eb38",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 405,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+      "blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 94,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "blob": "ada7cdbcd4f16163e15923f15f652dec0fcac7f6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 129,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "blob": "4c52b6fe0c7224ef4812ab6d31a07b401d721862",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 200,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+      "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 476,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.test.ts",
+      "blob": "a587e583e7ae8168a27fcdc7db414d614378290b",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 565,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/sellerPairing.test.ts",
+      "blob": "59c0ff53bd9e4619adc700cd559ea00886ac7359",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 119,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/session.test.ts",
+      "blob": "17c93c2e96814428c0ae8ac2155f937fb099ecfa",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 343,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settings.loopback.test.ts",
+      "blob": "6bdda45ce1de594800ad1b7377d0206a93cdabdf",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 17,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "blob": "01fe046841dacb451962614ef219f1c7ab122ea8",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 92,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "blob": "9ba2a5ccb59077ec6ac27c83e95ae69e10835e01",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 133,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "blob": "db3e1d0e58641947725dd27b3fb3e9c6cee6fada",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 153,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settings.uiPrivacy.test.ts",
+      "blob": "d53995d69830845c7b48553bbc5c8adeb483367b",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 81,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settingsExchange.test.ts",
+      "blob": "5ce01111b90a7c5b938ba712790f0b7cb7660358",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 190,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settingsExchange.test.ts",
+      "blob": "6dfda318e1ddcdc0c6d3914f8b37d92001995384",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 207,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+      "blob": "549d64d9348fe9638c04454078b08654e23077c1",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 63,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+      "blob": "03b845702db83998a2b578ebaa593bb1b243f28b",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 64,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/privacyInvariants.test.ts",
+      "blob": "957cde23e8c602fa096e497851aed8ba96549c1c",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 219,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/privacyInvariants.test.ts",
+      "blob": "f8a67c6d1df7939aad8daf57f36d3a04cfadfca7",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 231,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/state.sweep.test.ts",
+      "blob": "4e70df6a705a56a4f475136fe183b6e00b943e21",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 156,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/test/fakeIndexedDb.ts",
+      "blob": "3424eec28ee24d9fc24f82a61e938b7970bbaa8b",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 98,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/test/keys.ts",
+      "blob": "f4235382a9d5bf11de2dbadd163cb284d38983a6",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 15,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/test/memoryIndexedDb.ts",
+      "blob": "cdec2333fce7a696e75baa58b1b9132338100fe1",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 143,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/test/render.tsx",
+      "blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 50,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+      "blob": "96d79a91967763376e3ccbd472a0111d470be367",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 339,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.i18n.test.tsx",
+      "blob": "a5a93e5a38fbc9026c260bfc41884f5e9573ab81",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 36,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.lock.test.tsx",
+      "blob": "098c626f4c401dfea4ccc342809d4c6571e52f5c",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 65,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+      "blob": "dfaeaf232a511786fada7ca13abad49a5d067116",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 172,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+      "blob": "7231bb425a0d7132ca0dc6107ba74ddf12fe71ff",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 113,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+      "blob": "4a2aaaa6e9cca4e98481313b1afa0bb211d624eb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 129,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.test.tsx",
+      "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 942,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/SellerPairing.test.tsx",
+      "blob": "e827e5f02f1762724dbbdec0d1cd832485f941a9",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 260,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+      "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "commits": [
+        "137628961463fc5abd8b7927b2efe6b18a0a206a"
+      ],
+      "line_count": 79,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "blob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 253,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "blob": "6094ae5931e43d72b3fad9ade002275afaace426",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 254,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.race.test.tsx",
+      "blob": "5cc29989d5952ec0f60cbe8f7a82f9c307b73b1c",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 50,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+      "blob": "c3ca70c56ae0bae2e313b40d5c3f268abd30e343",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 61,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "f898ade764504ab8aee0024194afed15f35f92fb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "commits": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "line_count": 238,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "blob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "commits": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "04910f65dc0268e41519c4b1a44e83264272f0bf"
+      ],
+      "line_count": 436,
+      "kind": "test_or_test_helper",
+      "status": "unread"
+    }
+  ],
+  "inherited_browser_coverage": "review-browser-custody.json",
+  "inherited_core_coverage": "review-core-packages.json",
+  "runtime_verification": "not run",
+  "coverage_summary": {
+    "reviewed_versions": 53,
+    "production_versions": 17,
+    "test_or_test_helper_versions": 36,
+    "independently_reread_predecessor_versions": 3,
+    "new_coverage_versions": 50,
+    "remaining_versions": 58,
+    "remaining_lines": 11535,
+    "partial_versions": 0,
+    "new_confirmed_findings": 0
+  },
+  "handoff": {
+    "status": "fresh_worker_required",
+    "reason": "Context compaction occurred after the final bounded reads. Per parent instruction, reviewer stopped source review and persisted exact coverage/unread entries.",
+    "production_assignment_complete": true,
+    "portable_test_assignment_complete": true,
+    "remaining_scope": "Browser custody test/helper unique path/blob versions listed in remaining. Referenced fixture JSON contents were not fully read and are not claimed as covered.",
+    "next_worker": "Continue exact remaining entries only; review full source in bounded reads or complete diff against an actually fully read counterpart; preserve path+blob deduplication; do not run target code/tests/PoCs or edit target files.",
+    "exclusions": "SecretBackup, BackupPanel and full-profile MerchantProfilePanel are excluded by parent no-lean-caller decision. Full-profile TagArchive UI excluded; portable archive/ledger primitives and included lean support stay in scope. Other nonportable ux-vault modules/tests were not assigned."
+  }
+}

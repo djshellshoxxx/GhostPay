@@ -1,0 +1,1385 @@
+{
+  "reviewer": "scanner_adapter_tests_round5",
+  "status": "complete",
+  "frozen_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "scope": "Exact union of two predecessor remaining lists; static tests and test support only",
+  "assignment_count": 40,
+  "assignment_version_lines": 7201,
+  "coverage": [
+    {
+      "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+      "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "line_count": 157,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          157
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Scan.i18n.test.tsx",
+      "blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "line_count": 94,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          94
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "5ca8631fb1f25658ae55e122d10e22027c0d5e51",
+      "line_count": 92,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          92
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "146a90721ae039959af1ce4cd973c572394721f7"
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "8b2fcf37b6c7670c20938018a3810265fd777152",
+      "line_count": 696,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          696
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "c25de17f75fcea631452b769aadede99a305f25f"
+    },
+    {
+      "path": "apps/web/src/views/ScanPrivacy.i18n.test.tsx",
+      "blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "line_count": 216,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          216
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/net-transport/src/browser.test.ts",
+      "blob": "7c26ee3fbff011a3c46b99274a7a90eade242964",
+      "line_count": 43,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          43
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "5a11e91b46c0cd6fa6697673284affe315c7f380"
+    },
+    {
+      "path": "packages/scan-source/src/composite.test.ts",
+      "blob": "9246734a198f12adf9512da541dd247d13d3c08a",
+      "line_count": 145,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          145
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "4280a956a606315455c39b1b254a13b21aaf004c"
+    },
+    {
+      "path": "packages/scan-source/src/indexer.test.ts",
+      "blob": "b4776a2a734b91fe83112cea38be58886761260a",
+      "line_count": 109,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          109
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/pir2.test.ts",
+      "blob": "2f1740ea8289dfafa08a7614114eb2880c033570",
+      "line_count": 113,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          113
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "99678e91f2a22a2d0e8ef74dbece3a040a300bde"
+    },
+    {
+      "path": "packages/scan-source/src/range.test.ts",
+      "blob": "357c9d96c636c4df4d2698c1c2d34fcec4ec8bfd",
+      "line_count": 100,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          100
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "37eeeb47f674b5dc6e86569ddefcd7cb56b13eaa"
+    },
+    {
+      "path": "packages/scan-source/src/testutil.ts",
+      "blob": "80abc5dffb35c837bb0d3ee6e793636d56bfedeb",
+      "line_count": 133,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          133
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/validate.test.ts",
+      "blob": "84500028971740c8d42580be599aad4fc49e797e",
+      "line_count": 60,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          60
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/window.test.ts",
+      "blob": "49244a63e4c0fc16793f6e429940fc153be37267",
+      "line_count": 41,
+      "kind": "test-support",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          41
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Home.authorization.test.tsx",
+      "blob": "640023d9450771e5edfb69066f077c168e48d35d",
+      "line_count": 85,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          85
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "146a90721ae039959af1ce4cd973c572394721f7",
+      "line_count": 117,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          117
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+      "blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+      "line_count": 172,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          172
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+      "blob": "a386af69cb9c30910df93438cb8d589d16229980",
+      "line_count": 124,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          124
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+      "line_count": 703,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          703
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers",
+      "truncation_repair": "Initial 351-703 output was truncated internally; full 440-570 reread repaired missing 460-561 span before credit."
+    },
+    {
+      "path": "packages/net-transport/src/browser.test.ts",
+      "blob": "5a11e91b46c0cd6fa6697673284affe315c7f380",
+      "line_count": 50,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          50
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/net-transport/src/selection.test.ts",
+      "blob": "018e3d754211e3f15bf1199b210ebfe7d0c6f6ba",
+      "line_count": 75,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          75
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/composite.test.ts",
+      "blob": "4280a956a606315455c39b1b254a13b21aaf004c",
+      "line_count": 145,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          145
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/padded.test.ts",
+      "blob": "94a8befe42447d02b44f47fe57ce9ab1120a9102",
+      "line_count": 134,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          134
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/pir2.test.ts",
+      "blob": "99678e91f2a22a2d0e8ef74dbece3a040a300bde",
+      "line_count": 121,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/scan-source/src/range.test.ts",
+      "blob": "37eeeb47f674b5dc6e86569ddefcd7cb56b13eaa",
+      "line_count": 142,
+      "kind": "test-support",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "origin": "review-scanner-tests-round4.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          142
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/eip712.independent.test.ts",
+      "blob": "9470d3c9304a1e969965d36b8fc86e4a8688566c",
+      "line_count": 99,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          99
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/logs.test.ts",
+      "blob": "e10267684a88385ecd9b289f3d85f29546961196",
+      "line_count": 466,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          466
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/payments.anvil.test.ts",
+      "blob": "fe6523aa89555b5b0fa4c17109aa931c4aff8a64",
+      "line_count": 230,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          230
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/permit.test.ts",
+      "blob": "a59fe67b62b7b368e072ad37fb5fa9a818367dfa",
+      "line_count": 197,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          197
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/quote.anvil.test.ts",
+      "blob": "b0d274199e3ff7aaab1926e88eafc2437534d617",
+      "line_count": 111,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          111
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/quote.guards.test.ts",
+      "blob": "a0b5058d01dcea87a2e20fc3b7f63a4b5cc45f29",
+      "line_count": 148,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          148
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/quote.test.ts",
+      "blob": "a6348941fa36533ca408d8a10e059fcd52ed5884",
+      "line_count": 207,
+      "kind": "test",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          207
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": false
+      },
+      "method": "complete reviewed counterpart plus complete immutable blob-to-blob diff",
+      "counterpart_blob": "ab98c68605acba6a7d094e631ab1431ab88e2763"
+    },
+    {
+      "path": "packages/chain-adapters/src/quote.test.ts",
+      "blob": "ab98c68605acba6a7d094e631ab1431ab88e2763",
+      "line_count": 211,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          211
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": false,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/registry.compat.test.ts",
+      "blob": "ffcc3420bf57ec069bc9ad1995497c0a85da21fb",
+      "line_count": 114,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          114
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/registry.test.ts",
+      "blob": "b705e66f46759ee506fa7cea74b4fa84ed59bc02",
+      "line_count": 111,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          111
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/registryDelegation.test.ts",
+      "blob": "e80fdc0c4e0a681336552f866d0d0e4dd66dfe24",
+      "line_count": 184,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          184
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/registryEns.test.ts",
+      "blob": "890f227fa0a11ec5ab7104444173187cc2de2540",
+      "line_count": 88,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          88
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/router.anvil.test.ts",
+      "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+      "line_count": 159,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          159
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/router.test.ts",
+      "blob": "0e5791a4bfba226e85ef4028469dcda095254951",
+      "line_count": 304,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          304
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/scanHardening.test.ts",
+      "blob": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e",
+      "line_count": 493,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          493
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    },
+    {
+      "path": "packages/chain-adapters/src/sweep.test.ts",
+      "blob": "60526c7f94d0f6851b6f1dd64ec1ef9668b94392",
+      "line_count": 212,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "origin": "review-support-packages-round3.json",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          212
+        ]
+      ],
+      "present_as_identical_blob": {
+        "main": true,
+        "candidate": true
+      },
+      "method": "full immutable git cat-file blob read with line numbers"
+    }
+  ],
+  "findings": [],
+  "observations": [
+    {
+      "id": "ST-Q01",
+      "classification": "unranked test-quality issue; not a production security finding",
+      "title": "Quote conversion property accepts unexpected payer exceptions",
+      "confidence": "high from static control flow",
+      "applies_to": [
+        "frozen main",
+        "primary candidate"
+      ],
+      "evidence": [
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "blob": "ab98c68605acba6a7d094e631ab1431ab88e2763",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              144,
+              154
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "blob": "a6348941fa36533ca408d8a10e059fcd52ed5884",
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "ranges": [
+            [
+              140,
+              150
+            ]
+          ]
+        }
+      ],
+      "detail": "The property callback catches every payer fiatToTokenAmount exception and returns successfully. Its generated fiat and price are positive with fixed valid currency/precision and bounded token precision, so unexpected rejection does not fail this property. Fixed example tests elsewhere still provide some conversion evidence; this observation does not claim the complete suite would accept an always-throwing implementation.",
+      "recommendation": "Require successful payer conversion for this valid generated domain. Distinguish explicitly expected seller-zero rejection from unexpected exceptions, or use preconditions that describe the supported domain.",
+      "validation": "Static only; no test mutation, test execution, or mutation testing."
+    },
+    {
+      "id": "ST-Q02",
+      "classification": "unranked test-harness issue; not a production security finding",
+      "title": "Router Anvil startup timeout can leave its child process alive",
+      "confidence": "high from static lifecycle",
+      "applies_to": [
+        "frozen main",
+        "primary candidate"
+      ],
+      "evidence": [
+        {
+          "path": "packages/chain-adapters/src/router.anvil.test.ts",
+          "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              39,
+              58
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/router.anvil.test.ts",
+          "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              78,
+              81
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/router.anvil.test.ts",
+          "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              106,
+              108
+            ]
+          ]
+        }
+      ],
+      "detail": "startAnvil creates a local child and rejects after 20 seconds without killing it. The suite stores its outer cleanup handle only after startAnvil resolves; if a live child never emits the expected readiness text, afterAll sees no handle and cannot stop it. The source also leaves its timer uncleared on error/exit.",
+      "recommendation": "Retain the child handle before readiness and use one failure cleanup path that clears the startup timer and terminates the child; bound captured startup output. The payments and quote Anvil helpers already show fail-path kill logic.",
+      "validation": "Static only; no process was spawned and no failure was reproduced."
+    },
+    {
+      "id": "ST-O01",
+      "classification": "test evidence and limitation",
+      "title": "UI scan and export lifecycle expectations use synthetic browser and storage boundaries",
+      "evidence": [
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              1,
+              44
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              175,
+              274
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              325,
+              467
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              599,
+              703
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+          "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              19,
+              44
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+          "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              92,
+              157
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+          "blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              45,
+              172
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+          "blob": "a386af69cb9c30910df93438cb8d589d16229980",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              40,
+              124
+            ]
+          ]
+        }
+      ],
+      "detail": "The source specifies stale-session cleanup, quarantine/tombstones, cancellation, automatic recheck suppression, receipt address omission, and fresh action-specific export authorization. jsdom, InlineWorker, in-memory vaults, captured downloads, altered timers and synthetic RPCs are explicit fixture boundaries. No native Worker, actual browser download, cross-tab scheduling, IndexedDB durability or runtime pass is established."
+    },
+    {
+      "id": "ST-O02",
+      "classification": "test evidence and known-finding context",
+      "title": "Candidate cancellation tests support the established SN-K01 correction",
+      "evidence": [
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "blob": "146a90721ae039959af1ce4cd973c572394721f7",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              32,
+              56
+            ]
+          ]
+        },
+        {
+          "path": "packages/scan-source/src/padded.test.ts",
+          "blob": "94a8befe42447d02b44f47fe57ce9ab1120a9102",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              100,
+              134
+            ]
+          ]
+        },
+        {
+          "path": "packages/scan-source/src/range.test.ts",
+          "blob": "37eeeb47f674b5dc6e86569ddefcd7cb56b13eaa",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              109,
+              142
+            ]
+          ]
+        }
+      ],
+      "detail": "Candidate test source asserts pre-dispatch refusal, rejection of a late head/window, unchanged request counts after abort, and fixed local cancellation text. The corresponding older privacy/range variants lack these newly added cases. SN-K01 remains predecessor-owned and is not re-ranked here. No tests were executed."
+    },
+    {
+      "id": "ST-O03",
+      "classification": "test evidence limitation",
+      "title": "Composite head and import-closure assertions have narrower scope than their titles",
+      "evidence": [
+        {
+          "path": "packages/scan-source/src/composite.test.ts",
+          "blob": "4280a956a606315455c39b1b254a13b21aaf004c",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              96,
+              102
+            ]
+          ]
+        },
+        {
+          "path": "packages/net-transport/src/browser.test.ts",
+          "blob": "5a11e91b46c0cd6fa6697673284affe315c7f380",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              9,
+              31
+            ]
+          ]
+        }
+      ],
+      "detail": "The best-head test accepts either 1500 or CHAIN_HEAD through an expectation derived from the actual returned head, so it does not enforce one best-head rule. The browser helper follows relative static from-import/export syntax only, does not inspect bare-package internals or side-effect/dynamic imports, and recognizes only a partial list of unprefixed Node built-ins. It is not a complete browser-bundle closure proof.",
+      "recommendation": "Assert the intended exact head rule or change the test description; retain artifact/bundler-level import graph evidence for browser closure. Do not duplicate or replace predecessor-owned BROWSER01."
+    },
+    {
+      "id": "ST-O04",
+      "classification": "test evidence and design limitation",
+      "title": "Scan-source and adapter tests specify bounded processing but retain explicit completeness limits",
+      "evidence": [
+        {
+          "path": "packages/scan-source/src/testutil.ts",
+          "blob": "80abc5dffb35c837bb0d3ee6e793636d56bfedeb",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              6,
+              133
+            ]
+          ]
+        },
+        {
+          "path": "packages/scan-source/src/indexer.test.ts",
+          "blob": "b4776a2a734b91fe83112cea38be58886761260a",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              24,
+              97
+            ]
+          ]
+        },
+        {
+          "path": "packages/scan-source/src/pir2.test.ts",
+          "blob": "99678e91f2a22a2d0e8ef74dbece3a040a300bde",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              28,
+              119
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/logs.test.ts",
+          "blob": "e10267684a88385ecd9b289f3d85f29546961196",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              179,
+              212
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/scanHardening.test.ts",
+          "blob": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              82,
+              100
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/scanHardening.test.ts",
+          "blob": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              120,
+              155
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/scanHardening.test.ts",
+          "blob": "d6f41acbfe8cab313bd07fbc9c366e92bd80221e",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              309,
+              331
+            ]
+          ]
+        }
+      ],
+      "detail": "Fixtures exercise aligned ranges, record validation, budget handling, continuity/hash mismatch, PIR response integrity and an explicit experimental gate. Fake block hashes and in-process PIR peers do not establish real provider independence, record completeness or deployed service behavior. Adapter tests expressly retain router-only coverage notices and fail-closed blocks that still exceed limits; they also document a rate-limit ambiguity that can result in router-only coverage. No new candidate regression or new ranking of AP-Q1 is asserted."
+    },
+    {
+      "id": "ST-O05",
+      "classification": "optional integration evidence limitation",
+      "title": "Anvil integration coverage requires separate execution and artifact provenance",
+      "evidence": [
+        {
+          "path": "packages/chain-adapters/src/payments.anvil.test.ts",
+          "blob": "fe6523aa89555b5b0fa4c17109aa931c4aff8a64",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              17,
+              60
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/payments.anvil.test.ts",
+          "blob": "fe6523aa89555b5b0fa4c17109aa931c4aff8a64",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              97,
+              120
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/payments.anvil.test.ts",
+          "blob": "fe6523aa89555b5b0fa4c17109aa931c4aff8a64",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              123,
+              228
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/router.anvil.test.ts",
+          "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              13,
+              28
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/router.anvil.test.ts",
+          "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              61,
+              66
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/router.anvil.test.ts",
+          "blob": "bca50477b3cb2768b2aa6729bd3fc22a5f247336",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              110,
+              155
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.anvil.test.ts",
+          "blob": "b0d274199e3ff7aaab1926e88eafc2437534d617",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              10,
+              35
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.anvil.test.ts",
+          "blob": "b0d274199e3ff7aaab1926e88eafc2437534d617",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              40,
+              108
+            ]
+          ]
+        }
+      ],
+      "detail": "All three local-EVM suites skip their substantive cases when required local tools or artifacts are missing unless REQUIRE_ANVIL=1 activates a separate availability assertion. The payment fixture explicitly substitutes local mock token code, the router fee fixture builds under the Base Sepolia table while sending to local chain 31337, and the quote fixture installs compiled mock aggregator code. These sources are intentional isolated integration definitions, not proof of live-token/feed behavior, current artifact/source identity, a particular CI setting or an observed passing run."
+    },
+    {
+      "id": "ST-O06",
+      "classification": "cryptographic and registry test evidence limitation",
+      "title": "Embedded vectors and cross-implementation checks supplement self-round-trips",
+      "evidence": [
+        {
+          "path": "packages/chain-adapters/src/eip712.independent.test.ts",
+          "blob": "9470d3c9304a1e969965d36b8fc86e4a8688566c",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              44,
+              98
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/sweep.test.ts",
+          "blob": "60526c7f94d0f6851b6f1dd64ec1ef9668b94392",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              20,
+              38
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/sweep.test.ts",
+          "blob": "60526c7f94d0f6851b6f1dd64ec1ef9668b94392",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              92,
+              111
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/sweep.test.ts",
+          "blob": "60526c7f94d0f6851b6f1dd64ec1ef9668b94392",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              128,
+              165
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "blob": "a59fe67b62b7b368e072ad37fb5fa9a818367dfa",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              53,
+              113
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "blob": "a59fe67b62b7b368e072ad37fb5fa9a818367dfa",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              129,
+              197
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/registryDelegation.test.ts",
+          "blob": "e80fdc0c4e0a681336552f866d0d0e4dd66dfe24",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              78,
+              183
+            ]
+          ]
+        },
+        {
+          "path": "packages/chain-adapters/src/registryEns.test.ts",
+          "blob": "890f227fa0a11ec5ab7104444173187cc2de2540",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "ranges": [
+            [
+              21,
+              87
+            ]
+          ]
+        }
+      ],
+      "detail": "The tests embed fixed EIP-712 and ENS-namehash constants, compare manual and viem digest paths, check domain/nonce changes, malformed/high-s permit evidence, verifier callback boundaries and frozen delegation inputs, and prevent ENS offchain gateway fetches in synthetic cases. This review inspected those assertions but did not externally revalidate the published vectors, protocol addresses, deployment state or library independence."
+    }
+  ],
+  "remaining": [],
+  "constraints": {
+    "target_edits": false,
+    "target_execution": false,
+    "test_execution": false,
+    "build_execution": false,
+    "live_probes": false,
+    "transactions": false,
+    "git_mutations": false
+  },
+  "reference_verification": {
+    "assigned_sha_path_blob": "all 40 matched",
+    "actual_blob_line_counts": "all 40 matched"
+  },
+  "counts": {
+    "reviewed_versions": 40,
+    "reviewed_version_lines": 7201,
+    "distinct_paths": 33,
+    "full_blob_read_versions": 33,
+    "counterpart_diff_versions": 7,
+    "remaining_versions": 0,
+    "remaining_version_lines": 0,
+    "new_actionable_production_security_findings": 0,
+    "unranked_test_quality_issues": 2
+  },
+  "known_findings_context": {
+    "SN-K01": "predecessor-owned; frozen-main cancellation issue corrected in primary candidate; only supporting test evidence reviewed here",
+    "AP-Q1": "predecessor-owned secondary comparison aggregate budget observation remains unranked; not reassessed",
+    "PN01-05": "predecessor-owned; not duplicated",
+    "BROWSER01": "predecessor-owned; import test limitation does not replace or duplicate it"
+  },
+  "outcome": "Exact assigned union completed: 40 immutable variants / 7201 version-lines. No new actionable production security finding established. Two unranked test-quality/harness issues and explicit evidence limitations recorded. No target execution.",
+  "truncation_handling": "Initial handoff/metadata batch was truncated and was reread as bounded Markdown plus compact JSON metadata before use; no target-source coverage came from it. The candidate Scan.test.tsx 351-703 source output was internally truncated; the complete 440-570 span was reread before full coverage credit. All other target-source outputs and all seven counterpart diffs were complete."
+}

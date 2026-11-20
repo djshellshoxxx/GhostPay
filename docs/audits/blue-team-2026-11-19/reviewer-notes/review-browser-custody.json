@@ -1,0 +1,5253 @@
+{
+  "audit": "GhostPay browser custody source-only review",
+  "authorization": "Repository audit notes only; no source/test/config changes, runtime tests, live probes, Git mutations, or transactions.",
+  "repository": "/workspace/scratch/e449ed9154f6/GhostPay-audit",
+  "commits": {
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+    "quick_hide": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+    "clipboard": "04910f65dc0268e41519c4b1a44e83264272f0bf"
+  },
+  "scope_file_count": 116,
+  "unique_version_count": 150,
+  "files": [
+    {
+      "path": "apps/web/src/App.test.tsx",
+      "versions": [
+        {
+          "blob": "63832b4078d23e3a8e24ba6faf63f1cbe5da9968",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 330,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/App.tsx",
+      "versions": [
+        {
+          "blob": "14d318dc3abc774a06e05e33ac03d2a7645afe6e",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 28,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppLean.fragment.test.tsx",
+      "versions": [
+        {
+          "blob": "f3a0bd09abada7d88f02483ef10d920fc158c038",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 170,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppLean.test.tsx",
+      "versions": [
+        {
+          "blob": "66de30ed6f99258b38f5cbc44e6c8a518eb341aa",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 166,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppLean.tsx",
+      "versions": [
+        {
+          "blob": "b9bbdfe053510ba13ef5ebac4488411a04f6770e",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 9,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              9
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+      "versions": [
+        {
+          "blob": "559b539b56213bd83f9ed5cc47c5e0d0e39a4abf",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 101,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+      "versions": [
+        {
+          "blob": "0896c29c5eeb62ed6538870e1d9ef7db4ce01cfb",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 83,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.i18n.test.tsx",
+      "versions": [
+        {
+          "blob": "00f900bf327c8079717230465d5d4654186744c0",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 88,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.idleClock.test.tsx",
+      "versions": [
+        {
+          "blob": "560e879fbf8e457983b9c682157a9da56b786185",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 122,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "ba81445f5861a3895a364fb0c357fe09a3842d6e",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 429,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.network.test.tsx",
+      "versions": [
+        {
+          "blob": "6fed5ee88798d7871d60583e04f0d2552c30e8df",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 64,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.privacy.test.tsx",
+      "versions": [
+        {
+          "blob": "d7f4b0385712dfc48c7b04412217dacba11c89de",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 195,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.quickHide.test.tsx",
+      "versions": [
+        {
+          "blob": "e524497cf602d5c08fbd15f11b7b5fd35f9e73a5",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 44,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "versions": [
+        {
+          "blob": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 323,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              323
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        },
+        {
+          "blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+          "commit_labels": [
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 519,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              519
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        },
+        {
+          "blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 551,
+          "review_status": "superseded-historical-attestation",
+          "reviewed_line_ranges": [
+            [
+              1,
+              551
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff",
+          "historical_review_status": "reviewed",
+          "superseded_by": "review-appshell-provenance-round10.json: fresh full-content read of all551lines"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/BackupPanel.test.tsx",
+      "versions": [
+        {
+          "blob": "c4150f545fcceddf8c5b680ea4f422b05f402bbc",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 222,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ],
+      "scope_status": "excluded_full_profile_only",
+      "exclusion_reason": "Imported only by full App sellerArchive; lean AppLean supplies no archive. Parent directed exclusion of non-core archival UI."
+    },
+    {
+      "path": "apps/web/src/components/BackupPanel.tsx",
+      "versions": [
+        {
+          "blob": "83f0e937414b1fdd129aa0ff70b5f109e7bb73e9",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 94,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ],
+      "scope_status": "excluded_full_profile_only",
+      "exclusion_reason": "Imported only by full App sellerArchive; lean AppLean supplies no archive. Parent directed exclusion of non-core archival UI."
+    },
+    {
+      "path": "apps/web/src/components/ClipboardPrivacyControls.tsx",
+      "versions": [
+        {
+          "blob": "b9e3a56bc77a731e4302063dfe07a122ad226340",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 31,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              31
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/ClipboardPrivacySync.tsx",
+      "versions": [
+        {
+          "blob": "f0d0138c6cc30f181110a65d32d317345e52139b",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 13,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              13
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/Common.clipboardPrivacy.test.tsx",
+      "versions": [
+        {
+          "blob": "8f4a9246266ee4565a9cbbce32e526f09e27b888",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 172,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/Common.test.tsx",
+      "versions": [
+        {
+          "blob": "af9c2a77b7d1232b50f8861dd0793c2c0eebc240",
+          "commit_labels": [
+            "main",
+            "candidate"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+          ],
+          "line_count": 183,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "67a93df29f2df39dbe2f4489959e5e68835e7457",
+          "commit_labels": [
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 204,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/Common.tsx",
+      "versions": [
+        {
+          "blob": "71b607b3e92f583b6bc784c7ec929567dd6f75da",
+          "commit_labels": [
+            "main",
+            "candidate"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+          ],
+          "line_count": 135,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              135
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "acee66019d29abb5844982c6da13d205f5cca440",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 142,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              142
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        },
+        {
+          "blob": "6d83d05d31ce3812f3ac9faebdea994a491bf188",
+          "commit_labels": [
+            "clipboard"
+          ],
+          "commits": [
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 137,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              137
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/PrivacyControls.tsx",
+      "versions": [
+        {
+          "blob": "590b40b5ed2f984870122cbbaff9da47f651d4d6",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 29,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              29
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.test.tsx",
+      "versions": [
+        {
+          "blob": "abc4394869cf13217141dcf64d98d8edefb5dabd",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 120,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.tsx",
+      "versions": [
+        {
+          "blob": "7e855836d25e8e70ed17430161efd12116794d52",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 28,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              28
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/PrivateHistory.tsx",
+      "versions": [
+        {
+          "blob": "1919f8a37f42fe5994450713c86c8f3fc276fb35",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 22,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              22
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.i18n.test.tsx",
+      "versions": [
+        {
+          "blob": "be6fb9d4ffa6db300695d5b25ffc1ffa63de81e6",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 135,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+      "versions": [
+        {
+          "blob": "d3f96ceebe31fa1fde01dc2dfeca427e10df24c7",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 283,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+      "versions": [
+        {
+          "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 79,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+      "versions": [
+        {
+          "blob": "eb5258cc762b0dbc4c7d9191b4fb36888ebda9e0",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 432,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.tsx",
+      "versions": [
+        {
+          "blob": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 796,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              796
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete quick-hide source plus complete exact baseline/quick-hide diff; all differing old lines read"
+        },
+        {
+          "blob": "07e736bb80b10e16b49e9e09b2aff9d3085a2a82",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 801,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              801
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/SecretBackup.clipboardPrivacy.test.tsx",
+      "versions": [
+        {
+          "blob": "9fd22059746398b5be98884e97b4fb490faf346c",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 117,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ],
+      "scope_status": "excluded_full_profile_only",
+      "scope_reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+    },
+    {
+      "path": "apps/web/src/components/SecretBackup.test.tsx",
+      "versions": [
+        {
+          "blob": "d980357d1c6be7e89806933ddeff77ff3fe371b5",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 524,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "f16293d89ee542fce28e9bd6fe7782e69d91b2cf",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 586,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ],
+      "scope_status": "excluded_full_profile_only",
+      "scope_reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+    },
+    {
+      "path": "apps/web/src/components/SecretBackup.tsx",
+      "versions": [
+        {
+          "blob": "c86f77de050b838204e3f4222cd796ca6e54337a",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 251,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              251
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "c92bd4951f23325c854cdd8ca37f1ca1aa1a91b6",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 263,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              263
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ],
+      "scope_status": "excluded_full_profile_only",
+      "scope_reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+    },
+    {
+      "path": "apps/web/src/components/SecretBackup.views.test.tsx",
+      "versions": [
+        {
+          "blob": "7f43ef17516de5a0e334e41a1e64b1e7c7731ff3",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 75,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "a88fa6cd417c4dbf64d90b2884606b33de9bb03f",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 79,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ],
+      "scope_status": "excluded_full_profile_only",
+      "scope_reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+    },
+    {
+      "path": "apps/web/src/components/SensitiveContent.tsx",
+      "versions": [
+        {
+          "blob": "e4b64ba4f3312c3392e2498ca5c6b306fd0871d5",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 31,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              31
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportArchive.tsx",
+      "versions": [
+        {
+          "blob": "b4ba62a90797295349725dbc0e991d83da576826",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 128,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              128
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+      "versions": [
+        {
+          "blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 90,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+      "versions": [
+        {
+          "blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 70,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportCommon.tsx",
+      "versions": [
+        {
+          "blob": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 204,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              204
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+      "versions": [
+        {
+          "blob": "b575ca653ec342ba75de1c3790172389f5c40781",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 61,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportMaster.tsx",
+      "versions": [
+        {
+          "blob": "c703b8a853f9b8613db64d78892bce49484872dc",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 92,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              92
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+      "versions": [
+        {
+          "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 311,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.tsx",
+      "versions": [
+        {
+          "blob": "8db65de1837b1bf70dff72a4be1e0e30a5d27006",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 196,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              196
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "versions": [
+        {
+          "blob": "916f471c6a9ba26c9a15f7672460896e3c8a240c",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 430,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "versions": [
+        {
+          "blob": "fda705e782c147702ebcbac125ddb30ffee94910",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 289,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              289
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "versions": [
+        {
+          "blob": "01e4b56e692bf638fe7be61ff1149f20fd244077",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 92,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "versions": [
+        {
+          "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 200,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.tsx",
+      "versions": [
+        {
+          "blob": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 108,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              108
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "versions": [
+        {
+          "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 18,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "d7fda34e0967a86ecd591892076d9883903c19cd",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 69,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              69
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete numbered source read; not executed"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "versions": [
+        {
+          "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 34,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              34
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete quick-hide source plus complete exact baseline/quick-hide diff; all differing old lines read"
+        },
+        {
+          "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 42,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              42
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/appLock.test.ts",
+      "versions": [
+        {
+          "blob": "906b574c2808aa8104ed568eeb488ade0332c543",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 40,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/appLock.ts",
+      "versions": [
+        {
+          "blob": "918ea520b4867d69dbb575c0c9a14a8e336c5a2e",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 30,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              30
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+      "versions": [
+        {
+          "blob": "18c81c21dfa680c5498b2f907633cbdca32c09e5",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 111,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "9a3c70863ea0373a6cd9bb6adf9960116cfd4c2d",
+          "commit_labels": [
+            "clipboard"
+          ],
+          "commits": [
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 111,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/clipboardPrivacy.ts",
+      "versions": [
+        {
+          "blob": "cfb9e13bb3548d48f65b2578a76d2888553a0b35",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 92,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              92
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        },
+        {
+          "blob": "5e55f2ca693ef3112e8d12409572b29d96ef86a8",
+          "commit_labels": [
+            "clipboard"
+          ],
+          "commits": [
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 38,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              38
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/executionSettings.test.ts",
+      "versions": [
+        {
+          "blob": "40d1842efa873544e01ba4bb653b5375c26e424a",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 32,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/executionSettings.ts",
+      "versions": [
+        {
+          "blob": "eb5354fd199e4c7e5edbb89b04742e25946a67f2",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 15,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              15
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/frameGuard.test.ts",
+      "versions": [
+        {
+          "blob": "e52932be58a380e349f62fe38a34aaad1e150345",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 67,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/frameGuard.ts",
+      "versions": [
+        {
+          "blob": "e1f2279c35ca58966f3a4aa270378da48b78ee94",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 88,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              88
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/idbStore.test.ts",
+      "versions": [
+        {
+          "blob": "ac35d25819dc2799b011b6e456d9fac05e1ab082",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 109,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/idbStore.ts",
+      "versions": [
+        {
+          "blob": "c6944c59a52a069f1856bb7ecdcfe971d03c593e",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 125,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              125
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.idb.test.ts",
+      "versions": [
+        {
+          "blob": "b15fa874bbf0397b569a7d6fcc2722da44eda0d9",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 90,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+      "versions": [
+        {
+          "blob": "57f4e70f37c4319e75d0f98af3a48f445e469c06",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 132,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.test.ts",
+      "versions": [
+        {
+          "blob": "af1323436da652d8defe084464f7c252c61c7e26",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 404,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.ts",
+      "versions": [
+        {
+          "blob": "46bc24df04ce940d0880199e2f4f0ac522787c43",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 381,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              381
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete candidate source read plus exact complete Git diff; unchanged text reviewed by identity and all old changed/deleted lines read in diff"
+        },
+        {
+          "blob": "000be25182a877bbab96cc3b6a0e5ac9038790ca",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 428,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              428
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/keystore.test.ts",
+      "versions": [
+        {
+          "blob": "ff824086da7994ea866e6445abd4402534eb3641",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 206,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/keystore.ts",
+      "versions": [
+        {
+          "blob": "5df27bcc439bcde961e0ea191923c89534ea090a",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 7,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              7
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+      "versions": [
+        {
+          "blob": "8aadf1028cfcc92e1eb42371f6dcbe17c2085719",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 165,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/paymentExportRpc.ts",
+      "versions": [
+        {
+          "blob": "78a2122759db2b1245b74cd965c4c4f20b539a15",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 51,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              51
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+      "versions": [
+        {
+          "blob": "c08d77395d40d3f67b8afa58909b86ea57b992a6",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 95,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+      "versions": [
+        {
+          "blob": "826578ab8904206b22d69f4ea963648f01a5eb38",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 405,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+      "versions": [
+        {
+          "blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 94,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "versions": [
+        {
+          "blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 475,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              475
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/privacyMode.test.tsx",
+      "versions": [
+        {
+          "blob": "b70402daeada1ead5a91e2c6bf77ba06a61b2bdf",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 150,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/privacyMode.tsx",
+      "versions": [
+        {
+          "blob": "1ab179b7a39c6e5c4f54fb114d21e70f83f6effa",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 119,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              119
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+      "versions": [
+        {
+          "blob": "ada7cdbcd4f16163e15923f15f652dec0fcac7f6",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 129,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "4c52b6fe0c7224ef4812ab6d31a07b401d721862",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 200,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+      "versions": [
+        {
+          "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 476,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.test.ts",
+      "versions": [
+        {
+          "blob": "a587e583e7ae8168a27fcdc7db414d614378290b",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 565,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/reconciliationVault.ts",
+      "versions": [
+        {
+          "blob": "b9be19c98c20fb904d7ca149f2e89af302f00a97",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 230,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              230
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete candidate source plus complete exact main/candidate diff; all differing old lines read"
+        },
+        {
+          "blob": "f71adf00f68e3ad64e612f66ff57d9f89bceab93",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 252,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              252
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/sellerPairing.test.ts",
+      "versions": [
+        {
+          "blob": "59c0ff53bd9e4619adc700cd559ea00886ac7359",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 119,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/sellerPairing.ts",
+      "versions": [
+        {
+          "blob": "7fd1578738e869f77c06e3822d6dcb17257f9ac1",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 23,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              23
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/session.atomicity.test.ts",
+      "versions": [
+        {
+          "blob": "f6cdfc565e943ed52e4c73973cdb4398f0707430",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 64,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/session.idleLock.test.ts",
+      "versions": [
+        {
+          "blob": "8ae759c2e2eb6f20df73bb658a5b97fe4f4477fa",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 341,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/session.test.ts",
+      "versions": [
+        {
+          "blob": "17c93c2e96814428c0ae8ac2155f937fb099ecfa",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 343,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "versions": [
+        {
+          "blob": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 490,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              490
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete candidate source read plus exact complete Git diff; unchanged text reviewed by identity and all old changed/deleted lines read in diff"
+        },
+        {
+          "blob": "9440ec16a0283f70b8fc317f13f98db0de0194e0",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 610,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              610
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settings.loopback.test.ts",
+      "versions": [
+        {
+          "blob": "6bdda45ce1de594800ad1b7377d0206a93cdabdf",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 17,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settings.test.ts",
+      "versions": [
+        {
+          "blob": "01fe046841dacb451962614ef219f1c7ab122ea8",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 92,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "9ba2a5ccb59077ec6ac27c83e95ae69e10835e01",
+          "commit_labels": [
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 133,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "db3e1d0e58641947725dd27b3fb3e9c6cee6fada",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 153,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settings.ts",
+      "versions": [
+        {
+          "blob": "24b906e163e6bd314c73f172d95332dce4340233",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 158,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              158
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "5d73dc4b122d8d418f3f912d3b7008d1a11ef4d4",
+          "commit_labels": [
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 218,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              218
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "666aff245eac46a61633b74257bc65c39fb6093e",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 265,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              265
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settings.uiPrivacy.test.ts",
+      "versions": [
+        {
+          "blob": "d53995d69830845c7b48553bbc5c8adeb483367b",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 81,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settingsExchange.test.ts",
+      "versions": [
+        {
+          "blob": "5ce01111b90a7c5b938ba712790f0b7cb7660358",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 190,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "6dfda318e1ddcdc0c6d3914f8b37d92001995384",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 207,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settingsExchange.ts",
+      "versions": [
+        {
+          "blob": "8ab2753690b4bb99621278db22c04b25a00791f2",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 220,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              220
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "e9d632142c41d51b0850ff4d16a7308f3115012a",
+          "commit_labels": [
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 226,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              226
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "94b41f3c5cbd8dd3bc60c4efc8701464f969b690",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 227,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              227
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+      "versions": [
+        {
+          "blob": "549d64d9348fe9638c04454078b08654e23077c1",
+          "commit_labels": [
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 63,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "03b845702db83998a2b578ebaa593bb1b243f28b",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 64,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/stealthExport.ts",
+      "versions": [
+        {
+          "blob": "abfaf722906562156ca976ad88b1e84af64b7433",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 7,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              7
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/main.test.tsx",
+      "versions": [
+        {
+          "blob": "1e7e06a879996ebbb3dadd077d3bc2063d3c3e15",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 85,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/main.tsx",
+      "versions": [
+        {
+          "blob": "5531434b522b3bf288fefe97545673c3ca8362a6",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 19,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              19
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "290ba486b19ad7a36139b8559130fd6c6b498e1e",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 48,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              48
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/privacyInvariants.test.ts",
+      "versions": [
+        {
+          "blob": "957cde23e8c602fa096e497851aed8ba96549c1c",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 219,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "f8a67c6d1df7939aad8daf57f36d3a04cfadfca7",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 231,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/state.sweep.test.ts",
+      "versions": [
+        {
+          "blob": "4e70df6a705a56a4f475136fe183b6e00b943e21",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 156,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/state.tsx",
+      "versions": [
+        {
+          "blob": "0a8c106cf9f67357a4af5304f652612076d7d3da",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 215,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              215
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "68f481926a20ee6d528edea74773047194c434d9",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 226,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              226
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/test/fakeIndexedDb.ts",
+      "versions": [
+        {
+          "blob": "3424eec28ee24d9fc24f82a61e938b7970bbaa8b",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 98,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/test/keys.ts",
+      "versions": [
+        {
+          "blob": "f4235382a9d5bf11de2dbadd163cb284d38983a6",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 15,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/test/memoryIndexedDb.ts",
+      "versions": [
+        {
+          "blob": "cdec2333fce7a696e75baa58b1b9132338100fe1",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 143,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/test/render.tsx",
+      "versions": [
+        {
+          "blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 50,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+      "versions": [
+        {
+          "blob": "96d79a91967763376e3ccbd472a0111d470be367",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 339,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.i18n.test.tsx",
+      "versions": [
+        {
+          "blob": "a5a93e5a38fbc9026c260bfc41884f5e9573ab81",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 36,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.lock.test.tsx",
+      "versions": [
+        {
+          "blob": "098c626f4c401dfea4ccc342809d4c6571e52f5c",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 65,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+      "versions": [
+        {
+          "blob": "dfaeaf232a511786fada7ca13abad49a5d067116",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 172,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+      "versions": [
+        {
+          "blob": "7231bb425a0d7132ca0dc6107ba74ddf12fe71ff",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 113,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+      "versions": [
+        {
+          "blob": "4a2aaaa6e9cca4e98481313b1afa0bb211d624eb",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 129,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.test.tsx",
+      "versions": [
+        {
+          "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 942,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.tsx",
+      "versions": [
+        {
+          "blob": "437c684af1fac0f759607bb3fe4f8e37238a3d89",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 649,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              649
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete source of another version read plus complete exact Git diff; unchanged text reviewed by identity and all changed/deleted lines read in diff"
+        },
+        {
+          "blob": "2c17d389ad6d108a68470e075caf98d0a987cd33",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 660,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              660
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerPairing.test.tsx",
+      "versions": [
+        {
+          "blob": "e827e5f02f1762724dbbdec0d1cd832485f941a9",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 260,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/SellerPairing.tsx",
+      "versions": [
+        {
+          "blob": "4e325d81f2adb73dc10a1dc0f02522286889db22",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 116,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              116
+            ]
+          ],
+          "notes": [
+            "Source review only; associated tests still unread."
+          ],
+          "review_method": "complete numbered source read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+      "versions": [
+        {
+          "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 79,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Settings.exchange.test.tsx",
+      "versions": [
+        {
+          "blob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 253,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "6094ae5931e43d72b3fad9ade002275afaace426",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 254,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Settings.race.test.tsx",
+      "versions": [
+        {
+          "blob": "5cc29989d5952ec0f60cbe8f7a82f9c307b73b1c",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 50,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+      "versions": [
+        {
+          "blob": "c3ca70c56ae0bae2e313b40d5c3f268abd30e343",
+          "commit_labels": [
+            "main",
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 61,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "versions": [
+        {
+          "blob": "f898ade764504ab8aee0024194afed15f35f92fb",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 238,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        },
+        {
+          "blob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+          "commit_labels": [
+            "candidate",
+            "quick_hide",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "137628961463fc5abd8b7927b2efe6b18a0a206a",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 436,
+          "review_status": "unread",
+          "reviewed_line_ranges": [],
+          "notes": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/views/Settings.tsx",
+      "versions": [
+        {
+          "blob": "05179dfa993616e1cf59f19717a1263d61f6c31e",
+          "commit_labels": [
+            "main"
+          ],
+          "commits": [
+            "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+          ],
+          "line_count": 500,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              500
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete candidate source plus complete exact candidate/main diff; all differing old lines read"
+        },
+        {
+          "blob": "fb144d734ef2e05825735e01aaeb3243d43085f7",
+          "commit_labels": [
+            "candidate",
+            "clipboard"
+          ],
+          "commits": [
+            "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+            "04910f65dc0268e41519c4b1a44e83264272f0bf"
+          ],
+          "line_count": 721,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              721
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete numbered source read"
+        },
+        {
+          "blob": "83a8148de6a30fe4e34a287af19d72e2a7dd05fc",
+          "commit_labels": [
+            "quick_hide"
+          ],
+          "commits": [
+            "137628961463fc5abd8b7927b2efe6b18a0a206a"
+          ],
+          "line_count": 735,
+          "review_status": "reviewed",
+          "reviewed_line_ranges": [
+            [
+              1,
+              735
+            ]
+          ],
+          "notes": [
+            "Source review only; no runtime verification."
+          ],
+          "review_method": "complete candidate source plus complete exact candidate/quick-hide diff"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "BROWSER-01",
+      "title": "Quick-hide branch leaves wallet-attempt review and clear controls unreachable in core routes",
+      "severity": "Medium",
+      "priority": "P2",
+      "confidence": "High",
+      "affected_commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "affected_branch": "latest quick-hide / privacy #300",
+      "scope": "Lean/core Pay and Registry routes",
+      "evidence": [
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/components/WalletAttempts.tsx",
+          "lines": [
+            10,
+            40
+          ],
+          "meaning": "Optional wallet prop gates visible records and the only rendered clear control; omitted prop always yields an empty visible list."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/views/Pay.tsx",
+          "lines": [
+            1055,
+            1059
+          ],
+          "meaning": "Input branch mounts WalletAttempts with no wallet prop."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/views/Pay.tsx",
+          "lines": [
+            1124,
+            1127
+          ],
+          "meaning": "Review branch mounts WalletAttempts with no wallet prop."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "lines": [
+            269,
+            272
+          ],
+          "meaning": "Registry route mounts WalletAttempts with no wallet prop."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/wallet.ts",
+          "lines": [
+            285,
+            295
+          ],
+          "meaning": "Payment attempt identity uses chain plus invoice scope, not the currently selected account."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/wallet.ts",
+          "lines": [
+            347,
+            372
+          ],
+          "meaning": "beginAttempt executes before the provider submission; the returned hash updates but retains the attempt."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+          "lines": [
+            64,
+            87
+          ],
+          "meaning": "An existing same-key record blocks beginAttempt, with no expiry or automatic eviction; explicit clear removes it."
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/components/WalletAttempts.test.tsx",
+          "lines": [
+            11,
+            36
+          ],
+          "meaning": "Connected component test manually supplies wallet; omitted-wallet test intentionally hides clear while preserving duplicate protection, leaving route wiring uncovered."
+        }
+      ],
+      "reachable_flow": "Core Pay and Registry mount the component without props. Once the tab journal contains an attempt, the component can display its generic warning but treats wallet as undefined regardless of the actual connection. It never renders the record, returned hash, or confirmed-clear button. A subsequent matching action is rejected by beginAttempt before a new provider submission, and the record does not expire automatically.",
+      "practical_impact": "Users cannot review or clear unresolved attempt records through the core route UI, so retry/recovery for a matching payment or registry action stays blocked while that record remains in the tab journal. Changing a payment account does not change the invoice-scoped duplicate key. This is a recovery/availability regression; no loss of funds is established.",
+      "remediation_direction": "Pass the current connected wallet context to WalletAttempts at every core caller. Make the integration contract explicit so omitted wallet wiring cannot silently compile. Add route-level coverage for pre-existing attempt review and confirmed clearing across connected, disconnected, account-change and chain-change states, while retaining privacy gating and duplicate-submission protection.",
+      "status": {
+        "main": "Not present: baseline component renders attempts without the new wallet prop gate.",
+        "candidate": "Not present in combined candidate #302: baseline component remains.",
+        "clipboard": "Not introduced by clipboard-only #297.",
+        "quick_hide": "Introduced and still present in latest #300.",
+        "known_issue": "No prior issue identifier established by this source audit."
+      },
+      "verification": "Source only. Complete WalletAttempts implementations and quick-hide tests read; exact Pay/Registry caller excerpts, wallet send/key excerpts and complete duplicateAttemptJournal read. Payments reviewer independently confirmed the source flow. No tests, reproductions, provider calls or transactions executed."
+    }
+  ],
+  "runtime_verification": "None; source review only",
+  "remaining": "Initial four-commit included production complete. Exact included unread test/helper versions are in handoff.unread_versions. Broader recent-ref branch union remains unreviewed unless root coverage says otherwise; it was not added to this initial inventory.",
+  "workspace_reset": "Scratch disappeared mid-review; parent restored exact frozen repository; ledger reconstructed from reviewed content.",
+  "observations": [
+    {
+      "id": "BROWSER-OBS-01",
+      "scope": "excluded full-profile SecretBackup behavior; not a lean Pages finding",
+      "severity": "Low",
+      "confidence": "High",
+      "title": "Backup cleanup unconditionally erases current clipboard on main and combined candidate",
+      "evidence": [
+        {
+          "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/components/SecretBackup.tsx",
+          "lines": [
+            34,
+            65
+          ]
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/components/SecretBackup.tsx",
+          "lines": [
+            40,
+            68
+          ]
+        },
+        {
+          "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/clipboardPrivacy.ts",
+          "lines": [
+            57,
+            77
+          ]
+        }
+      ],
+      "flow": "Optional full-profile SecretBackup records a copied backup. A later hide, lock or unmount calls its module-level cleanup, which on main/candidate writes an empty clipboard without checking present content.",
+      "impact": "Can erase unrelated clipboard content copied after the backup. SecretBackup has no known lean route caller.",
+      "status": "Existing main behavior; still present combined candidate and clipboard-only #297; fixed by quick-hide #300 shared ownership and digest comparisons. Exact prior issue identifier not established.",
+      "remediation": "Use newest ownership-aware conditional clear implementation; retain best-effort/browser-race limitation in UI claims.",
+      "test_review": "Pending; no tests executed."
+    }
+  ],
+  "additional_dependency_reads": [
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "line_count": 1524,
+      "reviewed_line_ranges": [
+        [
+          1048,
+          1065
+        ],
+        [
+          1119,
+          1132
+        ]
+      ],
+      "review_status": "partial_dependency_read",
+      "review_method": "numbered source read for finding corroboration",
+      "ownership": "Root or payments lane; separate from initial browser-custody coverage count."
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+      "line_count": 375,
+      "reviewed_line_ranges": [
+        [
+          264,
+          277
+        ]
+      ],
+      "review_status": "partial_dependency_read",
+      "review_method": "numbered source read for finding corroboration",
+      "ownership": "Root or payments lane; separate from initial browser-custody coverage count."
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "line_count": 506,
+      "reviewed_line_ranges": [
+        [
+          278,
+          297
+        ],
+        [
+          340,
+          380
+        ]
+      ],
+      "review_status": "partial_dependency_read",
+      "review_method": "numbered source read for finding corroboration",
+      "ownership": "Root or payments lane; separate from initial browser-custody coverage count."
+    },
+    {
+      "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "commit": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "line_count": 90,
+      "reviewed_line_ranges": [
+        [
+          1,
+          90
+        ]
+      ],
+      "review_status": "reviewed",
+      "review_method": "numbered source read for finding corroboration",
+      "ownership": "Root or payments lane; separate from initial browser-custody coverage count."
+    }
+  ],
+  "coverage_summary": {
+    "inventory_paths": 116,
+    "inventory_unique_versions": 150,
+    "inventory_versions_reviewed": 61,
+    "included_unique_versions": 141,
+    "included_versions_reviewed": 59,
+    "included_production_unique_versions": 58,
+    "included_production_versions_reviewed": 58,
+    "included_unread_test_or_helper_versions": 82,
+    "included_unread_production_versions": 0,
+    "excluded_unique_versions": 9,
+    "runtime_tests_executed": 0
+  },
+  "handoff": {
+    "status": "Ready for fresh successor, requested by parent after context compaction.",
+    "completed": "All included production versions within the initial main/candidate/quick-hide/clipboard inventory; quick-hide WalletAttempts.test.tsx.",
+    "unread_versions": [
+      {
+        "path": "apps/web/src/App.test.tsx",
+        "blob": "63832b4078d23e3a8e24ba6faf63f1cbe5da9968",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 330,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppLean.fragment.test.tsx",
+        "blob": "f3a0bd09abada7d88f02483ef10d920fc158c038",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 170,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppLean.test.tsx",
+        "blob": "66de30ed6f99258b38f5cbc44e6c8a518eb341aa",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 166,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+        "blob": "559b539b56213bd83f9ed5cc47c5e0d0e39a4abf",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 101,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+        "blob": "0896c29c5eeb62ed6538870e1d9ef7db4ce01cfb",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 83,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.i18n.test.tsx",
+        "blob": "00f900bf327c8079717230465d5d4654186744c0",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 88,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.idleClock.test.tsx",
+        "blob": "560e879fbf8e457983b9c682157a9da56b786185",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        ],
+        "commit_labels": [
+          "main"
+        ],
+        "line_count": 122,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.idleClock.test.tsx",
+        "blob": "ba81445f5861a3895a364fb0c357fe09a3842d6e",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 429,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.network.test.tsx",
+        "blob": "6fed5ee88798d7871d60583e04f0d2552c30e8df",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 64,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.privacy.test.tsx",
+        "blob": "d7f4b0385712dfc48c7b04412217dacba11c89de",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 195,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/AppShell.quickHide.test.tsx",
+        "blob": "e524497cf602d5c08fbd15f11b7b5fd35f9e73a5",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 44,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/Common.clipboardPrivacy.test.tsx",
+        "blob": "8f4a9246266ee4565a9cbbce32e526f09e27b888",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 172,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/Common.test.tsx",
+        "blob": "af9c2a77b7d1232b50f8861dd0793c2c0eebc240",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate"
+        ],
+        "line_count": 183,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/Common.test.tsx",
+        "blob": "67a93df29f2df39dbe2f4489959e5e68835e7457",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 204,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/PrivacyQuickHide.test.tsx",
+        "blob": "abc4394869cf13217141dcf64d98d8edefb5dabd",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 120,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/ReconciliationLedger.i18n.test.tsx",
+        "blob": "be6fb9d4ffa6db300695d5b25ffc1ffa63de81e6",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 135,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+        "blob": "d3f96ceebe31fa1fde01dc2dfeca427e10df24c7",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 283,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+        "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 79,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+        "blob": "eb5258cc762b0dbc4c7d9191b4fb36888ebda9e0",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 432,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportCommon.expiry.test.tsx",
+        "blob": "c4fe7475b40ced0f3c98abb690b36b5351139793",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 90,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportCommon.review.test.tsx",
+        "blob": "1c9f60cee51327f25d7e76407fb03b82058439f7",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 70,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+        "blob": "b575ca653ec342ba75de1c3790172389f5c40781",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 61,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+        "blob": "e862d56370e933cdead752e57a30c6d54e2af000",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 311,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+        "blob": "916f471c6a9ba26c9a15f7672460896e3c8a240c",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 430,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+        "blob": "01e4b56e692bf638fe7be61ff1149f20fd244077",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 92,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+        "blob": "2a38ab18ac0fb37b53b4f40062695e2c5876addf",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 200,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/components/WalletAttempts.test.tsx",
+        "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 18,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/appLock.test.ts",
+        "blob": "906b574c2808aa8104ed568eeb488ade0332c543",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 40,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+        "blob": "18c81c21dfa680c5498b2f907633cbdca32c09e5",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 111,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+        "blob": "9a3c70863ea0373a6cd9bb6adf9960116cfd4c2d",
+        "commits": [
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "clipboard"
+        ],
+        "line_count": 111,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/executionSettings.test.ts",
+        "blob": "40d1842efa873544e01ba4bb653b5375c26e424a",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 32,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/frameGuard.test.ts",
+        "blob": "e52932be58a380e349f62fe38a34aaad1e150345",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 67,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/idbStore.test.ts",
+        "blob": "ac35d25819dc2799b011b6e456d9fac05e1ab082",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 109,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/keyVault.idb.test.ts",
+        "blob": "b15fa874bbf0397b569a7d6fcc2722da44eda0d9",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 90,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+        "blob": "57f4e70f37c4319e75d0f98af3a48f445e469c06",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 132,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/keyVault.test.ts",
+        "blob": "af1323436da652d8defe084464f7c252c61c7e26",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 404,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/keystore.test.ts",
+        "blob": "ff824086da7994ea866e6445abd4402534eb3641",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 206,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+        "blob": "8aadf1028cfcc92e1eb42371f6dcbe17c2085719",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 165,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+        "blob": "c08d77395d40d3f67b8afa58909b86ea57b992a6",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 95,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+        "blob": "826578ab8904206b22d69f4ea963648f01a5eb38",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 405,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 94,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/privacyMode.test.tsx",
+        "blob": "b70402daeada1ead5a91e2c6bf77ba06a61b2bdf",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 150,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+        "blob": "ada7cdbcd4f16163e15923f15f652dec0fcac7f6",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        ],
+        "commit_labels": [
+          "main"
+        ],
+        "line_count": 129,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+        "blob": "4c52b6fe0c7224ef4812ab6d31a07b401d721862",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 200,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+        "blob": "c68a9d26ce94c836079a83dc2694929aa13e8ac9",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 476,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/reconciliationVault.test.ts",
+        "blob": "a587e583e7ae8168a27fcdc7db414d614378290b",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 565,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/sellerPairing.test.ts",
+        "blob": "59c0ff53bd9e4619adc700cd559ea00886ac7359",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 119,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/session.atomicity.test.ts",
+        "blob": "f6cdfc565e943ed52e4c73973cdb4398f0707430",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 64,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/session.idleLock.test.ts",
+        "blob": "8ae759c2e2eb6f20df73bb658a5b97fe4f4477fa",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 341,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/session.test.ts",
+        "blob": "17c93c2e96814428c0ae8ac2155f937fb099ecfa",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 343,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settings.loopback.test.ts",
+        "blob": "6bdda45ce1de594800ad1b7377d0206a93cdabdf",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 17,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settings.test.ts",
+        "blob": "01fe046841dacb451962614ef219f1c7ab122ea8",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        ],
+        "commit_labels": [
+          "main"
+        ],
+        "line_count": 92,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settings.test.ts",
+        "blob": "9ba2a5ccb59077ec6ac27c83e95ae69e10835e01",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 133,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settings.test.ts",
+        "blob": "db3e1d0e58641947725dd27b3fb3e9c6cee6fada",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 153,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settings.uiPrivacy.test.ts",
+        "blob": "d53995d69830845c7b48553bbc5c8adeb483367b",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 81,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settingsExchange.test.ts",
+        "blob": "5ce01111b90a7c5b938ba712790f0b7cb7660358",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 190,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settingsExchange.test.ts",
+        "blob": "6dfda318e1ddcdc0c6d3914f8b37d92001995384",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 207,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+        "blob": "549d64d9348fe9638c04454078b08654e23077c1",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 63,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+        "blob": "03b845702db83998a2b578ebaa593bb1b243f28b",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 64,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/main.test.tsx",
+        "blob": "1e7e06a879996ebbb3dadd077d3bc2063d3c3e15",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 85,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/privacyInvariants.test.ts",
+        "blob": "957cde23e8c602fa096e497851aed8ba96549c1c",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        ],
+        "commit_labels": [
+          "main"
+        ],
+        "line_count": 219,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/privacyInvariants.test.ts",
+        "blob": "f8a67c6d1df7939aad8daf57f36d3a04cfadfca7",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 231,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/state.sweep.test.ts",
+        "blob": "4e70df6a705a56a4f475136fe183b6e00b943e21",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 156,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/test/fakeIndexedDb.ts",
+        "blob": "3424eec28ee24d9fc24f82a61e938b7970bbaa8b",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 98,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/test/keys.ts",
+        "blob": "f4235382a9d5bf11de2dbadd163cb284d38983a6",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 15,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/test/memoryIndexedDb.ts",
+        "blob": "cdec2333fce7a696e75baa58b1b9132338100fe1",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 143,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/test/render.tsx",
+        "blob": "dbd0a6a491b6284a39a7e185847713184a97be88",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 50,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+        "blob": "96d79a91967763376e3ccbd472a0111d470be367",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 339,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.i18n.test.tsx",
+        "blob": "a5a93e5a38fbc9026c260bfc41884f5e9573ab81",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 36,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.lock.test.tsx",
+        "blob": "098c626f4c401dfea4ccc342809d4c6571e52f5c",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 65,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+        "blob": "dfaeaf232a511786fada7ca13abad49a5d067116",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 172,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+        "blob": "7231bb425a0d7132ca0dc6107ba74ddf12fe71ff",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 113,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+        "blob": "4a2aaaa6e9cca4e98481313b1afa0bb211d624eb",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 129,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerKeys.test.tsx",
+        "blob": "3a51679880d33e69390b0ceafd8e4c48c6b6e81d",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 942,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/SellerPairing.test.tsx",
+        "blob": "e827e5f02f1762724dbbdec0d1cd832485f941a9",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 260,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.clipboardPrivacy.test.tsx",
+        "blob": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 79,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.exchange.test.tsx",
+        "blob": "bc1344d8bc56fba59d9f126646cf9505973f0601",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        ],
+        "commit_labels": [
+          "main"
+        ],
+        "line_count": 253,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.exchange.test.tsx",
+        "blob": "6094ae5931e43d72b3fad9ade002275afaace426",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 254,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.race.test.tsx",
+        "blob": "5cc29989d5952ec0f60cbe8f7a82f9c307b73b1c",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 50,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+        "blob": "c3ca70c56ae0bae2e313b40d5c3f268abd30e343",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 61,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.test.tsx",
+        "blob": "f898ade764504ab8aee0024194afed15f35f92fb",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+        ],
+        "commit_labels": [
+          "main"
+        ],
+        "line_count": 238,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      },
+      {
+        "path": "apps/web/src/views/Settings.test.tsx",
+        "blob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+        "commits": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 436,
+        "review_status": "unread",
+        "kind": "test_or_test_helper"
+      }
+    ],
+    "excluded_versions": [
+      {
+        "path": "apps/web/src/components/BackupPanel.test.tsx",
+        "blob": "c4150f545fcceddf8c5b680ea4f422b05f402bbc",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 222,
+        "review_status": "unread",
+        "reason": "Full-profile only; no lean AppShell caller."
+      },
+      {
+        "path": "apps/web/src/components/BackupPanel.tsx",
+        "blob": "83f0e937414b1fdd129aa0ff70b5f109e7bb73e9",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "quick_hide",
+          "clipboard"
+        ],
+        "line_count": 94,
+        "review_status": "unread",
+        "reason": "Full-profile only; no lean AppShell caller."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.clipboardPrivacy.test.tsx",
+        "blob": "9fd22059746398b5be98884e97b4fb490faf346c",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 117,
+        "review_status": "unread",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.test.tsx",
+        "blob": "d980357d1c6be7e89806933ddeff77ff3fe371b5",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 524,
+        "review_status": "unread",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.test.tsx",
+        "blob": "f16293d89ee542fce28e9bd6fe7782e69d91b2cf",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 586,
+        "review_status": "unread",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.tsx",
+        "blob": "c86f77de050b838204e3f4222cd796ca6e54337a",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 251,
+        "review_status": "reviewed",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.tsx",
+        "blob": "c92bd4951f23325c854cdd8ca37f1ca1aa1a91b6",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 263,
+        "review_status": "reviewed",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.views.test.tsx",
+        "blob": "7f43ef17516de5a0e334e41a1e64b1e7c7731ff3",
+        "commits": [
+          "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "04910f65dc0268e41519c4b1a44e83264272f0bf"
+        ],
+        "commit_labels": [
+          "main",
+          "candidate",
+          "clipboard"
+        ],
+        "line_count": 75,
+        "review_status": "unread",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      },
+      {
+        "path": "apps/web/src/components/SecretBackup.views.test.tsx",
+        "blob": "a88fa6cd417c4dbf64d90b2884606b33de9bb03f",
+        "commits": [
+          "137628961463fc5abd8b7927b2efe6b18a0a206a"
+        ],
+        "commit_labels": [
+          "quick_hide"
+        ],
+        "line_count": 79,
+        "review_status": "unread",
+        "reason": "No lean route caller identified; parent requested excluded/full-profile observation only. Production reads retained for supporting evidence; associated unread tests are not a core completion requirement."
+      }
+    ],
+    "broader_branch_deltas": "Parent is constructing the union of unique core path/blob versions across 28 recent source-bearing refs. This agent has not received or reviewed that expanded assignment. Successor must obtain the exact list from parent, then de-duplicate against this ledger by path plus blob; do not infer coverage from commit name.",
+    "portable_vault": "Portable ux-vault belongs to package lane; parent will assign any remaining portable vault review to successor. This ledger does not claim that package reviewed.",
+    "next_steps": [
+      "Read the exact included unread test/helper versions below in bounded batches. Prioritize session idle-lock/atomicity, AppShell idle/quick-hide/privacy and beforeUnload, then key-vault/export lifecycle and clipboard ownership cases.",
+      "Review all remaining included tests and helpers; compare unique old versions using complete source plus exact diffs only, and mark the method and full line coverage accurately.",
+      "Obtain the expanded recent-ref path/blob list from parent and review every assigned unique version not in this ledger. Keep full-profile observations excluded from core counts.",
+      "Preserve BROWSER-01 and cross-lane corroboration. Check any later assigned branch version for corrected wallet prop wiring before stating current status beyond these frozen commits.",
+      "Do not execute tests, code, vulnerability reproductions, live probes, transactions or Git mutations; write audit notes only as authorized by parent."
+    ],
+    "resolved_hypotheses": [
+      "Candidate AppShell forces the suspended/retained sole-copy session to SellerKeys; CreateInvoice unmounts even if the public session summary identity stays the same. Main-only idle behavior differs; candidate clears view data and denies ordinary secret use.",
+      "SecretBox.copyOf consumes/wipes its source by default on successful ownership transfer, confirmed by package reviewer at packages/secret-box/src/secretBox.ts:93-109. Recovered payment key transfer does not leave the source scalar unwiped on success.",
+      "Latest quick-hide visual masking intentionally retains mounted DOM/JS state so active flows and sole-copy recovery state survive. Do not misreport that design as DOM erasure.",
+      "Clipboard conditional clear is ownership/digest guarded on latest branch but external browser clipboard compare/write remains best effort, not atomic. No new core issue established from that limitation."
+    ],
+    "scope_reachability": "AppLean uses AppShell without the full-profile BackupPanel archive. SellerPairing is mounted by lean SellerKeys and ReconciliationLedger by lean Scan, so those remain included. SecretBackup has no identified lean route caller and its observation/tests are full-profile exclusions."
+  },
+  "final_errata": [
+    "BROWSER-01 existing Pay route regression is documented in canonical findings.md; early absent-route-test language is superseded.",
+    "One AppShell historical diff parent was ambiguous; final credit uses the explicit round10 full read. Historical pending lists are closed through successor reports."
+  ]
+}

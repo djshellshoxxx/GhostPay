@@ -1,0 +1,4030 @@
+{
+  "reviewer": "core_packages_review",
+  "scope": "Batch 1: core-crypto, invoice-schema, address-safety, qr-exchange, secret-box. Pending next worker: ux-vault portable runtime (nonportable paths retained for exclusion decision), web scannerCore and worker. KeyVault/keystore owned by custody lane; manifest/deployment owned by payments lane.",
+  "main_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "candidate_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "constraints": [
+    "No application/test/config writes",
+    "No target execution or exploit reproduction",
+    "No live probes or transactions",
+    "No Git mutations"
+  ],
+  "method": "git show immutable objects plus GitHub fetch_file at pinned SHA during workspace reset; associated tests inspected as code only, not executed",
+  "coverage_semantics": "Full read at candidate also covers base when blobs are identical. Different base blobs require delta inspection; no changed base full read implied.",
+  "findings": [],
+  "observations": [
+    {
+      "id": "CP-O1",
+      "title": "Secret storage APIs are best-effort guardrails",
+      "confidence": "high",
+      "source": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/secret-box/src/secretBox.ts:47-57",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/secret-box/src/secretBox.ts:72-109",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/secret-box/src/secretBox.ts:156-212"
+      ],
+      "detail": "copyOf copies then zeroes source by default on successful return; take transfers ownership without zeroing. Validation failures before copy do not consume input. Same-realm isolation and guaranteed zeroization are not claimed."
+    },
+    {
+      "id": "CP-O2",
+      "title": "Known key-compartment relationship is explicitly recorded",
+      "confidence": "high",
+      "source": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/core-crypto/src/viewing-key-boundary.test.ts:1-4"
+      ],
+      "detail": "Viewing-key delegation combined with one-time private-key export has a documented master-spend confidentiality consequence. It is already known/tested in candidate, not a newly discovered primitive break. Custody lane notified. No recovery steps supplied."
+    },
+    {
+      "id": "CP-O3",
+      "title": "Invoice verification and seller identity are separate",
+      "confidence": "high",
+      "source": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/envelope.ts:440-467",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/envelope.ts:470-488",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/README.md:24-53"
+      ],
+      "detail": "Default parsed result can carry invalid signature; policy gate must reject it. Required-pin mode rejects invalid/unpinned results; caller supplies intended seller pin set. Passphrase prompt header is unauthenticated."
+    },
+    {
+      "id": "CP-O4",
+      "title": "Minimal receipt recipient binding is conditional",
+      "confidence": "high",
+      "source": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/receipts.ts:143-167",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/receipts.test.ts:68-94"
+      ],
+      "detail": "Receipt is a seller attestation and field-consistency check, not independent payment proof. New optional stealthAddress means an absent address does not assert recipient binding even when caller supplies expectation. Intentional tested semantics; payments lane notified to assess UI claims.",
+      "integration_followup": "payments_network_review confirmed correct seller-attestation labels and conditional recipient display, but will record a low candidate wording mismatch in en.json:973 where introduction promises prepared-recipient comparison even for minimal receipts."
+    },
+    {
+      "id": "CP-O5",
+      "title": "QR integrity does not authenticate sender",
+      "confidence": "high",
+      "source": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/qr-exchange/README.md:14-23",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/qr-exchange/src/assembler.ts:63-134",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/qr-exchange/src/assembler.test.ts:117-128"
+      ],
+      "detail": "Bounded single-session reassembly validates canonical data and digest prefix; sender trust comes from decoded application payload. Accepted duplicates intentionally refresh inactivity timer. No integrity bypass established."
+    },
+    {
+      "id": "CP-O6",
+      "title": "Address-safety docs contain stale dependency statements",
+      "confidence": "high",
+      "source": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/address-safety/README.md:13",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/address-safety/DEVIATIONS.md:4",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/address-safety/src/meta.ts:1-2"
+      ],
+      "detail": "README/DEVIATIONS describe Node-only node:crypto hashing, while actual implementation uses noble SHA-256. Documentation maintenance only; do not use this stale text to exclude package from browser scope."
+    }
+  ],
+  "ledger": [
+    {
+      "path": "apps/web/src/lib/scanner.worker.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "line_count": 15,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "line_count": 54,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "line_count": 38,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "line_count": 194,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+      "line_count": 256,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+      "line_count": 167,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "apps/web/src/lib/workerFactory.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "line_count": 6,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/address-safety/src/address.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7bb5c173c927f3809e5cba20d2247fd81bd74163",
+      "line_count": 200,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          200
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "7bb5c173c927f3809e5cba20d2247fd81bd74163",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            200
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/address-safety/src/address.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2824fb62c01a283b76b50afc8fb5241d042f229d",
+      "line_count": 147,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          147
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "2824fb62c01a283b76b50afc8fb5241d042f229d",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            147
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/address-safety/src/errors.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "c69208ed57a50b5d0ca14b166613423f4fc7d7cf",
+      "line_count": 55,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          55
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "c69208ed57a50b5d0ca14b166613423f4fc7d7cf",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            55
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/address-safety/src/index.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "26262d3b42570ed925a9f5bd04312d705fd9274a",
+      "line_count": 15,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          15
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "26262d3b42570ed925a9f5bd04312d705fd9274a",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            15
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/address-safety/src/meta.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2000eb2f753610d02ef0b63b589b7fa3128b8233",
+      "line_count": 40,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          40
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "2000eb2f753610d02ef0b63b589b7fa3128b8233",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            40
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/address-safety/src/meta.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "dd5230c5a4416bd0f2d5a3a7e79e982eca38487f",
+      "line_count": 51,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          51
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "dd5230c5a4416bd0f2d5a3a7e79e982eca38487f",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            51
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/address-safety/src/text.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "5c7ce65578af4cb859882ce18c5e9efb53c8cb0f",
+      "line_count": 88,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          88
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "2e1cf250c247448e7f400423d8441c5c9b3f41d8",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              7,
+              9
+            ],
+            "candidate": [
+              7,
+              9
+            ]
+          },
+          {
+            "base": [
+              73,
+              73
+            ],
+            "candidate": [
+              73,
+              73
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/address-safety/src/text.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "ad259833a631448c638c0389fca3ded7f2540f07",
+      "line_count": 78,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          78
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "ad259833a631448c638c0389fca3ded7f2540f07",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            78
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/address-safety/src/token.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "eb5e7d3884629bbc8937b8f912561b412eec6abf",
+      "line_count": 35,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          35
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "eb5e7d3884629bbc8937b8f912561b412eec6abf",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            35
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/address-safety/src/token.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7c8d9a59624e7074d59a17c8dfacb8ca7783c1bb",
+      "line_count": 45,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "7c8d9a59624e7074d59a17c8dfacb8ca7783c1bb",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            45
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/differential.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "4e2ea47aa6560ccf9af09ba977672a6abb964cb8",
+      "line_count": 114,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          114
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "4e2ea47aa6560ccf9af09ba977672a6abb964cb8",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            114
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/errors.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "547e2b1ae57cd0e07c9d401cbcd178d5dda4d1fd",
+      "line_count": 58,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          58
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "547e2b1ae57cd0e07c9d401cbcd178d5dda4d1fd",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            58
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/hash-edge.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "88645dd113a97d5d06be00368ab99585ec4d29b8",
+      "line_count": 162,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          162
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "88645dd113a97d5d06be00368ab99585ec4d29b8",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            162
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/hex.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d3f3b19fca0728651afd339ab8987e7cdc4c21e4",
+      "line_count": 22,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          22
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "d3f3b19fca0728651afd339ab8987e7cdc4c21e4",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            22
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/independent.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "f28bb8ea3ae526c0dfb11e634ee0f5a0325a3e1c",
+      "line_count": 300,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          300
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "f28bb8ea3ae526c0dfb11e634ee0f5a0325a3e1c",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            300
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/index.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "ebf3777b7db44a1c7a51c915b09058f5ede91e4a",
+      "line_count": 26,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          26
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "ebf3777b7db44a1c7a51c915b09058f5ede91e4a",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            26
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/keys.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "086e80c73f79107c33dcc036f60577874cb7c279",
+      "line_count": 102,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          102
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "086e80c73f79107c33dcc036f60577874cb7c279",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            102
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/metadata.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "e31f5ed0716383b8150937f288f152fa0cbbfa02",
+      "line_count": 91,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          91
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "e31f5ed0716383b8150937f288f152fa0cbbfa02",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            91
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/metadata.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "fa8a9c3d6f0bf33ebf2cb05f80557b34717d1a16",
+      "line_count": 115,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          115
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "fa8a9c3d6f0bf33ebf2cb05f80557b34717d1a16",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            115
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/negative.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "ff9db977ebbabf5d2924a0b578e36d61e5eb6568",
+      "line_count": 330,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          330
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "ff9db977ebbabf5d2924a0b578e36d61e5eb6568",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            330
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/properties.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a8b4962131f617abf155620fd2dc43c1d1e12357",
+      "line_count": 95,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          95
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a8b4962131f617abf155620fd2dc43c1d1e12357",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            95
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/rng.testutil.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "52e49b1bdc05b95f8d2705460b5e81ee12503fb9",
+      "line_count": 52,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          52
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "52e49b1bdc05b95f8d2705460b5e81ee12503fb9",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            52
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/rng.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d5a9a34a65c7c9eba2710055601487acf6073cea",
+      "line_count": 44,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          44
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "d5a9a34a65c7c9eba2710055601487acf6073cea",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            44
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/secp256k1-ref.testutil.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "92a81444a4e59f2e47f384a7b99b7b97d9733caa",
+      "line_count": 183,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          183
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "92a81444a4e59f2e47f384a7b99b7b97d9733caa",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            183
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/secret.builtinHex.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "db613b56368e44ef0bbd38116342649ba4daf705",
+      "line_count": 48,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          48
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "db613b56368e44ef0bbd38116342649ba4daf705",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            48
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/secret.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "214a10bf4453e453ed3101b10f362b9eef52dcaf",
+      "line_count": 156,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          156
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "214a10bf4453e453ed3101b10f362b9eef52dcaf",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            156
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/secrets.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2742f22733750e629100ab0dd941cd99c5fa96d8",
+      "line_count": 124,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          124
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "2742f22733750e629100ab0dd941cd99c5fa96d8",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            124
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/stealth.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "6a5c51b87d0d9e8044442884c45476b0eef97d60",
+      "line_count": 232,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          232
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "6a5c51b87d0d9e8044442884c45476b0eef97d60",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            232
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/core-crypto/src/vectors.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "604fe971bb4a75125987546f3606cc3e954be74b",
+      "line_count": 92,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          92
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "604fe971bb4a75125987546f3606cc3e954be74b",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            92
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/core-crypto/src/viewing-key-boundary.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "19768d02370fefc94580f48d23222b04437dde2e",
+      "line_count": 44,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          44
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": null,
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "absent-on-main"
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "8d959c2b144182d0d0f576214dc7b761b7166c47",
+      "line_count": 46,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          46
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "ef5f6d46556e658bbca154eb70d9f3be713e7712",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              27,
+              41
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "5466ee0b99925dedd23e753636ae7ab3f6f48234",
+      "line_count": 74,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          74
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "eb7b8723f4a3b80a6ce457012636a5b29e1f8ccb",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              53,
+              53
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/envelope.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "486d42b861ce54371239c82e90bae2a94603029a",
+      "line_count": 590,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          590
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "bda520017c37abd60f0a2ae208c28b7a69c2d247",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              339,
+              340
+            ],
+            "candidate": [
+              339,
+              340
+            ]
+          },
+          {
+            "base": [
+              413,
+              413
+            ],
+            "candidate": []
+          },
+          {
+            "base": [
+              426,
+              426
+            ],
+            "candidate": [
+              425,
+              425
+            ]
+          },
+          {
+            "base": [
+              501,
+              501
+            ],
+            "candidate": [
+              500,
+              500
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/envelope.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "cc6b9dd6fc20fb93ecb22b00e8391338bfd6a0e4",
+      "line_count": 600,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          600
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "9e6f5d8b80405d634252bf0b65a50d8610325f58",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              16,
+              16
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              18,
+              18
+            ]
+          },
+          {
+            "base": [
+              163,
+              163
+            ],
+            "candidate": [
+              165,
+              165
+            ]
+          },
+          {
+            "base": [
+              182,
+              182
+            ],
+            "candidate": [
+              184,
+              191
+            ]
+          },
+          {
+            "base": [
+              188,
+              188
+            ],
+            "candidate": [
+              197,
+              200
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              312,
+              332
+            ]
+          },
+          {
+            "base": [
+              326,
+              326
+            ],
+            "candidate": [
+              359,
+              362
+            ]
+          },
+          {
+            "base": [
+              393,
+              393
+            ],
+            "candidate": [
+              429,
+              429
+            ]
+          },
+          {
+            "base": [
+              395,
+              395
+            ],
+            "candidate": [
+              431,
+              431
+            ]
+          },
+          {
+            "base": [
+              516,
+              517
+            ],
+            "candidate": [
+              552,
+              553
+            ]
+          },
+          {
+            "base": [
+              521,
+              521
+            ],
+            "candidate": [
+              557,
+              557
+            ]
+          },
+          {
+            "base": [
+              557,
+              557
+            ],
+            "candidate": [
+              593,
+              593
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/errors.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "903641f49f24629b21a225b2724c58cf2db402d2",
+      "line_count": 167,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          167
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a2fded81b112dc570571566e1c87bb6d78e292d4",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              21,
+              22
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              154,
+              167
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/expiry.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7a3df5c7d69af8b1355640617183a90ca89d7944",
+      "line_count": 58,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          58
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "7a3df5c7d69af8b1355640617183a90ca89d7944",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            58
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/expiry.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "51b0f6238f0ddd27a6b00a50b705b2372cff1548",
+      "line_count": 36,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          36
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "51b0f6238f0ddd27a6b00a50b705b2372cff1548",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            36
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/fixtures.testutil.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a215a584087964d89ea808b2b4c269af3c169d52",
+      "line_count": 74,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          74
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a215a584087964d89ea808b2b4c269af3c169d52",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            74
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/fuzz.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "28bd253567a179561c015d5bf2ebc87d094ae73e",
+      "line_count": 150,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          150
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "28bd253567a179561c015d5bf2ebc87d094ae73e",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            150
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/independent.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "76f4b7d70345229a023cd64852afcaeee082d417",
+      "line_count": 270,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          270
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "43b0d7eae975efb8125205adf1d53e99b69ec4e0",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              231,
+              231
+            ],
+            "candidate": [
+              231,
+              232
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/index.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "f93afefe76b28ed39a45e6e8d726931e865f4c5f",
+      "line_count": 71,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          71
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "f93afefe76b28ed39a45e6e8d726931e865f4c5f",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            71
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2ffdfe70a8814762b14721ac640fc82cab0b9e54",
+      "line_count": 235,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          235
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "dcf0e7acad6b223cf9b9c0f325b1d3e8e091ec36",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              127,
+              229
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "8ed01592d487c356a72d51e240e5cc63fb470a3a",
+      "line_count": 228,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          228
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              181,
+              181
+            ]
+          },
+          {
+            "base": [
+              199,
+              199
+            ],
+            "candidate": [
+              200,
+              219
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a1299d9ceedefeefb5784d287d556008531af02f",
+      "line_count": 78,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          78
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "0ee33da251a01df95d7aafae9d3118feb1fd9d82",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              48,
+              54
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a4269dec888518799aa4b3e8cc82d2ff9cc21d77",
+      "line_count": 185,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          185
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a75124bb35d2c319e6936097ef6b4048ac59ec76",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              157,
+              158
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/passphrase.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7c9183038e3d1454d418419da7dcf1bee3a91d32",
+      "line_count": 546,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          546
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a80ea26fc2b72a219270418ac2120d3d1f703ef5",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              443,
+              443
+            ],
+            "candidate": [
+              443,
+              443
+            ]
+          },
+          {
+            "base": [
+              448,
+              448
+            ],
+            "candidate": [
+              448,
+              448
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/passphrase.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "3844a9951dcad85559e823cac9abfc6fe8ece3b7",
+      "line_count": 121,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "3844a9951dcad85559e823cac9abfc6fe8ece3b7",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            121
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/pinnedSigner.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "30fb5bc7b563a6522c0a9aa23579100407eeef61",
+      "line_count": 235,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          235
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "6df3d196d0aaccfcd75ac59255279b07a50df9a0",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              6,
+              6
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              8,
+              8
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              10,
+              10
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              73,
+              117
+            ]
+          },
+          {
+            "base": [
+              151,
+              151
+            ],
+            "candidate": [
+              199,
+              199
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/receipts.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "731dabc01043c143d809932ee3afd22704d78d1f",
+      "line_count": 127,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          127
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "f4d084fdeb412c647269aae0d3a187f834c17815",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [],
+            "candidate": [
+              68,
+              94
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/receipts.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "line_count": 185,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          185
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              24,
+              24
+            ],
+            "candidate": [
+              24,
+              25
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              66,
+              66
+            ]
+          },
+          {
+            "base": [
+              67,
+              67
+            ],
+            "candidate": [
+              69,
+              69
+            ]
+          },
+          {
+            "base": [
+              74,
+              74
+            ],
+            "candidate": [
+              76,
+              76
+            ]
+          },
+          {
+            "base": [
+              81,
+              81
+            ],
+            "candidate": [
+              83,
+              83
+            ]
+          },
+          {
+            "base": [
+              86,
+              86
+            ],
+            "candidate": [
+              88,
+              89
+            ]
+          },
+          {
+            "base": [
+              95,
+              95
+            ],
+            "candidate": [
+              98,
+              98
+            ]
+          },
+          {
+            "base": [
+              102,
+              102
+            ],
+            "candidate": [
+              105,
+              105
+            ]
+          },
+          {
+            "base": [
+              131,
+              132
+            ],
+            "candidate": [
+              134,
+              135
+            ]
+          },
+          {
+            "base": [
+              152,
+              152
+            ],
+            "candidate": [
+              155,
+              155
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/schema.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d48560381e74c3649419ac08e3fb4ba5eed03986",
+      "line_count": 671,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          671
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "d48560381e74c3649419ac08e3fb4ba5eed03986",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            671
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/schema.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "b6fae850aedfc3e6d35a32eb3c8b0a4ea217f544",
+      "line_count": 400,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          400
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "b6fae850aedfc3e6d35a32eb3c8b0a4ea217f544",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            400
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/secp256k1-ref.testutil.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "54438d7f8e9cc76b4b4814662c0005375dbd24c9",
+      "line_count": 183,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          183
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "54438d7f8e9cc76b4b4814662c0005375dbd24c9",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full core-crypto reference-copy read plus entire diff against this file; only comment line 2 differs."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            183
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/sign.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d477fdb5d25c899e47f16a83c9b15d3d89bbe7f9",
+      "line_count": 245,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          245
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "d477fdb5d25c899e47f16a83c9b15d3d89bbe7f9",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            245
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/sign.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "55dffe55c71c6daaf18342e05ae403ab71bb496c",
+      "line_count": 112,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          112
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "55dffe55c71c6daaf18342e05ae403ab71bb496c",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            112
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/invoice-schema/src/text-hygiene.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "f8664bcada335244c7cc0a1690e50b07552d169a",
+      "line_count": 106,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          106
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "4a641ad3ff77a16946d33ad6a367ff4e948d5ec5",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              56,
+              56
+            ],
+            "candidate": [
+              56,
+              56
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/invoice-schema/src/verificationStatus.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "6f786afcda134d2fa7836e5a8ef861bf97e16381",
+      "line_count": 157,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          157
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": null,
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "absent-on-main"
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "ee613b41e23d1d77ebe9caf3151ecef014bd22cd",
+      "line_count": 141,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          141
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a92fec814ce83710aea14c4b0e0ededb3398f742",
+      "same_blob_as_base": false,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              2,
+              2
+            ],
+            "candidate": [
+              2,
+              2
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              71,
+              129
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/assembler.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "144dd8ec67e8aaeffc5c3d90f6a06234d770abcd",
+      "line_count": 134,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          134
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "8e8d12e447265e682597edf2887e5a2f6afd55db",
+      "same_blob_as_base": false,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              78,
+              78
+            ],
+            "candidate": []
+          },
+          {
+            "base": [],
+            "candidate": [
+              85,
+              86
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/base64url.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "9c8140f8b528de844a792269ee97bb54eef4cc2b",
+      "line_count": 62,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          62
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "9c8140f8b528de844a792269ee97bb54eef4cc2b",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            62
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/camera.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "24d4d6f093ab026e8e14e27c1f3d41188974fc05",
+      "line_count": 348,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          348
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "24d4d6f093ab026e8e14e27c1f3d41188974fc05",
+      "same_blob_as_base": true,
+      "notes": [
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            348
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/camera.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d849dfa89a64837e9ede9eca2c03fa3064cafcf5",
+      "line_count": 261,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          261
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "d849dfa89a64837e9ede9eca2c03fa3064cafcf5",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            261
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/errors.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "60b18daf6a7319f1dc8fe11272474181a9fb40ae",
+      "line_count": 46,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          46
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "60b18daf6a7319f1dc8fe11272474181a9fb40ae",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            46
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/generate.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "97e7867f33d522a05b3cf9b3814801f8ef33c824",
+      "line_count": 63,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          63
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "97e7867f33d522a05b3cf9b3814801f8ef33c824",
+      "same_blob_as_base": true,
+      "notes": [
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            63
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/generate.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "87c7b111242706aae34756bfe2d7f4bcb059d10c",
+      "line_count": 63,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          63
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "87c7b111242706aae34756bfe2d7f4bcb059d10c",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            63
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/index.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "1141b06d7055f09e5d539725b4f332bfcb5786e8",
+      "line_count": 43,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          43
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "1141b06d7055f09e5d539725b4f332bfcb5786e8",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            43
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/multipart.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d8440e0d772d7ecbe5e4fba62d908f437bc3a64d",
+      "line_count": 230,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          230
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "d8440e0d772d7ecbe5e4fba62d908f437bc3a64d",
+      "same_blob_as_base": true,
+      "notes": [
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            230
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/multipart.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "c0f6cd1fd5b3805a741a308eb426cec07be95d14",
+      "line_count": 98,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          98
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "c0f6cd1fd5b3805a741a308eb426cec07be95d14",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            98
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/readers.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "58769a945594dc2b1c95d4e96f80832fed3551e7",
+      "line_count": 215,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "58769a945594dc2b1c95d4e96f80832fed3551e7",
+      "same_blob_as_base": true,
+      "notes": [
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            215
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/readers.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "caea9b8a3bbfeb9e626814e5db3882e22e568921",
+      "line_count": 299,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          299
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "caea9b8a3bbfeb9e626814e5db3882e22e568921",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            299
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/seller.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "cf4c91a51f60374cf999cbcbe5564037c949bdd6",
+      "line_count": 73,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          73
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "cf4c91a51f60374cf999cbcbe5564037c949bdd6",
+      "same_blob_as_base": true,
+      "notes": [
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            73
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/seller.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "bb4bfb49fd0eeedf9b814d367304e92fe899d47e",
+      "line_count": 106,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          106
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "bb4bfb49fd0eeedf9b814d367304e92fe899d47e",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            106
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/qr-exchange/src/settings-exchange.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7d47fae09c6590ab4d23591e6646b074d49b0b59",
+      "line_count": 251,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          251
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "7d47fae09c6590ab4d23591e6646b074d49b0b59",
+      "same_blob_as_base": true,
+      "notes": [
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            251
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/qr-exchange/src/settings-exchange.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "03db64a49273df7c3d4f25106f6c18f6b6c57661",
+      "line_count": 218,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          218
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "03db64a49273df7c3d4f25106f6c18f6b6c57661",
+      "same_blob_as_base": true,
+      "notes": [
+        "Full candidate source read, without execution; main coverage by identical blob where noted.",
+        "All implementation and test-source lines inspected; no tests executed."
+      ],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            218
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/secret-box/src/index.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7e5ba1878b3ec08fa333e920d0eef254662241d3",
+      "line_count": 3,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          3
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "7e5ba1878b3ec08fa333e920d0eef254662241d3",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/secret-box/src/scope.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "c23e2d9e608b673029af68e83cf2792b1377cb77",
+      "line_count": 116,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          116
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "c23e2d9e608b673029af68e83cf2792b1377cb77",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            116
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/secret-box/src/scope.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "5f6ad71c2253b7ad1d806a2a110d599ca08bd207",
+      "line_count": 136,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          136
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "5f6ad71c2253b7ad1d806a2a110d599ca08bd207",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            136
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/secret-box/src/secret-box.killers.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "04f3b1c11009da8e6deefe4f0b39720cc044a92c",
+      "line_count": 78,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          78
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "04f3b1c11009da8e6deefe4f0b39720cc044a92c",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            78
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/secret-box/src/secretBox.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "4cc174c0c71279165da919e43082ba007f484e96",
+      "line_count": 320,
+      "kind": "test",
+      "read_ranges": [
+        [
+          1,
+          320
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "4cc174c0c71279165da919e43082ba007f484e96",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            320
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": false
+    },
+    {
+      "path": "packages/secret-box/src/secretBox.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "14d0fb8cfd21c4b6e96d94c1e7e88c1461aa1daf",
+      "line_count": 316,
+      "kind": "implementation",
+      "read_ranges": [
+        [
+          1,
+          316
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "14d0fb8cfd21c4b6e96d94c1e7e88c1461aa1daf",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            316
+          ]
+        ]
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "packages/ux-vault/src/backup.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "41258fed58ceae289772d3fa072683da31fe6ade",
+      "line_count": 84,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "41258fed58ceae289772d3fa072683da31fe6ade",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/bytes.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "9226a2d55abaf930c9d5a358e348f4d69944f479",
+      "line_count": 75,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "9226a2d55abaf930c9d5a358e348f4d69944f479",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/confusables.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "0825066436d44673e7c881de6c6e74014da9a74e",
+      "line_count": 155,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "0825066436d44673e7c881de6c6e74014da9a74e",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/confusables.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "98d53a5d14138399769d361d9f8eb4ea99ef8c97",
+      "line_count": 235,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "98d53a5d14138399769d361d9f8eb4ea99ef8c97",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/contacts.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2db7c9fbcc61e6b27a735f19ea658c3911d128a6",
+      "line_count": 224,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "15462e18c59b6351ff222e80999d5e96d080b7c1",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/contacts.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "f27397d1e880ee0b53308db6c8c4d7408601ba3a",
+      "line_count": 220,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "f27397d1e880ee0b53308db6c8c4d7408601ba3a",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/envelope.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "8608ab75206841194d26a5c58ee67f66b2f58ae8",
+      "line_count": 187,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "8608ab75206841194d26a5c58ee67f66b2f58ae8",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/envelope.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "c3084a8c76bb0254e26abfaf1d6e8d7a0a91bb2b",
+      "line_count": 257,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "c3084a8c76bb0254e26abfaf1d6e8d7a0a91bb2b",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/errors.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2f57fff99485eeca67622fa2356915c4a99f0356",
+      "line_count": 40,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "2f57fff99485eeca67622fa2356915c4a99f0356",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/index.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "ec95a35f7bf81bd6272cb15c1187235ce9ad1ea3",
+      "line_count": 9,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "ec95a35f7bf81bd6272cb15c1187235ce9ad1ea3",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/keystore-portable-memory.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "83b0c06b59479d1dd1ea70f445366b0ab372b53c",
+      "line_count": 69,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": null,
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/keystore-portable.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "330cebb6652fa6e54a10536eec7292af5cde129d",
+      "line_count": 443,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "59e998e772e26be386aea4b8369d5240222ea1f9",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/memory.testutil.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "b796c38449ab06baedb79011bfaeeedc9ad774dc",
+      "line_count": 43,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "b796c38449ab06baedb79011bfaeeedc9ad774dc",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/merge.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "9d0640ddfa384dbca1aaacb6de3fa7734941b839",
+      "line_count": 171,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "9d0640ddfa384dbca1aaacb6de3fa7734941b839",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/portable-errors.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d4526d7fddc13250167595918b0179ce7462fd92",
+      "line_count": 145,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "467ad1e8c606865d90947c07cfc6a13bd0d882be",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/portable-parity.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "e33114ecaa8a4eea7b6e0cf5632fdcd2453247ef",
+      "line_count": 45,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "e33114ecaa8a4eea7b6e0cf5632fdcd2453247ef",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/portable.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "56d5d87931cb3d508eb224565b7e60c970de3783",
+      "line_count": 8,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a0cfff7cbfbf2a3166c03c0bf81bffacda71cde2",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/reconciliation-amounts.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "45c7063b70a10720885eec7583b002d18ab05bba",
+      "line_count": 145,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "45c7063b70a10720885eec7583b002d18ab05bba",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/reconciliation-amounts.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a1fd812a9b40d2c11dd1b551013062bc6eace5d4",
+      "line_count": 90,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "a1fd812a9b40d2c11dd1b551013062bc6eace5d4",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/reconciliation-portable.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "78d7b8ec843514d3446b69fa22b84e35b178a694",
+      "line_count": 1146,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "78d7b8ec843514d3446b69fa22b84e35b178a694",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/schema.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "9cdb54565aa5d3d4140d59ed80689dcc02a0dd36",
+      "line_count": 280,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "7c1e3b90b90c9e9254b1755568457b870513594d",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/schema.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "951303c1098834ad6d680f063c7d15453f90c811",
+      "line_count": 175,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "951303c1098834ad6d680f063c7d15453f90c811",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/search.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "568db97dc1400374b24d3418fbd0f5f173224bc3",
+      "line_count": 54,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "568db97dc1400374b24d3418fbd0f5f173224bc3",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "packages/ux-vault/src/seller-scope.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "cdc16b0f13e5f583b49eac06005d4157a22397ca",
+      "line_count": 10,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "cdc16b0f13e5f583b49eac06005d4157a22397ca",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "f1f391fd473bcddf56ee973a7ce83c4f50fc1bd7",
+      "line_count": 161,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": null,
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "ce875cc4b5e3607617ac6c147ad463c5de931b86",
+      "line_count": 858,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": null,
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+      "line_count": 855,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": null,
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/tag-archive-portable.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "c6ff5f13cfc286921cd06f7aa036579747dd943e",
+      "line_count": 254,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "c6ff5f13cfc286921cd06f7aa036579747dd943e",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": true,
+      "pending_disposition": "core-closure-runtime"
+    },
+    {
+      "path": "packages/ux-vault/src/vault.test.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "50fd4de340c7f1a090059d2d4652f84d10d4bf0a",
+      "line_count": 364,
+      "kind": "test",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "196fa33df5e2ee5ca910fd05ea88a075300f1c28",
+      "same_blob_as_base": false,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "associated-test-or-support"
+    },
+    {
+      "path": "packages/ux-vault/src/vault.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2cb0dbee41ab47e4bba5dcb3c2246d5547af8bdb",
+      "line_count": 295,
+      "kind": "implementation",
+      "read_ranges": [],
+      "status": "pending-next-worker",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "2cb0dbee41ab47e4bba5dcb3c2246d5547af8bdb",
+      "same_blob_as_base": true,
+      "notes": [],
+      "base_review": {
+        "status": "unread"
+      },
+      "in_conservative_lean_closure": false,
+      "pending_disposition": "not-in-lean-closure-exclusion-decision-pending"
+    },
+    {
+      "path": "apps/web/src/lib/qrMultipart.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d8c9a8cc2d6eb90f1a6a45fe463a6f8e7ab1abb3",
+      "line_count": 33,
+      "kind": "supplemental-web-implementation",
+      "read_ranges": [
+        [
+          1,
+          33
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "48032d32ea18fa660ac72c342263d741ceb7cc0d",
+      "same_blob_as_base": false,
+      "notes": [
+        "Full candidate implementation read for QR import reachability. Supplemental overlap; application lane retains primary responsibility."
+      ],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              1,
+              1
+            ],
+            "candidate": [
+              1,
+              1
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              21,
+              22
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "apps/web/src/components/CameraImporter.tsx",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "255e318fb120ef769687e0c2dfb38f2bceb9e7d9",
+      "line_count": 365,
+      "kind": "supplemental-web-implementation",
+      "read_ranges": [
+        [
+          1,
+          365
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "f592f573581511d7287608c3da068aae432f5738",
+      "same_blob_as_base": false,
+      "notes": [
+        "Full candidate implementation read for QR import reachability. Supplemental overlap; application lane retains primary responsibility."
+      ],
+      "base_review": {
+        "status": "reviewed-via-full-candidate-and-complete-diff",
+        "changed_ranges": [
+          {
+            "base": [
+              127,
+              127
+            ],
+            "candidate": [
+              127,
+              127
+            ]
+          },
+          {
+            "base": [
+              135,
+              135
+            ],
+            "candidate": [
+              135,
+              135
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              139,
+              139
+            ]
+          },
+          {
+            "base": [
+              140,
+              140
+            ],
+            "candidate": [
+              141,
+              141
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              145,
+              145
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              161,
+              161
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              246,
+              246
+            ]
+          },
+          {
+            "base": [],
+            "candidate": [
+              305,
+              305
+            ]
+          }
+        ],
+        "note": "Not claimed as a second independent line-by-line reading of main."
+      },
+      "in_conservative_lean_closure": true
+    },
+    {
+      "path": "test-vectors/scheme1.json",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "b9821a2e63d98d6e733cff85ab05b1399dbe3adb",
+      "line_count": 137,
+      "kind": "test-fixture",
+      "read_ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "status": "reviewed-full",
+      "base_commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "base_blob": "b9821a2e63d98d6e733cff85ab05b1399dbe3adb",
+      "same_blob_as_base": true,
+      "base_review": {
+        "status": "reviewed-identical-blob",
+        "read_ranges": [
+          [
+            1,
+            137
+          ]
+        ]
+      },
+      "notes": [
+        "Full static read of public deterministic test fixture; generator and third-party SDK not audited or run."
+      ],
+      "in_conservative_lean_closure": false
+    }
+  ],
+  "context_ledger": [
+    {
+      "path": "AGENTS.md",
+      "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "blob": "c7260f4fc81c572ac9787d8325e54463b8fcb35a",
+      "line_count": 15,
+      "kind": "repo-instructions",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          15
+        ]
+      ]
+    },
+    {
+      "path": "docs/ai/WORKFLOW.md",
+      "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "blob": "37f625bb62b2b2479a0492495abbf34f55fee943",
+      "line_count": 17,
+      "kind": "repo-instructions",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          17
+        ]
+      ]
+    },
+    {
+      "path": "docs/ai/HANDOFF.md",
+      "commit": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "blob": "95a9c272dc6019697a72db088b717fa0d271dc84",
+      "line_count": 14,
+      "kind": "repo-instructions",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          14
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/src/main.tsx",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "290ba486b19ad7a36139b8559130fd6c6b498e1e",
+      "line_count": 48,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          48
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/src/AppLean.tsx",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "b9bbdfe053510ba13ef5ebac4488411a04f6770e",
+      "line_count": 9,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          9
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "line_count": 128,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          128
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.mjs",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+      "line_count": 274,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          274
+        ]
+      ]
+    },
+    {
+      "path": "package.json",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "3cb706b2a695b959d6d261323174de61c2439e34",
+      "line_count": 49,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          49
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/package.json",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "dc383c41588864646c2bfa0083acc1d9d33e1f54",
+      "line_count": 59,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          59
+        ]
+      ]
+    },
+    {
+      "path": "tsconfig.base.json",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797",
+      "line_count": 18,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          18
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "6500e86eb5839bfa98d0193c88615e7a3c13039d",
+      "line_count": 9,
+      "kind": "closure-context",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          9
+        ]
+      ]
+    },
+    {
+      "path": "packages/core-crypto/README.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "41b658f872f57a68714f2481bc6dc10a7b036445",
+      "line_count": 55,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          55
+        ]
+      ]
+    },
+    {
+      "path": "packages/core-crypto/DEVIATIONS.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "8a6698710f81536ee1ea6eb4fde3b94fe45422e6",
+      "line_count": 31,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          31
+        ]
+      ]
+    },
+    {
+      "path": "packages/secret-box/README.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a76368b40db0e6bf95d1a94a38c097deebae8b33",
+      "line_count": 19,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          19
+        ]
+      ]
+    },
+    {
+      "path": "packages/secret-box/DEVIATIONS.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "2494ab65d144692f1b5b491c00cc7e73c7d68997",
+      "line_count": 8,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          8
+        ]
+      ]
+    },
+    {
+      "path": "packages/invoice-schema/README.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d68bae336b9d85bb41c975b224a3b71c3a602e1e",
+      "line_count": 141,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          141
+        ]
+      ]
+    },
+    {
+      "path": "packages/invoice-schema/DEVIATIONS.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "a67320d562b914faff0ab715c3dc956ebdd33de0",
+      "line_count": 53,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          53
+        ]
+      ]
+    },
+    {
+      "path": "packages/address-safety/README.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "113ab51cee5a6c636d1a6a8a789c5ee19f10f062",
+      "line_count": 22,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          22
+        ]
+      ]
+    },
+    {
+      "path": "packages/address-safety/DEVIATIONS.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "d92fb80c346c95d377ba8cabf6fb8764ca01f301",
+      "line_count": 12,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          12
+        ]
+      ]
+    },
+    {
+      "path": "packages/qr-exchange/README.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "012eeef0feaa333a1c4d84007cdfb18063945bd0",
+      "line_count": 51,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          51
+        ]
+      ]
+    },
+    {
+      "path": "packages/qr-exchange/DEVIATIONS.md",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "705725f821d8cee444473486a19ae4f08a029280",
+      "line_count": 11,
+      "kind": "package-documentation",
+      "status": "reviewed-full",
+      "read_ranges": [
+        [
+          1,
+          11
+        ]
+      ]
+    },
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4",
+      "line_count": 519,
+      "kind": "closure-context",
+      "status": "imports-only-not-full-reviewed",
+      "read_ranges": [],
+      "notes": [
+        "Combined source output truncated; used lexical imports for closure only. Do not count as completed source audit."
+      ]
+    }
+  ],
+  "coverage_summary": {
+    "packages": {
+      "core-crypto": {
+        "implementation_files": 8,
+        "implementation_lines": 755,
+        "test_support_files": 12,
+        "test_support_lines": 1635
+      },
+      "secret-box": {
+        "implementation_files": 3,
+        "implementation_lines": 455,
+        "test_support_files": 3,
+        "test_support_lines": 514
+      },
+      "invoice-schema": {
+        "implementation_files": 11,
+        "implementation_lines": 2179,
+        "test_support_files": 16,
+        "test_support_lines": 3771
+      },
+      "address-safety": {
+        "implementation_files": 6,
+        "implementation_lines": 391,
+        "test_support_files": 4,
+        "test_support_lines": 363
+      },
+      "qr-exchange": {
+        "implementation_files": 10,
+        "implementation_lines": 1330,
+        "test_support_files": 7,
+        "test_support_lines": 1321
+      }
+    },
+    "primary_src_files": 80,
+    "primary_src_lines": 12714,
+    "primary_implementation_files": 38,
+    "primary_implementation_lines": 5110,
+    "primary_test_support_files": 42,
+    "primary_test_support_lines": 7604,
+    "fixture_files": 1,
+    "fixture_lines": 137,
+    "supplemental_web_files": 2,
+    "supplemental_web_lines": 398,
+    "pending_files": 37,
+    "pending_lines": 7827
+  },
+  "finding_conclusion": "No new actionable browser-reachable vulnerability established in the five-package bounded batch. This is source inspection, not proof of cryptographic correctness or a full-product security audit.",
+  "known_changes": [
+    {
+      "id": "CP-K1",
+      "title": "Base64url runtime type guard",
+      "classification": "low-impact public-API hardening; no direct browser exploit established",
+      "status": "fixed-on-candidate",
+      "confidence": "high",
+      "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/base64url.ts:52-55",
+      "base_source": "c977b5d6723f6822c3b5d86cd6b231712c53c395:packages/invoice-schema/src/base64url.ts:52-55",
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "branch_commit": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "comparison": "runtime blob identical to candidate; only regression test unused argument differs",
+      "impact": "Non-string programmatic input now yields fixed Base64UrlError. Fragment entry already checks string type."
+    },
+    {
+      "id": "CP-K2",
+      "title": "Dense data-array canonicalization",
+      "classification": "signature-input hardening for programmatic objects",
+      "status": "fixed-on-candidate",
+      "confidence": "high",
+      "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/json.ts:200-222",
+      "impact": "Rejects sparse/decorated/accessor arrays and snapshots data properties before recursion. Imported strict JSON cannot encode JavaScript getters/proxies, so no external payload reachability established."
+    },
+    {
+      "id": "CP-K3",
+      "title": "Merchant-profile invalid-clock rejection",
+      "classification": "low-impact fail-closed clock validation",
+      "status": "fixed-on-candidate",
+      "confidence": "high",
+      "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/merchantProfile.ts:156-158",
+      "impact": "Non-finite and negative injected clocks no longer bypass expiry comparison. No externally controlled clock path established."
+    },
+    {
+      "id": "CP-K4",
+      "title": "Rejected QR conflict preserves inactivity deadline",
+      "classification": "low availability/session-lifetime hardening",
+      "status": "fixed-on-candidate",
+      "confidence": "high",
+      "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/qr-exchange/src/assembler.ts:75-87",
+      "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "branch_commit": "172695efb41665a4e50d335029e54184bbb5b328",
+      "comparison": "assembler implementation and tests identical to candidate",
+      "impact": "Rejected conflicting input no longer refreshes partial-session activity. It did not bypass final payload integrity; web conflict path resets assembly."
+    },
+    {
+      "id": "CP-K5",
+      "title": "Precise verification failure classes",
+      "classification": "diagnostic/API behavior change",
+      "status": "present-on-candidate",
+      "confidence": "high",
+      "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/envelope.ts:162-203,312-330,356-365",
+      "impact": "Missing signatures, unsupported versions and unavailable local crypto are classified separately; no relaxed success path observed."
+    },
+    {
+      "id": "CP-K6",
+      "title": "Minimal receipts",
+      "classification": "intentional protocol/API behavior change",
+      "status": "present-on-candidate",
+      "confidence": "high",
+      "source": "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/receipts.ts:24-25,66-108,147-167",
+      "impact": "Allows signed receipts omitting one-time address; conditional recipient binding is explicit in tests and must remain explicit in UI."
+    }
+  ],
+  "branch_comparisons": [
+    {
+      "branch_commit": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "candidate_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "paths": [
+        "packages/invoice-schema/src/base64url.ts",
+        "packages/invoice-schema/src/base64url.test.ts"
+      ],
+      "status": "complete-diff-reviewed",
+      "production_blob_equal": true
+    },
+    {
+      "branch_commit": "172695efb41665a4e50d335029e54184bbb5b328",
+      "candidate_commit": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "paths": [
+        "packages/qr-exchange/src/assembler.ts",
+        "packages/qr-exchange/src/assembler.test.ts"
+      ],
+      "status": "both-paths-identical-blobs"
+    }
+  ],
+  "unreviewed_scope_notes": [
+    "ux-vault portable closure: 8 implementation files/2951 lines plus associated tests; all unread here. Nonportable package entries retained explicitly for scope/exclusion decision, not silently counted complete.",
+    "Web scannerCore.ts, scanner.worker.ts, workerFactory.ts and four associated scanner test files unread.",
+    "All other packages in lean-closure are for parent-assigned lanes; closure membership is not review completion.",
+    "Third-party cryptography/QR implementations, fixture generator, package tooling configs and actual emitted bundle behavior are not audited in this batch. Root owns build/CI.",
+    "Main/candidate changed package.json and invoice docs deltas inspected; only src/test coverage is included in primary source counts."
+  ],
+  "state": "bounded-batch-complete-handoff-ready"
+}

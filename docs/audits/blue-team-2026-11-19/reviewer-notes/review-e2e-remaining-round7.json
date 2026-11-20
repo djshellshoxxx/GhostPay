@@ -1,0 +1,925 @@
+{
+  "reviewer": "e2e_remaining_round7",
+  "review_type": "static defensive source review; read-only target",
+  "source_ledger": "/workspace/scratch/e449ed9154f6/review-e2e-tests-round6.json",
+  "source_ledger_sha256": "113b0d7780aa303ee715a872b6d25d51c8d6e7fcd6bc755ff433d8513793539a",
+  "assignment": "/workspace/scratch/e449ed9154f6/e2e_tests_round4-assignment.json",
+  "assignment_sha256": "fb2405add1c46871b9288e567b6c5eae7e020b27d579210d966f1fd7802bfdb4",
+  "scope": "Exactly the 18 remaining path/blob variants from review-e2e-tests-round6.json; 1,308 source lines.",
+  "repository": "/workspace/scratch/e449ed9154f6/GhostPay-audit",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "constraints": [
+    "No application, test, configuration or dependency edits.",
+    "No Git mutation, checkout, merge, commit, push or network operation.",
+    "No target code, tests, build, server, probe, PoC, RPC or transaction execution.",
+    "Only temporary review artifacts written outside the repository."
+  ],
+  "metadata_verification": {
+    "remaining_entries_verified": 18,
+    "original_assignment_indices_matched": 18,
+    "sha_path_blob_resolutions_matched": 18,
+    "blob_line_counts_matched": 18,
+    "main_blob_matches": 18,
+    "candidate_blob_matches": 18,
+    "round6_overlap_variants": 0,
+    "combined_assignment_map_exact": true
+  },
+  "source_read_note": "All assigned source was read directly from immutable Git blobs with line numbers in three complete batches (remaining indices 0-4, 5-14, 15-17). No source output in those batches was truncated. Initial verbose predecessor-ledger output was truncated; exact remaining metadata, substantive predecessor findings/gaps and the complete predecessor Markdown were subsequently re-read in compact complete output. No truncated output was used as source coverage.",
+  "summary": {
+    "assigned_variants": 18,
+    "assigned_lines": 1308,
+    "reviewed_variants": 18,
+    "reviewed_lines": 1308,
+    "remaining_variants": 0,
+    "remaining_lines": 0,
+    "new_application_security_findings": 0,
+    "confirmed_test_harness_defects": 0,
+    "qualification_gaps": 1,
+    "combined_with_round6_reviewed_variants": 61,
+    "combined_with_round6_reviewed_lines": 15439
+  },
+  "coverage": [
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/accessibility-audit.ts",
+      "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+      "line_count": 59,
+      "kind": "test-support",
+      "assignment_index": 0,
+      "status": "reviewed",
+      "source_remaining_index": 0,
+      "ranges": [
+        [
+          1,
+          59
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/accessibility.spec.ts",
+      "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+      "line_count": 137,
+      "kind": "test-support",
+      "assignment_index": 1,
+      "status": "reviewed",
+      "source_remaining_index": 1,
+      "ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/camera-browser.ts",
+      "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+      "line_count": 29,
+      "kind": "test-support",
+      "assignment_index": 3,
+      "status": "reviewed",
+      "source_remaining_index": 2,
+      "ranges": [
+        [
+          1,
+          29
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/contextual-help.spec.ts",
+      "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+      "line_count": 135,
+      "kind": "test-support",
+      "assignment_index": 4,
+      "status": "reviewed",
+      "source_remaining_index": 3,
+      "ranges": [
+        [
+          1,
+          135
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/devices.spec.ts",
+      "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+      "line_count": 52,
+      "kind": "test-support",
+      "assignment_index": 6,
+      "status": "reviewed",
+      "source_remaining_index": 4,
+      "ranges": [
+        [
+          1,
+          52
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/passphrase-vault.spec.ts",
+      "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+      "line_count": 65,
+      "kind": "test-support",
+      "assignment_index": 18,
+      "status": "reviewed",
+      "source_remaining_index": 5,
+      "ranges": [
+        [
+          1,
+          65
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/prepare-manifest.d.mts",
+      "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+      "line_count": 10,
+      "kind": "test-support",
+      "assignment_index": 19,
+      "status": "reviewed",
+      "source_remaining_index": 6,
+      "ranges": [
+        [
+          1,
+          10
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/prepare-manifest.mjs",
+      "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+      "line_count": 42,
+      "kind": "test-support",
+      "assignment_index": 20,
+      "status": "reviewed",
+      "source_remaining_index": 7,
+      "ranges": [
+        [
+          1,
+          42
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/product-backup-retry.spec.ts",
+      "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+      "line_count": 34,
+      "kind": "test-support",
+      "assignment_index": 21,
+      "status": "reviewed",
+      "source_remaining_index": 8,
+      "ranges": [
+        [
+          1,
+          34
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/qr-camera-multipart.spec.ts",
+      "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+      "line_count": 45,
+      "kind": "test-support",
+      "assignment_index": 22,
+      "status": "reviewed",
+      "source_remaining_index": 9,
+      "ranges": [
+        [
+          1,
+          45
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/qr-camera.spec.ts",
+      "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+      "line_count": 72,
+      "kind": "test-support",
+      "assignment_index": 23,
+      "status": "reviewed",
+      "source_remaining_index": 10,
+      "ranges": [
+        [
+          1,
+          72
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/qr-video.d.mts",
+      "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+      "line_count": 3,
+      "kind": "test-support",
+      "assignment_index": 24,
+      "status": "reviewed",
+      "source_remaining_index": 11,
+      "ranges": [
+        [
+          1,
+          3
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/qr-video.mjs",
+      "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+      "line_count": 66,
+      "kind": "test-support",
+      "assignment_index": 25,
+      "status": "reviewed",
+      "source_remaining_index": 12,
+      "ranges": [
+        [
+          1,
+          66
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/receipt-lean.spec.ts",
+      "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+      "line_count": 38,
+      "kind": "test-support",
+      "assignment_index": 26,
+      "status": "reviewed",
+      "source_remaining_index": 13,
+      "ranges": [
+        [
+          1,
+          38
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/reconciliation.spec.ts",
+      "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+      "line_count": 96,
+      "kind": "test-support",
+      "assignment_index": 27,
+      "status": "reviewed",
+      "source_remaining_index": 14,
+      "ranges": [
+        [
+          1,
+          96
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/recovery.spec.ts",
+      "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+      "line_count": 316,
+      "kind": "test-support",
+      "assignment_index": 28,
+      "status": "reviewed",
+      "source_remaining_index": 15,
+      "ranges": [
+        [
+          1,
+          316
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/sellerpairing.spec.ts",
+      "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+      "line_count": 63,
+      "kind": "test-support",
+      "assignment_index": 29,
+      "status": "reviewed",
+      "source_remaining_index": 16,
+      "ranges": [
+        [
+          1,
+          63
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    },
+    {
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "path": "apps/web/e2e/static-help.spec.ts",
+      "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+      "line_count": 46,
+      "kind": "test-support",
+      "assignment_index": 30,
+      "status": "reviewed",
+      "source_remaining_index": 17,
+      "ranges": [
+        [
+          1,
+          46
+        ]
+      ],
+      "method": "Complete immutable Git blob read with line numbers; every assigned source line inspected directly. No counterpart or diff inheritance. No target code executed."
+    }
+  ],
+  "findings": [],
+  "quality_gaps": [
+    {
+      "id": "E2E-G03",
+      "title": "Camera lifecycle assertions lose visibility when video elements are removed",
+      "classification": "qualification_gap",
+      "scope": "test-support only",
+      "confidence": "high (direct source)",
+      "is_application_vulnerability": false,
+      "status": {
+        "main": "present; same reviewed test blobs",
+        "candidate": "present; same reviewed test blobs"
+      },
+      "evidence": [
+        {
+          "path": "apps/web/e2e/qr-camera.spec.ts",
+          "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              23,
+              27
+            ],
+            [
+              33,
+              54
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/qr-camera-multipart.spec.ts",
+          "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              35,
+              43
+            ]
+          ]
+        }
+      ],
+      "detail": "The single-camera liveTracks observer enumerates document.querySelectorAll(video) and counts only live tracks on those current elements' srcObject streams. The multipart test uses the same current-DOM strategy. Zero live tracks is therefore also returned when the relevant video is removed or its srcObject is cleared; the assertions retain no reference to previously acquired streams. The navigation, stop and completion assertions cannot independently establish that all earlier capture tracks reached ended.",
+      "impact": "These assertions establish that no live track remains reachable through the currently queried video elements. They do not fully qualify capture teardown after navigation or preview completion. A future regression that detaches a video while retaining a live stream could escape this particular observation. No actual application camera leak, failed stop operation, unauthorized capture or production vulnerability was established.",
+      "recommendation": "In the test harness, retain observational references to streams returned by the real mediaDevices.getUserMedia call, establish successful acquisition on the successful path, and assert that every acquired video track reaches ended after explicit stop, route teardown and successful completion. Preserve the separate explicit-click and denied-permission checks.",
+      "validation": "Static source inspection only. No browser, media device, test or application execution was performed."
+    }
+  ],
+  "positive_assertion_coverage": [
+    {
+      "topic": "Accessibility and responsive layout",
+      "detail": "The audit requires axe to be injected and to evaluate at least one passing rule, blocks serious/critical violations, and retains rule metadata without DOM/HTML/invoice payloads. Route tests assert keyboard focus, malformed-input refusal, 320-CSS-pixel reflow with enlarged text, forced colors and reduced motion. Native assistive-technology review is explicitly unresolved. Device checks confirm the configured viewport/mobile flag and route-specific headings; their comments limit evidence to Chromium emulation.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/accessibility-audit.ts",
+          "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              22,
+              59
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/accessibility.spec.ts",
+          "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              9,
+              137
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/devices.spec.ts",
+          "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              4,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Contextual and static help",
+      "detail": "Source covers keyboard dismissal/focus return, QR dialog focus confinement, unchanged QR geometry under RTL, pointer/touch click delivery below expanding help, local help assets at three widths, skip navigation and JavaScript-disabled help access. The help-click tests deliberately intercept form submission to observe activation; they do not qualify decryption in those cases.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/contextual-help.spec.ts",
+          "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              20,
+              135
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/static-help.spec.ts",
+          "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              6,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Passphrase invoice and saved vault gates",
+      "detail": "The invoice case asserts that protected item/memo text is absent before unlock and after a wrong passphrase, then appears after the correct phrase. The saved-vault case wipes memory, reloads, rejects the wrong phrase, restores the same public identity on successful unlock and checks passphrase clearing.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/passphrase-vault.spec.ts",
+          "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              4,
+              65
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Restricted manifest fixture preparation",
+      "detail": "The helper checks three authored fake deployment addresses, uses explicitly public deterministic test material, verifies the resulting signature through the deployment parser, writes a fresh temporary fixture with exclusive creation and mode 0600, removes the temporary directory on write failure and clears the temporary key array. Its declared interface returns only the directory and public key.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/prepare-manifest.mjs",
+          "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              12,
+              41
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/prepare-manifest.d.mts",
+          "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              1,
+              10
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "QR preview and virtual-camera boundary",
+      "detail": "Single-code source asserts explicit click before scanning, untrusted public-config preview without key installation, permission-denial messaging and paste fallback. Multipart source assembles an app-created invoice and requires explicit Open scanned invoice before ordinary review, with a non-local request assertion. The video generator and launcher supply authored local frames; comments explicitly exclude physical-device acceptance. Track-teardown qualification is limited by E2E-G03.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/qr-camera.spec.ts",
+          "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              30,
+              72
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/qr-camera-multipart.spec.ts",
+          "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              12,
+              45
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/camera-browser.ts",
+          "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              14,
+              29
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/qr-video.mjs",
+          "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              1,
+              66
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/qr-video.d.mts",
+          "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              1,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Backup retry and lean receipt policy",
+      "detail": "The full-profile tag-archive regression reuses the original downloaded archive twice without reloading and checks that the file input resets and the apply step disappears. Its authored archive is empty. The receipt test checks the validated-invoice input in both profiles, absence of manual digest mode and refusal to sign without a validated invoice in lean, and the explicit manual-mode explanation in full.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/product-backup-retry.spec.ts",
+          "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              7,
+              34
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/receipt-lean.spec.ts",
+          "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              8,
+              38
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Encrypted reconciliation and preview invalidation",
+      "detail": "Source preserves the invoice digest and observation meaning across language changes, checks that the encrypted export lacks the plaintext digest, suppresses a diagnostic marker from errors, invalidates an import preview when the same file is picked again, clears preview/input on lock and removes ledger availability after reload loses memory-only keys.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/reconciliation.spec.ts",
+          "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              12,
+              96
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Independent-context recovery and occupied vault preservation",
+      "detail": "The recovery observer aborts attempted IndexedDB upgrades and uses a readonly transaction. Tests assert encrypted envelope metadata, exact public identity after import, memory-only import before explicit save, re-encryption under a new phrase, wrong-phrase refusal without ciphertext changes, damaged/malformed backup refusal, and preservation of an occupied destination vault through import/reload. The independent environments are browser contexts in the supplied browser; this source alone does not establish separate browser-engine acceptance. Web-storage secret checks are sampled assertions, not continuous monitoring.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/recovery.spec.ts",
+          "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              25,
+              113
+            ],
+            [
+              180,
+              316
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Public seller pairing remains an untrusted preview",
+      "detail": "Source rejects an unsupported config version, previews a config from a separate context without loading keys, repeats the same file after clear, and verifies that a reload clears preview/memory-only identity while a subsequent public-config preview still loads no keys. The export check searches for selected secret-related field labels; it is not characterized as a proof of absence of all possible secret encodings.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/sellerpairing.spec.ts",
+          "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              5,
+              63
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "excluded_duplicates": [
+    "BROWSER-01",
+    "PN-01",
+    "PN-02",
+    "PN-03",
+    "PN-04",
+    "PN-05",
+    "SN-K01",
+    "E2E-Q01",
+    "E2E-G01",
+    "E2E-G02",
+    "E2E-H01"
+  ],
+  "head_mapping": [
+    {
+      "path": "apps/web/e2e/accessibility-audit.ts",
+      "reviewed_blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/accessibility.spec.ts",
+      "reviewed_blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/camera-browser.ts",
+      "reviewed_blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/contextual-help.spec.ts",
+      "reviewed_blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/devices.spec.ts",
+      "reviewed_blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/passphrase-vault.spec.ts",
+      "reviewed_blob": "b6402185bde44ff518a31afcfdaada6382167096",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.d.mts",
+      "reviewed_blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.mjs",
+      "reviewed_blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/product-backup-retry.spec.ts",
+      "reviewed_blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-camera-multipart.spec.ts",
+      "reviewed_blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-camera.spec.ts",
+      "reviewed_blob": "8c8b940002179e448bdba20b260c55d11837769b",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-video.d.mts",
+      "reviewed_blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-video.mjs",
+      "reviewed_blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/receipt-lean.spec.ts",
+      "reviewed_blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/reconciliation.spec.ts",
+      "reviewed_blob": "44f5517f2929db43295211a654c7c6f633387df6",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/recovery.spec.ts",
+      "reviewed_blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/sellerpairing.spec.ts",
+      "reviewed_blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+        "same_as_reviewed": true
+      }
+    },
+    {
+      "path": "apps/web/e2e/static-help.spec.ts",
+      "reviewed_blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+        "same_as_reviewed": true
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+        "same_as_reviewed": true
+      }
+    }
+  ],
+  "remaining": [],
+  "runtime_validation": "Not performed by instruction. The presence of source assertions is not a passing test result.",
+  "mutations": "Only this JSON and Markdown companion were written in scratch outside the repository. No application, config, dependency, test or Git state mutation."
+}

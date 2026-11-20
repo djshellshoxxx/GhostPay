@@ -1,0 +1,341 @@
+{
+  "cut_utc": "2026-11-20T06:51:27Z",
+  "refs": [
+    [
+      "main-final",
+      "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5"
+    ],
+    [
+      "payment-uri-aggregate-length",
+      "0fa33f7101f3c9ac4d685673aece16eda6e98366"
+    ],
+    [
+      "main-recovered-fixes",
+      "0e926f8b4cf7f307c3174f3a03298ff310cb1808"
+    ],
+    [
+      "main-unique-code",
+      "885b9569e6fc99e43bf01d23305494275e10120e"
+    ],
+    [
+      "tor-completion",
+      "e60c69f32dbbd9edf7e81ed8866144d665e3de9a"
+    ]
+  ],
+  "files": [
+    {
+      "path": "tools/portable-hosting-kit/src/profiles/static-export.mjs",
+      "blob": "42009b42e5b03d4bb88fd2b51925a064abc445b3",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 149,
+      "kind": "production",
+      "refs": [
+        "main-final",
+        "payment-uri-aggregate-length",
+        "main-recovered-fixes",
+        "main-unique-code",
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "blob": "04130f97dd71e3a48fb34ed67d920b68d9ccee9f",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 140,
+      "kind": "test-support",
+      "refs": [
+        "main-final",
+        "payment-uri-aggregate-length",
+        "main-recovered-fixes",
+        "main-unique-code"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "sha": "773a94be1c8328d6fa1720ae48f1b6a2d903f0c5",
+      "line_count": 150,
+      "kind": "test-support",
+      "refs": [
+        "main-final",
+        "payment-uri-aggregate-length",
+        "main-recovered-fixes",
+        "main-unique-code",
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "packages/payment-uri/src/bitcoin.ts",
+      "blob": "64915453404d7943d6c1cfdbcce20d3de936aa66",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 142,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "packages/payment-uri/src/builder-length.test.ts",
+      "blob": "1a7ae62c2097c5ca032345f81e936b3335e52da8",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 141,
+      "kind": "test-support",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "packages/payment-uri/src/query.ts",
+      "blob": "72ea90b057e4fdfcf334380db4d76d19da67db64",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 123,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "packages/payment-uri/src/solana.ts",
+      "blob": "e95dbaaca0ed19c7124affbcc3d09f1349812cc2",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 105,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "packages/payment-uri/src/tron.ts",
+      "blob": "316b71948856d0f1784211fc6eebdec7e5928c31",
+      "sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+      "line_count": 83,
+      "kind": "production",
+      "refs": [
+        "payment-uri-aggregate-length"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "272d994a11987ba644f007a98a850af8e4c81650",
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+      "line_count": 214,
+      "kind": "production",
+      "refs": [
+        "main-recovered-fixes"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": ".github/workflows/tor-static.yml",
+      "blob": "59e0675115a2203546a917d020c27e4d95a2913e",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 110,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "deploy/tor-static/.dockerignore",
+      "blob": "2465bc7364814b57d1b8f484e3c67148615edc08",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 6,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "deploy/tor-static/Dockerfile",
+      "blob": "8d593b9a0e419661c59a6d85d8b57ac6f498b29c",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 32,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "deploy/tor-static/host.example.json",
+      "blob": "bff0f3e674f504e966cfeb7523d97048f356170c",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 9,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "deploy/tor-static/prepare.mjs",
+      "blob": "1c0776edde8faff31e7fc247204915509f48e141",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 177,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "deploy/tor-static/runtime-check.sh",
+      "blob": "8dddbffac95e7aeb2cca04260fa0a02cd7565dc3",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 20,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "deploy/tor-static/tor-start.sh",
+      "blob": "811be5b8949748d34b39edd0ffa05eb82711e809",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 25,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "scripts/tor/browser-acceptance.mjs",
+      "blob": "1f57b2d5a102f398cfc111e349dfc2684d498518",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 111,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "scripts/tor/hosting-config.test.mjs",
+      "blob": "4ac175f883ce1760c5cf308fc385e1b8218fa81d",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 176,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/adapters/tor.mjs",
+      "blob": "a01d11a4d0409438cec689cde3998d0ce1c8c777",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 575,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/config/host-config.mjs",
+      "blob": "ba5f2c311c77fabc1d85d66dc05f94388c7f616b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 264,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/serve/headers.mjs",
+      "blob": "d0bce8f92792580ea517d72b40a2653ea70111eb",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 455,
+      "kind": "production",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/adapters/tor.test.mjs",
+      "blob": "62174c98d88122f5101ee8d9728b6747685d8a4f",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 196,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/config/host-config.test.mjs",
+      "blob": "d702839dbaf95f62b6d86186b351817eae07fdff",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 132,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "blob": "5721e767c46307ed6776048163ba149f2cc5987b",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 140,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/profiles/nginx.test.mjs",
+      "blob": "963eec40dfae88830f8594cc923026b671d9c0fc",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 224,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+      "blob": "a2f499b8820e299d817520943724941e5b4cabc5",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "line_count": 348,
+      "kind": "test-support",
+      "refs": [
+        "tor-completion"
+      ],
+      "status": "pending"
+    }
+  ],
+  "excluded": [
+    {
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+      "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+      "reason": "Excluded optional policy / coordinator automation"
+    },
+    {
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+      "path": "scripts/automation/integration-lock.mjs",
+      "reason": "Excluded optional policy / coordinator automation"
+    },
+    {
+      "sha": "0e926f8b4cf7f307c3174f3a03298ff310cb1808",
+      "path": "scripts/tests/integration-lock.test.mjs",
+      "reason": "Excluded optional policy / coordinator automation"
+    }
+  ]
+}

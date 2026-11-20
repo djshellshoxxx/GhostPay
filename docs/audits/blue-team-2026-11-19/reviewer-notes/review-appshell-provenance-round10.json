@@ -1,0 +1,42 @@
+{
+  "review": "AppShell source-provenance closure, round 10",
+  "review_date": "2026-11-20",
+  "repository": "/workspace/scratch/e449ed9154f6/GhostPay-audit",
+  "scope": "One committed source file; fresh complete manual static review",
+  "coverage": [
+    {
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "path": "apps/web/src/AppShell.tsx",
+      "blob": "ae90814b2edb359cf1d72d0a728cfb619870933f",
+      "line_count": 551,
+      "byte_count": 27940,
+      "status": "reviewed",
+      "method": "full-content",
+      "read_ranges": [[1, 150], [151, 300], [301, 450], [451, 551]],
+      "ranges_inclusive": true,
+      "complete": true,
+      "truncated": false,
+      "read_tool_chunk_ids": ["9b35fe", "36ebea", "2fa16a", "fdb4f4"],
+      "source_access": "git show 137628961463fc5abd8b7927b2efe6b18a0a206a:apps/web/src/AppShell.tsx; line-numbered, nonoverlapping chunks",
+      "blob_verification": "git rev-parse SHA:path and independently recomputed Git blob SHA-1 over all 27,940 bytes both equal the expected blob",
+      "sha256": "956b71b282cadd2c9186e0b32e5842a7519d75829ed7c6353351ede803ffe47e",
+      "newline_count": 551,
+      "ends_with_newline": true
+    }
+  ],
+  "provenance_closure": "This fresh full-content read establishes coverage directly at the stated commit and blob. No earlier baseline, parent revision, or historical diff coverage is inferred or required.",
+  "reviewed_topics": [
+    "Full and lean view selection, backup gating, frame refusal dispatch, and suspended-session rendering",
+    "Invoice-fragment lifecycle, privacy-scope changes, and focus handling",
+    "Settings storage synchronization, execution-setting changes, RPC authorization calls, and cache invalidation",
+    "Idle-clock observations, lease identity, synchronous suspension, asynchronous custody guards, activity rearming, and listener cleanup",
+    "External-copy unload protection and rendered status/backup notices"
+  ],
+  "new_confirmed_findings": [],
+  "conclusion": "No new concrete security issue confirmed within this one-file static review.",
+  "limits": [
+    "Imported implementations were not read or independently revalidated; this review does not establish their contracts or runtime behavior.",
+    "No target code execution, tests, builds, probes, installs, network access, Git mutations, or source edits were performed.",
+    "Only these review notes were written, outside the repository in scratch."
+  ]
+}

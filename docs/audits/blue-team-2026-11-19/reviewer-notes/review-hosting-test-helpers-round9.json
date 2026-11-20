@@ -1,0 +1,573 @@
+{
+  "schema": "ghostpay.source-review.hosting-test-helpers.round9.v1",
+  "status": "complete",
+  "completed_utc": "2026-11-20T07:05:03.785580+00:00",
+  "scope": {
+    "description": "Read-only closure of precisely four previously unread test-support paths imported by latest hosting tests. All reads use immutable Tor feature Git objects.",
+    "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+    "repository": "/workspace/scratch/e449ed9154f6/GhostPay-audit",
+    "upstream_review_json": "/workspace/scratch/e449ed9154f6/review-latest-hosting-round8.json",
+    "upstream_review_markdown": "/workspace/scratch/e449ed9154f6/review-latest-hosting-round8.md",
+    "constraints": [
+      "No target execution, tests, builds, installs, probes, proof of concept, servers or network operations",
+      "No Git mutations or application/configuration/test edits",
+      "Only the two assigned scratch review artifacts written",
+      "Optional I2P generator and interactive wizard remain excluded from the Tor call path"
+    ]
+  },
+  "counts": {
+    "fresh_reviewed_file_versions": 4,
+    "fresh_reviewed_unique_paths": 4,
+    "fresh_reviewed_lines": 601,
+    "fresh_production_versions": 0,
+    "fresh_test_support_versions": 4,
+    "additional_first_party_fixture_versions_required": 0,
+    "pending_file_versions": 0,
+    "pending_ranges": 0,
+    "new_confirmed_production_findings": 0,
+    "unranked_test_quality_observations": 1
+  },
+  "cumulative_hosting_coverage": {
+    "basis": "Round 8 coverage plus the four unique path/blob additions here; repeated caller reads are not counted again.",
+    "reviewed_file_versions": 60,
+    "reviewed_unique_paths": 56,
+    "reviewed_lines": 12007,
+    "baseline_global_source_and_test_counts_changed": false
+  },
+  "findings": [],
+  "test_quality_observations": [
+    {
+      "id": "H9-TQ-01",
+      "classification": "unranked-test-quality-observation",
+      "new_production_finding": false,
+      "title": "Differential helper checks HEAD bodylessness only for status 200",
+      "confidence": "high-source-confidence",
+      "runtime_failure_observed": false,
+      "description": "requestCases includes HEAD requests for missing, hidden, malformed and conditional cases. compareServers checks the length of both HEAD bodies only inside its n.status === 200 block. For a non-200 HEAD response, the helper checks status, interim responses and selected headers but makes no assertion that either body is empty.",
+      "impact_limit": "This is an assertion-coverage gap in the differential helper. It does not establish that either production server emits a body on a non-200 HEAD response. Dedicated tests elsewhere may provide additional coverage, and none were executed in this review.",
+      "recommendation": "Apply the HEAD body-length assertion to all completed HEAD responses independently of status, retaining status and header comparisons. Keep this as a test-quality improvement, separate from production vulnerabilities.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+          "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+          "lines": [
+            45,
+            64
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/compare.mjs#L45-L64"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+          "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+          "lines": [
+            109,
+            120
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/compare.mjs#L109-L120"
+        }
+      ],
+      "qualification": "The existing differential caller also includes explicit normative spot checks and requires observed status coverage; this observation is scoped to the helper assertion and does not claim the whole test suite has no independent oracle.",
+      "qualifying_evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+          "blob": "5721e767c46307ed6776048163ba149f2cc5987b",
+          "lines": [
+            70,
+            125
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/differential.test.mjs#L70-L125"
+        }
+      ]
+    }
+  ],
+  "review_conclusions": [
+    {
+      "area": "Demo fixture",
+      "conclusion": "The fixture defines fixed file names/content and deterministic asset hashes. Its browser script writes text nodes, uses a same-origin JSON fetch and states that the demo does not establish payment-network routing. writeDemoSite rejects non-empty destinations and uses exclusive file creation. No production vulnerability was established from this test-support read.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+          "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+          "lines": [
+            15,
+            51
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/demo/demo-site.mjs#L15-L51"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+          "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+          "lines": [
+            77,
+            143
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/demo/demo-site.mjs#L77-L143"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+          "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+          "lines": [
+            151,
+            161
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/src/demo/demo-site.mjs#L151-L161"
+        }
+      ]
+    },
+    {
+      "area": "Serving fixture and raw client",
+      "conclusion": "The fixture starts from the real application header policy, then appends explicit test-only header combination/detachment rules. The raw client preserves request bytes, collects interim responses, merges repeated response fields and exposes raw post-header bytes. Its socket timeout and loopback nginx helpers are harness behavior, not evidence of an executed deployment.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+          "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+          "lines": [
+            12,
+            14
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/serve/helpers.mjs#L12-L14"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+          "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+          "lines": [
+            47,
+            111
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/serve/helpers.mjs#L47-L111"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+          "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+          "lines": [
+            127,
+            176
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/serve/helpers.mjs#L127-L176"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+          "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+          "lines": [
+            204,
+            242
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/serve/helpers.mjs#L204-L242"
+        }
+      ]
+    },
+    {
+      "area": "Differential assertions",
+      "conclusion": "The request matrix covers routing, files, encodings, methods, conditional requests and malformed inputs. The comparator requires selected security headers on both servers, compares status/interim/header values and successful bodies, and makes an explicit nginx-version allowance for CONNECT refusals. H9-TQ-01 records the limited HEAD body assertion separately.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+          "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+          "lines": [
+            14,
+            80
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/compare.mjs#L14-L80"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+          "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+          "lines": [
+            89,
+            123
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/compare.mjs#L89-L123"
+        }
+      ]
+    },
+    {
+      "area": "Adapter assertions",
+      "conclusion": "Adapter fixtures supply controlled onion/I2P configurations, require generated file data to be Uint8Array, and verify KitError class/code with optional message matching. The I2P fixture is local test data and adds no import or dependency on the excluded I2P generator.",
+      "evidence": [
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+          "blob": "18ca28d400e80731554982da12df1c539795373b",
+          "lines": [
+            3,
+            42
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/adapters/fixtures.mjs#L3-L42"
+        },
+        {
+          "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "path": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+          "blob": "18ca28d400e80731554982da12df1c539795373b",
+          "lines": [
+            48,
+            75
+          ],
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/adapters/fixtures.mjs#L48-L75"
+        }
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "status": "reviewed",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+      "blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+      "line_count": 161,
+      "kind": "test-support",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          161
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": true,
+      "byte_count": 7288,
+      "terminal_newline": true,
+      "computed_git_blob": "cfa70aa4b2f47f84ae4b511a1e9346364afa86b9",
+      "blob_verified": true,
+      "promoted_from_round8_status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "status": "reviewed",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+      "blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+      "line_count": 242,
+      "kind": "test-support",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          242
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": true,
+      "byte_count": 9073,
+      "terminal_newline": true,
+      "computed_git_blob": "0ea649190c0402c79caa55681553a680fcc626cb",
+      "blob_verified": true,
+      "promoted_from_round8_status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "status": "reviewed",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+      "blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+      "line_count": 123,
+      "kind": "test-support",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": true,
+      "byte_count": 8309,
+      "terminal_newline": true,
+      "computed_git_blob": "a9b869f584d95392bb2981c69cd1710aae590377",
+      "blob_verified": true,
+      "promoted_from_round8_status": "referenced-but-not-read-outside-narrow-call-path"
+    },
+    {
+      "status": "reviewed",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+      "blob": "18ca28d400e80731554982da12df1c539795373b",
+      "line_count": 75,
+      "kind": "test-support",
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          75
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": true,
+      "byte_count": 1879,
+      "terminal_newline": true,
+      "computed_git_blob": "18ca28d400e80731554982da12df1c539795373b",
+      "blob_verified": true,
+      "promoted_from_round8_status": "referenced-but-not-read-outside-narrow-call-path"
+    }
+  ],
+  "dependency_coverage_reused": [
+    {
+      "status": "reviewed-in-round8",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/src/errors.mjs",
+      "blob": "80d71210dd00b6f03a03a41943656fc41091741c",
+      "line_count": 55,
+      "method": "inherited-full-content-with-same-blob-verification",
+      "read_ranges": [
+        [
+          1,
+          55
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": false,
+      "coverage_source": "review-latest-hosting-round8.json:supplemental_coverage"
+    },
+    {
+      "status": "reviewed-in-round8",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/src/types.mjs",
+      "blob": "cc9c73bd51da2342eb14a71d592fcf416c577dfe",
+      "line_count": 121,
+      "method": "inherited-full-content-with-same-blob-verification",
+      "read_ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": false,
+      "coverage_source": "review-latest-hosting-round8.json:supplemental_coverage"
+    },
+    {
+      "status": "reviewed-in-round8",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "apps/web/public/_headers",
+      "blob": "604be638edef9d055c8c2b4f52d5988e2bbd5ee4",
+      "line_count": 36,
+      "method": "inherited-full-content-with-same-blob-verification",
+      "read_ranges": [
+        [
+          1,
+          36
+        ]
+      ],
+      "remaining_ranges": [],
+      "fresh_full_read": false,
+      "coverage_source": "review-latest-hosting-round8.json:supplemental_coverage"
+    }
+  ],
+  "first_party_reference_closure": [
+    {
+      "from": "tools/portable-hosting-kit/src/demo/demo-site.mjs",
+      "reference_lines": [
+        10,
+        10
+      ],
+      "to": "tools/portable-hosting-kit/src/errors.mjs",
+      "kind": "runtime-first-party-import",
+      "disposition": "same blob fully read in round 8"
+    },
+    {
+      "from": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+      "reference_lines": [
+        12,
+        14
+      ],
+      "additional_use_lines": [
+        47,
+        49
+      ],
+      "to": "apps/web/public/_headers",
+      "kind": "first-party-fixture-file-read",
+      "disposition": "same blob fully read in round 8"
+    },
+    {
+      "from": "tools/portable-hosting-kit/test/profiles/compare.mjs",
+      "reference_lines": [
+        4,
+        4
+      ],
+      "to": "tools/portable-hosting-kit/test/serve/helpers.mjs",
+      "kind": "runtime-first-party-import",
+      "disposition": "fully read in this round"
+    },
+    {
+      "from": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+      "reference_lines": [
+        4,
+        4
+      ],
+      "to": "tools/portable-hosting-kit/src/errors.mjs",
+      "kind": "runtime-first-party-import",
+      "disposition": "same blob fully read in round 8"
+    },
+    {
+      "from": "tools/portable-hosting-kit/test/adapters/fixtures.mjs",
+      "reference_lines": [
+        6,
+        6
+      ],
+      "to": "tools/portable-hosting-kit/src/types.mjs",
+      "kind": "JSDoc-type-reference",
+      "disposition": "same blob fully read in round 8"
+    }
+  ],
+  "call_site_evidence": [
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "scripts/tor/hosting-config.test.mjs",
+      "blob": "4ac175f883ce1760c5cf308fc385e1b8218fa81d",
+      "lines": [
+        10,
+        10
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/scripts/tor/hosting-config.test.mjs#L10-L10"
+    },
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/adapters/tor.test.mjs",
+      "blob": "62174c98d88122f5101ee8d9728b6747685d8a4f",
+      "lines": [
+        8,
+        8
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/adapters/tor.test.mjs#L8-L8"
+    },
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "blob": "5721e767c46307ed6776048163ba149f2cc5987b",
+      "lines": [
+        14,
+        15
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/differential.test.mjs#L14-L15"
+    },
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/profiles/static-export.test.mjs",
+      "blob": "2945afd04781da84e71b89b51d4f1fe02dd1ab8a",
+      "lines": [
+        10,
+        10
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/static-export.test.mjs#L10-L10"
+    },
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/profiles/nginx.test.mjs",
+      "blob": "963eec40dfae88830f8594cc923026b671d9c0fc",
+      "lines": [
+        12,
+        12
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/profiles/nginx.test.mjs#L12-L12"
+    },
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+      "blob": "a2f499b8820e299d817520943724941e5b4cabc5",
+      "lines": [
+        11,
+        11
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/serve/headers.test.mjs#L11-L11"
+    },
+    {
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/serve/headers.test.mjs",
+      "blob": "a2f499b8820e299d817520943724941e5b4cabc5",
+      "lines": [
+        289,
+        290
+      ],
+      "url": "https://github.com/djshellshoxxx/GhostPay/blob/e60c69f32dbbd9edf7e81ed8866144d665e3de9a/tools/portable-hosting-kit/test/serve/headers.test.mjs#L289-L290"
+    }
+  ],
+  "already_covered_context_rereads": [
+    {
+      "status": "context-reread",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "path": "tools/portable-hosting-kit/test/profiles/differential.test.mjs",
+      "blob": "5721e767c46307ed6776048163ba149f2cc5987b",
+      "line_count": 140,
+      "method": "full-content",
+      "read_ranges": [
+        [
+          1,
+          140
+        ]
+      ],
+      "fresh_full_read": false,
+      "new_coverage_count": 0,
+      "reason": "Qualify the differential-helper test-quality observation using existing caller assertions."
+    }
+  ],
+  "retained_exclusions": [
+    {
+      "path": "tools/portable-hosting-kit/src/adapters/i2p.mjs",
+      "reason": "Optional I2P generator is imported by the shared CLI but not selected by prepareStaticTor; no I2P end-to-end review claimed.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "03bd1640f26322927519c7ebb7033e16f1549c37",
+      "line_count": 226,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          226
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path",
+      "disposition_in_round9": "Legitimate Tor call-path exclusion retained; not read or expanded by this closure."
+    },
+    {
+      "path": "tools/portable-hosting-kit/src/wizard.mjs",
+      "reason": "Interactive configuration command is not invoked by the reviewed Tor preparation/build path.",
+      "sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "blob": "a6630c1762e213d650d9ab8b611d410a8912911d",
+      "line_count": 123,
+      "read_ranges": [],
+      "remaining_ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "status": "referenced-but-not-read-outside-narrow-call-path",
+      "disposition_in_round9": "Legitimate Tor call-path exclusion retained; not read or expanded by this closure."
+    }
+  ],
+  "baseline_disposition": {
+    "production_finding_ids": [
+      "BROWSER-01",
+      "PN-01",
+      "PN-02",
+      "PN-03",
+      "PN-04",
+      "PN-05",
+      "SN-K01"
+    ],
+    "production_findings_changed": false,
+    "prior_documentation_observation": "H8-DOC-01 remains separate and unchanged; its evidence is in the round 8 record."
+  },
+  "verification": {
+    "all_four_blob_ids_recomputed_and_matched": true,
+    "all_four_line_counts_matched_assignment_and_round8": true,
+    "all_source_outputs_complete_without_truncation": true,
+    "metadata_truncation_repaired": "The initial combined round 8 JSON/Markdown output was truncated. Both were reread completely in bounded sections: all JSON non-coverage fields, 20 primary coverage rows, both halves of supplemental coverage (36 rows), and Markdown lines 1-160 plus 161-end. No missing metadata or source ranges remain.",
+    "target_code_executed": false,
+    "tests_executed": false,
+    "network_used": false,
+    "git_mutated": false,
+    "source_changed": false
+  },
+  "remaining_required_reads": [],
+  "pending": [],
+  "handoff": "All four newly included test-support versions are reviewed in full, 601 lines, with verified SHA/path/blob/line-count identities and empty pending ranges. Their first-party dependency closure is complete through this pass or same-blob round 8 reads. No new confirmed production finding; one unranked test-quality observation (H9-TQ-01) is separate from the seven baseline production findings. The optional I2P generator and interactive wizard remain legitimately excluded. No execution or runtime-validation claim is made."
+}

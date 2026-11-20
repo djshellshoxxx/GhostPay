@@ -1,0 +1,528 @@
+{
+  "lane": "english-resource-round6",
+  "reviewer": "/root/english_resource_round6",
+  "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "runtime_execution": false,
+  "network_access": false,
+  "repository_mutation": false,
+  "coverage": [
+    {
+      "path": "apps/web/locales/en.json",
+      "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "candidate_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 2530,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          2530
+        ]
+      ],
+      "independently_read_ranges": [
+        [
+          301,
+          965
+        ],
+        [
+          988,
+          2530
+        ]
+      ],
+      "inherited_ranges": [
+        [
+          1,
+          300
+        ],
+        [
+          966,
+          987
+        ]
+      ],
+      "inherited_from": {
+        "reviewer": "root",
+        "report": "/workspace/scratch/e449ed9154f6/review-root.json",
+        "section": "partial_coverage",
+        "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+      },
+      "method": "Complete composed coverage: root's explicitly credited 322 lines plus this reviewer's complete numbered reads of the remaining 2208 lines in chunks of at most 100 lines. Initial aggregate-output truncation affecting 301-400 was repaired by rereading that entire chunk. No independent full-file read claimed. Candidate object identity separately verified."
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "blob": "cc7464eac7f565bff3f08849e82b0533c176cd09",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 2262,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          2262
+        ]
+      ],
+      "inherited_ranges": [
+        [
+          1,
+          10
+        ],
+        [
+          12,
+          54
+        ],
+        [
+          56,
+          60
+        ],
+        [
+          62,
+          68
+        ],
+        [
+          70,
+          184
+        ],
+        [
+          186,
+          298
+        ],
+        [
+          300,
+          475
+        ],
+        [
+          477,
+          1200
+        ],
+        [
+          1204,
+          1219
+        ],
+        [
+          1221,
+          1249
+        ],
+        [
+          1251,
+          1452
+        ],
+        [
+          1454,
+          2090
+        ],
+        [
+          2092,
+          2132
+        ],
+        [
+          2134,
+          2259
+        ],
+        [
+          2262,
+          2262
+        ]
+      ],
+      "inherited_from": {
+        "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "method": "Composed base: root ranges 1-300 and 966-987 plus this reviewer ranges 301-965 and 988-2530."
+      },
+      "transitively_inherited_root_ranges": [
+        [
+          1,
+          10
+        ],
+        [
+          12,
+          54
+        ],
+        [
+          56,
+          60
+        ],
+        [
+          62,
+          68
+        ],
+        [
+          70,
+          184
+        ],
+        [
+          186,
+          277
+        ],
+        [
+          936,
+          957
+        ]
+      ],
+      "independently_reviewed_diff_target_ranges": [
+        [
+          11,
+          11
+        ],
+        [
+          55,
+          55
+        ],
+        [
+          61,
+          61
+        ],
+        [
+          69,
+          69
+        ],
+        [
+          185,
+          185
+        ],
+        [
+          299,
+          299
+        ],
+        [
+          476,
+          476
+        ],
+        [
+          1201,
+          1203
+        ],
+        [
+          1220,
+          1220
+        ],
+        [
+          1250,
+          1250
+        ],
+        [
+          1453,
+          1453
+        ],
+        [
+          2091,
+          2091
+        ],
+        [
+          2133,
+          2133
+        ],
+        [
+          2260,
+          2261
+        ]
+      ],
+      "method": "Composed base plus complete candidate-to-main blob diff, including all deletions, additions and replacements. All 325 lines of zero-context diff read in chunks of at most 100 lines. No independent full-file read claimed. Frozen main object identity separately verified."
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "blob": "b35b0ee93bca647a80ddd12d1a49dee86845409b",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 2549,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          2549
+        ]
+      ],
+      "inherited_ranges": [
+        [
+          1,
+          476
+        ],
+        [
+          478,
+          2526
+        ],
+        [
+          2547,
+          2549
+        ]
+      ],
+      "inherited_from": {
+        "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "method": "Composed base: root ranges 1-300 and 966-987 plus this reviewer ranges 301-965 and 988-2530."
+      },
+      "transitively_inherited_root_ranges": [
+        [
+          1,
+          300
+        ],
+        [
+          966,
+          987
+        ]
+      ],
+      "independently_reviewed_diff_target_ranges": [
+        [
+          477,
+          477
+        ],
+        [
+          2527,
+          2546
+        ]
+      ],
+      "method": "Composed base plus complete candidate-to-quick-hide blob diff with three lines of context, including the clipboard qualification replacement and all 19 added settings/privacy/journal strings. No independent full-file read claimed."
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "blob": "a8e46fafce5cacc633239ef044ce1c91ed766870",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 2513,
+      "kind": "supporting-resource",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          2513
+        ]
+      ],
+      "inherited_ranges": [
+        [
+          1,
+          2513
+        ]
+      ],
+      "inherited_from": {
+        "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "method": "Composed base: root ranges 1-300 and 966-987 plus this reviewer ranges 301-965 and 988-2530."
+      },
+      "transitively_inherited_root_ranges": [
+        [
+          1,
+          283
+        ],
+        [
+          949,
+          970
+        ]
+      ],
+      "independently_reviewed_diff_target_ranges": [],
+      "method": "Composed base plus complete blob diff with three lines of context. The sole change deletes candidate lines 142-158; no target-only text exists. No independent full-file read claimed."
+    }
+  ],
+  "supplementary_full_reads": [
+    {
+      "path": "packages/contracts/test/GhostPayRouter.invariant.t.sol",
+      "blob": "bd526370803a3098359f8e3d70661edf26edd2be",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 236,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          236
+        ]
+      ],
+      "inherited_ranges": [],
+      "method": "Independent complete numbered source read; no test run."
+    },
+    {
+      "path": "packages/contracts/test/echidna/EchidnaRouter.sol",
+      "blob": "ec05b5b11a522ab32ec666d2af277db3357d445d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 204,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          204
+        ]
+      ],
+      "inherited_ranges": [],
+      "method": "Independent complete numbered source read; no test run."
+    },
+    {
+      "path": "packages/contracts/test/mocks/FeeOnTransferToken.sol",
+      "blob": "faaa773c23969663e2f2bfa154555dbdf2035631",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 27,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          27
+        ]
+      ],
+      "inherited_ranges": [],
+      "method": "Independent complete numbered source read."
+    },
+    {
+      "path": "packages/contracts/foundry.toml",
+      "blob": "59bf7337ea5fe8526869f22e9595e022027b4712",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 42,
+      "kind": "configuration",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          42
+        ]
+      ],
+      "inherited_ranges": [],
+      "method": "Independent complete numbered source read."
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "blob": "a1fb55a8eb9ec0270491fa4d5b2f071200d08142",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 98,
+      "kind": "production",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          98
+        ]
+      ],
+      "inherited_ranges": [],
+      "method": "Independent complete numbered read while screening generic error wording. No additional confirmed core issue."
+    }
+  ],
+  "supplementary_partial_reads": [
+    {
+      "path": "packages/invoice-schema/src/receipts.ts",
+      "blob": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 185,
+      "ranges": [
+        [
+          130,
+          165
+        ]
+      ],
+      "purpose": "PN-05 corroboration."
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1524,
+      "ranges": [
+        [
+          650,
+          695
+        ],
+        [
+          1240,
+          1270
+        ]
+      ],
+      "purpose": "PN-05 binding and help consumer."
+    },
+    {
+      "path": "packages/contracts/test/GhostPayRouter.t.sol",
+      "blob": "26e5ab25cb8feb9783b4afa74eb4bf4ec5be6ef6",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 981,
+      "ranges": [
+        [
+          339,
+          374
+        ],
+        [
+          447,
+          465
+        ]
+      ],
+      "purpose": "Independent narrow confirmation of separate metadata and fee-on-transfer rejection tests."
+    },
+    {
+      "path": "packages/contracts/test/GhostPayRouter.fuzz.t.sol",
+      "blob": "bb1ccfa26f1269852ef7b42aee16c9c5771a6a6c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 199,
+      "ranges": [
+        [
+          80,
+          101
+        ]
+      ],
+      "purpose": "Independent narrow confirmation of metadata-amount rejection assertion."
+    }
+  ],
+  "observations": [
+    {
+      "id": "EN-R6-PN05-CORROBORATION",
+      "related_finding": "PN-05",
+      "status": "source-confirmed",
+      "classification": "Additional evidence for an existing finding; not a new issue",
+      "summary": "help.receiptFile repeats the recipient-binding overclaim when invoice context is available. Pay renders that help and passes the prepared address, but the binder intentionally skips recipient comparison when a valid minimal receipt omits stealthAddress.",
+      "evidence": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:apps/web/locales/en.json:2062",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:apps/web/src/views/Pay.tsx:1256",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:apps/web/src/views/Pay.tsx:678-687",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/invoice-schema/src/receipts.ts:147-155"
+      ],
+      "recommendation": "Qualify both pay.receipt.intro and help.receiptFile on the receipt containing an address. Preserve intentional minimal receipts.",
+      "limits": "Same PN-05; no new severity or finding ID. Signature, invoice, chain, asset and amount checks remain separate. No runtime reproduction."
+    },
+    {
+      "id": "EN-R6-RESOURCE-REVIEW",
+      "classification": "Review result",
+      "summary": "No additional distinct core security wording issue established after complete composed coverage of all four English resources.",
+      "notes": "Core copy distinguishes configured RPC evidence, local records, historical observations and seller attestations from independent payment proof, and generally distinguishes generated/download-initiated backups from verified recoverability. Incidental Bitcoin/Solana/TRON/policy/merchant strings did not extend production scope. Existing BROWSER-01 and PN-01 through PN-05/SN-K01 were not duplicated."
+    }
+  ],
+  "independent_confirmations": [
+    {
+      "id": "ROOT-Q01",
+      "status": "independently-source-confirmed",
+      "classification": "Test qualification gap; not a demonstrated runtime vulnerability",
+      "summary": "payBadMetadata reverts in its successful try body instead of persisting unexpected acceptance. With fail_on_revert=false, this handler revert is not itself a failing invariant. It rolls back the router call and handler state; later invariants have no recorded bad-metadata acceptance to detect.",
+      "evidence": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/contracts/test/GhostPayRouter.invariant.t.sol:103-119,185-191,201-235",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/contracts/foundry.toml:23-26"
+      ],
+      "limiting_evidence": [
+        "Separate explicit unit rejection assertions read at GhostPayRouter.t.sol:339-373.",
+        "Separate metadata-amount fuzz rejection assertion read at GhostPayRouter.fuzz.t.sol:84-99."
+      ],
+      "recommendation": "Persist unexpected success in a dedicated counter or flag and assert its absence in an invariant. Retain the separate unit/fuzz guards.",
+      "validation": "Static source inference. No harness, mutation, build or test executed."
+    },
+    {
+      "id": "ROOT-Q02",
+      "status": "independently-source-confirmed",
+      "classification": "Test qualification gap; not a demonstrated runtime vulnerability",
+      "summary": "payFotToken has empty success and catch bodies. FOT-specific properties only check router retention; recipient accounting uses the ordinary token. Successful lossy forwarding with no FOT retained by the router would not violate those properties.",
+      "evidence": [
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/contracts/test/echidna/EchidnaRouter.sol:93-107,168-185,188-203",
+        "e22c1748a3de6eb02f5be3abe27d634b238c67c6:packages/contracts/test/mocks/FeeOnTransferToken.sol:18-25"
+      ],
+      "limiting_evidence": [
+        "The mock rounds burns up; every nonzero transfer is lossy.",
+        "Separate explicit unit rejection read at GhostPayRouter.t.sol:447-458.",
+        "Separate Foundry invariant read at GhostPayRouter.invariant.t.sol:230-235."
+      ],
+      "recommendation": "Record successful lossy-token calls as a persistent property failure and separately track exercise of the negative path.",
+      "validation": "Static source review. No mutation or test run."
+    }
+  ],
+  "new_confirmed_issues": [],
+  "remaining": {
+    "assigned_english_resources": [],
+    "requested_root_q_checks": [],
+    "note": "No assigned work remains. Supplementary partial reads are not full-file coverage claims; root owns the complete production/test audit ledger."
+  },
+  "notes": [
+    "Initial broad metadata output was truncated; targeted jq reads supplied exact scope and inheritance data.",
+    "Only read-only Git/text inspection and a standard-library diff-range mapping utility were used; no repository code imported or executed.",
+    "Only intermediate review artifacts outside the repository were written."
+  ]
+}

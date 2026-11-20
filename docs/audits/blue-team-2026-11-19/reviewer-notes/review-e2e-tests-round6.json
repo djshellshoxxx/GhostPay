@@ -1,0 +1,2600 @@
+{
+  "reviewer": "e2e_tests_round6",
+  "review_type": "static defensive source review; read-only target",
+  "assignment": "/workspace/scratch/e449ed9154f6/e2e_tests_round4-assignment.json",
+  "assignment_sha256": "fb2405add1c46871b9288e567b6c5eae7e020b27d579210d966f1fd7802bfdb4",
+  "repository": "/workspace/scratch/e449ed9154f6/GhostPay-audit",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "scope": "Exact assigned core E2E and support blob variants, prioritized flow helpers, core journeys, network/privacy and Pages assertions.",
+  "constraints": [
+    "No application, test, configuration or dependency edits.",
+    "No Git mutation, checkout, merge, commit, push or network operation.",
+    "No target code, tests, build, server, probe, PoC, RPC or transaction execution.",
+    "Only temporary review artifacts written outside the repository."
+  ],
+  "metadata_verification": "All 61 original assignment SHA:path resolutions, blob IDs and line counts checked against immutable Git objects; assignment file left unchanged.",
+  "source_read_note": "Initial verbose assignment output was truncated; every path/blob/SHA/line-count row was then re-read without repetitive refs and independently validated. All source and complete diffs counted below were read without missing output. An incidental truncated reviewer-ledger print was not used for source coverage.",
+  "summary": {
+    "assigned_variants": 61,
+    "assigned_lines": 15439,
+    "reviewed_variants": 43,
+    "reviewed_lines": 14131,
+    "remaining_variants": 18,
+    "remaining_lines": 1308,
+    "new_application_security_findings": 0,
+    "confirmed_test_harness_defects": 1,
+    "qualification_gaps": 2,
+    "historical_test_fixture_notes": 1
+  },
+  "coverage": [
+    {
+      "path": "apps/web/e2e/app.spec.ts",
+      "blob": "5e295217b712af3a57d046f96fad556640763ef6",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 251,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          251
+        ]
+      ],
+      "assignment_index": 2,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "blob": "58f53192dd505d66a02ceb8036be11b8a594000f",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 752,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          752
+        ]
+      ],
+      "assignment_index": 5,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "blob": "029ffe3c21bc293f5bd82a2349b0258d8c63a553",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 310,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          310
+        ]
+      ],
+      "assignment_index": 7,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/devnet-journey.spec.ts",
+        "blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 318
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/chain.ts",
+      "blob": "6e5b1b352349a6f3f1bab8ff971e23b62388e7cb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 205,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          205
+        ]
+      ],
+      "assignment_index": 8,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/devnet/pages.ts",
+      "blob": "67fa08cf7a8c3118e738b25a8a2146a0ff779605",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 269,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          269
+        ]
+      ],
+      "assignment_index": 9,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/devnet/pages.ts",
+        "blob": "8a0f66d2a53db85cbb47638d16e2b46cd98f0ecb",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 270
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/prepare-devnet-manifest.mjs",
+      "blob": "570705e9c29b2dcde376a14c77d7b3a86cf5cf41",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 175,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          175
+        ]
+      ],
+      "assignment_index": 10,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/devnet/scan-dist.mjs",
+      "blob": "5ee0290b7d5ce27d85d6fb79d703cbee0f3186b9",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 25,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          25
+        ]
+      ],
+      "assignment_index": 11,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/devnet/ui.ts",
+      "blob": "a48e444572702aec5542fb96fcfe82ce6e3e1c55",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 59,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          59
+        ]
+      ],
+      "assignment_index": 12,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "blob": "e887522e69348c3a52f4ba137b0f3bad242d9fd6",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 202,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          202
+        ]
+      ],
+      "assignment_index": 13,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/flows.spec.ts",
+      "blob": "1d01f09beae3ee3693e74bdc0dd1fec942a200f5",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 541,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          541
+        ]
+      ],
+      "assignment_index": 14,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/helpers.ts",
+      "blob": "463ecde552e7dd16790053765c879dfd01413c80",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 56,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          56
+        ]
+      ],
+      "assignment_index": 15,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/network-isolation.spec.ts",
+      "blob": "9327d9570232e2809d7564b983f5583ec08da0ab",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 108,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          108
+        ]
+      ],
+      "assignment_index": 16,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "blob": "9aea116713f0ad916ecbd6aaa922b86361228941",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 1068,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1068
+        ]
+      ],
+      "assignment_index": 17,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/pages-devnet.spec.ts",
+        "blob": "90b905165b9b6457585635022bc9e64dab674521",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 1097
+      }
+    },
+    {
+      "path": "apps/web/e2e/sweep-network.ts",
+      "blob": "e8cda12803449f83b2a0a106379a75898a19a22a",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 170,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          170
+        ]
+      ],
+      "assignment_index": 31,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/sweep.spec.ts",
+      "blob": "adb637b06e146fb8c30161e40a9b257fce34f19b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 146,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          146
+        ]
+      ],
+      "assignment_index": 32,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/sweep.spec.ts",
+        "blob": "1947eb0399a1f16eddfa595a6ea7a9a7fd16f9ed",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 154
+      }
+    },
+    {
+      "path": "apps/web/e2e/app.spec.ts",
+      "blob": "92afdb684409110c7b542d4e842fc8d915d81b43",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 268,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          268
+        ]
+      ],
+      "assignment_index": 33,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/app.spec.ts",
+        "blob": "5e295217b712af3a57d046f96fad556640763ef6",
+        "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "line_count": 251
+      }
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "blob": "7148861571dc01bfc9957522d51d8a1c23a194e6",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 767,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          767
+        ]
+      ],
+      "assignment_index": 34,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/core-journey.spec.ts",
+        "blob": "58f53192dd505d66a02ceb8036be11b8a594000f",
+        "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "line_count": 752
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 318,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          318
+        ]
+      ],
+      "assignment_index": 35,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/devnet/invoiceTamper.ts",
+      "blob": "c9501b91c45718371a144948546fd84c5831db57",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 19,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          19
+        ]
+      ],
+      "assignment_index": 36,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/devnet/pages.ts",
+      "blob": "8a0f66d2a53db85cbb47638d16e2b46cd98f0ecb",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 270,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          270
+        ]
+      ],
+      "assignment_index": 37,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 202,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          202
+        ]
+      ],
+      "assignment_index": 38,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/flowMocks.ts",
+        "blob": "e887522e69348c3a52f4ba137b0f3bad242d9fd6",
+        "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "line_count": 202
+      }
+    },
+    {
+      "path": "apps/web/e2e/flows.spec.ts",
+      "blob": "ebf2ee81c685f04af7f7f3f8e22278427d93eaab",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 545,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          545
+        ]
+      ],
+      "assignment_index": 39,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/flows.spec.ts",
+        "blob": "1d01f09beae3ee3693e74bdc0dd1fec942a200f5",
+        "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "line_count": 541
+      }
+    },
+    {
+      "path": "apps/web/e2e/helpers.ts",
+      "blob": "77387fdf1717f1a917d01da0790e017804299eb4",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 58,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          58
+        ]
+      ],
+      "assignment_index": 40,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/helpers.ts",
+        "blob": "463ecde552e7dd16790053765c879dfd01413c80",
+        "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+        "line_count": 56
+      }
+    },
+    {
+      "path": "apps/web/e2e/idle-session.spec.ts",
+      "blob": "c38a3ce515e22ec1af30c99058d228261a0028b7",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 179,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          179
+        ]
+      ],
+      "assignment_index": 41,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/invoice-signer.spec.ts",
+      "blob": "43c1f148fc53a7cab3454b6db0191cdfa865c3e0",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 330,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          330
+        ]
+      ],
+      "assignment_index": 42,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "blob": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 363,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          363
+        ]
+      ],
+      "assignment_index": 43,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "blob": "90b905165b9b6457585635022bc9e64dab674521",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 1097,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1097
+        ]
+      ],
+      "assignment_index": 44,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/privacy-settings.spec.ts",
+      "blob": "a673b37c5927c60aa8d4ca260a0861209178a00f",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 81,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          81
+        ]
+      ],
+      "assignment_index": 45,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+      "blob": "e46026f905b73f5f9c43a366db7737118983d62c",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 142,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          142
+        ]
+      ],
+      "assignment_index": 46,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 536,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          536
+        ]
+      ],
+      "assignment_index": 47,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/stealthExportFixtures.ts",
+      "blob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 349,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          349
+        ]
+      ],
+      "assignment_index": 48,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/sweep.spec.ts",
+      "blob": "1947eb0399a1f16eddfa595a6ea7a9a7fd16f9ed",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "line_count": 154,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          154
+        ]
+      ],
+      "assignment_index": 49,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/clipboard-privacy.spec.ts",
+      "blob": "bfa4bb354f148e5a0a53232896c8aa9fe4041e39",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 75,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          75
+        ]
+      ],
+      "assignment_index": 50,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/privacy-mask-history.spec.ts",
+      "blob": "4e46d29af387b23ae28b79055dd38d440f1911b9",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "line_count": 98,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          98
+        ]
+      ],
+      "assignment_index": 51,
+      "method": "Complete immutable Git blob read with line numbers; all source lines inspected. No target code executed."
+    },
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "blob": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "line_count": 357,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          357
+        ]
+      ],
+      "assignment_index": 52,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/network-authorization.spec.ts",
+        "blob": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 363
+      }
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "blob": "e07273d81db153a27c77cef83db3cfa99423bab3",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 760,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          760
+        ]
+      ],
+      "assignment_index": 53,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/core-journey.spec.ts",
+        "blob": "7148861571dc01bfc9957522d51d8a1c23a194e6",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 767
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "blob": "9426aa6fe1df0af34bacc4601db35999b8425fea",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 315,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          315
+        ]
+      ],
+      "assignment_index": 54,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/devnet-journey.spec.ts",
+        "blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 318
+      }
+    },
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "blob": "e072d3cbf199ea53c9f8bd26bd43ed390153b2e3",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 355,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          355
+        ]
+      ],
+      "assignment_index": 55,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/network-authorization.spec.ts",
+        "blob": "3f012662e7a44172e698e2f0e7f55ae6890e3a6b",
+        "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "line_count": 357
+      }
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "blob": "1d1ae84039ba9231efc9063313dacea80373b4e3",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 1092,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          1092
+        ]
+      ],
+      "assignment_index": 56,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/pages-devnet.spec.ts",
+        "blob": "90b905165b9b6457585635022bc9e64dab674521",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 1097
+      }
+    },
+    {
+      "path": "apps/web/e2e/privacy-settings.spec.ts",
+      "blob": "42fbcd77f2292abe9c7919edc6ac8903a0c028a2",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 76,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          76
+        ]
+      ],
+      "assignment_index": 57,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/privacy-settings.spec.ts",
+        "blob": "a673b37c5927c60aa8d4ca260a0861209178a00f",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 81
+      }
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "blob": "38be0a80b624e68be85e8657482bb64bf85fc5ec",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 509,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          509
+        ]
+      ],
+      "assignment_index": 58,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/stealth-export.spec.ts",
+        "blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 536
+      }
+    },
+    {
+      "path": "apps/web/e2e/stealthExportFixtures.ts",
+      "blob": "2966cbc681fdf0ddb74f88ed0c712f36c6c935a4",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "line_count": 342,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          342
+        ]
+      ],
+      "assignment_index": 59,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/stealthExportFixtures.ts",
+        "blob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 349
+      }
+    },
+    {
+      "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+      "blob": "db9e79a1337f1d8bcc423d0fc28c51e36975ee23",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "line_count": 137,
+      "kind": "test-support",
+      "status": "reviewed",
+      "ranges": [
+        [
+          1,
+          137
+        ]
+      ],
+      "assignment_index": 60,
+      "method": "Complete reviewed counterpart plus COMPLETE immutable blob-to-blob added/deleted diff; unchanged lines inherited. No target code executed.",
+      "counterpart": {
+        "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+        "blob": "e46026f905b73f5f9c43a366db7737118983d62c",
+        "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "line_count": 142
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "E2E-Q01",
+      "title": "Non-Pages devnet RPC proxy always returns HTTP 200",
+      "classification": "confirmed_test_harness_defect",
+      "scope": "test-support only",
+      "severity": "low",
+      "confidence": "high (direct source)",
+      "is_application_vulnerability": false,
+      "status": {
+        "main": "present; same chain.ts blob",
+        "candidate": "present; same chain.ts blob",
+        "pages_proxy": "Separate PagesNetwork path preserves status and has an explicit source-level acceptance test."
+      },
+      "evidence": [
+        {
+          "path": "apps/web/e2e/devnet/chain.ts",
+          "blob": "6e5b1b352349a6f3f1bab8ff971e23b62388e7cb",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              48,
+              58
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/devnet/chain.ts",
+          "blob": "6e5b1b352349a6f3f1bab8ff971e23b62388e7cb",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              125,
+              131
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/devnet/pages.ts",
+          "blob": "8a0f66d2a53db85cbb47638d16e2b46cd98f0ecb",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              24,
+              34
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/devnet/pages.ts",
+          "blob": "8a0f66d2a53db85cbb47638d16e2b46cd98f0ecb",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              121,
+              127
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "blob": "90b905165b9b6457585635022bc9e64dab674521",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              135,
+              165
+            ]
+          ]
+        }
+      ],
+      "detail": "The generic devnet post helper resolves only response-body text and discards the upstream HTTP status. DevnetNetwork.forward then fulfills every completed upstream response with status 200. A non-2xx response therefore reaches the application with a different transport status in this harness. PagesNetwork carries status and body and has a test asserting propagation of an upstream failure status.",
+      "impact": "The generic devnet journeys cannot establish HTTP-status handling fidelity for the deployed application. This is a test-harness defect, not evidence that the application mishandles production HTTP errors.",
+      "recommendation": "Use a shared status-preserving response representation for both devnet proxy helpers and retain a focused transport-fidelity assertion.",
+      "validation": "Static source inspection only. No harness, test, server, RPC request or transaction was executed."
+    }
+  ],
+  "quality_gaps": [
+    {
+      "id": "E2E-G01",
+      "title": "Pages qualification explicitly excludes a successful real-chain ERC-20 payment path",
+      "classification": "qualification_gap",
+      "is_application_vulnerability": false,
+      "status": {
+        "main": "present in assigned Pages suite",
+        "candidate": "present in assigned Pages suite"
+      },
+      "evidence": [
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "blob": "90b905165b9b6457585635022bc9e64dab674521",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              427,
+              445
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/devnet-journey.spec.ts",
+          "blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              71,
+              131
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/sweep.spec.ts",
+          "blob": "1947eb0399a1f16eddfa595a6ea7a9a7fd16f9ed",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              53,
+              102
+            ]
+          ]
+        }
+      ],
+      "detail": "The Pages c2 test expressly asserts that the local deployment tokens are absent from the compiled token choices and the allowlisted token addresses have no code on that chain. Its real-chain checkout journey uses the native asset. Separate ERC-20 scan/sweep tests rely on authored RPC fixtures.",
+      "impact": "A successful Pages/devnet run of these tests would provide native-asset journey evidence; it would not qualify successful ERC-20 checkout, approval/permit, or real token-transfer behavior through the same browser artifact.",
+      "recommendation": "Track native and ERC-20 qualification separately, and add independently reviewable local real-chain ERC-20 acceptance evidence using a fixture deployment aligned with the compiled token configuration. No execution was performed in this review."
+    },
+    {
+      "id": "E2E-G02",
+      "title": "Export leak guard samples persistent storage at the end of the journey",
+      "classification": "qualification_gap",
+      "is_application_vulnerability": false,
+      "status": {
+        "main": "stealth-export suite absent at pinned main",
+        "candidate": "present"
+      },
+      "evidence": [
+        {
+          "path": "apps/web/e2e/stealthExportFixtures.ts",
+          "blob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              264,
+              339
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              359,
+              416
+            ]
+          ]
+        }
+      ],
+      "detail": "recordLeaks records request/console/error/download events as they occur, but its URL/history/storage/IndexedDB/cache inspection is performed by snapshot(). The secret-leak scenario calls that snapshot once after completing multiple export and recovery actions.",
+      "impact": "The assertions establish absence of the selected synthetic secret markers at that sampled state. They do not establish that no transient plaintext storage write occurred and was removed earlier. No transient write or application leakage was established by this source review.",
+      "recommendation": "If continuous absence is part of the intended acceptance claim, observe sensitive storage writes using synthetic fixture markers or add checks at the individual credential/export transitions. Keep the reported evidence limited to the channels and moments actually inspected."
+    }
+  ],
+  "historical_observations": [
+    {
+      "id": "E2E-H01",
+      "title": "Older network-authorization fixture uses quantity-shaped balance results",
+      "classification": "historical_test_fixture_defect",
+      "is_application_vulnerability": false,
+      "evidence": [
+        {
+          "path": "apps/web/e2e/network-authorization.spec.ts",
+          "blob": "e072d3cbf199ea53c9f8bd26bd43ed390153b2e3",
+          "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+          "ranges": [
+            [
+              275,
+              293
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/network-authorization.spec.ts",
+          "blob": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              279,
+              298
+            ]
+          ]
+        }
+      ],
+      "status": {
+        "main": "test file absent",
+        "candidate": "corrected with ABI-encoded uint256 results",
+        "older_supplemental": "present in blob e072d3cbf199ea53c9f8bd26bd43ed390153b2e3"
+      },
+      "detail": "The older network-authorization test supplied short quantity-style results for ERC-20 balanceOf calls. The newer 19055300 variant uses encodeAbiParameters for both the stale and replacement balance results and documents the distinction from eth_chainId. This is not a current candidate defect.",
+      "validation": "Both complete diffs in the variant chain were inspected; no test was run."
+    }
+  ],
+  "positive_assertion_coverage": [
+    {
+      "topic": "Chained core journey",
+      "detail": "Source asserts prior-stage product outputs across invoice, payment, scanner, bound receipt, sweep, backup and independent restore; separate cases exercise expiry, same-key session replacement, reorg withdrawal and unknown/late outcomes. Assertions are unexecuted.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "blob": "7148861571dc01bfc9957522d51d8a1c23a194e6",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              474,
+              767
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Network authorization",
+      "detail": "Source observes dispatched HTTP(S) browser requests and includes persisted-policy refusal, cancellation, renewed grant replacement, second-tab endpoint changes, explicit balance-read consent and own-node refusal.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/network-authorization.spec.ts",
+          "blob": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              40,
+              363
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Signer trust",
+      "detail": "Source separates selected named pins from other named/legacy pins, invalidates stale confirmation across tabs, exercises offline verification and passphrase-policy recheck, and removes trusted review after idle lock.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/invoice-signer.spec.ts",
+          "blob": "43c1f148fc53a7cab3454b6db0191cdfa865c3e0",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              72,
+              300
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Export and sweep authority",
+      "detail": "Source checks credential gates, exact saved-file recovery, secret marker absence in observed channels, discarded in-flight exports after lock/wipe, durable pre-broadcast journal state and duplicate-sweep refusal through reload.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              71,
+              536
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/sweep.spec.ts",
+          "blob": "1947eb0399a1f16eddfa595a6ea7a9a7fd16f9ed",
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "ranges": [
+            [
+              53,
+              154
+            ]
+          ]
+        },
+        {
+          "path": "apps/web/e2e/sweep-network.ts",
+          "blob": "e8cda12803449f83b2a0a106379a75898a19a22a",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              117,
+              144
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "topic": "Existing wallet clear coverage",
+      "detail": "The flows suite already contains a late-wallet-hash and explicit confirmed-clear scenario. It was read and was not reported as missing coverage. Predecessor-owned BROWSER-01, PN-01 through PN-05 and SN-K01 were not duplicated.",
+      "evidence": [
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "blob": "1d01f09beae3ee3693e74bdc0dd1fec942a200f5",
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "ranges": [
+            [
+              140,
+              195
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "excluded_duplicates": [
+    "BROWSER-01",
+    "PN-01",
+    "PN-02",
+    "PN-03",
+    "PN-04",
+    "PN-05",
+    "SN-K01"
+  ],
+  "head_mapping": [
+    {
+      "path": "apps/web/e2e/accessibility-audit.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+        "assignment_indices": [
+          0
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+        "assignment_indices": [
+          0
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/accessibility.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+        "assignment_indices": [
+          1
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+        "assignment_indices": [
+          1
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/app.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "5e295217b712af3a57d046f96fad556640763ef6",
+        "assignment_indices": [
+          2
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "92afdb684409110c7b542d4e842fc8d915d81b43",
+        "assignment_indices": [
+          33
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/camera-browser.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+        "assignment_indices": [
+          3
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+        "assignment_indices": [
+          3
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/contextual-help.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+        "assignment_indices": [
+          4
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+        "assignment_indices": [
+          4
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/core-journey.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "58f53192dd505d66a02ceb8036be11b8a594000f",
+        "assignment_indices": [
+          5
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "7148861571dc01bfc9957522d51d8a1c23a194e6",
+        "assignment_indices": [
+          34
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devices.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+        "assignment_indices": [
+          6
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+        "assignment_indices": [
+          6
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "029ffe3c21bc293f5bd82a2349b0258d8c63a553",
+        "assignment_indices": [
+          7
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "639a3fa4e4bfb6a051fdc0cd583cfde63777e520",
+        "assignment_indices": [
+          35
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/chain.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "6e5b1b352349a6f3f1bab8ff971e23b62388e7cb",
+        "assignment_indices": [
+          8
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "6e5b1b352349a6f3f1bab8ff971e23b62388e7cb",
+        "assignment_indices": [
+          8
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/pages.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "67fa08cf7a8c3118e738b25a8a2146a0ff779605",
+        "assignment_indices": [
+          9
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "8a0f66d2a53db85cbb47638d16e2b46cd98f0ecb",
+        "assignment_indices": [
+          37
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/prepare-devnet-manifest.mjs",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "570705e9c29b2dcde376a14c77d7b3a86cf5cf41",
+        "assignment_indices": [
+          10
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "570705e9c29b2dcde376a14c77d7b3a86cf5cf41",
+        "assignment_indices": [
+          10
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/scan-dist.mjs",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "5ee0290b7d5ce27d85d6fb79d703cbee0f3186b9",
+        "assignment_indices": [
+          11
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "5ee0290b7d5ce27d85d6fb79d703cbee0f3186b9",
+        "assignment_indices": [
+          11
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/ui.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "a48e444572702aec5542fb96fcfe82ce6e3e1c55",
+        "assignment_indices": [
+          12
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "a48e444572702aec5542fb96fcfe82ce6e3e1c55",
+        "assignment_indices": [
+          12
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/flowMocks.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "e887522e69348c3a52f4ba137b0f3bad242d9fd6",
+        "assignment_indices": [
+          13
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "a9081deadbfac984619299d39de77c0fba3370cc",
+        "assignment_indices": [
+          38
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/flows.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "1d01f09beae3ee3693e74bdc0dd1fec942a200f5",
+        "assignment_indices": [
+          14
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "ebf2ee81c685f04af7f7f3f8e22278427d93eaab",
+        "assignment_indices": [
+          39
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/helpers.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "463ecde552e7dd16790053765c879dfd01413c80",
+        "assignment_indices": [
+          15
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "77387fdf1717f1a917d01da0790e017804299eb4",
+        "assignment_indices": [
+          40
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/network-isolation.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "9327d9570232e2809d7564b983f5583ec08da0ab",
+        "assignment_indices": [
+          16
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "9327d9570232e2809d7564b983f5583ec08da0ab",
+        "assignment_indices": [
+          16
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "9aea116713f0ad916ecbd6aaa922b86361228941",
+        "assignment_indices": [
+          17
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "90b905165b9b6457585635022bc9e64dab674521",
+        "assignment_indices": [
+          44
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/passphrase-vault.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+        "assignment_indices": [
+          18
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+        "assignment_indices": [
+          18
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.d.mts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+        "assignment_indices": [
+          19
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+        "assignment_indices": [
+          19
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.mjs",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+        "assignment_indices": [
+          20
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+        "assignment_indices": [
+          20
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/product-backup-retry.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+        "assignment_indices": [
+          21
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+        "assignment_indices": [
+          21
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-camera-multipart.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+        "assignment_indices": [
+          22
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+        "assignment_indices": [
+          22
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-camera.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+        "assignment_indices": [
+          23
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+        "assignment_indices": [
+          23
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-video.d.mts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+        "assignment_indices": [
+          24
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+        "assignment_indices": [
+          24
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/qr-video.mjs",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+        "assignment_indices": [
+          25
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+        "assignment_indices": [
+          25
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/receipt-lean.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+        "assignment_indices": [
+          26
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+        "assignment_indices": [
+          26
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/reconciliation.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+        "assignment_indices": [
+          27
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+        "assignment_indices": [
+          27
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/recovery.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+        "assignment_indices": [
+          28
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+        "assignment_indices": [
+          28
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/sellerpairing.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+        "assignment_indices": [
+          29
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+        "assignment_indices": [
+          29
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/static-help.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+        "assignment_indices": [
+          30
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+        "assignment_indices": [
+          30
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/sweep-network.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "e8cda12803449f83b2a0a106379a75898a19a22a",
+        "assignment_indices": [
+          31
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "e8cda12803449f83b2a0a106379a75898a19a22a",
+        "assignment_indices": [
+          31
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/sweep.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": "adb637b06e146fb8c30161e40a9b257fce34f19b",
+        "assignment_indices": [
+          32
+        ]
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "1947eb0399a1f16eddfa595a6ea7a9a7fd16f9ed",
+        "assignment_indices": [
+          49
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/devnet/invoiceTamper.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "c9501b91c45718371a144948546fd84c5831db57",
+        "assignment_indices": [
+          36
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/idle-session.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "c38a3ce515e22ec1af30c99058d228261a0028b7",
+        "assignment_indices": [
+          41
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/invoice-signer.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "43c1f148fc53a7cab3454b6db0191cdfa865c3e0",
+        "assignment_indices": [
+          42
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+        "assignment_indices": [
+          43
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/privacy-settings.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "a673b37c5927c60aa8d4ca260a0861209178a00f",
+        "assignment_indices": [
+          45
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "e46026f905b73f5f9c43a366db7737118983d62c",
+        "assignment_indices": [
+          46
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "7914f00fd505121edb5271e7040603b2dc2a847a",
+        "assignment_indices": [
+          47
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/stealthExportFixtures.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": "97044edcd17c4ead4f16b6e5a852a85480121987",
+        "assignment_indices": [
+          48
+        ]
+      }
+    },
+    {
+      "path": "apps/web/e2e/clipboard-privacy.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": null,
+        "assignment_indices": []
+      }
+    },
+    {
+      "path": "apps/web/e2e/privacy-mask-history.spec.ts",
+      "main": {
+        "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "blob": null,
+        "assignment_indices": []
+      },
+      "candidate": {
+        "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "blob": null,
+        "assignment_indices": []
+      }
+    }
+  ],
+  "remaining": [
+    {
+      "path": "apps/web/e2e/accessibility-audit.ts",
+      "blob": "75433aa655dd355fe6bfb45beddacaa278bf04f3",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 59,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 0,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/accessibility.spec.ts",
+      "blob": "72f569249469b17bc998c2dd97e905e85dd178d7",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 137,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 1,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/camera-browser.ts",
+      "blob": "56cc23161c34dc3c4be0864677e5e1eb7818fefb",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 29,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 3,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/contextual-help.spec.ts",
+      "blob": "849cb60756ecb75c148feac0018b183ae9431b44",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 135,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 4,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/devices.spec.ts",
+      "blob": "cdfc3fdf6b02233b9c7d67c987f4ba6a6b0be76b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 52,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 6,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/passphrase-vault.spec.ts",
+      "blob": "b6402185bde44ff518a31afcfdaada6382167096",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 65,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 18,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.d.mts",
+      "blob": "41bcb7ba40f229e1220da1002ccd8d741ceff84b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 10,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 19,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/prepare-manifest.mjs",
+      "blob": "fe0bf91fd0da467c88d8053a08c061499aa3bc95",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 42,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 20,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/product-backup-retry.spec.ts",
+      "blob": "b57cf8b38ad991c45c51226bba87bd61dfded8bc",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 34,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 21,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/qr-camera-multipart.spec.ts",
+      "blob": "34286ecda0ec4ca376baf5900652c997e7786b0d",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 45,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 22,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/qr-camera.spec.ts",
+      "blob": "8c8b940002179e448bdba20b260c55d11837769b",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 72,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 23,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/qr-video.d.mts",
+      "blob": "9123033fb25bebec7eaf984a524771a9c57a3750",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 3,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 24,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/qr-video.mjs",
+      "blob": "1fbde954b3ff32c023958255bbee77e3a60fb57a",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 66,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 25,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/receipt-lean.spec.ts",
+      "blob": "6a866d34f24e6ae323164cda736d2541bf936c40",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 38,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 26,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/reconciliation.spec.ts",
+      "blob": "44f5517f2929db43295211a654c7c6f633387df6",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 96,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 27,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/recovery.spec.ts",
+      "blob": "4f839e2b7c3b2608742e51842097c6fa56938083",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 316,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 28,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/sellerpairing.spec.ts",
+      "blob": "a97fad1a362556d88c5826ba37b55f6449017d77",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 63,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 29,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    },
+    {
+      "path": "apps/web/e2e/static-help.spec.ts",
+      "blob": "1d0b950296a48f70b5a61fd110ffdcf9696cc95c",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "line_count": 46,
+      "kind": "test-support",
+      "status": "pending",
+      "refs": [
+        "automation/20261120T0434Z/bug/erc20-simulation-result",
+        "fix/ghostpay-format-validation-20261120",
+        "integration/ghostpay-completion-20261120",
+        "automation/20261120T0243Z/worker/format-units-validation",
+        "feat/ghostpay-privacy-quick-hide-20261120",
+        "automation/20261120T0115Z/worker/receipt-hash-validation",
+        "automation/20261120T0115Z/coordinator/clipboard-qualification",
+        "fix/ghostpay-pages-integrity-gate-20261120",
+        "automation/20261120T0035Z/worker/qr-flag-coverage",
+        "release/ghostpay-beta-qualification-20261119",
+        "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+        "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "automation/20261120T004531Z/feature/clipboard-guard",
+        "automation/20261120T0035Z/worker/qr-kind-primitives",
+        "automation/20261119T2243Z/bug/base64url-runtime-input",
+        "automation/20261119T204728Z/bug/qr-kind-failclosed",
+        "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+        "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+        "automation/20261119-c977/bug/build-profile-failclosed",
+        "repair/ghostpay-analyzer-recovered-20261119",
+        "repair/ghostpay-final-lint-20261119",
+        "repair/ghostpay-qr-surrogates-20261119",
+        "repair/ghostpay-native-fee-recovered-20261119",
+        "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+        "repair/ghostpay-276-artifact-races-20261119",
+        "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "codex/ghostpay-feature-consolidation-20261119",
+        "main"
+      ],
+      "assignment_index": 30,
+      "ranges": [],
+      "reason": "Not read in this fresh worker; stopped at a clean file boundary before compaction."
+    }
+  ],
+  "stop_reason": "Clean completed-file boundary before compaction; fresh worker requested for remaining peripheral E2E files.",
+  "runtime_validation": "Not performed by instruction. Presence of an assertion is not a passing test result."
+}

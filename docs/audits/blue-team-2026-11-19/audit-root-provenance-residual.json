@@ -1,0 +1,332 @@
+{
+  "scope": "deduplicated first 54 review-root coverage records; excludes independent explicit full-read evidence in all current reports and supplemental read sections",
+  "generated_utc": "2026-11-20T06:54:35.221059+00:00",
+  "initial_records": 54,
+  "initial_unique_path_blob_pairs": 42,
+  "separately_covered_count": 5,
+  "residual_count": 37,
+  "residual_lines": 5605,
+  "residual": [
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "blob": "6cae62f1117c8cd9b23ded19c8bd8f341456704d",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 30,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "2b1b579c18c66c552c407d20d96bda6e28bed1e4",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 238,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "d64a04674ef09a8adff4ee3469694c893edb3e48",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 53,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "12f1c53b41c9e4a67fd365e911fa10ddce548ee3",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 208,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "blob": "30fbe84911c51c484a966a604351ed4a395dd18e",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 291,
+      "other_evidence": []
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "blob": "5ef7f8f55035f852da2e1398ae39fc6455a91ebb",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 261,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 359,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/registry.ts",
+      "blob": "6dcd24ced090ac1009b7949f4707a3d8e1a5f8ea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 22,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/tags.ts",
+      "blob": "6eb3bdbde7413f6b26a6df9219ab2184c259b080",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 565,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "blob": "c3be00ac752cebd8f0234dbfb6f275e9741bb527",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 94,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/displayText.ts",
+      "blob": "2202f8e612c74efa1cd4150f53f247fbc3e5c726",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 39,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/sanitize.ts",
+      "blob": "e5c281aa7f8105b71ef93ea407e8dfa454892317",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 25,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "blob": "8859aeb207e4b839838bdc3a5c8d9433fd9ae308",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 91,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/fragment.ts",
+      "blob": "9f361be2be54403f1980999bb64937299760e719",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 35,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "blob": "388e0a0b02e35c47b8595a57239eeb7f69334c64",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 32,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "line_count": 108,
+      "other_evidence": []
+    },
+    {
+      "path": "packages/contracts/src/GhostPayRouter.sol",
+      "blob": "bc6369fffe44ebcad5548ae731860161444e7998",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 250,
+      "other_evidence": []
+    },
+    {
+      "path": "packages/contracts/src/GhostPaySweepRelayer.sol",
+      "blob": "3095160e30f5bcc109e7786ec410ab81741dadd4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 150,
+      "other_evidence": []
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IERC5564Announcer.sol",
+      "blob": "f7e6b9e8088215cbebf9c36a98b05e3493e1cc0e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 45,
+      "other_evidence": []
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPayRouter.sol",
+      "blob": "1ecd181745e4feae9ec3cd4b7b7d59a7806ddaff",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 119,
+      "other_evidence": []
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IGhostPaySweepRelayer.sol",
+      "blob": "09b5605c6dfea8cd63310f0366a7e800c54e99ea",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/scripts/csp.mjs",
+      "blob": "6657fd5eb74278a37355c56847d47e6affb92c7e",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 52,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/scripts/scan-bundle.mjs",
+      "blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 336,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/scripts/validate-deployments.mjs",
+      "blob": "76a6132fcc692a18e657c3880427c8f60739c6b8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 101,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/build-pages.sh",
+      "blob": "2022cf30a0f18535131c2f9651d292226550835b",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 229,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/verify-pages-site.mjs",
+      "blob": "1354549a79a4c550ee55d21ebe6e77f22b2af4ce",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 290,
+      "other_evidence": []
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "blob": "552e4221da41f57b47a2f1dd816f6f3aa45b52ee",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 303,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "blob": "5ca89f54457128b887eb9107fc4eac66ce8c0530",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 375,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/merchantIdentity.ts",
+      "blob": "183a8fbc588cb1c66e5ec480e572849b803761db",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/buildProfile.ts",
+      "blob": "001fbf1105e1d28768624df6c47ccfdb16957d1a",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 36,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 127,
+      "other_evidence": []
+    },
+    {
+      "path": "apps/web/scripts/apply-csp.mjs",
+      "blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 121,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/verify-pages-artifact.mjs",
+      "blob": "56a1753d5181a6c5f9738ab62fd5f32911b6b516",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 153,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/lean-exclusions.mjs",
+      "blob": "3eb88a297c4aaf5bb620a60e4b5503862a1daef4",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 45,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/smoke.mjs",
+      "blob": "68c722f8c8ec68f844dce85e366059f88550eef3",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 137,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/smoke-walk.mjs",
+      "blob": "c0f3ca90f5c76da840542904cdeeb870e08ac437",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 65,
+      "other_evidence": []
+    },
+    {
+      "path": "scripts/pages/smoke-url.mjs",
+      "blob": "ddb9f17a688368c2f0f45197d7af6638f80ec0a8",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 32,
+      "other_evidence": []
+    }
+  ],
+  "separate_evidence": [
+    {
+      "path": "apps/web/vite.config.ts",
+      "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+      "evidence": [
+        {
+          "report": "review-core-packages.json",
+          "section": "context_ledger",
+          "method": "reviewed-full"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/scripts/localBuildProfile.mjs",
+      "blob": "65c1b1690763f34c64262643e94cdd672f0f057b",
+      "evidence": [
+        {
+          "report": "review-core-packages.json",
+          "section": "context_ledger",
+          "method": "reviewed-full"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/errors.ts",
+      "blob": "a1fb55a8eb9ec0270491fa4d5b2f071200d08142",
+      "evidence": [
+        {
+          "report": "review-english-resource-round6.json",
+          "section": "supplementary_full_reads",
+          "method": "Independent complete numbered read while screening generic error wording. No additional confirmed core issue."
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+      "evidence": [
+        {
+          "report": "review-browser-custody.json",
+          "section": "files",
+          "method": "complete numbered source read"
+        },
+        {
+          "report": "review-payments-network.json",
+          "section": "coverage",
+          "method": "full-source-read"
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "evidence": [
+        {
+          "report": "review-payments-network.json",
+          "section": "coverage",
+          "method": "full-source-read"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3511 @@
+{
+  "lane": "payments-network",
+  "status": "partial-checkpoint-ready-for-successor",
+  "scope_note": "Core lean EVM routes plus accepted privacy, QR and scan additions; dormant alternative chain features excluded by root clarification.",
+  "baseline": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "candidate": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+  "supplemental": [
+    "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+    "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+    "137628961463fc5abd8b7927b2efe6b18a0a206a"
+  ],
+  "coverage": [
+    {
+      "path": "apps/web/src/lib/pay.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          607
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "line_count": 607,
+      "bytes": 34459,
+      "main_blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/payExec.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          361
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "line_count": 361,
+      "bytes": 20529,
+      "main_blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          208
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "line_count": 208,
+      "bytes": 8390,
+      "main_blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.ts",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "ranges": [
+        [
+          1,
+          215
+        ]
+      ],
+      "status": "full-source-read-via-base-plus-complete-diff",
+      "knownFinding": "GP-WEB-DRYRUN-BOOL-20261120 fixed",
+      "blob": "c5e7b6ea5ac9525395cb4bc8c63f923db40d2e23",
+      "line_count": 215,
+      "bytes": 8695,
+      "main_blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          519
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "line_count": 519,
+      "bytes": 25669,
+      "main_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          506
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "line_count": 506,
+      "bytes": 24962,
+      "main_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          115
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "line_count": 115,
+      "bytes": 6351,
+      "main_blob": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          73
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "line_count": 73,
+      "bytes": 3437,
+      "main_blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          176
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+      "line_count": 176,
+      "bytes": 9461,
+      "main_blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          82
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "a9565d96c42e35b57f62e7235a13aa6729c886b9",
+      "line_count": 82,
+      "bytes": 4093,
+      "main_blob": "9ac0bdf0eb093554c8d7c74440732fca4bfebd22",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/deployment.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          37
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+      "line_count": 37,
+      "bytes": 2064,
+      "main_blob": "6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/opStackFee.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          84
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "line_count": 84,
+      "bytes": 4147,
+      "main_blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "ranges": [
+        [
+          1,
+          74
+        ]
+      ],
+      "status": "full-source-read-via-base-plus-complete-diff",
+      "blob": "9ba8ea7b418eab5cf18e900923572cf3e255aedd",
+      "line_count": 74,
+      "bytes": 3551,
+      "main_blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+      "line_count": 123,
+      "bytes": 5746,
+      "main_blob": "49158fb4ffec9b1d1eb55bcce21f081dbc9c8d4d",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/services.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          35
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "fcaf46383e7fb88d2d6042af1b260713c783a432",
+      "line_count": 35,
+      "bytes": 1749,
+      "main_blob": "283d87dbbd410235d2e5cbbdcd58d941b774e27d",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/networkSelection.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          42
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "cd5803357898b84863f7885c9fb827b28ff2693a",
+      "line_count": 42,
+      "bytes": 2479,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          23
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "e0cae13f36927b031b74ab2d98c1233f015a95db",
+      "line_count": 23,
+      "bytes": 1522,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          49
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "6256d5b234db85f4f7b0dfac40c4d5f55957e4ea",
+      "line_count": 49,
+      "bytes": 2837,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          218
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "9f870bed002dac0b809ab00f82c2b66c032f197c",
+      "line_count": 218,
+      "bytes": 10369,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          144
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "1867f9ad6b8913a135489ab715812851b7258f79",
+      "line_count": 144,
+      "bytes": 6588,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          121
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "9cb9a8af0d806cb3ac7c33d396113d4e8ecd787a",
+      "line_count": 121,
+      "bytes": 7839,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          30
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "7d73d645f829d14179a44c952bde2cfb62f5224c",
+      "line_count": 30,
+      "bytes": 1378,
+      "main_blob": "7d73d645f829d14179a44c952bde2cfb62f5224c",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          34
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "line_count": 34,
+      "bytes": 2049,
+      "main_blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          1524
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "line_count": 1524,
+      "bytes": 84220,
+      "main_blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          1062
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "line_count": 1062,
+      "bytes": 53986,
+      "main_blob": "ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          1409
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+      "line_count": 1409,
+      "bytes": 74659,
+      "main_blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+      "identical_to_main": true,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          699
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "line_count": 699,
+      "bytes": 41146,
+      "main_blob": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          406
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "5d562426908fbffc8b9aecb4c8e4a223a3a174f2",
+      "line_count": 406,
+      "bytes": 22630,
+      "main_blob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          500
+        ]
+      ],
+      "status": "full-source-read",
+      "blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "line_count": 500,
+      "bytes": 29526,
+      "main_blob": null,
+      "identical_to_main": false,
+      "kind": "source"
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          746
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a",
+      "line_count": 746,
+      "bytes": 39402,
+      "main_blob": "ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          462
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "line_count": 462,
+      "bytes": 26065,
+      "main_blob": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.tsx",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          396
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+      "line_count": 396,
+      "bytes": 21935,
+      "main_blob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/receipts.ts",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          119
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "cf880e0b9ee40a1d30c76a15e08e1c06674d71c1",
+      "line_count": 119,
+      "bytes": 8957,
+      "main_blob": "cf880e0b9ee40a1d30c76a15e08e1c06674d71c1",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.tsx",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          328
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "b81b4868434aae0891c5cd4a664ac48aecf3f947",
+      "line_count": 328,
+      "bytes": 19216,
+      "main_blob": "b81b4868434aae0891c5cd4a664ac48aecf3f947",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/receipts.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          132
+        ]
+      ],
+      "status": "full-source-read",
+      "kind": "source",
+      "blob": "a9b42e29afa652c552d17823f3d77b8eeb07cdcd",
+      "line_count": 132,
+      "bytes": 9770,
+      "main_blob": "cf880e0b9ee40a1d30c76a15e08e1c06674d71c1",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.tsx",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          335
+        ]
+      ],
+      "status": "full-source-read",
+      "kind": "source",
+      "blob": "b6cc91507f78283db57a7bb5f99b28f27711fffc",
+      "line_count": 335,
+      "bytes": 19830,
+      "main_blob": "b81b4868434aae0891c5cd4a664ac48aecf3f947",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.test.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          164
+        ]
+      ],
+      "status": "full-test-source-read",
+      "kind": "test",
+      "blob": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+      "line_count": 164,
+      "bytes": 11178,
+      "main_blob": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.test.ts",
+      "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "ranges": [
+        [
+          1,
+          183
+        ]
+      ],
+      "status": "full-test-source-read-via-base-plus-complete-diff",
+      "kind": "test",
+      "blob": "1f1749730b2af7483bacdeecc29f2fbda5490de3",
+      "line_count": 183,
+      "bytes": 12321,
+      "main_blob": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          78
+        ]
+      ],
+      "status": "full-test-source-read",
+      "kind": "test",
+      "blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "line_count": 78,
+      "bytes": 3336,
+      "main_blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "ranges": [
+        [
+          1,
+          92
+        ]
+      ],
+      "status": "full-test-source-read",
+      "kind": "test",
+      "blob": "43d5b5c882abdfb392776dd13d772e972f13ab46",
+      "line_count": 92,
+      "bytes": 4021,
+      "main_blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          1,
+          249
+        ]
+      ],
+      "status": "full-test-source-read",
+      "kind": "test",
+      "blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+      "line_count": 249,
+      "bytes": 14509,
+      "main_blob": null,
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "ranges": [
+        [
+          1,
+          42
+        ]
+      ],
+      "status": "full-source-read",
+      "kind": "source",
+      "cross_lane": "custody finding impact confirmation",
+      "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+      "line_count": 42,
+      "bytes": 2691,
+      "main_blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "ranges": [
+        [
+          1,
+          90
+        ]
+      ],
+      "status": "full-source-read",
+      "kind": "source",
+      "cross_lane": "custody finding impact confirmation; outside initial lane inventory",
+      "blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "line_count": 90,
+      "bytes": 5433,
+      "main_blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "ranges": [
+        [
+          1,
+          1524
+        ]
+      ],
+      "status": "identical-blob-to-fully-read-candidate",
+      "kind": "source",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "line_count": 1524,
+      "bytes": 84220,
+      "main_blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          971,
+          993
+        ],
+        [
+          1439,
+          1451
+        ],
+        [
+          1462,
+          1480
+        ]
+      ],
+      "status": "targeted-evidence-only",
+      "kind": "localization",
+      "blob": "f37853282e922f1817b948d5bada66dc84c3ad34",
+      "line_count": 2530,
+      "bytes": 269897,
+      "main_blob": "cc7464eac7f565bff3f08849e82b0533c176cd09",
+      "identical_to_main": false
+    },
+    {
+      "path": "packages/invoice-schema/src/receipts.ts",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "ranges": [
+        [
+          139,
+          163
+        ]
+      ],
+      "status": "targeted-evidence-only",
+      "kind": "cross-lane",
+      "blob": "a991e6aa7ac6bb2cea5758a1d79409c513758311",
+      "line_count": 185,
+      "bytes": 10725,
+      "main_blob": "af7f5ffe10ef7d0e5610dda4032ba9a517b4e298",
+      "identical_to_main": false
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          127
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "9ac0bdf0eb093554c8d7c74440732fca4bfebd22",
+      "line_count": 127,
+      "bytes": 5693,
+      "main_blob": "9ac0bdf0eb093554c8d7c74440732fca4bfebd22",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          48
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "49158fb4ffec9b1d1eb55bcce21f081dbc9c8d4d",
+      "line_count": 48,
+      "bytes": 1765,
+      "main_blob": "49158fb4ffec9b1d1eb55bcce21f081dbc9c8d4d",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/services.ts",
+      "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "ranges": [
+        [
+          1,
+          29
+        ]
+      ],
+      "status": "full-source-read-via-candidate-plus-complete-diff",
+      "kind": "source",
+      "blob": "283d87dbbd410235d2e5cbbdcd58d941b774e27d",
+      "line_count": 29,
+      "bytes": 1243,
+      "main_blob": "283d87dbbd410235d2e5cbbdcd58d941b774e27d",
+      "identical_to_main": true
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "ranges": [
+        [
+          282,
+          296
+        ],
+        [
+          344,
+          374
+        ]
+      ],
+      "status": "targeted-evidence-only",
+      "kind": "cross-lane",
+      "line_count": 506,
+      "bytes": 24962,
+      "main_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "identical_to_main": true,
+      "cross_lane": "#300 WalletAttempts impact confirmation"
+    }
+  ],
+  "tests": {
+    "executed": [],
+    "full_read": [
+      {
+        "path": "apps/web/src/lib/txGuard.test.ts",
+        "versions": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+        ],
+        "purpose": "transaction guards, dry run outcomes and #305 boolean classification"
+      },
+      {
+        "path": "apps/web/src/lib/format.test.ts",
+        "versions": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "a9e0715573f7247d7a16f9d1d030cf0232708fb2"
+        ],
+        "purpose": "formatting/parser contract and #303 invalid type/precision behavior"
+      },
+      {
+        "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+        "versions": [
+          "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        ],
+        "purpose": "review revocation and reviewed native balance invariants"
+      }
+    ],
+    "note": "Source review only. Existing test expectations are not runtime evidence and do not establish test pass status."
+  },
+  "findings": [
+    {
+      "id": "PN-01",
+      "title": "Main receipt polling can associate a receipt with the wrong transaction",
+      "severity": "medium",
+      "confidence": "high",
+      "novelty": "known-in-candidate; independently source-confirmed",
+      "status": {
+        "main": "present",
+        "candidate": "fixed",
+        "supplemental": "Do not infer regression from sibling feature branches that have not integrated candidate receipt fix."
+      },
+      "scenario": "The configured RPC returns an unrelated or misrouted successful receipt for a requested payment hash while the actual transaction is visible and still pending. Main only checks the optional destination and treats status 1 as success, so a receipt for another payment to the same router can be accepted.",
+      "impact": "The UI and local export may classify the requested payment as included without a receipt bound to that hash. This is an integrity/error-handling issue at the configured RPC boundary; it does not establish independent chain verification or an attacker-independent payment forgery.",
+      "evidence": [
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/wallet.ts",
+          "lines": [
+            485,
+            498
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/payExec.ts",
+          "lines": [
+            135,
+            144
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/payExec.ts",
+          "lines": [
+            339,
+            357
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/wallet.ts",
+          "lines": [
+            497,
+            508
+          ]
+        }
+      ],
+      "remediation": "Retain the candidate's exact transactionHash validation and strict receipt status validation. Verify the ordinary payment and approval flows exercise those failures through submitTx.",
+      "tests": "wallet and payExec test sources remain unread in this lane; do not claim their coverage or execution."
+    },
+    {
+      "id": "PN-02",
+      "title": "Main native sweep signs a freshly observed balance rather than the amount displayed for review",
+      "severity": "medium",
+      "confidence": "high",
+      "novelty": "known-in-candidate; independently source-confirmed",
+      "status": {
+        "main": "present",
+        "candidate": "fixed"
+      },
+      "scenario": "A seller sees the current native balance and starts a direct sweep. The balance changes before the signing preflight finishes. Main uses the newly read balance to calculate value, without requiring it to equal the balance passed by the view.",
+      "impact": "The signed native transfer can move a different amount from the amount displayed when the action started. Existing destination checks and fee caps still apply; no theft or arbitrary destination bypass is claimed.",
+      "evidence": [
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            337,
+            338
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            260,
+            264
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/sweep.ts",
+          "lines": [
+            572,
+            594
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/sweep.ts",
+          "lines": [
+            695,
+            701
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/sweep.ts",
+          "lines": [
+            904,
+            945
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            611,
+            634
+          ]
+        }
+      ],
+      "remediation": "Keep the candidate's equality check and explicit native fee preparation/confirmation. The single-use review should continue to bind destination, balance, nonce, fees, endpoint, manifest, replacement attempt and context until handoff.",
+      "tests": "Fully read sweep.reviewAuthority.test.ts:187\u2013249, covering changed balances before signing, delayed reads, same-nonce replacement, and deposits after the checked snapshot. Native review and Sweep view tests remain unread. No execution."
+    },
+    {
+      "id": "PN-03",
+      "title": "Main in-flight sweeps do not invalidate signing when the visible review changes",
+      "severity": "medium",
+      "confidence": "high",
+      "novelty": "known-in-candidate; independently source-confirmed",
+      "status": {
+        "main": "present",
+        "candidate": "fixed"
+      },
+      "scenario": "During a slow vault or RPC step, the seller changes the destination or selected sweep context. The destination input remains editable. Main guards the seller session, but its captured action proceeds with the earlier review and the helper receives no live review callback.",
+      "impact": "Main can sign or hand off the earlier destination/context while the view displays a newer choice. This is a stale-action authorization mismatch; existing transaction validation still applies to the captured fields.",
+      "evidence": [
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            138,
+            155
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            242,
+            264
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            354,
+            358
+          ]
+        },
+        {
+          "sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+          "path": "apps/web/src/lib/sweep.ts",
+          "lines": [
+            650,
+            664
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            134,
+            163
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/views/Sweep.tsx",
+          "lines": [
+            420,
+            455
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/sweep.ts",
+          "lines": [
+            954,
+            980
+          ]
+        }
+      ],
+      "remediation": "Preserve the candidate's scope identity, cancellation signals and assertReviewCurrent checks through key derivation, preflight, signing and pre-handoff. Once handoff starts, retain any returned or uncertain result even if the view subsequently changes.",
+      "tests": "Fully read sweep.reviewAuthority.test.ts:96\u2013185, including review revocation before derivation, during RPC/signing, and preservation of outcomes once handoff began. UI-level review-scope tests remain unread. No execution."
+    },
+    {
+      "id": "PN-04",
+      "title": "Malformed ERC20 boolean simulation data is reported as a successful dry run",
+      "severity": "low",
+      "confidence": "high",
+      "novelty": "known GP-WEB-DRYRUN-BOOL-20261120 / PR #305",
+      "status": {
+        "main": "present",
+        "candidate": "present",
+        "supplemental_305": "fixed in 87cf6c603338ad64ec02300fe42b96c3e0a205b9"
+      },
+      "scenario": "A configured node returns nonempty hexadecimal data for a direct ERC20 transfer simulation that is not a canonical ABI boolean. Main and the combined candidate classify any such return other than an exact false word as successful.",
+      "impact": "The UI loses the unavailable-simulation warning and can misdescribe the preflight. The helper already permits unavailable simulation by policy, so this finding does not establish a new authorization bypass or fund-loss path.",
+      "evidence": [
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/txGuard.ts",
+          "lines": [
+            117,
+            128
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/sweep.ts",
+          "lines": [
+            774,
+            780
+          ]
+        },
+        {
+          "sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "path": "apps/web/src/lib/txGuard.ts",
+          "lines": [
+            124,
+            135
+          ]
+        }
+      ],
+      "remediation": "Include #305's canonical boolean classification: legacy empty return remains accepted; canonical true is accepted; canonical false is refused; other nonempty data is unavailable. Preserve the distinction between an unavailable simulation and a confirmed successful simulation.",
+      "tests": "txGuard.test.ts fully read in e22 (1\u2013164) and #305 (1\u2013183 via full base and complete diff). Added malformed-bool and generic-call cases reviewed. No execution."
+    },
+    {
+      "id": "PN-05",
+      "title": "Receipt import description overstates recipient comparison for minimal receipts",
+      "severity": "low",
+      "confidence": "high",
+      "novelty": "new integration wording gap",
+      "status": {
+        "main": "not present under mandatory recipient format",
+        "candidate": "present"
+      },
+      "scenario": "A payer has prepared a payment and imports a valid signed receipt that intentionally omits its one-time address. The view passes an expected address, but the shared binding function intentionally skips comparison when the receipt lacks that field.",
+      "impact": "The introduction says a prepared one-time address is checked, although no recipient comparison occurs for this permitted minimal receipt. Signature, invoice digest, chain, asset and amount checks still occur; the success message and export correctly describe a seller attestation rather than independent payment proof.",
+      "evidence": [
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/locales/en.json",
+          "lines": [
+            973,
+            973
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/views/Pay.tsx",
+          "lines": [
+            678,
+            687
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "packages/invoice-schema/src/receipts.ts",
+          "lines": [
+            147,
+            155
+          ]
+        },
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/locales/en.json",
+          "lines": [
+            983,
+            985
+          ]
+        }
+      ],
+      "remediation": "Make the introductory claim conditional on the receipt carrying an address, or display which optional fields were actually compared. Keep the intentional privacy-preserving omission.",
+      "tests": "Package worker read the intended minimal-receipt acceptance tests. This lane independently inspected package binding lines139\u2013163, full Pay and full ReceiptPanel; relevant web receipt tests remain unread. No execution."
+    }
+  ],
+  "notes": [
+    "No application, test, configuration or Git mutation performed by this lane. Only local audit outputs were written.",
+    "No live network request, transaction, browser interaction, exploit reproduction or test/build execution.",
+    "Workspace reset erased scratch during initial review. Root restored the same immutable repository objects. The functions store preserved the read ledger; identical reviewed blobs were not automatically reread.",
+    "Sibling PR heads are independent snapshots. A fix absent from another sibling head is not by itself an integration regression.",
+    "Production scope is not complete. Unread scan/relayer source and test files must be assigned before any global completion claim.",
+    "Instruction documents were read for workflow; historical handoff text was not treated as proof of current behavior."
+  ],
+  "instructions_read": [
+    "AGENTS.md",
+    "docs/ai/WORKFLOW.md",
+    "docs/ai/HANDOFF.md",
+    "docs/HANDOFF.md"
+  ],
+  "method": "Full immutable source reads, full main/candidate diffs for reviewed changed source, reachable-flow analysis and existing test-source review. No runtime, build, unit, integration, browser or network verification was executed.",
+  "known_hardening": [
+    {
+      "id": "PN-H01",
+      "title": "parseUnits runtime type and precision validation",
+      "severity": "informational",
+      "confidence": "high",
+      "novelty": "known PR #303",
+      "status": {
+        "main": "missing helper guard",
+        "candidate": "missing helper guard",
+        "supplemental_303": "fixed"
+      },
+      "scenario": "A caller violates the TypeScript contract by supplying a non-string amount or invalid precision. The helper can throw instead of returning undefined. Reviewed production callers supply strings and compiled or fixed valid precisions; an externally reachable misuse was not established.",
+      "impact": "Helper API robustness and error predictability; not a confirmed production security exploit.",
+      "evidence": [
+        {
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "path": "apps/web/src/lib/format.ts",
+          "lines": [
+            16,
+            24
+          ]
+        },
+        {
+          "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "path": "apps/web/src/lib/format.ts",
+          "lines": [
+            16,
+            25
+          ]
+        }
+      ],
+      "remediation": "Keep #303's typeof and integer-range guard.",
+      "tests": "Full e22 format.test.ts1\u201378 and #3031\u201392 read; added invalid-type/precision tests cover the helper contract. No execution."
+    }
+  ],
+  "cross_lane_confirmations": [
+    {
+      "id": "CUSTODY-WALLET-ATTEMPTS",
+      "owner": "browser_custody_review",
+      "title": "#300 omits wallet prop at real Pay callers, hiding all attempt recovery controls",
+      "severity": "medium",
+      "confidence": "high",
+      "novelty": "new #300 integration regression; custody lane owns canonical finding",
+      "status": {
+        "main": "not present",
+        "candidate": "not present",
+        "supplemental_300": "present"
+      },
+      "scenario": "After a wallet attempt, the journal retains the action until an explicit review/clear. In #300 WalletAttempts hides records and clear controls unless wallet is supplied, but both Pay call sites still omit it, including after connection.",
+      "impact": "The intended in-app recovery is unreachable and repeat requests for the same invoice remain blocked in the tab. Payment keys are scoped to invoice and chain rather than account, so merely reconnecting does not clear that block. No funds-loss claim.",
+      "evidence": [
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/components/WalletAttempts.tsx",
+          "lines": [
+            24,
+            40
+          ]
+        },
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/views/Pay.tsx",
+          "lines": [
+            1059,
+            1059
+          ]
+        },
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/views/Pay.tsx",
+          "lines": [
+            1127,
+            1127
+          ]
+        },
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/duplicateAttemptJournal.ts",
+          "lines": [
+            64,
+            87
+          ]
+        },
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/wallet.ts",
+          "lines": [
+            285,
+            295
+          ]
+        },
+        {
+          "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "path": "apps/web/src/lib/wallet.ts",
+          "lines": [
+            347,
+            372
+          ]
+        }
+      ],
+      "remediation": "Pass the current wallet into real core Pay call sites and exercise the actual view with a retained attempt. Custody owns the detailed test follow-up."
+    },
+    {
+      "owner": "browser_custody_review",
+      "title": "Candidate idle suspension unmounts CreateInvoice even when unbacked seller keys remain loaded",
+      "disposition": "refuted candidate issue",
+      "evidence_basis": "Custody full source read: AppShell candidate132\u2013135 selects seller view when suspended; idle lock263 suspends synchronously and clears private scan state266\u2013268. Our CreateInvoice keyed-state analysis therefore does not establish retained visible form data in candidate.",
+      "coverage_note": "AppShell source owned and read by custody, not included in this lane's own full-read ledger."
+    },
+    {
+      "owner": "core_packages_review",
+      "title": "Minimal receipts deliberately omit recipient address",
+      "disposition": "intended schema behavior; no primitive/parser issue established",
+      "evidence_basis": "Package worker confirmed optional recipient and tests. Our full export/import flow review independently found appropriate attestation wording except PN-05."
+    },
+    {
+      "owner": "root",
+      "title": "jitter.ts main/candidate fully read by root",
+      "disposition": "external lane coverage; do not duplicate",
+      "evidence_basis": "Root message confirms full main/candidate jitter.ts read; exact root ledger is authoritative. This lane leaves it unread in its own ledger."
+    }
+  ],
+  "verified_properties": [
+    "Payment preview/build identity and current wallet/provider/account/chain authority are checked before wallet handoff; unknown outcomes retain an attempt record and any returned hash.",
+    "Candidate receipt polling binds exact transaction hash and accepts only receipt status 0 or 1.",
+    "Candidate native sweep review is opaque, single-use, time-bounded by wall and monotonic clocks, and bound to exact serialized transaction fields and fee reserve.",
+    "Candidate direct/relayed sweep guards recheck current review across asynchronous steps; locally derived secret buffers are wiped in finally blocks.",
+    "Candidate default services require per-operation network grants, exact endpoint authority, cancellation and bounded transport; raw fallback fetch refuses.",
+    "Candidate invoice signer pin snapshots, selection identity and stale-scope checks were traced through the Pay view.",
+    "Candidate ReceiptPanel defaults recipient export off, revalidates invoice/scan ownership facts before signing, and labels receipts as seller attestations.",
+    "Manifest selection and deployment pin paths were read; the removed optional runtime manifest loading helper was not treated as a reachable default flow."
+  ],
+  "initial_inventory": [
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.test.tsx",
+      "blob": "ceb237b51e68887f5932b8a87ddf4e71a7719522",
+      "bytes": 2653,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 41,
+      "main_blob": "ceb237b51e68887f5932b8a87ddf4e71a7719522",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.tsx",
+      "blob": "7d73d645f829d14179a44c952bde2cfb62f5224c",
+      "bytes": 1378,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 30,
+      "main_blob": "7d73d645f829d14179a44c952bde2cfb62f5224c",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+      "blob": "28a040d3b4b2049f97d90c6de10605aa32fd9210",
+      "bytes": 9607,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 143,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+      "blob": "9cb9a8af0d806cb3ac7c33d396113d4e8ecd787a",
+      "bytes": 7839,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 121,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+      "blob": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+      "bytes": 4707,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 92,
+      "main_blob": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.i18n.test.tsx",
+      "blob": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+      "bytes": 4198,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 67,
+      "main_blob": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.invoice.test.tsx",
+      "blob": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+      "bytes": 12807,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 200,
+      "main_blob": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.profile.test.tsx",
+      "blob": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+      "bytes": 4470,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 85,
+      "main_blob": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+      "blob": "8f14ca64dfef6668c59d280597dd252adf849bb0",
+      "bytes": 8561,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 142,
+      "main_blob": "1ba3f5cce99b7a13d2b6cb21d728bf152d283353",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.tsx",
+      "blob": "b6cc91507f78283db57a7bb5f99b28f27711fffc",
+      "bytes": 19830,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 335,
+      "main_blob": "b81b4868434aae0891c5cd4a664ac48aecf3f947",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+      "bytes": 1067,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 18,
+      "main_blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "bytes": 2049,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 34,
+      "main_blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.browser.test.ts",
+      "blob": "e7b54d33c2c5b22fc2fba0ff17c02a38862b3e73",
+      "bytes": 814,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 15,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.test.ts",
+      "blob": "475a53013815ba732ee5cf85bdbaaa928c97dbb8",
+      "bytes": 10531,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 167,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.ts",
+      "blob": "1867f9ad6b8913a135489ab715812851b7258f79",
+      "bytes": 6588,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 144,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+      "blob": "562e292e392c8e0292af5967c86ea471b5270d91",
+      "bytes": 5390,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 86,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+      "blob": "39bad79a85423c2d6a2a9358840b4df4bbde5347",
+      "bytes": 3372,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 61,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+      "blob": "f0b6da1a3eb205f758919e46cb007b775303ca7d",
+      "bytes": 4827,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 72,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.test.ts",
+      "blob": "3cda7fc01a8595a544248b5d48303a667cbd33b9",
+      "bytes": 5326,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 81,
+      "main_blob": "95e4bd674787a24ab4459009ceb6e7d070deff7f",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+      "bytes": 5746,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 123,
+      "main_blob": "49158fb4ffec9b1d1eb55bcce21f081dbc9c8d4d",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/deployment.test.ts",
+      "blob": "be90aa64969b62e5616161b848ef35e0b12b9804",
+      "bytes": 3005,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 48,
+      "main_blob": "be90aa64969b62e5616161b848ef35e0b12b9804",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/deployment.ts",
+      "blob": "6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+      "bytes": 2064,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 37,
+      "main_blob": "6cfa79ac859e983f1fdc937abf5904e7ae5b5a6b",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/format.test.ts",
+      "blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "bytes": 3336,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 78,
+      "main_blob": "3d6a9f5fade916452bc64fe98a3c9abb64add101",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "bytes": 3437,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 73,
+      "main_blob": "18dad7e4235c922bb7f197312317cc86557a12c2",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.test.ts",
+      "blob": "b852ad654e5d78f79d971accd90810dd7d82f549",
+      "bytes": 7878,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 149,
+      "main_blob": "b852ad654e5d78f79d971accd90810dd7d82f549",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.ts",
+      "blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+      "bytes": 9461,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 176,
+      "main_blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.test.ts",
+      "blob": "d0f00af1cc06573870f047967b97087cc086628d",
+      "bytes": 16746,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 306,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.ts",
+      "blob": "9f870bed002dac0b809ab00f82c2b66c032f197c",
+      "bytes": 10369,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 218,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.test.ts",
+      "blob": "dc43e8c535e862c4e5798d5b757f6335d29c6ce0",
+      "bytes": 3090,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 54,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.ts",
+      "blob": "6256d5b234db85f4f7b0dfac40c4d5f55957e4ea",
+      "bytes": 2837,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 49,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/jitter.test.ts",
+      "blob": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+      "bytes": 5453,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 150,
+      "main_blob": "7790a713ce6fb5434b06370638d2f364b4f9f3f9",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "bytes": 5005,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 127,
+      "main_blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/manifest.test.ts",
+      "blob": "2ac9bc61dbebd721aecab2fedf1eb3e50d501d68",
+      "bytes": 7512,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 116,
+      "main_blob": "0de9d50db4e0816f1fc7783919e45031a93bb38b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "blob": "a9565d96c42e35b57f62e7235a13aa6729c886b9",
+      "bytes": 4093,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 82,
+      "main_blob": "9ac0bdf0eb093554c8d7c74440732fca4bfebd22",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+      "blob": "6a27d3bd41b8508001539a914eabbf0c7f138ae4",
+      "bytes": 6438,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 93,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts",
+      "blob": "f1a38a5bd5264cede57e98b1c0cb883f8bc335d6",
+      "bytes": 2384,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 44,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.test.ts",
+      "blob": "4fda284ea68de5ddbf68b5608d0a06491875153d",
+      "bytes": 38179,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 482,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "blob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "bytes": 29526,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 500,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.test.ts",
+      "blob": "bb02e38582b7b3cdf9bf638be6bd52c2129114a6",
+      "bytes": 3622,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 64,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.ts",
+      "blob": "e0cae13f36927b031b74ab2d98c1233f015a95db",
+      "bytes": 1522,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 23,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/networkSelection.ts",
+      "blob": "cd5803357898b84863f7885c9fb827b28ff2693a",
+      "bytes": 2479,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 42,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/opStackFee.ts",
+      "blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "bytes": 4147,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 84,
+      "main_blob": "2f55a4af5b36ff10f279c66e0b13dcf83e87b1bb",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/pay.test.ts",
+      "blob": "7e27cf90328b7d9421e394edc10515e61157a1d5",
+      "bytes": 38291,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 611,
+      "main_blob": "7e27cf90328b7d9421e394edc10515e61157a1d5",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/pay.ts",
+      "blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "bytes": 34459,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 607,
+      "main_blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "bytes": 8765,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 171,
+      "main_blob": "4dded28d0f6c9521b07c07557cf2df589ba4fdba",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "bytes": 66841,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1025,
+      "main_blob": "3554a2315bfffd0116d2ec2abaaf73f7b0dbc2cd",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/payExec.ts",
+      "blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "bytes": 20529,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 361,
+      "main_blob": "3ce29cb9498df24def6a1137e2c0030b656d771f",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+      "blob": "8d8f2e22bdff1be59721a9ce1a7b8ad29eaeb4ad",
+      "bytes": 10937,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 190,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.ts",
+      "blob": "4a8b9e954c6f11be7438b0d6b7a14519e4ff3c63",
+      "bytes": 4820,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 99,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.test.ts",
+      "blob": "c39c51ef15e04127ea434ed6cbb98791c7eb851d",
+      "bytes": 18220,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 304,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.ts",
+      "blob": "7d0651782bdd49927bf40630035fa8e717ea6afd",
+      "bytes": 19485,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 365,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/receipts.test.ts",
+      "blob": "d8770c168ada02cedf50ecaa8bb47060f7199a35",
+      "bytes": 10459,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 149,
+      "main_blob": "70e1c9aed859596389f5b43b93e0d6ff26f58bec",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/receipts.ts",
+      "blob": "a9b42e29afa652c552d17823f3d77b8eeb07cdcd",
+      "bytes": 9770,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 132,
+      "main_blob": "cf880e0b9ee40a1d30c76a15e08e1c06674d71c1",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.test.ts",
+      "blob": "6cb95e18b26429619d78a5f5ca9e11071dd497ff",
+      "bytes": 12199,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 210,
+      "main_blob": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "blob": "419e5624c35dde3b5b1c4e94d2a1d09638d7b31f",
+      "bytes": 11687,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 221,
+      "main_blob": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.test.ts",
+      "blob": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5",
+      "bytes": 124487,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1995,
+      "main_blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.ts",
+      "blob": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11",
+      "bytes": 50770,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 871,
+      "main_blob": "043fb19af6e3ccf88224122185192829eed29c92",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+      "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+      "bytes": 20115,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 404,
+      "main_blob": "f83c257546972347ae3860d15c53c20388aeb7e6",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.ts",
+      "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+      "bytes": 5763,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 110,
+      "main_blob": "d33c6f6e4099fb386016289cc8aa560b1380ffa8",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.test.ts",
+      "blob": "2973e6da0371537fa5198bc01998f83fc49bdd40",
+      "bytes": 2153,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 33,
+      "main_blob": "2973e6da0371537fa5198bc01998f83fc49bdd40",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.ts",
+      "blob": "48da43b4c870fc9d3debaf46b00e19951d012ba5",
+      "bytes": 2284,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 47,
+      "main_blob": "48da43b4c870fc9d3debaf46b00e19951d012ba5",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+      "blob": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c",
+      "bytes": 5503,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+      "blob": "5bb3480d1e52945391c83f2be161e5ddef73fe9a",
+      "bytes": 1149,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 24,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+      "blob": "42bc1709a3c13f624a7ce0865d7a08580938e37a",
+      "bytes": 5272,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 85,
+      "main_blob": "4f549cf25d5f63daacfbc2a39ea993c9f2524a89",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.i18n.test.ts",
+      "blob": "931eeb063f1fa6855b95e757472cef69724f5d7d",
+      "bytes": 8308,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 106,
+      "main_blob": "931eeb063f1fa6855b95e757472cef69724f5d7d",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.scheduler.test.ts",
+      "blob": "6cb3f232ccffe8c453d1c977d0b80c16a483ff0e",
+      "bytes": 8764,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 164,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.test.ts",
+      "blob": "604004028b6b804b1f41f8bb62e2de61e892ea6b",
+      "bytes": 34447,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 520,
+      "main_blob": "5905dd39831b3dc42fcfe95e435e22e9af16aa2b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.transport.test.ts",
+      "blob": "f022052311390d7338e38f0c2a548b731ddd3093",
+      "bytes": 3121,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 68,
+      "main_blob": "f022052311390d7338e38f0c2a548b731ddd3093",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.ts",
+      "blob": "4dae49b9eb15d99fb5ecb34e84b76f6ac0a95c59",
+      "bytes": 41345,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 743,
+      "main_blob": "31dd6847ed088206afb7080873a2520c2201c393",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+      "blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "bytes": 1500,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 37,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.test.ts",
+      "blob": "762deed547d68f934999994d770369b2ee95c9ad",
+      "bytes": 16282,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 272,
+      "main_blob": "762deed547d68f934999994d770369b2ee95c9ad",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "bytes": 11271,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 213,
+      "main_blob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanner.worker.ts",
+      "blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "bytes": 520,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 15,
+      "main_blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+      "blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "bytes": 3659,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 54,
+      "main_blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "bytes": 1629,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 38,
+      "main_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+      "blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "bytes": 12271,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 194,
+      "main_blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+      "bytes": 13857,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 256,
+      "main_blob": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.ts",
+      "blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+      "bytes": 6527,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 167,
+      "main_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/services.ts",
+      "blob": "fcaf46383e7fb88d2d6042af1b260713c783a432",
+      "bytes": 1749,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 35,
+      "main_blob": "283d87dbbd410235d2e5cbbdcd58d941b774e27d",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "bytes": 10685,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 215,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+      "blob": "8097b83ba5ce627a38ec302fd9f9b1950369ba4b",
+      "bytes": 5664,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 114,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+      "bytes": 20120,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 336,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+      "blob": "b1e5c22e708da43efa3d61b85d9272ce136a2bdb",
+      "bytes": 14509,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 249,
+      "main_blob": null,
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+      "bytes": 69009,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1124,
+      "main_blob": "f38c5b90985f705a8d4cfac87a897cd6ee394d1b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "bytes": 53986,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1062,
+      "main_blob": "ef73a7ec629cf33da5dba4fa8b3d9f80913bbb1a",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.test.ts",
+      "blob": "90b3f7c9212cedf477e37a70be285dacba302fa4",
+      "bytes": 11691,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 177,
+      "main_blob": "90b3f7c9212cedf477e37a70be285dacba302fa4",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.ts",
+      "blob": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "bytes": 6351,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 115,
+      "main_blob": "375636b65ab3f9548dd06cce0dde98a94bf4b447",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.test.ts",
+      "blob": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+      "bytes": 11178,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 164,
+      "main_blob": "c5c6f6488a7ddd52bc175df6b8221ff45b2fd44d",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/txGuard.ts",
+      "blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "bytes": 8390,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 208,
+      "main_blob": "abba792709126a191cbd589f2023351a7b9e1c66",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "bytes": 22128,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 383,
+      "main_blob": "6416192e15102bf6725eac9b945ff45681d021ff",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+      "bytes": 25669,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 519,
+      "main_blob": "fb1d864f3223ce007e35d81c19a308df88657121",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/lib/workerFactory.ts",
+      "blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "bytes": 347,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 6,
+      "main_blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.buffer.test.tsx",
+      "blob": "5c4269fa33cad4250deba0b955c4a090c0b269bd",
+      "bytes": 12206,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 249,
+      "main_blob": "5c4269fa33cad4250deba0b955c4a090c0b269bd",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.i18n.test.tsx",
+      "blob": "8269636eef8652821346ec8fa375671409561e21",
+      "bytes": 2472,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 51,
+      "main_blob": "8269636eef8652821346ec8fa375671409561e21",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+      "blob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+      "bytes": 3480,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 76,
+      "main_blob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+      "blob": "e882d1107eb8a88c4583094a1081a82fc7d1f644",
+      "bytes": 6468,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 118,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+      "blob": "c0ab7561bb91cc777026c081a9ee39ff54db2e41",
+      "bytes": 4210,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 83,
+      "main_blob": "c0ab7561bb91cc777026c081a9ee39ff54db2e41",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.supported.test.tsx",
+      "blob": "17feff9faf1ceb38432b63cd1cf361433827b340",
+      "bytes": 9009,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 159,
+      "main_blob": "17feff9faf1ceb38432b63cd1cf361433827b340",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.test.tsx",
+      "blob": "de1c61ddaee5a7e2ef33b41a2c02a6bbfda6569e",
+      "bytes": 16624,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 281,
+      "main_blob": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.tsx",
+      "blob": "5d562426908fbffc8b9aecb4c8e4a223a3a174f2",
+      "bytes": 22630,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 406,
+      "main_blob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/views/Pay.i18n.test.tsx",
+      "blob": "b8d80d61869c5c0ec015302a872a63269534d6ad",
+      "bytes": 7795,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 135,
+      "main_blob": "b8d80d61869c5c0ec015302a872a63269534d6ad",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+      "blob": "3eb5ab0072c4cf5c61b7502d68d0e141dfd3b133",
+      "bytes": 24111,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 373,
+      "main_blob": "3eb5ab0072c4cf5c61b7502d68d0e141dfd3b133",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.network.test.tsx",
+      "blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887",
+      "bytes": 4014,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 81,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.preflightCompletion.test.tsx",
+      "blob": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8",
+      "bytes": 7491,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 151,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.signer.test.tsx",
+      "blob": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "bytes": 14683,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 239,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.supported.test.tsx",
+      "blob": "d19f8f7efd6ca0fb5b5d6ef738e1fcf56fb8f83d",
+      "bytes": 9162,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 170,
+      "main_blob": "d19f8f7efd6ca0fb5b5d6ef738e1fcf56fb8f83d",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "bytes": 85578,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1273,
+      "main_blob": "7ef3db702caa56538a7fd4e82e63eafb895debd5",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "bytes": 84220,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1524,
+      "main_blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+      "reviewed": true
+    },
+    {
+      "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+      "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "bytes": 8000,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 157,
+      "main_blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.i18n.test.tsx",
+      "blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "bytes": 5660,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "main_blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "146a90721ae039959af1ce4cd973c572394721f7",
+      "bytes": 6997,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 117,
+      "main_blob": "5ca8631fb1f25658ae55e122d10e22027c0d5e51",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+      "blob": "a704ec91667f26d087cb732e273873a2b8514560",
+      "bytes": 24060,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 440,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+      "blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+      "bytes": 10838,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 172,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+      "blob": "a386af69cb9c30910df93438cb8d589d16229980",
+      "bytes": 8335,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 124,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+      "bytes": 49401,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 703,
+      "main_blob": "8b2fcf37b6c7670c20938018a3810265fd777152",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "bytes": 57415,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1035,
+      "main_blob": "eed9daf882711659720a577138b3e08554ce9fe9",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/ScanPrivacy.i18n.test.tsx",
+      "blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "bytes": 14115,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 216,
+      "main_blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.nativeReview.test.tsx",
+      "blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+      "bytes": 12006,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 188,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "blob": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4",
+      "bytes": 10814,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 224,
+      "main_blob": "2334a9bb524127b6cc6165a857f7942e74420c27",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+      "blob": "2da1d11b208b413377b41b8416c0909dd0deebfa",
+      "bytes": 22440,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 424,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+      "bytes": 67229,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1070,
+      "main_blob": "17049ca012bd5bab662dd450668c64b11e7700dd",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.tsx",
+      "blob": "6da18522b825c99b4073fd238174f63a8a2b7b38",
+      "bytes": 41146,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 699,
+      "main_blob": "75ea26cfa62a08cbfe001d6ac02c68c6bc210566",
+      "reviewed": true
+    }
+  ],
+  "unread_production": [
+    {
+      "path": "apps/web/src/lib/jitter.ts",
+      "blob": "9845576adfb522c17db145b1772276f66523180c",
+      "bytes": 5005,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 127,
+      "main_blob": "f4d6fefe892130d70bfa9cea5113f611ccea8b02",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.ts",
+      "blob": "4a8b9e954c6f11be7438b0d6b7a14519e4ff3c63",
+      "bytes": 4820,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 99,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.ts",
+      "blob": "7d0651782bdd49927bf40630035fa8e717ea6afd",
+      "bytes": 19485,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 365,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.ts",
+      "blob": "419e5624c35dde3b5b1c4e94d2a1d09638d7b31f",
+      "bytes": 11687,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 221,
+      "main_blob": "193ddae643018212f0d9fc94593e8e22db4b8da3",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.ts",
+      "blob": "3b5fe3c1a8aafa1c270930b567fd06e2086d7b11",
+      "bytes": 50770,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 871,
+      "main_blob": "043fb19af6e3ccf88224122185192829eed29c92",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.ts",
+      "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+      "bytes": 5763,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 110,
+      "main_blob": "d33c6f6e4099fb386016289cc8aa560b1380ffa8",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.ts",
+      "blob": "48da43b4c870fc9d3debaf46b00e19951d012ba5",
+      "bytes": 2284,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 47,
+      "main_blob": "48da43b4c870fc9d3debaf46b00e19951d012ba5",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.ts",
+      "blob": "4dae49b9eb15d99fb5ecb34e84b76f6ac0a95c59",
+      "bytes": 41345,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 743,
+      "main_blob": "31dd6847ed088206afb7080873a2520c2201c393",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.ts",
+      "blob": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+      "bytes": 11271,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 213,
+      "main_blob": "0cf63cb855bb80e1dcf1e2b9f511c8758b124558",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanner.worker.ts",
+      "blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "bytes": 520,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 15,
+      "main_blob": "59c8bcfb1d3227f8ba04ac9b88e4a6ab2f101092",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.ts",
+      "blob": "3ad466bae0d7d19187260e0696c0d29fb6a71293",
+      "bytes": 6527,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 167,
+      "main_blob": "3d22991c284bc58ef0abe27671785ef768546259",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/workerFactory.ts",
+      "blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "bytes": 347,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 6,
+      "main_blob": "292fe169b63d29278cdb739d8168fc868075c5d0",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.tsx",
+      "blob": "d92f0f2df98b2452a9285c5d4e4687d4096a0834",
+      "bytes": 57415,
+      "kind": "source",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1035,
+      "main_blob": "eed9daf882711659720a577138b3e08554ce9fe9",
+      "reviewed": false
+    }
+  ],
+  "unread_tests": [
+    {
+      "path": "apps/web/src/components/InvoicePaymentSummary.test.tsx",
+      "blob": "ceb237b51e68887f5932b8a87ddf4e71a7719522",
+      "bytes": 2653,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 41,
+      "main_blob": "ceb237b51e68887f5932b8a87ddf4e71a7719522",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+      "blob": "28a040d3b4b2049f97d90c6de10605aa32fd9210",
+      "bytes": 9607,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 143,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+      "blob": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+      "bytes": 4707,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 92,
+      "main_blob": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.i18n.test.tsx",
+      "blob": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+      "bytes": 4198,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 67,
+      "main_blob": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.invoice.test.tsx",
+      "blob": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+      "bytes": 12807,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 200,
+      "main_blob": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.profile.test.tsx",
+      "blob": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+      "bytes": 4470,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 85,
+      "main_blob": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+      "blob": "8f14ca64dfef6668c59d280597dd252adf849bb0",
+      "bytes": 8561,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 142,
+      "main_blob": "1ba3f5cce99b7a13d2b6cb21d728bf152d283353",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+      "bytes": 1067,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 18,
+      "main_blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.browser.test.ts",
+      "blob": "e7b54d33c2c5b22fc2fba0ff17c02a38862b3e73",
+      "bytes": 814,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 15,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/boundedRequest.test.ts",
+      "blob": "475a53013815ba732ee5cf85bdbaaa928c97dbb8",
+      "bytes": 10531,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 167,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+      "blob": "562e292e392c8e0292af5967c86ea471b5270d91",
+      "bytes": 5390,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 86,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+      "blob": "39bad79a85423c2d6a2a9358840b4df4bbde5347",
+      "bytes": 3372,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 61,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+      "blob": "f0b6da1a3eb205f758919e46cb007b775303ca7d",
+      "bytes": 4827,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 72,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.test.ts",
+      "blob": "3cda7fc01a8595a544248b5d48303a667cbd33b9",
+      "bytes": 5326,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 81,
+      "main_blob": "95e4bd674787a24ab4459009ceb6e7d070deff7f",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/deployment.test.ts",
+      "blob": "be90aa64969b62e5616161b848ef35e0b12b9804",
+      "bytes": 3005,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 48,
+      "main_blob": "be90aa64969b62e5616161b848ef35e0b12b9804",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.test.ts",
+      "blob": "b852ad654e5d78f79d971accd90810dd7d82f549",
+      "bytes": 7878,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 149,
+      "main_blob": "b852ad654e5d78f79d971accd90810dd7d82f549",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceSignerPins.test.ts",
+      "blob": "d0f00af1cc06573870f047967b97087cc086628d",
+      "bytes": 16746,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 306,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceVerification.test.ts",
+      "blob": "dc43e8c535e862c4e5798d5b757f6335d29c6ce0",
+      "bytes": 3090,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 54,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/jitter.test.ts",
+      "blob": "ff652c1d81720c9e45157479058e6b7b0edcaad2",
+      "bytes": 5453,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 150,
+      "main_blob": "7790a713ce6fb5434b06370638d2f364b4f9f3f9",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/manifest.test.ts",
+      "blob": "2ac9bc61dbebd721aecab2fedf1eb3e50d501d68",
+      "bytes": 7512,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 116,
+      "main_blob": "0de9d50db4e0816f1fc7783919e45031a93bb38b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+      "blob": "6a27d3bd41b8508001539a914eabbf0c7f138ae4",
+      "bytes": 6438,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 93,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts",
+      "blob": "f1a38a5bd5264cede57e98b1c0cb883f8bc335d6",
+      "bytes": 2384,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 44,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.test.ts",
+      "blob": "4fda284ea68de5ddbf68b5608d0a06491875153d",
+      "bytes": 38179,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 482,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/networkOperation.test.ts",
+      "blob": "bb02e38582b7b3cdf9bf638be6bd52c2129114a6",
+      "bytes": 3622,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 64,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/pay.test.ts",
+      "blob": "7e27cf90328b7d9421e394edc10515e61157a1d5",
+      "bytes": 38291,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 611,
+      "main_blob": "7e27cf90328b7d9421e394edc10515e61157a1d5",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+      "blob": "6eafa0466c682977baa69b7c87b91ffd8b79c227",
+      "bytes": 8765,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 171,
+      "main_blob": "4dded28d0f6c9521b07c07557cf2df589ba4fdba",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/payExec.test.ts",
+      "blob": "0e9a3abe4e78e4091b19614ef68efb285b5c1254",
+      "bytes": 66841,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1025,
+      "main_blob": "3554a2315bfffd0116d2ec2abaaf73f7b0dbc2cd",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+      "blob": "8d8f2e22bdff1be59721a9ce1a7b8ad29eaeb4ad",
+      "bytes": 10937,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 190,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/privateScanStore.test.ts",
+      "blob": "c39c51ef15e04127ea434ed6cbb98791c7eb851d",
+      "bytes": 18220,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 304,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/receipts.test.ts",
+      "blob": "d8770c168ada02cedf50ecaa8bb47060f7199a35",
+      "bytes": 10459,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 149,
+      "main_blob": "70e1c9aed859596389f5b43b93e0d6ff26f58bec",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/relayerClient.test.ts",
+      "blob": "6cb95e18b26429619d78a5f5ca9e11071dd497ff",
+      "bytes": 12199,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 210,
+      "main_blob": "42151b26b4fcbcdeefc09268065e2f648ca17a97",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanClient.test.ts",
+      "blob": "297c6f0cbf22e8e351f42579c05dc4c79bdb6cc5",
+      "bytes": 124487,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1995,
+      "main_blob": "c9f850561062eb011c0d97ca02d95898301fdd2b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+      "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+      "bytes": 20115,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 404,
+      "main_blob": "f83c257546972347ae3860d15c53c20388aeb7e6",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanMatches.test.ts",
+      "blob": "2973e6da0371537fa5198bc01998f83fc49bdd40",
+      "bytes": 2153,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 33,
+      "main_blob": "2973e6da0371537fa5198bc01998f83fc49bdd40",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+      "blob": "7cdb7bf627b2624005f1ba8e3d0ee8bc12e6df3c",
+      "bytes": 5503,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+      "blob": "5bb3480d1e52945391c83f2be161e5ddef73fe9a",
+      "bytes": 1149,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 24,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+      "blob": "42bc1709a3c13f624a7ce0865d7a08580938e37a",
+      "bytes": 5272,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 85,
+      "main_blob": "4f549cf25d5f63daacfbc2a39ea993c9f2524a89",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.i18n.test.ts",
+      "blob": "931eeb063f1fa6855b95e757472cef69724f5d7d",
+      "bytes": 8308,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 106,
+      "main_blob": "931eeb063f1fa6855b95e757472cef69724f5d7d",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.scheduler.test.ts",
+      "blob": "6cb3f232ccffe8c453d1c977d0b80c16a483ff0e",
+      "bytes": 8764,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 164,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.test.ts",
+      "blob": "604004028b6b804b1f41f8bb62e2de61e892ea6b",
+      "bytes": 34447,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 520,
+      "main_blob": "5905dd39831b3dc42fcfe95e435e22e9af16aa2b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanPrivacy.transport.test.ts",
+      "blob": "f022052311390d7338e38f0c2a548b731ddd3093",
+      "bytes": 3121,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 68,
+      "main_blob": "f022052311390d7338e38f0c2a548b731ddd3093",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.partial.test.ts",
+      "blob": "ceeba44eb5156581c4fa9c65b3104109306bff1e",
+      "bytes": 1500,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 37,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scanSpam.test.ts",
+      "blob": "762deed547d68f934999994d770369b2ee95c9ad",
+      "bytes": 16282,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 272,
+      "main_blob": "762deed547d68f934999994d770369b2ee95c9ad",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+      "blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "bytes": 3659,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 54,
+      "main_blob": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.fuzz.test.ts",
+      "blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "bytes": 1629,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 38,
+      "main_blob": "77ce0bd28772235418d9e241b0da84028068035f",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+      "blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "bytes": 12271,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 194,
+      "main_blob": "671e4041953379c58270388eebb201fcec2dd541",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/scannerCore.test.ts",
+      "blob": "64d9d0d95a66da023f2968faa7bd97c7dbe66605",
+      "bytes": 13857,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 256,
+      "main_blob": "902cb6d07492fc8b08131d17b94d7d3fbc70c826",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.boundaryAudit.test.ts",
+      "blob": "e3813045c7975bcbd4e1201d65869e6962827c25",
+      "bytes": 10685,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 215,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+      "blob": "8097b83ba5ce627a38ec302fd9f9b1950369ba4b",
+      "bytes": 5664,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 114,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "blob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+      "bytes": 20120,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 336,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.test.ts",
+      "blob": "c391e4aca34e7125383e04bb32d26f1c1b55bd4d",
+      "bytes": 69009,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1124,
+      "main_blob": "f38c5b90985f705a8d4cfac87a897cd6ee394d1b",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/transactionOutcome.test.ts",
+      "blob": "90b3f7c9212cedf477e37a70be285dacba302fa4",
+      "bytes": 11691,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 177,
+      "main_blob": "90b3f7c9212cedf477e37a70be285dacba302fa4",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "blob": "0eef38ea9deb736072515d3240eeabfbd6b5e49b",
+      "bytes": 22128,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 383,
+      "main_blob": "6416192e15102bf6725eac9b945ff45681d021ff",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.buffer.test.tsx",
+      "blob": "5c4269fa33cad4250deba0b955c4a090c0b269bd",
+      "bytes": 12206,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 249,
+      "main_blob": "5c4269fa33cad4250deba0b955c4a090c0b269bd",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.i18n.test.tsx",
+      "blob": "8269636eef8652821346ec8fa375671409561e21",
+      "bytes": 2472,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 51,
+      "main_blob": "8269636eef8652821346ec8fa375671409561e21",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.ordering.test.tsx",
+      "blob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+      "bytes": 3480,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 76,
+      "main_blob": "5cded4b3666f14dc57f1878c245a59d6bed4192a",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+      "blob": "e882d1107eb8a88c4583094a1081a82fc7d1f644",
+      "bytes": 6468,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 118,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+      "blob": "c0ab7561bb91cc777026c081a9ee39ff54db2e41",
+      "bytes": 4210,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 83,
+      "main_blob": "c0ab7561bb91cc777026c081a9ee39ff54db2e41",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.supported.test.tsx",
+      "blob": "17feff9faf1ceb38432b63cd1cf361433827b340",
+      "bytes": 9009,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 159,
+      "main_blob": "17feff9faf1ceb38432b63cd1cf361433827b340",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.test.tsx",
+      "blob": "de1c61ddaee5a7e2ef33b41a2c02a6bbfda6569e",
+      "bytes": 16624,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 281,
+      "main_blob": "0d1ca5555de25aeebebccec61232bedbad4e1c18",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.i18n.test.tsx",
+      "blob": "b8d80d61869c5c0ec015302a872a63269534d6ad",
+      "bytes": 7795,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 135,
+      "main_blob": "b8d80d61869c5c0ec015302a872a63269534d6ad",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+      "blob": "3eb5ab0072c4cf5c61b7502d68d0e141dfd3b133",
+      "bytes": 24111,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 373,
+      "main_blob": "3eb5ab0072c4cf5c61b7502d68d0e141dfd3b133",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.network.test.tsx",
+      "blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887",
+      "bytes": 4014,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 81,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.preflightCompletion.test.tsx",
+      "blob": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8",
+      "bytes": 7491,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 151,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.signer.test.tsx",
+      "blob": "06a1750266a87afac186e7b1d8b64f4af689a9de",
+      "bytes": 14683,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 239,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.supported.test.tsx",
+      "blob": "d19f8f7efd6ca0fb5b5d6ef738e1fcf56fb8f83d",
+      "bytes": 9162,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 170,
+      "main_blob": "d19f8f7efd6ca0fb5b5d6ef738e1fcf56fb8f83d",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.test.tsx",
+      "blob": "199ecddf5d1e6ab7aec4ebd2ba5d01a5908f0b3c",
+      "bytes": 85578,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1273,
+      "main_blob": "7ef3db702caa56538a7fd4e82e63eafb895debd5",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.autoRescan.test.tsx",
+      "blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "bytes": 8000,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 157,
+      "main_blob": "1c52101fd63804fa5e80c540923d89a5606afc8e",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.i18n.test.tsx",
+      "blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "bytes": 5660,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 94,
+      "main_blob": "2892f973dcb48a6076eb38e768bd43082378becb",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.privacy.test.tsx",
+      "blob": "146a90721ae039959af1ce4cd973c572394721f7",
+      "bytes": 6997,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 117,
+      "main_blob": "5ca8631fb1f25658ae55e122d10e22027c0d5e51",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+      "blob": "a704ec91667f26d087cb732e273873a2b8514560",
+      "bytes": 24060,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 440,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+      "blob": "576a2c5ff4bc13b61181d554c7a59135070d1cb9",
+      "bytes": 10838,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 172,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+      "blob": "a386af69cb9c30910df93438cb8d589d16229980",
+      "bytes": 8335,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 124,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Scan.test.tsx",
+      "blob": "c25de17f75fcea631452b769aadede99a305f25f",
+      "bytes": 49401,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 703,
+      "main_blob": "8b2fcf37b6c7670c20938018a3810265fd777152",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/ScanPrivacy.i18n.test.tsx",
+      "blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "bytes": 14115,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 216,
+      "main_blob": "bd5571c580d0fbfb882bf15d0e39c97e1ff60231",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.nativeReview.test.tsx",
+      "blob": "e8d5fcb22def002ca90add99e344b4a132835c10",
+      "bytes": 12006,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 188,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+      "blob": "70d8ba09fbc19a6b2ab2de14d21d73c25cebb6a4",
+      "bytes": 10814,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 224,
+      "main_blob": "2334a9bb524127b6cc6165a857f7942e74420c27",
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.quoteLifecycle.test.tsx",
+      "blob": "2da1d11b208b413377b41b8416c0909dd0deebfa",
+      "bytes": 22440,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 424,
+      "main_blob": null,
+      "reviewed": false
+    },
+    {
+      "path": "apps/web/src/views/Sweep.test.tsx",
+      "blob": "2be1f668375db2c95f6d184514350bc0913b8685",
+      "bytes": 67229,
+      "kind": "test",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "line_count": 1070,
+      "main_blob": "17049ca012bd5bab662dd450668c64b11e7700dd",
+      "reviewed": false
+    }
+  ],
+  "scope_counts": {
+    "source": {
+      "total": 40,
+      "reviewed": 27,
+      "unread": 13,
+      "total_bytes": 639503
+    },
+    "test": {
+      "total": 82,
+      "reviewed": 3,
+      "unread": 79,
+      "total_bytes": 1216384
+    }
+  },
+  "main_comparison_gaps": [],
+  "successor_handoff": {
+    "next": "Read remaining production files in full from e22, then compare main with complete diffs or full source. Root has already fully read jitter.ts main/candidate; import root coverage instead of repeating it. Review remaining test source and global union variants. Root assigned successor additional net-transport/scan-source coverage.",
+    "do_not_repeat": "Preserve full-read coverage when blobs match; do not infer full coverage from searches, execution or names.",
+    "open_questions": [
+      "Follow scanClient/scannerCore/Scan dataflow for receipt authenticity, private scan guarantees and cursor/restore authority.",
+      "Review relayerClient response and refusal semantics against known unresolved-attempt policy.",
+      "Read wallet receipt regression tests and Pay/Sweep integration tests for confirmed old defects and new #300 issue.",
+      "Confirm supporting CameraImporter, QrFrame, qr and Factory/route source ownership through root closure; these are not in this initial 122-file manifest.",
+      "Parent/custody owns canonical #300 WalletAttempts finding; avoid duplicate counting."
+    ],
+    "constraints": "No app/test/config edits, no Git mutations, no execution/probes/transactions/reproduction. Only local audit outputs in parent authorized paths."
+  }
+}
