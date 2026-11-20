@@ -1923,3 +1923,14 @@ Branch: `review/ghostpay-contract-findings-gen4-20261119`; base `aa9a66905022311
 Owned writes: this additive claim and `docs/engineering-handoffs/continuous-20261119/generation-4-contract-review/` only.
 Acceptance: independently map all ten exact c993 Mythril records to current unchanged contract source, assess concrete authorization/reentrancy/timestamp constraints with source and meaningful existing tests where executable, and preserve per-finding uncertainty and next steps. Internal assessment does not replace external review, change strict analyzer status, or waive findings. Confirmed defects are reported before any proposed product edits.
 No contract, product, workflow, gate, dependency, remote-ref, fee, deployment or release changes.
+
+
+# Independent artifact security review — 2026-11-19 Vancouver
+
+Worker: `/root/artifact_security_review`; branch `review/ghostpay-artifact-remediation-20261120`.
+Base: canonical PR #278 `d74af79ebabdc8cead843361c3497b46d8c421f9`.
+Owned writes: this additive claim and `docs/engineering-handoffs/remediation-20261120/artifact-review/` only.
+Acceptance: execute current verifier tests, independently challenge manifest/file/source identity assumptions, verify a fresh payments-disabled artifact when the coordinator's dependencies are prepared, and preserve exact evidence.
+Boundaries: read-only product, tests and workflows until an independently observed defect is reported and scoped with the coordinator. No remote mutation, integration, release-policy change, signing, deployment or funds.
+
+Additional coordinator-authorized independent review: exact CodeQL fixture correction `008ccdcf05b703cea51ffc4fdaa42fc279281d81`. Read-only source inspection, AST-derived byte-equivalence proof and original focused test replay; no production or test changes authored by this reviewer. Review and evidence remain in the owned artifact-review directory.

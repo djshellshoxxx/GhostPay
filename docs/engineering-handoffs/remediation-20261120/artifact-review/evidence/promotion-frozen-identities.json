@@ -1,0 +1,35 @@
+[
+  {
+    "name": "promotion-baseline-frozen",
+    "base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "command": [
+      "node",
+      "--test",
+      "scripts/pages/build-pages-artifact-gate.test.mjs"
+    ],
+    "exitCode": 1,
+    "sourceSha256": {
+      "scripts/pages/build-pages-artifact-gate.test.mjs": "46ef7733e7e7d1cf42708d8b32ea1692b47bf19b678c7e3036eae8f8d239d59d",
+      "scripts/pages/build-pages.sh": "394405785542ddac814e5b81e236bfc7318c1ebdad8514480c869d98aa6f94e2",
+      "scripts/pages/verify-pages-artifact.mjs": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67"
+    },
+    "log": "promotion-baseline-frozen.log.gz"
+  },
+  {
+    "name": "promotion-fixed-frozen",
+    "base": "308dcbb2d40793514ea303a898282578dc17342d",
+    "command": [
+      "node",
+      "--test",
+      "scripts/pages/build-pages-artifact-gate.test.mjs",
+      "scripts/pages/verify-pages-artifact.test.mjs"
+    ],
+    "exitCode": 0,
+    "sourceSha256": {
+      "scripts/pages/build-pages-artifact-gate.test.mjs": "46ef7733e7e7d1cf42708d8b32ea1692b47bf19b678c7e3036eae8f8d239d59d",
+      "scripts/pages/build-pages.sh": "6402f359c4e86fbf110072befd6b1e036707befd06d413c4354b477ba91b098f",
+      "scripts/pages/verify-pages-artifact.mjs": "1b745f52fb5a7333e5c2a3b27be199ece737fadee5a30a60d7c60b46068b0b67"
+    },
+    "log": "promotion-fixed-frozen.log.gz"
+  }
+]
