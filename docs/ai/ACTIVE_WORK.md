@@ -746,3 +746,12 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
 - Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
 - Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
+
+
+## TRON cancellation independent qualification — 2026-11-20
+
+Worker: consolidation coordinator `/root`, with independent source reviewer `/root/ci_triage_r2`.
+Branch: `evidence/ghostpay-tron-qualification-r2-20261120`; base/source: `87c3bf5a59f4d443c9e5cf81368162554a5315c3` (PR #321).
+Owned paths: this additive record and `docs/consolidation/continuation-r2-20261120/TRON_ABORT_QUALIFICATION.{md,json}` only.
+Acceptance: reproduce the donor's three cancellation regressions on its tests-only checkpoint, independently review the unchanged product, run the original complete package coverage/typecheck/lint/build gates, and bind results to exact source and dependency provenance. Preserve donor source/PR head and original CI gates.
+Status: local acceptance passed; source and tests unchanged. Hosted checks remain pending and no merge/deployment is claimed.

@@ -1,0 +1,236 @@
+{
+  "format": "ghostpay-tron-abort-qualification/1",
+  "qualified_source": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+  "qualified_tree": "a77ea829e449c412911ac67c9d1395179a079055",
+  "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "pr": 321,
+  "red": {
+    "source": "b7f9d6440cb83c11792b343197c4f223db03f34a",
+    "total": 3,
+    "passed": 0,
+    "failed": 3,
+    "expected_failures": 3,
+    "run": {
+      "source": "b7f9d6440cb83c11792b343197c4f223db03f34a",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/scan.cancellation.test.ts",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/tron-r2-red.json"
+      ],
+      "started_at": "2026-11-20T17:51:43.953841+00:00",
+      "elapsed_seconds": 1.298,
+      "exit_code": 1
+    }
+  },
+  "green": {
+    "total": 106,
+    "passed": 106,
+    "failed": 0,
+    "skipped": 0,
+    "test_files": 10,
+    "coverage": {
+      "statements": 97.04,
+      "branches": 93.3,
+      "functions": 98.93,
+      "lines": 99.11
+    },
+    "original_thresholds": {
+      "statements": 95,
+      "branches": 90,
+      "functions": 95,
+      "lines": 95
+    }
+  },
+  "package_gates": [
+    {
+      "name": "coverage",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "--workspace",
+        "@ghostpay/tron-adapter",
+        "--",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/tron-r2-green.json"
+      ],
+      "started_at": "2026-11-20T17:52:24.910702+00:00",
+      "elapsed_seconds": 5.505,
+      "exit_code": 0,
+      "log": "/workspace/scratch/994a0d214fb9/tron-r2-coverage.log"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/tron-adapter"
+      ],
+      "started_at": "2026-11-20T17:52:30.416448+00:00",
+      "elapsed_seconds": 1.941,
+      "exit_code": 0,
+      "log": "/workspace/scratch/994a0d214fb9/tron-r2-typecheck.log"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/tron-adapter"
+      ],
+      "started_at": "2026-11-20T17:52:32.358846+00:00",
+      "elapsed_seconds": 3.688,
+      "exit_code": 0,
+      "log": "/workspace/scratch/994a0d214fb9/tron-r2-lint.log"
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/tron-adapter"
+      ],
+      "started_at": "2026-11-20T17:52:36.047099+00:00",
+      "elapsed_seconds": 2.629,
+      "exit_code": 0,
+      "log": "/workspace/scratch/994a0d214fb9/tron-r2-build.log"
+    }
+  ],
+  "dependency_reuse": {
+    "source": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+    "dependency_source": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "identity_checked_paths": [
+      "package.json",
+      "package-lock.json",
+      "tsconfig.base.json",
+      "eslint.config.js",
+      "packages/core-crypto",
+      "packages/tron-adapter/package.json",
+      "packages/tron-adapter/vitest.config.ts",
+      "packages/tron-adapter/tsconfig.json"
+    ],
+    "mode": "external dependency symlinks; own workspace package links; own build outputs",
+    "shared_dependency_entries": 410,
+    "fresh_install": false
+  },
+  "independent_source_review": {
+    "format": "ghostpay-independent-source-review-v1",
+    "reviewer": "/root/ci_triage_r2",
+    "reviewed_at": "2026-11-20 17:51:24 UTC",
+    "base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "head": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+    "tree": "a77ea829e449c412911ac67c9d1395179a079055",
+    "commits": [
+      "a5c936e0ec18c624f93e2e3a092cf222efd24f68 aa3df1cb37274fae73af0ca957183c15c51b62d3 docs: claim isolated TRON scan cancellation repair",
+      "b7f9d6440cb83c11792b343197c4f223db03f34a a5c936e0ec18c624f93e2e3a092cf222efd24f68 test(tron): reproduce same-page and delayed-RPC cancellation leaks",
+      "c31525fce87eba819c380a8aef0c45555fbb5d9e b7f9d6440cb83c11792b343197c4f223db03f34a fix(tron): stop buffered and late-RPC scan results after abort",
+      "87c3bf5a59f4d443c9e5cf81368162554a5315c3 c31525fce87eba819c380a8aef0c45555fbb5d9e docs: hand off exact TRON buffered-scan cancellation repair"
+    ],
+    "source_blobs": [
+      {
+        "path": "docs/ai/ACTIVE_WORK.md",
+        "blob_sha": "e7624dcdda08a2adcd9584bb200f8ab609257f3e",
+        "sha256": "e07ccd22cbe6aa474b1a2597f60884bba3c3455b82e600a7276563dd0dd3d99f",
+        "bytes": 74275
+      },
+      {
+        "path": "docs/handoffs/TRON_SCAN_ABORT_20261120.md",
+        "blob_sha": "93bebb5ccd5ef6ba0163f2f8684c71afbc9a9ffc",
+        "sha256": "cceef00f972e885d7d65993abb7c56cbeffb04ee2eba9490cd1c469493f61e3d",
+        "bytes": 3574
+      },
+      {
+        "path": "packages/tron-adapter/src/scan.cancellation.test.ts",
+        "blob_sha": "6d981bc0afaeaf20c6e2fdb871738b67856d2165",
+        "sha256": "93e36bd5ccf751579e28b3ba7490b1a67e448c2fe0596dd4c0a9e40218b3d596",
+        "bytes": 5458
+      },
+      {
+        "path": "packages/tron-adapter/src/scan.ts",
+        "blob_sha": "549ea733bb6855695b21600d3e0b5f90b6ec4b9e",
+        "sha256": "7e7e3f979945e379dc8bb643825627a2aba9a313756e8e10082ea9d84812ae63",
+        "bytes": 8287
+      }
+    ],
+    "scan_base_equals_307": true,
+    "scan_base_equals_325": true,
+    "decision": "APPROVED FOR QUALIFICATION; no blocking source/test finding",
+    "validation_scope": "Read-only source and test review plus git diff --check. No test, lint, typecheck, build, browser, or network-RPC execution by this reviewer.",
+    "findings": [],
+    "assessed_behaviors": [
+      "The assertActive closure throws the existing typed TronAdapterError('ABORTED').",
+      "The optional head await and every page await are followed by abort checks.",
+      "Buffered-page iteration rechecks before every block and transaction; resuming after a yielded payment cannot release the next transaction when already aborted.",
+      "TRC-20 confirmation rechecks abort after await, before either skipping an unconfirmed candidate or yielding a confirmed candidate.",
+      "An immediate pre-yield guard and terminal guard retain cancellation after the final yield or empty result.",
+      "Non-aborted parseCandidate, checkTronAnnouncement, Transfer-log proof matching, trustedToken behavior, pagination bounds, payment fields, and RPC paths are unchanged.",
+      "The three new tests separately cover same-block buffered native yield, delayed page result, and delayed confirmed TRC-20 receipt result. They require code ABORTED and use deterministic synthetic fixtures from the real builder.",
+      "Existing scan.test.ts remains byte-for-byte unchanged and retains valid native/TRC-20, token-trust, pagination, malformed-data and pre-abort controls.",
+      "Only scan.ts and a new focused test file change code. Ownership and handoff docs are additive; all file modes are 100644; no dependency, workflow, contract or release configuration changes."
+    ],
+    "qualifications_required": [
+      "Execute new tests against tests-only donor b7f9d644 to bind a current RED result; original donor handoff did not execute them.",
+      "Execute complete original tron-adapter package coverage suite at repaired source, retaining existing coverage thresholds.",
+      "Execute original package TypeScript, typed lint and build gates with source-appropriate dependencies.",
+      "Re-read heads, overlap, full hosted results and integration lease before any main merge."
+    ]
+  },
+  "limitations": [
+    "Hosted checks remain pending; no main merge or deployment.",
+    "Dependency reuse, not a fresh install; matching manifests, lockfile, configuration and core-crypto source were checked.",
+    "No browser, wallet, live-chain or repository-wide test claim."
+  ],
+  "artifacts": [
+    {
+      "name": "tron-r2-red.json",
+      "bytes": 4383,
+      "sha256": "35e278d88f4c688c81699632ab58eff09504f9a537891f97eadefed95d965e54"
+    },
+    {
+      "name": "tron-r2-red.log",
+      "bytes": 72,
+      "sha256": "a50d1f6bdcf9ff99856d57cd7950c3948957e9f9ef63699029bca6c824e7c39a"
+    },
+    {
+      "name": "tron-r2-green.json",
+      "bytes": 179214,
+      "sha256": "5ebca07020e7aa7e31904fa0f3a3f118343230e7c83db3a557e814afaac7e55c"
+    },
+    {
+      "name": "tron-r2-coverage.log",
+      "bytes": 1529,
+      "sha256": "8e1500c2b67a905d9e64487edd1847ec1ab65305e6eeed687694257f87abda65"
+    },
+    {
+      "name": "tron-r2-typecheck.log",
+      "bytes": 225,
+      "sha256": "a88364a6bda172db287846b1a8556ecd05320207301d72c3f514125d05e9ff54"
+    },
+    {
+      "name": "tron-r2-lint.log",
+      "bytes": 233,
+      "sha256": "a0fe0fd8ac021e36ef12f8494286545f127a54911d0db6d9084917ecdf5d7959"
+    },
+    {
+      "name": "tron-r2-build.log",
+      "bytes": 490,
+      "sha256": "2b9bf482997a3cbb77137ee94f2de70431c9c65b5c664cdcad8d018dd9995039"
+    },
+    {
+      "name": "tron-scan-abort-independent-review-r2.md",
+      "bytes": 3172,
+      "sha256": "00ef9a78e590193fc9fb82fbd1b304a541b12f7e37444a81554a2dcabfee6c79"
+    }
+  ]
+}
