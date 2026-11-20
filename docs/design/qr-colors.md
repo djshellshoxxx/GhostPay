@@ -13,7 +13,7 @@ Every QR code in GhostPay is shown inside a frame that tells the user what kind 
 | `proof` | purple | dotted | check-document | PROOF | receipts, proof of payment, signed manifests, fingerprints | keep or compare |
 | `caution` | yellow | groove plus hazard stripe | warning triangle | CAUTION | testnet, dev, unsigned, unverified data | verify before relying on it |
 
-`kindForPayload(type, flags)` picks the kind. `secret` is never downgraded; any other kind becomes `caution` if flagged testnet, unsigned or unverified.
+`kindForPayload(type, flags)` picks the kind. `secret` and `bearer` are never downgraded; other recognized kinds become `caution` if flagged testnet, unsigned or unverified. Unknown or non-string payload types and frame kinds are rejected before key coercion.
 
 ## Rationale
 
