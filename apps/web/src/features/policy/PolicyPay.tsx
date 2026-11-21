@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { WalletAttempts } from '../../components/WalletAttempts';
 import { PostBroadcastError } from '../../lib/payExec';
-import { userMessage } from '../../lib/errors';
+import { UserFacingError, userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { useServices } from '../../lib/services';
@@ -32,6 +32,11 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   const [token, setToken] = useState('native');
   const [amount, setAmount] = useState('');
   const [reviewed, setReviewed] = useState<Reviewed | undefined>(undefined);
+  // A visible form edit revokes the review *synchronously*, even before React re-renders.
+  // sendPolicyPayment re-checks its captured guard before every wallet request.
+  const reviewRevision = useRef(0);
+  useEffect(() => () => { reviewRevision.current += 1; }, []);
+  const invalidateReview = (): void => { reviewRevision.current += 1; setReviewed(undefined); };
   const prepared = reviewed?.prepared;
   const [msg, setMsg] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
@@ -42,13 +47,18 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
 
   const review = (): void => {
     setMsg(undefined);
-    setReviewed(undefined);
+    invalidateReview();
     if (deployment === undefined) return;
     try {
       if (!DEC.test(amount.trim())) throw new Error('amount');
       const assertSessionCurrent = captureSessionVersionGuard();
       const assertDeploymentCurrent = props.ctx.assertDeploymentCurrent;
-      const assertCurrent = (): void => { assertSessionCurrent(); assertDeploymentCurrent(); };
+      const revision = reviewRevision.current;
+      const assertCurrent = (): void => {
+        if (revision !== reviewRevision.current) throw new UserFacingError('The policy payment form changed after review. Review it again. Nothing was sent.');
+        assertSessionCurrent();
+        assertDeploymentCurrent();
+      };
       assertCurrent();
       const p = preparePolicyPayment({ metaAddress: meta, deployment, token, gross: BigInt(amount.trim()), nowSec: BigInt(Math.floor(services.nowMs() / 1000)) });
       setReviewed({ prepared: p, guard: { assertCurrent, deployment, reviewed: reviewPolicyPayment(p, deployment) } });
@@ -92,10 +102,10 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
       {deployment === undefined ? <Notice kind="info">{t('policy.pay.verifyFirst')}</Notice> : (
         <>
           <Field label={t('policy.pay.metaLabel')} hint={t('policy.pay.metaHint')}>
-            {(id, hint) => <input id={id} aria-describedby={hint} value={meta} onChange={(e) => { setMeta(e.target.value); setReviewed(undefined); }} spellCheck={false} />}
+            {(id, hint) => <input id={id} aria-describedby={hint} value={meta} onChange={(e) => { setMeta(e.target.value); invalidateReview(); }} spellCheck={false} />}
           </Field>
-          <Field label={t('policy.pay.tokenLabel')}>{(id) => <input id={id} value={token} onChange={(e) => { setToken(e.target.value); setReviewed(undefined); }} spellCheck={false} />}</Field>
-          <Field label={t('policy.pay.amountLabel')}>{(id) => <input id={id} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); setReviewed(undefined); }} />}</Field>
+          <Field label={t('policy.pay.tokenLabel')}>{(id) => <input id={id} value={token} onChange={(e) => { setToken(e.target.value); invalidateReview(); }} spellCheck={false} />}</Field>
+          <Field label={t('policy.pay.amountLabel')}>{(id) => <input id={id} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); invalidateReview(); }} />}</Field>
           {locked ? (
             <>
               <Notice kind="error" title={t('policy.pay.lockedTitle')}>{t('policy.pay.lockedBody')}</Notice>
