@@ -1,3 +1,16 @@
+# Isolated idle, scan and current-main candidate — 2026-11-20 Pacific
+
+Worker: fc3db078ca12-root-r2; independent composition reviewer: /root/r2_idle_composition_review.
+Branch: integration/ghostpay-idle-scan-candidate-20261121-fc3db.
+Base: integration PR307 at 5a745d4b5fba69b66a9779f88aefc63c253a4f27.
+Pinned donors: PR344 a88157b53d1e0925350d5c8db047eabb4365f4e9 (existing idle/backup/receipt/request-file stack); PR350 89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8 (scan helper plus current main aec179910c39081d820396409ff3139ff2264132).
+Scope: isolated source-preserving composition, additive ownership resolution, and new docs/consolidation/idle-scan-candidate-20261121-fc3db/ evidence. Donor runtime paths remain exact; no donor branch is edited. A separate worker may contribute only the new wallet.finalAccount.test.ts and its handoff after independent review.
+Acceptance: preserve all donor histories and every intended blob/mode/type, retain every existing claim, preserve main's six TRON/fee product/test changes, verify the current combined source with applicable original gates, and publish only a reviewable candidate. Source-specific donor CI is not a combined-source pass.
+Ownership: complete current branch/PR and raw-claim review found no existing equivalent composition. Shared integration lock generation 11 remains held by 994a0d214fb9-root-r3 at c196151daf8233f96045fd205b2d899c9e8cc97d; expiry does not authorize takeover. This worker owns only this new isolated candidate and its evidence, not shared integration/main or frozen donor paths.
+State: claimed before composition. No shared ref update, lock takeover, manual workflow dispatch, release, deployment or funds operation is part of this task.
+
+---
+
 # R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
 
 Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
