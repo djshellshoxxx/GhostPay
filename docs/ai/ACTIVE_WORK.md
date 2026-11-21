@@ -1,3 +1,14 @@
+# Pages browser self-check footer — 2026-11-21
+
+Worker: one ChatGPT implementation coordinator; independent review is not yet available.
+Branch: `chatgpt/ghostpay-browser-selfchecks-20261121`, based on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: new `apps/web/src/lib/browserChecks.ts`, `apps/web/src/lib/browserChecks.test.ts`, `apps/web/src/components/BrowserChecks.tsx`, `apps/web/src/components/BrowserChecks.test.tsx`, bounded import/footer addition to `apps/web/src/AppShell.tsx`, scoped `apps/web/src/styles/app.css` CSS, additive `apps/web/locales/{en,es,ja,ar}.json` keys, this additive ownership claim, and `docs/handoffs/BROWSER_SELF_CHECKS_20261121.md`.
+Scope: startup and resumed/runtime local capability checks, displayed at the bottom of every shared browser-app view with a mobile-friendly disclosure. Distinguish checks of secure context, WebCrypto SHA-256 known answer and temporary storage round trip from independent client artifact verification, chain/funds safety and recovery guarantees. No network requests or telemetry, no wallet, key or payment changes.
+Acceptance: deterministic test-first success/failure/storage-cleanup coverage; stale asynchronous run must not supersede newer result; accessible/mobile footer on all routes, all shipped locales; applicable tests/build/lint/CI must pass at final source before integration. Record skipped checks and review requirements; do not merge with unqualified or actively owned large branches.
+Overlap/reconciliation: broad PR #278 touches AppShell and locales; PR #307 touches locales and CSS. Integration PR #380 owns the overarching ledger. This branch claims only scoped additive changes and must be reconciled by integration owner. No integration lock acquired and no main merge attempted.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
