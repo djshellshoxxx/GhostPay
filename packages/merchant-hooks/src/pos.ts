@@ -89,11 +89,12 @@ export function posReduce(state: PosState, event: PosEvent, now: number): PosRes
     };
   }
   if (state.status !== 'awaiting') return no;
-  // Do not accept payments, ticks or cancellation against a malformed or unbounded expiry.
+  // Safe cancellation must remain available even when clock/expiry data is malformed.
+  if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
+  // Do not accept payments or ticks against a malformed or unbounded expiry.
   if (typeof now !== 'number' || !Number.isSafeInteger(now) || now < 0 ||
       typeof state.expiresAt !== 'number' || !Number.isSafeInteger(state.expiresAt) || state.expiresAt < 0)
     throw new HooksError('bad-time-policy');
-  if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
   if (now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
   if (event.type !== 'payment') return no;
   if (event.invoiceId !== state.invoiceId || event.currency !== state.currency) return no;
