@@ -3938,3 +3938,69 @@ are included. Add `apps/web/src/views/Settings.savedReconciliation.test.tsx`
 for focused retention and stale-test regressions without changing the exact
 recovered partial-import test. The independent reviewer owns final source
 review and unchanged-assertion reruns on the committed repair head.
+
+
+## BTC wallet lifecycle and worker-result guard recovery — 2026-11-21 UTC
+
+Worker: `/root/btc_lifecycle_guard_recovery`; coordinator: `/root`.
+Isolated branch: `repair/ghostpay-btc-lifecycle-20261121-5ceb`.
+Exact base: `783231a46840cd869e39bd704751d4ab4c349c45`, tree
+`65e5cc6fdb7ab3337951ba0b0b58e87b71df095b` (public PR #372 source-equivalent).
+Selective donor: PR #244 `981cc2f4395d2d76c499a5cd46387daaaa3a6b1f`;
+qualified alias `7954f1e5a29988fb9239225d1f829c6c3dc71e08`.
+
+Owned writes: `apps/web/src/features/btc/{BtcView.tsx,esplora.ts,scanWorkerClient.ts}`,
+new narrowly scoped adjacent lifecycle/API/result-contract test files, and this
+additive claim. Existing broader branch ownership is retained; coordinator has
+authorized this isolated successor and owns publication, independent review and
+all shared integration actions. No other active task owns these BTC source paths.
+
+Acceptance: reset optional provider-check consent after wallet installation and
+lock while preserving endpoint reset and mandatory disclosed light-scan checks;
+retain safe uint32 output-index validation; bind worker results to the request,
+verified headers, unique outputs and coherent recovery-window state. Preserve the
+newer per-output `spentCheckedThrough` model and every current stronger source,
+network authorization, cancellation, assertion and gate. Select only compatible
+donor guards; do not merge the donor's older source/UI model.
+
+Verification: corrected-source ordinary lifecycle and API-contract tests plus
+existing focused BTC suites, scoped lint/typecheck and applicable source/build
+checks. No vulnerable-history execution, exploit reconstruction, live endpoint
+transaction or new adversarial payload is included. Record exact frozen source,
+commands, pass/fail/skip counts and unexecuted native/hosted gates. Coordinate the
+heavy-process slot with the retention worker. Never install or build through
+shared dependency symlinks. No remote ref, lease, parent/main merge, release,
+deployment, mainnet enablement, contract or dependency change is authorized.
+
+Status: claimed before source edits; no tests or independent review claimed.
+
+
+### BTC lifecycle guard implementation handoff
+
+The coordinator authorized final documentation and deferred remaining heavy gates
+to exact-source hosted qualification while the retention coverage run holds the
+local execution slot. Additional owned handoff path:
+`docs/handoffs/BTC_LIFECYCLE_GUARDS_20261121_5CEB.md`.
+
+Frozen product/test source: `c503534fa904c32a1071038b5cfe08a778b7bdda`, tree
+`595be477d20ac27b1c62d7ef92d3cd34299b0053`. Author executions passed125 cases
+across14 complete focused files, zero failures/skips; secret and source-preservation
+checks passed. Fresh reviewer `/root/btc_guard_independent_review` independently
+reran the same125 cases with zero failures/skips and reported no blocking source
+finding in the bounded changed-path scope. These are overlapping executions, not
+250 distinct cases, formal GitHub approval or whole-candidate qualification.
+
+Typed ESLint, full-web TypeScript, build, full coverage, native Worker/browser
+execution and exact published-head CI remain unexecuted by this author. No gate
+or existing assertion was changed. No vulnerable-history execution or new
+adversarial-result fixture was performed. The corrected source and existing
+refusal suites were the only executable BTC input.
+
+The final documentation leaves every application/test blob identical to the
+frozen source. Source history, command receipts, failures, provenance and limits
+are retained in the verified author evidence packet for the coordinator's single
+authoritative ledger. Source paths are released for root-owned publication and
+reviewed follow-up; no local process remains. No install or build was performed
+through borrowed dependencies, and the temporary read-only reuse link is removed.
+No remote ref, shared integration, lease, release, deployment or funds operation
+was performed by this worker.

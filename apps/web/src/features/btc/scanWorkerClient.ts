@@ -4,7 +4,7 @@ import type { EsploraFetch } from './esplora';
 import { BtcScanSourceBridge } from './scanWorkerSource';
 import { BtcOracleBridge } from './oracleBridge';
 import { normalizeOracleConfig } from './oracleSource';
-import { MAX_SCAN_MATCHES, wipeFound, type ScanParams, type ScanResult } from './scan';
+import { MAX_SCAN_BLOCKS, MAX_SCAN_MATCHES, wipeFound, type ScanParams, type ScanResult } from './scan';
 import { isHeight, isWorkerErrorCode, MAX_WORKER_STATE_BYTES, readWorkerState, type BtcScanRequest, type BtcScanResponse, type BtcScanStart } from './scanWorkerMessages';
 
 export interface BtcScanWorker {
@@ -25,7 +25,7 @@ function wipeResponseResult(value: unknown): void {
     if (item !== null && typeof item === 'object' && 'spendTweak' in item && item.spendTweak instanceof Uint8Array) zeroize(item.spendTweak);
   }
 }
-function validateResult(r: ScanResult, providerSpentCheck: boolean): void {
+function validateResult(r: ScanResult, p: ScanParams, providerSpentCheck: boolean): void {
   const hex = (s: unknown): boolean => typeof s === 'string' && /^[0-9a-f]{64}$/.test(s);
   if (r === null || typeof r !== 'object' || !isHeight(r.fromHeight) || !Number.isSafeInteger(r.toHeight) || !isHeight(r.spentCount) || r.headerAnchored !== true ||
       !['local', 'provider', 'unknown'].includes(r.spentStatus) ||
@@ -35,6 +35,19 @@ function validateResult(r: ScanResult, providerSpentCheck: boolean): void {
         !isHeight(f.height) || !hex(f.blockHash) || !hex(f.txid) || !isHeight(f.vout) || typeof f.amountSats !== 'bigint' || f.amountSats < 0n || f.amountSats > 2_100_000_000_000_000n ||
         !(f.spendTweak instanceof Uint8Array) || f.spendTweak.length !== 32 || !(f.xOnlyPublicKey instanceof Uint8Array) || f.xOnlyPublicKey.length !== 32 ||
         typeof f.duplicateKey !== 'boolean' || (f.label !== null && !isHeight(f.label)))) throw new SilentPaymentError('INVALID_RESPONSE');
+  const history = r.recoveredHistory;
+  const headers = p.headers;
+  // Retained spent-coverage anchors can be above an explicitly earlier scan limit. They must still belong
+  // to the checked chain; payment discoveries themselves remain within the requested result range.
+  if (r.fromHeight !== p.fromHeight || headers === undefined || r.toHeight > headers.tipHeight ||
+      (p.toHeight !== undefined && r.toHeight > p.toHeight) ||
+      (r.spentStatus === 'local' && r.toHeight < headers.tipHeight) ||
+      r.blocks.some((b: ScanResult['blocks'][number]) => b.height > headers.tipHeight || headers.hashAt(b.height) !== b.hash) ||
+      r.found.some((f: ScanResult['found'][number]) => f.height < r.fromHeight || f.height > r.toHeight || headers.hashAt(f.height) !== f.blockHash) ||
+      new Set(r.found.map((f: ScanResult['found'][number]) => `${f.txid}:${String(f.vout)}`)).size !== r.found.length ||
+      (history !== undefined && (history === null || !isHeight(history.offset) || !isHeight(history.end) || !isHeight(history.total) ||
+        history.offset > history.end || history.end > history.total || history.end - history.offset > (p.recoveryLimit ?? MAX_SCAN_BLOCKS))))
+    throw new SilentPaymentError('INVALID_RESPONSE');
 }
 
 /** Dedicated worker per request; all exits detach handlers and terminate it. Checkpoint commits stay in the vault owner. */
@@ -85,7 +98,7 @@ export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWor
         if (m.type === 'block' && isHeight(m.height)) { p.onBlock?.(m.height); return; }
         if (m.type === 'error' && isWorkerErrorCode(m.code)) { finish(new SilentPaymentError(m.code)); return; }
         if (m.type === 'done' && !committing) {
-          validateResult(m.result, providerSpentCheck);
+          validateResult(m.result, p, providerSpentCheck);
           const found: ScanResult['found'][number][] = [];
           try {
             for (const f of m.result.found) found.push({ ...f, spendTweak: secretScalarFromBytes(f.spendTweak) });

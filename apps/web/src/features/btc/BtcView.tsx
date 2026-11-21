@@ -214,6 +214,7 @@ export function BtcView(
       setSaveScan(false);
       setSavedScan(undefined);
       setForgetScan(false);
+      setProviderCheck(false);
     });
   };
 
@@ -564,6 +565,7 @@ export function BtcView(
     walletRef.current = undefined;
     forgetSeed();
     setWallet(undefined);
+    setProviderCheck(false);
     setSaveScan(false); setSavedScan(undefined); setForgetScan(false);
     resetFlow();
   };
