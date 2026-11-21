@@ -1,3 +1,15 @@
+# GP-UTC-01 — fail-closed runtime Unix timestamp display (2026-11-21 12:38 UTC)
+
+Cycle/coordinator: `20261121T1238Z/bug/unix-timestamp-runtime-guard`; one assistant, sequential audit, implementation and self-check. Native delegate/independent verifier unavailable; do not count this as independent approval.
+Isolated branch: `automation/20261121T1238Z/bug/unix-timestamp-runtime-guard`; exact parent source: PR #384 commit `f3e5540777491559e79565cafe0978f5e8e30003`, based on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned changes: `apps/web/src/lib/format.ts` function `formatUnix` only, `apps/web/src/lib/format.test.ts` new timestamp regressions only, this additive claim, dedicated `docs/handoffs/UNIX_TIMESTAMP_RUNTIME_GUARD_20261121.md`. Do not alter parent #384's `parseUnits` implementation or regressions.
+Finding: existing helper promises `invalid time` for nonnumber/untrusted values but numeric coercion of `null` renders epoch, numeric strings silently change type, and bigint/Symbol or throwing valueOf can crash an invoice render. Reproduced on Node 22 with source-equivalent function. Reachability from validated invoice schema not established; defensive correctness, low severity; no funds-loss exploit asserted.
+Acceptance: test first that runtime-invalid values (`null`, strings, bigint, Symbol, objects including hostile coercion) return `invalid time` without throwing; preserve all finite in-range Unix-seconds dates including the existing ±Date bound, and preserve existing UTC display; reject nonnumber values without evaluating user-supplied coercion; no new dependencies, policy changes, secrets, contracts, releases, or deployments.
+Coordination: live integration lock branch `automation/ghostpay-integration-lock` held generation 11 by `994a0d214fb9-root-r3`; expiry is not takeover authorization. No shared tracking writes, PR merging or main changes. Parent #384 hosted workflows completed successfully but do not qualify this new branch.
+Execution note: direct git checkout unavailable due GitHub DNS; GitHub connector supports isolated source writes. Node 22 source-equivalent reproduction is not repository Vitest. Require exact-head hosted CI and genuinely independent review before integration.
+
+---
+
 # Scope correction after cross-package audit — same cycle and branch
 
 At source checkpoint `8e8cee02d2160a4ff130fb0a448e2c2f7039a38c`, a follow-up cross-package audit found that `packages/merchant-ledger/src/decimal.ts` explicitly defines GhostPay's existing signed fiat-minor-unit model as **zero for a fixed eight-code list and two for all others, including KWD**. Changing `apps/web/src/lib/format.ts` to ISO 4217 exponents would reinterpret historical invoices and disagree with merchant-ledger and shop integrations. This is an unresolved protocol/compatibility policy; the ISO experiment must be reverted in the final diff. Preserve its commits and reasoning in history, but do not seek integration of the exponent change.
