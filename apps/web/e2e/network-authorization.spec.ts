@@ -114,6 +114,9 @@ test('cancelling a loaded payment does not silently restart payment preflight', 
   const link = await createInvoice(page, { encrypt: true });
   await page.goto(link);
   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();
+  // The invoice uses same-document hash navigation. Its preceding networkidle state can already be satisfied
+  // while the new asynchronous manifest/preflight is still completing. Measure the loaded state the test promises.
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeEnabled();
   await page.waitForLoadState('networkidle');
   expect(network.state.methods).toContain('eth_chainId');
   const before = foreign.length;
@@ -121,6 +124,10 @@ test('cancelling a loaded payment does not silently restart payment preflight', 
   await page.getByRole('button', { name: 'Cancel network activity', exact: true }).click();
   await expect(page.getByText('Network activity cancelled. Start a new action to authorize another request.', { exact: true })).toHaveCount(1);
   await page.waitForLoadState('networkidle');
+  await test.info().attach('cancelled-preflight-requests', { contentType: 'application/json', body: Buffer.from(JSON.stringify({
+    before, requests: foreign.map((request) => ({ method: request.method(), origin: new URL(request.url()).origin,
+      rpcMethod: rpcRequest(request)?.method, failure: request.failure()?.errorText ?? null })),
+  }, null, 2)) });
   expect(foreign).toHaveLength(before);
   await page.getByRole('button', { name: 'Review network access for this invoice', exact: true }).click();
   await page.waitForLoadState('networkidle');
@@ -188,6 +195,8 @@ test('replacing Settings in a second tab does not authorize a loaded payment to 
   const link = await createInvoice(page, { encrypt: true });
   await page.goto(link);
   await expect(page.getByRole('heading', { name: 'Review payment', exact: true })).toBeVisible();
+  // Establish completed preflight before measuring changes attributable to the second tab's settings save.
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeEnabled();
   await page.waitForLoadState('networkidle');
   expect(network.state.methods).toContain('eth_chainId');
   const before = foreign.length;
@@ -208,6 +217,10 @@ test('replacing Settings in a second tab does not authorize a loaded payment to 
   await expect(other.getByText('Settings saved.', { exact: true })).toBeVisible();
   await replaced;
   await page.waitForLoadState('networkidle');
+  await test.info().attach('replaced-settings-preflight-requests', { contentType: 'application/json', body: Buffer.from(JSON.stringify({
+    before, requests: foreign.map((request) => ({ method: request.method(), origin: new URL(request.url()).origin,
+      rpcMethod: rpcRequest(request)?.method, failure: request.failure()?.errorText ?? null })),
+  }, null, 2)) });
   expect(foreign).toHaveLength(before);
   expect(foreign.filter((request) => new URL(request.url()).origin === NEXT_RPC)).toEqual([]);
   expect(network.state.raws).toEqual([]);

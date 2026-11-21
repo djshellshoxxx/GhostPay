@@ -3948,3 +3948,40 @@ are included. Add `apps/web/src/views/Settings.savedReconciliation.test.tsx`
 for focused retention and stale-test regressions without changing the exact
 recovered partial-import test. The independent reviewer owns final source
 review and unchanged-assertion reruns on the committed repair head.
+
+
+## Native browser harness repair — 2026-11-21
+
+Worker `/root/native_harness_repair`; coordinator `/root`. Isolated branch
+`repair/ghostpay-native-harness-20261121-5ceb`, base public
+`22569e2a83e3f8bc3c86982f69bbb1d90ca8356c` (tree
+`b682a8eb262921d82f0d49d243005d8461a8a706`).
+Owned paths: `apps/web/e2e/network-isolation.spec.ts`, `idle-session.spec.ts`,
+`stealthExportFixtures.ts`, `network-authorization.spec.ts`,
+`accessibility-audit.ts`, new test-only fixture support, and diagnostic-only
+changes to `.github/workflows/native-browser-qualification.yml`. Root separately
+owns ContextHelp source/tests and contextual-help browser geometry.
+Evidence: hosted native run44882398831 reported WebKit lean126pass/5fail/5skip
+and Firefox lean109pass/12fail/5skip. Read complete failures before changes.
+Acceptance: preserve assertions, coverage, CSP, release and permission gates;
+repair only source-supported harness incompatibilities; add diagnostics for
+unexplained Firefox page crashes and cancellation observations. Existing failures
+and skips remain explicit until the corrected exact head executes successfully.
+No application or dependency edits, disabled axe rules, blanket retry/timeout
+changes, native version substitution, remote refs or shared integration-lock
+changes. Production copies/financial data are not exercised. Current generation11
+lease remains held by the unreconciled prior coordinator.
+
+
+## Native contextual-help interaction repair — 2026-11-21 UTC
+
+Owner: `5ceb6203640a-root`; branch `fix/ghostpay-context-help-native-20261121-5ceb`; base public #373 `22569e2a83e3f8bc3c86982f69bbb1d90ca8356c`, tree `b682a8eb262921d82f0d49d243005d8461a8a706`. Own `apps/web/src/components/ContextHelp.tsx`, its existing test only if needed, `apps/web/src/styles/app.css`, `apps/web/e2e/contextual-help.spec.ts`, this additive claim and a scoped handoff. Native harness worker owns the other browser fixtures/workflow; retention worker owns reconciliation only.
+
+Observed exact-source hosted failures: WebKit lean job136780385669 lost the click below hover-only help; Firefox lean136780385891 compared viewport coordinates across scrolling. Preserve immediate hover-leave hiding, keyboard/touch behavior, aria descriptions, original click/geometry assertions and all privacy/CSP constraints. Retain hidden explanation layout only until the next pointer activation/cancellation or keyboard action so that closing it cannot move the pressed control. Compare in-flow positions in document coordinates. No arbitrary timeout increase, assertion removal or browser skip. Existing unit tests and real hosted browser rerun must qualify the fix; local browser absence is not a pass.
+
+No shared target, parent, integration lease, deployment or funds action. The generation11 lease remains unreconciled. Root will publish an isolated child after review, preserve failed receipts and combine only with independently reviewed nonoverlapping harness work.
+
+
+## Native repair composition — 2026-11-21 UTC
+
+Coordinator `5ceb6203640a-root` owns isolated branch `qualify/ghostpay-native-repair-composition-20261121-5ceb`. Merge inputs: harness `5ed15080db47aeccffc1ed9dbd4aeac4bfc1dff6` and UI `c773eff0` (product `59fb5f0d2a8f28b8572fe19a9e7f7ca5039705db`), both from public #373 `22569e2a83e3f8bc3c86982f69bbb1d90ca8356c`. Only the additive registry conflicts; preserve the entire common prefix and both appended claims. All other changed files must equal their respective frozen source blobs. A fresh reviewer owns independent combined-source assessment. Exact-head hosted native/Chromium and final composition gates remain pending. This local composition and any guarded update of the coordinator's exclusively owned source PR do not acquire or modify the unreconciled shared integration lease.

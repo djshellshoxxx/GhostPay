@@ -22,6 +22,9 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
   const [focused, setFocused] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  // Hover dismissal hides the explanation immediately. Keep its in-flow space until the next interaction so that
+  // moving from the help to a control below it cannot move that control between pointer movement and activation.
+  const [reserveHoverSpace, setReserveHoverSpace] = useState(false);
   const open = !dismissed && (hovered || focused || pinned);
   // A press elsewhere moves focus at mousedown, before the release (for touch, at the compatibility mousedown after
   // pointerup). Collapsing the in-flow explanation on that blur would move the pressed control away, so the release and
@@ -32,11 +35,15 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
   const blurPending = useRef(false);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !reserveHoverSpace) return;
+    let closeTimer: ReturnType<typeof setTimeout> | undefined;
     const dismiss = (): void => {
+      blurPending.current = false;
       setHovered(false);
+      setFocused(false);
       setPinned(false);
       setDismissed(true);
+      setReserveHoverSpace(false);
     };
     const onKey = (event: KeyboardEvent): void => {
       if (event.key !== 'Escape' || event.defaultPrevented) return;
@@ -50,11 +57,15 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
       if (event.target instanceof Node && !root.current?.contains(event.target)) dismiss();
     };
     const onPressStart = (): void => { pressing.current = true; };
-    const onKeyInput = (): void => { pressing.current = false; };
+    const onKeyInput = (): void => { pressing.current = false; setReserveHoverSpace(false); };
+    const onResize = (): void => { if (!pressing.current) setReserveHoverSpace(false); };
     const onPressEnd = (): void => {
       pressing.current = false;
-      if (!blurPending.current) return;
-      setTimeout(() => {
+      if (!blurPending.current && !reserveHoverSpace) return;
+      if (closeTimer !== undefined) clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => {
+        closeTimer = undefined;
+        setReserveHoverSpace(false);
         if (!blurPending.current) return;
         blurPending.current = false;
         setFocused(false);
@@ -69,7 +80,9 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
     document.addEventListener('keydown', onKeyInput, true);
     document.addEventListener('mouseup', onPressEnd, true);
     document.addEventListener('pointercancel', onPressEnd, true);
+    window.addEventListener('resize', onResize);
     return () => {
+      if (closeTimer !== undefined) clearTimeout(closeTimer);
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('click', onOutsideClick);
       document.removeEventListener('pointerdown', onPressStart, true);
@@ -77,8 +90,9 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
       document.removeEventListener('keydown', onKeyInput, true);
       document.removeEventListener('mouseup', onPressEnd, true);
       document.removeEventListener('pointercancel', onPressEnd, true);
+      window.removeEventListener('resize', onResize);
     };
-  }, [open]);
+  }, [open, reserveHoverSpace]);
 
   return (
     <span
@@ -86,11 +100,15 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
       ref={root}
       onPointerEnter={(event) => {
         if (event.pointerType === 'touch') return;
+        setReserveHoverSpace(false);
         setHovered(true);
         setDismissed(false);
       }}
-      onPointerLeave={() => { setHovered(false); }}
-      onFocus={() => { blurPending.current = false; setFocused(true); setDismissed(false); }}
+      onPointerLeave={() => {
+        if (open && hovered && !focused && !pinned) setReserveHoverSpace(true);
+        setHovered(false);
+      }}
+      onFocus={() => { blurPending.current = false; setReserveHoverSpace(false); setFocused(true); setDismissed(false); }}
       onBlur={(event) => {
         if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) return;
         if (pressing.current) {
@@ -116,6 +134,7 @@ export function ContextHelp(props: ContextHelpProps): ReactNode {
         <span aria-hidden="true">?</span>
       </button>
       <span id={id} className="context-help-text" role="tooltip" hidden={!open}>{props.children}</span>
+      {reserveHoverSpace && !open && <span className="context-help-text context-help-space" aria-hidden="true">{props.children}</span>}
     </span>
   );
 }

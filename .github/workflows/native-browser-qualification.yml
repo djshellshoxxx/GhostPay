@@ -8,6 +8,8 @@ on:
       - 'apps/web/**'
       - 'packages/**'
       - 'scripts/build-workspaces.mjs'
+      - 'scripts/tests/native-crypto-probe.test.mjs'
+      - 'scripts/tests/native-http-redirect-fixture.test.mjs'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.base.json'
@@ -20,6 +22,8 @@ on:
       - 'apps/web/**'
       - 'packages/**'
       - 'scripts/build-workspaces.mjs'
+      - 'scripts/tests/native-crypto-probe.test.mjs'
+      - 'scripts/tests/native-http-redirect-fixture.test.mjs'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.base.json'
@@ -56,11 +60,15 @@ jobs:
           key: playwright-native-${{ runner.os }}-${{ steps.pw.outputs.version }}-${{ matrix.engine }}
       # Browser installation is permitted on the GitHub-hosted runner, not the restricted local workspace.
       - run: ./node_modules/.bin/playwright install --with-deps ${{ matrix.engine }}
+      - name: Verify native harness fixture contracts
+        run: node --test scripts/tests/native-crypto-probe.test.mjs scripts/tests/native-http-redirect-fixture.test.mjs
       - name: Run existing journeys with the selected native engine
         shell: bash
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
           NATIVE_ENGINE: ${{ matrix.engine }}
+          # Preserve native process stderr for unexplained page crashes; this does not change browser settings.
+          DEBUG: pw:browser
         run: |
           set -euo pipefail
           case "$NATIVE_ENGINE" in
@@ -68,7 +76,9 @@ jobs:
             webkit) projects=(--project=webkit --project=webkit-iphone-se --project=webkit-ipad-mini) ;;
             *) exit 1 ;;
           esac
-          npm exec --workspace @ghostpay/web -- playwright test --config=playwright.native.config.ts "${projects[@]}"
+          mkdir -p apps/web/test-results
+          git rev-parse HEAD HEAD^{tree} > apps/web/test-results/native-browser-process.log
+          npm exec --workspace @ghostpay/web -- playwright test --config=playwright.native.config.ts --trace=retain-on-failure "${projects[@]}" 2>&1 | tee -a apps/web/test-results/native-browser-process.log
       - name: Record successful source identity
         env:
           NATIVE_ENGINE: ${{ matrix.engine }}
