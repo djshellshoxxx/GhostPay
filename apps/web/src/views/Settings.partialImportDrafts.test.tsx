@@ -75,6 +75,7 @@ describe('Settings partial import: unselected unsaved form drafts (GP-BUG-04)', 
     const transfer = exportSettingsExchange(
       { ...DEFAULT_SETTINGS, rpcUrls: { '84532': 'https://imported-rpc.example/' } },
       ['rpcUrls'],
+      makeServices().chains.map((chain) => chain.chainId),
     );
     fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: transfer } });
     await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
