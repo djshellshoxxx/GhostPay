@@ -137,15 +137,20 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await p.reload();
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    // The tab journal survives reload; visual disclosure still requires wallet reconnection.
+    const lockedJournal = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(lockedJournal).toContainText('Connect the relevant wallet account and chain');
+    await expect(lockedJournal).not.toContainText(payHash);
     await openFresh(p, link);
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).not.toContainText(payHash);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
     await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
+    // The matching account+chain reveals the retained hash without authorizing a second send.
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
@@ -268,7 +273,10 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     // Reload mid-flow: the transaction is still only in the mempool.
     await p.reload();
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
+    const lockedJournal = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(lockedJournal).toContainText('Connect the relevant wallet account and chain');
+    await expect(lockedJournal).not.toContainText(hash);
+    // The submitted hash stays durable in tab storage even while concealed.
     await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash }]);
     await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
@@ -277,6 +285,7 @@ test('real chain: reload while the payment is still pending keeps its hash and b
     await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();
