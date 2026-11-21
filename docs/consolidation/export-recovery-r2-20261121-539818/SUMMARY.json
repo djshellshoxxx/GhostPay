@@ -1,0 +1,36 @@
+{
+  "parent": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+  "donor": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+  "application_source_commit": "81bfa7bddaebdaaf059ad663fead05d59ec82cda",
+  "counts": {
+    "interop": 1,
+    "application_export_and_expiry": 36,
+    "codec_and_properties": 65,
+    "standalone_decoder": 22,
+    "total_passed": 124,
+    "failed": 0,
+    "skipped": 0,
+    "complete_test_files": 6
+  },
+  "typed_lint": {
+    "scope": "sole recovered test",
+    "exit_code": 0
+  },
+  "fresh_install": {
+    "executor": "root",
+    "exit_code": 0,
+    "installed_entries_verified": 789
+  },
+  "fresh_library_build": {
+    "executor": "root",
+    "exit_code": 0,
+    "packages": 65,
+    "compiled_files_verified": 2289
+  },
+  "pre_reset_product_tests": 0,
+  "full_coverage_qualified": false,
+  "full_browser_qualified": false,
+  "remote_mutation": false,
+  "shared_target_mutation": false,
+  "runtime_window_released": true
+}

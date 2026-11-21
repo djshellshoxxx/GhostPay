@@ -1,0 +1,27 @@
+{
+  "name": "existing-stealth-export-codec",
+  "application_source_commit": "81bfa7bddaebdaaf059ad663fead05d59ec82cda",
+  "execution_head": "2e1ad0d82babb2b19e15c5e48e293b07ce933c6a",
+  "cwd": "packages/ux-vault",
+  "argv": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/stealth-export-portable.test.ts",
+    "src/stealth-export-portable.property.test.ts",
+    "--maxWorkers=1"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-21T04:46:18.989912+00:00",
+  "elapsed_seconds": 16.841,
+  "exit_code": 0,
+  "test_blobs": {
+    "src/stealth-export-portable.test.ts": "ce875cc4b5e3607617ac6c147ad463c5de931b86",
+    "src/stealth-export-portable.property.test.ts": "f1f391fd473bcddf56ee973a7ce83c4f50fc1bd7"
+  },
+  "output_bytes": 225,
+  "output_sha256": "44be65884346853b0f94874b7157638afddc12e3ef27b89b6391bbc3ba31157f",
+  "output": "\n RUN  v5.1.0 /workspace/scratch/539818ee134f/GhostPay-export-recovery/packages/ux-vault\n\n\n Test Files  2 passed (2)\n      Tests  65 passed (65)\n   Start at  20:46:19\n   Duration  16.51s (tests 88%, import 6%, transform 5%)\n\n",
+  "scope": "Both complete existing codec/vector and property-test files. Original Vitest configuration; no coverage option, name filter, timeout or assertion change. Focused run is not full vault coverage qualification."
+}
