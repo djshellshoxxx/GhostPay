@@ -1,0 +1,302 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    122,
+    140
+  ],
+  "results": [
+    {
+      "branch": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "head_sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 782,
+      "merge_base_sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "head_sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 748,
+      "merge_base_sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "head_sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 737,
+      "merge_base_sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "head_sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 739,
+      "merge_base_sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "head_sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 734,
+      "merge_base_sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "head_sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 756,
+      "merge_base_sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "head_sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 730,
+      "merge_base_sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "head_sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 733,
+      "merge_base_sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "head_sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 774,
+      "merge_base_sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "head_sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 740,
+      "merge_base_sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "head_sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 768,
+      "merge_base_sha": "b1150eb8280ac5259fad620f0b762e83c19cf71d",
+      "files_returned": 1,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/lib/format.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "head_sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "status": "diverged",
+      "ahead_by": 42,
+      "behind_by": 737,
+      "merge_base_sha": "85f525165d6c94c3c6b908930df712e9e7ac66f7",
+      "files_returned": 1,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/CHATGPT_ZERO_CODEX_LATEST.md",
+          "status": "modified",
+          "additions": 364,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "head_sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "status": "diverged",
+      "ahead_by": 3,
+      "behind_by": 546,
+      "merge_base_sha": "a89a2e948321314acf97db435e9776d9322a9461",
+      "files_returned": 3,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "head_sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 741,
+      "merge_base_sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "head_sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "status": "diverged",
+      "ahead_by": 7,
+      "behind_by": 562,
+      "merge_base_sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "files_returned": 7,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/PAGES_BROWSER_FIXES_COMBINED_2026-11-14.md",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "head_sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 752,
+      "merge_base_sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "head_sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 769,
+      "merge_base_sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "head_sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 753,
+      "merge_base_sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}
