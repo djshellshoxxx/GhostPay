@@ -23,6 +23,14 @@ Worker: ChatGPT specification team; coordinator owns publication.
 Branch: `future/f05-ghostproof`.
 Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
 Owned path: `docs/future/modules/F05-ghostproof/SPEC.md` and this additive claim.
+
+
+# F10 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f10-private-recurring`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F10-private-recurring/SPEC.md` and this additive claim.
 Acceptance: source-grounded modular contract, dependencies, failure/recovery,
 privacy/fee limits, acceptance cases and planned checks; verified remote spec.
 Documentation only: no implementation, main merge, deployment, activation or fee decision.
@@ -52,6 +60,7 @@ Ownership reconciliation: current integration PR #307 does not change TRON adapt
 Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
 
 ---
+
 
 
 # Main unique-code consolidation — 2026-11-19 (Pacific)
@@ -165,6 +174,8 @@ complete kit tree and three product blobs equal the reviewed original. Historica
 evidence copied byte-for-byte; root lock differences remain explicit. Recovery-worker
 source review found no introduced blocker. No new runtime replay is claimed.
 Provenance: `docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md`.
+
+
 
 # Historical security promotion — 2026-11-19
 
@@ -662,6 +673,42 @@ Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
 
+## F10 browser recurring-plan continuation — 2026-11-20
+
+Worker: ChatGPT `future_inventory`, coordinated by the future-feature continuation lead.
+Branch: `future/f10-private-recurring`.
+Specification head: `1c1f2aedb0941a0aeb389a5f5b0dd1ebb68e78d9`.
+Current main to consolidate before implementation: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+
+Owned paths: `apps/web/src/features/future/private-recurring/**`,
+`docs/future/modules/F10-private-recurring/**`, this additive ownership record,
+and the minimal web workspace dependency declaration/lock entry for the existing
+`@ghostpay/merchant-billing` package if required. Other worktrees and active F03,
+seller-session, receipt-print, backup-ownership and v1 privacy repairs remain
+independently owned.
+
+Acceptance: implement a strict browser-safe plan/snapshot adapter using existing
+UTC schedule helpers, canonical token-atomic quantities distinct from fiat plans,
+validated presentation timezones, at most 24 due-period previews, duplicate
+identity checks, and explicit one-period review with revision/session/clock
+invalidation. Preview must not invoke invoice creation or consume nonce
+randomness. Exercise month-end/leap-year cadence, pause/cancel behavior, bounded
+catch-up and malformed state with deterministic tests. Record exact verification
+commands and limitations in the F10 handoff.
+
+Scope is an unmounted future module. No signing, automatic invoice issuance,
+network requests, notification delivery, persistence-provider implementation,
+production/lean route activation, fees, deployment or remote publication.
+
+Status: M1 product/test source `e0b6e44379447037be09d20934972d8afc7a6600` implements
+strict staged snapshots, UTC due previews and single-use local review. All 84
+focused cases pass with unchanged coverage thresholds. The module is unmounted;
+actual P04/P05 issuance/persistence, paused legacy migration, UI, and browser
+qualification remain pending. A typed lint attempt was killed with exit 137;
+serial coordinator lint/typecheck and independent review are still required.
+See `docs/future/modules/F10-private-recurring/HANDOFF.md` for exact contracts,
+source pins, research decisions, acceptance mapping and remaining work.
+
 Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
 regressions (4 failed / 15 passed before correction; 19/19 after), package
 typecheck/lint/build, secret scan and action pins passing. Available full package
@@ -888,12 +935,28 @@ malformed-format coverage and rerun focused checks before independent re-review.
 Correction source: `d44604ce463cec708c77a230b068f0ac44669280`. Independent source review and 67/67
 focused tests pass; full integration qualification remains coordinator-owned.
 
+## F10 independent milestone review — 2026-11-20
+
+Worker: `f10_independent_review`, delegated by the future-feature coordinator.
+Branch: `future/f10-private-recurring`. Reviewed product/test source:
+`e0b6e44379447037be09d20934972d8afc7a6600`; initial documentation head:
+`e7991b659fb77c748bf82de6f2e4fe7f8242cc57`.
+Owned paths: this additive ownership record and
+`docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md`.
+Product source remains read-only. Acceptance: independently inspect canonical
+units, UTC schedule reuse, staged snapshot identities, explicit local review and
+revocation; replay maintained focused tests; record incomplete integration and
+qualification honestly. No remote writes, production activation, new test probes,
+full-web typecheck or typed lint; coordinator owns the serialized broader gates.
+
 
 ## Future-feature current-main reconciliation — 2026-11-20
 
 Worker: ChatGPT coordinator. Starting head: `49088efa043ca3f016e0b802f8b7bf51bf18a97a`.
 
 Worker: ChatGPT coordinator. Starting head: `f8aab16068bfd55210e0acbcf5bb8492f8c8f472`.
+
+Worker: ChatGPT coordinator. Starting head: `a76e89f538314e8d8d292a4caa7c281ef82e64d8`.
 New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
 Owned change: merge current main while preserving every future-module source blob
 and all existing ownership records; resolve registry append conflicts only.
@@ -961,5 +1024,12 @@ Worker: ChatGPT coordinator. Tested head `e08333af3eb830a36d375ecf2174db955f559d
 Owned paths: module qualification/publication docs and copied execution logs;
 this registry and the module catalog row only. Runtime/test code is frozen.
 Acceptance: preserve exact source trees, independent review, 67 passing tests,
+
+## F10 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `e134147beb21b7f71d4776def94cd4e24b83346b`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 84 passing tests,
 current-main TypeScript/build/bundle evidence and source-publication mapping.
 Hosted checks remain separately reported. No activation or main merge.
