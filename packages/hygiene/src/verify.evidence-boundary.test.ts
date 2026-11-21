@@ -20,8 +20,8 @@ function row(from: string, to: string, value: bigint, opts: {
 function rpcWith(...rows: unknown[]): VerifyRpc {
   return {
     chainId: 84532,
-    request: async () => rows,
-  } as VerifyRpc;
+    request: () => Promise.resolve(rows),
+  };
 }
 
 const receipt = {
@@ -46,9 +46,9 @@ describe('GP-BUG-11: bind ERC-20 evidence to the requested log filter', () => {
   it('does not interpret an old sweep Transfer as a new confirmation', async () => {
     const logRow = row(STEALTH, DEST, 20n, { block: '0x64' });
     await expect(sweepConfirmed(rpcWith(logRow), {
-      token: TOKEN as `0x${string}`,
-      from: STEALTH as `0x${string}`,
-      to: DEST as `0x${string}`,
+      token: TOKEN,
+      from: STEALTH,
+      to: DEST,
       net: 20n,
       head: 500n,
     })).resolves.toBe(false);
@@ -57,8 +57,8 @@ describe('GP-BUG-11: bind ERC-20 evidence to the requested log filter', () => {
   it('deduplicates the same event identity before calculating an outflow', async () => {
     const logRow = row(STEALTH, DEST, 4n);
     const result = await spentCheck(rpcWith(logRow, { ...logRow }), {
-      token: TOKEN as `0x${string}`,
-      stealth: STEALTH as `0x${string}`,
+      token: TOKEN,
+      stealth: STEALTH,
       fromBlock: 100n,
       head: 100n,
       net: 10n,

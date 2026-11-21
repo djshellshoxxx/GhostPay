@@ -1,3 +1,16 @@
+# Hygiene evidence test lint repair — 2026-11-20 (Pacific)
+
+Worker: `/root/hygiene_lint_repair`, delegated by coordinator `9a4ab6c3d117-root`.
+Branch: `test/ghostpay-hygiene-lint-20261120-9a4ab6`.
+Exact source/base: existing authoritative PR #339 at `d03600ca87c7156d4acd1ff78bef6e92c20d9ea4`.
+Live discovery: `main` remains `aec179910c39081d820396409ff3139ff2264132`; integration PR #307 remains `5a745d4b5fba69b66a9779f88aefc63c253a4f27`; #339's branch still points to the exact base. Independent evidence worker `hygiene_qualification` owns source-preserving qualification of that base and reported seven typed-ESLint errors in the existing evidence-boundary test.
+Owned paths: only `packages/hygiene/src/verify.evidence-boundary.test.ts`, additive content in this registry, and new `docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_*` evidence. This isolated stacked correction preserves #339's ownership and history; it does not claim or change that shared branch.
+Acceptance: remove only unnecessary type assertions and replace the no-await async RPC fixture with an equivalent promise-returning fixture; preserve every existing assertion, test case, production source, configuration, dependency, timeout and coverage threshold. Run original package lint, unchanged full coverage and typecheck on the corrected source with explicit dependency provenance. Original source-preserving package build may be reused because production sources/build inputs remain identical; document that boundary. Record actual failures and passes. Obtain independent source review before coordinator publication/integration.
+Coordination: the evidence-only worker released its heavy-job slot after original build passed. No shared integration lease, source branch, deployment, release or live financial action. No remote writes by this worker.
+Status: correction `5c0b698a16a9b3303357a90b4e80d674b8da3c0b` passes original typed lint, all 149 unchanged coverage tests and package typecheck. Original build evidence is reused only because every build input is unchanged and the changed test is excluded. Lossless results and exact source/dependency provenance are in `HYGIENE_LINT_*`; independent coordinator source review approved exact correction `5c0b698a`; publication and composed-head hosted CI remain pending. No remote writes.
+
+---
+
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
 Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
