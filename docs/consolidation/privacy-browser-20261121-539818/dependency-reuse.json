@@ -1,0 +1,7 @@
+{
+  "source": "/workspace/scratch/dc1ef37f4621/GhostPay",
+  "method": "Hard-linked immutable installed external packages; local relative workspace links; workspace builds not reused",
+  "package_lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "installed_package_entries": 789,
+  "external_metadata_mismatches": []
+}

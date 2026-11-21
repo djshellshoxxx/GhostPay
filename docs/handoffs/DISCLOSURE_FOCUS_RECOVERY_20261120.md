@@ -1,5 +1,72 @@
 # Wallet disclosure focus recovery on the current privacy stack
 
+## Current continuation: tests above canonical PR #354
+
+Concurrent [PR #354](https://github.com/djshellshoxxx/GhostPay/pull/354) independently
+recovered the same focus behavior while this work was being published as #355.
+PR #354 is canonical for the runtime, seven cancellation variants and two browser
+driver repairs. This continuation preserves its four application/test files exactly
+and adds only our three distinct mounted quick-hide cases in
+`apps/web/src/components/WalletDisclosure.quickHide.test.tsx`.
+
+The local successor is an ordinary merge with ordered parents:
+
+1. Published #355: `f11792f7b9202512f0bf980a03f057e8a15836ae`.
+2. Canonical #354: `8ce7f1db452167311876bd0707778c2e9c64f3df`.
+
+Both complete ownership histories are preserved additively. Relative to #354,
+the only new test path is the quick-hide file; the other differences are this
+handoff and the additive ownership record. The earlier runtime-recovery sections
+below remain historical evidence for their named sources and no longer describe
+the current PR's application-code scope. The coordinator will retarget #355 above
+#354 and publish the normal descendant without rewriting either history.
+
+### Controlled continuation verification
+
+The three new cases use the actual mounted provider, privacy boundary, quick-hide
+control and wallet fixtures. One preserves the successful-hide focus-ordering
+control; the other two exercise quick hide after focus was left on body or the
+document element. PR #354's existing cancellation tests remain unchanged.
+
+| Stage | Immutable tree and runtime | Executed result |
+| --- | --- | --- |
+| RED | Tree `ca7f19f7aaee1854a860544236bc58c2c7cf8a8f`; only runtime temporarily restored to original #352 blob `fe26789ff37a6802f23ee94d02631575ce1d01f7` | New file: 2 failed, 1 passed, zero skips; 2.74 seconds |
+| GREEN | Tree `bc9bfe8c6aa2ecdeb9e06a6be324480aad56f423`; exact canonical #354 runtime restored | Canonical 13 plus new 3 cases: 16 passed, zero failures or skips; 3.86 seconds |
+
+These are source trees retained before the documentation update, not claims that
+the still-open merge already had a committed HEAD. Only documentation changes
+follow this passing product/test tree. The final successor keeps exact canonical
+source identities, all mode `100644`:
+
+- `WalletDisclosure.tsx`: `094b9d4cce058b060c13821c7723449bafe0a743`.
+- `WalletDisclosure.test.tsx`: `96144da7ab938bea7aa6649e28b251d08bf9f264`.
+- New `WalletDisclosure.quickHide.test.tsx`: `30e770013630c1bb83f8d8cf37948e9af2993249`.
+
+RED used the earlier command with only the new quick-hide path. GREEN used:
+
+```bash
+NODE_OPTIONS=--max-old-space-size=384 \
+  ../../node_modules/.bin/vitest run --maxWorkers=1 \
+  src/components/WalletDisclosure.test.tsx \
+  src/components/WalletDisclosure.quickHide.test.tsx
+```
+
+The current #352/#354 lockfile and all library inputs are identical, so the matching
+installation and 19 rebuilt libraries described below remain valid. No additional
+install or package rebuild was needed. Original assertions, timeouts, configurations
+and coverage thresholds remain unchanged. The complete web and browser/hosted
+gates still need qualification on the new combined successor.
+
+RED log SHA-256: `91111fc5d5a32d91440a1f47f38c6d447bb994c4dadc711648312bbe30657bd8`.
+GREEN log SHA-256: `17084d895ee177d0d4ce833f6ca5f38087f59254e33df025b3014dfedb12b4c0`.
+
+`/root` independently approved the new test file and confirmed zero difference for
+all four canonical #354 application/test files. The review verified real mounted
+privacy/disclosure behavior, unchanged zero-send/provider assertions, exclusion
+of hidden/inert focus targets, and listener/root-tabindex cleanup. This static
+review is separate from the worker's RED/GREEN execution. No heavy process remains;
+source paths are released to the coordinator for normal descendant publication.
+
 ## Result and scope
 
 Recovered the completed, previously unrepresented focus repair from

@@ -1,0 +1,15 @@
+{
+  "file": "EXECUTION_HISTORY.bundle",
+  "sha256": "2dc85fb40af6cde395bb27cf892cc1440fe5721a15b002c561b7e5763e668041",
+  "bytes": 11575,
+  "heads": {
+    "repair/ghostpay-privacy-browser-lifecycle-20261121-539818": "14c52cad022193289a64ba1dc2848b6a55ab822a",
+    "review/ghostpay-pr350-539818": "0daae8df191bb5e67be764d7e10d4b82c8302a3a"
+  },
+  "prerequisites": [
+    "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+    "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+  ],
+  "verification": "git bundle verify: exit0",
+  "excludes": "Final documentation checkpoint, to avoid self-reference"
+}
