@@ -76,3 +76,26 @@ describe('display helpers', () => {
     }
   });
 });
+
+describe('parseUnits malformed runtime boundaries', () => {
+  it('returns undefined rather than throwing for non-string JavaScript values', () => {
+    for (const value of [undefined, null, 42, false, ['12.34'], { toString: () => '12.34' }, new String('12.34')]) {
+      expect(parseUnits(value as unknown as string, 2)).toBeUndefined();
+    }
+  });
+  it('returns undefined for noninteger, negative, nonfinite or unsupported decimal precision', () => {
+    for (const decimals of [undefined, null, NaN, Infinity, -Infinity, -1, 1.5, 37]) {
+      expect(parseUnits('12.34', decimals as number)).toBeUndefined();
+    }
+  });
+  it('preserves valid exact fiat/token parsing and GhostPay signed minor-unit compatibility', () => {
+    expect(fiatDecimals('KWD')).toBe(2); // Existing signed invoice schema and merchant-ledger protocol.
+    expect(fiatDecimals('JPY')).toBe(0);
+    expect(fiatDecimals('USD')).toBe(2);
+    expect(parseUnits('12.34', fiatDecimals('KWD'))).toBe(1234n);
+    expect(parseUnits('0.0001', 4)).toBe(1n);
+    expect(parseUnits('12.345', 3)).toBe(12345n);
+    expect(parseUnits('12.3456', 3)).toBeUndefined();
+    expect(parseUnits('12345', 0)).toBe(12345n);
+  });
+});

@@ -1,3 +1,22 @@
+# Scope correction after cross-package audit — same cycle and branch
+
+At source checkpoint `8e8cee02d2160a4ff130fb0a448e2c2f7039a38c`, a follow-up cross-package audit found that `packages/merchant-ledger/src/decimal.ts` explicitly defines GhostPay's existing signed fiat-minor-unit model as **zero for a fixed eight-code list and two for all others, including KWD**. Changing `apps/web/src/lib/format.ts` to ISO 4217 exponents would reinterpret historical invoices and disagree with merchant-ledger and shop integrations. This is an unresolved protocol/compatibility policy; the ISO experiment must be reverted in the final diff. Preserve its commits and reasoning in history, but do not seek integration of the exponent change.
+
+Revised worker identity: same single assistant, isolated branch `automation/20261121T1033Z/bug/fiat-minor-units`, base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`, no independent reviewer. Owned paths remain `apps/web/src/lib/format.ts`, `apps/web/src/lib/format.test.ts`, this claim, and its handoff. Revised accepted task: test-first guard `parseUnits` against malformed JavaScript runtime input and invalid decimal precision so it returns `undefined` (its existing contract) instead of an untyped TypeError/RangeError. Preserve GhostPay's 0/2 signed-invoice currency semantics, all valid string amount conversions, and existing error handling. Add preservation tests for KWD=2 and known currency fallback. No merge, release or policy change.
+
+---
+
+# Fiat minor-unit correctness — 2026-11-21 10:33 UTC
+
+Cycle/worker: `20261121T1033Z/bug/fiat-minor-units`; one assistant, sequential source audit, test implementation, repair and self-check. No independent verifier/agent available.
+Branch: `automation/20261121T1033Z/bug/fiat-minor-units`; exact base `eb59d93cffed7848c4aac37d0e9650b87239c6da`. No shared integration lock acquired.
+Owned paths: `apps/web/src/lib/format.ts`, `apps/web/src/lib/format.test.ts`, this branch-local additive claim, and `docs/handoffs/FIAT_MINOR_UNITS_20261121.md`.
+Dependencies: current `main`; independent of payment-URI PRs #360/#370/#379 and ongoing recovery/privacy PR #372. Recheck other branch/PR ownership before integration. Security reporting policy applies; this is a correctness fix, not a public vulnerability report.
+Evidence: main `format.ts` only knows eight zero-decimal currencies and no 3- or 4-decimal currencies, despite `invoiceCreate.ts` using `fiatDecimals()` to convert the user-entered price into signed integer minor units and `formatFiat()` using it to display invoices. ISO 4217 List One (SIX Group, 2026-09-17; checked via published copies) includes additional 0-decimal currencies, seven 3-decimal currencies, and two 4-decimal units.
+Acceptance: add regression tests demonstrating source incorrect values for zero/three/four decimals; implement the missing recognized ISO minor-unit exceptions without altering unknown-code default (2), prices of USD/EUR/CAD/JPY, token custody, exchange rates, invoice signatures, APIs, or release policy; run real focused checks if available and record exact failures. Update only isolated branch/PR; independent verification and main integration remain gated.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
