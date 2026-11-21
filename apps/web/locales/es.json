@@ -5,6 +5,17 @@
     "note": "Machine-drafted catalog seeded to prove plural, RTL and CJK handling. Not reviewed by a native speaker."
   },
   "messages": {
+    "app.checks.title": "Autocomprobaciones del navegador",
+    "app.checks.running": "Comprobando las capacidades locales del navegador…",
+    "app.checks.ready": "Todas las comprobaciones de capacidades del navegador se superaron",
+    "app.checks.attention": "Revise las capacidades del navegador",
+    "app.checks.secure": "Contexto seguro del navegador",
+    "app.checks.digest": "Prueba SHA-256 con resultado conocido de WebCrypto",
+    "app.checks.storage": "Prueba temporal de escritura y lectura del almacenamiento",
+    "app.checks.pass": "Superada",
+    "app.checks.warn": "No disponible",
+    "app.checks.fail": "Fallida",
+    "app.checks.limits": "Estas comprobaciones no son una verificación independiente de la integridad del código, la autenticidad del monedero o RPC, la seguridad de los pagos, la liquidación en cadena ni la recuperación de claves. No se envía ninguna solicitud de red.",
     "settings.title": "Ajustes",
     "settings.notice.plaintext": "Los ajustes se guardan en este navegador en texto sin cifrar, incluidas las URL de RPC. No introduzcas una URL que contenga un secreto que no guardarías en texto sin cifrar. Nunca se guarda ninguna clave.",
     "settings.rpc.legend": "Puntos de conexión RPC",
