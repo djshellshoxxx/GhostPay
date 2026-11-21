@@ -31,3 +31,38 @@
 - Integration lock `automation/ghostpay-integration-lock:integration-lock.json` observed **held**, generation **11**, owner `994a0d214fb9-root-r3`. Expired timestamp is not proof of release; no mainline merge or shared-lock mutation.
 
 This is a qualification candidate, not a completed Firefox fix, application release, or security sign-off.
+
+
+## Continuation R10 — hosted failure isolation and 453-branch checkpoint (2026-11-21 UTC)
+
+### Confirmed first-child CI defect and isolated fix
+
+- First exact child head `886371cbe9e57be70a60e8230f0df562f8c1ea57` failed [CI 44887854510](https://github.com/djshellshoxxx/GhostPay/actions/runs/44887854510): `e2e (full)` job `136797429943` and `e2e (lean)` job `136797429947` each had **4** Chromium project failures in the **new synthetic test only**, while the other listed CI jobs, including TypeScript/lint/web tests, passed. Failure at `accessibility.spec.ts:47`: the promised negative `assertReflow` test resolved instead of rejecting after toggling the fixture open. This is a failed regression, **not** a passing browser check.
+- [Native browser 44887854529](https://github.com/djshellshoxxx/GhostPay/actions/runs/44887854529): Firefox full/lean and WebKit full/lean all failed. WebKit failures include the new synthetic assertion; Firefox continues to show independent Juggler/page-crash failures. The prior WebKit pass on the unmodified parent cannot be attributed to this child.
+- New commit **`b28b817d4f111c2a04ac5cf59af77127f1478ac6`** updates only `apps/web/e2e/accessibility.spec.ts`. It creates a separate blank Playwright page for the synthetic layout fixture instead of replacing the actively running app page from `beforeEach`; ensures the input is visibly open and wider than 320px before expecting the reflow rejection; ensures the summary button is visible; and closes the probe page in `finally`. The original live-app page remains intact for afterEach evidence.
+- Separate **local Chromium DOM probe** (installed Chromium binary, *not* the repository E2E suite) confirmed control geometry for the exact standalone HTML fixture: closed `details` -> zero violations; open `details` -> input right edge 908px; closed `details` with 900px summary button -> summary button right edge 900px. This establishes expected fixture geometry, **not** that the new hosted child passes.
+- Parent-to-child comparison after the fix: **4 commits ahead / 0 behind**, exactly three paths: the Playwright spec, additive ownership registry, and this handoff. No runtime, custody, contract, package, network, security-policy or release change.
+- New head `b28b817d4f111c2a04ac5cf59af77127f1478ac6` started CI, Pages, Beta acceptance, Tor static and native browser runs `44892417468`, `44892417437`, `44892417541`, `44892417423`, `44892417438`, initially **queued**. Exact-head completion and independent review are mandatory before stacking into #373.
+
+### Exact-ref branch reconciliation (453 branches)
+
+- Immutable comparison base `main`: **`eb59d93cffed7848c4aac37d0e9650b87239c6da`**, still identical to the previous R9 base at this checkpoint.
+- Exhaustive branch pagination reached terminal empty page: **100/100/100/100/53/0 = 453**. Git matching-ref enumeration returned exactly 453 branch names and SHAs. Against [R9 BRANCH_HEADS](https://github.com/djshellshoxxx/GhostPay/blob/c493df9e210f6227471864a623ee536cc9483a3a/docs/consolidation/20261121-r9/BRANCH_HEADS.json): **446 unchanged names+heads, six added names, one moved head, zero removed**. The full 447-branch exact-main R9 compare remains valid for the 446 unchanged heads; the seven changed/new names were compared to the **same immutable main SHA**:
+  - `audit/ghostpay-main-447-census-20261121-r9` @ `c493df9e210f6227471864a623ee536cc9483a3a`: 33 ahead / 0 behind, **33 docs paths only**, ledger work; do not treat as application donor.
+  - `automation/20261121T0842Z/bug/payment-uri-query-boundaries` @ `31b943bbc5bc3c3fdd3d1aec0d3fb5fa3d35c8a2`: 13 ahead / 44 behind, **8 paths including 4 payment-URI source/test paths**; owned by existing PR #379, not a separate cherry-pick.
+  - `automation/20261121T0900Z/qa/firefox-closed-details-reflow` @ `b28b817d4f111c2a04ac5cf59af77127f1478ac6`: 583 ahead / 0 behind; broad 300-file compare cap because stacked on recovery/browser integration. Recover **only bounded QA child** by comparing with #373 parent, not main.
+  - `feature/ghostpay-invoice-timestamp-retention-20261121-5ceb` @ `cfa8131bab9a012cd1ce970f4afa8de23adfdf80`: 577 ahead / 0 behind; **300-file cap**, already owned by PR #383; separate policy and browser qualification required.
+  - `integration/ghostpay-autonomous-ledger-20261121-5ceb` @ `80dd9eb9669fba0171a037b0b690d17a7e2b655e`: 1 ahead / 0 behind, **26 docs-only paths**, existing PR #380 ledger.
+  - `repair/ghostpay-btc-lifecycle-20261121-5ceb` @ `4fc5c3dceb682067d6ebc7da1759cbeadd20dddf`: 577 ahead / 0 behind; **300-file cap**, owned by PR #382.
+  - Moved `qualify/ghostpay-native-browsers-20261121-5ceb`: `22569e2a83e3f8bc3c86982f69bbb1d90ca8356c` → `b660b2d8f3f84ddf72f684d13913f643f33f2eee`; 579 ahead / 0 behind; 300-file cap, owner PR #373. Do not count its shared ancestry as newly unique code.
+- All branch classifications are **path/ancestry screening**; 300-file cap and positive-ahead counts cannot establish semantic uniqueness. Do not bulk-merge.
+
+### Cross-PR Tor qualification overlap
+
+- Existing PRs [#382](https://github.com/djshellshoxxx/GhostPay/pull/382) and [#383](https://github.com/djshellshoxxx/GhostPay/pull/383) each passed main CI, Pages, Beta acceptance and Hosting kit, but failed Tor static hosting: [run 44888411159](https://github.com/djshellshoxxx/GhostPay/actions/runs/44888411159) job `136798667266` and [run 44889095031](https://github.com/djshellshoxxx/GhostPay/actions/runs/44889095031) job `136800770473` both time out on `scripts/tor/browser-acceptance.mjs:81` expecting obsolete text `Scan privacy settings saved. They apply to the next scan.`.
+- Both heads have script blob **`1f57b2d5a102f398cfc111e349dfc2684d498518`**. Existing parent qualification PR #373 has the already-corrected script blob **`835b8e0c609f4a59a1c856397784a5a406945a22`** using `Network privacy settings saved. Pending network operations were cancelled; start a new action to use these settings.` This is **overlap requiring reconciliation**, not evidence that either child is Tor-qualified. Do not duplicate fixes or import a broad parent without an exact-head combined CI run.
+- The generation-11 integration lock was previously reported held by another worker; **do not** modify shared branches or main until ownership and approvals are verified.
+
+### Next bounded action
+
+Recheck #381 exact-head full/lean Chromium plus native Firefox/WebKit. If the isolated fixture is still failing, inspect actual saved Playwright trace/DOM and repair its fixture without disabling geometry assertions. Then integrate qualified #381 → #373 → #372 under the integration owner; independently reconcile #382/#383 Tor fixture dependency, and resume R9 capped-branch semantic work. No merge/deploy/release from this checkpoint.
