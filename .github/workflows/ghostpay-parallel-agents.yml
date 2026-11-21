@@ -1,0 +1,325 @@
+name: GhostPay Parallel API-Funded QA
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ghostpay-parallel-agents.yml'
+      - 'scripts/tests/ghostpay-parallel-workflow.test.mjs'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9,21 * * *'
+
+# Separate from ghostpay-codex-cloud.yml. Four simultaneous isolated workers.
+# $10/worker is a TARGET, NOT an enforceable API dollar limit.
+permissions: {}
+concurrency:
+  group: ghostpay-parallel-api-funded
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test workflow safety invariants
+        run: node --test scripts/tests/ghostpay-parallel-workflow.test.mjs
+
+  develop:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.repository == 'djshellshoxxx/GhostPay'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: read
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - lane: invoice-qa
+            owned_prefix: packages/invoice-schema/
+            task: "Add an independent regression test for invoice serialization, signature binding, rejection or safe parsing; do not implement an unmerged PR's core work."
+          - lane: recovery-qa
+            owned_prefix: apps/web/e2e/
+            task: "Add a narrowly scoped browser regression for cancelled, interrupted, stale-session or fresh-profile recovery; do not reconstruct PR #47."
+          - lane: tooling-qa
+            owned_prefix: scripts/tests/
+            task: "Harden an existing reproducibility, reporting or CI helper with a regression test; do not change CI definitions, dependencies or release policy."
+          - lane: locale-qa
+            owned_prefix: apps/web/src/i18n/
+            task: "Improve tests for locale key completeness, placeholders or safe English fallback; do not auto-translate security-critical text."
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Check API key and snapshot other owners
+        id: preflight
+        env:
+          HAS_KEY: ${{ (secrets.GHOSTPAY_OPENAI_API_KEY != '' || secrets.OPENAI_API_KEY != '') }}
+          GH_TOKEN: ${{ github.token }}
+          LANE: ${{ matrix.lane }}
+          PREFIX: ${{ matrix.owned_prefix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$HAS_KEY" != true ]; then
+            echo "::error::Set GHOSTPAY_OPENAI_API_KEY or OPENAI_API_KEY"
+            exit 1
+          fi
+          # Every open PR, regardless of author or head branch, retains ownership.
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --jq '.[].number' > open-prs.txt
+          : > owned-paths.txt
+          while IFS= read -r number; do
+            [ -n "$number" ] || continue
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$number/files?per_page=100" \
+              --jq '.[] | .filename, (.previous_filename // empty)' >> owned-paths.txt
+          done < open-prs.txt
+          sort -u -o owned-paths.txt owned-paths.txt
+          echo "lane=$LANE prefix=$PREFIX, $(wc -l < owned-paths.txt) currently owned paths" >> "$GITHUB_STEP_SUMMARY"
+          # Do not spend credits when this lane's entire known surface is owned.
+          echo "go=true" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/setup-node-libs
+        if: steps.preflight.outputs.go == 'true'
+      - name: Run one isolated Codex attempt
+        if: steps.preflight.outputs.go == 'true'
+        id: codex
+        continue-on-error: true
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
+        with:
+          openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          safety-strategy: drop-sudo
+          output-file: parallel-agent-report.txt
+          prompt: |
+            Repository: djshellshoxxx/GhostPay. Agent lane: ${{ matrix.lane }}.
+            Assigned, exclusive write prefix: ${{ matrix.owned_prefix }}.
+            Task: ${{ matrix.task }}
+            Read docs/handoffs/LEAN_RELEASE_SCOPE.md and
+            docs/handoffs/SOURCE_RECONCILIATION_2026-11-02.md, then inspect
+            actual code, tests, and owned-paths.txt. Other open PRs own all
+            paths in owned-paths.txt; NEVER edit one of those paths.
+            Never alter anything outside your assigned prefix. If no safe
+            unowned file exists, make no changes and report BLOCKED.
+            Work only on independent core-release QA, not optional features.
+            Write a failing regression first, verify red, implement the smallest
+            fix, verify green, and record exact commands/outcomes.
+            No feature expansion, dependency changes, workflow files, deployment,
+            network payments, release, pushing, or PR operations.
+            Never add real keys, production manifests, or claimed audit evidence.
+            Do not modify, delete, or rebase other contributors' work.
+            This invocation has a target API cost of $10, not a hard limit;
+            stop after one narrow improvement and do not start external agents.
+            Your final report must describe files, tests, skipped gates and
+            whether any useful work was impossible because of active ownership.
+      - name: Verify scope and fresh open-PR ownership
+        id: scope
+        if: always() && steps.preflight.outputs.go == 'true' && steps.codex.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREFIX: ${{ matrix.owned_prefix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Reject unauthorized edits, including untracked files, before staging.
+          git ls-files -m -o --exclude-standard |
+          while IFS= read -r path; do
+            case "$path" in
+              open-prs.txt|owned-paths.txt|parallel-agent-report.txt) ;;
+              "$PREFIX"*) ;;
+              *) echo "::error::Out-of-lane file: $path"; exit 1 ;;
+            esac
+          done
+          git add -N -- "$PREFIX"
+          git diff --name-only HEAD > changed-paths.txt
+          if [ ! -s changed-paths.txt ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          while IFS= read -r path; do
+            case "$path" in
+              "$PREFIX"*) ;;
+              *) echo "::error::Out-of-lane change: $path"; exit 1 ;;
+            esac
+            case "$path" in
+              */.env*|*private-key*|*secret*|*/dist/*|*/node_modules/*|*/package.json|*/package-lock.json)
+                echo "::error::Disallowed path: $path"; exit 1 ;;
+            esac
+          done < changed-paths.txt
+          # Recheck after Codex; earlier snapshots alone are race-prone.
+          : > fresh-owned-paths.txt
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --jq '.[].number' |
+          while IFS= read -r number; do
+            [ -n "$number" ] || continue
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$number/files?per_page=100" \
+              --jq '.[] | .filename, (.previous_filename // empty)' >> fresh-owned-paths.txt
+          done
+          if grep -Fxf changed-paths.txt fresh-owned-paths.txt; then
+            echo "::error::Changed paths overlap an open PR"; exit 1
+          fi
+          git add -A -- "$PREFIX"
+          git diff --cached --binary > agent.patch
+          test -s agent.patch
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Record API budget and evidence
+        if: always()
+        env:
+          LANE: ${{ matrix.lane }}
+          CODEX_STATUS: ${{ steps.codex.outcome }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os
+          data={"lane":os.environ["LANE"],"target_api_usd":10,
+                "actual_api_usd":None,"actual_usage_source":"not exposed by codex-action",
+                "codex_status":os.environ["CODEX_STATUS"],
+                "attempts":1,"billing_cap_enforced":False,
+                "run_id":os.environ["GITHUB_RUN_ID"]}
+          with open("cost-accounting.json","w") as f: json.dump(data,f,indent=2)
+          PY
+          echo "API target: $10 for this lane; actual API charges not provided by codex-action." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload lane evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ghostpay-parallel-report-${{ matrix.lane }}
+          path: |
+            parallel-agent-report.txt
+            cost-accounting.json
+          retention-days: 30
+          if-no-files-found: ignore
+      - name: Upload scoped patch
+        if: steps.scope.outcome == 'success' && steps.scope.outputs.changed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ghostpay-parallel-patch-${{ matrix.lane }}
+          path: agent.patch
+          retention-days: 14
+          if-no-files-found: error
+
+  publish:
+    needs: develop
+    if: always() && github.event_name != 'pull_request' && needs.develop.result != 'cancelled'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lane: [invoice-qa, recovery-qa, tooling-qa, locale-qa]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        id: artifact
+        continue-on-error: true
+        with:
+          name: ghostpay-parallel-patch-${{ matrix.lane }}
+          path: incoming
+      - name: Validate fresh ownership and apply patch
+        id: apply
+        if: steps.artifact.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$LANE" in
+            invoice-qa) prefix=packages/invoice-schema/ ;;
+            recovery-qa) prefix=apps/web/e2e/ ;;
+            tooling-qa) prefix=scripts/tests/ ;;
+            locale-qa) prefix=apps/web/src/i18n/ ;;
+            *) exit 1 ;;
+          esac
+          git apply --check --binary incoming/agent.patch
+          git apply --binary incoming/agent.patch
+          git add -A -- "$prefix"
+          git diff --cached --name-only > published-paths.txt
+          test -s published-paths.txt
+          while IFS= read -r path; do
+            case "$path" in "$prefix"*) ;; *) echo "Out-of-lane: $path"; exit 1;; esac
+          done < published-paths.txt
+          : > owned.txt
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --jq '.[].number' |
+          while IFS= read -r number; do
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$number/files?per_page=100" \
+              --jq '.[] | .filename, (.previous_filename // empty)' >> owned.txt
+          done
+          if grep -Fxf published-paths.txt owned.txt; then
+            echo "::error::Ownership conflict after development"; exit 1
+          fi
+          echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - name: Create isolated review PR
+        if: steps.apply.outputs.ready == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        with:
+          token: ${{ secrets.GHOSTPAY_GITHUB_TOKEN || github.token }}
+          branch: codex/ghostpay-parallel-${{ matrix.lane }}-${{ github.run_id }}
+          base: main
+          add-paths: ${{ steps.apply.outputs.prefix }}
+          commit-message: 'test: independent GhostPay ${{ matrix.lane }} checkpoint'
+          title: 'test: GhostPay parallel ${{ matrix.lane }} checkpoint ${{ github.run_id }}'
+          body: |
+            Isolated API-funded QA checkpoint. Lane: ${{ matrix.lane }}.
+            Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Target $10 per attempt, not a hard limit; actual API cost is
+            unavailable from the Codex action. See report artifact.
+            Human review, exact-head required CI, current ownership and
+            repository branch protection are required before merge.
+            No deployment or real-money action.
+          draft: true
+          delete-branch: true
+
+  integrate:
+    needs: [develop, publish]
+    if: always() && github.event_name != 'pull_request' && github.repository == 'djshellshoxxx/GhostPay'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+    steps:
+      - name: Merge only human-approved passing isolated PRs
+        env:
+          GH_TOKEN: ${{ secrets.GHOSTPAY_GITHUB_TOKEN || github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" \
+            --jq '.[] | select(.head.ref | startswith("codex/ghostpay-parallel-")) | .number' |
+          while IFS= read -r number; do
+            [ -n "$number" ] || continue
+            obj="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$number")"
+            head="$(jq -r '.head.sha' <<<"$obj")"
+            draft="$(jq -r '.draft' <<<"$obj")"
+            [ "$draft" = false ] || continue
+            # Require an exact-head approval by a human. Older approvals do not count.
+            approvals="$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$number/reviews?per_page=100" \
+              --jq '.[] | select(.state=="APPROVED" and .user.type=="User") | [.commit_id,.user.login] | @tsv' \
+              | awk -v sha="$head" '$1==sha {print $2}' | sort -u | wc -l)"
+            [ "$approvals" -ge 1 ] || continue
+            checks="$(gh api "repos/$GITHUB_REPOSITORY/commits/$head/check-runs?per_page=100")"
+            valid=true
+            for required in typescript contracts e2e secrets-and-egress; do
+              result="$(jq -r --arg n "$required" '[.check_runs[] | select(.name==$n)] | last | .conclusion // "missing"' <<<"$checks")"
+              if [ "$result" != success ]; then valid=false; fi
+            done
+            [ "$valid" = true ] || continue
+            # Branch-protection and review rules remain enforced by GitHub.
+            gh pr merge "$number" --match-head-commit "$head" --squash --delete-branch ||
+              echo "::warning::PR #$number remains gated"
+          done
