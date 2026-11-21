@@ -77,8 +77,22 @@ export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: At
   const store = requiredStorage(storage);
   const next = { ...attempt, status: 'submitted' as const, hash: hash.toLowerCase() };
   if (!validAttempt(next)) return fail();
-  const records = readAttempts(store).filter((a) => a.id !== attempt.id);
-  write([...records, next], store);
+  const records = readAttempts(store);
+  const previous = records.find((a) => a.id === attempt.id);
+  if (previous !== undefined) {
+    // A returned wallet hash must never overwrite the hash of a recorded submission.
+    // Refuse an id collision with another action rather than silently replacing it.
+    if (previous.key !== attempt.key || previous.chainId !== attempt.chainId ||
+      previous.account !== attempt.account || previous.kind !== attempt.kind ||
+      previous.createdAt !== attempt.createdAt) return fail();
+    if (previous.status === 'submitted') {
+      if (previous.hash !== next.hash) return fail();
+      return; // The same provider result has already been recorded.
+    }
+  }
+  // An explicit clear may remove the original record while the wallet request is
+  // still pending. In that case preserve its late hash alongside any replacement.
+  write([...records.filter((a) => a.id !== attempt.id), next], store);
 }
 /** Clearing is only bookkeeping; it cannot cancel or roll back a wallet request or transaction. */
 export function clearAttempt(key: string, confirmed: boolean, storage?: AttemptStorage): void {
