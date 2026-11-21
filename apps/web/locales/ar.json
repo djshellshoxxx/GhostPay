@@ -567,6 +567,7 @@
     "policy.create.heading": "إنشاء عنوان وصفي للسياسة",
     "policy.create.needSession": "حمّل مفاتيح البائع أو أنشئها أولًا («مفاتيح البائع»).",
     "policy.create.imported": "تم التحقّق من سجل السياسة وتحميله.",
+    "policy.create.alreadySaved": "سجل السياسة محمّل بالفعل.",
     "policy.create.otherKeys": "تم التحقّق من السجل، لكنه يخص مفاتيح بائع أخرى غير المحمّلة الآن. لن يجد المسح مدفوعاته.",
     "policy.create.rejected": "رُفض السجل: {reason}.",
     "policy.create.badMeta": "أدخل العنوان الوصفي للسياسة (st:eth:gp2:0x...).",

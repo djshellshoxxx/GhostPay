@@ -1,0 +1,14 @@
+
+ RUN  v5.0.5 /workspace/scratch/d4505675e06a/GhostPay-policy-recovery/apps/web
+
+Not implemented: navigation to another Document
+
+ Test Files  15 passed | 1 skipped (16)
+      Tests  247 passed | 4 skipped (251)
+   Start at  20:50:21
+   Duration  32.48s (tests 48%, import 30%, environment 14%, transform 8%)
+
+     Import  391 modules were evaluated 526 times · 9.06s total, 30% of tracked time
+             ~2.33s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

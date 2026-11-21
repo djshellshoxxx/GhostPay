@@ -1,3 +1,15 @@
+# GP-BUG-08 follow-up — policy record downloads and catalog parity (2026-11-20 Pacific)
+
+- Worker: `/root`, with independent `round2_recovery_review`, `round2_checks`, and `round2_claims` workers.
+- Branch: `fix/ghostpay-policy-recovery-followup-20261121-r1`; parent PR #357 head `e871eccc1238b7145cd1d0a667afb393c373cf83`; main observed at `aec179910c39081d820396409ff3139ff2264132`.
+- Owned paths: `apps/web/src/features/policy/PolicyCreate.tsx`, new `PolicyCreate.recordDownloads.test.tsx`, existing `PolicyView.more.test.tsx` and `PolicyView.recordIdentity.test.tsx` in that directory, the single `policy.create.alreadySaved` entry in `apps/web/locales/{ar,es,ja}.json`, this additive claim, and dedicated follow-up evidence under `docs/handoffs/`.
+- Evidence: #357's exact-head `ts-check` builds successfully but fails catalog parity with three missing keys. Independent review identifies identical export filenames for equal-policy/equal-spending-key records with different viewing keys. The prior recovery fixture imports the exact record it then claims to restore, conflicting with the intended duplicate-record message.
+- Acceptance: preserve seller identity and duplicate-record safeguards; bind filenames to the full canonical meta-address; verify distinct filenames, repeat stability and exact serialized bytes; exercise genuine recovery using another saved record's nonzero limits root and separate duplicate-recovery feedback; verify each seller key independently; restore catalog parity without changing draft metadata, fallback rules or release gates.
+- Coordination: preserve #357's author branch. #355, #356 and #359 already own the separate focus, Settings and pending-send repairs. Shared integration remains held by coordinator `994a0d214fb9-root-r3` at generation 11. This task does not acquire that lease or modify main/shared candidates. Publish a scoped draft successor after independent review.
+- Status: implementation and scoped verification complete; independent source review passed. Evidence is retained in `docs/handoffs/gpbug08-recovery-followup-20261121/`. Draft successor prepared; hosted checks on its published head and any eventual combined integration remain separate gates.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.

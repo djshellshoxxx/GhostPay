@@ -567,6 +567,7 @@
     "policy.create.heading": "ポリシーメタアドレスを作成",
     "policy.create.needSession": "まず販売者の鍵を読み込むか生成してください（「販売者の鍵」）。",
     "policy.create.imported": "ポリシー記録を検証して読み込みました。",
+    "policy.create.alreadySaved": "ポリシー記録はすでに読み込まれています。",
     "policy.create.otherKeys": "記録は検証できましたが、現在読み込まれているものとは別の販売者の鍵に属しています。スキャンでは、その支払いは見つかりません。",
     "policy.create.rejected": "記録を拒否しました：{reason}。",
     "policy.create.badMeta": "ポリシーメタアドレス（st:eth:gp2:0x...）を入力してください。",

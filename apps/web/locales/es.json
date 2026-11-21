@@ -567,6 +567,7 @@
     "policy.create.heading": "Crear una meta-dirección con política",
     "policy.create.needSession": "Carga o genera primero claves del vendedor (Claves del vendedor).",
     "policy.create.imported": "Registro de política verificado y cargado.",
+    "policy.create.alreadySaved": "El registro de política ya está cargado.",
     "policy.create.otherKeys": "Registro verificado, pero pertenece a otras claves del vendedor distintas de las cargadas ahora. El análisis no encontrará sus pagos.",
     "policy.create.rejected": "Se rechazó el registro: {reason}.",
     "policy.create.badMeta": "Introduce la meta-dirección con política (st:eth:gp2:0x...).",
