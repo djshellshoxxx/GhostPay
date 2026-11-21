@@ -1,6 +1,5 @@
 {
   "schema": "ghostpay-cycle-publication-v1",
-  "observed_at_utc": "2026-11-21T00:18:09Z",
   "main": "aec179910c39081d820396409ff3139ff2264132",
   "integration_head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
   "lease": {
@@ -150,7 +149,8 @@
       "remote_commit": "37760c3655c48fa190c0f2324072cb506cf1b88d",
       "remote_tree": "5b06caab299285c12ef7b04a30b4ec9f209bbb52",
       "pr": 346,
-      "url": "https://github.com/djshellshoxxx/GhostPay/pull/346"
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/346",
+      "pr_created_at_utc": "2026-11-21T00:12:09Z"
     },
     {
       "name": "hygiene",
@@ -241,7 +241,8 @@
       "remote_commit": "95e60ce4948b7430865dafbd1ad01434310a75f7",
       "remote_tree": "fcf9e125911bd2ed5cbf60053c8012bc51edb8d9",
       "pr": 347,
-      "url": "https://github.com/djshellshoxxx/GhostPay/pull/347"
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/347",
+      "pr_created_at_utc": "2026-11-21T00:12:11Z"
     },
     {
       "name": "privacy",
@@ -339,7 +340,8 @@
       "remote_commit": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
       "remote_tree": "d7ea42d23c5fed1f1a474b9733636004a039b22f",
       "pr": 348,
-      "url": "https://github.com/djshellshoxxx/GhostPay/pull/348"
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/348",
+      "pr_created_at_utc": "2026-11-21T00:28:34Z"
     },
     {
       "name": "composition",
@@ -425,5 +427,264 @@
     "state": "open",
     "draft": true,
     "source_changed": false
+  },
+  "baseline_refs_observed_at_utc": "2026-11-21T00:36:42Z",
+  "publication_map_recorded_at_utc": "2026-11-21T00:36:42Z",
+  "timestamp_note": "Baseline ref observation and contribution publication are separate events; each contribution retains its immutable commit/tree identity.",
+  "workflow_snapshot": {
+    "observed_at_utc": "2026-11-21T00:36:42Z",
+    "checks": [
+      {
+        "name": "root",
+        "pr": 349,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/349",
+        "head_sha": "81674a63fd8e3c39ae43a0cb4e596bc998e87dfc",
+        "base": "integration/ghostpay-main-recovered-fixes-20261120",
+        "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:35:08Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44844803943,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 465,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803943/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803943/logs",
+              "workflow_id": 398745505
+            },
+            {
+              "id": 44844803954,
+              "name": "CLI operator qualification",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 308,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803954/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803954/logs",
+              "workflow_id": 412675588
+            },
+            {
+              "id": 44844803914,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 346,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803914/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803914/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44844803856,
+              "name": "Pages",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 341,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803856/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803856/logs",
+              "workflow_id": 392799214
+            },
+            {
+              "id": 44844803968,
+              "name": "Tor static hosting",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 12,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803968/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803968/logs",
+              "workflow_id": 424694545
+            },
+            {
+              "id": 44844803806,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1625,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803806/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803806/logs",
+              "workflow_id": 391558649
+            }
+          ]
+        }
+      },
+      {
+        "name": "recovery",
+        "pr": 346,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/346",
+        "head_sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+        "base": "codex/ghostpay-private-checkpoint-browser-20261119",
+        "base_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:12:09Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44842224511,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 343,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224511/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224511/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44842224187,
+              "name": "CLI operator qualification",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 306,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224187/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224187/logs",
+              "workflow_id": 412675588
+            },
+            {
+              "id": 44842224169,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1622,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224169/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224169/logs",
+              "workflow_id": 391558649
+            },
+            {
+              "id": 44842224189,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 462,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224189/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224189/logs",
+              "workflow_id": 398745505
+            }
+          ]
+        }
+      },
+      {
+        "name": "hygiene",
+        "pr": 347,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/347",
+        "head_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+        "base": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+        "base_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:12:11Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44842227151,
+              "name": "Pages",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 339,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227151/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227151/logs",
+              "workflow_id": 392799214
+            },
+            {
+              "id": 44842227264,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 463,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227264/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227264/logs",
+              "workflow_id": 398745505
+            },
+            {
+              "id": 44842226986,
+              "name": "CLI operator qualification",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 307,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226986/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226986/logs",
+              "workflow_id": 412675588
+            },
+            {
+              "id": 44842226995,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 344,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226995/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226995/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44842226988,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1623,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226988/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226988/logs",
+              "workflow_id": 391558649
+            }
+          ]
+        }
+      },
+      {
+        "name": "privacy",
+        "pr": 348,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/348",
+        "head_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+        "base": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+        "base_sha": "410353a23631234aa888e46f38df22291c699a26",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:28:34Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44844067229,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 464,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067229/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067229/logs",
+              "workflow_id": 398745505
+            },
+            {
+              "id": 44844067244,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1624,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067244/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067244/logs",
+              "workflow_id": 391558649
+            },
+            {
+              "id": 44844067221,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 345,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067221/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067221/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44844067142,
+              "name": "Pages",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 340,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067142/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067142/logs",
+              "workflow_id": 392799214
+            }
+          ]
+        }
+      }
+    ],
+    "note": "Applies to these queried immutable heads. A later documentation-only publication-map update does not transfer their hosted status to a new commit."
   }
 }
