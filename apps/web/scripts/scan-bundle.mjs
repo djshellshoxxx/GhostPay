@@ -5,6 +5,7 @@
 // React DOM's own internals contain a few innerHTML / dangerouslySetInnerHTML strings; those are matched by explicit
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
+import ts from 'typescript';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -86,37 +87,38 @@ function scanHosts(text, label, problems) {
   }
 }
 
-/** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
 /**
- * Remove // and block comments while leaving string/template literals intact, so a `//` inside a
- * literal (e.g. "https://x") cannot swallow same-line code. Conservative: an unterminated literal
- * is kept verbatim to the end of its line (template literals to end of file), never dropped.
+ * Scan a source file for forbidden sinks using the TypeScript AST, so comment-like text inside strings, templates,
+ * regular expressions or JSX cannot erase adjacent executable sinks. This checks syntax, not alias/data flow.
+ * Fails closed: a file that does not parse is reported.
+ * @returns Problem kinds found, e.g. `dangerouslySetInnerHTML`, `innerHTML/outerHTML assignment`, `eval/new Function`.
  */
-export function stripComments(src) {
-  let out = '';
-  let i = 0;
-  const n = src.length;
-  while (i < n) {
-    const c = src[i];
-    const d = src[i + 1];
-    if (c === '/' && d === '/') {
-      while (i < n && src[i] !== '\n') i++;
-    } else if (c === '/' && d === '*') {
-      const end = src.indexOf('*/', i + 2);
-      i = end === -1 ? n : end + 2;
-    } else if (c === '"' || c === "'" || c === '`') {
-      let j = i + 1;
-      while (j < n && src[j] !== c && (c === '`' || src[j] !== '\n')) j += src[j] === '\\' ? 2 : 1;
-      out += src.slice(i, Math.min(j + 1, n));
-      i = j + 1;
-    } else {
-      out += c;
-      i++;
+export function scanSourceSinks(text, fileName) {
+  const kind = fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const sf = ts.createSourceFile(fileName, text, ts.ScriptTarget.ESNext, true, kind);
+  const found = new Set();
+  if (sf.parseDiagnostics.length > 0) found.add('could not be parsed');
+  const calleeIdent = (e) => {
+    while (ts.isParenthesizedExpression(e)) e = e.expression;
+    if (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.CommaToken) return calleeIdent(e.right);
+    return ts.isIdentifier(e) ? e.text : undefined;
+  };
+  const visit = (n) => {
+    if ((ts.isIdentifier(n) || ts.isStringLiteralLike(n)) && n.text === 'dangerouslySetInnerHTML') found.add('dangerouslySetInnerHTML');
+    if (ts.isBinaryExpression(n) && n.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && n.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+      const l = n.left;
+      const name = ts.isPropertyAccessExpression(l) ? l.name.text : ts.isElementAccessExpression(l) && ts.isStringLiteralLike(l.argumentExpression) ? l.argumentExpression.text : undefined;
+      if (name === 'innerHTML' || name === 'outerHTML') found.add('innerHTML/outerHTML assignment');
     }
-  }
-  return out;
+    if (ts.isCallExpression(n) && calleeIdent(n.expression) === 'eval') found.add('eval/new Function');
+    if (ts.isNewExpression(n) && calleeIdent(n.expression) === 'Function') found.add('eval/new Function');
+    ts.forEachChild(n, visit);
+  };
+  visit(sf);
+  return [...found];
 }
 
+/** Scans a built `dist` directory (and optionally the app source tree) and returns a list of problems. */
 export function scanBundle(distDir, srcDir, viteConfigPath) {
   const problems = [];
   if (!existsSync(distDir)) return [`dist directory not found: ${distDir}`];
@@ -207,10 +209,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = stripComments(readFileSync(f, 'utf8'));
-      if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
-      if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
-      if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);
+      for (const kind of scanSourceSinks(readFileSync(f, 'utf8'), r)) problems.push(`src/${r}: ${kind}`);
     }
   }
   return problems;

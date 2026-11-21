@@ -85,6 +85,9 @@ export function buildWithdrawInputs(a: WithdrawArgs): WithdrawInputs {
   const n = a.note;
   assertValue(n.value, 'existingValue');
   assertValue(a.withdrawnValue, 'withdrawnValue');
+  // The pool rejects zero withdrawals and deposits: fail before generating an unusable proof.
+  if (n.value === 0n) fail('OUT_OF_RANGE', 'existingValue must be non-zero');
+  if (a.withdrawnValue === 0n) fail('OUT_OF_RANGE', 'withdrawnValue must be non-zero');
   if (a.withdrawnValue > n.value) fail('OUT_OF_RANGE', 'withdrawnValue exceeds note value');
   assertField(n.label, 'label');
   assertField(a.newNullifier, 'newNullifier');
@@ -138,6 +141,7 @@ export function buildWithdrawInputs(a: WithdrawArgs): WithdrawInputs {
 export function buildRagequitInputs(chainId: number, note: CircuitNote): RagequitInputs {
   assertTestnetChain(chainId);
   assertValue(note.value, 'value');
+  if (note.value === 0n) fail('OUT_OF_RANGE', 'value must be non-zero');
   assertField(note.label, 'label');
   precommitment(note.nullifier, note.secret);
   return {

@@ -1,18 +1,168 @@
-# QR import visibility cancellation — 2026-11-19
+# GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
-Worker: GhostPay automation bug worker, with a separate security reviewer.
-Branch: `automation/20261119T073600Z/bug/camera-visibility`.
-Base: `e454de6abfefda70d82784fafc1d8949b277c334` (current main at claim).
-Owned paths: `apps/web/src/components/CameraImporter.tsx`, focused `CameraImporter` tests,
-and `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md`.
-Acceptance: reproduce pending image/paste imports remaining authorized while the document is hidden;
-abort those operations on hiding; reject late delivery and hidden dispatch; retain existing camera,
-multipart, scope and retry behavior. Run focused tests and independent review before publication.
-This isolated claim does not own other workers' scan, session, recovery, transport or integration paths.
-Status: implemented at `d6e9dd38`; nine regressions failed on the original runtime and pass after repair.
-All 77 focused importer tests pass. Independent security review found no source blocker and reran the
-nine regressions successfully. Scoped TypeScript/typed lint pass; full hosted gates and integration remain
-coordinator-owned. See `docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md` for exact evidence and limits.
+Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
+Branch: `automation/20261120T1635Z/bug/tron-scan-abort` based on main commit `aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+Owned paths: `packages/tron-adapter/src/scan.ts`, new `packages/tron-adapter/src/scan.cancellation.test.ts`, an additive `docs/ai/ACTIVE_WORK.md` claim, and a dedicated `docs/handoffs/TRON_SCAN_ABORT_20261120.md`. No other files are claimed.
+Evidence: GP-BUG-13/MC-01 in existing read-only bugcheck PR #312; abort during iteration of a buffered page permits a second matched payment after signal cancellation. Prior audit exercised two synthetic native payments without network access on main/integration.
+Acceptance: preserve all valid native and TRC-20 detection, validation and pagination; return typed `ABORTED` rather than any further result after cancellation, including after delayed page or receipt readbacks and between same-page yields; add deterministic test-first Vitest regressions, with no real RPC/network or private keys; keep no-fee/non-custodial Pages behavior. No new dependencies, policy changes or contract edits.
+Ownership reconciliation: current integration PR #307 does not change TRON adapter scan source/tests; broad PRs #278/#262/#264 own `scan.test.ts` but not the `scan.ts` production file. Use a new focused test file to avoid their test ownership. Recheck all heads before any future integration. The durable integration lock is **held by another coordinator at generation 8**; do not acquire, update its metadata, or merge into main.
+Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
+
+---
+
+# Main unique-code consolidation — 2026-11-19 (Pacific)
+
+Worker: `150ffd7f8079-root`, with independent `prior_consolidation`, `release_review`, and `latest_fixes_review` source reviewers.
+Branch: `integration/ghostpay-main-unique-code-20261120`; base main: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+User authorization: consolidate branches with unique code into GhostPay main.
+Owned paths: additive branch provenance under `docs/consolidation/main-unique-code-20261120/`, this additive registry, and exact reviewed source/test contributions from PRs #279, #280, #281, #282 and #285. Preserve every existing registry section and donor parent. PR #267 was separately merged after exact-head checks passed.
+Acceptance: compare donor source blobs and ancestry; retain all current main files except the five reviewed independent fixes; validate the combined candidate with existing CI; merge only qualified changes. Preserve blocked broad donors, runtime/payment safeguards, deployment triggers, dependency versions and security gates. No branch deletion or force update.
+Execution: local executor unavailable; use connected GitHub source/CI tools. No local test execution is claimed.
+Status: ownership recorded before source integration; integration lease generation 7.
+
+---
+
+# Pages multipart QR malformed Unicode guard — 2026-11-19
+
+- Cycle/worker: `20261119T124337Z` / single ChatGPT coordinator with sequential bug, audit and documentation phases; no parallel or independent verifier available.
+- Branch: `automation/20261119T124337Z/bug/qr-utf8-surrogate-guard`; base `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrMultipart.ts`, `apps/web/src/lib/qrMultipart.test.ts`, this isolated claim and `docs/handoffs/QR_MULTIPART_SURROGATE_20261119.md`.
+- Discovery: single QR `makeQr` rejects unpaired UTF-16 surrogates, but multipart `TextEncoder` silently replaces them with UTF-8 U+FFFD. Node 22 reproduction: `\uD800` encodes as `EF BF BD` while valid astral pairs round-trip unchanged.
+- Acceptance: test-first rejection of isolated high/low surrogates and mixed strings by `toMultipart` and `multipartIfNeeded`; valid paired Unicode text still encodes and decodes; no QR/format/protocol change for valid payloads; no dependencies added; exact-head CI and separate review before merge.
+- Coordination: inspected changed-file inventories of active PRs #238, #240, #243, #244, #246, #249–#252, #254–#256, #258, #260–#262, #264–#265, #267–#278; neither owned QR file appeared (bounded sample, not an exhaustive review of all open PRs). Broad #278 and recovery integration remain externally owned. Metadata lock generation 3 observed released at `6408563f55081ee941c2036086c025ebf63d2c96`; no shared lock acquired, no merge planned.
+
+---
+
+# 2026-11-19 · Fail-closed runtime build profile guard (isolated)
+
+Coordinator and implementer: one ChatGPT assistant, sequential phases; no independent verifier spawned.
+Cycle: `20261119-c977`; isolated branch: `automation/20261119-c977/bug/build-profile-failclosed`.
+Base observed main: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: `apps/web/src/lib/buildProfile.ts`, `apps/web/src/lib/buildProfile.test.ts`, this append-only claim, and isolated `docs/handoffs/BUILD_PROFILE_FAILCLOSED_20261119.md`.
+Dependency/ownership: active consolidation PRs #246/#262/#264/#278 and QR #279 checked; none changes the two source/test paths as of branch creation. Existing metadata integration lock is released generation 3. The external GhostPay automation has a concurrently in-progress run; no integration or shared-ledger writes authorized for this branch.
+Finding: `resolveProfile` narrows when exactly `lean`, but unexpected runtime values (outside the TypeScript union) are treated as `full` when all other values are `full`. This differs from the fail-closed `profileFromDefine` logic. No real-world exploit established.
+Acceptance: test first; invalid explicit/shell/build values must resolve to lean, normal 3-source truth table unchanged; no feature widening, dependencies, workflows or build setting changes; record actual test execution and CI constraints; independent verification needed before merge.
+
+---
+
+# Run 20261119T1640Z — privacy-set 30-day coverage correctness
+
+Worker: one ChatGPT coordinator, with sequential implementation and audit phases; no independent subagent.
+Base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; isolated branch: `automation/20261119T1640Z/bug/scan-privacy-partial-30d`.
+Owned paths: `apps/web/src/lib/scanSpam.ts`, new `apps/web/src/lib/scanSpam.partial.test.ts`, and `docs/handoffs/SCAN_SPAM_PARTIAL_30D_20261119.md`. The claim is recorded here before source edits.
+Finding: `anonymitySet()` reports 7-day and 30-day public announcement counts but calculates `partial` from only the 7-day lower bound. If a scan began ten days ago, the 30-day displayed count is incomplete yet the warning is absent.
+Acceptance: a test that fails on baseline for incomplete 30-day coverage; 7-day/30-day counts remain unchanged; the `partial` flag marks incomplete 30-day history and gaps to head, but does not spuriously mark full available genesis history incomplete. Run available focused checks and report exact limits; avoid changing privacy policy, protocol, network access or real funds.
+Dependencies/ownership: checked active #278/#264/#246/#238/#244/#251/#248/#249/#222/#219/#250/#269/#270/#279/#280 changed-file inventories; none owns `scanSpam.ts` or new focused test. Recheck before PR. The metadata integration lock was last observed released generation 3; no protected integration requested.
+Status: claimed; implementation pending.
+
+---
+
+# Merchant key-pin strict JSON hardening — 2026-11-19 cycle 20261119T183817Z
+
+- Worker: one ChatGPT operator (sequential source, test, and audit phases; no independent subordinate).
+- Task branch: `automation/20261119T183817Z/bug/merchant-pin-duplicate-json`.
+- Base `main` SHA: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned files: `apps/web/src/lib/merchantIdentity.ts`, `apps/web/src/lib/merchantIdentity.test.ts` and an isolated handoff `docs/handoffs/MERCHANT_PIN_STRICT_JSON_20261119.md`.
+- Finding: ambiguous persisted signer-pin JSON (duplicate `v` or `signer` members) is accepted by `JSON.parse` as its final key value, despite the trusted-pin fail-closed contract. This is defensive local-storage validation; no remote compromise or fund-loss exploit claimed.
+- Acceptance: reject duplicate-key and forbidden-key pin records as `unavailable`, never silently treat them as `absent`; valid persisted pins continue to be read, saved and removed; regression committed before source repair.
+- Dependencies: reuse existing exported `parseStrictJson` (invoice-schema), no protocol/schema changes.
+- Ownership check: open PRs including #238, #246, #262, #264, #278 and all current work listed through #281 inspected for these two files; none claimed them. Recheck heads before integration.
+- Integration metadata ref remains outside this branch. No shared ledger or protected-branch update authorized from this worker.
+
+---
+
+# QR kind handling fail-closed — 2026-11-19 cycle 20261119T204728Z
+
+- Worker: one ChatGPT coordinator, sequential implementation and read-only audit phases (no independent subagent; not independently approved).
+- Task branch: `automation/20261119T204728Z/bug/qr-kind-failclosed`; exact base main `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+- Owned paths: `apps/web/src/lib/qrKinds.ts`, `apps/web/src/lib/qrKinds.test.ts`, `docs/handoffs/QR_KIND_FAILCLOSED_20261119.md`, and this additive ownership claim only.
+- Evidence: `kindForPayload` looks up a runtime key in a regular JavaScript object; for unknown keys it can return `undefined` or inherited properties such as `constructor`, while `unverified: true` can classify an unknown payload as caution. `qrKindClass` constructs arbitrary classes for unknown kinds.
+- Acceptance: reject unrecognized runtime payload types and frame kinds before returning handling policies or CSS; preserve all valid QR kind/rule behaviors and print policy; commit a failing regression first, then fix; execute bounded Node proof and report exact CI and independent review gaps.
+- Ownership: core active PRs #238/#243/#246/#251/#252/#255/#258/#261/#262/#264/#265/#268/#270/#274/#278/#279/#280/#281/#282 were inspected for these files; no direct overlap observed. Recheck at merge. No other branch or shared integration updates.
+- Status: claimed; no merge, deployment, release, or production change authorized from this isolated worker.
+
+---
+
+# Focused hosting main reconciliation — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-main-reconcile-20261119`.
+Starting PR #267 head: `c3a693e87053fbe91219f8edfe159a5ec0a37a34`.
+Qualified main input: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: additive `docs/ai/ACTIVE_WORK.md` reconciliation and new evidence under
+`docs/consolidation/hosting-timestamp-reconciliation-20261119/`. Incoming qualified
+main source/test changes are preserved exactly; no runtime source or gate edits.
+Acceptance: first preview merge conflicts; preserve main and focused ancestry;
+retain all existing ownership sections; keep the complete 80-file hosting-kit tree
+and its three reviewed timestamp source/test blobs exact; inspect the full resulting
+source/config diff and run only checks needed for a concrete reconciliation risk.
+Historical hosted kit/browser outcomes remain pinned to the earlier checkout;
+new-head CI/build/browser qualification is coordinator-owned and remains pending.
+No remote writes, force operations, mainnet, deployment or parallel heavy checks.
+Status: claim recorded before merge; merge-tree preview found only this registry.
+
+# Focused hosting timestamp promotion — 2026-11-19
+
+Worker: `branch_recon`, delegated by the feature-consolidation coordinator.
+Branch: `codex/ghostpay-hosting-timestamp-main-20261119`.
+Base: `14ded337a10c140d7a9f9a9238ec038587d925bb`, independently verified as GitHub main.
+Owned paths: the three reviewed source/test files from
+`38fe7fdaf151ef433be9721af8fea7cbcdea89c4` under `tools/portable-hosting-kit/`,
+the unchanged historical evidence in `docs/consolidation/hosting-timestamp-20261119/`,
+new provenance in `docs/consolidation/hosting-timestamp-main-20261119/`, and this
+additive claim. Acceptance: cherry-pick the exact reviewed fix without importing
+feature-candidate ancestry; verify all three blobs and the complete kit tree match
+the tested product; preserve every prior main claim; identify differences in root
+configuration/lockfiles and record evidence limits honestly. Obtain independent
+recovery-worker review. No other runtime, dependency, workflow, threshold, deployment
+or remote changes. The coordinator owns publication and hosted qualification.
+Status: exact `-x` cherry-pick product `f4464e57bc6743800c2564ddb71bb5b06f64eb35`;
+complete kit tree and three product blobs equal the reviewed original. Historical
+evidence copied byte-for-byte; root lock differences remain explicit. Recovery-worker
+source review found no introduced blocker. No new runtime replay is claimed.
+Provenance: `docs/consolidation/hosting-timestamp-main-20261119/PROVENANCE.md`.
+
+# Historical security promotion — 2026-11-19
+
+Worker: `history_census`; branch: `integration/ghostpay-historical-security-promotion-20261119`.
+Base/main: `e454de6abfefda70d82784fafc1d8949b277c334`.
+Owned integration: exact PR245 `baa032547a16196005dccc30a247acd55d4f62c6` and
+PR247 `20207a930336da95e78ad1d6f4987b3c74fc535a`, preserving both source parents,
+all ownership claims and their existing evidence. Resolve registry append collisions only;
+the focused main does not contain the broader master scanner changes.
+Optional source-only guard: the two net-harness source/test hunks from PR253
+`303ba1114fd78426162c4728f1778f66d64088f4`, excluding its major dependency train.
+Acceptance: merged pool helpers/witness fixtures and AST source scanner equal reviewed
+candidate source; untouched main content remains intact; bounded affected checks and
+exact dependency provenance recorded. No circuit, contract, protocol, release or gate change,
+no active source-branch overwrite, no remote mutation. Coordinator owns final publication/CI.
+
+# Historical pool repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Starting local head: `a85896ab6bb1b60eee9c9ad4ddc0e43d9ede9645`; reviewed tree:
+`7f85edb78d56c9c981ba1bc3745c3f3ccbeb07d8`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing pool repair while
+merging current main, and scoped validation evidence. Preserve both source histories,
+all ownership sections, and the reviewed pool implementation/test blobs. Run the
+19 helper tests on Node 22 and obtain independent integration-diff review. Source
+conflicts require inspection; publication and hosted qualification remain coordinator-owned.
+
+# Historical scanner repair main reconciliation — 2026-11-19
+
+Worker: actions_repair, assigned by the pre-merge reconciliation coordinator.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Starting local head: `3db24b5496a2d1979a55757a2b83eb8dd362614b`; reviewed tree:
+`96e15f7544b592bac8da065ad64188f56b0d9f4d`. Merge target: main
+`e454de6abfefda70d82784fafc1d8949b277c334`, independently observed after PR #242 merged.
+Owned scope: this additive claim, preservation of the existing AST scanner repair
+while merging current main, and scoped validation evidence. Preserve both source
+histories, all ownership sections, and the reviewed scanner implementation/test blobs.
+Run all 88 scanner/privacy tests on Node 22, scan the resulting eligible production
+sources, and obtain independent integration-diff review. Source conflicts require
+inspection; publication and hosted qualification remain coordinator-owned.
 
 # Browser network isolation: unowned transport gaps — 2026-11-18
 
@@ -437,6 +587,44 @@ dependency, build, upload or rerun. Hosted artifact existence remains unverified
 precede log creation, and the earlier browser acceptance failure remains red. Evidence and integration
 limits: `docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md`.
 
+# Historical source-sink scanner reconciliation — 2026-11-18
+
+
+# Historical pool input guard recovery — 2026-11-18
+
+Worker: history_review, coordinated by the pre-merge repair lead.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`, `test/witness.test.ts`,
+the package `DEVIATIONS.md`, this claim and a scoped merge-readiness handoff.
+Acceptance: recover the existing historical nonzero-input guards from
+`ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c` and property regression from
+`768b1f4cc86638e747cb1553297d012973c4cbb0`; reproduce the present helper/contract
+mismatch, preserve valid positive values and full withdrawals, and qualify the
+minimal repair independently. All 44 open PR file lists were checked; none
+changes the two owned source/test paths. The existing pool circuit constraints,
+proof artifacts, contracts, crypto, dependencies, deployment and security gates
+remain outside this scope. The coordinator owns publication and integration.
+
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, its `.d.mts` declaration,
+`apps/web/src/scanBundle.test.ts`, this claim and a source-pinned scanner handoff.
+Acceptance: reproduce the source scanner's false negatives after nested template,
+regex and JSX text; reconcile only the TypeScript AST source-sink check from
+historical `016fa2521f7cd7c1cfbe763aaf658e32f6e27be6`; retain current built-artifact,
+HTML, CSP, deployment and release-boundary checks unchanged. Add behavioral
+regressions, use already-declared TypeScript without dependency changes, fail on
+unparsable source, and independently review before integration.
+Ownership check: open PRs #209 and #238 still contain the old comment stripper;
+their separately owned hosting/HTML/deployment changes are preserved. Original
+branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
+regressions (4 failed / 15 passed before correction; 19/19 after), package
+typecheck/lint/build, secret scan and action pins passing. Available full package
+coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existing
+artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
+also passes all 19 helper tests. See the source-pinned handoff under
+`docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
 
 ## Shared invoice signer-policy extraction — 2026-11-18
 
@@ -507,3 +695,79 @@ cursor values, deliberate legacy rescan, existing same-key-restore AbortSignal d
 sole-copy idle-retention policy and lack of cross-tab locking remain explicit.
 See `docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md`. Publication and combined
 candidate qualification remain coordinator-owned; no duplicate #222-lane PR.
+
+# Historical pool input guard recovery — 2026-11-18
+
+Worker: history_review, coordinated by the pre-merge repair lead.
+Branch: `repair/ghostpay-history-pool-values-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `packages/pool-circuits/src/inputs.ts`, `src/helpers.test.ts`, `test/witness.test.ts`,
+the package `DEVIATIONS.md`, this claim and a scoped merge-readiness handoff.
+Acceptance: recover the existing historical nonzero-input guards from
+`ea1f0b244f0adf4794e55cda6dc7dbd1e5f4039c` and property regression from
+`768b1f4cc86638e747cb1553297d012973c4cbb0`; reproduce the present helper/contract
+mismatch, preserve valid positive values and full withdrawals, and qualify the
+minimal repair independently. All 44 open PR file lists were checked; none
+changes the two owned source/test paths. The existing pool circuit constraints,
+proof artifacts, contracts, crypto, dependencies, deployment and security gates
+remain outside this scope. The coordinator owns publication and integration.
+
+Status: implementation `b22d71475e84519af7fdad9a5571452e088bc4ae` has reproduced
+regressions (4 failed / 15 passed before correction; 19/19 after), package
+typecheck/lint/build, secret scan and action pins passing. Available full package
+coverage passes 23 tests at 100% statements/branches/functions/lines; 59 existing
+artifact-dependent tests remain skipped because wasm/zkeys are absent. Node 22.23.5
+also passes all 19 helper tests. See the source-pinned handoff under
+`docs/consolidation/merge-readiness/HISTORICAL_POOL_VALUES_20261118.md`.
+
+# Historical source-sink scanner reconciliation — 2026-11-18
+
+Worker: actions_repair, Caveman investigate-first; parent owns publication and integration.
+Branch: `repair/ghostpay-history-scanner-20261118-local`.
+Base: `58d89b39b27a66454ebf392bcd35d5c68b57b2f8` (refreshed main).
+Owned paths: `apps/web/scripts/scan-bundle.mjs`, its `.d.mts` declaration,
+`apps/web/src/scanBundle.test.ts`, this claim and a source-pinned scanner handoff.
+Acceptance: reproduce the source scanner's false negatives after nested template,
+regex and JSX text; reconcile only the TypeScript AST source-sink check from
+historical `016fa2521f7cd7c1cfbe763aaf658e32f6e27be6`; retain current built-artifact,
+HTML, CSP, deployment and release-boundary checks unchanged. Add behavioral
+regressions, use already-declared TypeScript without dependency changes, fail on
+unparsable source, and independently review before integration.
+Ownership check: open PRs #209 and #238 still contain the old comment stripper;
+their separately owned hosting/HTML/deployment changes are preserved. Original
+branches remain read-only. No workflow, contract, paid-automation or deployment changes.
+
+## QA-02 payment URI builder length — 2026-11-20 UTC (automation cycle)
+
+- Worker: sequential ChatGPT bug-repair coordinator; no subordinate or independent worker claimed.
+- Isolated branch: `automation/20261120T0641Z/bug/payment-uri-aggregate-length`; exact base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+- Finding: QA-02 / CORE-QA-01, source-pinned read-only QA at PR #309 (source `c977b5d6723f6822c3b5d86cd6b231712c53c395`), applies unchanged to base.
+- Owned paths: `packages/payment-uri/src/query.ts`, `bitcoin.ts`, `solana.ts`, `tron.ts`, new `builder-length.test.ts`, and `docs/handoffs/PAYMENT_URI_LENGTH_20261120.md`. This ownership registry entry is additive.
+- Dependencies: existing `splitUri` cap `MAX_URI_LENGTH=2048`; no other owner found via current open-PR metadata and scoped search; refresh before integration. No contract, wallet, relayer or main changes.
+- Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
+- Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
+
+
+## TRON range completeness recovery — 2026-11-20 continuation R2
+
+- Worker: `/root/branch_recovery_r2`; coordinator: `994a0d214fb9-root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`; exact base: `87c3bf5a59f4d443c9e5cf81368162554a5315c3` (PR #321, itself based on main `aa3df1cb37274fae73af0ca957183c15c51b62d3`).
+- Owned product paths: `packages/tron-adapter/src/rpc.ts` limited to `getBlockRange`; `packages/tron-adapter/src/scan.test.ts`; `apps/web/src/features/tron/fixtures.testutil.ts`; `apps/web/src/features/tron/chain.hardening.test.ts`. Owned evidence: `docs/consolidation/continuation-r2-20261120/` and this additive claim.
+- Acceptance: a requested block range must contain every requested height in order before scanner results or account/memo lookups proceed. Missing first, middle, last, or all blocks must fail with the existing typed invalid-response error. Preserve valid complete ranges, native/TRC-20 scanning, cancellation checks from #321, current RPC privacy isolation, parser bounds and original assertions.
+- Provenance: selectively recover missing source from PR #271 head `429a4de80b9ec53177b17d89d18ce8ec91a08814`, retaining original completeness contribution `22af2074a086d9957a18e310ef8572b28d1facd0` and fixture/regression correction `146e52481733fec5fc95580eb9d2d41a01a05df0`.
+- Ownership reconciliation: #271/#250 and broad #278/#262/#264 remain preserved donors. Root explicitly assigned this isolated recovery after current source/PR inspection. No existing donor branch is mutated. #321 owns `scan.ts` and its new cancellation test; those files remain unchanged. Other workers own retention and current CI triage. Root owns publication, shared refs, merge decisions and coordination metadata.
+- Sequence: save full live branch census and this claim; commit recovered tests/fixture before runtime; execute controlled RED checkpoint through coordinator scheduling; restore only the missing range check; run applicable qualification and independent review. No dependency installation/copy or broad workflow rerun is part of this worker's initial scope.
+- Evidence at claim: #271 has 36 successful hosted checks, three deployment-only skips and one beta failure during browser OS-package installation (Ubuntu mirror connection/resource failures, apt exit100). No beta assertions ran. Its prior successful source tests do not qualify this new composition. #321 current checks remain incomplete.
+
+
+## TRON range completeness independent qualification — 2026-11-20
+
+- Worker: `/root/range_qualification_r2`; coordinator: `/root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`. Frozen application/test input: `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272`, tree `46c186bfb4f7e15b384c9a0ba361790d8c7e6876`.
+- Owned changes: additive qualification status here and `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}` only. Product source and previous ownership records are immutable inputs.
+- Acceptance: read the independent source approval; verify the supplied RED evidence; rebuild matching libraries; execute original package coverage/typecheck/lint/build, all web TRON test files, full web TypeScript/typed lint, and the full-profile production build with original postbuild scan. Record exact commands, source, dependency reuse, results, limits and hashes. Preserve every original threshold and assertion.
+- State at claim: source review approved by `/root/ci_triage_r2`; original library build is running in a separate clean detached qualification worktree. No GREEN or complete qualification result is asserted by this claim.
+- Boundaries: no source/dependency/workflow changes, browser attempt, live RPC/funds, deployment, remote publication or shared-ref/lease mutation. Root owns publication and promotion.
+
+
+Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.

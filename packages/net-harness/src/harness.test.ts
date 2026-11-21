@@ -1,8 +1,9 @@
 import dns from 'node:dns';
+import { once } from 'node:events';
 import net from 'node:net';
 import tls from 'node:tls';
 import http from 'node:http';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   assertLoopback,
   installPoisonedResolver,
@@ -140,6 +141,32 @@ describe('http echo', () => {
 });
 
 describe('socks5 server', () => {
+  it('closes text-decoded sockets without parsing a binary greeting', async () => {
+    const createServer = vi.spyOn(net, 'createServer').mockImplementationOnce((options, listener) => {
+      const server = new net.Server(options, listener);
+      server.prependListener('connection', (client) => { client.setEncoding('utf8'); });
+      return server;
+    });
+    try {
+      const p = track(await startSocks5Server());
+      const client = net.connect({ host: '127.0.0.1', port: p.port });
+      let receivedReply = false;
+      try {
+        // A timeout must fail: client cleanup must not masquerade as a server-initiated close.
+        const closed = once(client, 'close', { signal: AbortSignal.timeout(1_000) });
+        client.on('data', () => { receivedReply = true; });
+        client.once('connect', () => { client.write(greet(0)); });
+        await closed;
+      } finally {
+        client.destroy();
+      }
+      expect(receivedReply).toBe(false);
+      expect(p.greetings).toEqual([]);
+      expect(p.records).toEqual([]);
+    } finally {
+      createServer.mockRestore();
+    }
+  });
   it('no-auth: resolves the name itself and tunnels, recording ATYP 3', async () => {
     const echo = track(await startHttpEcho({ responseBody: 'hi' }));
     const p = track(await startSocks5Server({ hosts: { 'echo.test': '127.0.0.1' } }));

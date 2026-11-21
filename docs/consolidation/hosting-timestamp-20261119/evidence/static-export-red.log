@@ -1,0 +1,118 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: exports byte-identical servable files under www/ with source mtimes
+ok 1 - exports byte-identical servable files under www/ with source mtimes
+  ---
+  duration_ms: 109.82502
+  type: 'test'
+  ...
+# Subtest: preserves submillisecond second boundary source timestamp under www/
+not ok 2 - preserves submillisecond second boundary source timestamp under www/
+  ---
+  duration_ms: 12.380933
+  type: 'test'
+  location: '/workspace/scratch/13855ecc035c/GhostPay-btc/tools/portable-hosting-kit/test/profiles/static-export.test.mjs:75:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    HTTP Last-Modified/ETag second must equal the source
+    + actual - expected
+    
+    + 1795078175
+    - 1795078174
+               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1795078174
+  actual: 1795078175
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/13855ecc035c/GhostPay-btc/tools/portable-hosting-kit/test/profiles/static-export.test.mjs:88:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: preserves epoch source timestamp under www/
+ok 3 - preserves epoch source timestamp under www/
+  ---
+  duration_ms: 15.11032
+  type: 'test'
+  ...
+# Subtest: preserves pre-epoch source timestamp under www/
+ok 4 - preserves pre-epoch source timestamp under www/
+  ---
+  duration_ms: 15.196532
+  type: 'test'
+  ...
+# Subtest: exports byte-identical servable files under www/mirror/app/ with source mtimes
+ok 5 - exports byte-identical servable files under www/mirror/app/ with source mtimes
+  ---
+  duration_ms: 65.322195
+  type: 'test'
+  ...
+# Subtest: preserves submillisecond second boundary source timestamp under www/mirror/app/
+not ok 6 - preserves submillisecond second boundary source timestamp under www/mirror/app/
+  ---
+  duration_ms: 8.91775
+  type: 'test'
+  location: '/workspace/scratch/13855ecc035c/GhostPay-btc/tools/portable-hosting-kit/test/profiles/static-export.test.mjs:75:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    HTTP Last-Modified/ETag second must equal the source
+    + actual - expected
+    
+    + 1795078175
+    - 1795078174
+               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1795078174
+  actual: 1795078175
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/13855ecc035c/GhostPay-btc/tools/portable-hosting-kit/test/profiles/static-export.test.mjs:88:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: preserves epoch source timestamp under www/mirror/app/
+ok 7 - preserves epoch source timestamp under www/mirror/app/
+  ---
+  duration_ms: 10.433462
+  type: 'test'
+  ...
+# Subtest: preserves pre-epoch source timestamp under www/mirror/app/
+ok 8 - preserves pre-epoch source timestamp under www/mirror/app/
+  ---
+  duration_ms: 11.625444
+  type: 'test'
+  ...
+# Subtest: refuses symlinks without leaving a partial export
+ok 9 - refuses symlinks without leaving a partial export
+  ---
+  duration_ms: 25.748078
+  type: 'test'
+  ...
+# Subtest: refuses nested site/output directories and weak headers
+ok 10 - refuses nested site/output directories and weak headers
+  ---
+  duration_ms: 5.315726
+  type: 'test'
+  ...
+# Subtest: overlay files are added when servable and not colliding
+ok 11 - overlay files are added when servable and not colliding
+  ---
+  duration_ms: 10.61207
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 9
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 428.946936

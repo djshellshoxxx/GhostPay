@@ -45,7 +45,7 @@ export async function resolveExisting(fs, p) {
  * @param {ExportFs} fs
  * @param {string} root realpath
  * @param {string} rel
- * @returns {Promise<{ data: Uint8Array, mtime: Date }>}
+ * @returns {Promise<{ data: Uint8Array, mtimeMs: number }>}
  */
 async function readNoFollow(fs, root, rel) {
   const segs = rel.split('/');
@@ -61,7 +61,7 @@ async function readNoFollow(fs, root, rel) {
   try {
     const st = await handle.stat();
     if (!st.isFile()) throw new KitError(ERROR_CODES.SYMLINK, `${rel} is not a regular file`, { path: rel });
-    return { data: await handle.readFile(), mtime: st.mtime };
+    return { data: await handle.readFile(), mtimeMs: st.mtimeMs };
   } finally {
     await handle.close();
   }
@@ -122,17 +122,21 @@ export async function exportStatic({ siteDir, files, entrypoint, hostConfig, pol
   const baseSegs = basePath.split('/').filter((s) => s !== '');
   try {
     await fs.mkdir(tmp, { mode: 0o755 });
-    /** @param {string} rel @param {Uint8Array} data @param {Date | null} mtime */
-    const put = async (rel, data, mtime) => {
+    /** @param {string} rel @param {Uint8Array} data @param {number | null} mtimeMs */
+    const put = async (rel, data, mtimeMs) => {
       const dest = path.join(tmp, ...baseSegs, ...rel.split('/'));
       await fs.mkdir(path.dirname(dest), { recursive: true, mode: 0o755 });
       await fs.writeFile(dest, data, { flag: 'wx', mode: 0o644 });
-      // Same mtime as the source, so nginx's ETag/Last-Modified equal the preview's (which reads the site).
-      if (mtime) await fs.utimes(dest, mtime, mtime);
+      // Stats.mtime rounds fractional milliseconds and can advance the HTTP Last-Modified/ETag second.
+      // String seconds preserve pre-epoch values too; fs.utimes interprets negative numbers as "now".
+      if (mtimeMs !== null) {
+        const seconds = String(mtimeMs / 1000);
+        await fs.utimes(dest, seconds, seconds);
+      }
     };
     for (const rel of servable) {
-      const { data, mtime } = await readNoFollow(fs, siteRoot, rel);
-      await put(rel, data, mtime);
+      const { data, mtimeMs } = await readNoFollow(fs, siteRoot, rel);
+      await put(rel, data, mtimeMs);
     }
     for (const o of overlay) await put(o.path, o.data, null);
     await fs.rename(tmp, wwwRoot);
