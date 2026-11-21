@@ -41,12 +41,14 @@ for (const fn of [posReduce, reduce]) {
   assert.throws(() => fn(idle, start, Number.MAX_SAFE_INTEGER - 59), /bad-time-policy/, 'expiry addition must remain safe');
   const active = fn(idle, start, 100).state;
   for (const now of [NaN, Infinity, -Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
-    for (const ev of [pay(1000), { type: 'tick' }, { type: 'cancel' }]) {
+    for (const ev of [pay(1000), { type: 'tick' }]) {
       assert.throws(() => fn(active, ev, now), /bad-time-policy/);
     }
+    assert.equal(fn(active, { type: 'cancel' }, now).state.status, 'cancelled');
   }
   for (const expiresAt of [undefined, NaN, Infinity, -1, 0.5]) {
     assert.throws(() => fn({ ...active, expiresAt }, pay(1000), 101), /bad-time-policy/);
+    assert.equal(fn({ ...active, expiresAt }, { type: 'cancel' }, 101).state.status, 'cancelled');
   }
   for (const dueMinor of [1000, '1000', NaN, undefined, null]) {
     assert.throws(() => fn(idle, { ...start, dueMinor }, 100), /bad-amount/);
