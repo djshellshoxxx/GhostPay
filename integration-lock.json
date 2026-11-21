@@ -1,11 +1,11 @@
 {
   "format": "ghostpay-integration-lock/1",
   "status": "held",
-  "owner": "5ceb6203640a-root",
-  "token": "5ceb6203-640a-4d21-9026-112106140000",
-  "generation": 12,
-  "base_sha": "aec179910c39081d820396409ff3139ff2264132",
-  "acquired_at": "2026-11-21T06:12:26.000Z",
-  "heartbeat_at": "2026-11-21T06:12:26.000Z",
-  "expires_at": "2026-11-21T07:12:26.000Z"
+  "owner": "994a0d214fb9-root-r3",
+  "token": "c9ab2a7b-aa65-48cc-8e53-4e4363cf6198",
+  "generation": 11,
+  "base_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+  "acquired_at": "2026-11-20T23:16:57.174Z",
+  "heartbeat_at": "2026-11-20T23:16:57.174Z",
+  "expires_at": "2026-11-21T00:16:57.174Z"
 }
