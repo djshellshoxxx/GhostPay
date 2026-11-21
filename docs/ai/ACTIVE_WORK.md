@@ -1,3 +1,14 @@
+# GP-BUG-07 — policy review revocation during pending wallet send (2026-11-20)
+
+Worker: automated GhostPay continuation, one sequential engineer (not independently reviewed). Branch: `automation/20261120/bug/policy-review-revocation-r1`; exact base main `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: `apps/web/src/features/policy/PolicyPay.tsx`, new `apps/web/src/features/policy/PolicyPay.pendingEdit.test.tsx`, additive `docs/handoffs/POLICY_REVIEW_REVOCATION_20261120.md` and this ownership record.
+Finding: GP-BUG-07 / MV-02 in PR #312 confirms that a reviewed policy payment may continue to the wallet after visible form edits while an earlier send is awaiting an account recheck. Scope is optional policy full-profile code; production Pages lean build and policy deployment pins do not expose this feature.
+Acceptance: synchronous form-edit/re-review invalidation of the authority captured with the original review; last wallet authority check refuses before any new wallet request; retain existing session/deployment/transaction/deadline checks and post-approval recovery messaging. Add mock-wallet/browser regression; do not introduce contracts, relayers, new chain support, dependencies or deployments.
+Overlap: broad PR #278 (head `417f7c71daf8645e1432f2ec8f070110879b80bd`) also touches PolicyPay and has not implemented a review-revision guard in the inspected head. Do not bulk-merge either donor; patch-equivalence and conflict review required before integration. No separate focused GP-BUG-07 PR was found. No shared integration lock acquisition or main mutation.
+Status: claimed; implementation, full CI, review and qualification pending.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
