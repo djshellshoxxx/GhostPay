@@ -1,3 +1,37 @@
+# Hygiene evidence and seven-testnet ledger composition — 2026-11-20 (Pacific)
+
+Worker: `/root/hygiene_composition`, delegated by `9a4ab6c3d117-root`.
+Branch: `qualify/ghostpay-hygiene-composition-20261120-9a4ab6`.
+Exact base: published #347 `95e60ce4948b7430865dafbd1ad01434310a75f7`, tree-identical
+with reviewed local #339 test-lint checkpoint `ed3f400d29e8ff72e2dbadc4c92722581694c8f7`.
+Donor: authoritative #341 `78137622011528a646ae94155ee4acf7f72e1e2a`; reuse only its
+original test `0284eead8822306c625981d5095e983f8364cb93` and runtime
+`26d2ba95a045bb60d9344cb3e4a84224c2b74b50` with provenance.
+Owned source: `packages/hygiene/src/ledger.ts` and
+`packages/hygiene/src/ledger.browser-chains.test.ts` for exact donor composition only.
+Owned documentation: this additive claim/status and
+`docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_*`.
+Acceptance: compare donor/base blobs; preserve all #339 verification corrections,
+#347 lint repair and existing assertions; qualify the first combined package tree
+with original full coverage, typecheck, lint and build. Verify lock/source/build-input
+identity before cache reuse. No new payload, baseline reproduction, feature, network,
+configuration, dependency, timeout, threshold or skip change. No browser or live
+financial action. Current #307 has no browser hygiene caller; privacy wiring and
+final release acceptance remain separately owned. Existing #339/#341/#347 stay
+authoritative; no shared branch, integration lease, remote ref or competing PR change.
+Heavy execution waits for the policy and privacy fixture workers. Source/metadata
+review and isolated preparation proceed first. Current three PR heads matched
+these pins before the claim. Status: claimed before source composition.
+Completion: exact combined source `6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb` passes
+161 original tests across seven files, zero skips, original coverage thresholds,
+typecheck, typed lint and package build; no retries or gate/source adjustments.
+All 24 other package files retain #347; both final ledger blobs match #341.
+Coordinator root independently reviewed and approved this exact package diff.
+Lossless evidence is in `HYGIENE_COMPOSITION_*`; browser/hosted integration
+remains separate. Heavy slot released; no remote/shared-target mutation.
+
+---
+
 # Hygiene evidence test lint repair — 2026-11-20 (Pacific)
 
 Worker: `/root/hygiene_lint_repair`, delegated by coordinator `9a4ab6c3d117-root`.
