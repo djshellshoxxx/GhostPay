@@ -1,3 +1,14 @@
+# GP-BUG — Bound rendered invoice display text after marker expansion (2026-11-21)
+
+Worker: ChatGPT bug-only coordinator (sequential implementation and review; independent verifier pending).
+Branch: `automation/20261121/bug/display-text-expansion-bound-r1`; exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/displayText.ts`, new `apps/web/src/lib/displayText.boundary.test.ts`, this additive registry claim, and `docs/handoffs/DISPLAY_TEXT_EXPANSION_20261121.md`. Do not alter the existing `displayText.test.ts` claimed by broad open PRs #278/#372.
+Finding: `safeText` truncates raw input to 4096 UTF-16 units but its hostile-codepoint escapes and mixed-script markers expand the returned render text beyond the documented output bound. A zero-width input of 4096 chars renders 32768 chars on the exact main algorithm; source-equivalent Node 22 reproduction fails the <=4096 assertion.
+Acceptance: commit failing regression first; cap returned text after expansion without splitting visible escapes or surrogate pairs, preserve all ordinary short content, control/newline behavior, and detection flags; add no functionality/dependencies/schema changes. Execute isolated source-equivalent red/green plus existing available checks, requiring hosted exact-head CI and independent qualified review before any merge.
+Coordination: current main has a separate, externally held generation-11 integration lock; do not acquire it, merge to main, deploy, release, or overwrite another worker. Recheck open PR heads, CI, review and lock before integration. Native checkout currently cannot resolve github.com, so no local repository Vitest pass is claimed.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
