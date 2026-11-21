@@ -1,0 +1,272 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    140,
+    158
+  ],
+  "results": [
+    {
+      "branch": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "head_sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 767,
+      "merge_base_sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "head_sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 745,
+      "merge_base_sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "head_sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 785,
+      "merge_base_sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "head_sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 731,
+      "merge_base_sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "head_sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 562,
+      "merge_base_sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "head_sha": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 781,
+      "merge_base_sha": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "head_sha": "17f681915f25441f5c38326ad718b8082495d52a",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 750,
+      "merge_base_sha": "17f681915f25441f5c38326ad718b8082495d52a",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "head_sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 745,
+      "merge_base_sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "files_returned": 1,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "status": "modified",
+          "additions": 28,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "head_sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 785,
+      "merge_base_sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/qualify-98-20261110",
+      "head_sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1073,
+      "merge_base_sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "head_sha": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1101,
+      "merge_base_sha": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "head_sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1100,
+      "merge_base_sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "head_sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1099,
+      "merge_base_sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "head_sha": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1098,
+      "merge_base_sha": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "head_sha": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1101,
+      "merge_base_sha": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "head_sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1102,
+      "merge_base_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "packages/ux-schedule/src/scheduled.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-schedule/src/scheduled.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 2
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "head_sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "status": "diverged",
+      "ahead_by": 3,
+      "behind_by": 1102,
+      "merge_base_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "packages/ux-guide/src/profiles.test.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-guide/src/profiles.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "checkpoint/ghostpay-recovery-20261102",
+      "head_sha": "1dffa5a366fc88a4428823634f43247913048915",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1693,
+      "merge_base_sha": "1dffa5a366fc88a4428823634f43247913048915",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}
