@@ -1,3 +1,14 @@
+# Merchant-ledger CSV formula-prefix defensive correctness — 2026-11-21
+
+Worker: one ChatGPT engineering assistant; independent reviewer not yet available.
+Branch: `chatgpt/ghostpay-csv-leading-whitespace-20261121`; immutable base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/merchant-ledger/src/csv.ts`, new `packages/merchant-ledger/src/csv.formula-prefix.test.ts`, this additive claim and `docs/handoffs/MERCHANT_LEDGER_CSV_FORMULA_PREFIX_20261121.md`.
+Finding: current `sanitizeText` recognizes formula operators after only ASCII spaces, and tabs/CR only if at position zero. Mixed leading spaces/tab, line feed or a leading BOM before formula text is emitted unprefixed by `sanitizeText` and `textCell`. The source-equivalent Node 22 RED probe confirmed five expected prefix failures. These are potential spreadsheet-import boundary ambiguities; no live Excel exploit is established.
+Acceptance: prefix a literal apostrophe on formula operators after leading whitespace (ASCII spaces, tabs, CR, LF, BOM), and on any field beginning with a line break/tab/CR within the leading whitespace run; preserve previously handled inputs, UTF-8 data and RFC 4180 quoting. Tests prove the five new cases and preserve benign text and already-protected formula prefixes. No changes to invoice protocol, network, custody, fees or deployment. Commit regression before production guard; verify exact-head CI and obtain separate review before integration.
+Ownership: main `docs/ai/ACTIVE_WORK.md` does not claim the exact source/test paths, and examined current broad PRs #278/#307/#372 do not modify `csv.ts`; refresh overlap before integration. Shared integration lock generation 11 is held by another coordinator and is not available for takeover. No main merge until exact owner reconciled and all gates pass.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
