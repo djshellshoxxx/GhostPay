@@ -63,7 +63,9 @@ export const INITIAL_POS_STATE: PosState = { status: 'idle', paidMinor: 0n };
  * @param now Injected unix seconds.
  * @returns New state; `accepted:false` when the event is ignored (terminal state, wrong invoice, illegal order).
  * @throws {HooksError} `bad-ttl`, `bad-amount`, or `bad-time-policy` for malformed runtime inputs.
- * @security Terminal states absorb everything, so a late or replayed payment event cannot resurrect a closed sale. Sessions are shorexport function posReduce(state: PosState, event: PosEvent, now: number): PosResult {
+ * @security Terminal states absorb everything, so a late or replayed payment event cannot resurrect a closed sale. Sessions are short-lived (30..900s).
+ */
+export function posReduce(state: PosState, event: PosEvent, now: number): PosResult {
   const no = { state, accepted: false } as const;
   if (event.type === 'start') {
     if (state.status !== 'idle') return no;
