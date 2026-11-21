@@ -599,10 +599,13 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
     const link = await createShortInvoice(s, 1);
+    const { invoice } = await parseFragment(new URL(link).hash);
     const payer = await openPayer(open, sim, { clock: true });
+    // Cross this invoice's deadline within the normal idle limit; a two-hour jump also expires the session.
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt - 300) * 1000));
     await reviewToFinalCheck(payer.page, sim, link);
     // The invoice expires between the reviewed final check and the send click.
-    await payer.context.clock.setSystemTime(Date.now() + 2 * 3_600_000);
+    await payer.context.clock.setSystemTime(new Date((invoice.expiresAt + 300) * 1000));
     await payer.page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(payer.page.getByText('This invoice has expired. Nothing was sent.')).toBeVisible();
     await expect(payer.page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);

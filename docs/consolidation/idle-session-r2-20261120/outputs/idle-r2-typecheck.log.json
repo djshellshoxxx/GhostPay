@@ -1,0 +1,6 @@
+{
+  "original_filename": "idle-r2-typecheck.log",
+  "original_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+  "original_bytes": 216,
+  "utf8_text": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/web@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+}
