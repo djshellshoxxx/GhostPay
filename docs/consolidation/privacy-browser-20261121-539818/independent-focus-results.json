@@ -1,0 +1,40 @@
+{
+  "reviewer": "/root/privacy_change_review",
+  "worktree": "/workspace/scratch/539818ee134f/GhostPay-privacy-independent",
+  "command": "NODE_OPTIONS=--max-old-space-size=256 npm exec -w @ghostpay/web -- vitest run src/components/WalletDisclosure.test.tsx --maxWorkers=1",
+  "node": "v24.22.3",
+  "vitest": "5.1.0",
+  "source_blobs": {
+    "WalletDisclosure.tsx": "094b9d4cce058b060c13821c7723449bafe0a743",
+    "WalletDisclosure.test.tsx": "96144da7ab938bea7aa6649e28b251d08bf9f264"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "sha": "4d8828cd205ad45b095c0a1e01e6c36282da207e",
+      "exit_code": 1,
+      "counts": {
+        "passed": 9,
+        "failed": 4,
+        "total": 13
+      },
+      "log": "/workspace/scratch/539818ee134f/evidence/independent-focus-baseline.log",
+      "bytes": 11692,
+      "sha256": "f6674da60ff00007316e3b730129f1ecf4caa4383c0576f5b6b7c74145ff1748"
+    },
+    {
+      "name": "fixed",
+      "sha": "14c52cad022193289a64ba1dc2848b6a55ab822a",
+      "exit_code": 0,
+      "counts": {
+        "passed": 13,
+        "failed": 0,
+        "total": 13
+      },
+      "log": "/workspace/scratch/539818ee134f/evidence/independent-focus-fixed.log",
+      "bytes": 387,
+      "sha256": "3ee3cdc24f61df4a61279fc24f3692e890619c2aa9358a7b2fbbe616bb8803b6"
+    }
+  ],
+  "clean_worktree": true
+}

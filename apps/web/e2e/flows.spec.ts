@@ -169,7 +169,14 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccountOnRecheck = true; });
     await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(page, 'eth_sendTransaction');
-    await expect(page.getByRole('alert')).toContainText('changed');
+    // Account invalidation discards the old operation's alert and requires deliberate reconnection.
+    await expect(page.getByRole('button', { name: /Connect E2E Wallet/ })).toBeVisible();
+    await expect(page.getByText('0x5555555555555555555555555555555555555555', { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Prepare payment', exact: true })).toHaveCount(0);
+    expect(await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls })
+      .__e2eWallet.calls.filter((method) => method === 'eth_sendTransaction'))).toHaveLength(0);
     expect(state.sendCalls ?? 0).toBe(0);
     expect(state.sent).toBeUndefined();
     expect(await page.evaluate(() => window.sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
