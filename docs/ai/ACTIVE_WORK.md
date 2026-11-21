@@ -792,3 +792,12 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 # R12 branch-delta evidence worker — 2026-11-21 05:07 Pacific
 
 Worker: autonomous GhostPay branch-consolidation coordinator, one sequential operator; no independent reviewer available. Branch: `audit/ghostpay-r12-delta-20261121-0507`. Frozen parent: canonical coordination PR #380 head `80dd9eb9669fba0171a037b0b690d17a7e2b655e`; observed `main` SHA `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Claimed paths: new files exclusively under `docs/consolidation/20261121-r12/` and this appended ownership claim; no runtime code, config, or tests. Acceptance: terminal pagination and Git-ref parity; reuse immutable 447-branch R9 comparisons only for unchanged heads and same main SHA; compare each changed/new branch head to current main, correlate open PRs and CI, explicitly record capped and semantic-review blockers; document immutable source provenance. Out of scope: merging into main, changing integration lock, deploying, releasing, modifying anyone else's source or existing ledger files. Separate review and CI required before integrating into canonical #380.
+
+
+---
+
+# GhostPay R15 — 475-branch incremental recovery census and semantic overlap handoff (2026-11-21 UTC)
+
+Worker: scheduled branch-consolidation continuation, single sequential source auditor; no independent reviewer. Branch: `audit/ghostpay-r15-475-delta-20261121` based exactly on `bb668e18b1bad2e92811c22ca57cb019b1b4b281` (existing docs-only child PR #403). Immutable main comparison base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: append-only this ownership entry and new `docs/consolidation/20261121-r15/README.md`. No runtime, test, workflow, keys, wallets, contracts, dependencies, hosting, or deployment paths are owned or modified.
+Acceptance: re-paginate live branches to terminal empty; reconcile R14 frozen 473-head census with the two new source-pinned PR heads #406/#407; verify exact-main comparisons and active PR CI; review selected divergent R13 branches for semantic overlap with owned recovery PR #372 by source/test blob; record unresolved independent review, queued CI, generation-11 integration lock, and no release. Preserve existing R9/R12/R13/R14 ledgers as the authoritative historical baseline; do not repeat or overwrite them. Do not claim all 475 immutable head SHAs were re-fetched or re-compared unless evidenced.
