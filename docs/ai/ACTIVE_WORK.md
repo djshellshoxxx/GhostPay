@@ -771,3 +771,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+# Scoped cookie dependency repair — 2026-11-21 UTC
+
+- Worker: `/root/dependency_cookie_repair`; coordinator: `/root`.
+- Branch: `repair/ghostpay-cookie-dependency-20261121-5ceb`; base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`, verified live before work.
+- Owned paths: root `package.json`, `package-lock.json`, scoped additions to `scripts/tests/dependency-tooling.test.mjs`, this additive claim, and `docs/handoffs/COOKIE_DEPENDENCY_20261121.md`. No application, contract, workflow, protocol or custody changes.
+- Acceptance: isolate the vulnerable development-only cookie dependency below Sentry with a compatible pinned override; preserve all unrelated and production dependency records; verify ordinary parser/API compatibility, existing tooling tests, affected compile/typecheck when available, installation and exact before/after audits. Do not reconstruct vulnerabilities or execute attack scenarios.
+- Coordination: parent explicitly assigned this isolated dependency scope. Historical dependency remediation is already represented in main; current PR #210 retains cookie 0.4.2, while major trains #87/#253 remove it through broader upgrades and remain separate. Preserve all donor branches. The generation-11 integration lease remains held by another owner; expiry never permits takeover. No shared ref, lock, merge, deployment or release action is owned here.
+- Status: claimed before source or dependency edits. Independently reviewed exact-source and hosted qualification remain required.
+
+Cookie milestone: product `8519a14c41e473b712df427f8ea4924247bb0f95` changes one development lock record; six tooling tests and 30 existing router tests pass with no skips, clean npm 11 install, compile/typecheck and production audit pass. Full audit remains failed with 15 low Elliptic-derived nodes. See `docs/handoffs/COOKIE_DEPENDENCY_20261121.md`; independent review, hosted gates and integration ownership remain unresolved.
