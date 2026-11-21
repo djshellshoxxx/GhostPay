@@ -1,3 +1,15 @@
+# Payment URI runtime type boundary — 2026-11-21 UTC
+
+- Cycle/coordinator: `20261121T0638Z`; one assistant running sequential source-audit, regression, implementation and verification phases. No independent worker or verifier available.
+- Branch: `automation/20261121T0638Z/bug/payment-uri-runtime-types`, source base `2844ec6c22fe179987585679a934e10033ff3384` (existing draft PR #360). This is an **isolated dependent follow-on** to #360, not a modification of its owner branch. Current main last inspected at `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/payment-uri/src/query.ts`, new `packages/payment-uri/src/query-runtime-types.test.ts`, this branch-local additive ownership claim, and `docs/handoffs/PAYMENT_URI_RUNTIME_TYPES_20261121.md`. No other paths.
+- Dependencies / ownership: PR #360 owns malformed UTF-16 encoding on this same file, and all of its exact-head CI completed successfully. Preserve that implementation and stack on its exact head; integration coordinator retains shared-branch ownership. Do not merge to protected/shared targets. Repository metadata integration lock is **held at generation 11** by `994a0d214fb9-root-r3`, not this cycle; expiry does not permit takeover.
+- Evidence: exported `pctEncode(s: string)` has no JavaScript runtime type guard. Before this fix, RegExp.test coerces undefined/null/number/boolean/array, and TextEncoder.encode coerces again: a runtime `undefined` yields the empty string, `null` yields `null`, `42` yields `42`, and `['note']` yields `note`. Locally reproduced with Node 22 on 2026-11-21. No supported browser exploit or payment redirection established; exported API correctness and input fidelity only.
+- Acceptance: test-first typed `INVALID_INPUT` refusal of runtime-invalid nonstrings, including propagation through `buildQuery`; preserve all valid UTF-8, proper astral characters and #360's malformed-surrogate `INVALID_ENCODING` refusal. No changes to keys, validators, protocol, contracts, fees, dependencies, deployments, other product surfaces or security gates.
+- Verification: run executable local source-equivalent checks if full checkout remains DNS-blocked; rely on hosted exact-head CI for actual repository tests. No self-review represented as independent approval. Maintain source-pinned handoff and draft dependent PR.
+
+---
+
 # 2026-11-21 04:40 UTC — payment URI UTF-16 encoding fidelity (isolated)
 
 - Cycle / coordinator: `20261121T0440Z` / single ChatGPT operator; sequential reproduction, implementation and self-review. **No independent native agent** is available; independent approval is outstanding.
