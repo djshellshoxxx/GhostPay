@@ -1,0 +1,11 @@
+/*
+!/.gitignore
+!/ARCHIVE_MANIFEST.json
+!/DELIVERY_MANIFEST.json
+!/EVIDENCE_NOTES.md
+!/README.md
+!/branch-census-current.json.gz
+!/open-pr-dispositions-current.json.gz
+!/state.json
+!/verify_evidence.py
+!/evidence-20261121-*.tar.gz

@@ -1,3 +1,11 @@
+# Autonomous consolidation and qualification — 2026-11-21 UTC
+
+Owner: `5ceb6203640a-root`; branch `integration/ghostpay-autonomous-ledger-20261121-5ceb`.
+Starting main: `aec179910c39081d820396409ff3139ff2264132`; first recorded main milestone: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: this additive claim, the current status section of `docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md`, and source-pinned evidence under `docs/consolidation/autonomous-20261121/`.
+Acceptance: preserve prior evidence, independently reconcile live branches and PR dependencies, and record exact reviewed/tested sources and actual merge results. Shared-target integration is now paused: a branch-only rule forbids expiry-only takeover of a held lease. The coordinator's generation-12 takeover was unsupported and the exact original generation-11 held record was restored by guarded commit `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79`. Previous-owner stop evidence is still unavailable. This coordinator owns only isolated worktrees and new branch publication pending ownership reconciliation.
+Workers use separate worktrees. TRON current-main conflict resolution and independent payment-key recovery integration have separate bounded ownership claims. Other open claims remain preserved. No branch deletion, force push, deployment, release or real-funds transaction is authorized by this claim.
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.

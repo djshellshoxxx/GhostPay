@@ -1,0 +1,159 @@
+{
+  "schema": "ghostpay-ledger-delivery/1",
+  "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "recorded_at_utc": "2026-11-21T08:46:54.187622+00:00",
+  "excludes_self": true,
+  "files": [
+    {
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "bytes": 80226,
+      "sha256": "b18b3915f2136fc399273fe4e9c023aaed835b1a2a6b768ddbc265c55b816b34"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/.gitignore",
+      "bytes": 231,
+      "sha256": "a2cb4896cd1a3a8a7d2838e051438fc3e07e1234557b405b11f54fa94816a4ca"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/ARCHIVE_MANIFEST.json",
+      "bytes": 238677,
+      "sha256": "8072c3b2e2ab82e772238b914bd592d776c7970f00d5609461b472c06ca5ce99"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/EVIDENCE_NOTES.md",
+      "bytes": 2543,
+      "sha256": "e6950047ca35ae3bcbf2e91681d3d556be3d0fb92144bd1db26269f65941bc36"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/README.md",
+      "bytes": 10321,
+      "sha256": "310fdafb0472c3c76ec868f4b72a60ff7d4c8a867d531d7f3a329ec050d5e747"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/branch-census-current.json.gz",
+      "bytes": 222731,
+      "sha256": "6ee34366c3392b221812f51091cc3172a1c9acb018f5d3dde3658fbed69e1ad4"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-01.tar.gz",
+      "bytes": 2151857,
+      "sha256": "2cf908ca0d68ef4d3f8b55cb246e082eb6dabc372fb302c1d6ded35313514741"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-02.tar.gz",
+      "bytes": 545108,
+      "sha256": "1ff424684f17464c23a3a74b5e582639a7421468f1b3feeb853f3c4dc50cc016"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-03.tar.gz",
+      "bytes": 231336,
+      "sha256": "613774fc788f274e2ee725bb84680a41363bc14f97eb88e218ecdf7873f39c96"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-04.tar.gz",
+      "bytes": 1971142,
+      "sha256": "ece5d698993ad369fed86cafc031c6cc2aae6b26760e66b383f5950954857d25"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-05.tar.gz",
+      "bytes": 2296487,
+      "sha256": "2b586139ed2731736d215216ce744e59d5d51220411ae021b3a1094f480f5cb7"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-06.tar.gz",
+      "bytes": 364458,
+      "sha256": "ee477c19b19cfd5a098720ea60485c057a65777ddfb1af87a7be4ffbe088a70d"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-07.tar.gz",
+      "bytes": 581472,
+      "sha256": "75574920faa3ded44a98c5b8a7ce1cf5cd0d0284d231f79b6023efc9e2b6253b"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-08.tar.gz",
+      "bytes": 54405,
+      "sha256": "21eadcae836f24ac95d5850be5378e99cb07424dce47c4717d2167e933f4f159"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-09.tar.gz",
+      "bytes": 743187,
+      "sha256": "a4b1f1a9cff42711e5f3890f4cdcfd140a82338fbda22692b6ef4e40a855d079"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-10.tar.gz",
+      "bytes": 745181,
+      "sha256": "0c7f4d5cc983520afdd7ed4daa865927f911c53e78547fb3624e002639e456cb"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-11.tar.gz",
+      "bytes": 1402230,
+      "sha256": "15efb3122cb873733b444f33b87210ab0b17878f7757a0506490cf47547c35b1"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-12.tar.gz",
+      "bytes": 2027101,
+      "sha256": "b3246232f4040b4a836a5e03d6be4ba68c59f5b6ee944c5cd71ebc92d62cee5e"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-13.tar.gz",
+      "bytes": 625057,
+      "sha256": "02f475b81675f32bc90b2d4054905e106485ec15cf2921f94710aba72655ad57"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-14.tar.gz",
+      "bytes": 710420,
+      "sha256": "805bc4bbf75da3376a60e8fbca3928e8767510d55b050f9f87e5ff257cd4043b"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/evidence-20261121-15.tar.gz",
+      "bytes": 177555,
+      "sha256": "6b4c2c08ca81412c912e1ac1cefc33b4a00112c670d17620cb4a27be15260aaa"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/open-pr-dispositions-current.json.gz",
+      "bytes": 21407,
+      "sha256": "9cd1fb99d9ef2a887dd820138fe0c8f067397b3a5886503ec0ecf550ad945a1f"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/state.json",
+      "bytes": 22523,
+      "sha256": "368275a5dfde41001dae4b666e85d65ed0c3363a9d3b802aec6d6a16cfeb7af7"
+    },
+    {
+      "path": "docs/consolidation/autonomous-20261121/verify_evidence.py",
+      "bytes": 1221,
+      "sha256": "15149c294fd135209a1d5f2c6972fdb2133e2aa974ef1de0afe747e2470ad0c0"
+    },
+    {
+      "path": "docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md",
+      "bytes": 32578,
+      "sha256": "862e8fe06c57e545e826dd229356da4fb1be5eb6b0dc0d775fc7c9421ae4cb98"
+    }
+  ],
+  "verification": [
+    {
+      "command": "python3 docs/consolidation/autonomous-20261121/verify_evidence.py",
+      "exit_code": 0,
+      "archives_verified": 15,
+      "files_verified": 1011
+    },
+    {
+      "command": "bash scripts/scan-secrets.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "scope": "Recognizable credential prefixes and private-key headers in1011 original evidence files",
+      "exit_code": 0,
+      "matches": 0
+    }
+  ],
+  "limits": [
+    "Documentation/evidence checkpoint only; no application test rerun implied.",
+    "Published-source mapping and subsequent census delta belong to the PR and next checkpoint.",
+    "Independent reviews are scoped AI-assisted reviews, not formal GitHub approvals."
+  ]
+}
