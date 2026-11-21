@@ -1,3 +1,14 @@
+# F04 explicit local CSV/JSON export slice — 2026-11-21
+
+Worker: ChatGPT foreground coordinator; no independent native worker is available in this run.
+Branch: `feat/f04-deliberate-local-export-20261121`; based on draft dormant-module consolidation PR #371 head `1de6e0247e0f76afe6f1615b43e55007ece25d9b`. Main remains `eb59d93cffed7848c4aac37d0e9650b87239c6da` at task start.
+Owned paths: new `apps/web/src/features/future/merchant-dashboard/export.ts` and `export.test.ts`; additive `apps/web/src/features/future/merchant-dashboard/index.ts` exports; `docs/handoffs/F04_EXPORT_CONSENT_20261121.md` and this append-only ownership claim. Do not modify shared original F04 projection, P03/P05, central integration lock or other owners' branches.
+Acceptance: one-shot, explicit export preview/approval bound to a frozen evidence-qualified projection and live session/operation/revision; CSV and JSON selected columns only, exact atomic money strings with chain/asset/state context, formula-mitigation, no ambient network/file/download side effects; strict malformed selection rejection, 20 MiB cap, profile/revision stale-session fail-closed. New Vitest tests and independent/local test harness; remote PR remains draft until full hosted checks, real provider/storage/UI integration and separate review qualify it. No deployment or main merge under the held integration lock.
+Dependencies/ownership: PR #322 owns original dormant F04 projection; PR #371 composes #322, #323, #324 as dormant source. This branch only adds a separate export module to that candidate. Existing lock held by `994a0d214fb9-root-r3` at generation 11 (from PR #371); no takeover. Reinspect candidate heads and lock before integration.
+Status: scope claimed; implementation and qualification pending.
+
+---
+
 # F04 source-preserving current-main consolidation — 2026-11-20 Pacific
 
 - Worker: `/root/branch_inventory`; coordinator: `1f782d9c4748-root`.
