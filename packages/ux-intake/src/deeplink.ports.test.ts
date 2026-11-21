@@ -21,6 +21,16 @@ describe('parseDeepLink explicit HTTPS ports', () => {
     });
   });
 
+  it('rejects explicit default ports through WHATWG slash and backslash normalization', () => {
+    for (const raw of [
+      'https:merchant.example:443/pay',
+      'https:/merchant.example:443/pay',
+      'https:////merchant.example:443/pay',
+      'https:\\merchant.example:443/pay',
+    ]) {
+      expect(parseDeepLink(raw, policy)).toEqual({ ok: false, code: 'port-not-allowed' });
+    }
+  });
   it('preserves accepted unported navigation and existing nondefault-port rejection', () => {
     expect(parseDeepLink(`https://${HOST}/pay`, policy)).toEqual({
       ok: true,
