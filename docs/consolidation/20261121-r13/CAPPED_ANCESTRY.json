@@ -1,0 +1,607 @@
+{
+  "schema": "ghostpay-r13-capped-ancestry/1",
+  "repository": "djshellshoxxx/GhostPay",
+  "main": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "comparison_target_PR": 372,
+  "comparison_target_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+  "upstream_R9": "c493df9e210f6227471864a623ee536cc9483a3a",
+  "upstream_R12": "2eb64d0a19e172ca02abe10a191b7d711962cb52",
+  "classification_semantics": "Graph ancestry only. Ancestor = exact commit included in active PR #372; descendant = branch contains exact PR #372 commit; divergent = has branch-side history not covered by PR #372. None implies integrated into main, tested, approved, or semantically safe.",
+  "counts": {
+    "ancestor": 30,
+    "descendant": 5,
+    "divergent": 24
+  },
+  "records": [
+    {
+      "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/ec546311f994fe1db544fe85ff2aa6db428d67d4...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/20261120T003500Z/coordinator/qualification-evidence",
+      "sha": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/52122f8b7076b2636d47f59f8bb607b189d3ab39...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/4493793ad2c438fcc0f45f96851eac8967cb607a...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+      "sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/6c648770f5647ca7993cc108ef9e5ede9b46b4c9...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/04910f65dc0268e41519c4b1a44e83264272f0bf...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/acbf39ee21ad35e9d14df958fa16fbcc2e230cae...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/20261121T0900Z/qa/firefox-closed-details-reflow",
+      "sha": "df0e715686bc42d270617692a7e310a8b362e840",
+      "source": "R12",
+      "relationship": "descendant_of_PR_372",
+      "comparison_base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "comparison_head": "df0e715686bc42d270617692a7e310a8b362e840",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/055d33e042c63edf1d5bbbdd7833d3c1ef93733d...df0e715686bc42d270617692a7e310a8b362e840",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "automation/ghostpay-integration-lock",
+      "sha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "sha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/7e6089e2e40a2a7daf93961eddef17d3fe8501fd...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/276aed60f19671cc6fa551be616b61041cb45b50...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/509a800439f2feb6173b20d2543746c3d74e9a42...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "chatgpt/ghostpay-tm-hardening-20261118",
+      "sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/c17e5c387e3c2b83f48b02ac33a669c44c69ced6...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "chatgpt/spec18-recovery-completion-20261118",
+      "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/38d69832ddc58ec27a19c00dbe3c89347c577495...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "codex/ghostpay-consolidation-followthrough-20261119",
+      "sha": "73545f63112910d46002718354ab5e99f8652e1f",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "73545f63112910d46002718354ab5e99f8652e1f",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/73545f63112910d46002718354ab5e99f8652e1f...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "codex/ghostpay-export-authorization-20261119",
+      "sha": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/b0abb726c138ad1df2f03b7b102c9bd9de318887...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "codex/ghostpay-feature-consolidation-20261119",
+      "sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/40b64e8f3a0f34f7b19235ba4655ef918687f22e...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/683f8587b8de45448f14aab0539cb07a5f21bce3...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "codex/ghostpay-private-scan-lint-20261119",
+      "sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/1b010ec910d04df105fd662cc360629cb0a2f5dd...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "codex/network-isolation-complete-20261119",
+      "sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/3ae0b4f642a8941592fad48c26e9ed1bbec327f4...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "evidence/ghostpay-completion-20261120",
+      "sha": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/070fc5bbbf35bb667a6dacbc94ff49af4b22d874...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "evidence/ghostpay-continuation-20261121-539818",
+      "sha": "c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "evidence/ghostpay-remediation-20261120",
+      "sha": "6fe35de42587e8da06e2590983b584ffde93d40f",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "6fe35de42587e8da06e2590983b584ffde93d40f",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/6fe35de42587e8da06e2590983b584ffde93d40f...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+      "sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/137628961463fc5abd8b7927b2efe6b18a0a206a...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+      "sha": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "source": "R12",
+      "relationship": "descendant_of_PR_372",
+      "comparison_base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "comparison_head": "cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/055d33e042c63edf1d5bbbdd7833d3c1ef93733d...cfa8131bab9a012cd1ce970f4afa8de23adfdf80",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "feature/ghostpay-retention-completion-20261120",
+      "sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/a34ce43e296e302e3e65ed077ea8ac892c5189a1...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "feature/ghostpay-retention-focus-20261120",
+      "sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/9608ec996fb159f11b84b9baec0b48033a48a6a5...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/2affd298c364c284d4d74f703fd4a612cc0f16d9...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "sha": "410353a23631234aa888e46f38df22291c699a26",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "410353a23631234aa888e46f38df22291c699a26",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/410353a23631234aa888e46f38df22291c699a26...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "sha": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/0fb2831a1b89430c69896f6db57306cd5518e55f...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-format-validation-20261120",
+      "sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/a9e0715573f7247d7a16f9d1d030cf0232708fb2...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+      "sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/936d054ed067d89c773310d42e33939c1129bbfa...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "sha": "172695efb41665a4e50d335029e54184bbb5b328",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "172695efb41665a4e50d335029e54184bbb5b328",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/172695efb41665a4e50d335029e54184bbb5b328...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/e31a090501b3f5e77afcee812323e6f69e1fd565...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-request-file-async-20261120-r3",
+      "sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/a88157b53d1e0925350d5c8db047eabb4365f4e9...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "fix/ghostpay-signer-pin-continue-20261121-r11",
+      "sha": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "source": "R12",
+      "relationship": "descendant_of_PR_372",
+      "comparison_base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "comparison_head": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/055d33e042c63edf1d5bbbdd7833d3c1ef93733d...51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integrate/ghostpay-export-recovery-acceptance-20261121-539818",
+      "sha": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/4ccb3db334de7d7cada305a11243c9e3efddc4f6...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integrate/ghostpay-idle-main-scan-20261121-539818",
+      "sha": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "45ece45defd2a26cfb7f471ea4654ba4d1d2266e",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/45ece45defd2a26cfb7f471ea4654ba4d1d2266e...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "sha": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/055d33e042c63edf1d5bbbdd7833d3c1ef93733d...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integration/ghostpay-completion-20261120",
+      "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/e22c1748a3de6eb02f5be3abe27d634b238c67c6...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+      "sha": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "50ccf5c8b396247b524e5115ebe51575ca79d318",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/50ccf5c8b396247b524e5115ebe51575ca79d318...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integration/ghostpay-master-consolidation-20261118",
+      "sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/198aa5baff22272453733a0f3dcfcac0e0994eec...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "integration/ghostpay-recovery-reconciled-20261119",
+      "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/f3bb7c662274c4a4394324c405b49517ad2b1461...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "sha": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "source": "R12",
+      "relationship": "descendant_of_PR_372",
+      "comparison_base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "comparison_head": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/055d33e042c63edf1d5bbbdd7833d3c1ef93733d...b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/417f7c71daf8645e1432f2ec8f070110879b80bd...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-270-policy-fixture-20261119",
+      "sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/dc821780e05483d1b35062a74b07be7ed9ca2f1c...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-analyzer-recovered-20261119",
+      "sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/e4d54a6829fcc861de7af1669c0e0f64f62aa137...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-btc-lifecycle-20261121-5ceb",
+      "sha": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+      "source": "R12",
+      "relationship": "descendant_of_PR_372",
+      "comparison_base": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "comparison_head": "4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/055d33e042c63edf1d5bbbdd7833d3c1ef93733d...4fc5c3dceb682067d6ebc7da1759cbeadd20dddf",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-final-lint-20261119",
+      "sha": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/73d7ccda4fd448dec1682082d633c90de9fa0d7a...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-native-fee-recovered-20261119",
+      "sha": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/cbc96840c3dc4fede90afff55b4dfd94f66784da...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/8ce7f1db452167311876bd0707778c2e9c64f3df...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "repair/ghostpay-qr-surrogates-20261119",
+      "sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/ac7b7a11f00896d105fa7a06e44e218046bdc56c...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "snapshot/ghostpay-privacy-8be15289-20261120",
+      "sha": "d6819796a9542acc488b896786faffe83b913d9b",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "d6819796a9542acc488b896786faffe83b913d9b",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/d6819796a9542acc488b896786faffe83b913d9b...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/26b45165c1d6de9e23f5b943ed46f3aa0908f45c...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "source": "R9",
+      "relationship": "divergent_from_PR_372",
+      "comparison_base": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/37760c3655c48fa190c0f2324072cb506cf1b88d...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/28f1e4bd0960a0d57ba2636b6456e7c1b3096e94...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "work/ghostpay-required-v1-candidate-20261120",
+      "sha": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/74dccc419bf5c82b21875d205ed5a97d0c4e69b6...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    },
+    {
+      "branch": "work/ghostpay-required-v11-candidate-20261120",
+      "sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "source": "R9",
+      "relationship": "ancestor_of_PR_372",
+      "comparison_base": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+      "comparison_head": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "compare_url": "https://github.com/djshellshoxxx/GhostPay/compare/8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9...055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "merge_safety": "unassessed"
+    }
+  ]
+}
