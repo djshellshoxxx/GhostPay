@@ -9,3 +9,7 @@ export {
   type DuePeriod, type DuePreview, type RecurringReviewContext, type RecurringReview,
   type ApprovedRecurringPeriod,
 } from './review';
+export {
+  createRecurringPlan, reviseRecurringPlan, transitionRecurringPlan,
+  type RecurringMutationContext, type RecurringPlanTransition,
+} from './lifecycle';

@@ -9,7 +9,8 @@ export const MAX_RECURRING_TIMESTAMP = 253_402_300_799;
 
 export type RecurringErrorCode = 'SCHEMA' | 'LIMIT' | 'REFERENCE' | 'AMOUNT' | 'ASSET' |
   'TIMEZONE' | 'SCHEDULE' | 'DUPLICATE' | 'SNAPSHOT' | 'CLOCK' | 'PLAN_MISSING' |
-  'REVIEW_REVOKED' | 'STALE_REVIEW' | 'REVIEW_EXPIRED' | 'NOT_DUE';
+  'REVIEW_REVOKED' | 'STALE_REVIEW' | 'REVIEW_EXPIRED' | 'NOT_DUE' |
+  'STALE_MUTATION' | 'INVALID_TRANSITION';
 
 /** Fixed messages never interpolate imported plan, invoice, or customer data. */
 export class RecurringError extends Error {
