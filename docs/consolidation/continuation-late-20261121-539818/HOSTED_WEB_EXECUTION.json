@@ -1,0 +1,46 @@
+{
+  "archive": "HOSTED_WEB_LOGS.json.gz",
+  "archive_sha256": "8623081ed0625a2d79233ac79cb31322a04edf01c2bc46bdd805c79c1305a03b",
+  "logs": [
+    {
+      "pr": 307,
+      "run_id": 44836230375,
+      "job_id": 136643807136,
+      "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44836230375/job/136643807136",
+      "source_head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "tested_checkout": "a55b0d07f4df48488929d742c935886ac2ecbd91",
+      "original_bytes": 325472,
+      "log_sha256": "da7aafd29cf4f7da155a9b22fe0249ec0bdb87966fef6c1299639b0f8dcde770",
+      "summary_excerpts": [
+        "2026-11-21T02:12:06.5200603Z      × uses the existing passphrase flow without previewing private fields 28908ms",
+        "2026-11-21T02:17:49.3664237Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+        "2026-11-21T02:17:49.3666127Z  FAIL  src/views/Pay.requestFile.test.tsx > Pay request-file intake > uses the existing passphrase flow without previewing private fields",
+        "2026-11-21T02:17:49.3668363Z TestingLibraryElementError: Unable to find role=\"heading\" and name \"Review payment\"",
+        "2026-11-21T02:17:49.3791964Z           Reading invoice…",
+        "2026-11-21T02:17:49.3823370Z             Opening invoice…",
+        "2026-11-21T02:17:49.4013527Z           Reading invoice…",
+        "2026-11-21T02:17:49.4045263Z             Opening invoice…",
+        "2026-11-21T02:17:49.4178233Z  Test Files  1 failed | 210 passed | 1 skipped (212)",
+        "2026-11-21T02:17:49.4180110Z       Tests  1 failed | 3084 passed | 1 skipped (3086)",
+        "2026-11-21T02:17:49.4293899Z ##[error]TestingLibraryElementError: Unable to find role=\"heading\" and name \"Review payment\""
+      ]
+    },
+    {
+      "pr": 344,
+      "run_id": 44836839436,
+      "job_id": 136644173665,
+      "job_url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44836839436/job/136644173665",
+      "source_head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "tested_checkout": "e9b1e3eb40f9e29ac78bf7bc65628d221354c155",
+      "original_bytes": 256184,
+      "log_sha256": "1a9f11dbc7830b33f3a31ea5b1f0ee299da8d8308768909a51451107122aec87",
+      "summary_excerpts": [
+        "2026-11-21T02:21:13.0481486Z      ✓ uses the existing passphrase flow without previewing private fields 11962ms",
+        "2026-11-21T02:24:24.6322871Z  Test Files  215 passed | 1 skipped (216)",
+        "2026-11-21T02:24:24.6342854Z       Tests  3184 passed | 1 skipped (3185)",
+        "2026-11-21T02:24:35.5187273Z  Test Files  3 passed (3)",
+        "2026-11-21T02:24:35.5187958Z       Tests  3 passed (3)"
+      ]
+    }
+  ]
+}

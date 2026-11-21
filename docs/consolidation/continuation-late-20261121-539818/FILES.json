@@ -1,0 +1,41 @@
+{
+  "hash_algorithm": "sha256",
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/CENSUS_EXTENSION.json",
+      "bytes": 5423,
+      "sha256": "b0abe3713fdad5dabeb2f5fd253736bf11ac4e5f234202075fb6c009d96707fe"
+    },
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/CENSUS_EXTENSION_DETAILS.json.gz",
+      "bytes": 173152,
+      "sha256": "0f6541ceafac511ef6714f97c9d6b557bf075ef095b9762f52490b14dacd9dbf"
+    },
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/CI_SNAPSHOT.json",
+      "bytes": 57466,
+      "sha256": "b18b3fe90f36c159425a3568a6fe2ae0e45a1c0d3770c87c7d96e40f0aa09006"
+    },
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/HOSTED_WEB_EXECUTION.json",
+      "bytes": 2668,
+      "sha256": "19dab1e3f00e6dcdcd88ab71959a32937bd0bc072dc295637d98b172a9161b20"
+    },
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/HOSTED_WEB_LOGS.json.gz",
+      "bytes": 118575,
+      "sha256": "8623081ed0625a2d79233ac79cb31322a04edf01c2bc46bdd805c79c1305a03b"
+    },
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/INDEPENDENT_REVIEWS.md",
+      "bytes": 3359,
+      "sha256": "5c90e588260841d70b735bf07462966fde414f62d1049b52b6c35fd3f6327def"
+    },
+    {
+      "path": "docs/consolidation/continuation-late-20261121-539818/REPORT.md",
+      "bytes": 10724,
+      "sha256": "ddac30ccf116f9f0317f5f81b3eaf2a17df85d159ab1c80277e82bdd1e4ce80f"
+    }
+  ]
+}

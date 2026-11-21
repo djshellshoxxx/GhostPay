@@ -1,0 +1,141 @@
+{
+  "observed_at_utc": "2026-11-21T02:56:49.299621+00:00",
+  "targets": {
+    "main": "aec179910c39081d820396409ff3139ff2264132",
+    "integration_pr307": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+  },
+  "prior_commit": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+  "prior_index": "docs/consolidation/autonomous-20261120-9a4ab6/BRANCH_CENSUS.json",
+  "generator_sha256": "21073be46a1b54cab3541b30bc3ae0c1189d2eb9293c5791eb8e487b1e71dfac",
+  "method": "Original function definitions reused verbatim; all best merge bases and complete mode/blob comparisons. Only new/changed heads computed; unchanged head/target pairs reused.",
+  "limits": "Mechanical branch classification does not establish semantic uniqueness, feature completion or merge qualification.",
+  "total_branches": 423,
+  "reused_exact_heads": 410,
+  "computed_heads": 13,
+  "missing_prior_names": [],
+  "summary": {
+    "main": {
+      "ancestor_or_equal": 189,
+      "documentation_or_nonapplication_diff": 79,
+      "application_semantic_review_required": 146,
+      "coordination_metadata_do_not_merge": 1,
+      "all_changed_application_blobs_retained": 7,
+      "unrelated_history": 1
+    },
+    "integration_pr307": {
+      "ancestor_or_equal": 199,
+      "documentation_or_nonapplication_diff": 79,
+      "all_changed_application_blobs_retained": 12,
+      "application_semantic_review_required": 131,
+      "coordination_metadata_do_not_merge": 1,
+      "unrelated_history": 1
+    }
+  },
+  "computed": [
+    {
+      "name": "automation/20261120/bug/policy-review-revocation-r1",
+      "sha": "9a10d335d048b197e90d257a5322ff5d5260572d",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "automation/20261121T0033Z/bug/router-duplicate-warning",
+      "sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "codex/ghostpay-autonomous-20261120-9a4ab6",
+      "sha": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "sha": "f11792f7b9202512f0bf980a03f057e8a15836ae",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "fix/ghostpay-embed-popup-legacy-test-20261120-r1",
+      "sha": "0750012546aeb4336b4340fe16751f8d83804acd",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "qualify/ghostpay-hygiene-composition-20261120-9a4ab6",
+      "sha": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "test/ghostpay-hygiene-lint-20261120-9a4ab6",
+      "sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+      "sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    }
+  ],
+  "details_sha256": "0f6541ceafac511ef6714f97c9d6b557bf075ef095b9762f52490b14dacd9dbf"
+}

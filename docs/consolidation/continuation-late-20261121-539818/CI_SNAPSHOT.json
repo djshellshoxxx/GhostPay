@@ -1,0 +1,1901 @@
+{
+  "observed_at_utc": "2026-11-21T03:02:30.236Z",
+  "limitation": "Connector workflow/job reads return first pages. The 24-job #344 run is completely represented by its returned collection. Returned workflow collections alone are not proof of complete branch-protection or integration qualification.",
+  "pull_requests": {
+    "pr307": {
+      "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "workflow_runs": [
+        {
+          "id": 44836230487,
+          "name": "Integration",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 357,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230487/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230487/logs",
+          "workflow_id": 392297734
+        },
+        {
+          "id": 44836230551,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 334,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230551/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230551/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44836230390,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 339,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230390/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230390/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44836230318,
+          "name": "CLI operator qualification",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 304,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230318/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230318/logs",
+          "workflow_id": 412675588
+        },
+        {
+          "id": 44836230464,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 456,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230464/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230464/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44836230494,
+          "name": "Tor static hosting",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 10,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230494/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230494/logs",
+          "workflow_id": 424694545
+        },
+        {
+          "id": 44836230375,
+          "name": "CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_number": 1615,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230375/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230375/logs",
+          "workflow_id": 391558649
+        }
+      ]
+    },
+    "pr344": {
+      "head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "workflow_runs": [
+        {
+          "id": 44836839498,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 340,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839498/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839498/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44836839524,
+          "name": "Tor static hosting",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 11,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839524/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839524/logs",
+          "workflow_id": 424694545
+        },
+        {
+          "id": 44836839540,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 335,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839540/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839540/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44836839505,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 457,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839505/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839505/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44836839436,
+          "name": "CI",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 1617,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839436/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839436/logs",
+          "workflow_id": 391558649
+        }
+      ]
+    },
+    "pr350": {
+      "head": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "workflow_runs": [
+        {
+          "id": 44845144737,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1627,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144737/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144737/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44845144767,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 348,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144767/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144767/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44845144764,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 467,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144764/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144764/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44845144758,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 343,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144758/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144758/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44845144759,
+          "name": "CLI operator qualification",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 310,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144759/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144759/logs",
+          "workflow_id": 412675588
+        }
+      ]
+    },
+    "pr354": {
+      "head": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "workflow_runs": [
+        {
+          "id": 44857880985,
+          "name": "Pages",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 350,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857880985/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857880985/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44857880987,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1634,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857880987/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857880987/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44857880984,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 470,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857880984/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857880984/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44857881009,
+          "name": "Beta acceptance",
+          "status": "in_progress",
+          "conclusion": null,
+          "run_number": 355,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857881009/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44857881009/logs",
+          "workflow_id": 414091144
+        }
+      ]
+    },
+    "pr356": {
+      "head": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284",
+      "workflow_runs": [
+        {
+          "id": 44858889341,
+          "name": "Hosting kit",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 472,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889341/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889341/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44858889394,
+          "name": "Tor static hosting",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 15,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889394/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889394/logs",
+          "workflow_id": 424694545
+        },
+        {
+          "id": 44858889295,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1636,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889295/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889295/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44858889220,
+          "name": "Beta acceptance",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 357,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889220/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889220/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44858889267,
+          "name": "Pages",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 352,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889267/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44858889267/logs",
+          "workflow_id": 392799214
+        }
+      ]
+    }
+  },
+  "pr344_ci_jobs": [
+    {
+      "id": 136635260625,
+      "name": "secrets-and-egress",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Reject committed private keys and env files",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Every action is pinned to a full SHA with a version comment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "No tx.origin in Solidity sources (spec 04)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Proxy header configs match apps/web/public/_headers (static, no network)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Self-host release gate and archive checks (fake docker/gh, no network)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Audit CLI path, atomic-write and permission regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17
+        }
+      ]
+    },
+    {
+      "id": 136635260922,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run set -euo pipefail",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 136644173466,
+      "name": "contracts-test",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "No tx.origin in contract sources (spec 04 s3, DOC-9)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run forge build --sizes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run forge test",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173472,
+      "name": "ts-typecheck",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run npm run typecheck",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 136644173511,
+      "name": "ts-test-relayer",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Build contract artifacts for the relayer anvil e2e",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Locate anvil",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Relayer unit tests (anvil e2e must run, not skip)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 136644173512,
+      "name": "ts-check",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Dependency tree is valid (production)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run npm run build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Chain matrix provenance and configured-cell parity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Build profile and emitted-output guard regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Merchant amount parsing and POS parity regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Locale catalog completeness and template safety",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run npm audit --omit=dev --audit-level=high",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 136644173514,
+      "name": "e2e (full)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run echo \"version=$(node -p \"require('./apps/web/package.json').devDependencies['@playwright/test']\")\" >> \"$GITHUB_OUTPUT\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run ./node_modules/.bin/playwright install --with-deps chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run npm run test:e2e --workspace @ghostpay/web",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Record the build used by the successful browser run",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Retain the browser-tested build and its identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 136644173525,
+      "name": "ts-lint",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run npm run lint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        }
+      ]
+    },
+    {
+      "id": 136644173558,
+      "name": "contracts-coverage",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Coverage (summary + lcov)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 136644173568,
+      "name": "lean-candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Compare two clean lean builds and retain unsigned candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    },
+    {
+      "id": 136644173576,
+      "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Fetch test-only ERC-4337 EntryPoint v0.7.0 fixture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Build Foundry project",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run Foundry tests (including configured fuzz and invariant runs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check formatting",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Check production NatSpec",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Check pool bytecode and storage layout",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 136644173578,
+      "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Fetch test-only ERC-4337 EntryPoint v0.7.0 fixture",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Build Foundry project",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run Foundry tests (including configured fuzz and invariant runs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Check formatting",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Check production NatSpec",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Check pool bytecode and storage layout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 136644173604,
+      "name": "contracts-slither",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Slither",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173611,
+      "name": "ts-test (rest-2)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173625,
+      "name": "ts-test (btc-silent-payments)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173629,
+      "name": "ts-test (confidential-contracts)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173657,
+      "name": "ts-test (rest-1)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173665,
+      "name": "ts-test (web)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173673,
+      "name": "e2e (lean)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run echo \"version=$(node -p \"require('./apps/web/package.json').devDependencies['@playwright/test']\")\" >> \"$GITHUB_OUTPUT\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run ./node_modules/.bin/playwright install --with-deps chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run npm run test:e2e --workspace @ghostpay/web",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Record the build used by the successful browser run",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Retain the browser-tested build and its identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    },
+    {
+      "id": 136644173693,
+      "name": "ts-test (core-crypto)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173727,
+      "name": "contracts-static",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run forge fmt --check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run bash scripts/check-natspec.sh",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Run forge snapshot --check --no-match-test \"testFuzz|invariant\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-forge",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136644173775,
+      "name": "ts-test (rest-0)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Install pinned Solidity compiler for the web registry integration test",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5
+        },
+        {
+          "name": "Unit tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Run foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run ./.github/actions/setup-node-libs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    },
+    {
+      "id": 136696480269,
+      "name": "contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run echo \"needs results: $RESULTS\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ]
+    },
+    {
+      "id": 136700103108,
+      "name": "typescript",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44836839436,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run echo \"needs results: $RESULTS\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        }
+      ]
+    }
+  ]
+}

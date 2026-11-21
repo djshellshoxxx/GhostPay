@@ -2466,3 +2466,26 @@ report directory. Its separate review branch and 35-test execution remain pinned
 to that source; no Scan implementation is copied into this privacy branch.
 
 ---
+
+# Continuation evidence and census extension — 2026-11-20 (Pacific)
+
+Worker: `539818ee134f-root`; independent Settings reviewer: `scan_fix_review`;
+independent CI refresh: `branch_reconciliation`.
+Branch: `evidence/ghostpay-continuation-20261121-539818`.
+Base: published #354 `8ce7f1db452167311876bd0707778c2e9c64f3df`.
+Owned scope: this additive registry entry and new evidence under
+`docs/consolidation/continuation-late-20261121-539818/`. No product/test edits.
+Acceptance: reuse unchanged exact-head entries from the existing 410-branch
+census, compute only added/changed heads using its original conservative comparison
+functions, retain complete logs for the newly verified #307/#344 hosted results,
+and preserve source-specific Settings qualification. Do not restart #354
+qualification with documentation-only updates or duplicate feature work. Main,
+shared integration, its generation-11 lease, release and deployment are unchanged.
+
+Completed evidence: frozen 423-origin-head census (410 exact reused heads, 13
+new heads) independently audited; #307 failing and #344 successful hosted web
+logs retained losslessly; all 24 #344 CI jobs observed successful. Settings
+successor #356 publishes the reviewed two-expectation correction with 21 passing
+tests; parent #353 remains pinned. Privacy #354 remains frozen, with parallel
+#355 equivalent runtime/complementary test provenance recorded for a later
+composition. No shared-target or lease change is included. See the scoped REPORT.
