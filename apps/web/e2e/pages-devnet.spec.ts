@@ -409,7 +409,10 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     expect(new URL(p.url()).pathname).toBe(PAGES_BASE);
     expect(new URL(p.url()).hash).toBe('');
     await nav(p).getByRole('button', { name: 'Pay' }).click();
-    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    // Reload retains the submitted hash, not permission to display it without wallet context.
+    const lockedJournal = p.getByRole('region', { name: 'Wallet attempt journal' });
+    await expect(lockedJournal).toContainText('Connect the relevant wallet account and chain');
+    await expect(lockedJournal).not.toContainText(payHash);
     await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
@@ -417,6 +420,8 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     await approveWalletDisclosure(p, 'eth_requestAccounts');
     await p.getByRole('button', { name: 'Prepare payment' }).click();
     await expect(p.getByRole('heading', { name: 'Final check before your wallet' })).toBeVisible({ timeout: 30_000 });
+    // Reconnecting the original wallet reveals the same saved hash, but retry stays blocked.
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await p.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await approveWalletDisclosure(p, 'eth_sendTransaction');
     await expect(p.getByText('A previous wallet attempt for this action already exists in this tab.', { exact: false })).toBeVisible();

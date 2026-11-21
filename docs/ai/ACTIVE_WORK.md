@@ -2423,3 +2423,13 @@ because required Anvil/Forge executables are unavailable; their acceptance and
 other privacy failures remain open. Full-web and changed-head compiler/typed-lint
 qualification are unclaimed. No heavy process remains; paths are released to root
 for stacked draft publication into existing #336.
+
+---
+
+## 2026-11-21 — Wallet attempt journal reconnection E2E gate
+
+- Worker: single connected GitHub assistant; branch `test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121`, parent PR #348 head `26b45165c1d6de9e23f5b943ed46f3aa0908f45c`, main at discovery `aec179910c39081d820396409ff3139ff2264132`.
+- Owned E2E tests: `apps/web/e2e/pages-devnet.spec.ts`, `apps/web/e2e/devnet-journey.spec.ts`; handoff `docs/handoffs/WALLET_JOURNAL_RECONNECT_BROWSER_20261121.md`. Ownership recorded first in this handoff at `84e9e3e5eeffe79cda7ebf9ab094ca86d4cfcd42`, before test edits.
+- Evidence: failed exact-head Pages run 44844067142 and Beta acceptance run 44844067221 on #348; journal correctly hides saved payment hash after reload without account+chain. Baseline E2E asserts hash visible before renewed wallet consent, which violates current privacy behavior.
+- Acceptance: before reconnect assert hash concealed while tab journal retained; after explicit wallet disclosure assert hash reappears; preserve no-double-send/nonce assertions. No runtime changes, hosted dependencies, fees, custody, RPC, deployment or main merge. Parent #348 and #336 must requalify after this stacked fix.
+- Test source commits: `5960979d35b82232a61a41248a3c47bad7e3f664` and `9002a10bb36d054edb2db26a6fc06b7acc4c4a53`. Hosted checks pending, no local repo tests executed (container lacks GitHub network).
