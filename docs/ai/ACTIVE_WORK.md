@@ -1,3 +1,10 @@
+# GP-BUG-20261121-QR — reject lossy malformed UTF-16 in QR capacity checks
+
+Worker: ChatGPT, bounded bug-only test-first repair. Base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Branch `fix/ghostpay-qr-capacity-unicode-surrogate-20261121`. Owned paths: `packages/ux-links/src/qr.ts`, `packages/ux-links/src/uri.test.ts`, additive claim in this file, `docs/handoffs/UX_LINKS_QR_UTF16_20261121.md`.
+Reproduction: `checkQrCapacity('\u005cuD800')` treats a lone surrogate as three U+FFFD UTF-8 bytes and returns a scannable capacity, but the original payload cannot round-trip. Node 22 TextEncoder/Decoder proof confirms silent replacement on both lone-surrogate classes. Acceptance: test-first QR-coded errors for unpaired high/low surrogates, including mixed strings; preserve valid emoji pairs and byte capacities; no new QR feature, protocol, dependency, payment behavior, threshold, or deployment changes. Require hosted exact-head CI, independent review and integration-owner qualification before merging to main. Scope check of active PRs #248/#262/#278/#307/#309/#365/#372/#384/#385/#389 found no direct edits to owned paths; recheck before merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
