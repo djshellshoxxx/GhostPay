@@ -2485,3 +2485,28 @@ report directory. Its separate review branch and 35-test execution remain pinned
 to that source; no Scan implementation is copied into this privacy branch.
 
 ---
+
+# Spec 18 interoperability acceptance recovery — 2026-11-20 (Pacific)
+
+Worker: `/root/r2_spec18_recovery`; coordinator: `539818ee134f-root`.
+Branch: `integrate/ghostpay-export-recovery-acceptance-20261121-539818`.
+Exact base: #355 `0fb2831a1b89430c69896f6db57306cd5518e55f`, which retains
+canonical #354 runtime/browser fixes and the reconciled quick-hide regressions.
+Donor: #346 `37760c3655c48fa190c0f2324072cb506cf1b88d`; exact test blob
+`48322f29d828f3fbdf4645c39a461e4044635a52`.
+Owned scope: new `apps/web/src/lib/paymentKeyExport.interop.test.ts`, this additive
+claim, and `docs/consolidation/export-recovery-r2-20261121-539818/` only.
+Acceptance: recover the exact donor test without reauthoring it; retain existing
+runtime, assertions, KDF parameters, timeouts, scripts and configuration; verify
+support source and dependency/build provenance; run the complete interop file
+and relevant complete existing export/codec/recovery files sequentially with one
+worker and bounded heap. Preserve complete outputs and every failed/blocked
+invocation. No full coverage, browser, physical-device or spend result is inferred
+from focused tests. #355 hosted CI is incomplete at assignment; the eventual
+published source and composition still require applicable gates and review.
+Existing broad Spec 18 and donor ownership remain authoritative. Original donor
+branches, shared refs, integration lease, release and deployment are untouched.
+Root owns fresh independent review and publication. No installs or remote writes
+are authorized for this worker. The original claim-only local attempt was lost
+in the workspace reset after disk exhaustion; no test was copied or executed in
+that attempt. This restored branch starts from the same published parent.

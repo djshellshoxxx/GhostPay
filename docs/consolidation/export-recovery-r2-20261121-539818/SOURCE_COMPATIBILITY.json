@@ -1,0 +1,48 @@
+{
+  "parent": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+  "donor": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+  "claim_commit": "e55ec7e74fd1598f5c0bfc71f3b9458298c1d50b",
+  "test_path": "apps/web/src/lib/paymentKeyExport.interop.test.ts",
+  "test_blob": "48322f29d828f3fbdf4645c39a461e4044635a52",
+  "test_sha256": "580c14f1549d2d35d07682a6e80fd669521008937afd984a20b63d46fcb55806",
+  "test_bytes": 7476,
+  "identical_support": [
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+      "donor_blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+      "target_blob": "6e3c2bb7232beeee5bc9aeee66dbbaa8e7c3dd0b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/stealthExport.ts",
+      "donor_blob": "abfaf722906562156ca976ad88b1e84af64b7433",
+      "target_blob": "abfaf722906562156ca976ad88b1e84af64b7433",
+      "identical": true
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "donor_blob": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+      "target_blob": "c677180b208bae95573fc4f14ab8ce06d8099cb9",
+      "identical": true
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.mjs",
+      "donor_blob": "c33e64770aa71b2d0751ce6104853725b0f2cbd7",
+      "target_blob": "c33e64770aa71b2d0751ce6104853725b0f2cbd7",
+      "identical": true
+    },
+    {
+      "path": "test-vectors/stealth-export.json",
+      "donor_blob": "b7064dde0b9c4d3057bd30c66b15dfc9fa80e45d",
+      "target_blob": "b7064dde0b9c4d3057bd30c66b15dfc9fa80e45d",
+      "identical": true
+    }
+  ],
+  "application_export_source": {
+    "path": "apps/web/src/lib/paymentKeyExport.ts",
+    "donor_blob": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd",
+    "target_blob": "443e62404c232922a3a5f485275dcc86cfd1c77f",
+    "diff": "diff --git a/apps/web/src/lib/paymentKeyExport.ts b/apps/web/src/lib/paymentKeyExport.ts\nindex a2d67e2a..443e6240 100644\n--- a/apps/web/src/lib/paymentKeyExport.ts\n+++ b/apps/web/src/lib/paymentKeyExport.ts\n@@ -123,7 +123,7 @@ async function assertPlainAccount(rpc: ExportRpc, address: string, check: () =>\n   }\n   check();\n   if (typeof code !== 'string' || code.length > MAX_CODE_HEX || !/^0x(?:[0-9a-fA-F]{2})*$/.test(code)) throw new UserFacingError({ key: 'error.paymentKeyExport.codeCheckFailed' });\n-  if (code !== '0x') throw new UserFacingError({ key: 'error.paymentKeyExport.contractAccount', values: { address } });\n+  if (code !== '0x') throw new UserFacingError({ key: 'error.paymentKeyExport.contractAccount' });\n }\n \n /** Derives one payment's key with the loaded keys and verifies it controls the announced address; the caller wipes `secret`. */"
+  },
+  "scope": "Exact additional test only; no existing application/test/dependency/configuration changes. Runtime qualification waits for fresh coordinator-managed install/build; lost installation evidence is not reused."
+}
