@@ -794,3 +794,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# Runtime decode/query parameter boundaries — 2026-11-21 08:42 UTC
+
+- Cycle/coordinator: `20261121T0842Z`, single assistant; distinct sequential audit/implementation/verification phases, with no independent native worker available.
+- Branch: `automation/20261121T0842Z/bug/payment-uri-query-boundaries`; base `3d57d9881033f60786fecb3a71562af445441a3e` (existing PR #370), itself dependent on #360. This is a bounded continuation, not a rewrite of either parent's code. Latest separately observed main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned files: `packages/payment-uri/src/query.ts`, new `packages/payment-uri/src/query-boundaries.test.ts`, this additive branch-only ownership claim, `docs/handoffs/PAYMENT_URI_QUERY_BOUNDARIES_20261121.md`. Do not alter parent branches or shared ledgers.
+- Finding: `pctDecode` and `parseQuery` allow invalid JS runtime inputs to throw raw `TypeError` rather than the existing typed `INVALID_INPUT`. Exported `buildQuery` interpolates unvalidated dynamic keys, permitting a malformed or key-injecting query even though `parseQuery` refuses the key grammar. This is defensive exported-library correctness; no demonstrated Pages wallet exploit or funds-loss claim.
+- Acceptance: test-first typed rejection for nonstring decode/query inputs, fail-closed query-builder key validation using the parser's existing KEY grammar, preserve valid RFC3986 Unicode encodings, repeatable known keys, EIP ABI parameter keys, existing malformed UTF-16 handling, and no change to accepted valid URIs. No contracts, keys, services, dependency, fee, policy, release, workflow or hosting changes.
+- Ownership/integration: #360 and #370 own earlier encoder fixes; this branch stacks on exact #370 source. Broad recovery/privacy #372/#373 is independently active and untouched. Existing integration lock is held at generation 11 by `994a0d214fb9-root-r3`; this run does not acquire or change it and may not merge shared targets.
+- Verification requirement: focused executable regression, typecheck, lint, build, hosted exact-head qualification and independent reviewer before promotion; document any unavailable checks accurately. Keep as draft if unqualified.
