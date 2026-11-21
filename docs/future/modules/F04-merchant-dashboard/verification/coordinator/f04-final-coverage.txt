@@ -1,0 +1,30 @@
+Source: 49088efa043ca3f016e0b802f8b7bf51bf18a97a
+Command: ["node", "../../node_modules/vitest/vitest.mjs", "run", "src/features/future/merchant-dashboard", "--maxWorkers=1", "--coverage.enabled=true", "--coverage.include=src/features/future/merchant-dashboard/{model,projection,select}.ts"]
+
+ RUN  v5.0.5 /workspace/scratch/db9ec5207fdd/GhostPay-f04/apps/web
+      Coverage enabled with v8
+
+
+ Test Files  1 passed (1)
+      Tests  61 passed (61)
+   Start at  08:34:52
+   Duration  1.98s (tests 93%, transform 5%, import 1%, worker 1%)
+
+ % Coverage report from v8
+---------------|---------|----------|---------|---------|-------------------
+File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+---------------|---------|----------|---------|---------|-------------------
+All files      |    93.7 |    91.17 |   94.28 |   98.98 |                   
+ model.ts      |   89.58 |    90.62 |     100 |   98.55 | 183               
+ projection.ts |   97.33 |    92.55 |   88.88 |      99 | 127               
+ select.ts     |      90 |    89.58 |     100 |     100 | 15,24,33,35       
+---------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 93.7% ( 268/286 )
+Branches     : 91.17% ( 217/238 )
+Functions    : 94.28% ( 33/35 )
+Lines        : 98.98% ( 196/198 )
+================================================================================
+
+Exit: 0

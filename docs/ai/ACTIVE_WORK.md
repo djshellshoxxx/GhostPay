@@ -1,3 +1,39 @@
+# F04 source-preserving current-main consolidation — 2026-11-20 Pacific
+
+- Worker: `/root/branch_inventory`; coordinator: `1f782d9c4748-root`.
+- Owned branch: `consolidate/ghostpay-f04-current-main-1f782-20261121`.
+- Frozen donor: PR #322 `future/f04-merchant-dashboard` at `066731b4d6d19d96469dd18fa082b264f3efed5d`; current main input: `da6b05da5bb2e4293f38572da361980960d91911`.
+- Scope: preserve the existing F04 M1 source and all donor history while composing with current main. Own only this additive registry claim and conflict reconciliation, plus `docs/consolidation/future-modules-20261121-1f782/F04_COMPOSITION.md`. The five files under `apps/web/src/features/future/merchant-dashboard/` are immutable source inputs; no source edit or feature activation is authorized by this claim.
+- Acceptance: preserve both parents; retain every exact registry line from each input in order; retain current-main paths; prove each F04 runtime/test blob and mode is unchanged; independently review the dormant module; rerun applicable repository checks on the final composition through the coordinator's shared runtime. Do not count prior donor checks as a new combined-source pass.
+- Ownership: this is an isolated successor of the existing F04 owner. The original future branch, shared integration branch, main and integration lock remain untouched. F03, backup, F11, Tor, #367 and the active narrow-merge queue remain separately owned.
+- Validation plan: no dependency installation or heavy tests in this worker. The coordinator owns final shared validation, publication and integration. Existing F04 M1 remains disconnected from all production routes; real evidence/persistence/UI integration is unfinished.
+
+---
+
+# F04 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f04-merchant-dashboard`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F04-merchant-dashboard/SPEC.md` and this additive claim.
+Acceptance: source-grounded modular contract, dependencies, failure/recovery,
+privacy/fee limits, acceptance cases and planned checks; verified remote spec.
+Documentation only: no implementation, main merge, deployment, activation or fee decision.
+Existing source and other ownership claims are preserved.
+
+# Future module specifications — 2026-11-19
+
+Worker: ChatGPT coordinator with independent roadmap, branch and architecture reviewers.
+Branch: `docs/ghostpay-future-module-specs-20261119`.
+Base commit: `c977b5d6723f6822c3b5d86cd6b231712c53c395`.
+Owned paths: new `docs/future/modules/**` and this additive claim.
+Scope: 40 separate module specifications covering the 18 products, P01–P19,
+T01/T02 and shared FEE01; preserve aliases and existing spec18 priority.
+Acceptance: all source IDs covered, hard dependency graph acyclic, real code
+reuse documented, independent branch/spec publication verified, documentation-only
+diffs. No implementation, main merge, deployment, activation, fee decisions or release
+changes. Feature branches append their own claim before their specification commit.
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
@@ -737,6 +773,73 @@ Ownership check: open PRs #209 and #238 still contain the old comment stripper;
 their separately owned hosting/HTML/deployment changes are preserved. Original
 branches remain read-only. No workflow, contract, paid-automation or deployment changes.
 
+
+## F04 future dashboard continuation — 2026-11-20
+
+Worker: future_features/f04_dashboard, coordinated by ChatGPT root.
+Branch: `future/f04-merchant-dashboard`.
+Specification head: `711e9e8f7e2b32431353b82c4e39e184d3ba0b58`.
+Main reconciliation input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/merchant-dashboard/`,
+`docs/future/modules/F04-merchant-dashboard/`, and this additive registry claim.
+Acceptance: strict bounded atomic-unit projections, explicit invoice/evidence binding,
+duplicate/conflicting observation handling, provider-qualified finality, reorg demotion,
+asset-separated exact totals, bounded selectors and stale-session/cancellation guards.
+The existing fiat ledger remains unchanged; the new module is disconnected from
+production routes and the lean artifact. No network, wallet, persistent state, fee,
+contract, dependency or release changes. Focused tests, source checks and independent
+review are required; the coordinator owns remote publication.
+Status: ownership recorded before implementation; main reconciliation next.
+
+
+### F04 milestone checkpoint — 2026-11-20
+
+Product source: `be37f79df4d60e2d87cd845fbf8e6f0fa117b135`.
+Isolated evidence projection and bounded selectors implemented; final focused
+56/56 tests and scoped strict TypeScript/type-aware ESLint passed. Whole-project
+typed-lint attempts exited 137; the final scoped check retained every repository
+rule with a smaller TypeScript program. Details and incomplete acceptance:
+`docs/future/modules/F04-merchant-dashboard/HANDOFF.md`.
+No production entry point or remote ref changed. Fresh independent review,
+full-web qualification and publication remain coordinator-owned.
+
+
+### F04 canonical-format review correction — 2026-11-20
+
+Worker: future_features/f04_dashboard. Starting head:
+`81ff020105231b0fba82798a6f1356ad1f18b409`.
+Owned correction: the F04 reference, atomic amount, chain, asset and hash
+validators and their malformed-format tests. Require full-input matching,
+preserve valid inputs, rerun focused tests and scoped strict TypeScript/typed
+ESLint under the shared validation lock. The independent reviewer's report is
+owned separately and must not be staged by this worker.
+
+
+## F04 independent milestone review — 2026-11-20
+
+Worker: `f04_independent_review`, delegated by the future-feature coordinator.
+Branch: `future/f04-merchant-dashboard`; starting documentation head
+`b2dcc7a843dfc89bed6fc8926b3d904d7b365920`.
+Original product: `be37f79df4d60e2d87cd845fbf8e6f0fa117b135`; canonical-format
+correction: `966f415e520298310efd1f03883ea69844ea5eed`.
+Owned edits: this additive record and
+`docs/future/modules/F04-merchant-dashboard/INDEPENDENT_REVIEW.md` only.
+Acceptance: independently inspect all introduced source/tests, review the narrow
+format correction, replay existing focused tests, and record exact results and
+remaining provider/browser/release limits. Product source stays read-only.
+No remote mutation, deployment, exploit tooling, full-web typed-lint retry,
+or change to qualification gates.
+
+
+## Future-feature current-main reconciliation — 2026-11-20
+
+Worker: ChatGPT coordinator. Starting head: `49088efa043ca3f016e0b802f8b7bf51bf18a97a`.
+New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
+Owned change: merge current main while preserving every future-module source blob
+and all existing ownership records; resolve registry append conflicts only.
+Acceptance: exact module-tree identity before/after; fresh applicable TypeScript,
+focused tests, lean build and bundle checks against the new baseline.
+No new feature activation, main mutation, release or deployment.
 ## QA-02 payment URI builder length — 2026-11-20 UTC (automation cycle)
 
 - Worker: sequential ChatGPT bug-repair coordinator; no subordinate or independent worker claimed.
@@ -747,6 +850,15 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 - Acceptance: builders never return a URI that their matching parser rejects solely for exceeding 2048 encoded characters; reject overlength as typed `TOO_LONG`; preserve valid vectors, NFC text, token/reference/amount semantics; test below/at/above cap and original QA examples. Do not merge without full hosted qualification, independent review, fresh ownership and deployment-gate checks.
 - Evidence at claim: repository Git checkout unavailable (GitHub DNS resolution failed); no repository tests run yet. Only scoped GitHub source inspected. Scope intentionally excludes unrelated findings QA-01/QA-03 and QC-01.
 
+
+## F04 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `19b47216b1c41653913196dd231f40faaa2d76a1`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 61 passing tests,
+current-main TypeScript/build/bundle evidence and source-publication mapping.
+Hosted checks remain separately reported. No activation or main merge.
 
 ## TRON range completeness recovery — 2026-11-20 continuation R2
 
