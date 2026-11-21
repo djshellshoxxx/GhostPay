@@ -1,0 +1,253 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "date_utc": "2026-11-20",
+  "frozen_main": "aec179910c39081d820396409ff3139ff2264132",
+  "baseline": {
+    "file": "docs/consolidation/current-census-20261120/CENSUS.json",
+    "main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "branches": 392
+  },
+  "inventory_before_new_work": {
+    "branch_count": 411,
+    "pages": [
+      100,
+      100,
+      100,
+      100,
+      11,
+      0
+    ],
+    "removed_baseline_branches": 0
+  },
+  "warning": "These 19 exact-head comparisons are not semantic patch-equivalence proofs. GitHub compare file lists are truncated at 300. Preexisting 392 names were not re-compared in this sweep; use their frozen census and recompare pinned heads before integration. This 411 snapshot preceded creation of the separate GP-BUG-07 working branch.",
+  "delta": [
+    {
+      "name": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "head_sha": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+      "compare": {
+        "ahead_by": 3,
+        "behind_by": 42,
+        "files_returned": 3,
+        "application_paths_returned": 2,
+        "truncated": false
+      },
+      "classification": "focused_pending_PR337"
+    },
+    {
+      "name": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "head_sha": "71632fa389ae93824b2f42d265278a9bd0f6de59",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 42,
+        "files_returned": 4,
+        "application_paths_returned": 2,
+        "truncated": false
+      },
+      "classification": "overlap_PR332_PR335"
+    },
+    {
+      "name": "automation/20261120T2036Z/bug/btc-preview-network",
+      "head_sha": "692cac58b1c345137264936e60bee7b1e2eed8b2",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 42,
+        "files_returned": 4,
+        "application_paths_returned": 2,
+        "truncated": false
+      },
+      "classification": "focused_pending_PR338"
+    },
+    {
+      "name": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "head_sha": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "compare": {
+        "ahead_by": 71,
+        "behind_by": 42,
+        "files_returned": 196,
+        "application_paths_returned": 71,
+        "truncated": false
+      },
+      "classification": "stacked_on_PR307_PR341"
+    },
+    {
+      "name": "automation/20261120/bug/btc-fee-floor-config",
+      "head_sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "compare": {
+        "ahead_by": 0,
+        "behind_by": 39,
+        "files_returned": 0,
+        "application_paths_returned": 0,
+        "truncated": false
+      },
+      "classification": "ancestry_redundant_PR334_merged"
+    },
+    {
+      "name": "docs/ghostpay-coordination-ledger-20261120",
+      "head_sha": "f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 10,
+        "files_returned": 1,
+        "application_paths_returned": 0,
+        "truncated": false
+      },
+      "classification": "docs_only_PR343_pending"
+    },
+    {
+      "name": "evidence/ghostpay-continuation-r2-20261120",
+      "head_sha": "c2b575e945b71563e30a9bef162cf3fdc92181f0",
+      "compare": {
+        "ahead_by": 68,
+        "behind_by": 42,
+        "files_returned": 211,
+        "application_paths_returned": 69,
+        "truncated": false
+      },
+      "classification": "broad_integration_evidence"
+    },
+    {
+      "name": "evidence/ghostpay-fee-floor-qualification-20261120-r2",
+      "head_sha": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+      "compare": {
+        "ahead_by": 1,
+        "behind_by": 39,
+        "files_returned": 17,
+        "application_paths_returned": 0,
+        "truncated": false
+      },
+      "classification": "non_application_evidence_PR334_donor"
+    },
+    {
+      "name": "evidence/ghostpay-idle-session-r2-20261120",
+      "head_sha": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+      "compare": {
+        "ahead_by": 97,
+        "behind_by": 42,
+        "files_returned": 266,
+        "application_paths_returned": 91,
+        "truncated": false
+      },
+      "classification": "stacked_idle_session_evidence"
+    },
+    {
+      "name": "evidence/ghostpay-vault-rekey-qualification-20261120",
+      "head_sha": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+      "compare": {
+        "ahead_by": 4,
+        "behind_by": 42,
+        "files_returned": 6,
+        "application_paths_returned": 2,
+        "truncated": false
+      },
+      "classification": "PR328_plus_evidence_overlap"
+    },
+    {
+      "name": "fix/ghostpay-backup-preflight-20261120-r2",
+      "head_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "compare": {
+        "ahead_by": 99,
+        "behind_by": 42,
+        "files_returned": 267,
+        "application_paths_returned": 93,
+        "truncated": false
+      },
+      "classification": "stacked_backup_PR333"
+    },
+    {
+      "name": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "head_sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "compare": {
+        "ahead_by": 463,
+        "behind_by": 76,
+        "files_returned": 300,
+        "application_paths_returned": null,
+        "truncated": true
+      },
+      "classification": "large_divergent_acceptance_candidate"
+    },
+    {
+      "name": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "head_sha": "410353a23631234aa888e46f38df22291c699a26",
+      "compare": {
+        "ahead_by": 454,
+        "behind_by": 76,
+        "files_returned": 300,
+        "application_paths_returned": 291,
+        "truncated": true
+      },
+      "classification": "large_divergent_acceptance_candidate"
+    },
+    {
+      "name": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+      "head_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+      "compare": {
+        "ahead_by": 10,
+        "behind_by": 42,
+        "files_returned": 5,
+        "application_paths_returned": 4,
+        "truncated": false
+      },
+      "classification": "focused_pending_PR339"
+    },
+    {
+      "name": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "head_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "compare": {
+        "ahead_by": 103,
+        "behind_by": 42,
+        "files_returned": 300,
+        "application_paths_returned": 95,
+        "truncated": true
+      },
+      "classification": "stacked_receipt_PR335_overlap_PR332"
+    },
+    {
+      "name": "fix/ghostpay-request-file-async-20261120-r3",
+      "head_sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "compare": {
+        "ahead_by": 107,
+        "behind_by": 42,
+        "files_returned": 300,
+        "application_paths_returned": null,
+        "truncated": true
+      },
+      "classification": "stacked_request_file_PR344"
+    },
+    {
+      "name": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "head_sha": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4",
+      "compare": {
+        "ahead_by": 5,
+        "behind_by": 42,
+        "files_returned": 5,
+        "application_paths_returned": 4,
+        "truncated": false
+      },
+      "classification": "focused_PR340_child_PR342_pending"
+    },
+    {
+      "name": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "head_sha": "06fd87c3e90000118ffa94048529db36f0a67d41",
+      "compare": {
+        "ahead_by": 7,
+        "behind_by": 42,
+        "files_returned": 7,
+        "application_paths_returned": 5,
+        "truncated": false
+      },
+      "classification": "test_only_incremental_PR342"
+    },
+    {
+      "name": "integration/ghostpay-idle-session-20261120-r2",
+      "head_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "compare": {
+        "ahead_by": 96,
+        "behind_by": 42,
+        "files_returned": 239,
+        "application_paths_returned": 91,
+        "truncated": false
+      },
+      "classification": "stacked_idle_session_parent"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import {
+  ZERO_ADDRESS,
   ZERO_HASH,
   buildPolicyRecord,
   decodeScheme2MetaAddress,
@@ -135,6 +136,9 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
               <li key={r.metaAddress}>
                 <p><Mono>{r.metaAddress}</Mono></p>
                 <p>{t('policy.create.recordDestination')} <Mono>{r.policy.destination}</Mono>{t('policy.create.recordTerms', { seconds: r.policy.delaySeconds.toString(), limits: r.limits.length === 0 ? t('policy.create.noLimits') : t('policy.create.tokenLimits', { count: String(r.limits.length) }) })}</p>
+                <Notice kind={r.policy.limitsRoot === ZERO_HASH ? 'info' : 'warn'}>
+                  {r.policy.limitsRoot === ZERO_HASH ? t('policy.create.withdrawableAny') : t('policy.create.withdrawableOnly', { tokens: r.limits.map((l) => l.token === ZERO_ADDRESS ? 'native' : l.token).join(', ') })}
+                </Notice>
                 <CopyButton text={r.metaAddress} label={t('policy.create.copyMeta')} />
                 <button type="button" onClick={() => {
                   // The canonical meta-address binds both seller keys and the policy hash.
