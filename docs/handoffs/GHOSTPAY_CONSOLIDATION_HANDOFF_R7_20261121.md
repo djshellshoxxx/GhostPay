@@ -49,3 +49,10 @@
 5. Resume from the 433-branch inventory and 32 source-pinned comparison ledgers on the current draft consolidation branch. New branches added by this run are outside the frozen snapshot; incrementally compare them against updated main at next checkpoint.
 
 This handoff is an engineering ledger, not a release sign-off. No live wallet transaction, private key, deployment, or released artifact was generated.
+
+## Exact source-head supplement and concurrent overlap
+
+- [BRANCH_HEADS_R7_20261121.json](BRANCH_HEADS_R7_20261121.json) pins **all 433** original snapshot branch names to Git object SHA (0 missing), from GitHub Git matching-refs. The 436 refs at this later observation included this census work branch plus two new integration branches absent from the initial inventory. Ref heads were captured after comparisons, so any head moved during the scan must be re-compared by exact SHA before merging.
+- [BRANCH_DELTA_POST_R7_20261121.json](BRANCH_DELTA_POST_R7_20261121.json) compares the two non-census additions exactly: `integrate/ghostpay-idle-main-scan-20261121-539818` at `45ece45defd2a26cfb7f471ea4654ba4d1d2266e` (119 ahead/0 behind), and `integration/ghostpay-idle-scan-candidate-20261121-fc3db` at `418054d5ca041973d31d514406ee4c6157ca919f` (120 ahead/0 behind). Both reached the 300-file API cap and both include `CameraImporter.tsx` / visibility regression test. They overlap reviewed #258; reconcile diff/hashes before any combined integration instead of importing duplicate source.
+- #258 refreshed head `d073414b718242eefdd22c0debc56901045d5f7a` was confirmed mergeable with queued CI, Pages, Hosting kit, Beta acceptance. Those checks are not yet green, and #258 remains draft.
+- #357 received an explicit coordination comment identifying the exact failed tests and existing child #362 repair; its parent code remains untouched.
