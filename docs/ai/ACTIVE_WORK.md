@@ -1,3 +1,12 @@
+# Browser self-check test-only lint repair — 2026-11-21 R16
+
+Worker: consolidation continuation, sequential source review/repair; no independent reviewer available.
+Branch: `fix/ghostpay-browser-selfchecks-lint-r16-20261121`, stacked on existing PR #402 exact head `3c9b96d0a10a976cb2143a8a62bbd4e31fc9f565`; frozen main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/components/BrowserChecks.test.tsx`, `apps/web/src/lib/browserChecks.test.ts`, this additive ownership claim and `docs/handoffs/BROWSER_SELFCHECK_LINT_R16_20261121.md`; no production changes. Parent #402 remains unmodified.
+Evidence: hosted CI `44903445539` `ts-lint` job `136853147319` reports exactly four `@typescript-eslint/require-await` errors: async act callbacks at lines 50,52 and async digest mocks at lines 64,73. All other jobs passed, but aggregate CI failed. Acceptance: maintain asynchronous React act flush and WebCrypto Promise contract, remove lint errors without disabling rules, preserve existing integrity/storage failure assertions. No wallet, custody, relayer, contracts, deployment or third-party work. Require exact-head CI + independent review; shared generation-11 integration lock held by another owner, no main merge.
+
+---
+
 # 2026-11-21 — Workstream I exact-optional TypeScript build repair (stacked on #395)
 
 Worker: GhostPay branch-consolidation continuation; sequential scoped CI reproduction and repair; no independent reviewer assumed.
