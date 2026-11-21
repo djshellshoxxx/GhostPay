@@ -27,7 +27,7 @@ describe('fiat input: formatting round-trip with overlapping separator text', ()
   });
 
   it('also parses a grouped Indian-pattern amount when full group tokens contain the decimal token', () => {
-    const fmt = { ...plain, grouping: 'indian' as const, groupSeparator: '.:' , decimalSeparator: ':' };
+    const fmt = { ...plain, grouping: 'indian' as const, groupSeparator: '.:', decimalSeparator: ':' };
     const text = rendered(123456789n, fmt);
     expect(text).toBe('12.:34.:567:89');
     expect(parseFiatInput(text, 2, fmt)).toEqual({ ok: true, value: 123456789n });
