@@ -1,0 +1,132 @@
+{
+  "schema": "ghostpay-semantic-branch-triage/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "source": "GitHub fetch_file blob SHA equality and inspected runtime source sections; no local executable tests",
+  "entries": [
+    {
+      "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "head_sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "decision": "source-and-test-identical-to-main",
+      "blobs": [
+        {
+          "path": "packages/ux-guide/src/profiles.ts",
+          "main_blob_sha": "b6a18547cd19ec2c4a624e4d08cc55393fd359",
+          "branch_blob_sha": "b6a18547cd19ec2c4a624e4d08cc55393fd359"
+        },
+        {
+          "path": "packages/ux-guide/src/profiles.test.ts",
+          "main_blob_sha": "ab67eea47a034bc7d4e3cd95f5864b75b8bafc4f",
+          "branch_blob_sha": "ab67eea47a034bc7d4e3cd95f5864b75b8bafc4f"
+        }
+      ],
+      "next": "Exclude from unique-code merges; changed paths are byte-identical to frozen main despite positive ahead count."
+    },
+    {
+      "branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "head_sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "decision": "source-and-test-identical-to-main",
+      "blobs": [
+        {
+          "path": "packages/cli/src/args.ts",
+          "main_blob_sha": "2a65cf907b6c217fc64bb2fe89e62716b46b0379",
+          "branch_blob_sha": "2a65cf907b6c217fc64bb2fe89e62716b46b0379"
+        },
+        {
+          "path": "packages/cli/src/args.test.ts",
+          "main_blob_sha": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8",
+          "branch_blob_sha": "597dfb9e42a45158a7a5b41f85747994f7aa5ef8"
+        }
+      ],
+      "next": "Exclude from unique-code merges; changed paths are byte-identical to frozen main despite positive ahead count."
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "head_sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "decision": "changed-test-identical-to-main",
+      "blobs": [
+        {
+          "path": "packages/merchant-billing/src/schedule.test.ts",
+          "main_blob_sha": "25d7ae46c3760003a1e16f5f280c50c63657048b",
+          "branch_blob_sha": "25d7ae46c3760003a1e16f5f280c50c63657048b"
+        }
+      ],
+      "next": "Exclude from unique-code merges; changed paths are byte-identical to frozen main despite positive ahead count."
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "head_sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "decision": "changed-source-identical-to-main",
+      "blobs": [
+        {
+          "path": "apps/web/src/lib/format.ts",
+          "main_blob_sha": "18dad7e4235c922bb7f197312317cc86557a12c2",
+          "branch_blob_sha": "18dad7e4235c922bb7f197312317cc86557a12c2"
+        }
+      ],
+      "next": "Exclude from unique-code merges; changed paths are byte-identical to frozen main despite positive ahead count."
+    },
+    {
+      "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "head_sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "decision": "source-and-test-identical-to-main",
+      "blobs": [
+        {
+          "path": "packages/net-transport/src/onion.ts",
+          "main_blob_sha": "4e93261f46b209b3264e8bebbc83c9a0087eee8e",
+          "branch_blob_sha": "4e93261f46b209b3264e8bebbc83c9a0087eee8e"
+        },
+        {
+          "path": "packages/net-transport/src/core.test.ts",
+          "main_blob_sha": "9e74331f2b5dedc328e36af9687fe87ae2dc0336",
+          "branch_blob_sha": "9e74331f2b5dedc328e36af9687fe87ae2dc0336"
+        }
+      ],
+      "next": "Exclude from unique-code merges; changed paths are byte-identical to frozen main despite positive ahead count."
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "head_sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "decision": "source-and-test-identical-to-main",
+      "blobs": [
+        {
+          "path": "packages/ux-schedule/src/scheduled.ts",
+          "main_blob_sha": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d",
+          "branch_blob_sha": "0e94c51ab5579099d24c9d0d2b1bf070a6a4a09d"
+        },
+        {
+          "path": "packages/ux-schedule/src/scheduled.test.ts",
+          "main_blob_sha": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4",
+          "branch_blob_sha": "f96887642b5bffebb6a29b613e54ebd3ea6d19a4"
+        }
+      ],
+      "next": "Exclude from unique-code merges; changed paths are byte-identical to frozen main despite positive ahead count."
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "head_sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "decision": "source-regression-relative-to-current-main",
+      "blobs": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "main_blob_sha": "da35b619ad1aa7efa8607e0ab9ce8278b585bd61",
+          "branch_blob_sha": "1a87d1828ed753c6cfc12a43d7ede50247678352"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "main_blob_sha": "762deed547d68f934999994d770369b2ee95c9ad",
+          "branch_blob_sha": "762deed547d68f934999994d770369b2ee95c9ad"
+        }
+      ],
+      "reason": "main anonymitySet.partial checks earliest available 30-day history; historical source uses only 7-day bound, understating incomplete 30-day privacy estimates. The RPC token/range guard itself already exists in main.",
+      "next": "Do not cherry-pick historical source; retain 30-day partial correction."
+    },
+    {
+      "branch": "recover/ghostpay-canonical-json-descriptors-20261121-r10",
+      "head_sha": "fbcf69223a524b8e3d74fb093dfc71d8b91bdc27",
+      "decision": "recoverable-unique-but-already-owned",
+      "owner_pr": 270,
+      "reason": "Descriptor-based canonical array validation present in historical branch, absent in frozen main; PR #270 has the feature and scan coordination, but exact-head CI fails lint, E2E, and policy-scheme suite. PR #265 is overlapping subset.",
+      "next": "Repair #270's exact failures or extract bounded change into existing owned chain with review; do not create duplicate feature PR."
+    }
+  ]
+}
