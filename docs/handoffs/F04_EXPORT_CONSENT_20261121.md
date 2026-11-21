@@ -14,8 +14,8 @@
 - Preview exposes only selected column names, output format, selected row count, unverified scan-coverage designation and a disclosure warning. It does not reveal invoice aliases or amounts.
 - Approval accepts only the exact preview object in the same coordinator instance and consumes the approval before doing serialization, including on failure.
 - Abort, session epoch, operation ID, profile and canonical revision checks guard both preview and release. A locked UI **must** call `cancel()` and discard any previously returned bytes; this module cannot revoke bytes previously handed to a caller.
-- Selection rejects unknown invoices, duplicate invoice IDs, unsupported columns, duplicate columns, malformed/sparse arrays, getters and unexpected root fields.
-- CSV protects formula-leading cells even after common leading whitespace/invisible characters; RFC-compatible quoting retains double quotes and CRLF. JSON exports use an explicit version, `atomic` unit marker and `not-evaluated` scan-coverage marker.
+- Selection rejects unknown invoices, duplicate invoice IDs, unsupported columns, duplicate columns, malformed/sparse arrays, accessor-backed frozen row arrays (without invoking their getters) and unexpected root fields.
+- CSV protects formula-leading cells even after common leading whitespace/invisible characters; quoting retains double quotes and CRLF. Isolated UTF-16 surrogates are rejected rather than silently changed during UTF-8 export; valid pairs survive. JSON exports use an explicit version, `atomic` unit marker and `not-evaluated` scan-coverage marker.
 - Exportable amount columns require explicit `chainId`, `assetId` and `state` columns in the same user-selected output; separate asset amounts are never summed or converted. Monetary strings are not converted to JavaScript numbers.
 - Maximum output is 20 MiB measured by UTF-8 byte length. No new dependencies, browser imports or route activation.
 
@@ -24,9 +24,9 @@ The coordinator assumes a trusted, locally built projection and a trusted `Dashb
 ## Verification and limitations
 
 - Before source implementation, a local Node test failed because the export module was absent (RED).
-- Local Node 22.16.0, TypeScript 5.8.3, isolated stub of the existing F04 context helper, and the new actual `export.ts` implementation: standalone strict TS compilation exited 0; **six local Node tests passed, zero failed** after repair. Local harness exercised exact string amounts, malformed selections, formulas/CSV quoting, preview replay, cancellation/session drift and byte cap.
-- The local tests used a stand-in `model.ts` and type-only projection scaffolding, not the real repository installation. They **do not** establish a full GhostPay test pass.
-- The committed `export.test.ts` contains six Vitest cases, including one that creates a real unverified projection with `buildDashboardProjection`. These Vitest cases, repository lint, whole-web typecheck, coverage, build, CodeQL, browser, mobile and hosted CI are **not locally executed or claimed as passing** here.
+- Local Node 22.16.0, TypeScript 5.8.3, isolated stub of the existing F04 context helper, and the new actual `export.ts` implementation: standalone strict TS compilation exited 0; **eight local Node tests passed, zero failed** after repair. Local harness exercised exact string amounts, malformed selections, formulas/CSV quoting, preview replay, cancellation/session drift and byte cap.
+- Two additional regressions failed before the second repair (accessor invocation and lossy UTF-16) and passed after it. The local tests used a stand-in `model.ts` and type-only projection scaffolding, not the real repository installation. They **do not** establish a full GhostPay test pass.
+- The committed `export.test.ts` contains eight Vitest cases, including one that creates a real unverified projection with `buildDashboardProjection`. These Vitest cases, repository lint, whole-web typecheck, coverage, build, CodeQL, browser, mobile and hosted CI are **not locally executed or claimed as passing** here.
 - A second, separate security review remains required; this same coordinator's review is not independent.
 - No payment, private key, merchant journal or live-network behavior was exercised. No deployment occurred.
 
