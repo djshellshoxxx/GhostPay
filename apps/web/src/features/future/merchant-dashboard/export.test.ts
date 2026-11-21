@@ -109,8 +109,10 @@ describe('F04 deliberate, local merchant exports', () => {
   it('rejects frozen row arrays containing getters without invoking them', () => {
     let calls = 0;
     const source = fixture();
-    const rows = [source.rows[0]];
-    Object.defineProperty(rows, '0', { enumerable: true, get: () => { calls++; return source.rows[0]; } });
+    const first = source.rows[0];
+    if (!first) throw new Error('Missing test fixture row');
+    const rows = [first];
+    Object.defineProperty(rows, '0', { enumerable: true, get: () => { calls++; return first; } });
     Object.freeze(rows);
     const projection = Object.freeze({ ...source, rows });
     const session = new DashboardExportCoordinator();
@@ -120,12 +122,14 @@ describe('F04 deliberate, local merchant exports', () => {
 
   it('rejects lone UTF-16 surrogates rather than silently replacing them in exported bytes', () => {
     const source = fixture(); const ctx = context();
-    const malformed = Object.freeze({ ...source.rows[0], alias: '\ud800' });
+    const first = source.rows[0];
+    if (!first) throw new Error('Missing test fixture row');
+    const malformed = Object.freeze({ ...first, alias: '\ud800' });
     const session = new DashboardExportCoordinator();
     const preview = session.preview(Object.freeze({ ...source, rows: Object.freeze([malformed]) }),
       request(['invoice:1'], 'csv', ['alias']), ctx.value);
     expect(() => session.approve(preview, ctx.value)).toThrow(expect.objectContaining({ code: 'INVALID_INPUT' }));
-    const valid = Object.freeze({ ...source.rows[0], alias: '\ud83d\ude80' });
+    const valid = Object.freeze({ ...first, alias: '\ud83d\ude80' });
     const next = session.preview(Object.freeze({ ...source, rows: Object.freeze([valid]) }),
       request(['invoice:1'], 'csv', ['alias']), ctx.value);
     expect(session.approve(next, ctx.value).content).toContain('🚀');
