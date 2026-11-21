@@ -23,11 +23,22 @@ export function parseUnits(text: string, decimals: number): bigint | undefined {
   return BigInt(whole) * 10n ** BigInt(decimals) + BigInt(frac.padEnd(decimals, '0') || '0');
 }
 
-const ZERO_DECIMAL_CURRENCIES = new Set(['JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', 'XOF']);
+// ISO 4217 List One, 2026-09-17 (SIX Group). Keep exception tables explicit and offline:
+// invoice creation converts entered prices into signed integer minor units via this function.
+// Unknown 3-letter codes retain the existing 2-decimal fallback until a separate currency-policy decision.
+const ZERO_DECIMAL_CURRENCIES = new Set([
+  'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG',
+  'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF',
+]);
+const THREE_DECIMAL_CURRENCIES = new Set(['BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND']);
+const FOUR_DECIMAL_UNITS = new Set(['CLF', 'UYW']);
 
-/** Minor-unit exponent for an ISO-4217 code (the invoice format stores minor units). */
+/** ISO-4217 minor-unit exponent used to sign and display fiat amounts in invoices. */
 export function fiatDecimals(currency: string): number {
-  return ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
+  if (ZERO_DECIMAL_CURRENCIES.has(currency)) return 0;
+  if (THREE_DECIMAL_CURRENCIES.has(currency)) return 3;
+  if (FOUR_DECIMAL_UNITS.has(currency)) return 4;
+  return 2;
 }
 
 /** Renders fiat minor units, for example `12345` USD -> `USD 123.45`. */
