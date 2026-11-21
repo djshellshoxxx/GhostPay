@@ -1,3 +1,14 @@
+# Settings partial-import draft preservation regression — 2026-11-21 UTC
+
+Coordinator and sequential QA role: `20261121T0238Z-root`; no separate native workers, Caveman runtime, or independent reviewer in this invocation.
+Task branch: `automation/20261121T0238Z/qa/settings-partial-import-drafts`, stacked on existing coordinator-owned PR #307 exact head `5a745d4b5fba69b66a9779f88aefc63c253a4f27`; main observed `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: new `apps/web/src/views/Settings.partialImportDrafts.test.tsx`, this additive ownership claim, and `docs/handoffs/SETTINGS_IMPORT_DRAFTS_20261121.md`. No edits to existing Settings application source or its tests, #278, #307, or other owners' branches.
+Finding/source: existing P2 GP-BUG-04 in audit #312 (`docs/notes/bugcheck-2026-11-19/FINDINGS.md`) was reproduced on older integrated source: importing only preferences reset unrelated unsaved RPC drafts. Exact #307 Settings.tsx no longer contains the whole-form saved-settings resync effect, but no dedicated regression covers retained unselected unsaved input. This task adds a targeted browser-component regression to prevent reintroduction; it does not declare the underlying finding independently verified or universally resolved.
+Acceptance: a preferences-only import applies the theme without losing unsaved primary/secondary RPC, optional relayer, and signer-pin drafts; these drafts are not prematurely written on import and can subsequently be saved explicitly. Use existing QR settings transfer and form UI; no production policy, storage, cryptography, contracts, services, dependencies or release changes. Run exact-source tests and required CI where possible, preserve failures, and obtain fresh independent verification before integration.
+Ownership reconciliation: current open PRs #278/#293/#307/#349/#350/#336/#345/#352 checked for overlapping Settings tests or coordination; #278 contains older `Settings.test.tsx` and `Settings.exchange.test.tsx`, so use a new uniquely named test file. PR #307 already owns the target integration branch. Durable lock generation 11 is held by 994a0d214fb9-root-r3; this cycle does not acquire or modify it and cannot merge a shared target.
+
+---
+
 # R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
 
 Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
