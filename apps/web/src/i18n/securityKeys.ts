@@ -1375,6 +1375,8 @@ export const SECURITY_KEY_GROUPS = {
     'receipt.lean.refused',
     'policy.network.none',
     'policy.create.imported',
+    // A restored-record identity/status claim is security-sensitive; keep source English until native review.
+    'policy.create.alreadySaved',
     'policy.create.badMeta',
     'policy.create.badDestinations',
     'policy.create.delayLabel',
