@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { formatCountdown } from './format';
 
+// Exercise the exported JavaScript runtime boundary without weakening its TypeScript signature.
+const fromRuntime = (milliseconds: unknown): string => formatCountdown(milliseconds as number);
+
 describe('formatCountdown invalid runtime input (issue #394)', () => {
   it('does not render nonfinite millisecond durations as a plausible countdown', () => {
     for (const value of [NaN, Infinity, -Infinity]) {
@@ -10,7 +13,7 @@ describe('formatCountdown invalid runtime input (issue #394)', () => {
 
   it('rejects invalid JavaScript runtime types instead of coercing or throwing', () => {
     for (const value of [undefined, null, '500', false, 0n, Symbol('milliseconds'), {}, [], new Date(0)]) {
-      expect(formatCountdown(value as unknown as number)).toBe('invalid time');
+      expect(fromRuntime(value)).toBe('invalid time');
     }
   });
 
@@ -22,7 +25,7 @@ describe('formatCountdown invalid runtime input (issue #394)', () => {
         throw new Error('unexpected countdown conversion');
       },
     };
-    expect(formatCountdown(hostile as unknown as number)).toBe('invalid time');
+    expect(fromRuntime(hostile)).toBe('invalid time');
     expect(conversions).toBe(0);
   });
 
