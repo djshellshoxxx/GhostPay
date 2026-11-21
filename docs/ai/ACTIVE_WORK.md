@@ -771,3 +771,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-BUG-18 — Weekly recurrence must stop at MAX_YEAR (2026-11-21)
+
+Worker: GhostPay Bug Repair Rounds cycle 8; one sequential coordinator, no independent verifier identity or native repo checkout available.
+Task branch: `automation/20261121/bug/ux-schedule-weekly-maxyear-r8` created from exact live main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths only: `packages/ux-schedule/src/recurrence.ts`, new `packages/ux-schedule/src/recurrence.year-boundary.test.ts`, additive claim in this file, and `docs/handoffs/WEEKLY_RECURRENCE_MAX_YEAR_20261121.md`.
+Source baseline: recurrence.ts Git blob `df6d0c8d3ee1918ed79055446b7a80832daca260`.
+Observed source-equivalent Node 22 reproduction: weekly rule anchored 2200-12-28 with Thursday weekday yields 2201-01-01; Friday also yields 2201-01-02; the library's MAX_YEAR is 2200 and daily/monthly rules stop there. Root cause: weekly outer loop tests `base < maxDays` without bounding `base + wd` in its inner weekday loop.
+Acceptance: failing regression committed before production change; no weekly occurrence on or after 2201-01-01; all valid 2200 final-week occurrences preserved, historical valid weekday schedules untouched; no new dependencies, protocols, payment interaction or feature work. Reproduce with source-equivalent checks and exact-head hosted CI; no false claims of local Vitest. Keep draft for independent review and held generation-11 integration lock. 178 open PRs' changed-file inventories were checked (pages 1 and 2); none changed the two owned source/test paths. PRs #372/#278/#264/#262/#238/#224 own nearby package manifests/template tests, not this bounded recurrence fix. Recheck before merge.
