@@ -33,7 +33,12 @@ export function browserCheckEnvironment(): BrowserCheckEnvironment {
 
   // This ID is only for a transient, non-secret storage probe; never a key or security token.
   const probeKey = `__ghostpay_capability_${randomId ?? `${Date.now()}_${++nextProbe}`}`;
-  return { secureContext: window.isSecureContext === true, digest, storage, probeKey };
+  return {
+    secureContext: window.isSecureContext === true,
+    ...(digest !== undefined ? { digest } : {}),
+    ...(storage !== undefined ? { storage } : {}),
+    probeKey,
+  };
 }
 
 export async function runBrowserChecks(env: BrowserCheckEnvironment): Promise<readonly BrowserCheck[]> {
