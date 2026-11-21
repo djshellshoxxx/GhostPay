@@ -225,7 +225,9 @@ export function requestFromUri(
   if (!isPosInt(nowSeconds)) return fail('REQUEST', 'now');
   const p = parsePaymentUri(uri);
   if (p.amount === undefined || p.asset === undefined || p.expiresAt === undefined) return fail('REQUEST');
-  if (p.expiresAt - nowSeconds > (opts.maxLifetime ?? MAX_LIFETIME_SECONDS)) return fail('REQUEST', 'exp');
+  const maxLifetime = opts.maxLifetime === undefined ? MAX_LIFETIME_SECONDS : opts.maxLifetime;
+  if (!isUint(maxLifetime)) return fail('REQUEST', 'maxLifetime');
+  if (p.expiresAt - nowSeconds > maxLifetime) return fail('REQUEST', 'exp');
   return {
     target: p.target,
     amount: p.amount,
