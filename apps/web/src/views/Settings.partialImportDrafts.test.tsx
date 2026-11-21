@@ -57,7 +57,7 @@ describe('Settings partial import: unselected unsaved form drafts (GP-BUG-04)', 
         theme: 'dark',
         rpcUrls: { '84532': 'https://pending-rpc.example/' },
         rpcUrlsSecondary: { '84532': 'https://pending-secondary.example/' },
-        relayerUrl: 'https://pending-relayer.example/',
+        relayerUrl: 'https://pending-relayer.example',
         pinnedSigners: [signer],
       });
     });
@@ -100,7 +100,7 @@ describe('Settings partial import: unselected unsaved form drafts (GP-BUG-04)', 
       expect(stored()).toMatchObject({
         theme: 'light',
         rpcUrls: { '84532': 'https://imported-rpc.example/' },
-        relayerUrl: 'https://draft-relayer.example/',
+        relayerUrl: 'https://draft-relayer.example',
         pinnedSigners: [signer],
       });
     });
