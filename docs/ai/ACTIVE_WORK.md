@@ -1,3 +1,15 @@
+# GP-BUG-R11 — EVM truncated receipt address comparison (2026-11-21)
+
+Worker: one sequential ChatGPT bug-repair coordinator; no independent code reviewer or native browser executor is available within this cycle.
+Task branch: `automation/20261121/bug/receipt-evm-truncated-tail-r11` based exactly on main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned source: `packages/ux-receipts/src/address.ts`; new isolated regression `packages/ux-receipts/src/address.case.test.ts`; this additive registry claim and new `docs/handoffs/RECEIPT_TRUNCATED_EVM_CASE_20261121.md` only. The preexisting `core.test.ts` is explicitly not owned.
+Defect evidence: upstream `address.ts` blob `455ecae74f2339f0fd88fe8160aadbaab21719d0` was copied byte-for-byte (Git blob hash matched) and compiled using installed TypeScript 5.8.3; Node 22 reported `matchesAddress(redactAddress('0xAbCdEf0123456789abcdef0123456789ABCDEF01', {head:6,tail:4}), actual) === false`. The helper lowercases the actual 0x address, but not the isolated uppercase suffix following `...`.
+Acceptance: test first for mixed-case EVM truncations, including short heads, both 0x/0X, non-EVM case-sensitive controls and mismatched tails; then repair only the comparison. No chain, receipt, API, dependency, deployment, fund or UI change. Preserve full-address behavior and all existing validations.
+Ownership: main ACTIVE_WORK has no claim for `packages/ux-receipts/src/address.ts`. Verified changed-file inventories of open broad PRs #238/#262/#264/#278/#372 (which own `core.test.ts`), plus #307/#371/#246/#260/#259/#250/#249/#248/#244/#240/#239 and current #343/#380/#408/#419/#422/#423/#424/#425: no PR modifies the proposed source or new test path. Further head reconciliation required before integration.
+Integration: durable metadata `automation/ghostpay-integration-lock/integration-lock.json` is held by external owner `994a0d214fb9-root-r3` at generation 11. No lease acquisition, release, protected main merge or modification to another owner's branch. Draft PR remains unqualified without exact-head CI, applicable browser verification and a genuinely independent review.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
