@@ -1,6 +1,9 @@
 import { fail } from './errors.js';
 import { buildPaymentUri, type PaymentUri } from './uri.js';
 
+// Reject malformed UTF-16 before TextEncoder can silently replace lone surrogates with U+FFFD.
+const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/;
+
 /** QR error-correction level. */
 export type QrEcc = 'L' | 'M' | 'Q' | 'H';
 
@@ -47,10 +50,11 @@ export interface QrCapacity {
  * phone-camera scanning, not a standard.
  * @param payload Text to encode.
  * @param ecc Error-correction level (default `M`).
- * @throws {LinkError} `QR` for non-string payload, empty payload or unknown level.
+ * @throws {LinkError} `QR` for non-string, empty, malformed UTF-16 payload or unknown level.
  */
 export function checkQrCapacity(payload: string, ecc: QrEcc = 'M'): QrCapacity {
   if (typeof payload !== 'string' || payload.length === 0) return fail('QR', 'payload');
+  if (LONE_SURROGATE.test(payload)) return fail('QR', 'payload');
   const table = Object.prototype.hasOwnProperty.call(CAPACITY, ecc) ? CAPACITY[ecc] : undefined;
   if (table === undefined) return fail('QR', 'ecc');
   const bytes = new TextEncoder().encode(payload).length;
