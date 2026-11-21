@@ -1,3 +1,9 @@
+# 2026-11-21 — R13 capped branch lineage triage, docs-only child of #401
+
+Worker: GhostPay branch-consolidation continuation, independent source-pinned comparison (no new application source authority). Branch: `audit/ghostpay-r13-capped-lineage-20261121`, immutable parent #401 `2eb64d0a19e172ca02abe10a191b7d711962cb52`, `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: append-only registry claim and new `docs/consolidation/20261121-r13/CAPPED_ANCESTRY.json` and `README.md`. Acceptance: reconcile all 59 GitHub-300-file-capped branch heads from current R12 ledger with live #372 ancestry; distinguish exact ancestor/descendant lineage from divergence without asserting merge safety or feature completion. Keep integration lock generation 11 untouched; no main merge/deploy/release. Independent ledger review required.
+
+---
+
 # Autonomous consolidation and qualification — 2026-11-21 UTC
 
 Owner: `5ceb6203640a-root`; branch `integration/ghostpay-autonomous-ledger-20261121-5ceb`.
