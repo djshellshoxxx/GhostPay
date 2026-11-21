@@ -115,7 +115,10 @@ describe('invoice signer verification lifecycle', () => {
     expect(screen.queryByText(PINNED)).toBeNull();
     await screen.findByText('Verification unavailable or interrupted. Open the invoice again to retry.');
     expect(screen.getByLabelText<HTMLSelectElement>('Expected seller (optional)').value).toBe('Alice');
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+    // Fail closed: removing a pin may drop the entire review, so Continue can be absent or disabled.
+    // In neither state may stale signer verification authorize progress.
+    const proceed = screen.queryByRole<HTMLButtonElement>('button', { name: 'Continue' });
+    expect(proceed === null || proceed.disabled).toBe(true);
   });
 
   it('cannot publish an old matching result after a pin is removed during verification', async () => {
