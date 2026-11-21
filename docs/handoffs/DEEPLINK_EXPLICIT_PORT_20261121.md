@@ -37,3 +37,14 @@ The repair checks the explicit HTTPS authority for `:<digits>` or empty `:` befo
 - Durable `automation/ghostpay-integration-lock/integration-lock.json` is held by external owner `994a0d214fb9-root-r3`, generation 11, metadata blob `97523a9ce00231ac883b32178ab48a547eb0dd8f`. Even an expired timestamp provides no takeover authorization. No merge, branch deletion, deployment or release.
 
 Next worker: inspect the draft PR exact head checks, investigate any genuine CI failure test-first on this owned branch, request a genuine separate code reviewer, perform applicable browser verification, reconcile PR owners and lock. Merge only if all required exact-head checks, independent review and legitimate integration ownership are satisfied. Otherwise leave draft.
+
+## R10 follow-up source review — normalized slash forms
+
+After initial PR publication, source-equivalent review found that WHATWG URL also accepts `https:merchant.example:443/pay`, `https:/merchant.example:443/pay`, multiple slashes, and a backslash variant as HTTPS URLs and normalizes away `443`. The first fix only captured a literal `https://` prefix, so it did not yet enforce the same explicit-port rule for these existing accepted spellings.
+
+- Added an additional failing Vitest regression **before** the follow-up production change: `a3303edf0ee7d547929242e8ae8e4deab4d2d5b5`.
+- Narrowly corrected raw authority capture to handle the same HTTPS special-scheme slash/backslash normalization: `2bb6223ac4e02fa3e566b0b3862a74aa9439296d`. No unrelated URL/parser feature change.
+- Current production blob `1c6134dd449cf7d94305e6135dfc3ab7eedb57be` supersedes the earlier `0e7ec2e925b38ea3c48dfe985e13b81ddb9f26b1` blob; current test blob `341db1aa278ce03c10aa888e975de1d45a8a64e8` supersedes the earlier `d701167e47aa86caabf5cb582e37e8eb40144f93`.
+- Follow-up isolated Node v22.16.0 tests of exact source-equivalent authority predicate: **526/526 pass**, including four normalized-slash cases, 256 zero-padded ports, 256 nondefault ports, credentials, unported and wrong-host controls.
+- This remains **source-equivalent Node evidence, not local repository Vitest or native-browser proof**. Only exact-head hosted checks after the updated branch, and genuine separate review, can qualify the PR. Earlier hosted checks against older heads cannot substitute.
+- Draft PR: https://github.com/djshellshoxxx/GhostPay/pull/424 . Preserve the held integration lock; leave draft and do not merge pending all required gates.
