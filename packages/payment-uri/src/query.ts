@@ -31,6 +31,7 @@ export function pctEncode(s: string): string {
 
 /** Strict percent-decoder: only `%XX` escapes, valid UTF-8, `+` is not allowed raw, result must be non-empty. */
 export function pctDecode(s: string): string {
+  if (typeof s !== 'string') return fail('INVALID_INPUT');
   if (!RAW_OK.test(s) || s.includes('+')) return fail('INVALID_ENCODING');
   const bytes: number[] = [];
   for (let i = 0; i < s.length; i++) {
@@ -75,6 +76,7 @@ export interface QueryOptions {
  * With `foldKeys` the returned keys are lowercased.
  */
 export function parseQuery(q: string, opts: QueryOptions): QueryParam[] {
+  if (typeof q !== 'string') return fail('INVALID_INPUT');
   const max = opts.maxParams ?? 16;
   const parts = q.split('&');
   if (parts.length > max) return fail('INVALID_QUERY');
@@ -123,5 +125,8 @@ export function splitUri(uri: unknown): SplitUri {
 
 /** Builds `key=value` pairs, percent-encoded, joined by `&`. */
 export function buildQuery(pairs: readonly (readonly [string, string])[]): string {
-  return pairs.map(([k, v]) => `${k}=${pctEncode(v)}`).join('&');
+  return pairs.map(([k, v]) => {
+    if (typeof k !== 'string' || !KEY.test(k)) return fail('INVALID_QUERY');
+    return `${k}=${pctEncode(v)}`;
+  }).join('&');
 }
