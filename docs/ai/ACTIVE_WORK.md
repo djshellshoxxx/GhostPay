@@ -1,3 +1,15 @@
+# Pages scan: distinguish duplicate router callbacks from distinct router announcements (2026-11-21 UTC)
+
+Cycle and coordinator: `20261121T0033Z-root`, one sequential assistant; no native subordinate workers or independent verifier available.
+Task branch: `automation/20261121T0033Z/bug/router-duplicate-warning`, base main `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: `apps/web/src/lib/scanMatches.ts`, `apps/web/src/lib/scanMatches.test.ts`, this additive task claim, and `docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md`. No other worker's branch or shared ledger is updated.
+Finding (bounded source audit, unverified in browser): `sharedRouterAddresses` marks the same router announcement twice as a shared one-time address, even though its contract requires two different router records; an asynchronous duplicate/update should not be counted as a second record. Existing `placeScanMatch` usually deduplicates the live UI, so this is a defensive P3 false-positive warning correction, not a payment/cryptographic vulnerability.
+Acceptance: a deterministic regression with duplicate announcement ID and same address does not trigger a shared-address warning, even after status refresh; two distinct router announcement IDs with the same address still trigger it. Preserve all public-scan replay filtering, one-time address identity, chain scope, and existing tests; no key, RPC, transaction, deployment or dependency changes.
+Ownership reconciliation: recent overlapping UI PRs #278/#307/#317/#318 and current #341/#345, plus #262/#264 and #302, were inspected for changed paths; none currently modifies `scanMatches.ts` or `scanMatches.test.ts` (bounded PR sample, not full historical inventory). Recheck before integration. The durable integration lease on `automation/ghostpay-integration-lock` is **held by another coordinator, generation 11**, last read 2026-11-20T23:16:57Z; do not claim, release or merge any protected/shared branch.
+Verification: add test before production fix, execute source-equivalent deterministic check only if original suite is unavailable, and preserve test/CI/independent-review limitations exactly. Existing `SECURITY.md` requirements apply. Draft PR only.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
