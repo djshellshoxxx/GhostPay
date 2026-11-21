@@ -1,0 +1,8 @@
+{
+  "format": "lossless-process-output-v1",
+  "original_filename": "RECOVERY_INTEROP_whitespace.log",
+  "bytes": 320,
+  "sha256": "ae78b7586e08f35fbf31a52131003d2f5c45bfefabfe34d414d9d4df54bac1a8",
+  "encoding": "utf-8",
+  "content": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_invoice_build.log:5: new blank line at EOF.\ndocs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_heap128.log:9: new blank line at EOF.\ndocs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_initial.log:30: new blank line at EOF.\n"
+}

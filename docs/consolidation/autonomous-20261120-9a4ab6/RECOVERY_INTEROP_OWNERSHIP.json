@@ -1,0 +1,1221 @@
+{
+  "created_at_utc": "2026-11-20T23:47:59.858133+00:00",
+  "branch": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+  "base_pr": 269,
+  "base_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+  "snapshot_observed_at_utc": "2026-11-20T23:34:59.281Z",
+  "snapshot_sha256": {
+    "all-open-pr-heads.json": "5d6944954d5891d63c19e7c360f98fd49b860354f1ca1ba5f8267b0e5c94d3f5",
+    "open-pr-path-overlap.json": "f0953ac815ca69ba63c521e5c2fde35e48d23af54e158184f9b57571b10de7f6"
+  },
+  "snapshot_head_count": 111,
+  "snapshot_path_count": 111,
+  "new_owned_paths": [
+    "apps/web/src/lib/paymentKeyExport.interop.test.ts",
+    "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_*"
+  ],
+  "new_test_exact_changed_path_owners": [],
+  "new_evidence_prefix_changed_path_owners": [],
+  "shared_additive_registry_changed_path_owners": [
+    160,
+    209,
+    210,
+    211,
+    213,
+    218,
+    223,
+    224,
+    225,
+    226,
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    238,
+    239,
+    240,
+    243,
+    244,
+    246,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,
+    256,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    277,
+    278,
+    289,
+    290,
+    292,
+    293,
+    294,
+    295,
+    296,
+    297,
+    298,
+    299,
+    300,
+    301,
+    302,
+    303,
+    304,
+    305,
+    307,
+    308,
+    309,
+    310,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    319,
+    320,
+    322,
+    323,
+    324,
+    326,
+    327,
+    332,
+    333,
+    335,
+    336,
+    338,
+    341,
+    344
+  ],
+  "registry_reads": [
+    {
+      "pr": 51,
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "branch": "automation/ghostpay-recurrent-backlog-20261103",
+      "registry_readable": false,
+      "diagnostic": "fatal: path 'docs/ai/ACTIVE_WORK.md' exists on disk, but not in '5835736c12968231ac7b3152e394077bee453622'"
+    },
+    {
+      "pr": 52,
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "registry_readable": false,
+      "diagnostic": "fatal: path 'docs/ai/ACTIVE_WORK.md' exists on disk, but not in '68dc5b502f25ed192f3ca82ee4fece8ee91d3bce'"
+    },
+    {
+      "pr": 82,
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "branch": "codex/setup-autonomous-agent-20261104",
+      "registry_readable": false,
+      "diagnostic": "fatal: path 'docs/ai/ACTIVE_WORK.md' exists on disk, but not in '122e51710eeee51a5ffc3f9dc76ee0b8ec291d43'"
+    },
+    {
+      "pr": 87,
+      "head": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 139,
+      "head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "registry_readable": false,
+      "diagnostic": "fatal: path 'docs/ai/ACTIVE_WORK.md' exists on disk, but not in '364b01f847391cd02b3aecb74e18ddd047096c97'"
+    },
+    {
+      "pr": 140,
+      "head": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "branch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "registry_readable": false,
+      "diagnostic": "fatal: path 'docs/ai/ACTIVE_WORK.md' exists on disk, but not in 'c5efadab9d9af6a0053f489ebe6c0c06e760d025'"
+    },
+    {
+      "pr": 153,
+      "head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "registry_readable": false,
+      "diagnostic": "fatal: path 'docs/ai/ACTIVE_WORK.md' exists on disk, but not in '83fe9b022d2b5a4068137fd7987467f1803803dc'"
+    },
+    {
+      "pr": 160,
+      "head": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "branch": "chatgpt/pages-release-gate-audit-20261114",
+      "registry_readable": true,
+      "registry_sha256": "fafd88e203baa1ec1a34d8e8dda461203f7cfc6160cf59c5fc0495eaf0c5fbee"
+    },
+    {
+      "pr": 205,
+      "head": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "branch": "nodata/zealous-hopper-lr0nxe",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 207,
+      "head": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "branch": "dependabot/github_actions/actions-b9ade1236b",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 209,
+      "head": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "branch": "claude/ghostpay-completion-audit-ot5jjm",
+      "registry_readable": true,
+      "registry_sha256": "8df6deb266e21ca01effdfe8b7779ec935d5e1435a20758624e97e725846bdb2"
+    },
+    {
+      "pr": 210,
+      "head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "registry_readable": true,
+      "registry_sha256": "1261d9e3fb393e88e315be96de828d7c69ac344c079c7abc5bcfd43ec51e612b"
+    },
+    {
+      "pr": 211,
+      "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "branch": "nodata/wonderful-darwin-kd1h22",
+      "registry_readable": true,
+      "registry_sha256": "6c9b6c4513e1b93123239f359e0d8158b808aeabbf7959a90e2612f7507f7785"
+    },
+    {
+      "pr": 212,
+      "head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 213,
+      "head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "registry_readable": true,
+      "registry_sha256": "5d689087bef635605cc5f0e76305bfed531673712be04095ee694c5ca6c0afa6"
+    },
+    {
+      "pr": 215,
+      "head": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "branch": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 217,
+      "head": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 218,
+      "head": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "branch": "claude/exciting-brown-7v69cr",
+      "registry_readable": true,
+      "registry_sha256": "5e2f92b0193d1fab45e278880229fcb6bb7b8ba89e9a21bb5057212b0cf96afc"
+    },
+    {
+      "pr": 219,
+      "head": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "branch": "claude/vibrant-cori-scu18b",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 220,
+      "head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "branch": "security/mythril-full-remediation-20261118",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 221,
+      "head": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "branch": "nodata/wizardly-allen-qwol6u",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 222,
+      "head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "branch": "privacy/hardening-recommendations",
+      "registry_readable": true,
+      "registry_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7"
+    },
+    {
+      "pr": 223,
+      "head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "branch": "nodata/doc-sweep-20261118",
+      "registry_readable": true,
+      "registry_sha256": "e1b7f9580302764c38e0f7d7f0ed8a3b48388131bf25f506127b721d5c43b7f2"
+    },
+    {
+      "pr": 224,
+      "head": "1054daabc5cabe958466ec144582d76137b54910",
+      "branch": "nodata/jolly-rubin-u4zd45",
+      "registry_readable": true,
+      "registry_sha256": "39f33873ccba684fae83af56098a0efc805eae3f034195f40835f044cae7a9da"
+    },
+    {
+      "pr": 225,
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "branch": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "registry_readable": true,
+      "registry_sha256": "84886f74aa760326441a8eb93bd2f22023a9c77443f7032328718024a6a1c146"
+    },
+    {
+      "pr": 226,
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "branch": "chatgpt/ghostpay-sonar-review-20261118",
+      "registry_readable": true,
+      "registry_sha256": "35970ea270880dd4e9ecbf3427f68933deb000bc7c2f8564f8a06054e4797016"
+    },
+    {
+      "pr": 228,
+      "head": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "branch": "chatgpt/ghostpay-own-node-guard-20261118",
+      "registry_readable": true,
+      "registry_sha256": "9347c4c938811ea3659064d7ab6aee18769b1992a0e37beaeecc88255ee301b9"
+    },
+    {
+      "pr": 229,
+      "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "branch": "chatgpt/ghostpay-recovery-review-20261118",
+      "registry_readable": true,
+      "registry_sha256": "27bb52f4a6c1d0f2224bd2d8c992437683f00b11a831af5bddb0394439674746"
+    },
+    {
+      "pr": 230,
+      "head": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "branch": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "registry_readable": true,
+      "registry_sha256": "a2ee770bc8e450a31be16dceddb885ea99d8af6004ef99ea79dedb1c061d6ebd"
+    },
+    {
+      "pr": 231,
+      "head": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "branch": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "registry_readable": true,
+      "registry_sha256": "de31ebb0f4b2f2bbb23934cc583611c58366edb36edde4567433d2e5f4ab0675"
+    },
+    {
+      "pr": 232,
+      "head": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "registry_readable": true,
+      "registry_sha256": "9683c82e9a00ed5e6a3f1fcb4d4e87c9ac463dd76ae39bd2b62b757c5585e55a"
+    },
+    {
+      "pr": 233,
+      "head": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "branch": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "registry_readable": true,
+      "registry_sha256": "36c04e59c75c903cee3c563334238eb23bce69a77b27e9ceec6ed37345796511"
+    },
+    {
+      "pr": 238,
+      "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "branch": "integration/ghostpay-pages-completion-20261118",
+      "registry_readable": true,
+      "registry_sha256": "1eaba538084c0d86735b975b0dd70a2900f72105a8bcf205bff89253dbea2096"
+    },
+    {
+      "pr": 239,
+      "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "registry_readable": true,
+      "registry_sha256": "becb6db66fbbcfa998ad8d6c442ff84de6ecc51aaee5893c133bbfd72ea50dcf"
+    },
+    {
+      "pr": 240,
+      "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "branch": "chatgpt/spec18-recovery-completion-20261118",
+      "registry_readable": true,
+      "registry_sha256": "59a54211208e59a0643b14874f4048744c320365d0a0e63a6ae1e540e787ff9a"
+    },
+    {
+      "pr": 243,
+      "head": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "branch": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "registry_readable": true,
+      "registry_sha256": "f1858b52fd1e27d7beb603faab214918e406dc03f2c88841a5831c1d0d1d5e53"
+    },
+    {
+      "pr": 244,
+      "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "branch": "chatgpt/btc-spent-private-scan-20261118",
+      "registry_readable": true,
+      "registry_sha256": "4e152af4e9261320d51305bb6076a0a4f2dc67edacfe9c04bab07b94be7538f4"
+    },
+    {
+      "pr": 246,
+      "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "registry_readable": true,
+      "registry_sha256": "352c2d6670ec33752bcd324fdfe5a42ce94ba27139a77df80978c4aed0f5b294"
+    },
+    {
+      "pr": 248,
+      "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "branch": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "registry_readable": true,
+      "registry_sha256": "8b91a7c3c450cd195942fd5c91b5aa7f4e0826f3c017b0572e8de2b10f899ece"
+    },
+    {
+      "pr": 249,
+      "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "branch": "chatgpt/ghostpay-tm-hardening-20261118",
+      "registry_readable": true,
+      "registry_sha256": "3bc3274e15251eded41ffec42ec8c03b1fe55b1bfc9a9e40bb20c55d67e05a2d"
+    },
+    {
+      "pr": 250,
+      "head": "22af2074a086d9957a18e310ef8572b28d1facd0",
+      "branch": "integration/ghostpay-historical-promotion-20261118",
+      "registry_readable": true,
+      "registry_sha256": "6ae23f92b68e5c956d78e5a2ef2687dd421a05478293e9dd80b9a2ebda4c78f9"
+    },
+    {
+      "pr": 251,
+      "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "branch": "codex/network-isolation-complete-20261119",
+      "registry_readable": true,
+      "registry_sha256": "435c2e0c0f2b3680bff1534954c2fe615877255072853477563e658c34b6098b"
+    },
+    {
+      "pr": 252,
+      "head": "4085622463411d3ba27f4efb7b73a70575170535",
+      "branch": "repair/ghostpay-pr-231-20261118",
+      "registry_readable": true,
+      "registry_sha256": "9f26aeb4b0579b82d290126ccaf2526ea471b6211e1408cb6df84cca16112978"
+    },
+    {
+      "pr": 253,
+      "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "branch": "repair/ghostpay-pr-87-20261119",
+      "registry_readable": true,
+      "registry_sha256": "27507fdb41ffcf8640c82fd18da7612199be1575e7245ff637861fa010cb2c5a"
+    },
+    {
+      "pr": 254,
+      "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "branch": "chatgpt/btc-spentness-private-scan-20261118",
+      "registry_readable": true,
+      "registry_sha256": "8bf71c7a101a7cb0bc6c096707db9366c4f17f198c1f1a6536d86d85f8286f56"
+    },
+    {
+      "pr": 255,
+      "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "branch": "integration/ghostpay-mythril-security-closure-20261118",
+      "registry_readable": true,
+      "registry_sha256": "e120bf1d30e031c3dc23b9828d13ec45d90f14053fb84058a58421d5ef5a2ce5"
+    },
+    {
+      "pr": 256,
+      "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "branch": "integration/ghostpay-idle-session-completion-20261119",
+      "registry_readable": true,
+      "registry_sha256": "06b34ad5c0bc8016bdf260721771f789d4a541cc8685372653080c477d20f4ae"
+    },
+    {
+      "pr": 258,
+      "head": "84398a79e18673f3e371a405931bc464e1cca99a",
+      "branch": "automation/20261119T073600Z/bug/camera-visibility",
+      "registry_readable": true,
+      "registry_sha256": "db5906b6f248e12c4bcd6f03f50ffb37fdae2162b7d8d17c1429b74473c8206b"
+    },
+    {
+      "pr": 259,
+      "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "branch": "integration/ghostpay-docs-recovery-20261119",
+      "registry_readable": true,
+      "registry_sha256": "e8148fc28ea393d1b0f78afe5e4985ebc4cdc4d8348fc80db5bce7fd8664357d"
+    },
+    {
+      "pr": 260,
+      "head": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+      "branch": "integration/ghostpay-recovery-reconciled-20261119",
+      "registry_readable": true,
+      "registry_sha256": "3cc816d2a29c1cd9eb485ac66b8ec08d21bdd6951c0ab5ed5f5448fd4fed2410"
+    },
+    {
+      "pr": 261,
+      "head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "branch": "automation/20261119T073600Z/coordinator/integration-lock",
+      "registry_readable": true,
+      "registry_sha256": "1d09eff7ee46f594ef0ee658a371976e0b479ff70ebe8b969b885d89cfe40bf1"
+    },
+    {
+      "pr": 262,
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "branch": "codex/ghostpay-feature-consolidation-20261119",
+      "registry_readable": true,
+      "registry_sha256": "845b9e178228c098ff0e2d2eb9c359ab2a936136bb9c8e6dd077ab42e516fb99"
+    },
+    {
+      "pr": 263,
+      "head": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "branch": "maintenance/ghostpay-branch-audit-20261119",
+      "registry_readable": true,
+      "registry_sha256": "1cd57ea572c8ff8db195a8ff6abcfef988d3652a8c7824032096e6211252bbdb"
+    },
+    {
+      "pr": 264,
+      "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "branch": "integration/ghostpay-master-consolidation-20261118",
+      "registry_readable": true,
+      "registry_sha256": "e569c8c81fedd386f33815625c6c7e11e40eb61f82b97030029180ce2de6ecbc"
+    },
+    {
+      "pr": 265,
+      "head": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "branch": "automation/20261119T083600Z/bug/json-canonical-array",
+      "registry_readable": true,
+      "registry_sha256": "14424265a105d25be530667a9a61a5784243fa8a20db343f84e5a6165e5f00d7"
+    },
+    {
+      "pr": 268,
+      "head": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+      "branch": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "registry_readable": true,
+      "registry_sha256": "8a73c5de2c309710c5b089940f20ea96a1b49f1cb9b383fae4d62ca3c0be9859"
+    },
+    {
+      "pr": 269,
+      "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "registry_readable": true,
+      "registry_sha256": "4f557068b32faffa9aa332bf5dbd38fa529de63ca12fca44da5c3b0dd1d0bb87"
+    },
+    {
+      "pr": 270,
+      "head": "73545f63112910d46002718354ab5e99f8652e1f",
+      "branch": "codex/ghostpay-consolidation-followthrough-20261119",
+      "registry_readable": true,
+      "registry_sha256": "ff50824a49e795a740e01c5d06cd3149415831197df68fadf6e8ed561a96d812"
+    },
+    {
+      "pr": 271,
+      "head": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+      "branch": "integration/ghostpay-adapter-qualification-20261119",
+      "registry_readable": true,
+      "registry_sha256": "e370e9867f75aef80e3d1a50baf42ebff461042a0656e17aecb2387baa9b4b8e"
+    },
+    {
+      "pr": 272,
+      "head": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "branch": "review/ghostpay-sweep-quote-lifecycle-20261119",
+      "registry_readable": true,
+      "registry_sha256": "77f1533fb4c9157b2db5b77e228ab293fac30ce64b9919d500c998e582f25e8e"
+    },
+    {
+      "pr": 273,
+      "head": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+      "branch": "codex/ghostpay-consolidation-records-20261119",
+      "registry_readable": true,
+      "registry_sha256": "a505fefa2cae0f76838657e14c94a7bc82aa405b5a22da585d04fbfbfb62ba80"
+    },
+    {
+      "pr": 274,
+      "head": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "branch": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "registry_readable": true,
+      "registry_sha256": "390999c71aa20f5325cdd42deef9495645545f76172679ebee667f431be5c0cc"
+    },
+    {
+      "pr": 275,
+      "head": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+      "branch": "repair/ghostpay-270-policy-fixture-20261119",
+      "registry_readable": true,
+      "registry_sha256": "483dd67e51c234eab8e05088e8dc68039018f8ac9d79888045ea5598160e8dad"
+    },
+    {
+      "pr": 276,
+      "head": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "branch": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "registry_readable": true,
+      "registry_sha256": "250ab1a95ab0f12d44ce46fda8fa20c717de5c0983d999b9d550b9db052bd1e0"
+    },
+    {
+      "pr": 277,
+      "head": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+      "branch": "repair/ghostpay-276-artifact-races-20261119",
+      "registry_readable": true,
+      "registry_sha256": "102a9bd6e3e317a6e9db6a2316e2721deb45c8de5682fd20c835e0028fd64133"
+    },
+    {
+      "pr": 278,
+      "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "registry_readable": true,
+      "registry_sha256": "6a634f4c79e5772d2fc620491373e1a572157f3aebb7e38c723d70ca8742a208"
+    },
+    {
+      "pr": 289,
+      "head": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "registry_readable": true,
+      "registry_sha256": "30a79c61ed5bc53ca5314dd589f429afc463facf2c99fa28c16107c64f2b61b3"
+    },
+    {
+      "pr": 290,
+      "head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "registry_readable": true,
+      "registry_sha256": "e62df5e718591115ab1bd792f327115241fca4e80411401c25750d17e9625058"
+    },
+    {
+      "pr": 292,
+      "head": "936d054ed067d89c773310d42e33939c1129bbfa",
+      "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+      "registry_readable": true,
+      "registry_sha256": "c28d2af73f75136819e52729802c6a07465f8e840559e3d5c6fc25e01d2495b9"
+    },
+    {
+      "pr": 293,
+      "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+      "registry_readable": true,
+      "registry_sha256": "5e949a57e072b2709cfb081add494cfda2be98b3e89e2a414cd63272a6c29140"
+    },
+    {
+      "pr": 294,
+      "head": "172695efb41665a4e50d335029e54184bbb5b328",
+      "branch": "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7",
+      "registry_readable": true,
+      "registry_sha256": "8aa7ef455906b3cc1287b4f6beb603ea6925294b21248746693803c4faf23ad3"
+    },
+    {
+      "pr": 295,
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "branch": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "registry_readable": true,
+      "registry_sha256": "2cf6def20cdde718c7de7332e052793d6d9efae9fc8c6a5903ab0504da7a5a79"
+    },
+    {
+      "pr": 296,
+      "head": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "branch": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "registry_readable": true,
+      "registry_sha256": "aad64ad7e5d3f6b333dd0137bd330b5349010e7e946c963001aa5b7e61a19466"
+    },
+    {
+      "pr": 297,
+      "head": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "registry_readable": true,
+      "registry_sha256": "e4b75b98f64a450b7ced2a62ab1fa0d3ed48d8ba0c0210087445e3bfdbb6ba3b"
+    },
+    {
+      "pr": 298,
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "registry_readable": true,
+      "registry_sha256": "8bc28bfac24be151247b9e10793e187f64ef472d860636e18956ef66c3b38fe0"
+    },
+    {
+      "pr": 299,
+      "head": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "branch": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "registry_readable": true,
+      "registry_sha256": "d5d245e7f3616bfd5b2f16529439b551992a303882e9b4000725883a389a8855"
+    },
+    {
+      "pr": 300,
+      "head": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+      "branch": "feat/ghostpay-privacy-quick-hide-20261120",
+      "registry_readable": true,
+      "registry_sha256": "13c41743839be9dea887e4dbf51fb04ab90c9ef9b42dce27e8969c1f5ad80926"
+    },
+    {
+      "pr": 301,
+      "head": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+      "branch": "automation/20261120T0243Z/worker/format-units-validation",
+      "registry_readable": true,
+      "registry_sha256": "5935c0ff192f733e272d5bf84bec2becc81c4bc8bf5b9b292d7d07cc8d9af3b3"
+    },
+    {
+      "pr": 302,
+      "head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+      "branch": "integration/ghostpay-completion-20261120",
+      "registry_readable": true,
+      "registry_sha256": "43bacff0f8c6f14d71de1cf000abcddda3d52ea1277861cd07f12faa5b13599b"
+    },
+    {
+      "pr": 303,
+      "head": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+      "branch": "fix/ghostpay-format-validation-20261120",
+      "registry_readable": true,
+      "registry_sha256": "72ca2a9a41f7a533403c45e5726af812ce163f9638800ece996e53631257e24a"
+    },
+    {
+      "pr": 304,
+      "head": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+      "branch": "evidence/ghostpay-completion-20261120",
+      "registry_readable": true,
+      "registry_sha256": "43b6882b5f70962aa852a28b712df0080f2cb6a5a470e0974dbd5d647118d8a4"
+    },
+    {
+      "pr": 305,
+      "head": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "registry_readable": true,
+      "registry_sha256": "2295650e8e003257ccc40134f2aa22cff5ebc891c0682c597b1363299dd4e054"
+    },
+    {
+      "pr": 307,
+      "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+      "registry_readable": true,
+      "registry_sha256": "196cd0b31292b2cc43e42c6ab0f73ef7b0ead820dd704a52d7d73ff21c67142c"
+    },
+    {
+      "pr": 308,
+      "head": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "branch": "feat/ghostpay-tor-completion-20261119",
+      "registry_readable": true,
+      "registry_sha256": "18d25c89a3898ad9e088f7151c069f2dd1ab481dc816473f107938bbaa70a489"
+    },
+    {
+      "pr": 309,
+      "head": "e9643073be74dac54c2875143501451812763f9c",
+      "branch": "audit/ghostpay-qa-stress-20261119",
+      "registry_readable": true,
+      "registry_sha256": "ea46e9ea7a1ed022a2dd82c0d514aa06837963d6150947ba53dd09895c88dbe4"
+    },
+    {
+      "pr": 310,
+      "head": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+      "branch": "future/f03-private-payment-links",
+      "registry_readable": true,
+      "registry_sha256": "3ce447a24c2f0dfe3d821e7efd3ab22cb95f717b1360e4c2045ee980ffbed7f0"
+    },
+    {
+      "pr": 312,
+      "head": "9cb8f511b0e1bd4a807fc51d569117b4e991e622",
+      "branch": "audit/bugcheck-core-latest-20261120",
+      "registry_readable": true,
+      "registry_sha256": "f4627303e6ccdb1775bb218b6f4b6fd98ef5917ecc5c95360e75b521eead3145"
+    },
+    {
+      "pr": 313,
+      "head": "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+      "branch": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "registry_readable": true,
+      "registry_sha256": "e25d1be002518a2705df46562f70446b190eb7452a596b02a7ee836368e72d4e"
+    },
+    {
+      "pr": 314,
+      "head": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+      "branch": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "registry_readable": true,
+      "registry_sha256": "1b9eca045c2e64049d8ee394acf85548c3d1a6f82607b15dc87f3995b24a3f4a"
+    },
+    {
+      "pr": 315,
+      "head": "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+      "branch": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "registry_readable": true,
+      "registry_sha256": "73962338e7ad7db1f25dc3a08e4942454fb06e6a09f4a350d27a6f572d4de91c"
+    },
+    {
+      "pr": 316,
+      "head": "e0c583be2514b44af7f3b15619fb8160358f1470",
+      "branch": "automation/20261120T1241Z/bug/receipt-print-css",
+      "registry_readable": true,
+      "registry_sha256": "bcba9321a100c9238f3602a1730ea19053af14637bdf0e1edc8f9ea1e06c49ea"
+    },
+    {
+      "pr": 317,
+      "head": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+      "branch": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "registry_readable": true,
+      "registry_sha256": "8fa50360a06abfce4cf12bbbe5ff7a7b2e5059412448e55c7725bad162bf6160"
+    },
+    {
+      "pr": 319,
+      "head": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1",
+      "branch": "fix/ghostpay-backup-completion-20261120",
+      "registry_readable": true,
+      "registry_sha256": "d70681671b8c7c3d34f29ac703c6036ffd38e45bb45cd8041a4c1c4791229a1f"
+    },
+    {
+      "pr": 320,
+      "head": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+      "branch": "fix/ghostpay-tor-qualification-20261120",
+      "registry_readable": true,
+      "registry_sha256": "1bc4e1f48c85e241f3f9328c0d85bf0d0072bb2f7e191fa6abbb9e65476e152a"
+    },
+    {
+      "pr": 322,
+      "head": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "branch": "future/f04-merchant-dashboard",
+      "registry_readable": true,
+      "registry_sha256": "27672e2e87900aca69380ff0b90897ce5043d04c6bea39055723c32d7c48a6e7"
+    },
+    {
+      "pr": 323,
+      "head": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "branch": "future/f05-ghostproof",
+      "registry_readable": true,
+      "registry_sha256": "3a5e6b50a854734061d05d7000dc3aa62502079b2fd23a2fec0248012c797b60"
+    },
+    {
+      "pr": 324,
+      "head": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "branch": "future/f10-private-recurring",
+      "registry_readable": true,
+      "registry_sha256": "db68519e3c1b380e8c2dc5e583b0419834baf947369690716ef99b65b8dd1e36"
+    },
+    {
+      "pr": 326,
+      "head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "branch": "feature/ghostpay-retention-completion-20261120",
+      "registry_readable": true,
+      "registry_sha256": "782baaa96eaf5dc34144aad898a72c54631c32ec1c7e4f1d265fdb4839fb76c1"
+    },
+    {
+      "pr": 327,
+      "head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "branch": "feature/ghostpay-retention-focus-20261120",
+      "registry_readable": true,
+      "registry_sha256": "b5d7c75cf6a39219b24d0f510a676f791094e14032bfd4ff9ec566ad736f5ae8"
+    },
+    {
+      "pr": 332,
+      "head": "71632fa389ae93824b2f42d265278a9bd0f6de59",
+      "branch": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "registry_readable": true,
+      "registry_sha256": "8db3f5776dfb3d8e998cc087319d6208f506e9b4e28e186ff392e63239d8fbcf"
+    },
+    {
+      "pr": 333,
+      "head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+      "branch": "fix/ghostpay-backup-preflight-20261120-r2",
+      "registry_readable": true,
+      "registry_sha256": "0545d58bf85219a5a6f4c77bcc3aa4d5c19937b508897264e5cd67d9e6cbc33e"
+    },
+    {
+      "pr": 335,
+      "head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+      "branch": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+      "registry_readable": true,
+      "registry_sha256": "23fb3a156cf33e2a543a7f5d28f6377dbeedf05b8e3c2b1232249c29f6f257cf"
+    },
+    {
+      "pr": 336,
+      "head": "410353a23631234aa888e46f38df22291c699a26",
+      "branch": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+      "registry_readable": true,
+      "registry_sha256": "22a9b215dbba50a418a0aea38b839258c788364dac3857d3b64dd4285305b5eb"
+    },
+    {
+      "pr": 337,
+      "head": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+      "branch": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "registry_readable": true,
+      "registry_sha256": "744fc58e051abbff686358d100ffc279a0d1a5f730eb9e6c981dca834e6e0973"
+    },
+    {
+      "pr": 338,
+      "head": "692cac58b1c345137264936e60bee7b1e2eed8b2",
+      "branch": "automation/20261120T2036Z/bug/btc-preview-network",
+      "registry_readable": true,
+      "registry_sha256": "d6654c8a88266ac06b770955a5e8381030e75bd4e76cfb978a862e668ea82b3b"
+    },
+    {
+      "pr": 339,
+      "head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+      "branch": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+      "registry_readable": true,
+      "registry_sha256": "744fc58e051abbff686358d100ffc279a0d1a5f730eb9e6c981dca834e6e0973"
+    },
+    {
+      "pr": 340,
+      "head": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4",
+      "branch": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "registry_readable": true,
+      "registry_sha256": "744fc58e051abbff686358d100ffc279a0d1a5f730eb9e6c981dca834e6e0973"
+    },
+    {
+      "pr": 341,
+      "head": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "branch": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "registry_readable": true,
+      "registry_sha256": "5743aabd41f6b17c2fee47a9e3c05cf48348d8cc060ae94989edc5b89a4dcb13"
+    },
+    {
+      "pr": 342,
+      "head": "06fd87c3e90000118ffa94048529db36f0a67d41",
+      "branch": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "registry_readable": true,
+      "registry_sha256": "744fc58e051abbff686358d100ffc279a0d1a5f730eb9e6c981dca834e6e0973"
+    },
+    {
+      "pr": 343,
+      "head": "f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7",
+      "branch": "docs/ghostpay-coordination-ledger-20261120",
+      "registry_readable": true,
+      "registry_sha256": "e07ccd22cbe6aa474b1a2597f60884bba3c3455b82e600a7276563dd0dd3d99f"
+    },
+    {
+      "pr": 344,
+      "head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "branch": "fix/ghostpay-request-file-async-20261120-r3",
+      "registry_readable": true,
+      "registry_sha256": "cc22ee81b47d666e80fd056b6eff5449efe691943175af632d22a1903146102d"
+    }
+  ],
+  "related_claims": [
+    {
+      "title": "# Spec 18 key portability + consolidation follow-through \u2014 2026-11-18 (ACTIVE)",
+      "text": "# Spec 18 key portability + consolidation follow-through \u2014 2026-11-18 (ACTIVE)\n\nWorker: Claude Code cloud session `ghostpay-consolidation-9xhtxg` (this session promoted PR #203 to `main` as\n`5467c158`). Spec 18 work started 06:27 UTC from candidate `71abc7e5` (tree equal to `main` `5467c158`) on local branch\n`spec18-local`; pushed to `claude/ghostpay-consolidation-9xhtxg-spec18`. Committed so far: format reference `a62f489d`,\ncodec `5c0a12cc`, independent recovery script + K04 anvil interop + user guide `b5762d19`; web UI, e2e, independent\nreview and verification in progress.\n\n| Lane | Owned paths (exclusive) | Acceptance |\n|---|---|---|\n| Spec 18 K01-K06 (codec, recovery, web UI, e2e) | `docs/specs/18-stealth-keypair-export-formats.md`; `packages/ux-vault/src/stealth-export-portable*.ts`, `packages/ux-vault/src/{portable,portable-errors}.ts` export/error lines; `test-vectors/{generate-stealth-export.mjs,stealth-export.json}`; `scripts/recovery/**`; recovery user-guide page; `apps/web/src/lib/{stealthExport,paymentKeyExport}.ts` (+ tests), re-authentication helper lines in `apps/web/src/lib/{session,keyVault}.ts`; spec 18 entry points in `apps/web/src/views/{Scan,SellerKeys}.tsx`; `apps/web/src/components/StealthExport*.tsx`; `apps/web/e2e/stealth-export.spec.ts`; `stealthExport.*` / `error.stealthExport.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`; one glob added to the ts-test shard-0 script-test line in `.github/workflows/ci.yml` | Spec 18 acceptance list on one exact SHA; independent review; external wallet/device rows pending |\n| #204 reconciliation (PR #206) | `CLAUDE.md`, `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`, the ci.yml shard-0 script-test line | Merged after green CI |\n| Security/release reconciliation (PR #212) | `docs/audits/{mythril-reevaluation,echidna-and-fee-token-review,ci-supply-chain-review}-20261118.md`, `docs/handoffs/consolidation-20261118/{OWNER_ACTION_PACKET,STATIC_BETA_DECISIONS}.md`, `docs/pages/PAGES_QUALIFICATION_20261118.md`, `scripts/contract-analysis/mythril-disposition-check.mjs` + test; already made before seeing #209's claim: `.github/dependabot.yml` (CI-06), `apps/web/package.json` `validate:deployments` script + `apps/web/src/validateDeploymentsScript.test.ts` + `apps/web/deployments/README.md` (B03) | Merged after green CI; #209 lanes B1/B4 may skip CI-06 and B03 |\n\nNot claimed (left to PR #209 / #211): SEC-09/SEC-10 Pages origin and loopback CSP, every other #205 row.\nOut of scope: deployment, signing, release, mainnet, contract source changes, branch deletion, owner decisions.",
+      "prs": [
+        213,
+        229
+      ]
+    },
+    {
+      "title": "# Pages Spec 18 recovery integration \u2014 2026-11-18",
+      "text": "# Pages Spec 18 recovery integration \u2014 2026-11-18\n\nWorker: security_recovery (independent integration lane). Branch:\n`integration/ghostpay-recovery-completion-20261118`. Base:\n`dfc75ef2087fa6463ae59e0818abec01796c578d`.\nOwned paths: Spec 18 export/recovery components and tests, paymentKeyExport and stealthExport\nhelpers, exact credential/session additions, ux-vault portable codec and tests, recovery\nscripts/vectors, recovery i18n entries, exact Scan/SellerKeys wiring, and this handoff.\nInputs: #213 `ebf7c92c3be1c7aebd37fc58b5567e114fb932fc` and #229\n`18110015e99efbeb4f23d47cd88bd6f917010108`. The coordinator owns unrelated\nprivacy/session/scanner changes and final integration. Acceptance: inspect current sources,\nreconcile both PRs onto live main, reproduce and fix concrete defects, run complete focused\ncodec/recovery/vault checks plus web typecheck and scoped lint, and record exact evidence.\nNo remote mutation, deployment, release, mainnet enablement or browser-pass claim.\nStatus: integrated and independently reviewed at code/test source\n`f2ed1ed4240f91ef2fb41f3edaf3ea6546e87e60`. Web recovery selection 135/135,\ncore crypto 75/75 and complete vault coverage 348/348 pass; the independent\nexport/i18n selection passes 24/24. Node recovery passes 15 cases, with the\nseparate raw-key interoperability case passing on available Foundry 1.5.1 only.\nFull-web typed lint remains blocked by executor memory; actual browser, pinned\nFoundry 1.8.5 and final combined/hosted qualification remain pending. See\n[the exact-source recovery handoff](../handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md).",
+      "prs": [
+        238,
+        239,
+        240,
+        243,
+        246,
+        249,
+        251,
+        260,
+        262,
+        264,
+        269,
+        270,
+        275,
+        278,
+        290,
+        292,
+        293,
+        294,
+        295,
+        297,
+        298,
+        300,
+        302,
+        303,
+        304,
+        326,
+        327,
+        336
+      ]
+    },
+    {
+      "title": "# Spec 18 key portability + consolidation follow-through \u2014 2026-11-18 (ACTIVE)",
+      "text": "# Spec 18 key portability + consolidation follow-through \u2014 2026-11-18 (ACTIVE)\n\nWorker: Claude Code cloud session `ghostpay-consolidation-9xhtxg` (this session promoted PR #203 to `main` as\n`5467c158`). Spec 18 work started 06:27 UTC from candidate `71abc7e5` (tree equal to `main` `5467c158`) on local branch\n`spec18-local`; pushed to `claude/ghostpay-consolidation-9xhtxg-spec18`. Committed so far: format reference `a62f489d`,\ncodec `5c0a12cc`, independent recovery script + K04 anvil interop + user guide `b5762d19`; web UI, e2e, independent\nreview and verification in progress.\n\n| Lane | Owned paths (exclusive) | Acceptance |\n|---|---|---|\n| Spec 18 K01-K06 (codec, recovery, web UI, e2e) | `docs/specs/18-stealth-keypair-export-formats.md`; `packages/ux-vault/src/stealth-export-portable*.ts`, `packages/ux-vault/src/{portable,portable-errors}.ts` export/error lines; `test-vectors/{generate-stealth-export.mjs,stealth-export.json}`; `scripts/recovery/**`; recovery user-guide page; `apps/web/src/lib/{stealthExport,paymentKeyExport}.ts` (+ tests), re-authentication helper lines in `apps/web/src/lib/{session,keyVault}.ts`; spec 18 entry points in `apps/web/src/views/{Scan,SellerKeys}.tsx`; `apps/web/src/components/StealthExport*.tsx`; `apps/web/e2e/stealth-export.spec.ts`; `stealthExport.*` / `error.stealthExport.*` keys in `apps/web/locales/*.json` and `apps/web/src/i18n/securityKeys.ts`; one glob added to the ts-test shard-0 script-test line in `.github/workflows/ci.yml` | Spec 18 acceptance list on one exact SHA; independent review; external wallet/device rows pending |\n| #204 reconciliation (PR #206) | `CLAUDE.md`, `.claude/skills/ghostpay-package-map/PACKAGE_MAP.md`, the ci.yml shard-0 script-test line | Merged after green CI |\n| Security/release reconciliation (PR #212) | `docs/audits/{mythril-reevaluation,echidna-and-fee-token-review,ci-supply-chain-review}-20261118.md`, `docs/handoffs/consolidation-20261118/{OWNER_ACTION_PACKET,STATIC_BETA_DECISIONS}.md`, `docs/pages/PAGES_QUALIFICATION_20261118.md`, `scripts/contract-analysis/mythril-disposition-check.mjs` + test; already made before seeing #209's claim: `.github/dependabot.yml` (CI-06), `apps/web/package.json` `validate:deployments` script + `apps/web/src/validateDeploymentsScript.test.ts` + `apps/web/deployments/README.md` (B03) | Merged after green CI; #209 lanes B1/B4 may skip CI-06 and B03 |\n\nNot claimed (left to PR #209 / #211): SEC-09/SEC-10 Pages origin and loopback CSP, every other #205 row.\nOut of scope: deployment, signing, release, mainnet, contract source changes, branch deletion, owner decisions.",
+      "prs": [
+        238,
+        239,
+        240,
+        243,
+        246,
+        249,
+        251,
+        260,
+        262,
+        264,
+        269,
+        270,
+        275,
+        278,
+        290,
+        292,
+        293,
+        294,
+        295,
+        297,
+        298,
+        300,
+        302,
+        303,
+        304,
+        326,
+        327,
+        336
+      ]
+    },
+    {
+      "title": "# Spec 18 independent completion review \u2014 2026-11-18",
+      "text": "# Spec 18 independent completion review \u2014 2026-11-18\n\nCoordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.\nBase: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at\n`dfc75ef2087fa6463ae59e0818abec01796c578d`. A concurrent local Spec 18 implementation\non `chatgpt/spec18-recovery-completion-20261118` is preserved read-only. This branch\nintegrates a fixed, hashed snapshot for independent testing and fixes, without\nchanging the original checkout or its branch.\n\nOwnership: coordinator owns snapshot integration, browser acceptance, locales, reports\nand publication; separate review lanes inspect crypto/offline recovery and UI/lifecycle\nwith edits assigned explicitly after findings. Acceptance: all twenty specified threats\nare traced to source and executed tests; backup retention and verification stay distinct;\nimports require fresh bound consent; offline recovery reproduces spending authority;\nfull feature gates execute or exact blockers are recorded. No release, deployment,\nmain merge, forced update, secret persistence or unrelated feature work.\n\nAssigned lanes on this branch:\n\n- `crypto_recovery_review`: `packages/ux-vault/src/stealth-export-portable*.ts`,\n  `scripts/recovery/**`, the Spec 18 format reference and independent recovery guide.\n  Acceptance: authenticated bounded recovery, authority reproduction and failure cleanup.\n- `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,\n  `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:\n  bound fresh consent, verify-only disposal, selected-file and session cancellation.\n  A reproduced import-preservation defect additionally assigns the narrow `session.ts`\n  box/install transaction and `session.atomicity.test.ts`: stage the replacement\n  before disposing the old keys and clean partially allocated secret boxes on failure.\n- Coordinator: remaining export panels/Common, locales/security keys, browser tests,\n  dependency preparation, combined qualification, evidence and integration.\n- `recovery_recon`: read-only independent final source/threat review; sole write scope\n  is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.\n\nHosted test follow-up, `lifecycle_review`: local source\n`58995408bec0e072a969db7bd4eb4687579bd4a7`; findings from hosted jobs\n`135206455356`, `135206455231` and `135206357114`.\nOwned paths: the test-only receiver/type repairs in `apps/web/e2e/stealth-export.spec.ts`\nand `apps/web/src/lib/session.atomicity.test.ts`; exact legacy `Verify backup` button\nselectors across the affected `apps/web/e2e/` journeys. Acceptance: resolve the three\nhosted typed-lint diagnostics and disambiguate legacy keystore verification from the\nnew Spec 18 verify-only button while retaining all assertions, timing and release gates.\nRun only bounded focused checks during the coordinator's full web coverage run;\nfresh hosted browser/lint results remain necessary. No runtime or remote changes.\n\nHosted real-crypto synchronization follow-up, `lifecycle_review`: local source\n`7d99c223e977938cd96c5e496232bad44a3b4799`, published candidate\n`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`; hosted job `135212473022`.\nOwned path: `apps/web/src/components/StealthExportVerification.test.tsx` only.\nThe two real-verification cases exceeded Testing Library's default polling deadline\nwhile the KDF remained active. Observe the actual call-through verification promise\nand await its settlement inside React `act` before the existing DOM assertions.\nRequire the real rejection for the wrong passphrase. Preserve cryptography, KDF cost,\nall assertions, the global test deadline and every gate; no synthetic success or delays.\nAcceptance: focused 14-case file and the existing 13-file feature selection execute,\nwith separate source review and a fresh hosted full-web result still required.\n\nFinal status: Spec 18 feature acceptance complete on local `8461dbdf`, published\n`07a7497d1a0cb39fb6904e5c50f8a52db2285820` (identical tree\n`6febc03ffd521fe9ac00ac10275f9ff625db509c`). Final hosted web coverage passes\n3,000 tests with one existing BTC regtest skip; the separate nocov phase passes 3/3.\nVault 353/353, core crypto 76/76, all eight Spec 18 browser cases in each profile,\nPages Anvil 16/16, typechecking, source builds and production dependency audit pass.\nIndependent offline recovery passes 22/22 and synthetic Foundry spending passes 1/1.\nAll twenty threats are reviewed with no unresolved feature blocker. Draft PR #239\nis stacked on the unchanged #238 base. Inherited owner-review/package-map gates,\nchain-adapter lint and hostile-text navigation remain failed; release/device limits\nremain explicit. Final report and raw evidence: `docs/handoffs/spec18-reviewed-20261118/`.\nThe final handoff commit changes documentation/evidence only. No merge or deployment.",
+      "prs": [
+        239,
+        260
+      ]
+    },
+    {
+      "title": "# Spec 18 portable recovery completion \u2014 2026-11-18",
+      "text": "# Spec 18 portable recovery completion \u2014 2026-11-18\n\nCoordinator: ChatGPT root. Branch: `chatgpt/spec18-recovery-completion-20261118`.\nBase: PR #238, `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at\n`dfc75ef2087fa6463ae59e0818abec01796c578d`. The existing #213/#229 implementation\nis already present. This task is stacked on #238; it does not merge that consolidation.\n\nExclusive lanes on this task branch:\n\n- Coordinator: export lifecycle panels other than `StealthExportRecovery`, shared export helpers,\n  seller-session/backup integration if required, locale catalogs/security-key declarations, browser\n  acceptance tests, this registry, and completion/security reports.\n- Recovery UI worker: `apps/web/src/components/StealthExportRecovery.tsx`,\n  `apps/web/src/lib/paymentKeyExport.ts`, and their focused tests.\n- Crypto/recovery worker: `packages/ux-vault/src/stealth-export-portable*`, `scripts/recovery/**`,\n  deterministic recovery vectors if needed, the format reference, and independent recovery guide.\n  Follow-up: `apps/web/src/AppShell.tsx` and `AppShell.beforeUnload.test.tsx` for the confirmed\n  cross-tab vault-deletion/sole-copy exit risk; preserve imported complete-backup exceptions.\n- Reconnaissance/reviewer: read-only branch/source review and final independent security review.\n\nAcceptance: export/retention/verification states remain distinct; saved files can be verified without\ninstalling keys; imports preserve existing keys until fresh bound consent; cancellation and locking\ndiscard stale results; offline recovery reproduces addresses and spending authority; malicious inputs\nfail safely. Every confirmed defect gets a regression test. Execute applicable original gates and\nreal browser checks; record unavailable or failing gates explicitly. No deployment, release,\nmain merge, force-push, branch deletion, custody service, or unrelated feature work.\n\nStatus: feature acceptance complete for the supported scheme-1 EVM EOA scope. Published\nimplementation `032c42fc3d5e52d8428a7907775835b5d1ed3704`, local equivalent\n`eb9e244232a6b7002e7dfc7085041cbf4177a566` and hosted merge\n`b53f116b825d7cf6e85681fc835aec18ef7add75` have identical tree\n`631d9b0765cd2c4a919bb4e6de6ae1cc6574cfd5`. Eight findings are resolved; independent\nreview has no unresolved feature blocker. Original whole-workspace typecheck passed;\nwhole-web coverage passed 2,997 tests with one existing Bitcoin skip and unchanged\nthresholds, followed by 3/3 nocov tests. Both Chromium profiles passed all nine Spec 18\njourneys, including actual BOM-file refusals; Pages artifact acceptance passed 16/16.\nDraft PR [#240](https://github.com/djshellshoxxx/GhostPay/pull/240) remains stacked on\n#238. Overall integration/release qualification is incomplete: inherited browser,\nlint and script gates remain failing, inherited CodeQL/Mythril issues remain open,\nand automatic approval review blocked a fresh npm audit. See the\n[completion report](../handoffs/spec18-completion-20261118/COMPLETION_REPORT.md),\n[security review](../handoffs/spec18-completion-20261118/SECURITY_REVIEW.md) and\n[hosted validation](../handoffs/spec18-completion-20261118/HOSTED_VALIDATION.md).\nNo main merge, deployment or release was performed.",
+      "prs": [
+        240
+      ]
+    },
+    {
+      "title": "# Recovery authority boundary review \u2014 2026-11-19",
+      "text": "# Recovery authority boundary review \u2014 2026-11-19\n\nWorker: recovery_completion; branch: `codex/ghostpay-recovery-authority-20261119`.\nBase: `b529a720` from existing master consolidation. The earlier main-based Spec18 port is preserved locally at `2176e4937a905d3c5603b5db9560d8675d0b51c5` and is superseded because the master already contains its strongest #239/#240/#256 behaviors.\nOwned paths: `apps/web/src/lib/paymentKeyExport.ts`, focused recovered-key expiry regressions, `scripts/recovery/stealth-export-recover.test.mjs`, and scoped evidence/handoff.\nAcceptance: reproduce and close any resumed-async/recovered-key loan that bypasses synchronous idle authority checks; preserve empty-session recovery, exact saved-byte verification, safe replacement, and boxed-key disposal. Retain independent recovery permission isolation on supported Node versions. No duplicate feature import, dependency, custody, contract, or release changes.\nStatus: implemented at `bdf6589f0dd07d9ab1935489c72160e1d99f2c82`; baseline five failures reproduced, 39 related tests pass on Node 24, six expiry cases plus independent recovery isolation pass on Node 22. Independent review and combined-head CI remain coordinator gates. Evidence: `docs/handoffs/recovered-key-authority-20261119/REVIEW.md`.",
+      "prs": [
+        262,
+        269,
+        270,
+        275,
+        278,
+        290,
+        292,
+        293,
+        294,
+        295,
+        297,
+        298,
+        300,
+        302,
+        303,
+        304,
+        326,
+        327,
+        336
+      ]
+    },
+    {
+      "title": "# Spec 18 independent completion review \u2014 2026-11-18",
+      "text": "# Spec 18 independent completion review \u2014 2026-11-18\n\nCoordinator: ChatGPT root a264. Branch: `chatgpt/spec18-recovery-reviewed-20261118-a264`.\nBase: PR #238 at `198aa5baff22272453733a0f3dcfcac0e0994eec`; main observed at\n`dfc75ef2087fa6463ae59e0818abec01796c578d`. A concurrent local Spec 18 implementation\non `chatgpt/spec18-recovery-completion-20261118` is preserved read-only. This branch\nintegrates a fixed, hashed snapshot for independent testing and fixes, without\nchanging the original checkout or its branch.\n\nOwnership: coordinator owns snapshot integration, browser acceptance, locales, reports\nand publication; separate review lanes inspect crypto/offline recovery and UI/lifecycle\nwith edits assigned explicitly after findings. Acceptance: all twenty specified threats\nare traced to source and executed tests; backup retention and verification stay distinct;\nimports require fresh bound consent; offline recovery reproduces spending authority;\nfull feature gates execute or exact blockers are recorded. No release, deployment,\nmain merge, forced update, secret persistence or unrelated feature work.\n\nAssigned lanes on this branch:\n\n- `crypto_recovery_review`: `packages/ux-vault/src/stealth-export-portable*.ts`,\n  `scripts/recovery/**`, the Spec 18 format reference and independent recovery guide.\n  Acceptance: authenticated bounded recovery, authority reproduction and failure cleanup.\n- `lifecycle_review`: `StealthExportRecovery`, `StealthExportVerification`, their tests,\n  `StealthExportSelection.test.tsx`, and `paymentKeyExport` source/tests. Acceptance:\n  bound fresh consent, verify-only disposal, selected-file and session cancellation.\n  A reproduced import-preservation defect additionally assigns the narrow `session.ts`\n  box/install transaction and `session.atomicity.test.ts`: stage the replacement\n  before disposing the old keys and clean partially allocated secret boxes on failure.\n- Coordinator: remaining export panels/Common, locales/security keys, browser tests,\n  dependency preparation, combined qualification, evidence and integration.\n- `recovery_recon`: read-only independent final source/threat review; sole write scope\n  is `docs/handoffs/spec18-reviewed-20261118/THREAT_REVIEW.md`.\n\nHosted test follow-up, `lifecycle_review`: local source\n`58995408bec0e072a969db7bd4eb4687579bd4a7`; findings from hosted jobs\n`135206455356`, `135206455231` and `135206357114`.\nOwned paths: the test-only receiver/type repairs in `apps/web/e2e/stealth-export.spec.ts`\nand `apps/web/src/lib/session.atomicity.test.ts`; exact legacy `Verify backup` button\nselectors across the affected `apps/web/e2e/` journeys. Acceptance: resolve the three\nhosted typed-lint diagnostics and disambiguate legacy keystore verification from the\nnew Spec 18 verify-only button while retaining all assertions, timing and release gates.\nRun only bounded focused checks during the coordinator's full web coverage run;\nfresh hosted browser/lint results remain necessary. No runtime or remote changes.\n\nHosted real-crypto synchronization follow-up, `lifecycle_review`: local source\n`7d99c223e977938cd96c5e496232bad44a3b4799`, published candidate\n`b536b1c560c3de43b9b5a3bbbbb8bc34474fbe73`; hosted job `135212473022`.\nOwned path: `apps/web/src/components/StealthExportVerification.test.tsx` only.\nThe two real-verification cases exceeded Testing Library's default polling deadline\nwhile the KDF remained active. Observe the actual call-through verification promise\nand await its settlement inside React `act` before the existing DOM assertions.\nRequire the real rejection for the wrong passphrase. Preserve cryptography, KDF cost,\nall assertions, the global test deadline and every gate; no synthetic success or delays.\nAcceptance: focused 14-case file and the existing 13-file feature selection execute,\nwith separate source review and a fresh hosted full-web result still required.\n\nFinal status: Spec 18 feature acceptance complete on local `8461dbdf`, published\n`07a7497d1a0cb39fb6904e5c50f8a52db2285820` (identical tree\n`6febc03ffd521fe9ac00ac10275f9ff625db509c`). Final hosted web coverage passes\n3,000 tests with one existing BTC regtest skip; the separate nocov phase passes 3/3.\nVault 353/353, core crypto 76/76, all eight Spec 18 browser cases in each profile,\nPages Anvil 16/16, typechecking, source builds and production dependency audit pass.\nIndependent offline recovery passes 22/22 and synthetic Foundry spending passes 1/1.\nAll twenty threats are reviewed with no unresolved feature blocker. Draft PR #239\nis stacked on the unchanged #238 base. Inherited owner-review/package-map gates,\nchain-adapter lint and hostile-text navigation remain failed; release/device limits\nremain explicit. Final report and raw evidence: `docs/handoffs/spec18-reviewed-20261118/`.\nThe final handoff commit changes documentation/evidence only. No merge or deployment.",
+      "prs": [
+        262,
+        264,
+        269,
+        270,
+        275,
+        278,
+        290,
+        292,
+        293,
+        294,
+        295,
+        297,
+        298,
+        300,
+        302,
+        303,
+        304,
+        326,
+        327,
+        336
+      ]
+    },
+    {
+      "title": "# Payment export authorization completion \u2014 2026-11-19",
+      "text": "# Payment export authorization completion \u2014 2026-11-19\n\nWorker: `feature_verification`, delegated by the feature-consolidation coordinator.\nBranch: `codex/ghostpay-export-authorization-20261119`.\nBase: `c40b7581b9b996f33612186bc91960c65273cb64` (PR #262).\nOwned paths: `apps/web/src/views/Scan.tsx`, its focused stealth-export integration tests,\n`apps/web/src/lib/paymentKeyExport.ts`, new `paymentExportRpc.ts` and tests,\n`apps/web/src/lib/networkAuthorization.ts` and focused action-policy tests,\n`docs/privacy/network-egress-inventory.json`, this additive claim, and\n`docs/handoffs/payment-export-authorization-20261119/`.\nAcceptance: reproduce an explicit payment-key export failing after its scan grant expires\nor is cancelled; obtain fresh, bounded authority only after an explicit export action,\nbound to the original verified scan endpoint and chain. Preserve session and live-settings\nchecks, forbid fallback and unrelated RPC methods, propagate export cancellation, and\ndispose each export authorization. Execute RED/GREEN integration regressions and independent\nsource review. Also normalize two existing Scan promise rejections identified in hosted\nlint, preserving Error values and cancellation precedence. The coordinator owns integration\ninto continuation PR #269; this isolated source branch does not change #262, #269 or main.\nNo cryptographic-format, dependency, release-gate or deployment changes.\nStatus: confirmed two-case behavioral RED; initial repair reached both expected downloads,\nthen failed only an exact canonical-URL assertion. Final GREEN and inventory-runner validation\nremain pending after executor interruptions. Source reconstructed from the exact base and\nrecorded patches when the workspace became unavailable; local claim/test commits remain\nprovenance, not claimed identical remote commit IDs. Details are in the scoped qualification.",
+      "prs": [
+        269,
+        278,
+        290,
+        292,
+        293,
+        294,
+        295,
+        297,
+        298,
+        300,
+        302,
+        303,
+        304,
+        326,
+        327,
+        336
+      ]
+    },
+    {
+      "title": "### Outputs generation 2 demonstrated message-boundary repair scope",
+      "text": "### Outputs generation 2 demonstrated message-boundary repair scope\n\nCoordinator confirmed narrow ownership of features/policy/chain.ts read-failure message, lib/paymentKeyExport.ts contract-code refusal descriptor, their existing policy.logic.test.ts/paymentKeyExport.test.ts regressions, four locale entries and explicit critical-key classification. Inspection found selected policy/stealth addresses retained and rendered by these UserFacingError paths. Preserve all RPC inputs, refusal/authorization behavior, export payload construction and known transaction outcomes. Regression before repair; no other caller/lifecycle/transport changes.",
+      "prs": [
+        326,
+        327,
+        336
+      ]
+    }
+  ],
+  "related_changed_paths": [
+    {
+      "pr": 213,
+      "head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    },
+    {
+      "pr": 229,
+      "head": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "branch": "chatgpt/ghostpay-recovery-review-20261118",
+      "changed_paths": [
+        "docs/user/recover-stealth-payment-keys.md",
+        "scripts/recovery/stealth-export-recover.mjs"
+      ]
+    },
+    {
+      "pr": 238,
+      "head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "branch": "integration/ghostpay-pages-completion-20261118",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    },
+    {
+      "pr": 239,
+      "head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    },
+    {
+      "pr": 240,
+      "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "branch": "chatgpt/spec18-recovery-completion-20261118",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    },
+    {
+      "pr": 262,
+      "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+      "branch": "codex/ghostpay-feature-consolidation-20261119",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    },
+    {
+      "pr": 264,
+      "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+      "branch": "integration/ghostpay-master-consolidation-20261118",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    },
+    {
+      "pr": 269,
+      "head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.ts"
+      ]
+    },
+    {
+      "pr": 278,
+      "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "branch": "release/ghostpay-beta-qualification-20261119",
+      "changed_paths": [
+        "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+        "apps/web/src/lib/paymentKeyExport.test.ts",
+        "apps/web/src/lib/paymentKeyExport.testutil.ts",
+        "apps/web/src/lib/paymentKeyExport.ts",
+        "docs/user/recover-stealth-payment-keys.md",
+        "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.test.ts",
+        "packages/ux-vault/src/stealth-export-portable.ts",
+        "scripts/recovery/raw-key-anvil.test.mjs",
+        "scripts/recovery/stealth-export-recover.mjs",
+        "scripts/recovery/stealth-export-recover.test.mjs"
+      ]
+    }
+  ],
+  "original_source_sha256": {
+    "AGENTS.md": "076b37a7d2e0ba651df29fc1a05e594abd433e86f6434172e84a97b805de8c2c",
+    "docs/ai/WORKFLOW.md": "5895562e5264b45c9e23a2c45f756dc3493c54c81561c093cbc995ea74d3c144",
+    "docs/ai/HANDOFF.md": "4af9530af7c0943c6e329bb92d86f6dcf36b5f988a4da6211d56a8e32945017d",
+    "docs/HANDOFF.md": "16afba7bf34502986a0a6a36a939774a03425ba41cb86e29c4ca22051927fbb6",
+    "apps/web/src/lib/paymentKeyExport.ts": "3993ddc825b5129447fdfca89d449ecd3db9eaa524e9cc5a682c324daea48d9f",
+    "apps/web/src/lib/paymentKeyExport.test.ts": "b322c9ac3d4d24bf2cbc396ba8bf04b30f8211a0681c1b848516d208605e0587",
+    "apps/web/src/lib/paymentKeyExport.testutil.ts": "8207b67859452630ffdc1cde79a06b334259c1aa5e4f3cec76c2b0ba7424a99b",
+    "apps/web/src/lib/stealthExport.ts": "d55f7dc1530d31409b1f124fffe18587695c3f150d48a48034b7d4531901d9a4",
+    "packages/ux-vault/src/stealth-export-portable.ts": "d0bad95bd056f18c0fc91e26558505fd116754e75d0ac1bb17fb41606622403f",
+    "scripts/recovery/stealth-export-recover.mjs": "889c3b2cfb25b997d5304bbf4349a5b8d7444467a6ff12e4db4c872673d8c888",
+    "scripts/recovery/stealth-export-recover.test.mjs": "cd64359174bcdf91d12da54f60c815d5f69a40469dce424fe4fe53e6c2c5daa7",
+    "scripts/recovery/raw-key-anvil.test.mjs": "79eb07ef94c7fbf657d5c68913fa09165d8dd68bf2b0963740384e2de35bdbe2",
+    "test-vectors/stealth-export.json": "a8f19ff0ce7ea723447aa4f203f6f6b8dd02d2c3de814be194684632bceba2a6",
+    "docs/user/recover-stealth-payment-keys.md": "60b6a96a422da6f32d48035924f0784cd4133889684935b70327be5826e2768b",
+    "apps/web/vite.config.ts": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+    "apps/web/package.json": "b270cd54ff551e81f7dfc89df378dfefbd2c21b6385a0393a8655018ef64a630",
+    "docs/handoffs/spec18-reviewed-20261118/COMPLETION_REPORT.md": "0ed5c50ad0143fdb67ac6902bfce7f48e2b47b854a4c939b7a918647cdcfb91b",
+    "docs/handoffs/spec18-reviewed-20261118/evidence/crypto-evidence/CRYPTO_REVIEW.md": "dc62f10b6dd00070bf713db3e5d80410aaf13ebb8d1b4ce6c1c0baf86f30f055"
+  },
+  "test_initial_sha256": "580c14f1549d2d35d07682a6e80fd669521008937afd984a20b63d46fcb55806",
+  "decision": "Add only the new application export to standalone decoder test. Existing Spec 18 source, fixtures, formats, defaults, guide and assertions remain authoritative and unchanged.",
+  "limits": "Frozen ownership census, not a live integration lease or merge approval. Six old PRs have no ACTIVE_WORK path; their changed-path inventories are included in the 111-PR check. Broad legacy recovery claims are preserved and explicitly not reassigned. Runtime test execution pending coordinator dependencies and heavy-job slot."
+}

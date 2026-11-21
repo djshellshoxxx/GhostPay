@@ -1,0 +1,50 @@
+{
+  "format": "recovery-interoperability-evidence-v1",
+  "authored_test_commit": "f9e5f9feecf8709e43784ae638a11752e775ae7a",
+  "test_sha256": "580c14f1549d2d35d07682a6e80fd669521008937afd984a20b63d46fcb55806",
+  "process_outputs": [
+    {
+      "original_filename": "RECOVERY_INTEROP_invoice_build.log",
+      "artifact": "RECOVERY_INTEROP_invoice_build.log.artifact.json",
+      "sha256": "a3328b4a4fac82d09b486fbb30d90a2dabd98532f4a28be850aa5ebcd97e55a8",
+      "bytes": 220
+    },
+    {
+      "original_filename": "RECOVERY_INTEROP_secrets.log",
+      "artifact": "RECOVERY_INTEROP_secrets.log.artifact.json",
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "bytes": 50
+    },
+    {
+      "original_filename": "RECOVERY_INTEROP_source_whitespace.log",
+      "artifact": "RECOVERY_INTEROP_source_whitespace.log.artifact.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "original_filename": "RECOVERY_INTEROP_test_heap128.log",
+      "artifact": "RECOVERY_INTEROP_test_heap128.log.artifact.json",
+      "sha256": "9f9eef2eb50a369b276dd35b2f24305f0d675d617a348a0377a6e24396d612e7",
+      "bytes": 212
+    },
+    {
+      "original_filename": "RECOVERY_INTEROP_test_initial.log",
+      "artifact": "RECOVERY_INTEROP_test_initial.log.artifact.json",
+      "sha256": "67d042361ad3a49149babec3f9f843ade49595beceb0f8f1acd4182014ddfb2c",
+      "bytes": 1397
+    },
+    {
+      "original_filename": "RECOVERY_INTEROP_whitespace.log",
+      "artifact": "RECOVERY_INTEROP_whitespace.log.artifact.json",
+      "sha256": "ae78b7586e08f35fbf31a52131003d2f5c45bfefabfe34d414d9d4df54bac1a8",
+      "bytes": 320
+    }
+  ],
+  "dependency_proof": {
+    "artifact": "RECOVERY_INTEROP_DEPENDENCIES.json.gz",
+    "uncompressed_sha256": "dfcb97113b13daa6a0ea256b4c227a27d6beaee7488e1e403cdd20162b297334",
+    "compressed_sha256": "f1cadbe615c3845746ab911336ba1c8499adea67d45ad1d4ad9a148453933952",
+    "uncompressed_bytes": 332768
+  },
+  "review": "Coordinator read the complete new test independently of its author, reviewed the bounded export-to-decoder-to-offline-signature chain, and verified unchanged test bytes against execution metadata. Whole-web qualification remains pending."
+}
