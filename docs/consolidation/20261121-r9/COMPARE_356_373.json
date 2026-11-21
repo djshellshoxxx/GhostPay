@@ -1,0 +1,4902 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    356,
+    374
+  ],
+  "results": [
+    {
+      "branch": "future/p12-selective-disclosure-proofs",
+      "head_sha": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P12-selective-disclosure-proofs/SPEC.md",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p13-confidential-amounts",
+      "head_sha": "8846d5553469753d963258023974ea044467cd6c",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P13-confidential-amounts/SPEC.md",
+          "status": "added",
+          "additions": 134,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p14-shielded-payments",
+      "head_sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P14-shielded-payments/SPEC.md",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p15-anonymous-withdrawals",
+      "head_sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P15-anonymous-withdrawals/SPEC.md",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p16-shielded-cross-chain",
+      "head_sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P16-shielded-cross-chain/SPEC.md",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p17-private-fee-outputs",
+      "head_sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P17-private-fee-outputs/SPEC.md",
+          "status": "added",
+          "additions": 133,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p18-telemetry-release-integrity",
+      "head_sha": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P18-telemetry-release-integrity/SPEC.md",
+          "status": "added",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/p19-optional-fee-gateway",
+      "head_sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P19-optional-fee-gateway/SPEC.md",
+          "status": "added",
+          "additions": 141,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/t01-staggered-transfers",
+      "head_sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/T01-staggered-transfers/SPEC.md",
+          "status": "added",
+          "additions": 183,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/t02-intermediary-routing",
+      "head_sha": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/T02-intermediary-routing/SPEC.md",
+          "status": "added",
+          "additions": 192,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "gh-pages",
+      "head_sha": "cc8d07943a11b77fbed825c1ede0c8234140ad1d",
+      "category": "compare-error",
+      "error": "NOT_FOUND: Error code: NOT_FOUND; Error: GitHub API error 404: {\"message\":\"No common ancestor between eb59d93cffed7848c4aac37d0e9650b87239c6da and cc8d07943a11b77fbed825c1ede0c8234140ad1d.\",\"documentation_url\":\"https://docs.github.com/rest/commits/commits#compare-two-commits\",\"status\":\"404\"}"
+    },
+    {
+      "branch": "ghostpay-cloud-recovery-2026-10-26",
+      "head_sha": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "status": "diverged",
+      "ahead_by": 12,
+      "behind_by": 1694,
+      "merge_base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files_returned": 173,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/abuse.test.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/abuse.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 75,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 62,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 145,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/e2e/recovery.spec.ts",
+          "status": "added",
+          "additions": 303,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/_headers",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/ghostpay-embed-v2.js",
+          "status": "added",
+          "additions": 231,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "added",
+          "additions": 228,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/App.tsx",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.tsx",
+          "status": "added",
+          "additions": 172,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+          "status": "added",
+          "additions": 91,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+          "status": "added",
+          "additions": 218,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.tsx",
+          "status": "modified",
+          "additions": 286,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/embedHeaders.test.ts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/embedV2.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 97,
+          "deletions": 67
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.test.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.ts",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "added",
+          "additions": 105,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "added",
+          "additions": 215,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+          "status": "added",
+          "additions": 201,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+          "status": "added",
+          "additions": 227,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/chain.ts",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/create.ts",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 224,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/flag.ts",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/guard.ts",
+          "status": "added",
+          "additions": 115,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/policy.logic.test.ts",
+          "status": "added",
+          "additions": 372,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/scan2.ts",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "added",
+          "additions": 89,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/withdraw.ts",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 50,
+          "deletions": 48
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/tron/network.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.ts",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.test.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.ts",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceCreate.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.test.ts",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 65,
+          "deletions": 21
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "added",
+          "additions": 164,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 348,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.ts",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "status": "added",
+          "additions": 300,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 205,
+          "deletions": 30
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 193,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "added",
+          "additions": 37,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "added",
+          "additions": 328,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "added",
+          "additions": 512,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 78,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/styles/print.css",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/About.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 14
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+          "status": "added",
+          "additions": 82,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 58,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "added",
+          "additions": 77,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+          "status": "added",
+          "additions": 189,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+          "status": "added",
+          "additions": 130,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "status": "modified",
+          "additions": 191,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 143,
+          "deletions": 78
+        },
+        {
+          "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 345,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 133,
+          "deletions": 44
+        },
+        {
+          "path": "deploy/nginx/nginx.conf",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/security-headers-embed.conf",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-0024-invoice-v2-buffer-policy.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-LOG.md",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "docs/chains/SOURCES-2026-10-25.md",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_20261026.json",
+          "status": "added",
+          "additions": 974,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_SUPERVISOR_20261026.py",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/CODEX_RESTART_2026-10-28.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/LOCAL_CHECKPOINT_2026-10-26_PAYMENT_SWEEP_GUARDS.md",
+          "status": "added",
+          "additions": 188,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PR30_LEAN_STATUS.md",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/solana-payments.md",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 7
+        },
+        {
+          "path": "docs/user/tron-payments.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "package.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 5
+        },
+        {
+          "path": "packages/btc-silent-payments/README.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/errors.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headers.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/sender.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/signer.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/config/tokens.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/client.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/record.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/window.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/vectors/client-v1.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/types.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/devnet/e2e.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "ghostpay-local-lean-boundary-20261027",
+      "head_sha": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "status": "diverged",
+      "ahead_by": 18,
+      "behind_by": 1694,
+      "merge_base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files_returned": 187,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/abuse.test.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/abuse.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 75,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 62,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 145,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/e2e/recovery.spec.ts",
+          "status": "added",
+          "additions": 303,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/_headers",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/ghostpay-embed-v2.js",
+          "status": "added",
+          "additions": 231,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.d.mts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.mjs",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.test.mjs",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "added",
+          "additions": 228,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/App.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 182
+        },
+        {
+          "path": "apps/web/src/AppLean.test.tsx",
+          "status": "added",
+          "additions": 109,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppLean.tsx",
+          "status": "added",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "added",
+          "additions": 196,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.tsx",
+          "status": "added",
+          "additions": 172,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+          "status": "added",
+          "additions": 91,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+          "status": "added",
+          "additions": 218,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.tsx",
+          "status": "modified",
+          "additions": 286,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/embedHeaders.test.ts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/embedV2.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 97,
+          "deletions": 67
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.test.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.ts",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "added",
+          "additions": 105,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "added",
+          "additions": 215,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+          "status": "added",
+          "additions": 201,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+          "status": "added",
+          "additions": 227,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/chain.ts",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/create.ts",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 224,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/flag.ts",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/guard.ts",
+          "status": "added",
+          "additions": 115,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/policy.logic.test.ts",
+          "status": "added",
+          "additions": 372,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/scan2.ts",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "added",
+          "additions": 89,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/withdraw.ts",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 50,
+          "deletions": 48
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/tron/network.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.ts",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.test.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.ts",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceCreate.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.test.ts",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 65,
+          "deletions": 21
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "added",
+          "additions": 164,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 348,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.ts",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "status": "added",
+          "additions": 300,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 205,
+          "deletions": 30
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 193,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "added",
+          "additions": 37,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "added",
+          "additions": 328,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "added",
+          "additions": 512,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 78,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/styles/print.css",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/About.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 14
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+          "status": "added",
+          "additions": 82,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 58,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "added",
+          "additions": 77,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+          "status": "added",
+          "additions": 189,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+          "status": "added",
+          "additions": 130,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "status": "modified",
+          "additions": 191,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 143,
+          "deletions": 78
+        },
+        {
+          "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 345,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 133,
+          "deletions": 44
+        },
+        {
+          "path": "apps/web/vite.config.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/nginx.conf",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/security-headers-embed.conf",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-0024-invoice-v2-buffer-policy.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-LOG.md",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "docs/chains/SOURCES-2026-10-25.md",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_20261026.json",
+          "status": "added",
+          "additions": 974,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_SUPERVISOR_20261026.py",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/CODEX_RESTART_2026-10-28.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/LOCAL_CHECKPOINT_2026-10-26_PAYMENT_SWEEP_GUARDS.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PR30_LEAN_STATUS.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/solana-payments.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/tron-payments.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/errors.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headers.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/sender.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/signer.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/config/tokens.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/client.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/record.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/window.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/vectors/client-v1.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/types.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/devnet/e2e.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/normalize-sbom.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/normalize-sbom.test.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/README.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/repack-viem.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.LICENSE.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.provenance.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.tgz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "ghostpay-offline-deps-2026-10-27",
+      "head_sha": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "status": "diverged",
+      "ahead_by": 13,
+      "behind_by": 1694,
+      "merge_base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files_returned": 178,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/abuse.test.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/abuse.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 75,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 62,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 145,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/e2e/recovery.spec.ts",
+          "status": "added",
+          "additions": 303,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/_headers",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/ghostpay-embed-v2.js",
+          "status": "added",
+          "additions": 231,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "added",
+          "additions": 228,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/App.tsx",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.tsx",
+          "status": "added",
+          "additions": 172,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+          "status": "added",
+          "additions": 91,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+          "status": "added",
+          "additions": 218,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.tsx",
+          "status": "modified",
+          "additions": 286,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/embedHeaders.test.ts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/embedV2.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 97,
+          "deletions": 67
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.test.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.ts",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "added",
+          "additions": 105,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "added",
+          "additions": 215,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+          "status": "added",
+          "additions": 201,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+          "status": "added",
+          "additions": 227,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/chain.ts",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/create.ts",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 224,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/flag.ts",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/guard.ts",
+          "status": "added",
+          "additions": 115,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/policy.logic.test.ts",
+          "status": "added",
+          "additions": 372,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/scan2.ts",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "added",
+          "additions": 89,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/withdraw.ts",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 50,
+          "deletions": 48
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/tron/network.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.ts",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.test.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.ts",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceCreate.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.test.ts",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 65,
+          "deletions": 21
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "added",
+          "additions": 164,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 348,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.ts",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "status": "added",
+          "additions": 300,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 205,
+          "deletions": 30
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 193,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "added",
+          "additions": 37,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "added",
+          "additions": 328,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "added",
+          "additions": 512,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 78,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/styles/print.css",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/About.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 14
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+          "status": "added",
+          "additions": 82,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 58,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "added",
+          "additions": 77,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+          "status": "added",
+          "additions": 189,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+          "status": "added",
+          "additions": 130,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "status": "modified",
+          "additions": 191,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 143,
+          "deletions": 78
+        },
+        {
+          "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 345,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 133,
+          "deletions": 44
+        },
+        {
+          "path": "deploy/nginx/nginx.conf",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/security-headers-embed.conf",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-0024-invoice-v2-buffer-policy.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-LOG.md",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "docs/chains/SOURCES-2026-10-25.md",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_20261026.json",
+          "status": "added",
+          "additions": 974,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_SUPERVISOR_20261026.py",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/CODEX_RESTART_2026-10-28.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/LOCAL_CHECKPOINT_2026-10-26_PAYMENT_SWEEP_GUARDS.md",
+          "status": "added",
+          "additions": 188,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PR30_LEAN_STATUS.md",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/solana-payments.md",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 7
+        },
+        {
+          "path": "docs/user/tron-payments.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 26
+        },
+        {
+          "path": "package.json",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 3
+        },
+        {
+          "path": "packages/btc-silent-payments/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 5
+        },
+        {
+          "path": "packages/btc-silent-payments/README.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/errors.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headers.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/sender.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/signer.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/config/tokens.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/client.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/record.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/window.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/vectors/client-v1.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/types.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/devnet/e2e.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/README.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/repack-viem.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.LICENSE.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.provenance.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.tgz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "ghostpay-sbom-repro-2026-10-27",
+      "head_sha": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "status": "diverged",
+      "ahead_by": 14,
+      "behind_by": 1694,
+      "merge_base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files_returned": 180,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/abuse.test.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/abuse.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 75,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 62,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 145,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/e2e/recovery.spec.ts",
+          "status": "added",
+          "additions": 303,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/_headers",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/ghostpay-embed-v2.js",
+          "status": "added",
+          "additions": 231,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "added",
+          "additions": 228,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/App.tsx",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.tsx",
+          "status": "added",
+          "additions": 172,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+          "status": "added",
+          "additions": 91,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+          "status": "added",
+          "additions": 218,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.tsx",
+          "status": "modified",
+          "additions": 286,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/embedHeaders.test.ts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/embedV2.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 97,
+          "deletions": 67
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.test.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.ts",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "added",
+          "additions": 105,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "added",
+          "additions": 215,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+          "status": "added",
+          "additions": 201,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+          "status": "added",
+          "additions": 227,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/chain.ts",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/create.ts",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 224,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/flag.ts",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/guard.ts",
+          "status": "added",
+          "additions": 115,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/policy.logic.test.ts",
+          "status": "added",
+          "additions": 372,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/scan2.ts",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "added",
+          "additions": 89,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/withdraw.ts",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 50,
+          "deletions": 48
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/tron/network.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.ts",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.test.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.ts",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceCreate.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.test.ts",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 65,
+          "deletions": 21
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "added",
+          "additions": 164,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 348,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.ts",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "status": "added",
+          "additions": 300,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 205,
+          "deletions": 30
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 193,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "added",
+          "additions": 37,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "added",
+          "additions": 328,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "added",
+          "additions": 512,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 78,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/styles/print.css",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/About.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 14
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+          "status": "added",
+          "additions": 82,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 58,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "added",
+          "additions": 77,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+          "status": "added",
+          "additions": 189,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+          "status": "added",
+          "additions": 130,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "status": "modified",
+          "additions": 191,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 143,
+          "deletions": 78
+        },
+        {
+          "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 345,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 133,
+          "deletions": 44
+        },
+        {
+          "path": "deploy/nginx/nginx.conf",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/security-headers-embed.conf",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-0024-invoice-v2-buffer-policy.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-LOG.md",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "docs/chains/SOURCES-2026-10-25.md",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_20261026.json",
+          "status": "added",
+          "additions": 974,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_SUPERVISOR_20261026.py",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/CODEX_RESTART_2026-10-28.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/LOCAL_CHECKPOINT_2026-10-26_PAYMENT_SWEEP_GUARDS.md",
+          "status": "added",
+          "additions": 188,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PR30_LEAN_STATUS.md",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/solana-payments.md",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 7
+        },
+        {
+          "path": "docs/user/tron-payments.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 26
+        },
+        {
+          "path": "package.json",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 3
+        },
+        {
+          "path": "packages/btc-silent-payments/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 5
+        },
+        {
+          "path": "packages/btc-silent-payments/README.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/errors.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headers.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/sender.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/signer.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/config/tokens.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/client.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/record.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/window.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/vectors/client-v1.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/types.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/devnet/e2e.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/normalize-sbom.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/normalize-sbom.test.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/README.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/repack-viem.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.LICENSE.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.provenance.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.tgz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "gpt/ghostpay-beta-spec-20261109",
+      "head_sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1131,
+      "merge_base_sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "gpt/ghostpay-cli-completion-20261109",
+      "head_sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1133,
+      "merge_base_sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "gpt/ghostpay-product-completion-20261109",
+      "head_sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1136,
+      "merge_base_sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}
