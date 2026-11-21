@@ -8,14 +8,32 @@ export interface SafeText {
   readonly flagged: boolean;
 }
 
-const HOSTILE = /[\p{Bidi_Control}\p{Default_Ignorable_Code_Point}\p{Co}\p{Cc}\p{Cs}\u{E0000}-\u{E007F}]/gu;
+const HOSTILE = /[\p{Bidi_Control}\p{Default_Ignorable_Code_Point}\p{Co}\p{Cc}\p{Cs}\u{E0000}-\u{E007F}]/u;
 const KEEP = new Set(['\n', '\t']);
 const MAX = 4096;
 
 function escapeHostile(s: string): string {
-  return s.replace(HOSTILE, (ch) => (KEEP.has(ch) ? ch : `⟦U+${(ch.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(4, '0')}⟧`));
+  let result = '';
+  for (const ch of s) {
+    const visible = !KEEP.has(ch) && HOSTILE.test(ch)
+      ? `⟦U+${(ch.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(4, '0')}⟧`
+      : ch;
+    // Never leave half of a visible U+ marker or a UTF-16 surrogate pair at the display boundary.
+    if (result.length + visible.length > MAX) break;
+    result += visible;
+  }
+  return result;
 }
 
+function capUnicodeText(s: string): string {
+  if (s.length <= MAX) return s;
+  let end = 0;
+  for (const ch of s) {
+    if (end + ch.length > MAX) break;
+    end += ch.length;
+  }
+  return s.slice(0, end);
+}
 /**
  * Prepares untrusted invoice text (memo, line-item descriptions) for display (audit S3-12).
  *
@@ -29,7 +47,7 @@ function escapeHostile(s: string): string {
 export function safeText(s: string): SafeText {
   const clipped = s.length > MAX ? s.slice(0, MAX) : s;
   const r = sanitizeDisplayText(clipped);
-  if (!isReason(r)) return { text: r.text, flagged: r.mixedScript || s.length > MAX };
+  if (!isReason(r)) return { text: capUnicodeText(r.text), flagged: r.mixedScript || s.length > MAX };
   return { text: escapeHostile(clipped.normalize('NFC')), flagged: true };
 }
 
