@@ -7,7 +7,7 @@ import { PostBroadcastError, submitTx, type BroadcastFn, type Runtime, type Stat
 import { browserAttemptStorage, readAttempts, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 import type { PolicyChainDeployment } from './chain';
-import type { PreparedPolicyPayment } from './pay';
+import { paysDerivedPayment, type PreparedPolicyPayment } from './pay';
 
 /** Exact transaction fields the review screen showed (a copy, so later changes to the prepared object are seen). */
 export interface ReviewedPolicyPayment {
@@ -40,7 +40,8 @@ const sameTx = (a: TxRequest, b: TxRequest): boolean => a.to.toLowerCase() === b
 /**
  * Synchronous final gate, run before every wallet request (inside `sendViaWallet`'s last authority check, after all
  * awaits): the session must be unchanged, the wallet on the reviewed chain, and both transactions byte-equal to the
- * review. The payment calldata is decoded again against the deployment and the approval is checked like Pay's.
+ * review. The payment calldata is decoded again against the deployment and its announcement fields must
+ * match the locally derived payment; the approval is checked like Pay's.
  */
 function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPayment, guard: PolicySendGuard, nowSeconds: number): void {
   guard.assertCurrent();
@@ -56,7 +57,7 @@ function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPay
   } catch {
     throw new UserFacingError('Blocked: the payment calldata does not match the verified policy deployment. Nothing was sent.');
   }
-  if (decoded.method !== prepared.built.method || decoded.stealth !== prepared.payment.accountAddress || decoded.owner !== prepared.payment.ownerAddress || decoded.policyHash !== prepared.payment.policyHash) {
+  if (!paysDerivedPayment(decoded, prepared.payment, prepared.built)) {
     throw new UserFacingError('Blocked: the payment calldata does not match the derived policy account. Nothing was sent.');
   }
   const args = routerArgs(prepared);

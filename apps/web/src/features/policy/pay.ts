@@ -7,6 +7,7 @@ import {
   deriveScheme2Payment,
   policyCoversToken,
   type Address,
+  type DecodedPolicyPayment,
   type PolicyPayment,
   type PolicyRecord,
   type Scheme2Payment,
@@ -64,6 +65,18 @@ export function assertPayeeTokenCoverage(metaAddress: string, token: Address | '
   return record === undefined ? 'unknown' : 'covered';
 }
 
+/** Check the decoded call against every announcement field of the locally derived payment. */
+export function paysDerivedPayment(decoded: DecodedPolicyPayment, payment: Scheme2Payment, built: PolicyPayment): boolean {
+  const metadata = decoded.metadata.toLowerCase();
+  return decoded.method === built.method
+    && decoded.stealth === payment.accountAddress
+    && decoded.owner === payment.ownerAddress
+    && decoded.policyHash === payment.policyHash
+    && decoded.ephemeralPublicKey.toLowerCase() === bytesToHex(payment.ephemeralPublicKey).toLowerCase()
+    && metadata === built.metadata.toLowerCase()
+    && metadata.startsWith(bytesToHex(payment.metadataPrefix).toLowerCase());
+}
+
 /**
  * Derives a fresh policy account for the payee and builds the router call. The calldata is decoded
  * again and checked against the derived account and policy before it is returned, so a wallet prompt
@@ -93,7 +106,7 @@ export function preparePolicyPayment(input: PolicyPayInput): PreparedPolicyPayme
     now: input.nowSec,
   });
   const decoded = decodePolicyPaymentCalldata(built.tx.data, input.deployment);
-  if (decoded.stealth !== payment.accountAddress || decoded.owner !== payment.ownerAddress || decoded.policyHash !== payment.policyHash || built.tx.to !== input.deployment.router) {
+  if (!paysDerivedPayment(decoded, payment, built) || built.tx.to !== input.deployment.router) {
     throw new UserFacingError('The prepared payment failed its self-check. Nothing was sent.');
   }
   const approval = token === 'native' ? undefined : { to: token, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [input.deployment.router, input.gross] }) };

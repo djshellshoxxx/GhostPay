@@ -1,3 +1,14 @@
+# Policy validation restoration — 2026-11-21 UTC
+
+Owner: `/root/policy_validation_restore`, coordinator `5ceb6203640a-root`.
+Branch: `recover/ghostpay-policy-validation-20261121-5ceb`; exact parent `e1ab03ca7b07c225ae42d0c16fb79b97f0a1f95c`.
+Owned paths: `packages/policy-scheme/src/{derive,eip712,limits,router}.ts`, narrowly required exports/docs and supported-format tests; `apps/web/src/features/policy/{pay,send}.ts`, narrowly required supported-input fixtures; additive claim and dedicated handoff.
+Scope: selectively restore existing defensive input-consistency and secret-lifetime guards. Preserve the parent asset coverage, exact seller identity, wallet authority, privacy, and transaction-journal behavior. No contracts, protocol, fees, custody, deployment or live-funds changes.
+Acceptance: static defensive source review, final-source supported-format compatibility, original TypeScript/lint/build and permitted existing final-source suites. No vulnerable-revision execution, exploit reconstruction, newly designed adversarial payloads or attack testing. Any unexecuted regression is recorded, never classified as passed. Existing assertions/gates are not removed or weakened.
+Ownership: isolated child only. The current generation-11 lease remains held by `994a0d214fb9-root-r3`; no remote/main/parent writes or lock transition. Root will separately review and publish any exact-source draft.
+
+---
+
 # Policy withdrawal-asset coverage recovery — 2026-11-21 UTC
 
 Owner: `/root/policy_asset_recovery`, coordinator `5ceb6203640a-root`.
