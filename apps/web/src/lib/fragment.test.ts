@@ -25,6 +25,15 @@ describe('fragment helpers', () => {
       dom.window.close();
     }
   });
+  it('rejects malformed pasted invoice fragment boundaries instead of passing them to invoice decoding', () => {
+    expect(extractFragment('#gpi=v1.abc#other')).toBeUndefined();
+    expect(extractFragment('https://x.test/#gpi=v1.abc#other')).toBeUndefined();
+    expect(extractFragment('#gpi=v1.abc?tracking=1')).toBeUndefined();
+    expect(extractFragment('garbage#gpi=v1.abc')).toBeUndefined();
+    expect(extractFragment('https://x.test/#gpi=v1.abc?other=1')).toBeUndefined();
+    expect(extractFragment('https://x.test/path?view=pay#gpi=v1.abc_-')).toBe('#gpi=v1.abc_-');
+    expect(extractFragment('#gpi=v1.abc_-')).toBe('#gpi=v1.abc_-');
+  });
   it('extracts from pasted links and rejects junk', () => {
     expect(extractFragment('  https://x.test/#gpi=v1.abc_-  ')).toBe('#gpi=v1.abc_-');
     expect(extractFragment('#gpi=v1.abc')).toBe('#gpi=v1.abc');
