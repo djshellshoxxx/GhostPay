@@ -1,3 +1,13 @@
+# Signer-pin revocation fail-closed review assertion — 2026-11-21 UTC
+
+Worker: automated GhostPay branch-consolidation continuation, isolated test-only follow-up. 
+Branch: `fix/ghostpay-signer-pin-continue-20261121-r11`; exact parent PR #381 head `df0e715686bc42d270617692a7e310a8b362e840`; main snapshot `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned files: `apps/web/src/views/Pay.signer.test.tsx`, this additive claim and `docs/handoffs/SIGNER_PIN_CONTINUE_GATE_20261121_R11.md`. Do not edit parent PR #381 or #373 source, the wallet runtime, release configuration, or the held generation-11 integration lock.
+Evidence: PR #381 exact-head CI run `44892601797`, `ts-test (web)` job `136813588470` passed 4,416 and failed one assertion in `Pay.signer.test.tsx`. The revoked-pin test finds the expected verification-unavailable warning and retained selected-seller label, but attempts to query a `Continue` button that no longer exists after fail-closed transition to invoice-input rendering. The current `Pay.tsx` source renders that button only in the review state and only while `phase === 'review'`; absent is at least as safe as disabled.
+Acceptance: assert that **no enabled Continue action exists**, whether the stale review is removed or a disabled button is displayed; keep all existing trust-loss/selected-seller checks and every other test untouched. This is a test-expectation correction, not a production security finding. Browser crashes and native Firefox failures remain independently blocked. Exact-head CI and independent review required; no deployment, release or main merge.
+
+---
+
 # Native Firefox reflow assertion — closed disclosure visibility (2026-11-21 UTC)
 
 Worker: GhostPay automation continuation, single coordinator; no independent verifier available.
