@@ -1,3 +1,15 @@
+# GP-BUG-COUNTDOWN-394 — invalid countdown runtime input guard (2026-11-21 16:36 UTC)
+
+Cycle/operator: `20261121T1636Z` one coordinator, sequential source audit, regression-first implementation and self-check. No independent native worker/verifier available; independent review outstanding. Caveman runtime not invoked.
+Branch: `automation/20261121T1636Z/bug/countdown-invalid-runtime`, stacked on existing PR #405 at exact commit `11117b9fff062d859c9db123ff62641cc0479192` (upstream PR #384, baseline main `eb59d93cffed7848c4aac37d0e9650b87239c6da`). Do not alter upstream branch or merge this child alone to main.
+Owned paths: a minimal `formatCountdown` hunk only in `apps/web/src/lib/format.ts`, new isolated `apps/web/src/lib/format.countdown.test.ts`, this append-only claim, and `docs/handoffs/COUNTDOWN_INVALID_RUNTIME_20261121.md`.
+Additional isolated parent-CI repair (evidence found after initial claim): one cast-expression-only change in `apps/web/src/lib/format.test.ts` at line 106 to address exact #405 inherited eslint `@typescript-eslint/no-unnecessary-type-assertion` failure in run `44905138796`, job `136862911631`. Do not change the underlying test values/assertions, parent `formatUnix` source, or the upstream branch. The original #405 owner can independently adopt this child-only repair; no independent approval is claimed. Leave parent `parseUnits` and `formatUnix` unchanged; no workflow, contract or deployment changes.
+Finding: existing [issue #394](https://github.com/djshellshoxxx/GhostPay/issues/394) is open and unclaimed by any identified PR: nonfinite durations display NaN/Infinity or misleading zero. No normal browser reachability or funds-loss proven. Note that #384 owns the shared format source, therefore use a dependent isolated child of #405 and coordinate integration.
+Acceptance: regression first for NaN/Infinity/-Infinity and invalid runtime types, with no attacker-supplied coercion; return existing `invalid time` label for invalid values; preserve all finite negative/zero/fractional/long countdown formatting, no dependencies; run an actual focused source-equivalent Node replay and attempt repository Vitest if checkout available; obtain exact-head hosted CI and independent review before integration.
+Integration lock observed held generation 11 by `994a0d214fb9-root-r3` at `integration-lock.json` on `automation/ghostpay-integration-lock`; expired time does not confer ownership. No lock mutation or protected/shared integration by this worker.
+
+---
+
 # GP-UTC-01 — fail-closed runtime Unix timestamp display (2026-11-21 12:38 UTC)
 
 Cycle/coordinator: `20261121T1238Z/bug/unix-timestamp-runtime-guard`; one assistant, sequential audit, implementation and self-check. Native delegate/independent verifier unavailable; do not count this as independent approval.

@@ -103,7 +103,8 @@ describe('parseUnits malformed runtime boundaries', () => {
 describe('formatUnix untrusted runtime timestamp boundaries', () => {
   it('returns invalid time for nonnumber values instead of coercing or throwing', () => {
     for (const input of [undefined, null, '0', '1700000000', false, 0n, Symbol('timestamp'), {}, [], new Date(0)]) {
-      expect(formatUnix(input as unknown as number)).toBe('invalid time');
+      const runtimeInput: unknown = input;
+      expect(formatUnix(runtimeInput as number)).toBe('invalid time');
     }
   });
 
