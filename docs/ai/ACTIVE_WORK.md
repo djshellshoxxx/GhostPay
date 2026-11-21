@@ -1534,3 +1534,44 @@ dependency upgrade, mainnet request, deployment or remote write.
 - Finding: the exported `canonicalize` array code uses `Array.map` (which skips holes); a sparse array can silently canonicalize to a different array or invalid JSON. Reject unsupported sparse/extra-property array input rather than returning unrepresentative signed/serialized bytes.
 - Acceptance: failing regression against baseline for holes and non-index/symbol own properties; minimal dense-array-preserving validation; regressions green, existing tests and TypeScript/lint when feasible; exact-head hosted CI, independent reviewer and lock-aware integration required before any merge.
 - Conflicts/dependencies: PR #262/#264 touch `receipts.ts` but not the two owned `json*.ts` files at inspected heads; those large candidates remain active. PR #258/#261 CI is pending. Integration lock ref is released at observed `3ae60de55add2763aa7d7a44033d11b96df13adb`; no shared integration authorized by this task.
+
+## Application export to standalone recovery interoperability — 2026-11-20
+
+Worker: `/root/recovery_acceptance`, delegated by the autonomous continuation coordinator.
+Branch: `test/ghostpay-recovery-interoperability-20261120-9a4ab6`.
+Exact base: PR #269 `683f8587b8de45448f14aab0539cb07a5f21bce3`.
+Owned paths: new `apps/web/src/lib/paymentKeyExport.interop.test.ts`, this additive
+claim, and `docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_*` evidence.
+The coordinator approved this test-only scope after review of the existing feature.
+The 111-open-PR snapshot observed at `2026-11-20T23:34:59.281Z` contains no exact
+changed-path owner for the new test or evidence paths. Existing broad Spec 18 and
+payment-export claims remain authoritative for their source; no existing runtime,
+decoder, fixture, guide or test path is reassigned or edited by this claim.
+
+Acceptance: generate a fresh encrypted per-payment file through the existing
+application export service with the real default KDF and public synthetic fixtures;
+write its exact bytes to a temporary file; run the documented independent decoder
+as a separate Node process with the passphrase only on standard input; use its
+returned key to verify the exported address and an offline signature. Preserve
+reauthentication, the existing injected EOA-code check, chain binding, the default
+nonrevealing decoder mode, original formats and every existing assertion. Record
+actual original-config execution and independent source review when available.
+This establishes bounded local byte/key interoperability, not live spending,
+browser download execution or recovery after arbitrary state loss.
+
+Dependencies and execution: the coordinator owns exact-source dependency setup
+and the single heavy-job slot; do not install or start heavy checks independently.
+No production functionality, dependency, configuration, threshold, workflow,
+contract, custody, remote ref, integration lease, deployment or real-funds change.
+PR #269 and the older Spec 18 donor branches remain unchanged and authoritative.
+
+Status: bounded acceptance implemented without production changes. The coordinator
+independently reviewed test SHA-256
+`580c14f1549d2d35d07682a6e80fd669521008937afd984a20b63d46fcb55806` before execution.
+The original invoice-schema build passed. Initial one-worker execution at heap
+384 MiB was killed before assertions; its resource cause remains unconfirmed.
+The coordinator-authorized same-source/configuration retry at heap 128 MiB passed
+one file/one test on Node 24.22.3, retaining the default KDF, all assertions and
+the original time bounds. Raw outputs and source-pinned metadata are in the scoped
+evidence directory. No full-web, hosted, browser or local-chain acceptance is
+claimed; source ownership outside this new test remains with the existing PRs.

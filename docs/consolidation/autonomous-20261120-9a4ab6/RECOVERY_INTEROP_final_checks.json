@@ -1,0 +1,56 @@
+{
+  "observed_at_utc": "2026-11-20T23:53:48.758595+00:00",
+  "checks": [
+    {
+      "name": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 2,
+      "stdout": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_invoice_build.log:5: new blank line at EOF.\ndocs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_heap128.log:9: new blank line at EOF.\ndocs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_initial.log:30: new blank line at EOF.\n",
+      "stderr": "",
+      "log": "RECOVERY_INTEROP_whitespace.log",
+      "log_sha256": "ae78b7586e08f35fbf31a52131003d2f5c45bfefabfe34d414d9d4df54bac1a8"
+    },
+    {
+      "name": "secrets",
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: no committed env files or key material found.\n",
+      "stderr": "",
+      "log": "RECOVERY_INTEROP_secrets.log",
+      "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    },
+    {
+      "name": "source_and_authored_evidence_whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "apps/web/src/lib/paymentKeyExport.interop.test.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_REVIEW.md",
+        "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_OWNERSHIP.json",
+        "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_invoice_build.json",
+        "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_initial.json",
+        "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_heap128.json"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "log": "RECOVERY_INTEROP_source_whitespace.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "interpretation": "Authored test, claim, Markdown report and JSON records only. The separately recorded unrestricted check still reports trailing blank lines in lossless raw logs; raw logs were not rewritten."
+    }
+  ],
+  "scope": "Original staged whitespace check and committed-secret script with unchanged exclusions. These are not a full type/lint/coverage gate.",
+  "finished_at_utc": "2026-11-20T23:54:19.385184+00:00"
+}

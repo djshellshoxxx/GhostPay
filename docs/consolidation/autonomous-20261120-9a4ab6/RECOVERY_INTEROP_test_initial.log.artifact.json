@@ -1,0 +1,8 @@
+{
+  "format": "lossless-process-output-v1",
+  "original_filename": "RECOVERY_INTEROP_test_initial.log",
+  "bytes": 1397,
+  "sha256": "67d042361ad3a49149babec3f9f843ade49595beceb0f8f1acd4182014ddfb2c",
+  "encoding": "utf-8",
+  "content": "\n RUN  v5.1.0 /workspace/scratch/9a4ab6c3d117/GhostPay-recovery-test/apps/web\n\n⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯\n\nVitest caught 1 unhandled error during the test run.\nThis might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.\n\n⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯\nError: [vitest-pool]: Worker forks emitted error.\n ❯ EventEmitter.onTaskError ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5926:21\n ❯ EventEmitter.emit node:events:514:28\n ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5401:22\n ❯ ChildProcess.emit node:events:514:28\n ❯ ChildProcess._handle.onexit node:internal/child_process:324:12\n\nCaused by: Error: Worker exited unexpectedly with signal SIGKILL during started state while running test file /workspace/scratch/9a4ab6c3d117/GhostPay-recovery-test/apps/web/src/lib/paymentKeyExport.interop.test.ts\n ❯ ChildProcess.emitUnexpectedExit ../../node_modules/vitest/dist/chunks/index.Di8au7q4.js:5399:33\n ❯ ChildProcess.emit node:events:514:28\n ❯ ChildProcess._handle.onexit node:internal/child_process:324:12\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n\n\n Test Files   (1)\n      Tests   (1)\n     Errors  1 error\n   Start at  15:50:25\n   Duration  2.82s (transform 59%, import 41%)\n\n"
+}
