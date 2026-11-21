@@ -181,6 +181,14 @@ describe('qr', () => {
     expect(code(() => checkQrCapacity('a', 'X' as 'L'))).toBe('QR');
     expect(code(() => checkQrCapacity('a', 'toString' as 'L'))).toBe('QR');
   });
+  it('rejects malformed UTF-16 rather than counting lossy replacement bytes', () => {
+    // TextEncoder silently changes unpaired surrogates into U+FFFD, so a QR cannot encode the supplied text faithfully.
+    for (const value of ['\uD800', '\uDC00', 'A\uD800B', 'A\uDC00B', '\uD800\uD800\uDC00', '\uD83D\uDE00\uD800']) {
+      expect(code(() => checkQrCapacity(value, 'M')), JSON.stringify(value)).toBe('QR');
+    }
+    // A valid surrogate pair remains accepted and is counted as four UTF-8 bytes.
+    expect(checkQrCapacity('A\uD83D\uDE00B', 'M').bytes).toBe(6);
+  });
   it('tables are monotonic and ordered L>M>Q>H', () => {
     for (const n of [1, 17, 100, 500, 1000, 1273]) {
       const v = (['L', 'M', 'Q', 'H'] as const).map(
