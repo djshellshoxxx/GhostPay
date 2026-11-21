@@ -27,7 +27,16 @@ function escapeHostile(s: string): string {
  * @param s Untrusted text.
  */
 export function safeText(s: string): SafeText {
-  const clipped = s.length > MAX ? s.slice(0, MAX) : s;
+  let clipped = s.length > MAX ? s.slice(0, MAX) : s;
+  // Do not turn a valid supplementary character into a fake unpaired-surrogate warning at the cut.
+  // Keep genuinely unpaired high surrogates for the existing visible escaping below.
+  if (s.length > MAX) {
+    const high = s.charCodeAt(MAX - 1);
+    const low = s.charCodeAt(MAX);
+    if (high >= 0xd800 && high <= 0xdbff && low >= 0xdc00 && low <= 0xdfff) {
+      clipped = clipped.slice(0, -1);
+    }
+  }
   const r = sanitizeDisplayText(clipped);
   if (!isReason(r)) return { text: r.text, flagged: r.mixedScript || s.length > MAX };
   return { text: escapeHostile(clipped.normalize('NFC')), flagged: true };
