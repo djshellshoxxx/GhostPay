@@ -771,3 +771,17 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG-R7 — stale reachability incorrectly summarized as OK (2026-11-21)
+
+- Coordinator: one ChatGPT bug-only worker; no separate verifier currently available.
+- Branch: `automation/20261121/bug/netstate-stale-summary-r7`; exact main base `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-core/src/netstate.ts`, new `packages/ux-core/src/netstate.stale.test.ts`, this strictly additive ownership claim, and new `docs/handoffs/NETSTATE_STALE_SUMMARY_20261121.md`. No other source or test is claimed.
+- Confirmed source defect to reproduce: `effective()` marks old successful probes `stale`, but `summarize()` can continue returning `overall: 'ok'` for expired RPC/relayer evidence; a stale former clock skew can also mask the stale condition. Preserve existing statuses and priorities; do not introduce a new UI state.
+- Acceptance: test-first regression for stale-only RPC, mixed fresh/stale RPC, stale relayer, and stale clock-skew; expected existing `overall: 'unknown'` rather than false `ok`/obsolete skew. Preserve fresh OK, real unreachable/degraded precedence, no new dependencies/network/feature changes.
+- Ownership: all 173 open PR changed-filename inventories checked this cycle; none changes either owned `netstate` path. Broad PRs #238/#262/#264/#278/#372 change other `ux-core` paths only. Recheck before integration.
+- Lock: separate `automation/ghostpay-integration-lock` branch has `status: held`, generation 11, owner `994a0d214fb9-root-r3` (the recorded expiry is in the past; no authority to steal/release). Never merge without legitimate coordination.
+- Verification: exact base production Git blob `3082d56ff1ecabf73ab4fb65e69c318053095954`. Full Git checkout is unavailable locally (github.com DNS fails); separate source-equivalent Node checks and hosted exact-head CI only. No independent review claimed.
