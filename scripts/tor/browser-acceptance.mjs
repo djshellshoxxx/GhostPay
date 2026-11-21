@@ -78,7 +78,7 @@ try {
     assert.equal(await transport.inputValue(), 'direct');
     await transport.selectOption('tor-browser');
     await page.getByRole('button', { name: 'Save scan privacy', exact: true }).click();
-    await page.getByText('Scan privacy settings saved. They apply to the next scan.', { exact: true }).waitFor();
+    await page.getByText('Network privacy settings saved. Pending network operations were cancelled; start a new action to use these settings.', { exact: true }).waitFor();
     await page.reload({ waitUntil: 'networkidle' });
     await nav.getByRole('button', { name: 'Settings', exact: true }).click();
     assert.equal(await page.getByLabel('Scan transport', { exact: true }).inputValue(), 'tor-browser');

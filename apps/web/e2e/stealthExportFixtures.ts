@@ -170,10 +170,11 @@ export interface ProbeReading {
 }
 
 /**
- * Test-only instrumentation of the page, changing no result: counts scheduler.yield calls (noble scrypt yields between
- * chunks, so a count that grows means a KDF is running), records the count at every click, counts finished AES-GCM
+ * Test-only instrumentation of the page, changing no result: counts host-task yields (scheduler.yield, or the existing
+ * zero-delay timer fallback on engines without that API), records the count at every click, counts finished AES-GCM
  * encryptions and decryptions, and can hold the next one's result until {@link releaseHold}. Console markers
  * ("gp-probe:*") tell the test about these moments even while the page's main thread is busy.
+ * A yield count is scheduling evidence, not by itself proof of KDF completion; tests also check the real AES operation.
  */
 export async function installCryptoProbe(context: BrowserContext): Promise<void> {
   await context.addInitScript(() => {
@@ -181,12 +182,25 @@ export async function installCryptoProbe(context: BrowserContext): Promise<void>
     Object.defineProperty(window, '__gpProbe', { value: probe });
     const sched = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
     const original = sched?.yield?.bind(sched);
+    const observedYield = (): void => {
+      probe.yields++;
+      if (probe.announceYield) { probe.announceYield = false; console.debug('gp-probe:kdf-yield'); }
+    };
     if (sched !== undefined && original !== undefined) {
       sched.yield = () => {
-        probe.yields++;
-        if (probe.announceYield) { probe.announceYield = false; console.debug('gp-probe:kdf-yield'); }
+        observedYield();
         return original();
       };
+    } else {
+      // Pinned noble uses new Promise(resolve => setTimeout(resolve, 0)) when scheduler.yield is unavailable.
+      // Observe that existing path rather than adding a scheduler polyfill or changing its timing/results.
+      globalThis.setTimeout = new Proxy(globalThis.setTimeout, {
+        apply(target, receiver: unknown, args: unknown[]): unknown {
+          if (args[1] === 0) observedYield();
+          const handle: unknown = Reflect.apply(target, receiver, args);
+          return handle;
+        },
+      });
     }
     window.addEventListener('click', () => { probe.yieldsAtClick.push(probe.yields); }, true);
     const subtle = crypto.subtle;
@@ -230,7 +244,7 @@ export async function releaseHold(page: Page): Promise<void> {
   });
 }
 
-/** The page logs "gp-probe:kdf-yield" at the next scheduler.yield call, i.e. once a KDF is running. */
+/** The page logs "gp-probe:kdf-yield" at the next observed host yield during the authored operation. */
 export async function announceNextYield(page: Page): Promise<void> {
   await page.evaluate(() => { (window as unknown as { __gpProbe: CryptoProbe }).__gpProbe.announceYield = true; });
 }

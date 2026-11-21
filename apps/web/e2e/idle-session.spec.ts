@@ -81,11 +81,16 @@ test('returning through real browser history does not expose the expired keys', 
   await page.goto('/');
   await importKnownKeys(page);
   const beforeLeaving = await page.evaluate(() => Date.now());
-  await page.goto('about:blank');
+  // WebKit's about:blank document does not receive the installed clock controller. An inert local HTTP document
+  // gives every engine a real away-history entry and the same clock instrumentation, without loading the app there.
+  await page.route('**/e2e-idle-away.html', (route) => route.fulfill({
+    status: 200, contentType: 'text/html', body: '<!doctype html><title>Idle history fixture</title><p>Away</p>',
+  }));
+  await page.goto('/e2e-idle-away.html');
   await page.clock.setSystemTime(beforeLeaving + 61_000);
   await page.goBack();
   await navigation(page).getByRole('button', { name: 'Seller keys', exact: true }).click();
-  // Chromium may restore this page from BFCache or perform a fresh load. Either observed path must expose no keys;
+  // The browser may restore this page from BFCache or perform a fresh load. Either observed path must expose no keys;
   // this test does not claim that BFCache was selected merely because goBack succeeded.
   await expect(seller(page).getByRole('button', { name: 'Generate new keys' })).toBeVisible();
   await expect(seller(page).locator('code', { hasText: /^st:eth:0x/ })).toHaveCount(0);

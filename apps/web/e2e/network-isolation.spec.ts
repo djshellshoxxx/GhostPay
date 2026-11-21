@@ -1,5 +1,6 @@
 import { expect, test, type Request } from '@playwright/test';
 import { ORIGIN } from './helpers';
+import { REDIRECT_HEADER, startHttpRedirectFixture, type HttpRedirectFixture } from './httpRedirectFixture.mjs';
 
 const UNAVAILABLE = 'not available in this environment';
 const PRIVATE_SETTINGS = {
@@ -10,10 +11,18 @@ function isHashRead(request: Request): boolean {
   return request.resourceType() === 'fetch' && /\/assets\/index[^/]*\.js$/.test(new URL(request.url()).pathname);
 }
 
-test('startup hash rejects a redirect without contacting its destination, including after reload', async ({ context, page }) => {
+const redirectTest = test.extend<{ redirectFixture: HttpRedirectFixture }>({
+  redirectFixture: async ({ baseURL }, use) => {
+    const fixture = await startHttpRedirectFixture(baseURL ?? ORIGIN);
+    try { await use(fixture); } finally { await fixture.close(); }
+  },
+});
+
+redirectTest('startup hash rejects a redirect without contacting its destination, including after reload', async ({ context, page, redirectFixture }) => {
   const forbidden: string[] = [];
   let hashReads = 0;
-  await page.goto('/');
+  redirectFixture.setRedirect(302, 'https://isolation-sink.invalid/entry.js');
+  await page.goto(redirectFixture.origin);
   await expect(page.getByText(/^[0-9a-f]{64}$/, { exact: false }).first()).toBeVisible();
   // Seed once, then use genuine reloads. Reinstalling preferences with addInitScript on every load could
   // hide a regression that cleared or downgraded the persisted policy during the previous session.
@@ -22,41 +31,48 @@ test('startup hash rejects a redirect without contacting its destination, includ
   }, PRIVATE_SETTINGS);
   await context.route('**/*', async (route) => {
     const request = route.request();
-    if (new URL(request.url()).origin !== ORIGIN) {
+    if (new URL(request.url()).origin !== redirectFixture.origin) {
       forbidden.push(request.url());
       await route.abort();
     } else if (isHashRead(request)) {
       hashReads++;
-      await route.fulfill({ status: 302, headers: { location: 'https://isolation-sink.invalid/entry.js' } });
+      // WebKit cannot fulfill 3xx. Keep this a real browser fetch: the loopback HTTP server returns the redirect.
+      await route.continue({ headers: { ...request.headers(), [REDIRECT_HEADER]: '1' } });
     } else await route.continue();
   });
   await page.reload();
   await expect(page.getByText(UNAVAILABLE, { exact: false })).toBeVisible();
   await page.waitForLoadState('networkidle');
   expect(hashReads).toBe(1);
+  expect(redirectFixture.responses).toHaveLength(1);
+  expect(redirectFixture.responses[0]?.status).toBe(302);
   expect(forbidden).toEqual([]);
   await page.reload();
   await expect(page.getByText(UNAVAILABLE, { exact: false })).toBeVisible();
   await page.waitForLoadState('networkidle');
   expect(hashReads).toBe(2);
+  expect(redirectFixture.responses).toHaveLength(2);
   expect(forbidden).toEqual([]);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('ghostpay.scanPrivacy.v1') ?? '{}') as unknown)).toEqual(PRIVATE_SETTINGS);
 });
 
-test('startup hash never follows a same-origin redirect either', async ({ context, page }) => {
+redirectTest('startup hash never follows a same-origin redirect either', async ({ context, page, redirectFixture }) => {
   const redirected: string[] = [];
+  redirectFixture.setRedirect(307, '/isolation-redirect-target.js');
   await context.route('**/*', async (route) => {
     const request = route.request();
     if (new URL(request.url()).pathname === '/isolation-redirect-target.js') {
       redirected.push(request.url());
       await route.fulfill({ status: 200, body: 'redirected asset' });
     } else if (isHashRead(request)) {
-      await route.fulfill({ status: 307, headers: { location: '/isolation-redirect-target.js' } });
+      await route.continue({ headers: { ...request.headers(), [REDIRECT_HEADER]: '1' } });
     } else await route.continue();
   });
-  await page.goto('/');
+  await page.goto(redirectFixture.origin);
   await expect(page.getByText(UNAVAILABLE, { exact: false })).toBeVisible();
   await page.waitForLoadState('networkidle');
+  expect(redirectFixture.responses).toHaveLength(1);
+  expect(redirectFixture.responses[0]?.status).toBe(307);
   expect(redirected).toEqual([]);
 });
 

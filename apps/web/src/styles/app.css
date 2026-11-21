@@ -291,5 +291,6 @@ summary { cursor: pointer; min-height: 44px; display: flex; align-items: center;
   text-align: start;
 }
 .context-help-text[hidden] { display: none; }
+.context-help-space { visibility: hidden; pointer-events: none; user-select: none; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
