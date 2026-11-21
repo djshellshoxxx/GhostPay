@@ -105,7 +105,9 @@ describe('F04 deliberate, local merchant exports', () => {
     const preview = session.preview(projection, request(), ctx.value);
     const output = JSON.parse(session.approve(preview, ctx.value).content) as { rows: { state: string; finalAtomic: string }[] };
     expect(output.rows[0]).toMatchObject({ state: 'unverified', finalAtomic: '0' });
-  });  it('rejects frozen row arrays containing getters without invoking them', () => {
+  });
+
+  it('rejects frozen row arrays containing getters without invoking them', () => {
     let calls = 0;
     const source = fixture();
     const rows = [source.rows[0]];
