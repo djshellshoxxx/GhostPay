@@ -1,3 +1,14 @@
+# 2026-11-21 — Merchant POS runtime clock/amount hardening (GP issue #400, R14)
+
+Worker: scheduled GhostPay branch-consolidation engineer; one sequential implementer and self-auditor, no independent GitHub reviewer. Branch: `automation/20261121/bug/pos-runtime-guard-r14`, exact source main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/merchant-hooks/src/pos.ts`, new `packages/merchant-hooks/src/pos.runtime.test.ts`, `examples/pos-terminal/pos-logic.js`, `examples/pos-terminal/parity.test.mjs`, this additive ownership entry, new `docs/handoffs/POS_RUNTIME_GUARDS_R14_20261121.md`. No other files claimed.
+Reproduced bug evidence: issue #400, source blob `976b988020f73bb26d1191036fdab65c1b65d55b`: NaN now creates unexpiring session; dueMinor number passes bigint comparison, payment amount number may throw implicit TypeError. Static mirror `pos-logic.js` must stay in parity. Verify invalid NaN/Infinity/unsafe/negative clocks, too-large sum, malformed amount types, malformed awaiting expiresAt, valid TTL and amount controls. Reject malformed inputs with `HooksError` codes; preserve terminal absorption, expiry boundary, no new backend/contract/checkout surface.
+Ownership: checked #307/#372/#371/#278/#262/#264/#398/#401/#403/#395/#404/#405/#265 changed filenames; none changes the claimed source/mirror/test paths; #398 changes existing `hooks.test.ts`, intentionally avoided. Other branches or newer PR heads must be rechecked before integration.
+Integration lock: `automation/ghostpay-integration-lock` generation 11 status HELD, owner `994a0d214fb9-root-r3`; expiry is not authority to override. No main merge/deploy/release. Require exact-head hosted CI, package parity, independent review, parent aggregate qualification.
+Plan: commit regression first, then targeted production/mirror repair, capture actual CI results, and publish source-pinned handoff. Do not claim local repository Vitest execution if unavailable.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
