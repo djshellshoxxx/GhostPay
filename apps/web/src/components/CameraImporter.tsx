@@ -124,7 +124,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       if (element instanceof HTMLDetailsElement && !element.open) return false;
       element = element.parentElement;
     }
-    return isEnabled.current && live.current;
+    return document.visibilityState !== 'hidden' && isEnabled.current && live.current;
   };
 
   useEffect(() => {
@@ -132,15 +132,17 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     const disclosureChanged = (): void => {
       if (!visible()) { stop(); resetTransfer(); setText(''); setStatus('camera.status.closed'); }
     };
-    // A hidden page must not keep the camera: stop it and require a new click (no automatic restart on return).
+    // Hiding revokes camera, paste and image work. Returning requires a new user action; it does not resume an import.
     const visibilityChanged = (): void => {
       if (document.visibilityState !== 'hidden') return;
       const cameraOn = abort.current !== null || (video.current?.srcObject ?? null) !== null;
+      const localImport = pasteAbort.current !== null;
       const partial = assembler.current !== null;
-      if (cameraOn) stop();
+      if (cameraOn || localImport) stop();
       if (partial) resetTransfer();
       if (cameraOn) setStatus('camera.status.hidden');
       else if (partial) setStatus('camera.multipart.hiddenReset');
+      else if (localImport) setStatus(undefined);
     };
     // toggle does not bubble; capture observes every containing disclosure, including nested details.
     document.addEventListener('toggle', disclosureChanged, true);
@@ -156,6 +158,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   useEffect(() => { stop(); resetTransfer(); refusedSession.current = null; setText(''); setStatus(undefined); }, [active, scopeKey, stop, resetTransfer]);
 
   const deliver = async (candidate: string, signal: AbortSignal): Promise<boolean> => {
+    if (signal.aborted || !visible()) return false;
     try {
       const accepted = (await callback.current(candidate, signal)) === true;
       if (signal.aborted || !visible()) return false;
@@ -240,6 +243,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     if (el === null || abort.current !== null || !visible()) return;
     pasteAbort.current?.abort();
     inputChanged.current?.();
+    if (!visible()) return;
     setStatus('camera.status.requesting'); setRunning(true);
     const controller = new AbortController(); abort.current = controller;
     const isActive = (): boolean => abort.current === controller && !controller.signal.aborted && visible();
@@ -298,6 +302,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     if (file === undefined || pasteAbort.current !== null || !visible()) return;
     stop();
     inputChanged.current?.();
+    if (!visible()) return;
     const controller = new AbortController(); pasteAbort.current = controller; setBusy(true);
     setStatus('camera.file.reading');
     void (async () => {
