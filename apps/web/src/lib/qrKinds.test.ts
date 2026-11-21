@@ -201,3 +201,32 @@ describe('printQrPolicy', () => {
     expect(printQrPolicy(undefined, false).bearerWarning).toBe(false);
   });
 });
+
+
+describe('printQrPolicy runtime protection boundary', () => {
+  it('does not treat truthy non-boolean values as proof that an invoice link is passphrase-protected', () => {
+    const invalidFlags: readonly unknown[] = ['false', 'true', 1, -1, [], {}, ['true']];
+    for (const value of invalidFlags) {
+      expect(printQrPolicy('https://example.invalid/#gpi=v1.test', value as boolean)).toEqual({
+        includeQr: true,
+        kind: 'bearer',
+        bearerWarning: true,
+      });
+    }
+  });
+  it('preserves existing true/false handling, limits and missing-link behavior', () => {
+    const link = 'https://example.invalid/#gpi=v1.test';
+    expect(printQrPolicy(link, true)).toEqual({ includeQr: true, kind: 'shareable', bearerWarning: false });
+    expect(printQrPolicy(link, false)).toEqual({ includeQr: true, kind: 'bearer', bearerWarning: true });
+    for (const value of [null, undefined, 0, '', NaN]) {
+      expect(printQrPolicy(link, value as boolean)).toEqual({ includeQr: true, kind: 'bearer', bearerWarning: true });
+      expect(printQrPolicy(undefined, value as boolean)).toEqual({ includeQr: false, kind: 'bearer', bearerWarning: false });
+    }
+    expect(printQrPolicy('x'.repeat(MAX_PRINT_QR_LINK_CHARS), false).includeQr).toBe(true);
+    expect(printQrPolicy('x'.repeat(MAX_PRINT_QR_LINK_CHARS + 1), false)).toEqual({
+      includeQr: false,
+      kind: 'bearer',
+      bearerWarning: true,
+    });
+  });
+});
