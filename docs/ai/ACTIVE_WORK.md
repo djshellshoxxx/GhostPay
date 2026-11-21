@@ -1125,3 +1125,25 @@ Prior full web build attempts were environment-limited (heap OOM 134, killed137)
 final full typecheck/build, browser acceptance and exact-head hosted gates remain.
 See the source-pinned handoff for commands and limits. Candidate remains draft.
 No deployment, release or real transaction is authorized by this worker claim.
+
+---
+
+# Private idle/main/Scan integration — 2026-11-20 (Pacific)
+
+Worker: `539818ee134f-root-r2`.
+Branch: `integrate/ghostpay-idle-main-scan-20261121-539818`.
+Base: #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Inputs: #344 `a88157b53d1e0925350d5c8db047eabb4365f4e9`, followed by
+#350 `89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8`, which includes current main
+`aec179910c39081d820396409ff3139ff2264132`.
+Owned scope: this isolated merge candidate, additive ownership reconciliation,
+and evidence in `docs/consolidation/idle-main-scan-r2-20261121-539818/`.
+Acceptance: preserve all input histories; resolve only registry conflicts by
+retaining complete source-labelled versions; preserve #344 idle/backup/receipt
+and request-file source, #307 TRON cancellation, and main/#350 fee-floor/Scan
+corrections; verify every nonregistry merge result; build/test the resulting
+source with original configuration and independent review. No application manual
+edits, weakening tests/gates, dependency/timeout changes, or source replacement.
+Shared main/#307 and the held integration lease remain unchanged. No release,
+deployment, real transaction or branch deletion. This is a private composition
+for qualification and owner handoff, not shared-target promotion.
