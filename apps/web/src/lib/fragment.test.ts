@@ -34,6 +34,14 @@ describe('fragment helpers', () => {
     expect(extractFragment('https://x.test/path?view=pay#gpi=v1.abc_-')).toBe('#gpi=v1.abc_-');
     expect(extractFragment('#gpi=v1.abc_-')).toBe('#gpi=v1.abc_-');
   });
+  it('refuses embedded URL control characters that URL parsing would silently remove', () => {
+    expect(extractFragment('https://x.test/#gpi=v1.ab\ncd')).toBeUndefined();
+    expect(extractFragment('https://x.test/#gpi=v1.ab\tcd')).toBeUndefined();
+    expect(extractFragment('https://x.test/#gpi=v1.ab\rcd')).toBeUndefined();
+    expect(extractFragment('https://x.test/\n#gpi=v1.abc')).toBeUndefined();
+    // Existing surrounding paste whitespace is still intentionally trimmed.
+    expect(extractFragment('  https://x.test/?view=pay#gpi=v1.abc  ')).toBe('#gpi=v1.abc');
+  });
   it('extracts from pasted links and rejects junk', () => {
     expect(extractFragment('  https://x.test/#gpi=v1.abc_-  ')).toBe('#gpi=v1.abc_-');
     expect(extractFragment('#gpi=v1.abc')).toBe('#gpi=v1.abc');
