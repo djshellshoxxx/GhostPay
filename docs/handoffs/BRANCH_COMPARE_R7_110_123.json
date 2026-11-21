@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 110,
+  "offset_end": 124,
+  "results": [
+    {
+      "branch": "chatgpt/zero-codex/docs-wiki-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 997,
+      "merge_base": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 134,
+      "merge_base": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1055,
+      "merge_base": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 1058,
+      "merge_base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files": [
+        [
+          "packages/merchant-billing/src/schedule.test.ts",
+          "modified",
+          15,
+          1
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "status": "diverged",
+      "ahead": 2,
+      "behind": 1058,
+      "merge_base": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files": [
+        [
+          "packages/net-transport/src/core.test.ts",
+          "modified",
+          3,
+          0
+        ],
+        [
+          "packages/net-transport/src/onion.ts",
+          "modified",
+          2,
+          1
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1055,
+      "merge_base": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 691,
+      "merge_base": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 714,
+      "merge_base": "433307b869acf2d81b2d12b415631076a89f7213",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 723,
+      "merge_base": "81fd4c032e29a87ce509236a0398468022c23012",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 738,
+      "merge_base": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 704,
+      "merge_base": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 693,
+      "merge_base": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 695,
+      "merge_base": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 690,
+      "merge_base": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}
