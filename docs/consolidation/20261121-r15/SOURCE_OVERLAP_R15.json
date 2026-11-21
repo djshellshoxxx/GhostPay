@@ -1,0 +1,224 @@
+{
+  "schema": "ghostpay-r15-incremental-475/1",
+  "date_utc": "2026-11-21",
+  "repo": "djshellshoxxx/GhostPay",
+  "main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "parent_pr": 403,
+  "parent_head_sha": "bb668e18b1bad2e92811c22ca57cb019b1b4b281",
+  "canonical_ledger_pr": 380,
+  "branch_name_pagination": [
+    100,
+    100,
+    100,
+    100,
+    75,
+    0
+  ],
+  "branch_name_count": 475,
+  "prior_verified_census": {
+    "r9": {
+      "count": 447,
+      "head": "c493df9e210f6227471864a623ee536cc9483a3a"
+    },
+    "r12": {
+      "count": 468,
+      "head": "2eb64d0a19e172ca02abe10a191b7d711962cb52"
+    },
+    "r13": {
+      "count": 470,
+      "head": "bb668e18b1bad2e92811c22ca57cb019b1b4b281"
+    },
+    "r14": {
+      "count": 473,
+      "head": "506604288e31c195c852fa2e8896e131da34bc3b"
+    }
+  },
+  "limitations": [
+    "This cycle fetched 475 names but did not re-fetch all 475 immutable heads",
+    "R14 pinned 473 refs and compared then-known deltas; moved old heads require a fresh Git refs comparison",
+    "No mainline source modification or repository tests executed locally"
+  ],
+  "new_head_compares": [
+    {
+      "branch": "automation/20261121/bug/pos-runtime-guard-r14",
+      "pr": 406,
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "ahead": 13,
+      "behind": 0,
+      "files": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/POS_RUNTIME_GUARDS_R14_20261121.md",
+        "examples/pos-terminal/parity.test.mjs",
+        "examples/pos-terminal/pos-logic.js",
+        "packages/merchant-hooks/src/pos.runtime.test.ts",
+        "packages/merchant-hooks/src/pos.ts"
+      ],
+      "classification": "existing_owned_pr_runtime_guard_regression_ci_pending"
+    },
+    {
+      "branch": "automation/20261121/bug/undo-maxpending-bound-r2",
+      "pr": 407,
+      "sha": "24caac5117f7dd19d7cf8b9cacae6c29f84956d0",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "ahead": 4,
+      "behind": 0,
+      "files": [
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/UNDO_MAXPENDING_BOUND_20261121.md",
+        "packages/ux-flow/src/undo.option-bounds.test.ts",
+        "packages/ux-flow/src/undo.ts"
+      ],
+      "classification": "existing_owned_pr_runtime_guard_regression_ci_pending"
+    }
+  ],
+  "semantic_overlaps": [
+    {
+      "donor": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "head": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "pr_owner": 372,
+      "files": [
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "donor_blob": "a85e1011cdface74c87683146ff7428654b7830d",
+          "pr372_blob": "a85e1011cdface74c87683146ff7428654b7830d"
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "donor_blob": "257b634250f033ddec042b67941fec23ffba1323",
+          "pr372_blob": "257b634250f033ddec042b67941fec23ffba1323"
+        }
+      ],
+      "finding": "exact_blob_match_in_active_372_not_main"
+    },
+    {
+      "donor": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "head": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "pr_owner": 372,
+      "files": [
+        {
+          "path": "apps/web/src/lib/wallet.ts",
+          "donor_blob": "3320a5650eab89763e16649e05ba8b4fa2ddeab9",
+          "pr372_blob": "20f6b7001b56bc9c0e5c543672083a63c93f74da"
+        }
+      ],
+      "finding": "semantically_present_in_active_pr_test_by_test_review_pending"
+    },
+    {
+      "donor": "automation/20261120T004531Z/feature/clipboard-guard",
+      "head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "pr_owner": 372,
+      "files": [
+        {
+          "path": "apps/web/src/lib/clipboardPrivacy.ts",
+          "donor_blob": "5e55f2ca693ef3112e8d12409572b29d96ef86a8",
+          "pr372_blob": "a9d84e38c348e4c2b238f52cf506263117babc13"
+        }
+      ],
+      "finding": "later_implementation_more_extensive_semantic_review_pending"
+    },
+    {
+      "donor": "chatgpt/ghostpay-tm-hardening-20261118",
+      "head": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "pr_owner": 372,
+      "files": [
+        {
+          "path": "apps/web/scripts/apply-csp.mjs",
+          "donor_blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63",
+          "pr372_blob": "79016d47eec0e5a85da365c4d8220fe3fee05a63"
+        },
+        {
+          "path": "scripts/tests/privacy-csp-bundle.test.mjs",
+          "donor_blob": "d86959ef4ba6418eec5737fdb9e54db7d2859a1f",
+          "pr372_blob": "d86959ef4ba6418eec5737fdb9e54db7d2859a1f"
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "donor_blob": "438c832baa2fea6ebb38c08c9526c3b249719b99",
+          "pr372_blob": "6b610050fa547484afed987fc26ef1a5e1ed5d8d"
+        }
+      ],
+      "finding": "two_exact_blobs_one_divergent_script_requires_semantic_review"
+    },
+    {
+      "donor": "codex/network-isolation-complete-20261119",
+      "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "pr_owner": 372,
+      "files": [
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "donor_blob": "42b9398464d133305a757477315e677d09d0f8b6",
+          "pr372_blob": "7bf77779c2128ca6782f79fce0cf0600e2419360"
+        }
+      ],
+      "finding": "expanded_active_pr_test_semantic_overlap_review_pending"
+    }
+  ],
+  "ci_statuses": [
+    {
+      "pr": 406,
+      "sha": "506604288e31c195c852fa2e8896e131da34bc3b",
+      "passed": [
+        "CLI operator qualification",
+        "Beta acceptance",
+        "Pages",
+        "Hosting kit"
+      ],
+      "queued": [
+        "CI"
+      ]
+    },
+    {
+      "pr": 407,
+      "sha": "24caac5117f7dd19d7cf8b9cacae6c29f84956d0",
+      "passed": [
+        "Pages",
+        "CLI operator qualification",
+        "Hosting kit",
+        "Beta acceptance"
+      ],
+      "queued": [
+        "CI"
+      ]
+    },
+    {
+      "pr": 402,
+      "sha": "3c9b96d0a10a976cb2143a8a62bbd4e31fc9f565",
+      "passed": [
+        "CLI operator qualification",
+        "Hosting kit",
+        "Beta acceptance",
+        "Pages"
+      ],
+      "queued": [
+        "CI"
+      ]
+    },
+    {
+      "pr": 386,
+      "sha": "51c019d0cd3b010b7399bb0a3e85af543bc6a1ce",
+      "passed": [
+        "CI",
+        "Tor static hosting",
+        "Pages",
+        "Beta acceptance",
+        "Hosting kit"
+      ],
+      "failed": [
+        "Native browser qualification"
+      ],
+      "browser_run_id": 44897636269
+    }
+  ],
+  "integration_lock": {
+    "branch": "automation/ghostpay-integration-lock",
+    "file": "integration-lock.json",
+    "blob_sha": "97523a9ce00231ac883b32178ab48a547eb0dd8f",
+    "status": "held",
+    "generation": 11,
+    "owner": "994a0d214fb9-root-r3"
+  },
+  "release": false,
+  "deployment": false,
+  "main_merged": false
+}
