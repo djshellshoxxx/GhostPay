@@ -2622,7 +2622,17 @@
     "wallet.disclosure.busy": "Another wallet disclosure is awaiting your decision. Finish or cancel it first.",
     "wallet.disclosure.expiry": "This review expires after two minutes. Closing the page, hiding sensitive details, or changing the session cancels it.",
     "wallet.disclosure.domainChain": "Typed-data domain chain ID",
-    "policy.error.contractResponse": "The contract did not answer the requested read as expected."
+    "policy.error.contractResponse": "The contract did not answer the requested read as expected.",
+    "retention.invoiceTimes.title": "Local invoice registration times",
+    "retention.invoiceTimes.scope": "Remove only the local date and time when each invoice was registered in this encrypted vault. This is manual cleanup for the currently unlocked seller and chain.",
+    "retention.invoiceTimes.compatibility": "After cleanup, older GhostPay versions cannot open this updated encrypted vault.",
+    "retention.invoiceTimes.consent": "Allow registration-time cleanup for this unlocked vault",
+    "retention.invoiceTimes.preview": "Preview registration-time cleanup",
+    "retention.invoiceTimes.confirmTitle": "Confirm removal of local registration times",
+    "retention.invoiceTimes.count": "Registration timestamps to remove: {count}.",
+    "retention.invoiceTimes.preserved": "Invoice registrations, original invoice times, amounts, receipts, payment history and recovery records remain saved.",
+    "retention.invoiceTimes.confirm": "Remove registration timestamps",
+    "retention.invoiceTimes.completed": "Local registration timestamps removed. Invoice registrations and payment history remain saved."
   },
   "settings.rpc.hint": "Use HTTPS for browser RPC access. Plain HTTP on loopback is accepted by the adapter but can be blocked by the page CSP or browser. Stored WSS URLs are not supported by the browser HTTP transport."
 }

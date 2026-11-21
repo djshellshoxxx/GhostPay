@@ -1,0 +1,2032 @@
+{
+  "generated_at_utc": "2026-11-21T09:10:55.052102+00:00",
+  "test_results": {
+    "final-package-coverage": {
+      "passed": 369,
+      "failed": 0,
+      "skipped": 0
+    },
+    "final-web-coverage": {
+      "passed": 4413,
+      "failed": 0,
+      "skipped": 13
+    },
+    "final-web-nocov": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "coverage": {
+    "final-package-coverage": {
+      "Statements": 97.05,
+      "Branches": 94.37,
+      "Functions": 99.75,
+      "Lines": 98.91
+    },
+    "final-web-coverage": {
+      "Statements": 93.53,
+      "Branches": 90.44,
+      "Functions": 95.59,
+      "Lines": 97.3
+    }
+  },
+  "dependency_findings": {
+    "info": 0,
+    "low": 17,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 17
+  },
+  "required_gates": {
+    "final-package-coverage": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/packages/ux-vault",
+      "started_at": "2026-11-21T08:30:47.277095+00:00",
+      "duration_seconds": 258.591,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-package-coverage.log",
+      "log_bytes": 1634,
+      "log_sha256": "27bf0dfac2dc906b7b32a4fcf82df41a96930921e3f834490220808ee8d5f034"
+    },
+    "final-web-coverage": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:36:19.835595+00:00",
+      "duration_seconds": 1825.101,
+      "exit_code": 0,
+      "before": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "after": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "log": "final-web-coverage.log",
+      "log_bytes": 13689,
+      "log_sha256": "bd18346e2900e3c050edd388b270227968fbfa2e2a2bcb38b1a0d99cd13cb075"
+    },
+    "final-web-nocov": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T09:07:22.105126+00:00",
+      "duration_seconds": 27.005,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-web-nocov.log",
+      "log_bytes": 1464,
+      "log_sha256": "8d96880053bbf09e58fa10d50afa8f2e89b7d2b20f50c63f51281023a78e326a"
+    },
+    "final-ux-vault-build": {
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/ux-vault"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:07:49.173207+00:00",
+      "duration_seconds": 1.239,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-ux-vault-build.log",
+      "log_bytes": 214,
+      "log_sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b"
+    },
+    "final-typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web",
+        "--workspace",
+        "@ghostpay/cli"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:07:50.472267+00:00",
+      "duration_seconds": 25.861,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-typecheck.log",
+      "log_bytes": 360,
+      "log_sha256": "5ee8f2bd70b182f7b5470c533447643369505a0a316a40a42cab86d6fbb209a3"
+    },
+    "final-lint": {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:08:16.398869+00:00",
+      "duration_seconds": 45.241,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-lint.log",
+      "log_bytes": 314,
+      "log_sha256": "bdc6f46d75021f3c511da1307373ba8faa1fd6fe635ffcda8e9671f53c9dc3e3"
+    },
+    "final-web-build-full": {
+      "command": [
+        "env",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE=full",
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:01.701853+00:00",
+      "duration_seconds": 20.865,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-web-build-full.log",
+      "log_bytes": 2684,
+      "log_sha256": "5ad5d888d4bc8f29ef9410f3bfce2c7c4ce6ea796f2e215b7bc9d7c46255c3a8"
+    },
+    "final-web-build-lean": {
+      "command": [
+        "env",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE=lean",
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:22.965229+00:00",
+      "duration_seconds": 20.325,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-web-build-lean.log",
+      "log_bytes": 2629,
+      "log_sha256": "88780dd591dd00f75b8e8da9322060829df69500c56ce954105076b0ce505e1e"
+    },
+    "final-secrets": {
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.880045+00:00",
+      "duration_seconds": 0.162,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-secrets.log",
+      "log_bytes": 50,
+      "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    },
+    "final-actions": {
+      "command": [
+        "bash",
+        "scripts/check-actions-pinned.sh"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.903050+00:00",
+      "duration_seconds": 0.165,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-actions.log",
+      "log_bytes": 85,
+      "log_sha256": "5ce60b1b7ae2628be29123af63f33de0efc71e32733c56b08be8d11e1edca152"
+    },
+    "final-tx-origin": {
+      "command": [
+        "bash",
+        "scripts/check-tx-origin.sh"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.913129+00:00",
+      "duration_seconds": 0.156,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-tx-origin.log",
+      "log_bytes": 48,
+      "log_sha256": "9d95acfba60449e36d81229c0ba5dbd3bd203e219648a67840da7ff16797dd25"
+    },
+    "final-dependency-audit": {
+      "command": [
+        "npm",
+        "audit",
+        "--json",
+        "--audit-level=high"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.879067+00:00",
+      "duration_seconds": 16.215,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-dependency-audit.log",
+      "log_bytes": 8577,
+      "log_sha256": "a17277d7488032dd38b8d425d36a3832c72b4b3b665510c4e1f3090c662f17b1"
+    },
+    "final-browser-collection-followup": {
+      "command": [
+        "node",
+        "../../node_modules/@playwright/test/cli.js",
+        "test",
+        "e2e/invoice-timestamp-retention.spec.ts",
+        "--list"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:37:16.592022+00:00",
+      "duration_seconds": 1.277,
+      "exit_code": 0,
+      "before": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "after": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "log": "final-browser-collection-followup.log",
+      "log_bytes": 372,
+      "log_sha256": "d2974e784e20fd1aea26e0278daa7bb234c5abaa2e993d0a6a0358579fde455d"
+    },
+    "final-source-contract-followup": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/verify_source_contract.py"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:37:16.595023+00:00",
+      "duration_seconds": 0.175,
+      "exit_code": 0,
+      "before": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "after": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "log": "final-source-contract-followup.log",
+      "log_bytes": 4515,
+      "log_sha256": "1dce865ad89003358ba5dc74abd243b1c7741ba104aac5a7f77ed2fcdff186bc"
+    },
+    "final-diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "783231a46840cd869e39bd704751d4ab4c349c45...HEAD"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:07:22.002751+00:00",
+      "duration_seconds": 0.036,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "full-artifact-digests": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/snapshot_build.py",
+        "full"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:22.627868+00:00",
+      "duration_seconds": 0.244,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "full-artifact-digests.log",
+      "log_bytes": 86,
+      "log_sha256": "32eaf47d547654cfc2e0a3ffd772ad91911d925c33e9285b3f51c745f0760e16"
+    },
+    "lean-artifact-digests": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/snapshot_build.py",
+        "lean"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:43.351204+00:00",
+      "duration_seconds": 0.03,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "lean-artifact-digests.log",
+      "log_bytes": 86,
+      "log_sha256": "6a2ff79244f9996f026bc2ef67b1b920b8a7c42ec399d79a6b2e4eeee3a94d51"
+    },
+    "final-product-equivalence": {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "16204479269401403e869fda79ecfe405321ea7e",
+        "HEAD",
+        "--",
+        "packages/ux-vault",
+        "apps/web/src",
+        "apps/web/locales"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:10:00.453351+00:00",
+      "duration_seconds": 0.003,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-product-equivalence.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "review-whitespace-resolution": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/verify_review_fix.py"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:10:54.451761+00:00",
+      "duration_seconds": 0.076,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "review-whitespace-resolution.log",
+      "log_bytes": 596,
+      "log_sha256": "e0ef1948bbbf5e73802b1e4667c5d12ca6225477803471b79047e0ff4d7ca79a"
+    }
+  },
+  "preserved_failed_author_runs": {
+    "typecheck-affected": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:26:44.777371+00:00",
+      "duration_seconds": 23.212,
+      "exit_code": 2,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "typecheck-affected.log",
+      "log_bytes": 930,
+      "log_sha256": "f27962ae0f4f4a3ee816a5d185a2ff2e7cf4854c33d7026b47ee2ff1e12a718c"
+    },
+    "web-focused": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage=false",
+        "--maxWorkers=2",
+        "src/components/ReconciliationLedger.retention.test.tsx",
+        "src/components/ReconciliationLedger.invoices.test.tsx",
+        "src/lib/reconciliationVault.invoices.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "src/i18n/catalog.test.ts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:21:07.581294+00:00",
+      "duration_seconds": 0.641,
+      "exit_code": 1,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "web-focused.log",
+      "log_bytes": 3179,
+      "log_sha256": "be4dace1f86b338392d0a50c870a3b716c106de001ad03dbdc34dc52aae0ff32"
+    },
+    "web-focused-ready": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "src/components/ReconciliationLedger.retention.test.tsx",
+        "src/components/ReconciliationLedger.invoices.test.tsx",
+        "src/lib/reconciliationVault.invoices.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "src/i18n/catalog.test.ts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:23:42.009671+00:00",
+      "duration_seconds": 17.845,
+      "exit_code": 1,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "web-focused-ready.log",
+      "log_bytes": 41795,
+      "log_sha256": "67318a5c7e22adb24bd6700f7dc0b26391eabba2cfb6b250b06bdb8803d7d49e"
+    },
+    "lint-affected": {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:28:29.425453+00:00",
+      "duration_seconds": 50.216,
+      "exit_code": 1,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "lint-affected.log",
+      "log_bytes": 1741,
+      "log_sha256": "01a8a1a84c73713f965fd0fb55e17d124e7db9d7dc6dd5b67a44e1da9d58bf27"
+    }
+  },
+  "all_author_runs": {
+    "typecheck-affected": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:26:44.777371+00:00",
+      "duration_seconds": 23.212,
+      "exit_code": 2,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "typecheck-affected.log",
+      "log_bytes": 930,
+      "log_sha256": "f27962ae0f4f4a3ee816a5d185a2ff2e7cf4854c33d7026b47ee2ff1e12a718c"
+    },
+    "install": {
+      "command": [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:15:24.488680+00:00",
+      "duration_seconds": 10.878,
+      "exit_code": 0,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": ""
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": ""
+      },
+      "log": "install.log",
+      "log_bytes": 402,
+      "log_sha256": "ab6332cd9b195eff47bc766b7034069adbc02f136dab4a7248c887b151982508"
+    },
+    "package-focused": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "src/reconciliation-retention.test.ts",
+        "src/reconciliation-amounts.test.ts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/packages/ux-vault",
+      "started_at": "2026-11-21T08:20:03.367238+00:00",
+      "duration_seconds": 11.941,
+      "exit_code": 0,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "package-focused.log",
+      "log_bytes": 228,
+      "log_sha256": "a3f8e869a9d5da2ec14e92de6ec2d6e231aac1a8cdad3cf2f088f3fdfa549b29"
+    },
+    "final-secrets": {
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.880045+00:00",
+      "duration_seconds": 0.162,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-secrets.log",
+      "log_bytes": 50,
+      "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    },
+    "final-lint": {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:08:16.398869+00:00",
+      "duration_seconds": 45.241,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-lint.log",
+      "log_bytes": 314,
+      "log_sha256": "bdc6f46d75021f3c511da1307373ba8faa1fd6fe635ffcda8e9671f53c9dc3e3"
+    },
+    "final-dependency-audit": {
+      "command": [
+        "npm",
+        "audit",
+        "--json",
+        "--audit-level=high"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.879067+00:00",
+      "duration_seconds": 16.215,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-dependency-audit.log",
+      "log_bytes": 8577,
+      "log_sha256": "a17277d7488032dd38b8d425d36a3832c72b4b3b665510c4e1f3090c662f17b1"
+    },
+    "final-web-nocov": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T09:07:22.105126+00:00",
+      "duration_seconds": 27.005,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-web-nocov.log",
+      "log_bytes": 1464,
+      "log_sha256": "8d96880053bbf09e58fa10d50afa8f2e89b7d2b20f50c63f51281023a78e326a"
+    },
+    "full-artifact-digests": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/snapshot_build.py",
+        "full"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:22.627868+00:00",
+      "duration_seconds": 0.244,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "full-artifact-digests.log",
+      "log_bytes": 86,
+      "log_sha256": "32eaf47d547654cfc2e0a3ffd772ad91911d925c33e9285b3f51c745f0760e16"
+    },
+    "final-web-coverage": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:36:19.835595+00:00",
+      "duration_seconds": 1825.101,
+      "exit_code": 0,
+      "before": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "after": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "log": "final-web-coverage.log",
+      "log_bytes": 13689,
+      "log_sha256": "bd18346e2900e3c050edd388b270227968fbfa2e2a2bcb38b1a0d99cd13cb075"
+    },
+    "web-focused": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage=false",
+        "--maxWorkers=2",
+        "src/components/ReconciliationLedger.retention.test.tsx",
+        "src/components/ReconciliationLedger.invoices.test.tsx",
+        "src/lib/reconciliationVault.invoices.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "src/i18n/catalog.test.ts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:21:07.581294+00:00",
+      "duration_seconds": 0.641,
+      "exit_code": 1,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "web-focused.log",
+      "log_bytes": 3179,
+      "log_sha256": "be4dace1f86b338392d0a50c870a3b716c106de001ad03dbdc34dc52aae0ff32"
+    },
+    "final-browser-collection": {
+      "command": [
+        "node",
+        "../../node_modules/@playwright/test/cli.js",
+        "test",
+        "e2e/invoice-timestamp-retention.spec.ts",
+        "--list"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:32:37.174109+00:00",
+      "duration_seconds": 2.115,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-browser-collection.log",
+      "log_bytes": 201,
+      "log_sha256": "f85acf730fa75ecbcd89492113f6f9373d02f0f7d4c92da8fa27dbf11510c789"
+    },
+    "typecheck-affected-corrected": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:27:52.936144+00:00",
+      "duration_seconds": 22.381,
+      "exit_code": 0,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "typecheck-affected-corrected.log",
+      "log_bytes": 294,
+      "log_sha256": "b06f11cb6f5add0ee58c40c2973ba9845d1460b78d8b226aa918c04010596f57"
+    },
+    "final-source-contract": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/verify_source_contract.py"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:38.338767+00:00",
+      "duration_seconds": 0.156,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-source-contract.log",
+      "log_bytes": 4515,
+      "log_sha256": "be8bb9f511fd6ba902f91aa4454c214f904da2efb82bf13af20a9d6e28f92658"
+    },
+    "lean-artifact-digests": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/snapshot_build.py",
+        "lean"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:43.351204+00:00",
+      "duration_seconds": 0.03,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "lean-artifact-digests.log",
+      "log_bytes": 86,
+      "log_sha256": "6a2ff79244f9996f026bc2ef67b1b920b8a7c42ec399d79a6b2e4eeee3a94d51"
+    },
+    "final-package-coverage": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/packages/ux-vault",
+      "started_at": "2026-11-21T08:30:47.277095+00:00",
+      "duration_seconds": 258.591,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-package-coverage.log",
+      "log_bytes": 1634,
+      "log_sha256": "27bf0dfac2dc906b7b32a4fcf82df41a96930921e3f834490220808ee8d5f034"
+    },
+    "final-tx-origin": {
+      "command": [
+        "bash",
+        "scripts/check-tx-origin.sh"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.913129+00:00",
+      "duration_seconds": 0.156,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-tx-origin.log",
+      "log_bytes": 48,
+      "log_sha256": "9d95acfba60449e36d81229c0ba5dbd3bd203e219648a67840da7ff16797dd25"
+    },
+    "final-web-build-full": {
+      "command": [
+        "env",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE=full",
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:01.701853+00:00",
+      "duration_seconds": 20.865,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-web-build-full.log",
+      "log_bytes": 2684,
+      "log_sha256": "5ad5d888d4bc8f29ef9410f3bfce2c7c4ce6ea796f2e215b7bc9d7c46255c3a8"
+    },
+    "final-source-contract-followup": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/verify_source_contract.py"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:37:16.595023+00:00",
+      "duration_seconds": 0.175,
+      "exit_code": 0,
+      "before": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "after": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "log": "final-source-contract-followup.log",
+      "log_bytes": 4515,
+      "log_sha256": "1dce865ad89003358ba5dc74abd243b1c7741ba104aac5a7f77ed2fcdff186bc"
+    },
+    "review-whitespace-resolution": {
+      "command": [
+        "python",
+        "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence/verify_review_fix.py"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:10:54.451761+00:00",
+      "duration_seconds": 0.076,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "review-whitespace-resolution.log",
+      "log_bytes": 596,
+      "log_sha256": "e0ef1948bbbf5e73802b1e4667c5d12ca6225477803471b79047e0ff4d7ca79a"
+    },
+    "libraries": {
+      "command": [
+        "npm",
+        "run",
+        "build:packages"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:21:08.637502+00:00",
+      "duration_seconds": 162.976,
+      "exit_code": 0,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "libraries.log",
+      "log_bytes": 17507,
+      "log_sha256": "9c8e1748663f297956a406bd254a3a37fe6841159798762193b6768ab21ae335"
+    },
+    "final-actions": {
+      "command": [
+        "bash",
+        "scripts/check-actions-pinned.sh"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:31:00.903050+00:00",
+      "duration_seconds": 0.165,
+      "exit_code": 0,
+      "before": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "after": {
+        "head": "16204479269401403e869fda79ecfe405321ea7e",
+        "tree": "a2c0b7c500696fe0af7328cda4bf428a8ca75ec0",
+        "status": ""
+      },
+      "log": "final-actions.log",
+      "log_bytes": 85,
+      "log_sha256": "5ce60b1b7ae2628be29123af63f33de0efc71e32733c56b08be8d11e1edca152"
+    },
+    "final-product-equivalence": {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "16204479269401403e869fda79ecfe405321ea7e",
+        "HEAD",
+        "--",
+        "packages/ux-vault",
+        "apps/web/src",
+        "apps/web/locales"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:10:00.453351+00:00",
+      "duration_seconds": 0.003,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-product-equivalence.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "web-focused-ready": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "src/components/ReconciliationLedger.retention.test.tsx",
+        "src/components/ReconciliationLedger.invoices.test.tsx",
+        "src/lib/reconciliationVault.invoices.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "src/i18n/catalog.test.ts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:23:42.009671+00:00",
+      "duration_seconds": 17.845,
+      "exit_code": 1,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "web-focused-ready.log",
+      "log_bytes": 41795,
+      "log_sha256": "67318a5c7e22adb24bd6700f7dc0b26391eabba2cfb6b250b06bdb8803d7d49e"
+    },
+    "final-web-build-lean": {
+      "command": [
+        "env",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE=lean",
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:09:22.965229+00:00",
+      "duration_seconds": 20.325,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-web-build-lean.log",
+      "log_bytes": 2629,
+      "log_sha256": "88780dd591dd00f75b8e8da9322060829df69500c56ce954105076b0ce505e1e"
+    },
+    "final-ux-vault-build": {
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/ux-vault"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:07:49.173207+00:00",
+      "duration_seconds": 1.239,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-ux-vault-build.log",
+      "log_bytes": 214,
+      "log_sha256": "893af1dd4f613c40fd51b3aa185370466ca550fdf626a7361d24c9422b38c22b"
+    },
+    "lint-affected": {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:28:29.425453+00:00",
+      "duration_seconds": 50.216,
+      "exit_code": 1,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "lint-affected.log",
+      "log_bytes": 1741,
+      "log_sha256": "01a8a1a84c73713f965fd0fb55e17d124e7db9d7dc6dd5b67a44e1da9d58bf27"
+    },
+    "web-focused-corrected": {
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "--coverage=false",
+        "--maxWorkers=1",
+        "src/components/ReconciliationLedger.retention.test.tsx",
+        "src/components/ReconciliationLedger.invoices.test.tsx",
+        "src/lib/reconciliationVault.invoices.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "src/i18n/catalog.test.ts"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:26:11.874443+00:00",
+      "duration_seconds": 10.273,
+      "exit_code": 0,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "web-focused-corrected.log",
+      "log_bytes": 434,
+      "log_sha256": "7b53cec38f45d1c6c1cada561ad807479a6de087a4e6c4b0288a9c765f409656"
+    },
+    "lint-affected-corrected": {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T08:29:39.714723+00:00",
+      "duration_seconds": 44.638,
+      "exit_code": 0,
+      "before": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "after": {
+        "head": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+        "tree": "abd5469bcf449e0cddd585511c71b0ceb622d73b",
+        "status": "M apps/web/locales/ar.json\n M apps/web/locales/en.json\n M apps/web/locales/es.json\n M apps/web/locales/ja.json\n M apps/web/src/components/ReconciliationLedger.tsx\n M apps/web/src/i18n/securityKeys.test.ts\n M apps/web/src/i18n/securityKeys.ts\n M apps/web/src/lib/reconciliationVault.ts\n M docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md\n M docs/ai/ACTIVE_WORK.md\n M docs/privacy-release/STATUS.md\n M docs/privacy-release/v11-04-retention.md\n M packages/ux-vault/src/reconciliation-portable.ts\n?? apps/web/e2e/invoice-timestamp-retention.spec.ts\n?? apps/web/src/components/InvoiceTimestampRetentionControls.tsx\n?? apps/web/src/components/ReconciliationLedger.retention.test.tsx\n?? packages/ux-vault/src/reconciliation-retention.test.ts"
+      },
+      "log": "lint-affected-corrected.log",
+      "log_bytes": 314,
+      "log_sha256": "bdc6f46d75021f3c511da1307373ba8faa1fd6fe635ffcda8e9671f53c9dc3e3"
+    },
+    "final-typecheck": {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/ux-vault",
+        "--workspace",
+        "@ghostpay/web",
+        "--workspace",
+        "@ghostpay/cli"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:07:50.472267+00:00",
+      "duration_seconds": 25.861,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-typecheck.log",
+      "log_bytes": 360,
+      "log_sha256": "5ee8f2bd70b182f7b5470c533447643369505a0a316a40a42cab86d6fbb209a3"
+    },
+    "final-diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "783231a46840cd869e39bd704751d4ab4c349c45...HEAD"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention",
+      "started_at": "2026-11-21T09:07:22.002751+00:00",
+      "duration_seconds": 0.036,
+      "exit_code": 0,
+      "before": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "after": {
+        "head": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+        "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+        "status": ""
+      },
+      "log": "final-diff-check.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "final-browser-collection-followup": {
+      "command": [
+        "node",
+        "../../node_modules/@playwright/test/cli.js",
+        "test",
+        "e2e/invoice-timestamp-retention.spec.ts",
+        "--list"
+      ],
+      "cwd": "/workspace/scratch/5ceb6203640a/GhostPay-invoice-retention/apps/web",
+      "started_at": "2026-11-21T08:37:16.592022+00:00",
+      "duration_seconds": 1.277,
+      "exit_code": 0,
+      "before": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "after": {
+        "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "status": ""
+      },
+      "log": "final-browser-collection-followup.log",
+      "log_bytes": 372,
+      "log_sha256": "d2974e784e20fd1aea26e0278daa7bb234c5abaa2e993d0a6a0358579fde455d"
+    }
+  },
+  "native_browser_tests": {
+    "collected": 2,
+    "executed": 0,
+    "status": "Local browser execution unperformed; exact published hosted qualification required."
+  },
+  "overlap": "These test command counts overlap and must not be added into a unique global total.",
+  "schema": "ghostpay-invoice-timestamp-retention-handoff/1",
+  "worker": "/root/registered_timestamp_retention",
+  "branch": "feature/ghostpay-invoice-timestamp-retention-20261121-5ceb",
+  "base_sha": "783231a46840cd869e39bd704751d4ab4c349c45",
+  "claim_sha": "a101f8a36036104fbfc92cd011fae4f26ec80375",
+  "product_sha": "16204479269401403e869fda79ecfe405321ea7e",
+  "test_tip_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+  "qualification_tip_sha": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+  "qualification_tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+  "local_qualification": "passed with explicitly recorded existing skips",
+  "qualified_for_merge": false,
+  "release_ready": false,
+  "broader_retention": "partial",
+  "removed_field_only": "RegisteredInvoice.registeredAt",
+  "format": {
+    "read_documents": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "normal_legacy_write": 3,
+    "redacted_document": 4,
+    "redacted_registration": {
+      "version": 2,
+      "registeredAt": null
+    },
+    "encrypted_envelope": 1
+  },
+  "independent_source_review": {
+    "reviewer": "/root/invoice_retention_independent_review",
+    "review_kind": "fresh independent defensive source review and corrected-source focused functional verification",
+    "completed_at_utc": "2026-11-21T08:43:02.681379+00:00",
+    "base_sha": "783231a46840cd869e39bd704751d4ab4c349c45",
+    "initial_product_sha": "16204479269401403e869fda79ecfe405321ea7e",
+    "reviewed_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+    "reviewed_tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+    "disposition": "No functional source blocker identified within this bounded slice. One minor failed whitespace gate must be corrected; full author qualification and native-browser execution remain open. This is not formal GitHub approval, external audit, release approval, or permission to bypass the integration lease.",
+    "standards": {
+      "substantive_findings": [],
+      "tooling_findings": [
+        {
+          "id": "RET-REVIEW-01",
+          "severity": "low",
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "line_at_review": 3950,
+          "finding": "Added blank line at EOF makes baseline-to-head git diff --check fail with exit 2.",
+          "correction": "Remove only the surplus final blank line in a docs-only follow-up after the running clean-source coverage stage; verify all product and test blobs unchanged and rerun baseline diff check.",
+          "status": "acknowledged by author; correction pending"
+        }
+      ],
+      "sources": [
+        "AGENTS.md",
+        "docs/ai/WORKFLOW.md",
+        "docs/ai/HANDOFF.md",
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "style_note": "No material Fowler baseline smell requiring a change was identified. Existing repository patterns, minimal scope, ownership, and evidence requirements take precedence."
+    },
+    "spec": {
+      "bounded_findings": [],
+      "requirements_source": [
+        "Parent bounded assignment for RegisteredInvoice.registeredAt only",
+        "docs/privacy-release/v11-04-retention.md",
+        "docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md"
+      ],
+      "broader_status": "Partial v1.1 retention. Automatic persistent expiry, other persistent metadata fields, terminal record cleanup, and M3 release/browser qualification are not completed by this slice."
+    },
+    "reviewed_changed_paths": [
+      "apps/web/e2e/invoice-timestamp-retention.spec.ts",
+      "apps/web/locales/ar.json",
+      "apps/web/locales/en.json",
+      "apps/web/locales/es.json",
+      "apps/web/locales/ja.json",
+      "apps/web/src/components/InvoiceTimestampRetentionControls.tsx",
+      "apps/web/src/components/ReconciliationLedger.retention.test.tsx",
+      "apps/web/src/components/ReconciliationLedger.tsx",
+      "apps/web/src/i18n/securityKeys.test.ts",
+      "apps/web/src/i18n/securityKeys.ts",
+      "apps/web/src/lib/reconciliationVault.ts",
+      "docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/privacy-release/STATUS.md",
+      "docs/privacy-release/v11-04-retention.md",
+      "packages/ux-vault/src/reconciliation-portable.ts",
+      "packages/ux-vault/src/reconciliation-retention.test.ts"
+    ],
+    "review_conclusions": [
+      "registeredAt is used only by registration creation, strict schema validation, serialization and the new cleanup; matching, amount, expiry and recovery consumers do not read it.",
+      "A v1 registration still requires a positive numeric save time. A v2 registration requires exactly registeredAt:null and is accepted inside document v4 only. Legacy v1-v3 documents remain readable; ordinary legacy writes remain v3.",
+      "Preview contains only a frozen category/count. Its identity is held in a per-handle WeakMap with encrypted snapshot text and session revision; no plaintext invoice or timestamp snapshot is retained.",
+      "Confirmation consumes the preview before awaiting work, rechecks exact ciphertext and authority, and makes a single guarded CAS attempt without optimistic retry. Zero eligible records cause no write.",
+      "Session replacement, same-key unlock, lock, different handle, cancellation, caller consent revocation, intervening writes, unknown formats and saturated safety state do not authorize cleanup.",
+      "Transformation changes only document version and v1 registration version/registeredAt. Matching times, net amounts, identities, complete observations, receipts, reorg cutoff/tombstones and unrelated stores remain intact.",
+      "Existing local redaction survives duplicate registration and older-backup import; new imported rows retain their metadata until a fresh approval. The documented later deletion of an entire registration is a separate operation and creates no new deletion-history store.",
+      "The actual ledger wires separate default-off consent to the current unlocked vault. Cancel, quick-hide, scope/session changes and pending-action guards revoke the preview or write authority.",
+      "All ten new UI messages are classified as security-sensitive. All existing entries in each of the four catalogs remain unchanged; source-English fallback remains subject to the existing translation-review policy.",
+      "The two native browser cases use real static UI, actual encrypted backup inspection, external-request blocking and native storage. They cover ordinary cleanup/import/reload and concurrent registration from another tab; collection succeeded but execution did not occur in this review."
+    ],
+    "independent_results": {
+      "passing_test_cases": 158,
+      "passing_test_files": 12,
+      "failed_test_cases": 0,
+      "skipped_test_cases": 0,
+      "package": {
+        "cases": 34,
+        "files": 2,
+        "duration_seconds": 1.694,
+        "receipt": "package-focused.receipt.json"
+      },
+      "web": {
+        "cases": 124,
+        "files": 10,
+        "duration_seconds": 19.197,
+        "receipt": "web-focused.receipt.json"
+      },
+      "browser_collection": {
+        "collected": 2,
+        "files": 1,
+        "executed": 0,
+        "receipt": "browser-collection.receipt.json"
+      },
+      "structural": {
+        "protected_symbols_unchanged": 35,
+        "original_security_assertion_call_nodes_unchanged": 62,
+        "original_security_test_titles_unchanged": 11,
+        "initial_e2e_assertion_call_nodes_preserved": 32,
+        "added_e2e_assertion_call_nodes": 14,
+        "receipt": "structural.receipt.json"
+      },
+      "whitespace": {
+        "exit_code": 2,
+        "status": "failed",
+        "receipt": "whitespace.receipt.json"
+      }
+    },
+    "preservation": {
+      "unchanged_base_entries": 5749,
+      "base_entries": 5762,
+      "added_entries": 4,
+      "deleted_entries": 0,
+      "unchanged_preexisting_test_paths": 996,
+      "preexisting_test_paths_changed": [
+        "apps/web/src/i18n/securityKeys.test.ts"
+      ],
+      "unchanged_gate_and_manifest_paths": 304,
+      "test_only_followup_paths": [
+        "apps/web/e2e/invoice-timestamp-retention.spec.ts"
+      ],
+      "test_path_count_scope": "Includes archived test-related sources and evidence; no execution is inferred from these paths."
+    },
+    "limitations": [
+      "Only the separate execution receipts establish independent passing cases; the author full-suite, compiler, lint, build and security results are not counted here.",
+      "Coverage was disabled only for these explicitly focused review reruns; the author retains and runs the unchanged original full coverage gates.",
+      "No browser engine was launched, no live network or funds operation was performed, and collection is not an execution pass.",
+      "No repository source edits, dependency installations, remote writes, merge, integration-lock operation, deployment or release occurred in this review.",
+      "No vulnerable historical version or new exploit scenario was executed. Source comparisons use preserved historical blobs only.",
+      "The code-review skill Standards and Spec axes were evaluated separately by this fresh reviewer; all available worker slots were already allocated, so no additional parallel reviewer was spawned. docs/agents/issue-tracker.md and CONTRIBUTING.md were absent; the supplied bounded assignment and repository privacy requirement are sufficient spec sources.",
+      "No independent native translation review or external protocol/cryptographic audit is implied."
+    ],
+    "next_actions": [
+      "Author completes running original full-web coverage before creating the agreed docs-only whitespace correction.",
+      "Reviewer or coordinator verifies that correction changes only the surplus registry newline and reruns baseline diff --check.",
+      "Preserve exact final source/tree and complete original type/lint/build/artifact/security receipts; update the review mapping for any further change.",
+      "Publish the isolated child candidate only through the coordinator; run both new browser journeys and all applicable hosted full/lean/native gates on the exact published source.",
+      "Keep parent #372 dependencies, unrelated open gates, formal review requirements and the unreconciled integration lease in effect."
+    ],
+    "receipts": [
+      {
+        "file": "browser-collection.receipt.json",
+        "source_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree_sha": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "exit_code": 0,
+        "duration_seconds": 1.101
+      },
+      {
+        "file": "package-focused.receipt.json",
+        "source_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree_sha": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "exit_code": 0,
+        "duration_seconds": 1.694
+      },
+      {
+        "file": "structural.receipt.json",
+        "source_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree_sha": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "exit_code": 0,
+        "duration_seconds": 0.394
+      },
+      {
+        "file": "web-focused.receipt.json",
+        "source_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree_sha": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "exit_code": 0,
+        "duration_seconds": 19.197
+      },
+      {
+        "file": "whitespace.receipt.json",
+        "source_sha": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+        "tree_sha": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+        "exit_code": 2,
+        "duration_seconds": 0.027
+      }
+    ]
+  },
+  "independent_whitespace_resolution": {
+    "schema": "ghostpay-independent-docs-delta-review/1",
+    "reviewer": "/root",
+    "before": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+    "after": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+    "tree": "bec41c9c8e517d2619cb847f780cfe36f092f1ff",
+    "changed_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "exact_change": "Removed exactly one final LF byte; all other tracked bytes identical.",
+    "base_diff_check_exit": 0,
+    "resolved_finding": "RET-REVIEW-01",
+    "product_test_review_carried_from": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+    "additional_tests_executed": 0,
+    "formal_approval": false
+  },
+  "independent_whitespace_resolution_sha256": "539f32b477486d86319d7e5618972129a69c2fbb845f272629a6f1ba1282251e",
+  "source_preservation": {
+    "base": "783231a46840cd869e39bd704751d4ab4c349c45",
+    "head": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+    "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+    "protected_unchanged": [
+      "package-lock.json",
+      "package.json",
+      "eslint.config.js",
+      "packages/ux-vault/vitest.config.ts",
+      "apps/web/vite.config.ts",
+      "apps/web/vitest.nocov.config.ts",
+      "apps/web/playwright.config.ts",
+      "apps/web/package.json",
+      "packages/ux-vault/package.json"
+    ],
+    "historical_test_changes": [
+      {
+        "path": "apps/web/src/i18n/securityKeys.test.ts",
+        "added": 10,
+        "removed": 0,
+        "purpose": "requires all new security-sensitive retention message keys"
+      }
+    ],
+    "changed_files": [
+      {
+        "path": "apps/web/e2e/invoice-timestamp-retention.spec.ts",
+        "git_blob": "a667312759f7d8a3e6d5e229423d5255294821a3",
+        "sha256": "3da2fdf950e978ae530a8872f11da879beeb1bc94ff44fb78d552f2572d272b2"
+      },
+      {
+        "path": "apps/web/locales/ar.json",
+        "git_blob": "93cc96a2bb22ed04ab5778a293e8d061d6c1ceb6",
+        "sha256": "3ce092209e5c2161c1d8f699f0f605f564190acd72736d65ae66237d9926eae5"
+      },
+      {
+        "path": "apps/web/locales/en.json",
+        "git_blob": "f01c6dedbcb8db820b7efd87ab42589aeb2a3069",
+        "sha256": "716e5c973a4cdb7dbb165e48e2fc61ef44e13258efdc3e1b3913230c6b186ca8"
+      },
+      {
+        "path": "apps/web/locales/es.json",
+        "git_blob": "10c4321b13b60c1e376d3abdd1be85d65ad9cd01",
+        "sha256": "d211fc0718db24019684813d87caf4454160139f1e70e9359615d8cb1ed605b9"
+      },
+      {
+        "path": "apps/web/locales/ja.json",
+        "git_blob": "c74d639113d2b208d088861a9b63e3f39aed1da1",
+        "sha256": "d8cc15e149ad95e704bfd0bf7082d2bc6f891795e2229a650f398a0ba9f02062"
+      },
+      {
+        "path": "apps/web/src/components/InvoiceTimestampRetentionControls.tsx",
+        "git_blob": "204641af6dde1ecb8a6900a89af419f58646bfc7",
+        "sha256": "81534f3a24bfc18456a9c34b86e7db12d90a38f7d09ccba7669e57d8cc47f2b2"
+      },
+      {
+        "path": "apps/web/src/components/ReconciliationLedger.retention.test.tsx",
+        "git_blob": "be1550286796bc8fb2fe040943ecd4db9737a86d",
+        "sha256": "cb47ff36c529a0fcc2887edba67f04ba843a5633355dfe9560de01f2f73e220c"
+      },
+      {
+        "path": "apps/web/src/components/ReconciliationLedger.tsx",
+        "git_blob": "3a0a42278345ce46b0f3336d91d2776483f3b882",
+        "sha256": "add89fbd1bdc1aff557e826290e546f8e5a07bb5ba3d4fb44e73df3cc387446e"
+      },
+      {
+        "path": "apps/web/src/i18n/securityKeys.test.ts",
+        "git_blob": "cfb411dc37ebaf0dbfc22eb01bebcaf0ba307ddf",
+        "sha256": "05cf31ec769c928cf4e46457551cc44019023c51959b6d434a5fcc9f4aaef787"
+      },
+      {
+        "path": "apps/web/src/i18n/securityKeys.ts",
+        "git_blob": "1cf259a5f3f4e3b89c2fcb8721ba84b34c97e6e9",
+        "sha256": "5be3a4ff16c29245fac4d65096d4690b0f91639f192df3df15b052af0448a4e3"
+      },
+      {
+        "path": "apps/web/src/lib/reconciliationVault.ts",
+        "git_blob": "e9722f22bc948b161fb8c00e55962a08e25d5293",
+        "sha256": "750a0366714c43050856f8c7371335a95406264f74958919ab6d589ccbd5f68b"
+      },
+      {
+        "path": "docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md",
+        "git_blob": "eb6e67aeaf8f5a799cbd34e5d17c3323b789246b",
+        "sha256": "d879630bbc689cb5ebbd32bc6142a8608d2878eb82fe4338726bc308cee2f3ef"
+      },
+      {
+        "path": "docs/ai/ACTIVE_WORK.md",
+        "git_blob": "c4a5283f3168c2eb389a0db4ffeaaf755224e8a1",
+        "sha256": "dedd5f13db226c11919a69b9832017e0851be0fcb71b5bd7195db4d27dbf94fe"
+      },
+      {
+        "path": "docs/privacy-release/STATUS.md",
+        "git_blob": "bcd820da6b1f1c82bf75332165ad31c5d7e5c891",
+        "sha256": "5709b61eb3471751c07c759c5188c78c9d724ee7a8f27064ba1f330b3b8a744e"
+      },
+      {
+        "path": "docs/privacy-release/v11-04-retention.md",
+        "git_blob": "06b2a215db5aa9459f6e487663636535b972175c",
+        "sha256": "1311c36cb8714a36e11ac8f5412655cc142cfb22c94c5eae5f1bb88af7b3aa17"
+      },
+      {
+        "path": "packages/ux-vault/src/reconciliation-portable.ts",
+        "git_blob": "c7d45a50e9a91467ba5c9819acebed45a60ad02f",
+        "sha256": "f4051c2d3cdd8ffaaff17147b97146d15928183fa69ea21aa3e884cdd8cd35ff"
+      },
+      {
+        "path": "packages/ux-vault/src/reconciliation-retention.test.ts",
+        "git_blob": "44aceb7e1ad3be1995ed5cb1a05fbf970cba3b20",
+        "sha256": "3de2a51130215fb4d843b5fd7a7d6b8cc2f1d41f13bfdf18cb27d5d0b8a0c027"
+      }
+    ],
+    "note": "Byte/line preservation proof only. Executable tests and independent source review are separate gates."
+  },
+  "node": "v24.22.3",
+  "npm": "11.19.1",
+  "source_scope": "Only local registration timestamps; complete invoices/payment/receipt/reorg/key/recovery and unrelated records retained.",
+  "authority": "Separate default-off consent; frozen category/count; exact ciphertext and handle/session/seller/chain binding; one guarded single-use CAS without retry/rebase.",
+  "remaining_gates": [
+    "Exact published hosted full/lean/native/browser qualification",
+    "Parent integration/dependencies and formal review/approval requirements",
+    "Unreconciled shared integration lease",
+    "Broader automatic persistent retention and terminal-record cleanup",
+    "Reviewed non-English security copy and overall release qualification"
+  ],
+  "worker_performed_remote_ref_lock_deployment_release_or_funds_changes": false,
+  "bundle_prerequisite": "783231a46840cd869e39bd704751d4ab4c349c45",
+  "evidence_directory": "/workspace/scratch/5ceb6203640a/invoice-timestamp-retention-evidence",
+  "containing_documentation_commit": "Recorded in external FINAL.json after commit to avoid self-reference",
+  "build_artifact_inventories": {
+    "full": {
+      "source": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+      "profile": "full",
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 1761,
+          "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+        },
+        {
+          "path": "assets/ar-JwWy5mFm.js",
+          "bytes": 353330,
+          "sha256": "788230a3a1825d91a3a1f0ae51ea3c0351a23508ff844062da31851e44bc9cfb"
+        },
+        {
+          "path": "assets/es-C-qGgrmf.js",
+          "bytes": 296425,
+          "sha256": "2f9dd8da7d0f25f433bed62cfddda7b7376631f7a1ab031b8ea120d3769a3c43"
+        },
+        {
+          "path": "assets/index-Dg_vfaDw.js",
+          "bytes": 2041904,
+          "sha256": "174e7c6ab96626d00a4f270986954c17110851734ca360d5218984e2004c9cdb"
+        },
+        {
+          "path": "assets/ja-BumiS1x9.js",
+          "bytes": 345803,
+          "sha256": "5adbb7188f0f6c680e5f0a5adeb68ac322f5a627df0d0e66552c49adad27e748"
+        },
+        {
+          "path": "assets/jsQR-DMfxOdIb.js",
+          "bytes": 129986,
+          "sha256": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869"
+        },
+        {
+          "path": "assets/rolldown-runtime-XKyaHtl9.js",
+          "bytes": 726,
+          "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+        },
+        {
+          "path": "assets/scan.worker-DaXX6p9Q.js",
+          "bytes": 107017,
+          "sha256": "039cfb56dbfadde9b6e23e2a5714fdee1a35a21b283b98bf53da33a31bcc839a"
+        },
+        {
+          "path": "assets/scanner.worker-CAQQ64R_.js",
+          "bytes": 62186,
+          "sha256": "54119a9d91ffe1acb7e5ecde487dca6ab939245160d19951c1e26d6b4a7e8f0f"
+        },
+        {
+          "path": "assets/style-rMTl2SKP.css",
+          "bytes": 12512,
+          "sha256": "a67b35df19dcdbc694d532318b0f70b10ccd8f13b0d1d83372ef2c43f9241419"
+        },
+        {
+          "path": "build-info.json",
+          "bytes": 152,
+          "sha256": "cbf5046e497190991c575a29ed141f65707ce8c61c6bd00fc79f140a605bc595"
+        },
+        {
+          "path": "deployments/README.md",
+          "bytes": 861,
+          "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 332,
+          "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+        },
+        {
+          "path": "ghostpay-embed-v1.js",
+          "bytes": 2742,
+          "sha256": "ad77f44216d452869e856a029d7b17cb31045ba0f28ec4859f5dc400ae3b84cd"
+        },
+        {
+          "path": "ghostpay-embed-v2.js",
+          "bytes": 13939,
+          "sha256": "ec302ad63d57348c3b7d6ea6be0975e8eea188364c80dc1cee4be8a8624ed7ab"
+        },
+        {
+          "path": "help.css",
+          "bytes": 3283,
+          "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+        },
+        {
+          "path": "help.html",
+          "bytes": 16853,
+          "sha256": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1"
+        },
+        {
+          "path": "index.html",
+          "bytes": 3369,
+          "sha256": "4f522e940254946433338b43edc6d6bc27cf4061ec6139bae2294c6bb855923b"
+        },
+        {
+          "path": "privacy.html",
+          "bytes": 8029,
+          "sha256": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7"
+        }
+      ]
+    },
+    "lean": {
+      "source": "8a4f2775386b1710a086ca340287e7481c59dd0e",
+      "profile": "lean",
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 1761,
+          "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+        },
+        {
+          "path": "assets/ar-JwWy5mFm.js",
+          "bytes": 353330,
+          "sha256": "788230a3a1825d91a3a1f0ae51ea3c0351a23508ff844062da31851e44bc9cfb"
+        },
+        {
+          "path": "assets/es-C-qGgrmf.js",
+          "bytes": 296425,
+          "sha256": "2f9dd8da7d0f25f433bed62cfddda7b7376631f7a1ab031b8ea120d3769a3c43"
+        },
+        {
+          "path": "assets/index-I_A_JBHf.js",
+          "bytes": 1526156,
+          "sha256": "8d091edd58e5ba4929ed6546a077c3d12a1fd0ab905cb39741142ba87605dc86"
+        },
+        {
+          "path": "assets/ja-BumiS1x9.js",
+          "bytes": 345803,
+          "sha256": "5adbb7188f0f6c680e5f0a5adeb68ac322f5a627df0d0e66552c49adad27e748"
+        },
+        {
+          "path": "assets/jsQR-DMfxOdIb.js",
+          "bytes": 129986,
+          "sha256": "d669286fbf7c726fdcad5de1b4ac34fd6b6be6411f8295925ad9f53895d77869"
+        },
+        {
+          "path": "assets/rolldown-runtime-XKyaHtl9.js",
+          "bytes": 726,
+          "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+        },
+        {
+          "path": "assets/scanner.worker-CAQQ64R_.js",
+          "bytes": 62186,
+          "sha256": "54119a9d91ffe1acb7e5ecde487dca6ab939245160d19951c1e26d6b4a7e8f0f"
+        },
+        {
+          "path": "assets/style-1qcfXE3B.css",
+          "bytes": 12512,
+          "sha256": "8145d889cf1513aefeab322bab882d702506abc86993809eeeb7731f1c11bb8a"
+        },
+        {
+          "path": "build-info.json",
+          "bytes": 152,
+          "sha256": "cbf5046e497190991c575a29ed141f65707ce8c61c6bd00fc79f140a605bc595"
+        },
+        {
+          "path": "deployments/README.md",
+          "bytes": 861,
+          "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 332,
+          "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+        },
+        {
+          "path": "ghostpay-lean-build.json",
+          "bytes": 113930,
+          "sha256": "dc18dd14511ac04ab1f5ce4c8db08062e728e98f7ae727097432385baa425e33"
+        },
+        {
+          "path": "help.css",
+          "bytes": 3283,
+          "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+        },
+        {
+          "path": "help.html",
+          "bytes": 16853,
+          "sha256": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1"
+        },
+        {
+          "path": "index.html",
+          "bytes": 3369,
+          "sha256": "4708a57c5b45282a8b8172aaa50f91dd2a094d1e2f39df6c2a70b896dd134492"
+        },
+        {
+          "path": "privacy.html",
+          "bytes": 8029,
+          "sha256": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7"
+        }
+      ]
+    }
+  },
+  "protected_paths_unchanged": [
+    "package-lock.json",
+    "package.json",
+    "eslint.config.js",
+    "packages/ux-vault/vitest.config.ts",
+    "apps/web/vite.config.ts",
+    "apps/web/vitest.nocov.config.ts",
+    "apps/web/playwright.config.ts",
+    "apps/web/package.json",
+    "packages/ux-vault/package.json"
+  ]
+}

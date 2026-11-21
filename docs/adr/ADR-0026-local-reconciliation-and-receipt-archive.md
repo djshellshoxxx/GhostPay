@@ -249,9 +249,7 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
   (`docs/audits/24-ai-assisted-security-audit-2026-10-28.md`, finding L3-F9), and ADR-LOG's ADR-0025 entry accepts it.
 - Plaintext exports of receipts and legacy records leak payment details if mishandled. They sit behind confirmations
   only.
-- The format and bounds are part of the encrypted-data contract. This build reads version 1, 2 and 3 documents
-  (`validateDocument`) and writes version 3. Any other build must accept version 3 before it can read a backup
-  written by this one.
+- The format and bounds are part of the encrypted-data contract. This build reads version 1, 2, 3 and 4 documents (`validateDocument`). Normal legacy writes retain version 3. Explicit registration-time cleanup and imported version-4 documents retain version 4. Older readers reject version 4 without overwriting its ciphertext; the cleanup control discloses this compatibility boundary before approval.
 - The reorg path depends on the scanner reporting canonical hashes. If they cannot be read, nothing is written and the
   seller is warned to stop relying on historical records.
 - The feature is web-only, experimental, and not audited on its own.
@@ -288,3 +286,16 @@ These tests exercise the described behaviour. They are listed, not re-run for th
 8. **Legacy block-time migration (2026-11-16).** No data migration is needed. Version 1 record field `blockTimestamp`
    is optional. Old records remain readable and can be reviewed manually, but wall-clock timestamps never make them
    exact. New scans populate it only from a canonical header validated against the announcement's block number/hash.
+
+
+## Bounded local registration-time cleanup — 2026-11-21
+
+The optional manual adapter removes only `RegisteredInvoice.registeredAt`, a local save timestamp with no matching, expiry, amount, signature, recovery or reorg role. It retains every complete registration, observation, receipt, cutoff and tombstone. Invoices keep their original `createdAt` and `expiresAt`. Receipt `archivedAt` and signed `issuedAt`, observation `recordedAt` and reorg `invalidatedAt` are unchanged.
+
+A version-1 registration requires a positive numeric `registeredAt`. A version-2 registration requires the same exact fields with `registeredAt: null`; no timestamp is fabricated. Version-2 registrations are permitted only inside document version 4. The encrypted envelope and HKDF/AES-GCM binding remain version 1. Existing document versions 1/2/3 remain readable and do not adopt version 4 merely because they are read or previewed.
+
+`previewInvoiceTimestampCleanup()` returns only the category and eligible count. Its opaque identity is tied to the vault handle, session revision and exact current ciphertext. Confirmation consumes that identity before awaiting work and performs one compare-and-swap, guarded inside the storage transaction; it never invokes the optimistic change/retry loop. Lock, same-key reinstall, cancellation, a different handle, intervening storage writes and caller consent revocation reject without deleting records. A zero-count plan writes nothing. Read-only saturated documents remain read-only.
+
+Consent starts off for each mounted unlocked scope; existing invoice/proof presentation preferences cannot authorize this write. The UI previews the count and requires confirmation. No timer, RPC or new storage collection is introduced. New imported registrations retain their own save metadata until separately previewed; old backup copies and duplicate registration do not restore a removed time on an existing local row. The explicit removed-time representation survives backup/export/import/reload. An explicit later removal of the entire registration is a different existing operation; this adapter does not create an additional deletion-history collection.
+
+This is one persistent metadata slice, not automatic retention, receipt deletion, settlement evidence or complete v1.1 qualification. Exact-source local qualification, independent review and the unexecuted native-browser gate are recorded in the [source-pinned handoff](../privacy-release/evidence/retention-invoice-time-20261121.md).

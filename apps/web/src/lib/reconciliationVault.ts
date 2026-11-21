@@ -2,7 +2,7 @@ import { createReconciliationApi, type ReconciliationVaultStore, type Reconcilia
 import { UserFacingError, type MessageDescriptor } from './errors';
 import { captureSessionGuard, getSessionPublic, revealViewingKey } from './session';
 import { checkpointKeyId } from './scanClient';
-export type { ReconciliationScope, VaultRecord, ArchivedReceipt, ReconciliationVaultStore, ReconciliationState, ReconciliationImportPreview } from '@ghostpay/ux-vault/portable';
+export type { ReconciliationScope, VaultRecord, ArchivedReceipt, ReconciliationVaultStore, ReconciliationState, ReconciliationImportPreview, InvoiceTimestampCleanupPreview } from '@ghostpay/ux-vault/portable';
 export const { MAX_VAULT_BYTES, MAX_ARCHIVED_RECEIPTS, ReconciliationVault } = createReconciliationApi({ Error: UserFacingError, notify: announce });
 export type ReconciliationVault = ReconciliationVaultHandle;
 

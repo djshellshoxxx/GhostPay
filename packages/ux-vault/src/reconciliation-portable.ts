@@ -36,8 +36,7 @@ export interface ReconciliationLedgerDocument {
 }
 
 
-export interface RegisteredInvoice {
-  readonly version: 1;
+interface RegisteredInvoiceFields {
   readonly invoiceDigest: string;
   /** Local identity only; the nonce never appears on chain. */
   readonly nonce: string;
@@ -49,9 +48,13 @@ export interface RegisteredInvoice {
   readonly createdAt: number;
   /** Unix seconds. */
   readonly expiresAt: number;
-  /** Milliseconds since the epoch. */
-  readonly registeredAt: number;
 }
+
+/** Version 2 explicitly records removal of the local save time; invoice times remain unchanged. */
+export type RegisteredInvoice = RegisteredInvoiceFields & (
+  | { readonly version: 1; readonly registeredAt: number }
+  | { readonly version: 2; readonly registeredAt: null }
+);
 
 
 export type MatchProposal =
@@ -83,7 +86,7 @@ export interface ArchivedReceipt {
 
 export interface Document {
   readonly saturated: boolean;
-  readonly version: 3;
+  readonly version: 3 | 4;
   readonly records: readonly VaultRecord[];
   /**
    * Lowest block of any reorg this vault handled. Records the vault held then were checked against the chain; the
@@ -128,6 +131,12 @@ export interface ReconciliationImportPreview {
   readonly receiptCount: number;
 }
 
+/** Opaque, single-use approval for one exact encrypted snapshot. No invoice identities or times are exposed. */
+export interface InvoiceTimestampCleanupPreview {
+  readonly category: 'invoice-registration-timestamps';
+  readonly count: number;
+}
+
 export interface Cutoff {
   readonly from: bigint;
   /** Null: recorded before cutoff times existed, so it covers every observation at or above `from`. */
@@ -145,6 +154,9 @@ confirmProposal(value: ReconciliationRecord | VaultRecord, invoiceDigest: string
 }): Promise<void>;
 proposals(current?: readonly ReconciliationRecord[]): Promise<ReadonlyMap<string, MatchProposal>>;
 registerInvoice(value: RegisteredInvoice): Promise<void>;
+previewInvoiceTimestampCleanup(): Promise<InvoiceTimestampCleanupPreview>;
+confirmInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview, actionGuard?: () => void): Promise<void>;
+cancelInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview): void;
 removeInvoice(invoiceDigest: string): Promise<void>;
 clearInvoices(): Promise<void>;
 archiveReceipt(receipt: SignedReceipt, archivedAt?: number): Promise<void>;
@@ -260,7 +272,7 @@ function validateRegisteredInvoice(value: unknown): RegisteredInvoice {
   // Strict JSON parsing yields null-prototype objects; keep a plain copy.
   const o = { ...(value as Record<string, unknown>) };
   // Schema keys use locale-independent UTF-16 order, matching the canonical ASCII key list.
-  if (Object.keys(o).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).join('|') !== KEYS || o.version !== 1) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoice' });
+  if (Object.keys(o).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).join('|') !== KEYS || (o.version !== 1 && o.version !== 2)) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoice' });
   if (typeof o.invoiceDigest !== 'string' || !/^0x[0-9a-f]{64}$/.test(o.invoiceDigest)) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceDigest' });
   if (typeof o.nonce !== 'string' || !/^[0-9a-f]{32}$/.test(o.nonce)) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceNonce' });
   if (!Number.isSafeInteger(o.chainId) || (o.chainId as number) <= 0) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceChain' });
@@ -270,7 +282,7 @@ function validateRegisteredInvoice(value: unknown): RegisteredInvoice {
   const seconds = (n: unknown): boolean => Number.isSafeInteger(n) && (n as number) > 0 && (n as number) * 1000 <= MAX_TIME_MS;
   if (!seconds(o.createdAt) || !seconds(o.expiresAt) || (o.expiresAt as number) <= (o.createdAt as number))
     return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceTimeWindow' });
-  if (!Number.isSafeInteger(o.registeredAt) || (o.registeredAt as number) <= 0 || (o.registeredAt as number) > MAX_TIME_MS)
+  if (o.version === 2 ? o.registeredAt !== null : (!Number.isSafeInteger(o.registeredAt) || (o.registeredAt as number) <= 0 || (o.registeredAt as number) > MAX_TIME_MS))
     return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceTimestamp' });
   return o as unknown as RegisteredInvoice;
 }
@@ -447,14 +459,15 @@ function parseEnvelope(text: string, scope: ReconciliationScope): Envelope {
 
 function validateDocument(value: unknown, scope: ReconciliationScope): Document {
   // Version 1 documents (before invoice registration and receipt archiving) and version 2 documents (before the
-  // reorg cutoff time) upgrade on the next write.
+  // reorg cutoff time) upgrade on the next write. Version 4 permits explicitly removed registration times; only
+  // cleanup or import of that representation opts a document into the new format.
   const legacy =
     object(value) && value.version === 1 && exact(value, 'version|records|invalidatedFrom|tombstones|saturated');
-  const timed = object(value) && value.version === 3;
+  const timed = object(value) && (value.version === 3 || value.version === 4);
   if (
     !object(value) ||
     (!legacy &&
-      ((value.version !== 2 && value.version !== 3) ||
+      ((value.version !== 2 && value.version !== 3 && value.version !== 4) ||
         !exact(
           value,
           `version|records|invalidatedFrom|tombstones|saturated|invoices|receipts${timed ? '|invalidatedAt' : ''}`,
@@ -504,6 +517,8 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
     ? []
     : (value.invoices as unknown[]).map((item) => {
         const invoice = validateRegisteredInvoice(item);
+        if (invoice.version === 2 && value.version !== 4)
+          fail({ key: 'error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit' });
         if (invoice.chainId !== scope.chainId) fail({ key: 'error.reconciliationVault.registeredInvoiceHasAnotherScope' });
         return invoice;
       });
@@ -512,7 +527,7 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
   const receipts = legacy ? [] : (value.receipts as unknown[]).map((item) => validateArchivedReceipt(item, scope));
   if (new Set(receipts.map((r) => receiptId(r.receipt))).size !== receipts.length) fail({ key: 'error.reconciliationVault.duplicateArchivedReceipt' });
   return {
-    version: 3,
+    version: value.version === 4 ? 4 : 3,
     records,
     invalidatedFrom: value.invalidatedFrom,
     invalidatedAt: invalidatedAt as number | null,
@@ -641,7 +656,7 @@ function mergeImport(document: Document, imported: Document): Document {
     if (!receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) receipts.push(entry);
   const cutoff = mergeCutoffs(local, remote);
   return {
-    version: 3,
+    version: document.version === 4 || imported.version === 4 ? 4 : 3,
     records,
     tombstones: tombstones.slice(0, MAX_RECONCILIATION_RECORDS),
     invalidatedFrom: cutoff?.from.toString() ?? null,
@@ -663,6 +678,10 @@ class ReconciliationVault {
   private readonly previews = new WeakMap<
     ReconciliationImportPreview,
     { readonly text: string; readonly revision: number }
+  >();
+  private readonly timestampPreviews = new WeakMap<
+    InvoiceTimestampCleanupPreview,
+    { readonly text: string | null; readonly revision: number }
   >();
   public constructor(
     private readonly store: ReconciliationVaultStore,
@@ -909,8 +928,52 @@ class ReconciliationVault {
         throw new UserFacingError(
           { key: 'error.reconciliationVault.invoiceCapacity', values: { count: String(MAX_REGISTERED_INVOICES) } },
         );
-      return { ...document, invoices: [...document.invoices, invoice] };
+      return { ...document, version: invoice.version === 2 ? 4 : document.version, invoices: [...document.invoices, invoice] };
     });
+  }
+  /** Preview is read-only and retains ciphertext only. It never authorizes cleanup of a later snapshot. */
+  public async previewInvoiceTimestampCleanup(): Promise<InvoiceTimestampCleanupPreview> {
+    const revision = this.revision;
+    const { text, document } = await this.snapshot();
+    this.guard(revision);
+    if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
+    const preview = Object.freeze({
+      category: 'invoice-registration-timestamps' as const,
+      count: document.invoices.filter((invoice) => invoice.version === 1).length,
+    });
+    this.timestampPreviews.set(preview, { text, revision });
+    return preview;
+  }
+  public cancelInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview): void {
+    this.timestampPreviews.delete(preview);
+  }
+  /** One approval, one exact compare-and-swap. Never retry or apply reviewed authority to concurrent changes. */
+  public async confirmInvoiceTimestampCleanup(preview: InvoiceTimestampCleanupPreview, actionGuard: () => void = () => undefined): Promise<void> {
+    const staged = this.timestampPreviews.get(preview);
+    this.timestampPreviews.delete(preview);
+    this.guard();
+    if (staged === undefined || staged.revision !== this.revision)
+      fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
+    const guard = (): void => { this.guard(staged.revision); actionGuard(); };
+    guard();
+    const { text, document } = await this.snapshot();
+    guard();
+    if (text !== staged.text)
+      fail({ key: 'error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain' });
+    if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
+    if (preview.count === 0) return;
+    const next = await this.encrypt({
+      ...document,
+      version: 4,
+      invoices: document.invoices.map((invoice) => invoice.version === 1
+        ? { ...invoice, version: 2 as const, registeredAt: null }
+        : invoice),
+    });
+    guard();
+    const swapped = await this.store.compareAndSwap(scopeKey(this.scope), text, next, guard);
+    guard();
+    if (!swapped) fail({ key: 'error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain' });
+    announce();
   }
   /** Removing a registration never changes saved observations or their annotations. */
   public async removeInvoice(invoiceDigest: string): Promise<void> {
