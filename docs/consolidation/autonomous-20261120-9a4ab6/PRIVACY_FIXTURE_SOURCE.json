@@ -1,0 +1,58 @@
+{
+  "base": "410353a23631234aa888e46f38df22291c699a26",
+  "correction": "a02d640b7f847c006526d561467db9f348910d5a",
+  "changed_paths": [
+    "apps/web/src/components/SharedComponents.i18n.test.tsx",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/privacy/network-egress-inventory.json"
+  ],
+  "unit_exact_single_render_replacement": true,
+  "all_existing_unit_assertions_preserved": true,
+  "inventory_only_changed_field": "networkReferenceCounts[apps/web/src/views/Pay.tsx][reference:getRpc]",
+  "before": 6,
+  "after": 7,
+  "call_count_unchanged": 3,
+  "independent_review": {
+    "reviewer": "/root/privacy_fixture_repair/rpc_inventory_review",
+    "decision": "Approve single count refresh; added reference is non-invoking useCallback dependency, no fourth acquisition call or new permission",
+    "origin_commit": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6",
+    "pay_blob": "213396721bb63d68bc3d0c51755f9389ab3e2746",
+    "app_shell_blob": "349d23d980d972375303c40c617817379d1eb5c5",
+    "inventory_test_blob": "d48716335d66af3ce36c5add29fcaf05da53e8ad",
+    "reference_lines": [
+      426,
+      427,
+      517,
+      534,
+      555,
+      603,
+      836
+    ]
+  },
+  "browser_prerequisites": {
+    "anvil": {
+      "path": null,
+      "foundry_fallback": false
+    },
+    "forge": {
+      "path": null,
+      "foundry_fallback": false
+    },
+    "cast": {
+      "path": null,
+      "foundry_fallback": false
+    }
+  },
+  "source_sha256": {
+    "apps/web/src/components/SharedComponents.i18n.test.tsx": "6eaa14ceb9759c27ffd613d2fa38ece339f4fa9dc404e7699c40383f27a3cc46",
+    "docs/privacy/network-egress-inventory.json": "aef1df4668f2ab798b993ca258cbb9b3873443e1ec2f94bb8912029921ad5a76",
+    "apps/web/src/components/WalletAttempts.tsx": "b0d05ee1f07970d34eba1e88add1afa42145b69a9a63754e454884fcc4f9ffa6",
+    "apps/web/src/components/WalletAttempts.test.tsx": "d6b125ab3b07518818c0a453c32ec5f76ff447e60a9aa74fa771256ee0d77a39",
+    "apps/web/src/components/PrivateHistory.tsx": "01892a36db80a6abea491e64968b0505a0f0dbfb5a94ae02deb80f1df589c7b5",
+    "apps/web/src/views/Pay.tsx": "28612fda00d61eb788a208729dbc376933f5cf79e5b95f188d3939a565ea5ec2",
+    "apps/web/src/AppShell.tsx": "08a3dd04e0655b4f5e2779d0343eb5139db5fe51a91f7699e029eab1eee7b72e",
+    "scripts/tests/network-egress-inventory.test.mjs": "5a476d47880d8a9990fad05d9f0798da6841963cc12974ad46049370d62e078a",
+    "package-lock.json": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+    "apps/web/vite.config.ts": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed"
+  }
+}

@@ -169,7 +169,7 @@ describe('PaymentRequestQr under Arabic', () => {
 describe('WalletAttempts', () => {
   it('translates the heading, keeps the unknown-outcome and clear texts English in a draft locale', async () => {
     beginAttempt({ key: `0x${'ab'.repeat(32)}`, chainId: 1, account: `0x${'cd'.repeat(20)}`, kind: 'payment' });
-    render(inLocale('es', <WalletAttempts />));
+    render(inLocale('es', <WalletAttempts wallet={{ chainId: 1, account: `0x${'cd'.repeat(20)}` }} />));
     expect(await screen.findByRole('heading', { name: draft('es', 'walletAttempts.heading') })).toBeTruthy();
     expect(screen.getByText(english('walletAttempts.hint'))).toBeTruthy();
     expect(screen.getByRole('button', { name: english('walletAttempts.clear') })).toBeTruthy();
