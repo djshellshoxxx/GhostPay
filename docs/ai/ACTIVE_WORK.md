@@ -771,3 +771,14 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+## GP-BUG-R5 — reject unsupported ux-export summary period options (2026-11-21)
+
+- Worker: GhostPay Bug Repair Rounds, one sequential ChatGPT implementation/review coordinator; **no separate independent verifier available**.
+- Branch: `automation/20261121/bug/summary-period-runtime-guard-r5`, based on live `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths: `packages/ux-export/src/summary.ts`, new `packages/ux-export/src/summary.period-boundary.test.ts`, this **append-only** registry section, and `docs/handoffs/SUMMARY_PERIOD_RUNTIME_BOUND_20261121.md`. The existing `summary.test.ts` remains untouched.
+- Evidence: exported `periodKey` falls through to daily UTC grouping for unsupported period values, while `summarize` never checks `options.period` (including for empty rows). This silently returns wrong summary buckets instead of the existing `INVALID_OPTION` error for unsupported options.
+- Acceptance: regression first reproduces unsupported runtime string/null/undefined/numeric periods being accepted; minimal `ExportError('INVALID_OPTION')` guard in both entry points; preserve five valid period groupings, status/amount/date semantics, CSV and aggregation. No new API, dependency, interface, contract, wallet, RPC, deployment or release change.
+- Ownership: read **all 173** live open PR changed-file inventories (2026-11-21) and found **no** changes under `packages/ux-export/src/`. Refresh exact heads/conflicts before any eventual integration. PR #390 remains externally owned and unchanged; generation-11 metadata-only integration lease belongs to another coordinator and **must not be acquired or used to merge**.
+- Verification: repository checkout is unavailable from this executor because `git ls-remote` cannot resolve `github.com`; record isolated source-equivalent Node verification distinctly from actual hosted GitHub CI. Native browser checks and separate review remain required as applicable.
