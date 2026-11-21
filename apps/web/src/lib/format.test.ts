@@ -76,3 +76,45 @@ describe('display helpers', () => {
     }
   });
 });
+
+describe('ISO 4217 minor-unit exceptions (2026 List One)', () => {
+  it('does not divide whole-unit currencies by 100 when signing or displaying fiat', () => {
+    const zeroDecimals = [
+      'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG',
+      'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF',
+    ];
+    for (const currency of zeroDecimals) {
+      expect(fiatDecimals(currency)).toBe(0);
+      expect(formatFiat(12_345n, currency)).toBe(`${currency} 12345`);
+      expect(parseUnits('12345', fiatDecimals(currency))).toBe(12_345n);
+      expect(parseUnits('12345.50', fiatDecimals(currency))).toBeUndefined();
+    }
+  });
+
+  it('preserves all three decimal places for dinar/rial minor units', () => {
+    const threeDecimals = ['BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND'];
+    for (const currency of threeDecimals) {
+      expect(fiatDecimals(currency)).toBe(3);
+      expect(parseUnits('12.345', fiatDecimals(currency))).toBe(12_345n);
+      expect(formatFiat(12_345n, currency)).toBe(`${currency} 12.345`);
+      expect(formatFiat(-1n, currency)).toBe(`${currency} -0.001`);
+      expect(parseUnits('12.3456', fiatDecimals(currency))).toBeUndefined();
+    }
+  });
+
+  it('preserves four decimals for the CLF and UYW indexed units', () => {
+    for (const currency of ['CLF', 'UYW']) {
+      expect(fiatDecimals(currency)).toBe(4);
+      expect(parseUnits('12.3456', fiatDecimals(currency))).toBe(123_456n);
+      expect(formatFiat(123_456n, currency)).toBe(`${currency} 12.3456`);
+      expect(parseUnits('12.34567', fiatDecimals(currency))).toBeUndefined();
+    }
+  });
+
+  it('does not change two-decimal currency handling or the existing unknown-code fallback', () => {
+    for (const currency of ['USD', 'CAD', 'EUR', 'ZZZ']) {
+      expect(fiatDecimals(currency)).toBe(2);
+      expect(formatFiat(12_345n, currency)).toBe(`${currency} 123.45`);
+    }
+  });
+});
