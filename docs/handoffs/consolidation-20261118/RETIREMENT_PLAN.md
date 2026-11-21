@@ -1,6 +1,8 @@
 # GhostPay branch and PR retirement plan — 2026-11-18
 
-**Nothing is deleted, closed or archived now.** This is a proposed mapping for Phase E of the gameplan. Every retirement action below requires the owner's final approval, given after the candidate is qualified and promoted through the normal protected review.
+**Status 2026-11-18 (after PR #203 merged):** the owner authorized retirement; 105 PRs were closed with comments (90 fully contained in `main`, 15 superseded) and no branch was deleted. See [RETIREMENT_LOG.md](RETIREMENT_LOG.md). The original proposal follows.
+
+**Original proposal: nothing is deleted, closed or archived now.** This is a proposed mapping for Phase E of the gameplan. Every retirement action below requires the owner's final approval, given after the candidate is qualified and promoted through the normal protected review.
 
 Source data: `branch_census_20261118.json` (215 refs, pinned candidate `278c9a2734a56c548a75acd1c2a4eab7397d62d1`, unified `beb525dddcca103de9eda447b55cddf7ee2f428c`). Patch equivalence is not proof of current behavior: each retirement keeps the outstanding acceptance work listed here open until the candidate's own tests and acceptance evidence cover it.
 
