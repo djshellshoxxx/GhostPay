@@ -1,0 +1,28 @@
+{
+  "description": "Public API commit metadata differs from local commits. Every corresponding full tree is identical; ordered merge topology and all donor histories are preserved. The original local execution history is included in EXECUTION_HISTORY.bundle.",
+  "mapping": {
+    "412ee60f901f50868b840532c6e6a0fb75791169": {
+      "published_commit": "125d566f175b13307352d6fc1441e62df84fae8e",
+      "tree": "69d5cb3bede5db23a159d0e1fb10a9301aa8448e",
+      "parents": [
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+      ]
+    },
+    "cc0a1e58bc35c3400f77a0a0eaaaad3da1b899c6": {
+      "published_commit": "953dd00513d68d602c9f0dc9d9dffea7cea3c117",
+      "tree": "93897ed891bbd17b1b836bf4866dbe6829ddbf97",
+      "parents": [
+        "125d566f175b13307352d6fc1441e62df84fae8e",
+        "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+      ]
+    },
+    "7ef2b91d0485d42caea97edbbda67b4b5a04580e": {
+      "published_commit": "9ca88e905023759cb7bde14bcf93846a766b7323",
+      "tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "parents": [
+        "953dd00513d68d602c9f0dc9d9dffea7cea3c117",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+      ]
+    }
+  }
+}

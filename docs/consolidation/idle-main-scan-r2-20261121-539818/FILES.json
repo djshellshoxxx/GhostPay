@@ -1,0 +1,80 @@
+{
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/CAPTURE.json",
+      "bytes": 1996,
+      "sha256": "f900488d9b0a8df6bee2fbff11c9ac282767678d4b1dba9d8824e69d3274db6a"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/CENSUS_EXTENSION.json",
+      "bytes": 3745,
+      "sha256": "d67786ba7f1bceb1fcbabf197ef65770821552e80ccebfa6c6ac9ca11aa8dbb8"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/CENSUS_EXTENSION_DETAILS.json.gz",
+      "bytes": 77669,
+      "sha256": "91fbbfd6bbfea8f75809266a86f8dcb28dd83edc8cb6b28dee7eb15bd32e1380"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/ENVIRONMENT.json",
+      "bytes": 684,
+      "sha256": "ad13d8e11c6cc72af8538f54a22fe0783a817c07be4525defaeca8a5dfb9f147"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION.json",
+      "bytes": 6132,
+      "sha256": "e28eb02b2c4376bb591cfe5719a5e4a8bb4e1b86a13eec6365383510cf599c78"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION_HISTORY.bundle",
+      "bytes": 105848,
+      "sha256": "5128d52c4c8dee6a3e3b89a05c3671f557ab55a158a6d99cb5a3704281f0c37c"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION_HISTORY.json",
+      "bytes": 399,
+      "sha256": "9991913804343af678bef17ece98cf28e09b72b119bdd5aced97bd46145c5b76"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXECUTION_LOGS.json.gz",
+      "bytes": 4488,
+      "sha256": "614e3dd38098ee362e195e40c03ec9566d92a1bb0cc00d2132dadc43baf4fee8"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/EXTEND_CENSUS.py",
+      "bytes": 5986,
+      "sha256": "0bfd3e572dcbb7cb60567e6c42e1b2538bb1997fb1b06ddc8c785171d8ad71fa"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/INDEPENDENT_REVIEWS.md",
+      "bytes": 3461,
+      "sha256": "5075ce6eb16251de898b7b0db421a232af6847ef75f0003d09d14685fd7becf0"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/LIGHT_CHECKS.json",
+      "bytes": 1043,
+      "sha256": "7df46e182c60f1b1bf101725f9bbae98b4e27877ce196c96aa91e23e36369a0e"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/MERGES.json",
+      "bytes": 1005,
+      "sha256": "f76eff0b39bcb4ada69887a884caafe918d542c89488dfa289604ac5ee952405"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/PUBLICATION_BASES.json",
+      "bytes": 1174,
+      "sha256": "c8c07750beb3351c10208137186969f045322093388d9a8cd4330d3b46564918"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/REPORT.md",
+      "bytes": 13584,
+      "sha256": "967fd710a7f290ef15fea2098e45667e53f4c2f3a300f65af2dc4423344edee9"
+    },
+    {
+      "path": "docs/consolidation/idle-main-scan-r2-20261121-539818/SNAPSHOT.json",
+      "bytes": 126158,
+      "sha256": "4207f47c3865bec52e43964df4e5231b6195a855cead294b981b080dd5b44cde"
+    }
+  ]
+}

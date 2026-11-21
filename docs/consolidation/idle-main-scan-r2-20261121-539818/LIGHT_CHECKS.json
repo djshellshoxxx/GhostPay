@@ -1,0 +1,38 @@
+[
+  {
+    "command": [
+      "npm",
+      "run",
+      "ci:scan-secrets"
+    ],
+    "exit_code": 0,
+    "output": "\n> ghostpay@0.1.0 ci:scan-secrets\n> bash scripts/scan-secrets.sh\n\nOK: no committed env files or key material found.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n",
+    "output_bytes": 266,
+    "output_sha256": "6f2ce826e5b45ead88ac00331a9f1028f42466a421dd1e382baf2470bf3fe51c"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": "",
+    "output_bytes": 0,
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "output": "",
+    "output_bytes": 0,
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

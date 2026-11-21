@@ -1,0 +1,95 @@
+{
+  "observed_at_utc": "2026-11-21T04:34:40.741Z",
+  "targets": {
+    "main": "aec179910c39081d820396409ff3139ff2264132",
+    "integration_pr307": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+  },
+  "previous_commit": "c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c",
+  "previous_details_sha256": "0f6541ceafac511ef6714f97c9d6b557bf075ef095b9762f52490b14dacd9dbf",
+  "original_generator_commit": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+  "generator_sha256": "21073be46a1b54cab3541b30bc3ae0c1189d2eb9293c5791eb8e487b1e71dfac",
+  "method": "Unchanged original function definitions; all best merge bases; exact Git mode/type/blob comparisons; only new or changed heads recomputed.",
+  "limits": "Frozen separate endpoint observations; mechanical differences are not distinct missing features or merge qualification. Later publications are excluded.",
+  "total_branches": 428,
+  "open_prs": 127,
+  "reused_exact_heads": 421,
+  "computed_heads": 7,
+  "missing_previous_names": [],
+  "summary": {
+    "main": {
+      "ancestor_or_equal": 189,
+      "documentation_or_nonapplication_diff": 80,
+      "application_semantic_review_required": 150,
+      "coordination_metadata_do_not_merge": 1,
+      "all_changed_application_blobs_retained": 7,
+      "unrelated_history": 1
+    },
+    "integration_pr307": {
+      "ancestor_or_equal": 199,
+      "documentation_or_nonapplication_diff": 79,
+      "application_semantic_review_required": 136,
+      "all_changed_application_blobs_retained": 12,
+      "coordination_metadata_do_not_merge": 1,
+      "unrelated_history": 1
+    }
+  },
+  "computed": [
+    {
+      "name": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "sha": "508531da5665e3649d3f925673a2d8eb9347a2a1",
+      "classification": {
+        "main": "documentation_or_nonapplication_diff",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "docs/ghostpay-coordination-ledger-20261120",
+      "sha": "5564d8d2dcd22ce8d0b0c2516628f42671b8ffd5",
+      "classification": {
+        "main": "documentation_or_nonapplication_diff",
+        "integration_pr307": "documentation_or_nonapplication_diff"
+      }
+    },
+    {
+      "name": "evidence/ghostpay-continuation-20261121-539818",
+      "sha": "c7d0e589cca0bb1bbb6c93620808ec2b6aa1b22c",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "sha": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "fix/ghostpay-policy-pendingedit-lint-20261121-r1",
+      "sha": "23f55bfea1068a5791b8e8e29409e4a13d0b28a3",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "fix/ghostpay-policy-record-seller-identity-20261121",
+      "sha": "e871eccc1238b7145cd1d0a667afb393c373cf83",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    },
+    {
+      "name": "repair/ghostpay-settings-import-expectations-20261121-539818",
+      "sha": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284",
+      "classification": {
+        "main": "application_semantic_review_required",
+        "integration_pr307": "application_semantic_review_required"
+      }
+    }
+  ],
+  "details_sha256": "91fbbfd6bbfea8f75809266a86f8dcb28dd83edc8cb6b28dee7eb15bd32e1380"
+}

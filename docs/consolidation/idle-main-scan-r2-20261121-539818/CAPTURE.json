@@ -1,0 +1,59 @@
+{
+  "assembled_at_utc": "2026-11-21T04:34:40.741Z",
+  "repository": "djshellshoxxx/GhostPay",
+  "branch_pages": [
+    {
+      "page": 1,
+      "per_page": 100,
+      "count": 100,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches?per_page=100&page=1"
+    },
+    {
+      "page": 2,
+      "per_page": 100,
+      "count": 100,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches?per_page=100&page=2"
+    },
+    {
+      "page": 3,
+      "per_page": 100,
+      "count": 100,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches?per_page=100&page=3"
+    },
+    {
+      "page": 4,
+      "per_page": 100,
+      "count": 100,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches?per_page=100&page=4"
+    },
+    {
+      "page": 5,
+      "per_page": 100,
+      "count": 28,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/branches?per_page=100&page=5"
+    }
+  ],
+  "open_pr_pages": [
+    {
+      "page": 1,
+      "per_page": 50,
+      "count": 50,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls?state=open&per_page=50&page=1"
+    },
+    {
+      "page": 2,
+      "per_page": 50,
+      "count": 50,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls?state=open&per_page=50&page=2"
+    },
+    {
+      "page": 3,
+      "per_page": 50,
+      "count": 27,
+      "url": "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls?state=open&per_page=50&page=3"
+    }
+  ],
+  "termination": "Each endpoint's final page is shorter than the requested page size. All names/PR numbers are unique. This is not an atomic observation; first PR page was read before the other pages.",
+  "restored_source": "Fresh full Git clone after ephemeral workspace reset. Immutable heads in snapshot remain available.",
+  "limits": "Later publications and ref movements are outside this denominator. This metadata records actual tool reads rather than another endpoint replay."
+}
