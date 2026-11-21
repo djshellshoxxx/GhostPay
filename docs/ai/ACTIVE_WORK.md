@@ -1,3 +1,12 @@
+# GP-BUG-07 follow-up: pending edit and mined-approval review races (2026-11-21 UTC)
+
+Worker: ChatGPT sequential engineer, no independent approving reviewer. Task branch `test/ghostpay-policy-review-races-20261121-r1` starts at PR #375 exact head `2e0aff8490086a54fadd52c2fa4d802605b7920e`, itself stacked #375 → #374 → #368 → #362 → #357 and inheriting #345's review-revocation repair. Baseline current main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: a new `apps/web/src/features/policy/PolicyPay.reviewRaces.test.tsx`, this append-only claim, and `docs/handoffs/POLICY_REVIEW_RACE_COVERAGE_20261121.md`. Existing production source/tests and parents are untouched.
+Acceptance: deterministic MockWallet/jsdom tests for editing payee/token while an account recheck is pending, re-review invalidation, and an ERC-20 approval already mined followed by an edited amount before the payment wallet request. Require no unauthorized payment wallet request and clear residual-allowance messaging; do not assume a browser can revoke a wallet request already delivered. Do not weaken CI/gates, add dependencies, network endpoints, contracts, deployment, custody or fee logic.
+Verification: exact-head hosted focused Vitest, web lint/typecheck, full relevant CI and independent review required; do not claim local execution or approval without evidence. This is a stacked draft child of #375, not an independent mainline merge. Generation-11 integration lock remains held by another coordinator; do not mutate it or any parent/main branch.
+
+---
+
 # Policy validation restoration — 2026-11-21 UTC
 
 Owner: `/root/policy_validation_restore`, coordinator `5ceb6203640a-root`.
