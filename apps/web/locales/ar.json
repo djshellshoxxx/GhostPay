@@ -5,6 +5,17 @@
     "note": "Machine-drafted catalog seeded to prove plural, RTL and CJK handling. Not reviewed by a native speaker."
   },
   "messages": {
+    "app.checks.title": "الفحوص الذاتية للمتصفح",
+    "app.checks.running": "جارٍ فحص قدرات المتصفح المحلية…",
+    "app.checks.ready": "اجتازت جميع فحوص قدرات المتصفح",
+    "app.checks.attention": "تحقق من قدرات المتصفح",
+    "app.checks.secure": "سياق متصفح آمن",
+    "app.checks.digest": "اختبار SHA-256 بنتيجة معروفة عبر WebCrypto",
+    "app.checks.storage": "اختبار مؤقت للكتابة والقراءة من تخزين المتصفح",
+    "app.checks.pass": "اجتاز",
+    "app.checks.warn": "غير متاح",
+    "app.checks.fail": "فشل",
+    "app.checks.limits": "هذه الفحوص ليست تحققًا مستقلاً من سلامة شيفرة التطبيق أو أصالة المحفظة أو RPC أو سلامة المدفوعات أو تسويتها على السلسلة أو استرداد المفاتيح. لا تُرسل أي طلبات شبكة.",
     "settings.title": "الإعدادات",
     "settings.notice.plaintext": "تُحفظ الإعدادات في هذا المتصفح كنص عادي، بما في ذلك عناوين RPC. لا تضع عنوانًا يحتوي على سرّ لا تحفظه كنص عادي. لا يتم حفظ أي مفتاح أبدًا.",
     "settings.rpc.legend": "نقاط اتصال RPC",
