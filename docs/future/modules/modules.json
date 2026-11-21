@@ -96,8 +96,10 @@
         "P14",
         "FEE01"
       ],
-      "status": "specification-only",
-      "implementation_authorized": false
+      "status": "milestone-1-implemented-disabled",
+      "implementation_authorized": true,
+      "implemented_milestone": "M1",
+      "qualification_path": "docs/future/modules/F05-ghostproof/COORDINATOR_VERIFICATION.md"
     },
     {
       "id": "F06",

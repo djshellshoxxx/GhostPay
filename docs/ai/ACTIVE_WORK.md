@@ -16,6 +16,13 @@ Worker: ChatGPT specification team; coordinator owns publication.
 Branch: `future/f04-merchant-dashboard`.
 Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
 Owned path: `docs/future/modules/F04-merchant-dashboard/SPEC.md` and this additive claim.
+
+# F05 future specification — 2026-11-19
+
+Worker: ChatGPT specification team; coordinator owns publication.
+Branch: `future/f05-ghostproof`.
+Source base: `c977b5d6723f6822c3b5d86cd6b231712c53c395`; docs foundation: `524aa18bdcd307a3129bbb7a6b7e74838819331e`.
+Owned path: `docs/future/modules/F05-ghostproof/SPEC.md` and this additive claim.
 Acceptance: source-grounded modular contract, dependencies, failure/recovery,
 privacy/fee limits, acceptance cases and planned checks; verified remote spec.
 Documentation only: no implementation, main merge, deployment, activation or fee decision.
@@ -45,6 +52,7 @@ Ownership reconciliation: current integration PR #307 does not change TRON adapt
 Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
 
 ---
+
 
 # Main unique-code consolidation — 2026-11-19 (Pacific)
 
@@ -830,10 +838,62 @@ remaining provider/browser/release limits. Product source stays read-only.
 No remote mutation, deployment, exploit tooling, full-web typed-lint retry,
 or change to qualification gates.
 
+## F05 offline receipt assurance continuation — 2026-11-20
+
+Worker: future_features/f05_ghostproof, coordinated by ChatGPT root.
+Branch: `future/f05-ghostproof`; specification head `a241d0a5556c23bf2670f6ba17e7c928b41d7eb4`.
+Main input: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5`.
+Owned paths: `apps/web/src/features/future/ghostproof/**`, F05 specification and
+handoff, minimal web dependency declaration and matching lock entry if needed.
+Acceptance: bounded offline receipt import using the existing digest and signed
+receipt providers; accurate assurance, trust, binding and unknown finality labels;
+immutable disclosure preview; rejection of unsupported claims; stale/session/abort
+lifecycle protection; deterministic tests with real signed receipts.
+Keep the feature outside production routes and the lean artifact. No provider
+cryptography, existing receipt-core changes, network access, automatic export,
+wallet access, production activation, release, main merge or remote writes.
+Status: main reconciled at `7d64e0f4`; product/tests complete at
+`726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`. Normal configured focused tests
+pass 62/62; scoped coverage, strict TypeScript and repository ESLint pass.
+Source-pinned evidence and remaining scope: `docs/future/modules/F05-ghostproof/HANDOFF.md`.
+Full feature, production activation, independent review and hosted/browser gates remain pending.
+
+
+## F05 independent milestone review — 2026-11-20
+
+Worker: `future_features/f05_independent_review`; branch `future/f05-ghostproof`.
+Starting head: `160acff6dfa40491d36aea151b0e7aa679f05307`.
+Product/test source: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: this additive claim, `docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md`,
+and the coordinator-requested correction summary in the F05 handoff.
+Product code is read-only. Review assurance, signer/invoice binding, strict input
+limits, immutable state and cancellation; replay only the existing focused tests.
+Do not run whole-web TypeScript or typed lint while another worker owns the heavy
+validation slot. No remote mutation, production activation, deployment or payment.
+Status: initial review passed 62/62 focused tests. The canonical-format observation
+was corrected by the coordinator at `d44604ce463cec708c77a230b068f0ac44669280` and independently
+re-reviewed; final focused replay passed 67/67. No remaining introduced blocking
+defect found. Whole-web, browser and release gates remain separate.
+
+
+## F05 canonical binding correction — 2026-11-20
+
+Worker: ChatGPT coordinator, independent-review follow-up.
+Base product: `726d16dc560f8b12e4c71f6c04895fd1dcbd34f4`.
+Owned paths: GhostProof `review.ts` and `review.test.ts` only.
+Acceptance: canonical binding strings must match their complete input; retain
+explicit whitespace normalization of caller-configured signer pins. Add ordinary
+malformed-format coverage and rerun focused checks before independent re-review.
+
+Correction source: `d44604ce463cec708c77a230b068f0ac44669280`. Independent source review and 67/67
+focused tests pass; full integration qualification remains coordinator-owned.
+
 
 ## Future-feature current-main reconciliation — 2026-11-20
 
 Worker: ChatGPT coordinator. Starting head: `49088efa043ca3f016e0b802f8b7bf51bf18a97a`.
+
+Worker: ChatGPT coordinator. Starting head: `f8aab16068bfd55210e0acbcf5bb8492f8c8f472`.
 New main input: `aa3df1cb37274fae73af0ca957183c15c51b62d3` (reviewed #306 and #311 source).
 Owned change: merge current main while preserving every future-module source blob
 and all existing ownership records; resolve registry append conflicts only.
@@ -894,3 +954,12 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Ownership reconciliation: current integration owner `5ceb6203640a-root` holds generation 12 and is repairing camera/policy/TRON and narrow child stacks. This task does not change those branches, their source, main, or the shared lease. Existing F04/F05/F10 source branches remain immutable; this successor preserves their exact frozen contributions for coordinated integration.
 - Boundaries: no production UI activation, signing/issuance/persistence feature additions, remote services, contract edits, external dependency version changes, deployment or branch deletion. The root owns publication of this isolated candidate; shared integration requires the existing coordination protocol.
 - Status: claim recorded before composition. Exact-head candidate qualification is not yet asserted.
+
+## F05 final qualification and publication record — 2026-11-20
+
+Worker: ChatGPT coordinator. Tested head `e08333af3eb830a36d375ecf2174db955f559d64`.
+Owned paths: module qualification/publication docs and copied execution logs;
+this registry and the module catalog row only. Runtime/test code is frozen.
+Acceptance: preserve exact source trees, independent review, 67 passing tests,
+current-main TypeScript/build/bundle evidence and source-publication mapping.
+Hosted checks remain separately reported. No activation or main merge.
