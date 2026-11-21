@@ -1,0 +1,528 @@
+{
+  "format": "ghostpay-autonomous-continuation/1",
+  "repository": "djshellshoxxx/GhostPay",
+  "coordinator": "5ceb6203640a-root",
+  "updated_at_utc": "2026-11-21T08:42:29.225911+00:00",
+  "authoritative_human_ledger": "../../handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md",
+  "status": "active-isolated-engineering; shared-target integration blocked",
+  "release_ready": false,
+  "starting_main": "aec179910c39081d820396409ff3139ff2264132",
+  "latest_verified_main": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "latest_verified_main_tree": "d8aa628cbc531c6969bdf0af621795ceacfc00c3",
+  "ownership": {
+    "ref": "automation/ghostpay-integration-lock",
+    "status": "held",
+    "owner": "994a0d214fb9-root-r3",
+    "generation": 11,
+    "prior_writer_stopped_verified": false,
+    "integration_authorized": false,
+    "isolated_new_branch_publication_allowed": true,
+    "rule_source": {
+      "parent_prs": [
+        307,
+        349
+      ],
+      "path": "scripts/automation/integration-lock.mjs",
+      "rule": "A held lease cannot be acquired on expiry alone; reconcile the previous writer first."
+    },
+    "exception": {
+      "unsupported_acquisition_commit": "4621502dc88686fd4f2e9d954c8a18e6ea280b46",
+      "unsupported_generation": 12,
+      "reason": "Expiry was incorrectly treated as sufficient before the branch-only no-takeover rule was found.",
+      "merges_before_discovery": [
+        342,
+        351,
+        359,
+        366,
+        258
+      ]
+    },
+    "correction": {
+      "commit": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+      "restored_original_blob": "97523a9ce00231ac883b32178ab48a547eb0dd8f",
+      "verification": "Exact original generation-11 bytes restored with guarded update; acquisition and restoration retained.",
+      "shared_target_writes_stopped": true
+    },
+    "unblock": "Verify or obtain confirmation that coordinator 994a0d214fb9-root-r3 has stopped; then follow repository release/acquisition protocol and recheck every source/target head."
+  },
+  "merges": [
+    {
+      "pr": 342,
+      "target_pr": 340,
+      "source": "06fd87c3e90000118ffa94048529db36f0a67d41",
+      "commit": "b86a3e6affe8b71c6f13d16783accad446271ba4",
+      "tree": "71964f50a56f150182c51407b408fe7d6e0ab1db",
+      "method": "merge",
+      "tree_verified": true,
+      "ownership_exception": true
+    },
+    {
+      "pr": 351,
+      "target_pr": 337,
+      "source": "0750012546aeb4336b4340fe16751f8d83804acd",
+      "commit": "08d2111a5fd3b71a148fc8648481200e680faf53",
+      "tree": "9ce013174e2417756abd8cc95407010414a66814",
+      "method": "merge",
+      "tree_verified": true,
+      "ownership_exception": true
+    },
+    {
+      "pr": 359,
+      "target_pr": 345,
+      "source": "23f55bfea1068a5791b8e8e29409e4a13d0b28a3",
+      "commit": "ccc8c3521511e2a2b9b66ef11f12723d87ce5f44",
+      "tree": "9ff7701b0a8992bf9d266b8dee6b2792aa0c2047",
+      "method": "merge",
+      "tree_verified": true,
+      "ownership_exception": true
+    },
+    {
+      "pr": 366,
+      "target": "main",
+      "source": "0d8437c1097fad30d505c343ce4da356350ea4c3",
+      "commit": "da6b05da5bb2e4293f38572da361980960d91911",
+      "tree": "d411271ca253e5d4fab95caebe03ecaf2411fc6f",
+      "method": "merge",
+      "tree_verified": true,
+      "ownership_exception": true
+    },
+    {
+      "pr": 258,
+      "target": "main",
+      "source": "d073414b718242eefdd22c0debc56901045d5f7a",
+      "commit": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "tree": "d8aa628cbc531c6969bdf0af621795ceacfc00c3",
+      "method": "merge",
+      "tree_verified": true,
+      "ownership_exception": true
+    }
+  ],
+  "publications": [
+    {
+      "pr": 369,
+      "target_pr": 340,
+      "branch": "repair/ghostpay-tron-main-20261121-5ceb",
+      "local_source": "5de4629aacfbe6ce4570c1f796d15d67e866e097",
+      "remote_source": "500ece7a7c99b566ecaad5a8dd0d54fd0022395a",
+      "tree": "281b142d553d582ceadd557fda711ae8070411bf",
+      "remote_parents": [
+        "b86a3e6affe8b71c6f13d16783accad446271ba4",
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "exact_tree_verified": true,
+      "state": "Draft; all five hosted workflows successful including24/24CI jobs; existing ownership/review/dependency gates still apply."
+    },
+    {
+      "pr": 372,
+      "target_pr": 367,
+      "branch": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "local_source": "783231a46840cd869e39bd704751d4ab4c349c45",
+      "remote_source": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+      "tree": "65e5cc6fdb7ab3337951ba0b0b58e87b71df095b",
+      "remote_parents": [
+        "50ccf5c8b396247b524e5115ebe51575ca79d318",
+        "4ccb3db334de7d7cada305a11243c9e3efddc4f6",
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "exact_tree_verified": true,
+      "state": "Draft; web4405 passed/13 skipped; all68 typechecks and67 lint commands passed; hosted Chromium156/2 full and143/5 lean, Integration/Pages/Beta/Hosting/CLI passed. Core CI incomplete; Mythril10 findings failed, Echidna succeeded. Parent Tor fixture repaired in373. Ownership/dependency/approval gates remain."
+    },
+    {
+      "pr": 373,
+      "target_pr": 372,
+      "branch": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "local_source": "a9bd507e130283df2270683faa3128af89dc44d6",
+      "remote_source": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+      "tree": "51054a204b1a1f02b1cc4385e943cdfa2bc5ed15",
+      "remote_parents": [
+        "5299580a28477a736fe8b0738a86f102d3bbab2e"
+      ],
+      "exact_tree_verified": true,
+      "state": "draft; 14-path independent source review and18 focused tests passed; corrected-source hosted gates running; original four failed native jobs remain recorded; Firefox crashes unresolved",
+      "prior_source": "22569e2a83e3f8bc3c86982f69bbb1d90ca8356c",
+      "base": "integrate/ghostpay-recovery-privacy-20261121-5ceb",
+      "parents": [
+        "22569e2a83e3f8bc3c86982f69bbb1d90ca8356c"
+      ],
+      "remote_tree_verified": true,
+      "guarded_fast_forward": true
+    },
+    {
+      "pr": 374,
+      "target_pr": 368,
+      "branch": "recover/ghostpay-policy-asset-coverage-20261121-5ceb",
+      "local_source": "e1ab03ca7b07c225ae42d0c16fb79b97f0a1f95c",
+      "remote_source": "821700d172dc638e1c06f35a03ca5f0c215fd46d",
+      "tree": "fbb88d447ca4a60275bcd28d3256b03a77c47a3e",
+      "remote_parents": [
+        "18d0442a156106abe2309f8a6e82358aab37961a",
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+        "ccc8c3521511e2a2b9b66ef11f12723d87ce5f44"
+      ],
+      "exact_tree_verified": true,
+      "state": "Draft; exact-tree full web2837/13 and scoped independent review passed; Pages/Beta/Hosting/CLI passed; CI and native gates remain; ownership hold."
+    },
+    {
+      "name": "policy_validation",
+      "pr": 375,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/375",
+      "branch": "recover/ghostpay-policy-validation-20261121-5ceb",
+      "base": "recover/ghostpay-policy-asset-coverage-20261121-5ceb",
+      "local_source": "dee9202c4f7d3cfb0233aca838b361c15b2a5345",
+      "remote_source": "2e0aff8490086a54fadd52c2fa4d802605b7920e",
+      "tree": "ff04943bef13c739d6fb914d1172ed2e7e828dfd",
+      "parents": [
+        "821700d172dc638e1c06f35a03ca5f0c215fd46d"
+      ],
+      "remote_tree_verified": true,
+      "local_original_history_preserved_in_bundle": true,
+      "state": "Draft; independent scoped review and recorded local qualification passed; Pages/Beta/Hosting/CLI passed. Core CI incomplete; documented native/external/approval/dependency gates remain; integration held."
+    },
+    {
+      "name": "chain_interop",
+      "pr": 376,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/376",
+      "branch": "recover/ghostpay-chain-interop-20261121-5ceb",
+      "base": "main",
+      "local_source": "08ac68148861ca00b68720572afd0f22fad5dd27",
+      "remote_source": "f717157271fe494eb8094e504e9fec8276d51fcc",
+      "tree": "9cdb74017b5950ea78da3e058e6c1831003c21cc",
+      "parents": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "remote_tree_verified": true,
+      "local_original_history_preserved_in_bundle": true,
+      "state": "Draft; independent scoped review and recorded local qualification passed; Pages/Beta/Hosting/CLI passed. Core CI incomplete; documented native/external/approval/dependency gates remain; integration held."
+    },
+    {
+      "pr": 377,
+      "branch": "repair/ghostpay-cookie-dependency-20261121-5ceb",
+      "base": "main",
+      "local_source": "eea06147aa2d3989a4fe5171a2926cedb719f5e2",
+      "remote_source": "d3c2228c53cbda4ee650ec91776af8bb1c02674d",
+      "tree": "49a1259eced5fd3e224ff2a629f781e8593f6ccb",
+      "parents": [
+        "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ],
+      "remote_tree_verified": true,
+      "local_original_history_preserved_in_bundle": true,
+      "state": "draft; scoped independent review and36 cases passed; four hosted workflows passed; CI incomplete; ownership and required approvals held"
+    }
+  ],
+  "evidence_limits": [
+    "Independent source review means another AI-assisted worker, not formal GitHub approval or external professional audit.",
+    "Test groups overlap; do not sum reruns as unique tests.",
+    "Skipped, queued, launch-blocked, timed-out and unexecuted checks are not passes.",
+    "No deployment, release, historical branch deletion, force push or real-funds transaction occurred."
+  ],
+  "census_snapshots": [
+    {
+      "at": "2026-11-21T06:10:11.823Z",
+      "base": "aec179910c39081d820396409ff3139ff2264132",
+      "branches": 437,
+      "branch_pages": [
+        100,
+        100,
+        100,
+        100,
+        37,
+        0
+      ],
+      "open_prs": 135,
+      "pr_pages": [
+        100,
+        35,
+        0
+      ],
+      "ancestry_incorporated": 189,
+      "ahead": 247,
+      "unrelated": 1,
+      "code_path_candidates": 175,
+      "docs_directory_candidates": 66,
+      "other_noncode_candidates": 6,
+      "comparisons_at_least_300_paths": 53,
+      "unique_ahead_commits": 1589,
+      "semantic_review_unresolved": 154,
+      "evidence": "census-start"
+    },
+    {
+      "at": "2026-11-21T06:33:38.109Z",
+      "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "branches": 438,
+      "branch_pages": [
+        100,
+        100,
+        100,
+        100,
+        38,
+        0
+      ],
+      "open_prs": 131,
+      "pr_pages": [
+        100,
+        31,
+        0
+      ],
+      "ancestry_incorporated": 191,
+      "ahead": 246,
+      "unrelated": 1,
+      "code_path_candidates": 175,
+      "docs_directory_candidates": 65,
+      "other_noncode_candidates": 6,
+      "comparisons_at_least_300_paths": 53,
+      "unique_ahead_commits": 1553,
+      "valid_multiple_merge_bases": 48,
+      "classifications": {
+        "Already incorporated": 191,
+        "Documentation or evidence only": 70,
+        "Blocked by dependencies": 95,
+        "Experimental or deferred": 10,
+        "Superseded": 22,
+        "Partially implemented": 12,
+        "Unique but requiring correction": 20,
+        "Semantically redundant": 18
+      },
+      "semantic_review_obligations": 142,
+      "evidence": "census-followup",
+      "unclassified": 0
+    }
+  ],
+  "candidate_evidence": {
+    "vault328": "root/verification.json",
+    "small338_350_360_and_tron": "integration-review/integration-source-review.json",
+    "policy368_362_357": "camera-policy-review/independent-source-review.json",
+    "sweep349": "sweep-journal/final-receipt.json",
+    "recovery_scope_first": "recovery-review-first/REVIEW.json",
+    "child_merges_ci": "ci/child-qualification.json",
+    "main_and_child_observations": "github-observations.json",
+    "residual_branch_dispositions": "residual-branch-review/dispositions.json.gz",
+    "recovery_second_review": "recovery-review-second/REVIEW.json",
+    "recovery_final_review": "recovery-review-final/REVIEW.json",
+    "native_review": "native-review/REVIEW.json",
+    "payment_uri_370": "payment-uri-370/REVIEW.json",
+    "hosted_qualification": "hosted-qualification/observations.json",
+    "recovery_final_qualification": "recovery-final-qualification/EXECUTION_SUMMARY.json",
+    "policy_asset_publication": "policy-asset-publication.json",
+    "policy_asset_final_qualification": "policy-asset-qualification/HANDOFF.json",
+    "tor_fixture_repair": "tor-fixture-publication.json",
+    "chain_interop_qualification": "chain-interop-qualification/HANDOFF.json",
+    "policy_validation_qualification": "policy-validation-qualification/HANDOFF.json",
+    "policy_validation_review": "policy-validation-review/REVIEW.json",
+    "chain_interop_review": "chain-interop-review/REVIEW.json",
+    "publication_milestone": "publication-milestone-0808.json",
+    "semantic_family_followthrough": "semantic-family-followthrough/REVIEW.json",
+    "native_composition_review": "native-composition-review/HANDOFF.json",
+    "current_publication_checkpoint": "publication-checkpoint-native-repair.json",
+    "invoice_retention_review": "invoice-retention-review/REVIEW.json"
+  },
+  "reviews": {
+    "open_pr_discussions_captured": 131,
+    "review_submissions_observed": {
+      "COMMENTED": 10
+    },
+    "formal_approved_reviews_observed_in_captured_discussions": 0,
+    "separate_ai_source_reviews": "Source/path/SHA scope recorded in individual evidence, not formal GitHub approvals."
+  },
+  "active_workers": [
+    {
+      "owner": "/root/registered_timestamp_retention",
+      "scope": "Frozen8cf505ba; full qualification and docs-only whitespace correction"
+    },
+    {
+      "owner": "/root/invoice_retention_independent_review",
+      "scope": "Read-only independent retention review;158 focused cases passed"
+    },
+    {
+      "owner": "/root/btc_lifecycle_guard_recovery",
+      "scope": "Selective BTC lifecycle/worker/API guards; isolated783 child"
+    },
+    {
+      "owner": "/root",
+      "scope": "Ledger, owned native qualification ref and CI; shared integration held"
+    }
+  ],
+  "new_confirmed_findings": [
+    {
+      "id": "COMPOSITION-RELAYER-REFUSAL",
+      "status": "fixed and independently reviewed in published372; local full qualification passed; remaining hosted and integration gates recorded",
+      "finding": "Unsupported client_queue_full response must retain uncertain broadcast state/signing lock.",
+      "evidence": "Author regression and independent review; no real endpoint transaction."
+    },
+    {
+      "id": "SCAN-EMPTY-BULK-EVIDENCE",
+      "status": "fixed and independently reviewed in published372; local full qualification passed; remaining hosted and integration gates recorded",
+      "finding": "Empty bulk evidence after malformed router evidence allowed ownership-dependent individual RPC fallback.",
+      "correction": "Pass explicit empty primary/secondary evidence batches and retain unverified state.",
+      "tests": "Author new single/dual provider regressions fail before and pass after;109 scanClient cases passed. Independent rerun in progress.",
+      "privacy_limit": "Bounded randomized evidence batching does not promise unconditional traffic indistinguishability when page router transactions exceed configured cap."
+    },
+    {
+      "id": "SETTINGS-PARTIAL-IMPORT-DRAFTS",
+      "source": "89c9b8035afa29fc291944a00a23667c12bd2ecc",
+      "status": "fixed in published372",
+      "finding": "Preserve unrelated field drafts/retention choices while invalidating stale RPC callbacks."
+    },
+    {
+      "id": "BTC-ENDPOINT-CONSENT",
+      "source": "89c9b8035afa29fc291944a00a23667c12bd2ecc",
+      "status": "fixed in published372",
+      "finding": "Revoke optional provider consent when endpoint changes."
+    },
+    {
+      "id": "POLICY-ASSET-NEGATIVE-EVIDENCE",
+      "source": "e1ab03ca7b07c225ae42d0c16fb79b97f0a1f95c",
+      "status": "corrected and independently reviewed in published374; local full qualification passed; hosted CI and integration gates remain",
+      "finding": "Same-hash unsupported policy asset terms remain a negative constraint across seller identities; positive and recovery identity stay exact-seller bound."
+    },
+    {
+      "id": "DROPPED-POLICY-HARDENING",
+      "status": "defensive guards restored and independently reviewed in published375; historical sensitive regression cases and native/hosted/browser gates remain unqualified",
+      "source": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "finding": "Historical N09/N10/N11 donor includes missing decoder/signature/proof/key-copy/derived-payment-binding guards."
+    }
+  ],
+  "execution_failures": [
+    {
+      "scope": "Frozen1b full web coverage",
+      "status": "failed; not passed",
+      "reason": "Repair dependency isolation guard failed but following npm ci ran, removing baseline modules through a shared symlink. Coverage report generation ended ENOENT.",
+      "recovery": "Restore exact-lock baseline dependencies, establish independent repair install and run final source coverage. No source refs changed."
+    },
+    {
+      "scope": "Tor static-hosting browser acceptance on original372/373 heads",
+      "status": "failed; correction staged in isolated native child",
+      "reason": "Exact saved-message expectation refers to obsolete copy; both jobs timed out waiting for that text.",
+      "correction_source": "dab622cad070dfd6e5b2a48a1fe81ee6d6d13cc0",
+      "preserved": "Exact matching, persistence, egress, integrity and all other assertions remain."
+    }
+  ],
+  "next_actions": [
+    "Finish retention qualification, final independent review and hosted acceptance.",
+    "Finish selective BTC guards, preserve current spentness and obtain fresh independent review.",
+    "Inspect corrected-source native run44885795475 and repair actual failures.",
+    "Continue100 inherited semantic review obligations.",
+    "Refresh live branches/PRs and persist original evidence/source history.",
+    "Verify previous coordinator stopped before shared integration; recheck exact-head gates and approvals."
+  ],
+  "latest_semantic_review_obligations": 102,
+  "semantic_followthrough": {
+    "reviewed_heads": 6,
+    "evidence": "semantic-followthrough/REVIEW.json",
+    "remaining_inherited_obligations": 136
+  },
+  "dependency_audit": {
+    "recovery_source": "783231a46840cd869e39bd704751d4ab4c349c45",
+    "command": "npm audit --json",
+    "exit_code": 1,
+    "findings": {
+      "low": 17,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "scope": "full development-inclusive audit; production-only zero is a separate result",
+    "evidence": "root/recovery-full-dependency-audit-confirmed.json",
+    "repair": "Published scoped cookie repair377: full audit15 low, production0. Remaining Hardhat2/FHE/elliptic constraint documented. Recovery783 remains17 low."
+  },
+  "latest_inherited_semantic_review_obligations": 100,
+  "latest_census": {
+    "path": "census-latest/branch-census-final.json",
+    "snapshot": "2026-11-21T08:09:54.353Z",
+    "branches": 445,
+    "open_prs": 138,
+    "main": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+    "classifications": {
+      "Already incorporated": 191,
+      "Documentation or evidence only": 70,
+      "Blocked by dependencies": 100,
+      "Experimental or deferred": 11,
+      "Superseded": 22,
+      "Partially implemented": 12,
+      "Unique but requiring correction": 21,
+      "Semantically redundant": 18
+    },
+    "semantic_obligations": 102,
+    "publication_delta": [
+      "PR377 and its new branch were published after the cutoff.",
+      "Owned373 advanced to independently reviewed b660b2d8; exact-source hosted run44885795475 is pending.",
+      "This continuation ledger branch is a subsequent publication delta; no self-referential commit SHA is invented."
+    ],
+    "inherited_semantic_obligations": 100
+  },
+  "publication_history": [
+    {
+      "pr": 373,
+      "target_pr": 372,
+      "branch": "qualify/ghostpay-native-browsers-20261121-5ceb",
+      "local_source": "dab622cad070dfd6e5b2a48a1fe81ee6d6d13cc0",
+      "remote_source": "22569e2a83e3f8bc3c86982f69bbb1d90ca8356c",
+      "tree": "b682a8eb262921d82f0d49d243005d8461a8a706",
+      "remote_parents": [
+        "5299580a28477a736fe8b0738a86f102d3bbab2e"
+      ],
+      "exact_tree_verified": true,
+      "state": "Draft; corrected Tor static-hosting workflow44882398824 passed including browser blocked-egress acceptance and no-bootstrap Tor configuration; native-browser and CI remain queued; ownership hold.",
+      "prior_source": "5299580a28477a736fe8b0738a86f102d3bbab2e"
+    }
+  ],
+  "semantic_followthrough_third": {
+    "packet": "semantic-family-followthrough/REVIEW.json",
+    "considered": 17,
+    "closed": 10,
+    "remaining_in_packet": 7,
+    "independent_passed": 581,
+    "independent_failed": 0,
+    "independent_skipped": 0,
+    "remaining_inherited": 100,
+    "remaining_total_at_cutoff": 102
+  },
+  "main_hosted_qualification": {
+    "source": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+    "core_ci_run": 44874766201,
+    "jobs_success": 24,
+    "jobs_total": 24,
+    "hosting": "success",
+    "codeql": "success",
+    "evidence": "publication-checkpoint-native-repair.json",
+    "deployment": false
+  },
+  "native_repair": {
+    "source": "b660b2d8f3f84ddf72f684d13913f643f33f2eee",
+    "local_source": "a9bd507e130283df2270683faa3128af89dc44d6",
+    "tree": "51054a204b1a1f02b1cc4385e943cdfa2bc5ed15",
+    "independent_tests": {
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    "reviewed_paths": 14,
+    "review": "native-composition-review/HANDOFF.json",
+    "hosted_run": 44885795475,
+    "hosted_result": "pending",
+    "ui_only_typecheck": "passed on59fb5f0d after two recorded exit137 attempts",
+    "combined_local_build": "not executed",
+    "prior_native_failures_retained": true
+  },
+  "timestamp_retention": {
+    "local_source": "8cf505bae569fb2e8e3400a1489630991b71fa54",
+    "tree": "7cd2ccd97abb3808db44ac253da7a6e0e45f2ec2",
+    "status": "frozen; full qualification and final review active",
+    "scope": "Only RegisteredInvoice.registeredAt",
+    "full_ux_vault_passed": 369,
+    "independent_focused_passed_so_far": 158,
+    "native_execution": "not executed",
+    "broader_retention": "partial"
+  },
+  "hosted_contract_analysis": {
+    "source": "055d33e042c63edf1d5bbbdd7833d3c1ef93733d",
+    "run": 44879663933,
+    "mythril": "failure",
+    "findings": {
+      "Low": 7,
+      "Medium": 3
+    },
+    "echidna": "success",
+    "safety_properties": 13,
+    "evidence": "hosted-contract-analysis/SUMMARY.json"
+  }
+}

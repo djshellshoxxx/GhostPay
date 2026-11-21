@@ -1,9 +1,64 @@
 # GhostPay authoritative completion ledger
 
-## Current status (2026-11-18 consolidation)
+## Current status (2026-11-21 UTC continuation)
 
-This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for
-`2962554d`/`beb525dd`; where it says browser or analyzer results are pending, the table below supersedes it.
+Coordinator: `5ceb6203640a-root`. Starting main was `aec179910c39081d820396409ff3139ff2264132`;
+the latest verified main is `eb59d93cffed7848c4aac37d0e9650b87239c6da`. This section and its
+[machine-readable state](../consolidation/autonomous-20261121/state.json) are the current continuation
+of this existing ledger. Older sections below remain evidence for their named sources, not present-tense
+qualification of main. See the [continuation evidence](../consolidation/autonomous-20261121/README.md)
+for exact source, test, review and ownership records. Neither beta completion nor release readiness is asserted.
+
+### Ownership exception and integration hold
+
+The coordinator initially acquired generation 12 of `automation/ghostpay-integration-lock` by relying on
+generation 11's expiry. After five merges, a worker located the branch-only instruction in
+`scripts/automation/integration-lock.mjs` on the #307/#349 source line: a held lease cannot be taken over
+on expiry alone. The previous writer must first be reconciled. This acquisition did not satisfy that rule.
+All subsequent shared-target updates stopped. Guarded corrective commit
+`6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` restored the exact original generation-11 record and owner
+`994a0d214fb9-root-r3`; both the acquisition and restoration remain in history. Available handoffs do not
+establish that this previous writer stopped. Existing merged commits remain intact, but their source and
+test evidence does not erase this coordination exception. Further shared-branch integration is blocked
+until the previous writer's stopped state is verified. New exclusively owned branches remain recoverable
+and can be prepared for review and hosted qualification.
+
+### Verified integration results
+
+| Change | Destination | Actual merge commit |
+|---|---|---|
+| #342 selected-genesis test callers | #340 | `b86a3e6affe8b71c6f13d16783accad446271ba4` |
+| #351 embedded popup test expectations | #337 | `08d2111a5fd3b71a148fc8648481200e680faf53` |
+| #359 pending-payment edit regression lint correction | #345 | `ccc8c3521511e2a2b9b66ef11f12723d87ce5f44` |
+| #366 independently checked historical branch census | main | `da6b05da5bb2e4293f38572da361980960d91911` |
+| #258 hidden-page camera and asynchronous QR cancellation | main | `eb59d93cffed7848c4aac37d0e9650b87239c6da` |
+
+The three child merge trees match their hosted-tested trees. The camera main merge was independently
+reconstructed and its actual tree matched. Both the independent camera run and root's actual post-merge
+run passed all 77 focused tests, with no skips. Current-main web typecheck, repository secret scan and
+111 pinned workflow-action references passed. Current-main hosted CI44874766201 completed with all24 jobs successful; Hosting kit and all three
+CodeQL analyses in the dynamically named `Push on main` workflow passed. Conditional publishing skips are not passing tests.
+
+### Current implementation, census and gates
+
+The [continuation evidence index](../consolidation/autonomous-20261121/README.md) records exact current candidate sources, test counts and failures; `state.json` links their raw receipts. Published owned implementation/qualification PRs are #369, #372, #373, #374, #375, #376 and #377. They remain unmerged pending their explicit integration and qualification gates.
+
+PR #369 has all five hosted workflows green, including 24/24 core CI jobs. Recovery #372 passed 4,405 local web tests with 13 skips, all 68 workspace typechecks, 67 lint invocations, and hosted Chromium full 156 passed/2 skipped and lean 143 passed/5 skipped. Core CI remains incomplete; Mythril failed while Echidna passed.
+
+The exact corrected #373 Tor hosting workflow passed browser acceptance with external requests blocked and Tor configuration validation without bootstrap. All four new Firefox/WebKit jobs failed: WebKit full 139 passed/5 failed/2 skipped; lean 126/5/5. Firefox full 124/10/2; lean 109/12/5. The independently reviewed14-path correction is published at373 head b660b2d8f3f84ddf72f684d13913f643f33f2eee, with18 focused tests passing. Corrected-source native run44885795475 is pending. Queued and failed jobs are not passes.
+
+Policy #374 asset coverage and #375 defensive validation each passed full web coverage with 2,837 passes/13 skips and independent bounded source review. Historical sensitive regression cases on #375 remain unexecuted after an automatic cybersecurity restriction; those gates are not waived. Chain interoperability #376 retains 34 exact historical source files and passed 763 suite cases per author/independent run; external protocol review remains open. Narrow dependency #377 changes one development lock record; author and independent coordinator each passed 36 cases. The full audit decreases from 17 to 15 low findings and still exits 1; production audit is zero.
+
+The latest complete snapshot compares **445 branches and 138 open PRs** against main `eb59d93cffed7848c4aac37d0e9650b87239c6da`, with every source SHA, best merge base, ahead/behind count, complete file delta and ahead commit preserved. All 445 have dispositions. The inherited semantic queue is100 after42 additional bounded reviews; two newer obligations at this cutoff make102 total. PR #377 was published after this cutoff and is an explicit delta for the next refresh. Historical 438- and 437-branch snapshots remain immutable evidence. Classification does not assert mainline incorporation or behavioral completion.
+
+Mandatory v1.1 persistent retention remains partial. Current-source review identifies local invoice-registration time as a removable field while protecting all financial, recovery and security rows. Its versioned-removal/CAS/consent implementation is frozen, with369 vault and158 independent focused cases passing so far. Final review, full web qualification and native storage acceptance remain open. Existing approvals, deployment trust-root, real wallet/device/Tor-route acceptance and external cryptographic review remain separate.
+
+Independent reviews are separate AI-worker or coordinator source reviews, not formal GitHub approvals or external professional audits. Test groups overlap; never sum repeated runs as unique cases. No deployment, release, force push, historical branch deletion, real-funds transaction, gate suppression or further shared-target write occurred. The ownership exception remains recorded above.
+
+## 2026-11-18 consolidation (history)
+
+This section is source-pinned historical status. It superseded the 2026-11-16 snapshot for
+`2962554d`/`beb525dd` at that time; it does not qualify current main or newer integration candidates.
 
 Consolidation candidate: branch `nodata/wizardly-allen-qwol6u`, draft PR
 [#203](https://github.com/djshellshoxxx/GhostPay/pull/203), built on unified #187 (`beb525dd`) plus main ancestry,
