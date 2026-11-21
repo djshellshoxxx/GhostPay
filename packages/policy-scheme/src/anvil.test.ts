@@ -313,7 +313,7 @@ describe.skipIf(!available)('policy-scheme anvil cross-check (real PolicyAccount
     // The restored signing preflight now refuses the wrong token's Merkle leaf before an order can be signed.
     expect(() => buildWithdrawTypedData(mismatchedTokenOrder)).toThrow(/leaf does not match token, limit and window/);
     // Independently retain the calldata encoder's exact signed-leaf check on an otherwise valid native order.
-    expect(() => encodeRequestWithdraw(td, { ...proof, limit: proof.limit + 1n }, '0x')).toThrow(/limitLeafHash/);
+    expect(() => encodeRequestWithdraw(td, { ...proof, windowSeconds: proof.windowSeconds + 1n }, '0x')).toThrow(/limitLeafHash/);
     // For a real-contract negative test, sign an ERC-20 order with no claimed limit leaf, then supply the
     // native-only proof in raw calldata. The deployed account has a nonzero root and must reject the mismatch.
     const tdToken = buildWithdrawTypedData({ ...mismatchedTokenOrder, limit: null });
