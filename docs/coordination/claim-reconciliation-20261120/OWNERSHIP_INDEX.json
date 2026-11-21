@@ -1,0 +1,3824 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "snapshot_sha256": "56663c301cea0d7c9723a5eb1a825341f4dd3d44057075a710ec651a96c0106e",
+  "generated_report_sha256": "ddc6c5688bc39640ffec9050f3111c3bce6e0de55f5da5b929776548a81033a3",
+  "document_count": 199,
+  "notes": [
+    "Index of all distinct raw ACTIVE_WORK.md blobs in the final report. Source commits and associated branch/PR names are pinned to the snapshot.",
+    "Raw text is retained in the complete reproducible report and in the corresponding Git blob; git cat-file blob BLOB_SHA reads the exact document.",
+    "No ownership release or current validity is inferred from claim text, branch inclusion or path overlap."
+  ],
+  "documents": [
+    {
+      "blob_sha": "00287e15fd5be4fa57e48a7b55c935d8e4b7228b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61066,
+      "text_sha256": "7fe2a63172fd150bf6e6844ed8c69b43a2e00f333b7cf2dbacc682f32b384cf4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+          "branches": [
+            "future/p14-shielded-payments"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "00f589f05adb37fc7a512d19a71303ac421a8888",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 78123,
+      "text_sha256": "3a5e6b50a854734061d05d7000dc3aa62502079b2fd23a2fec0248012c797b60",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+          "branches": [
+            "future/f05-ghostproof"
+          ],
+          "pull_requests": [
+            323
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "02e690440c487022264bb7960cf662a40bf117f2",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 259146,
+      "text_sha256": "22a9b215dbba50a418a0aea38b839258c788364dac3857d3b64dd4285305b5eb",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "410353a23631234aa888e46f38df22291c699a26",
+          "branches": [
+            "fix/ghostpay-devnet-wallet-consent-20261120-r2"
+          ],
+          "pull_requests": [
+            336
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "0308f3893ad11bc566144be2b8c281373d811d7a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 60050,
+      "text_sha256": "aaa86bede8a83289e5e102f150146a32be07ed8a488cdaf26b6974f38341de12",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+          "branches": [
+            "chatgpt/ghostpay-idle-lifecycle-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "03200f85dfcc83011d209a315da8c6019c3c9f16",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 12559,
+      "text_sha256": "84278183b34d8bcaa9cdcb7b71978901341d93849ae27a7e7a16d725f5476d07",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "73371b57040c61bdb480e724e8593313d95c6781",
+          "branches": [
+            "codex/ghostpay-ops-response-cap-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "04b41101cdb2b9407fadd05a8fa0df073ffb1e03",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 52482,
+      "text_sha256": "8a73c5de2c309710c5b089940f20ea96a1b49f1cb9b383fae4d62ca3c0be9859",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+          "branches": [
+            "automation/20261119T095600Z/bug/merchant-profile-clock"
+          ],
+          "pull_requests": [
+            268
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "050385bdf99bc7af991de995897cbd6a47938f90",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 6432,
+      "text_sha256": "3c6fba581cba7f81ae8019955678337b639933866f85da292c695d7eea8a3bc5",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+          "branches": [
+            "codex/ghostpay-mythril-recovery-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "0676774da7579033094d1c2f8d3c8f0299291fa2",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 54425,
+      "text_sha256": "9f26aeb4b0579b82d290126ccaf2526ea471b6211e1408cb6df84cca16112978",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4085622463411d3ba27f4efb7b73a70575170535",
+          "branches": [
+            "repair/ghostpay-pr-231-20261118"
+          ],
+          "pull_requests": [
+            252
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "08cf8393d128ff56de379e5a95bff9a4c27292ed",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 245778,
+      "text_sha256": "2575fb1f1d267ee940d3d148cd8b3b2940385af6aec76363d712fced5491a00d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+          "branches": [
+            "work/ghostpay-required-v11-candidate-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "0c4ca449e7c07cbb84153efc3863e9fcfc3f04a3",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61041,
+      "text_sha256": "8797561bffb5f79417622535ec053010b2f697123fbb8afd988fba8952eb2211",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+          "branches": [
+            "automation/20261119T183817Z/bug/merchant-pin-duplicate-json"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "0ce5a9b4004b402b60516723eefbdc4c8d5c0e2a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 76746,
+      "text_sha256": "1bc4e1f48c85e241f3f9328c0d85bf0d0072bb2f7e191fa6abbb9e65476e152a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+          "branches": [
+            "fix/ghostpay-tor-qualification-20261120"
+          ],
+          "pull_requests": [
+            320
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "0ef3a22bc094e52139e8241e84935da313d4ada4",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53884,
+      "text_sha256": "6ae23f92b68e5c956d78e5a2ef2687dd421a05478293e9dd80b9a2ebda4c78f9",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "22af2074a086d9957a18e310ef8572b28d1facd0",
+          "branches": [
+            "integration/ghostpay-historical-promotion-20261118"
+          ],
+          "pull_requests": [
+            250
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "1020360e6c9b88490977a8cb8a9d26b4b2d40fe1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 41145,
+      "text_sha256": "95efe2b7403c51a0567e8e8e02eed90a5efb6c6eed79e1852b80e5cf8b8a2ab7",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+          "branches": [
+            "security/mythril-full-remediation-20261118"
+          ],
+          "pull_requests": [
+            220
+          ]
+        },
+        {
+          "source_sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+          "branches": [
+            "dependabot/github_actions/actions-b9ade1236b"
+          ],
+          "pull_requests": [
+            207
+          ]
+        },
+        {
+          "source_sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+          "branches": [
+            "nodata/wizardly-allen-qwol6u"
+          ],
+          "pull_requests": [
+            221
+          ]
+        },
+        {
+          "source_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+          "branches": [
+            "privacy/hardening-recommendations"
+          ],
+          "pull_requests": [
+            222
+          ]
+        },
+        {
+          "source_sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+          "branches": [
+            "chatgpt/zero-codex/docs-postmerge-wiki-20261118"
+          ],
+          "pull_requests": [
+            215
+          ]
+        },
+        {
+          "source_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+          "branches": [
+            "claude/ghostpay-consolidation-9xhtxg-security"
+          ],
+          "pull_requests": [
+            212
+          ]
+        },
+        {
+          "source_sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+          "branches": [
+            "claude/vibrant-cori-scu18b"
+          ],
+          "pull_requests": [
+            219
+          ]
+        },
+        {
+          "source_sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+          "branches": [
+            "claude/ghostpay-consolidation-9xhtxg-feeguard"
+          ],
+          "pull_requests": [
+            217
+          ]
+        },
+        {
+          "source_sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+          "branches": [
+            "chatgpt/zero-codex/audit-main-20261118-r185"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+          "branches": [
+            "nodata/zealous-hopper-lr0nxe"
+          ],
+          "pull_requests": [
+            205
+          ]
+        },
+        {
+          "source_sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+          "branches": [
+            "chatgpt/zero-codex/handoff-postmerge-20261118"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+          "branches": [
+            "dependabot/npm_and_yarn/npm-major-1ddf9439d6"
+          ],
+          "pull_requests": [
+            87
+          ]
+        },
+        {
+          "source_sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+          "branches": [
+            "claude/ghostpay-consolidation-9xhtxg"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+          "branches": [
+            "claude/admiring-albattani-6kydor"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+          "branches": [
+            "claude/friendly-turing-1ui0on"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "10c075e36974db91f081d7b57fe17b95cf0aa8bf",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 115549,
+      "text_sha256": "0545d58bf85219a5a6f4c77bcc3aa4d5c19937b508897264e5cd67d9e6cbc33e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+          "branches": [
+            "fix/ghostpay-backup-preflight-20261120-r2"
+          ],
+          "pull_requests": [
+            333
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "10f2dba2b4f264d15bf04d6190b99d2dc51e1a21",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61054,
+      "text_sha256": "99d82203de14f64eb28f973d544da5779da1d33ec27436c8f670adaacd6d1977",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "83898237e1b602f94f2e959ef761b5bd63db6590",
+          "branches": [
+            "future/f15-private-rpc"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "14e906dfaad019ae15187c473cf190428d236ed7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61066,
+      "text_sha256": "6b0f1fff8a928b5db146c879acc47a536d60a0f467a80209617593b83f1ccd78",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "25017e720df43d371f956830ba7fd6cb5f81590f",
+          "branches": [
+            "future/p01-tor-onion-hosting"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "155751302f1169b36d3697175924269591182d34",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61068,
+      "text_sha256": "6d8a309a51687bb99e5bbf5ab050b7a287b90c30ec042fadc490f3d13462d309",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+          "branches": [
+            "future/p10-private-submission"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "19f592f44944539536ccd7dd697c847427011e02",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 264634,
+      "text_sha256": "18c61eb3562af728a6e766b32f006e2d8400b9e89841fe19b50eeae5abe9bb7a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+          "branches": [
+            "fix/ghostpay-browser-acceptance-20261120-r3"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "1c6495f7d9f0a9b993604c47c8c3b29811281512",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61070,
+      "text_sha256": "4cbb88daa8a73d1111257c4ec881a4ff79beeabe00799b45aade2ee273619273",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+          "branches": [
+            "future/p06-key-role-separation"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "1cd31781e5191fd3d245f25ce779fee953b5ac4a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63417,
+      "text_sha256": "6b0ae88523cf4c917fad7984433d1b12009409c8b30efecbdfd8c03c2f6536a3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+          "branches": [
+            "automation/20261120T0035Z/worker/qr-kind-primitives"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "1d94824ae306f54b153d2106f44f834f8f3911c3",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63530,
+      "text_sha256": "435c2e0c0f2b3680bff1534954c2fe615877255072853477563e658c34b6098b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+          "branches": [
+            "codex/network-isolation-complete-20261119"
+          ],
+          "pull_requests": [
+            251
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "1f5835660f1e25a096ba6701b07865ab79cae280",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 42604,
+      "text_sha256": "9683c82e9a00ed5e6a3f1fcb4d4e87c9ac463dd76ae39bd2b62b757c5585e55a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+          "branches": [
+            "chatgpt/ghostpay-beta-consolidation-20261118"
+          ],
+          "pull_requests": [
+            232
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "21de487149774239317e636ae96ee263ffe17012",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 52749,
+      "text_sha256": "db5906b6f248e12c4bcd6f03f50ffb37fdae2162b7d8d17c1429b74473c8206b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "84398a79e18673f3e371a405931bc464e1cca99a",
+          "branches": [
+            "automation/20261119T073600Z/bug/camera-visibility"
+          ],
+          "pull_requests": [
+            258
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2309c6bd7ba92689df643e778e1148e9732f0737",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 1066,
+      "text_sha256": "e9fb5e5ecf59dd4fe91c90d6bf8829812e708077d8f4e78f6ad57b354ad524df",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+          "branches": [
+            "chatgpt/zero-codex/pages-fragment-shell-gates-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+          "branches": [
+            "chatgpt/zero-codex/pages-manifest-gates-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "17f681915f25441f5c38326ad718b8082495d52a",
+          "branches": [
+            "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+          "branches": [
+            "chatgpt/zero-codex/pages-late-invoice-focus-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+          "branches": [
+            "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+          "branches": [
+            "chatgpt/zero-codex/pages-keystore-reimport-control-20261118"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+          "branches": [
+            "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+          "branches": [
+            "chatgpt/zero-codex/pages-fragment-history-state-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+          "branches": [
+            "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+          "branches": [
+            "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+          "branches": [
+            "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+          "branches": [
+            "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+          "branches": [
+            "chatgpt/zero-codex/pages-pay-rich-tags-20261117"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+          "branches": [
+            "chatgpt/zero-codex/pages-download-cleanup-20261116"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+          "branches": [
+            "chatgpt/zero-codex/pages-renderer-own-property-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "236b171e878956d03538df511b48926abb4386ca",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61052,
+      "text_sha256": "0f3499728c47211d463ffef8d370d88cb34aa006111593dec4fffa994303b3a3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+          "branches": [
+            "future/f11-ghostteams"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "23af3cdb19fb8bc3e1012f9ae70c404080d870c2",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 187479,
+      "text_sha256": "6a634f4c79e5772d2fc620491373e1a572157f3aebb7e38c723d70ca8742a208",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "branches": [
+            "release/ghostpay-beta-qualification-20261119"
+          ],
+          "pull_requests": [
+            278
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "247445a0c2b40e4d07c752ab1701b1e922b2db04",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 268065,
+      "text_sha256": "b3fa6904aa08339595f0990815fe40bf80e6ac071bf05c67a5e4ed476e63be5e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+          "branches": [
+            "fix/ghostpay-disclosure-focus-recovery-20261120"
+          ],
+          "pull_requests": [
+            355
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2526640aad46d29007d82517ea25303724258124",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 475,
+      "text_sha256": "456e8bda49038b7f9423b9a599f21e3adc24bdfda6d4ea99748970c6849bb4ff",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
+          "branches": [
+            "ai/agent-harness-20261113"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+          "branches": [
+            "chatgpt/zero-codex/pages-qr-combined-20261115"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+          "branches": [
+            "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+            "chatgpt/pages-browser-fixes-combined-20261114"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+          "branches": [
+            "chatgpt/zero-codex/pages-scan-transfer-filter-20261114"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+          "branches": [
+            "chatgpt/ghostpay-historical-consolidation-20261115"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "a89a2e948321314acf97db435e9776d9322a9461",
+          "branches": [
+            "integration/consolidated-2026-11-14"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+          "branches": [
+            "claude/lucid-meitner-apalzc"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+          "branches": [
+            "chatgpt/ghostpay-rpc-filter-guard-20261114"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "26b14eba12ac122d9202725d9d51ee25c5f3ac96",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 195447,
+      "text_sha256": "c28d2af73f75136819e52729802c6a07465f8e840559e3d5c6fc25e01d2495b9",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+          "branches": [
+            "fix/ghostpay-pages-integrity-gate-20261120"
+          ],
+          "pull_requests": [
+            292
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2979dae3bd4575668a47a0249fdfac36c910072a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 123833,
+      "text_sha256": "8ebcc503721548e4f1c65b3b04fe164cd2ebdc1f418a7389ac0d56889c9d782e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+          "branches": [
+            "codex/ghostpay-private-scan-lint-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "2ab681532cad41134ab61a793441a467ffef755a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 74153,
+      "text_sha256": "6d917f659147df4a0f09eaf7cf4e32bdf880d71a9bd49d0650d6bb0b36b372c4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "c6f73ebb177fc76aa74172b86e3f173263c64195",
+          "branches": [
+            "work/future-feature-coordination-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "2b134df9cb47df751230e0d7216da8f563ea50a0",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43200,
+      "text_sha256": "35970ea270880dd4e9ecbf3427f68933deb000bc7c2f8564f8a06054e4797016",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+          "branches": [
+            "chatgpt/ghostpay-sonar-review-20261118"
+          ],
+          "pull_requests": [
+            226
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2b139220a7931f963efd71098d0312078f6d2a18",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 265145,
+      "text_sha256": "7b3461fe658bd81137ec5cc6b733640483a98f4716e29c2e5ea6380814d26eb3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+          "branches": [
+            "repair/ghostpay-privacy-browser-lifecycle-20261121-539818"
+          ],
+          "pull_requests": [
+            354
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2dc3cb97cef4a7bfd8a8c13df6c94fbb91ce609e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 74384,
+      "text_sha256": "d6654c8a88266ac06b770955a5e8381030e75bd4e76cfb978a862e668ea82b3b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "692cac58b1c345137264936e60bee7b1e2eed8b2",
+          "branches": [
+            "automation/20261120T2036Z/bug/btc-preview-network"
+          ],
+          "pull_requests": [
+            338
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2e14c48a66293275d967dd485cb6648969927193",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 59606,
+      "text_sha256": "250ab1a95ab0f12d44ce46fda8fa20c717de5c0983d999b9d550b9db052bd1e0",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4f14d6f167c788f5ae2d019bc8482027495f3c6c",
+          "branches": [
+            "integration/ghostpay-historical-security-promotion-20261119"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "b6e484c252723fc3293c7106ce2c46069c2668a8",
+          "branches": [
+            "audit/ghostpay-core-latest-security-20261119"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+          "branches": [
+            "chatgpt/ghostpay-pages-artifact-integrity-20261119"
+          ],
+          "pull_requests": [
+            276
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "2ffcd9bc7b28551102ceec7f37b3e63b4bdbfae5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 194599,
+      "text_sha256": "13c41743839be9dea887e4dbf51fb04ab90c9ef9b42dce27e8969c1f5ad80926",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+          "branches": [
+            "feat/ghostpay-privacy-quick-hide-20261120"
+          ],
+          "pull_requests": [
+            300
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "3002659e20f281cf5d1c311e7befdcf0ba6a3633",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 192023,
+      "text_sha256": "b2d0a0ef44568e55bb815adda3b478278abbe3384f5c90fe3c2b0a90766af2b3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "d6819796a9542acc488b896786faffe83b913d9b",
+          "branches": [
+            "snapshot/ghostpay-privacy-8be15289-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "30304012504261d7e79a607a47cd70f80bc66f68",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61112,
+      "text_sha256": "25ab4f10cb1cb5202c26c8cf56bf771cde886924a7bb30d8d063a1cef30d8062",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+          "branches": [
+            "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "32914cb81e03d11cee2f0b33f1786efa210874f5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 178919,
+      "text_sha256": "1d19b97b4bcbd6b68859a6823d31ad198b5c4734f3e8f3cc4ebb6a7279a4a48a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+          "branches": [
+            "automation/20261120T003500Z/coordinator/qualification-evidence"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "32ade12db6fe7984194e296f7f8b791b0ff35901",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 178030,
+      "text_sha256": "e62df5e718591115ab1bd792f327115241fca4e80411401c25750d17e9625058",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+          "branches": [
+            "automation/20261120T003500Z/coordinator/qr-runtime-qualification"
+          ],
+          "pull_requests": [
+            290
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "34a6f89f6f6c8060cab634186dafa74790f086b2",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 64386,
+      "text_sha256": "77f1533fb4c9157b2db5b77e228ab293fac30ce64b9919d500c998e582f25e8e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+          "branches": [
+            "review/ghostpay-sweep-quote-lifecycle-20261119"
+          ],
+          "pull_requests": [
+            272
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "35418e72ca76b6bef09834b1ddf745151cc8a944",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53139,
+      "text_sha256": "8bf71c7a101a7cb0bc6c096707db9366c4f17f198c1f1a6536d86d85f8286f56",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+          "branches": [
+            "chatgpt/btc-spentness-private-scan-20261118"
+          ],
+          "pull_requests": [
+            254
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "355e373ddf9140ba6b7c269604ca9be2cf9a84e6",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 55021,
+      "text_sha256": "e120bf1d30e031c3dc23b9828d13ec45d90f14053fb84058a58421d5ef5a2ce5",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+          "branches": [
+            "integration/ghostpay-mythril-security-closure-20261118"
+          ],
+          "pull_requests": [
+            255
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "35e1209ad0253916c2355fee8868fed1d3a0cd8d",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 261543,
+      "text_sha256": "1fedfded96e431be33b67db392c38955860ca5aefd0d5a1c9bdf75e5d7dec7fc",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+          "branches": [
+            "test/ghostpay-privacy-fixtures-20261120-9a4ab6"
+          ],
+          "pull_requests": [
+            348
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "379e546cfa093218431b815d371b454454185b59",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61056,
+      "text_sha256": "b8d9772628e9198f15a305940f9c78448987dd7f9625bfb78cb3fb8f6d3c3969",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "90b86766119d3f72870948ee83d039b989659b5f",
+          "branches": [
+            "future/f07-ghostpayouts"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "3aed6a2a695e692d0b6f8f1915c6e6613831692b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61139,
+      "text_sha256": "5935c0ff192f733e272d5bf84bec2becc81c4bc8bf5b9b292d7d07cc8d9af3b3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+          "branches": [
+            "automation/20261120T0243Z/worker/format-units-validation"
+          ],
+          "pull_requests": [
+            301
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "3afd2cc78ba835fb1ebf55f798984ebd64e4526e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 58554,
+      "text_sha256": "1eaba538084c0d86735b975b0dd70a2900f72105a8bcf205bff89253dbea2096",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+          "branches": [
+            "integration/ghostpay-pages-completion-20261118"
+          ],
+          "pull_requests": [
+            238
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "3b2bb25742e79ef8f36732f398f9adfba1545044",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53589,
+      "text_sha256": "06b34ad5c0bc8016bdf260721771f789d4a541cc8685372653080c477d20f4ae",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+          "branches": [
+            "chatgpt/ghostpay-idle-lifecycle-qualified-20261119"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+          "branches": [
+            "integration/ghostpay-idle-session-completion-20261119"
+          ],
+          "pull_requests": [
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "3c2adfa7e2e248040b3c14f0934deaf56ce4dcc7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 113821,
+      "text_sha256": "16b067a6af79b2e5815a6e5d535ac1743fc948f2aaca50fd328b0d579604581c",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+          "branches": [
+            "evidence/ghostpay-idle-session-r2-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "3d5cd8c2468d94d201e04078860c4e468d1189c7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 113481,
+      "text_sha256": "352c2d6670ec33752bcd324fdfe5a42ce94ba27139a77df80978c4aed0f5b294",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+          "branches": [
+            "chatgpt/ghostpay-remaining-work-20261119"
+          ],
+          "pull_requests": [
+            246
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "3e249ca9604e4b8f7d4c3367185b9eeca0555861",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 68092,
+      "text_sha256": "a5e87bedb66dffeebef17ac3a63d05d1527129e6b580fd385134d29f778eb2a0",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7de737b5c8c5fc02086ba0030d78c181d239590c",
+          "branches": [
+            "feature/ghostpay-invoice-file-completion-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "3e88f62ac81a6aa82cd07c99d0c9181c1dd27626",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 255947,
+      "text_sha256": "b5d7c75cf6a39219b24d0f510a676f791094e14032bfd4ff9ec566ad736f5ae8",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+          "branches": [
+            "feature/ghostpay-retention-focus-20261120"
+          ],
+          "pull_requests": [
+            327
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "3f77691f5614299d2b35b3ba07d6cba22d87ed80",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61076,
+      "text_sha256": "4883cf82068cff897e52c831a9cb1ac751ae7a2515a8ebd3c2d5ced8e29f12e4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+          "branches": [
+            "future/p11-metadata-timing-policy"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "40421ffebb5d4d926d5b8fa09be25e21847659ef",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 44803,
+      "text_sha256": "27bb52f4a6c1d0f2224bd2d8c992437683f00b11a831af5bddb0394439674746",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+          "branches": [
+            "chatgpt/ghostpay-recovery-review-20261118"
+          ],
+          "pull_requests": [
+            229
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "40b37b7e6c6faaf0cbe4f4e24d3e1a8086bd5849",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 41815,
+      "text_sha256": "e1b7f9580302764c38e0f7d7f0ed8a3b48388131bf25f506127b721d5c43b7f2",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+          "branches": [
+            "nodata/doc-sweep-20261118"
+          ],
+          "pull_requests": [
+            223
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "426c43e7b83b9c12da731d61eaaab1739879f53f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 46719,
+      "text_sha256": "6c9b6c4513e1b93123239f359e0d8158b808aeabbf7959a90e2612f7507f7785",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+          "branches": [
+            "nodata/wonderful-darwin-kd1h22"
+          ],
+          "pull_requests": [
+            211
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "426fe3ee160b7b1df12c0315c82d93e09ad8363f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 114768,
+      "text_sha256": "e569c8c81fedd386f33815625c6c7e11e40eb61f82b97030029180ce2de6ecbc",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+          "branches": [
+            "integration/ghostpay-master-consolidation-20261118"
+          ],
+          "pull_requests": [
+            264
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "45812fc41263ce502c5f46ad1dca0e905e8f9fda",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 37577,
+      "text_sha256": "35a289daa9a13fef5c94620f3bef5a1971337c322e4de347d70a88799382d858",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+          "branches": [
+            "docs/ghostpay-3q-stealth-keypair-export-20261116"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+          "branches": [
+            "codex/ghostpay-unified-completion"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "e05044d4209de7e9cc242c8a83e5fc2264663174",
+          "branches": [
+            "docs/ghostpay-privacy-architecture-5a-5l-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "492e02322173a2ba18835ddb47f55f8fae4ad4de",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 136858,
+      "text_sha256": "fbb288b870c5d64acbf2c2d91b9ee15aa6b3aa92f73f3c9434a6ba40d105a333",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+          "branches": [
+            "codex/ghostpay-autonomous-20261120-9a4ab6"
+          ],
+          "pull_requests": [
+            349
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "4a67268e72f3241a159fcd4ddbae5578057feb3e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 58909,
+      "text_sha256": "d5d245e7f3616bfd5b2f16529439b551992a303882e9b4000725883a389a8855",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+          "branches": [
+            "automation/20261120T0115Z/coordinator/cycle-checkpoint"
+          ],
+          "pull_requests": [
+            299
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "4ccc2bfd0bfc910524fa222ac1389646352b4768",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61058,
+      "text_sha256": "5277bf0790ba96301fcc1f7b96a8b65698389fa5fe389714a92f1ad22fff6a3a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+          "branches": [
+            "future/f17-private-funds"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "4d67a9409d8a5838585cff0aa5fa3d6dda5e5b9b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61068,
+      "text_sha256": "825dacd60145c00cc40e7dcbd9db1cfde1a91866dd2dc26854e2b885a9d53049",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+          "branches": [
+            "future/f14-multichain-routing"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "4e0b10c399d7aa04adb10e5573aac0de9ff7f76e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 6494,
+      "text_sha256": "352afceb8d6f9c9d02604477edc07b62790be61aa069dc09ddcdfbb0aa7560e6",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+          "branches": [
+            "codex/ghostpay-registry-recovery-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "4e3320ce636d1eeaff15bc5266a9862bd399ccd0",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63556,
+      "text_sha256": "f4627303e6ccdb1775bb218b6f4b6fd98ef5917ecc5c95360e75b521eead3145",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "9cb8f511b0e1bd4a807fc51d569117b4e991e622",
+          "branches": [
+            "audit/bugcheck-core-latest-20261120"
+          ],
+          "pull_requests": [
+            312
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "4f5e079d815e3e131d5fac323ddbb02cbf130e50",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 222483,
+      "text_sha256": "43bacff0f8c6f14d71de1cf000abcddda3d52ea1277861cd07f12faa5b13599b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "branches": [
+            "integration/ghostpay-completion-20261120"
+          ],
+          "pull_requests": [
+            302
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "5146598b50599b3fe7a0bee130ebc371482313c9",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53027,
+      "text_sha256": "14424265a105d25be530667a9a61a5784243fa8a20db343f84e5a6165e5f00d7",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+          "branches": [
+            "automation/20261119T083600Z/bug/json-canonical-array"
+          ],
+          "pull_requests": [
+            265
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "541f711d6e3019b98f65193e981109dfc856917b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61072,
+      "text_sha256": "9308c45cedc3b1eb470f73fc419a5582ffb075ab22adad6c4d588beb159675eb",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+          "branches": [
+            "future/t02-intermediary-routing"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "5462d723fa7194d29625dfd90c8120b62e0ef891",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61046,
+      "text_sha256": "d82f4d0c186c1b7c0d2714bb9d5dd84865d4ccba7555461542def53514d5492c",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+          "branches": [
+            "future/f08-ghostid"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "5651102c0c41889de836e4075899d71f6ecfaa7d",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 131714,
+      "text_sha256": "483dd67e51c234eab8e05088e8dc68039018f8ac9d79888045ea5598160e8dad",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+          "branches": [
+            "repair/ghostpay-270-policy-fixture-20261119"
+          ],
+          "pull_requests": [
+            275
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "56762920db213bcf81fa687d30eca033e7c60f43",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61074,
+      "text_sha256": "c772bc2388177f46ebbf483804d3075cdc2bc238c9f83eab2c3f5f8aa9d9c4a4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+          "branches": [
+            "future/p15-anonymous-withdrawals"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "59ae3d48a854734375544164ddd0aaebb6ce37b7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 119369,
+      "text_sha256": "cc22ee81b47d666e80fd056b6eff5449efe691943175af632d22a1903146102d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+          "branches": [
+            "fix/ghostpay-request-file-async-20261120-r3"
+          ],
+          "pull_requests": [
+            344
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "5b48ac49ea397989454d48fcd2e2be521d3ebedd",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 149781,
+      "text_sha256": "b7259077a08c499a6409e9bedf7eb40805de309af3f43ec84a78548e3573488f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "cbc96840c3dc4fede90afff55b4dfd94f66784da",
+          "branches": [
+            "repair/ghostpay-native-fee-recovered-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "5d9bf7ef60c737ccbebd12e7a3d548a7ab966d67",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61110,
+      "text_sha256": "41cc4f69f4c9a5085d0787a78f5451f9eb6cde462fbbe415d018addbc77f0831",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+          "branches": [
+            "future/f01-ghosttips"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "5e7ab3437f6230bc43df60c5bb2d469ce76b6c0b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 73365,
+      "text_sha256": "71507f7cfe9f798d6f09d36e5e26bd629866da3feb74ff803c997eacdecaf256",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+          "branches": [
+            "evidence/ghostpay-vault-rekey-qualification-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "613070e410504eee003f2ed7d7b59247d2dcf718",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61074,
+      "text_sha256": "5d1cb1557162f14d8301dc6a48f2ab1a7e9042444a62d3da646b60d28b306ea5",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+          "branches": [
+            "future/p05-encrypted-local-state"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "61a65aacaf8e3d39df9f912a3fbecc80b68a2ee1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53958,
+      "text_sha256": "ba482ce72a0c11d0daba78be7a9c3b17bfbb09e75ed71367797cdf23a21e2bec",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ca61cc889c6a5ca6f264cf787e2d2e698f594ea8",
+          "branches": [
+            "repair/ghostpay-history-pool-values-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "61b78a766fb09e5294eb4d4fac158a41cda140af",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63425,
+      "text_sha256": "becb6db66fbbcfa998ad8d6c442ff84de6ecc51aaee5893c133bbfd72ea50dcf",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+          "branches": [
+            "chatgpt/spec18-recovery-reviewed-20261118-a264"
+          ],
+          "pull_requests": [
+            239
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "633e4bc2757cde00f5851a624453a2e33c44062c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 76263,
+      "text_sha256": "1b9eca045c2e64049d8ee394acf85548c3d1a6f82607b15dc87f3995b24a3f4a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+          "branches": [
+            "automation/20261120T0835Z/bug/sellerkeys-operation-supersession"
+          ],
+          "pull_requests": [
+            314
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "64be211bbcaec32ccf6689afdca94b2156fb92b5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 71489,
+      "text_sha256": "e6313d1dfd7121695da44cf4048271e95e1bd7a2a1d611bb63479dfc8ce74cad",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
+          "branches": [
+            "audit/f03-browser-qualification-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "65097e785ab0e8355cb74bad8ea5891bb5ef64ca",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 134336,
+      "text_sha256": "ee54837d38acfcb8b64274b17fd94b8cfca46ec83f006342bd41bad717ecbd24",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+          "branches": [
+            "test/ghostpay-recovery-interoperability-20261120-9a4ab6"
+          ],
+          "pull_requests": [
+            346
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "6738a3b7a76c4a7f86a3b8e1d0dc7212c40a0d94",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61062,
+      "text_sha256": "0b4260be082e57ca3cd50109786aa48a74e9f37965de4460e87671db6aca9fc3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+          "branches": [
+            "future/f13-fiat-conversion"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "681a8805c9e1c72b334709c732c22ecfca89f8ff",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 100933,
+      "text_sha256": "5743aabd41f6b17c2fee47a9e3c05cf48348d8cc060ae94989edc5b89a4dcb13",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "78137622011528a646ae94155ee4acf7f72e1e2a",
+          "branches": [
+            "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets"
+          ],
+          "pull_requests": [
+            341
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "689dfbb92dba5311bacd54f61f2476672a50159c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63738,
+      "text_sha256": "73962338e7ad7db1f25dc3a08e4942454fb06e6a09f4a350d27a6f572d4de91c",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+          "branches": [
+            "automation/20261120T1042Z/bug/ledger-actionable-activation"
+          ],
+          "pull_requests": [
+            315
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "6a06a7c2fba3bb9e37d06329b79c83ec369726e1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61054,
+      "text_sha256": "d920f4cfc4364b34e135386e693b29467adc457ab4a06ada9e93c1966baa60fa",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+          "branches": [
+            "future/f12-ghostbridge"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "6a0f4f4d0be50e83400bb273d05d8d1813896832",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61084,
+      "text_sha256": "cbd64469f450ef9e2eb3e2f441961e371635a63eb73ee4702387e89042e89fcf",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+          "branches": [
+            "future/p04-encrypted-offline-invoices"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "6b37471da6e9cb7ef4889772df1b052c353596f5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 12800,
+      "text_sha256": "f46c87cf3ce605df0d97c5c9336ac593f86fd4f875a25f7ae21a48e2a75068a5",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+          "branches": [
+            "codex/ghostpay-observability-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "6c291f9c807fddd1ec5a0f674dbf28b5423e4f64",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 109745,
+      "text_sha256": "196cd0b31292b2cc43e42c6ab0f73ef7b0ead820dd704a52d7d73ff21c67142c",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+          "branches": [
+            "integration/ghostpay-main-recovered-fixes-20261120"
+          ],
+          "pull_requests": [
+            307
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "6f0f17202fa03af9143c2d6b3336a7f73dfdfb40",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 252929,
+      "text_sha256": "782baaa96eaf5dc34144aad898a72c54631c32ec1c7e4f1d265fdb4839fb76c1",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+          "branches": [
+            "feature/ghostpay-retention-completion-20261120"
+          ],
+          "pull_requests": [
+            326
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "710ae5f3a2158a2c6d89d08f84c7e4486a81dd6f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 732,
+      "text_sha256": "fafd88e203baa1ec1a34d8e8dda461203f7cfc6160cf59c5fc0495eaf0c5fbee",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+          "branches": [
+            "chatgpt/pages-release-gate-audit-20261114"
+          ],
+          "pull_requests": [
+            160
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "759920ecf7928f99db0dbcf570cd5d117231c6a6",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 80505,
+      "text_sha256": "be3fbf1a4a516ba1e292873bc627ee0e632587cb9281f8ce13bc1203b92fcadd",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "9a10d335d048b197e90d257a5322ff5d5260572d",
+          "branches": [
+            "automation/20261120/bug/policy-review-revocation-r1"
+          ],
+          "pull_requests": [
+            345
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "765fb0d08ca496ca52f41d4c11dcc41e2bbf59b3",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53588,
+      "text_sha256": "522f0b4142eef95785acdd48aa48c0406ac0d55ef4ad39a7cbc2002a50498ede",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6c11242abca5a3f20d933266c723d71b2e75d39b",
+          "branches": [
+            "repair/ghostpay-history-scanner-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "76a77d6c25e8cb8c0cf83c6f7a9db0b324c29ada",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53174,
+      "text_sha256": "e8148fc28ea393d1b0f78afe5e4985ebc4cdc4d8348fc80db5bce7fd8664357d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+          "branches": [
+            "integration/ghostpay-docs-recovery-20261119"
+          ],
+          "pull_requests": [
+            259
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "782ef83c7a123cbebb5aee640bca71b47ed535b3",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 62932,
+      "text_sha256": "e370e9867f75aef80e3d1a50baf42ebff461042a0656e17aecb2387baa9b4b8e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "429a4de80b9ec53177b17d89d18ce8ec91a08814",
+          "branches": [
+            "integration/ghostpay-adapter-qualification-20261119"
+          ],
+          "pull_requests": [
+            271
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "7839423bc5338b2f8e6f9249069ba715b5cce876",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 154284,
+      "text_sha256": "4d571b80ac511b8042ad2344084cc379bb8612c2a5d55069d6ed645754b57db1",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e4d54a6829fcc861de7af1669c0e0f64f62aa137",
+          "branches": [
+            "repair/ghostpay-analyzer-recovered-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "785e7518e0a3889d5d30ecdffbb4c122fb1c5ab4",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61070,
+      "text_sha256": "add83a1b6f3075f70c054889dd90d6aeec67f825eacdee2a2c55931ad716ccd2",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+          "branches": [
+            "future/p17-private-fee-outputs"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "7a5e9b8aaddcad2377424c9da64bf03e10475918",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 65054,
+      "text_sha256": "d70681671b8c7c3d34f29ac703c6036ffd38e45bb45cd8041a4c1c4791229a1f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1",
+          "branches": [
+            "fix/ghostpay-backup-completion-20261120"
+          ],
+          "pull_requests": [
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "7c88f2618257fcfc8b62555343221f6813e98e65",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 78831,
+      "text_sha256": "df263b6635a15f99097034e27c46f446fe56df60251be5515d324c3eeda3c313",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "aec179910c39081d820396409ff3139ff2264132",
+          "branches": [
+            "main"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+          "branches": [
+            "integration/ghostpay-tron-range-20261120-r2"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "e871eccc1238b7145cd1d0a667afb393c373cf83",
+          "branches": [
+            "fix/ghostpay-policy-record-seller-identity-20261121"
+          ],
+          "pull_requests": [
+            357
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "7fa47b12cb43c943ffb2fa241656f0ef650654fa",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61058,
+      "text_sha256": "8222538e8ab9ddcf9d28abd809b26a629b3dbc73947bfb348c79e6f3b9e96204",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+          "branches": [
+            "future/f18-privacy-modes"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "81892d8f75b91aa7a85835642080f316468f8579",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61072,
+      "text_sha256": "0e0ae2fc39fbe2016aecbae6abaafa82da4c7d10a3ab6646610bd600f0ac2b9d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8846d5553469753d963258023974ea044467cd6c",
+          "branches": [
+            "future/p13-confidential-amounts"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "81b6b88a4686423ea6790fb4c3ed06cb4dd24c68",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 112395,
+      "text_sha256": "c8c3aa59ddbaebd71ea4d549a52f04fc77125493c56ddb4923be35a27df1a8f2",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "2748c9bfd55bd226c7801c15a7acdd955ab70339",
+          "branches": [
+            "integration/ghostpay-sweep-consent-20261120"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+          "branches": [
+            "integration/ghostpay-idle-session-20261120-r2"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "81cec4793a246c2be25bb8f325930b6da4107ab1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 12799,
+      "text_sha256": "609107710313b58ecff8859745e5f3c63a27753caf95dc0ccdd2ac9524cdf0b3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "27852ba898968a08f7d7c448fac8b19058189281",
+          "branches": [
+            "codex/ghostpay-canonical-time-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "85bafde7f64a1a1c88f9b13c396a80a6a0721915",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 74729,
+      "text_sha256": "40730d95617e41c394e4366fe3b6629b4f26ca025a65243745bca7827f8100a4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+          "branches": [
+            "test/ghostpay-hygiene-lint-20261120-9a4ab6"
+          ],
+          "pull_requests": [
+            347
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "8706f239be1b672b8da81c6a77c2a738d97a5d71",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 64222,
+      "text_sha256": "3bc3274e15251eded41ffec42ec8c03b1fe55b1bfc9a9e40bb20c55d67e05a2d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+          "branches": [
+            "chatgpt/ghostpay-tm-hardening-20261118"
+          ],
+          "pull_requests": [
+            249
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "8718f3286d53486813c1479baaf820d9b5bdbc7e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 72393,
+      "text_sha256": "744fc58e051abbff686358d100ffc279a0d1a5f730eb9e6c981dca834e6e0973",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "06fd87c3e90000118ffa94048529db36f0a67d41",
+          "branches": [
+            "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1"
+          ],
+          "pull_requests": [
+            342
+          ]
+        },
+        {
+          "source_sha": "0750012546aeb4336b4340fe16751f8d83804acd",
+          "branches": [
+            "fix/ghostpay-embed-popup-legacy-test-20261120-r1"
+          ],
+          "pull_requests": [
+            351
+          ]
+        },
+        {
+          "source_sha": "53a33810a86c47b4eaa6835ddebee237a5f78bf5",
+          "branches": [
+            "audit/ghostpay-current-census-20261120-r2"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "81598d93dd82cc440526c866d42b55be0657895b",
+          "branches": [
+            "fix/ghostpay-vault-rekey-lock-revocation-20261120"
+          ],
+          "pull_requests": [
+            328
+          ]
+        },
+        {
+          "source_sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+          "branches": [
+            "automation/20261120/bug/btc-fee-floor-config"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+          "branches": [
+            "automation/ghostpay-20261120-embed-popup-noopener-r1"
+          ],
+          "pull_requests": [
+            337
+          ]
+        },
+        {
+          "source_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+          "branches": [
+            "fix/ghostpay-hygiene-transfer-evidence-20261120"
+          ],
+          "pull_requests": [
+            339
+          ]
+        },
+        {
+          "source_sha": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4",
+          "branches": [
+            "fix/ghostpay-tron-genesis-guard-gpbug15-20261120"
+          ],
+          "pull_requests": [
+            340
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "8784736605bd6fd0bd4f321544e0cbc3f8f7d29a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 75139,
+      "text_sha256": "c98f46069819251e40fbf8ee05f09a9baf34c8a8f57b13521e1a1c199e668786",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "437cddb9e012786fe5f6cbcdc1536841aa4ce77a",
+          "branches": [
+            "evidence/ghostpay-tron-qualification-r2-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "8f6ced455b53fd3a0ad8d5bbb58794532af7ff91",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43064,
+      "text_sha256": "3d7fb5904d0f860017a71eb7996f801523dac5b3f82333b12f6d82daac21b645",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+          "branches": [
+            "chatgpt/ghostpay-viem-alignment-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "90bbe34cb19493406c4db1f08da82d47c4b06eda",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 130072,
+      "text_sha256": "ff50824a49e795a740e01c5d06cd3149415831197df68fadf6e8ed561a96d812",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+          "branches": [
+            "codex/ghostpay-consolidation-followthrough-20261119"
+          ],
+          "pull_requests": [
+            270
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "96a085e9e2cc9303253122fb6e833bfd5c3af43d",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 41946,
+      "text_sha256": "9347c4c938811ea3659064d7ab6aee18769b1992a0e37beaeecc88255ee301b9",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+          "branches": [
+            "chatgpt/ghostpay-own-node-guard-20261118"
+          ],
+          "pull_requests": [
+            228
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "96ab87f80e24072eae18a6798d34ba4c6febebce",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53241,
+      "text_sha256": "8b91a7c3c450cd195942fd5c91b5aa7f4e0826f3c017b0572e8de2b10f899ece",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+          "branches": [
+            "chatgpt/ghostpay-private-scan-completion-20261119"
+          ],
+          "pull_requests": [
+            248
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "98a94be168bcf04aeb8712ae1ce6341a512fc917",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 48838,
+      "text_sha256": "5e2f92b0193d1fab45e278880229fcb6bb7b8ba89e9a21bb5057212b0cf96afc",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+          "branches": [
+            "claude/exciting-brown-7v69cr"
+          ],
+          "pull_requests": [
+            218
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "99790b4d6a4402f85de17c1fa65ada719ca2d597",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61111,
+      "text_sha256": "f9075201664962d18bc0c9d95f29a62b5f46b2efd71164a8a0153ef6f8e69dd7",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6dcd163413fc94d5b2db760d5e15db391760a099",
+          "branches": [
+            "audit/ghostpay-blue-team-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "9a68965f68d2126403f4a1913eae07574f2e3d0f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61083,
+      "text_sha256": "1c2e806a80df07ed7cf1c55256481973c3bbabc6d28a0d9e94599627c08c9b95",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "89942105c48df03b9351f777278b6a992e35a95e",
+          "branches": [
+            "automation/20261119T204728Z/bug/qr-kind-failclosed"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "9a7376fb9caf4d7a120fa34c4bfb17c31d7b14a5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 51511,
+      "text_sha256": "506d017839a20b5856eb82d95ccb9f26aebdea94942a58e5cf42ad2774bef55f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+          "branches": [
+            "automation/20261119T083600Z/audit/merchant-clock"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "ab4e0da2cfe2a18adac0424896fba0b40fac81a8",
+          "branches": [
+            "integration/ghostpay-qualified-fixes-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "9ac15e6c6cdfbe72f0c84ff46b9daaa54dfb1916",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 884,
+      "text_sha256": "187fd1f6d97d926f2016e35c5f8636a168887f66893a5333a9bb3f547b5e5058",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+          "branches": [
+            "chatgpt/zero-codex/pages-owner-transfer-filter-20261115"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "9ac8d1f5da4491cfe1709d110aff4a5bd4bf6748",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 117235,
+      "text_sha256": "23fb3a156cf33e2a543a7f5d28f6377dbeedf05b8e3c2b1232249c29f6f257cf",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+          "branches": [
+            "fix/ghostpay-receipt-archive-identity-20261120-r2"
+          ],
+          "pull_requests": [
+            335
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "9aea29e381e2bcfbdcc4e8870027820e31105bc9",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 42990,
+      "text_sha256": "36c04e59c75c903cee3c563334238eb23bce69a77b27e9ceec6ed37345796511",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+          "branches": [
+            "chatgpt/ghostpay-privacy-browser-fixtures-20261118"
+          ],
+          "pull_requests": [
+            233
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "9afccdda8997ec29da82cb9c51eb18dc96fd6a8e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43610,
+      "text_sha256": "a9a7d79af8e301ee23e7e587dfc519736957970317070780fa05684ad53ac721",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+          "branches": [
+            "chatgpt/ghostpay-pages-checkpoint-v4-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "9c1b91a5949eda507c8960a7f818a0661b526763",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61070,
+      "text_sha256": "51d56d197458966dad711c4d5166165136410645e113bcac6feec03af83994fa",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+          "branches": [
+            "future/t01-staggered-transfers"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "9c1e7daae437ced0876a9c5365081315163c2bea",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 78052,
+      "text_sha256": "db68519e3c1b380e8c2dc5e583b0419834baf947369690716ef99b65b8dd1e36",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+          "branches": [
+            "future/f10-private-recurring"
+          ],
+          "pull_requests": [
+            324
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "9c8ead39b4ff84eda9a9685ca9acd1ca15e1d711",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 65352,
+      "text_sha256": "8fa50360a06abfce4cf12bbbe5ff7a7b2e5059412448e55c7725bad162bf6160",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+          "branches": [
+            "automation/20261120T1435Z/bug/chain-scoped-tags",
+            "automation/20261120T1600Z/bug/scan-tags-session-lifecycle"
+          ],
+          "pull_requests": [
+            317
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "a02cb59f661ab7df09e72521519dbee026ea3133",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61074,
+      "text_sha256": "a466d12f1bbb4ebf1ce632dcbe473af7452bb0c866f5febd6e124c3e0dff537d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+          "branches": [
+            "future/fee01-modular-fee-policy"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "a04dda7bd52ef6c732eee4ee06aa6aceeb1eed2b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61071,
+      "text_sha256": "655e3b3b64d3f224bfd722d64b49003bd1ce7179071c2629d20b628438408fbd",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "0041514a630398c89693498d9b5e44ef562d9c61",
+          "branches": [
+            "automation/20261119T1640Z/bug/scan-privacy-partial-30d"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "a14bd2c1decb97cd54aafa5e1fed3752a81d7e99",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 42239,
+      "text_sha256": "a2ee770bc8e450a31be16dceddb885ea99d8af6004ef99ea79dedb1c061d6ebd",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+          "branches": [
+            "chatgpt/ghostpay-sweep-ledger-memory-20261118"
+          ],
+          "pull_requests": [
+            230
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "a2c8d4a9703d601cc2be2d3eb6e3b0b4505fdaa1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53187,
+      "text_sha256": "27507fdb41ffcf8640c82fd18da7612199be1575e7245ff637861fa010cb2c5a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+          "branches": [
+            "repair/ghostpay-pr-87-20261119"
+          ],
+          "pull_requests": [
+            253
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "a6208c10aad89e582a365b97555899d237dab33f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 124576,
+      "text_sha256": "613598ab3378defef9417a84f6350b9884178330f3a5224c8e03cb8c02e574c4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "b0abb726c138ad1df2f03b7b102c9bd9de318887",
+          "branches": [
+            "codex/ghostpay-export-authorization-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "a670804dc9b7db27b9945726acc57152167f6d69",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61072,
+      "text_sha256": "644ec22136590c5c7fdf4864f553bc37261e298cda2299082179c54aa28291aa",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+          "branches": [
+            "future/p16-shielded-cross-chain"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "aabd1e6bc40c976a373f1eb11e589edd7e86b160",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 54808,
+      "text_sha256": "1261d9e3fb393e88e315be96de828d7c69ac344c079c7abc5bcfd43ec51e612b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+          "branches": [
+            "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c"
+          ],
+          "pull_requests": [
+            210
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "aee32548195bd408e286b8e148fb138e775cefdd",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 5895,
+      "text_sha256": "994caac23aa535f17e114ba353ad873ae2ded8e63369ae3a68fa61df0084b93f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+          "branches": [
+            "codex/recovery-spec02-unqualified-20261116"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+          "branches": [
+            "codex/ghostpay-completion-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "afeed83321f1b8857a9554867c5243d5bc09ad3c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 179601,
+      "text_sha256": "2cf6def20cdde718c7de7332e052793d6d9efae9fc8c6a5903ab0504da7a5a79",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+          "branches": [
+            "automation/20261120T0035Z/worker/qr-flag-coverage"
+          ],
+          "pull_requests": [
+            295
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "b27c3f0a4ab5a81362e29b0e9372e1c40c8ead39",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61074,
+      "text_sha256": "7ac2175170a6b16b573841f2fa38be5b3b76b49a47558e477bd0e787cc5caf03",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+          "branches": [
+            "future/f16-per-client-identities"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b329dbd7fa3e33ddfbd8c9b63f85a2c18115929c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 74431,
+      "text_sha256": "8db3f5776dfb3d8e998cc087319d6208f506e9b4e28e186ff392e63239d8fbcf",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "71632fa389ae93824b2f42d265278a9bd0f6de59",
+          "branches": [
+            "automation/20261120T1840Z/bug/receipt-archive-identity"
+          ],
+          "pull_requests": [
+            332
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "b531965d63e0adec0d929168405ef6dde6432be4",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 42536,
+      "text_sha256": "39f33873ccba684fae83af56098a0efc805eae3f034195f40835f044cae7a9da",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "1054daabc5cabe958466ec144582d76137b54910",
+          "branches": [
+            "nodata/jolly-rubin-u4zd45"
+          ],
+          "pull_requests": [
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "b540cde123bc82d06f73582cb76da31c73477fc5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 60883,
+      "text_sha256": "102a9bd6e3e317a6e9db6a2316e2721deb45c8de5682fd20c835e0028fd64133",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+          "branches": [
+            "repair/ghostpay-276-artifact-races-20261119"
+          ],
+          "pull_requests": [
+            277
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "b5ad4fac756a4927fdf8d02b068a6f5cdeace2b5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43608,
+      "text_sha256": "ca9a38fba0436f3e845862d8f7d25f6ec65d260e46149c86b5db891bef5b1630",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+          "branches": [
+            "chatgpt/ghostpay-invoice-validation-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b5eaec43961aac242a88ee4ca9ab0cf63f64f717",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 78078,
+      "text_sha256": "27672e2e87900aca69380ff0b90897ce5043d04c6bea39055723c32d7c48a6e7",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+          "branches": [
+            "future/f04-merchant-dashboard"
+          ],
+          "pull_requests": [
+            322
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "b66ef5bffb0af16b4e9193f04795f9a3afaf6fb1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61029,
+      "text_sha256": "2f3d755fba912432f1ad6b745305621392bbbe5ed57f9bf584f6b6dc02330179",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+          "branches": [
+            "automation/20261119-c977/bug/build-profile-failclosed"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b6f623be7800bc2194fc0cb8e87893356abac4d5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43400,
+      "text_sha256": "9e9aecec2a9c144595679141fa4360e7c7d599078f5ae4180903b52137b56fa0",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+          "branches": [
+            "codex/ghostpay-browser-isolation-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b763116517bb0ed503eca07248a0e45255aeee26",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 41960,
+      "text_sha256": "84886f74aa760326441a8eb93bd2f22023a9c77443f7032328718024a6a1c146",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+          "branches": [
+            "chatgpt/ghostpay-mythril-checker-failclosed-20261118"
+          ],
+          "pull_requests": [
+            225
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "b81a4220cf9a4ea4db6e78554d8010e7066dac7c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 197376,
+      "text_sha256": "babd4013c62e59ac591eaeab17c504ffef433b34b6e9a05d644b4996a48102cc",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6fe35de42587e8da06e2590983b584ffde93d40f",
+          "branches": [
+            "evidence/ghostpay-remediation-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b81d6f61aa64110399ee49f1843415d29f58f71d",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61082,
+      "text_sha256": "f63fc390f498cb2294dc09dbb654bad35e45fef6cc7bf5005e681150fdb00fc8",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+          "branches": [
+            "future/p09-noncustodial-gas-services"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b868ac2719ff078acdb9427cf4201520bf9f2b18",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61112,
+      "text_sha256": "e139ba4a1c2c125548f69a24c52264b307a639d08cf0d0d82a11e27c8b10fe31",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+          "branches": [
+            "future/f02-ghoststore"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b88bc18ae0bb89480d1c710f5b54b7a43ddf9de4",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61079,
+      "text_sha256": "61f8fb5918e47760289b1be1c3ef179eb2d82b21627527a76a8e75ec4dc585cb",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ae0bad1151625fd3453a9c684927145024fa8634",
+          "branches": [
+            "future/f03-private-payment-links-spec"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "b88bf11ce2befec8f9002cc1b1dff305e6dd3f2b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61779,
+      "text_sha256": "59a54211208e59a0643b14874f4048744c320365d0a0e63a6ae1e540e787ff9a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+          "branches": [
+            "chatgpt/spec18-recovery-completion-20261118"
+          ],
+          "pull_requests": [
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "bb8756b0ed113399adf826530378cd950c244b53",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61068,
+      "text_sha256": "9fe64e4e549f22fa005f1332d11e551eb537e59615400dedc421af5099196f5d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "8d03ebe48a9f6184d9905c2a9c93e8dc080f2618",
+          "branches": [
+            "docs/ghostpay-core-readonly-audit-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "bcf67b6131306b1f4bd070c635a0ece3b6ed23e0",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 60828,
+      "text_sha256": "ea46e9ea7a1ed022a2dd82c0d514aa06837963d6150947ba53dd09895c88dbe4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e9643073be74dac54c2875143501451812763f9c",
+          "branches": [
+            "audit/ghostpay-qa-stress-20261119"
+          ],
+          "pull_requests": [
+            309
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "be632fe9954da6d542f614bf002ec65b96376ef8",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61066,
+      "text_sha256": "17f36687d02eb159cfd78db2777fa916acb864a33b795ca71cb51761a2bf06dd",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+          "branches": [
+            "future/f06-encrypted-backups"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "bef948b246f19b4525ec755617775efadc0d73a7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 131499,
+      "text_sha256": "4f557068b32faffa9aa332bf5dbd38fa529de63ca12fca44da5c3b0dd1d0bb87",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+          "branches": [
+            "codex/ghostpay-private-checkpoint-browser-20261119"
+          ],
+          "pull_requests": [
+            269
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "bf8503db096a9e2776f36d94d12cd7de6123ae52",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 52352,
+      "text_sha256": "1cd57ea572c8ff8db195a8ff6abcfef988d3652a8c7824032096e6211252bbdb",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "55e7799574d9ab978c24e48addf6792f84e76a56",
+          "branches": [
+            "maintenance/ghostpay-branch-audit-20261119"
+          ],
+          "pull_requests": [
+            263
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "bfdf5c6d180b365a534db541a9848318fab46c28",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43048,
+      "text_sha256": "de31ebb0f4b2f2bbb23934cc583611c58366edb36edde4567433d2e5f4ab0675",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+          "branches": [
+            "chatgpt/ghostpay-sweep-balance-consent-20261118"
+          ],
+          "pull_requests": [
+            231
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "c0bf66f9f694e5dc76dbbb095bf6fa25ae5a1cfd",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 190931,
+      "text_sha256": "8bc28bfac24be151247b9e10793e187f64ef472d860636e18956ef66c3b38fe0",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+          "branches": [
+            "automation/20261120T0115Z/worker/receipt-hash-validation"
+          ],
+          "pull_requests": [
+            298
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "c23bd259fc1dcd68df30e14b1fd57109205864c5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 128275,
+      "text_sha256": "845b9e178228c098ff0e2d2eb9c359ab2a936136bb9c8e6dd077ab42e516fb99",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+          "branches": [
+            "codex/ghostpay-feature-consolidation-20261119"
+          ],
+          "pull_requests": [
+            262
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "c391583de92bdd62783979b8c03a5a908f4eecc6",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61048,
+      "text_sha256": "aee37659b8d92f26f2c0866d32fd4e0262f376b25373db047e90c05fd88d0899",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+          "branches": [
+            "future/f09-ghostpos"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "c3b3f28796557d98536bf5220d5eb923a53eb935",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 62311,
+      "text_sha256": "6ec703540671669917b1d21a4eac08d36cafb31726cbaa30267457cc5abac30f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+          "branches": [
+            "codex/ghostpay-hosting-timestamp-main-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "c51e9f277a21814d4407743048d0962dd568ecd8",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 234707,
+      "text_sha256": "43b6882b5f70962aa852a28b712df0080f2cb6a5a470e0974dbd5d647118d8a4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+          "branches": [
+            "evidence/ghostpay-completion-20261120"
+          ],
+          "pull_requests": [
+            304
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "c5df176e7eb45d2e045cb4638b06efe43e14f47a",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61072,
+      "text_sha256": "b35bf60215b1cf301254d3713f635da553213a3633cc9ff0d07b41849beb05a0",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+          "branches": [
+            "future/p08-linkability-analysis"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "c6e2b7fb1b37f58c8bd4645ede0f3f4700a80b8b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 176826,
+      "text_sha256": "5e949a57e072b2709cfb081add494cfda2be98b3e89e2a414cd63272a6c29140",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+          "branches": [
+            "automation/20261120T004531Z/feature/clipboard-guard"
+          ],
+          "pull_requests": [
+            293
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "c8337648f1eca885e1acaafbcdf648efd96ff8f7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 11699,
+      "text_sha256": "2e296af68ef810ede562a779661ab8b4d51aa6c0b43077f7f33ce46c1847b18b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+          "branches": [
+            "codex/ghostpay-caveman-completion-20261116"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+          "branches": [
+            "codex/ghostpay-caveman-followup-20261116",
+            "codex/ghostpay-spec09-matrix-20261116"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "ca89b77457faa245cc14eb4e9c625d16c690b235",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 45079,
+      "text_sha256": "8df6deb266e21ca01effdfe8b7779ec935d5e1435a20758624e97e725846bdb2",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+          "branches": [
+            "claude/ghostpay-completion-audit-ot5jjm"
+          ],
+          "pull_requests": [
+            209
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "ccad5b5c8b2e5bdfd6ead825fadd42f3d40d9536",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 101316,
+      "text_sha256": "0624e8ee969b859f9f944ccb023e74216e6355e43810ec720f90c2221bae10d4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "c2b575e945b71563e30a9bef162cf3fdc92181f0",
+          "branches": [
+            "evidence/ghostpay-continuation-r2-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "ccbe1b396bc4f39d865358c367cb3fb306903bb5",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 65341,
+      "text_sha256": "18d25c89a3898ad9e088f7151c069f2dd1ab481dc816473f107938bbaa70a489",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+          "branches": [
+            "feat/ghostpay-tor-completion-20261119"
+          ],
+          "pull_requests": [
+            308
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "cfc7a5f56c64de169b56a82f27563de8d4069d13",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61086,
+      "text_sha256": "2aa297da1ba973c59bc6337fa87093210163df50e1dd0947a03fe97fca66daad",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "70862d040066167bc3ba2d311913b92a6b327fc5",
+          "branches": [
+            "future/p18-telemetry-release-integrity"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d058f4db587206c69de1eff05e6987bb4ba91832",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63811,
+      "text_sha256": "27adc021ff991cf1b0778a7b4b3f56cece269b9391e8ced36084bd6636bdfd02",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "0fa33f7101f3c9ac4d685673aece16eda6e98366",
+          "branches": [
+            "automation/20261120T0641Z/bug/payment-uri-aggregate-length"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d05bb126f4431da96d5507c2253a6dad03d2ba54",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 43755,
+      "text_sha256": "5d689087bef635605cc5f0e76305bfed531673712be04095ee694c5ca6c0afa6",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+          "branches": [
+            "claude/ghostpay-consolidation-9xhtxg-spec18"
+          ],
+          "pull_requests": [
+            213
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "d213990f61433de0bb3536bdc5a55668f9481336",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 42770,
+      "text_sha256": "41bf1943e8025f4786d82a5b3fed9fabfc5f926c5e669275aed8bdcf38fc08fd",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+          "branches": [
+            "chatgpt/ghostpay-beta-log-artifact-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d2c80c2aa929c9915d0ccbdc581ae7282bfeaee8",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61086,
+      "text_sha256": "84f8ff8ca460266db62b8e24bc77f12feb464bf10bc0fed4a73449879375fe2d",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6131e3c28e05438d8c796af74665cf74f51b7453",
+          "branches": [
+            "future/p12-selective-disclosure-proofs"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d2d35700c5a9560511a243c94daac9b617e82abb",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 177244,
+      "text_sha256": "8aa7ef455906b3cc1287b4f6beb603ea6925294b21248746693803c4faf23ad3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "172695efb41665a4e50d335029e54184bbb5b328",
+          "branches": [
+            "fix/ghostpay-qr-conflict-expiry-20261119-c374725a11b7"
+          ],
+          "pull_requests": [
+            294
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "d336edcdde279d31afca6cfbadc8ef204814cffc",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61074,
+      "text_sha256": "7f3dc30094e8e8a5cbf6140aed0d3a6d575c8622191a3bb55ee039b1af233e24",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+          "branches": [
+            "future/p07-encrypted-device-sync"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d430df11cc7861c94f4e00876d56be005420ef8c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 59856,
+      "text_sha256": "f1858b52fd1e27d7beb603faab214918e406dc03f2c88841a5831c1d0d1d5e53",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+          "branches": [
+            "chatgpt/ghostpay-pinned-signer-completion-20261119"
+          ],
+          "pull_requests": [
+            243
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "d55c621f8234a423da8e2937aa3ec12d91faf442",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 70893,
+      "text_sha256": "0d8faf7a55deb8f82df74a46cbe7a694888091695e23d2202f142ca8fe615977",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "885b9569e6fc99e43bf01d23305494275e10120e",
+          "branches": [
+            "integration/ghostpay-main-unique-code-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d7d80bd7e3b8c24a089aa4ab193366ad028ca261",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61978,
+      "text_sha256": "a078b9998c15db37070cddfd960d0a49961486b095756fc2b902e50739c5e0dc",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "bdffcb1d88557b3ca9110c20e03261508011c902",
+          "branches": [
+            "audit/zero-cool-core-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "d85459047ccaa9b35505d1f04eb4ce3b3070904b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61088,
+      "text_sha256": "30a79c61ed5bc53ca5314dd589f429afc463facf2c99fa28c16107c64f2b61b3",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+          "branches": [
+            "automation/20261119T2243Z/bug/base64url-runtime-input"
+          ],
+          "pull_requests": [
+            289
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "d960a096074b858eb340e3643af538bfc7af706b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 111969,
+      "text_sha256": "89830c30a902f799aa90494c0a143f82dfc29b8a955969429a4e3395e0d6c737",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+          "branches": [
+            "automation/20261121T0238Z/qa/settings-partial-import-drafts"
+          ],
+          "pull_requests": [
+            353
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "da939b6274049d6a1185c9582fbb5e1a6ea3f08e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 178686,
+      "text_sha256": "e4b75b98f64a450b7ced2a62ab1fa0d3ed48d8ba0c0210087445e3bfdbb6ba3b",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+          "branches": [
+            "automation/20261120T0115Z/coordinator/clipboard-qualification"
+          ],
+          "pull_requests": [
+            297
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "dac4c3c0f7f0d174e51cdcdd746cc617de11a26c",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61052,
+      "text_sha256": "56e8c548a5049a9cf4f87dd54af3f8f54210189c9d3a8301ba7da6c3e819ca57",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a453777b5b66933571294da3d9aa7be6843070a4",
+          "branches": [
+            "future/p02-rpc-policy"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "dbe6338044a6f283c55c4df2e713bf82b126dad9",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 53206,
+      "text_sha256": "390999c71aa20f5325cdd42deef9495645545f76172679ebee667f431be5c0cc",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+          "branches": [
+            "automation/20261119T104800Z/bug/jitter-expiry-rollback"
+          ],
+          "pull_requests": [
+            274
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "dd734c005b6b808339155b1c95d333c4eeb6043b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 60735,
+      "text_sha256": "740eccc87c7dfff859579208570f954c4cb1b85e46930eab14275a7d4e7e9729",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52",
+          "branches": [
+            "docs/ghostpay-future-module-specs-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "e2010df1f8cd89eb4eb2c9c945dcc12f0d96a3f7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 75665,
+      "text_sha256": "bcba9321a100c9238f3602a1730ea19053af14637bdf0e1edc8f9ea1e06c49ea",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "e0c583be2514b44af7f3b15619fb8160358f1470",
+          "branches": [
+            "automation/20261120T1241Z/bug/receipt-print-css"
+          ],
+          "pull_requests": [
+            316
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "e21966e0881d6c50e54952475ae341a736414d06",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 262935,
+      "text_sha256": "fc52fc7cd62ccf63c975efd7bf77ff645aca8b612f68a8ea442aef73be58652f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+          "branches": [
+            "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121"
+          ],
+          "pull_requests": [
+            352
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "e351be52e0ae9382a0e6d016cab607758653c78e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 81049,
+      "text_sha256": "51ef21e54c0723ce7ad027340019307c732ecbba639b2b6753ad201f2dd602ce",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+          "branches": [
+            "automation/20261121T0033Z/bug/router-duplicate-warning"
+          ],
+          "pull_requests": [
+            350
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "e7624dcdda08a2adcd9584bb200f8ab609257f3e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 74275,
+      "text_sha256": "e07ccd22cbe6aa474b1a2597f60884bba3c3455b82e600a7276563dd0dd3d99f",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+          "branches": [
+            "automation/20261120T1635Z/bug/tron-scan-abort"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7",
+          "branches": [
+            "docs/ghostpay-coordination-ledger-20261120"
+          ],
+          "pull_requests": [
+            343
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "e7a53ccb5bd14b90ec18256e559bce2850ac08fd",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61076,
+      "text_sha256": "c0ddf4f9ea850568dc71037d4e8ca964a3264da660cc0dd0b3592702ba0416a5",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+          "branches": [
+            "future/p03-local-stealth-scanning"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "ea2f1f547d2eb661afd4afe7e1c836efda1f9987",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 66794,
+      "text_sha256": "a505fefa2cae0f76838657e14c94a7bc82aa405b5a22da585d04fbfbfb62ba80",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+          "branches": [
+            "codex/ghostpay-consolidation-records-20261119"
+          ],
+          "pull_requests": [
+            273
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "eb25c29d5b5478572e9a15a05254c73812e8da77",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 159260,
+      "text_sha256": "0704d8dc4ca14604c4d599428b3f60cdd18e035f6b6fd353fce7ff1b64c7a19e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "73d7ccda4fd448dec1682082d633c90de9fa0d7a",
+          "branches": [
+            "repair/ghostpay-final-lint-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "ed4c1e01d963309e7896c820902985b9ba7b91a1",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 52845,
+      "text_sha256": "1d09eff7ee46f594ef0ee658a371976e0b479ff70ebe8b969b885d89cfe40bf1",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+          "branches": [
+            "automation/20261119T073600Z/coordinator/integration-lock"
+          ],
+          "pull_requests": [
+            261
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "ee2c2767597c81697aa3a665efbb732d8ee42c1f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 56222,
+      "text_sha256": "aad64ad7e5d3f6b333dd0137bd330b5349010e7e946c963001aa5b7e61a19466",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+          "branches": [
+            "automation/20261120T0035Z/coordinator/cycle-checkpoint"
+          ],
+          "pull_requests": [
+            296
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "ee4d60e03349eebcfd20c97310b5169506d5fb65",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61233,
+      "text_sha256": "2295650e8e003257ccc40134f2aa22cff5ebc891c0682c597b1363299dd4e054",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+          "branches": [
+            "automation/20261120T0434Z/bug/erc20-simulation-result"
+          ],
+          "pull_requests": [
+            305
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "ee51766baf2d155524d5e3ce02d6a2100f341185",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 47204,
+      "text_sha256": "4e152af4e9261320d51305bb6076a0a4f2dc67edacfe9c04bab07b94be7538f4",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+          "branches": [
+            "chatgpt/btc-spent-qualification-20261119"
+          ],
+          "pull_requests": []
+        },
+        {
+          "source_sha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+          "branches": [
+            "chatgpt/btc-spent-private-scan-20261118"
+          ],
+          "pull_requests": [
+            244
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "f1fa257f67b0b312d32639f0316fced658b22a23",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 77048,
+      "text_sha256": "67a1ed1c213012e3ffc704ad5a2ab88874a50208e328cd8ab048204e1ac00f93",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7",
+          "branches": [
+            "qualify/ghostpay-hygiene-composition-20261120-9a4ab6"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "f33dc3e2513428d3e510d058d841b841158e093e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 73548,
+      "text_sha256": "ed61d2568ac3d961c36a8bcfd272fd0ef7bebc5a5b909126ef9794acfc6a3816",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+          "branches": [
+            "evidence/ghostpay-fee-floor-qualification-20261120-r2"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "f48cb9252ad8224549829181e615d30c84f22c85",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 113561,
+      "text_sha256": "9b36d6126cd0262902aa247f4d83e566c2418c4db8ab4be1e40a4592d414b12e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "82ab06f1bb6fc4b9df2b4ac87679a4029987a284",
+          "branches": [
+            "repair/ghostpay-settings-import-expectations-20261121-539818"
+          ],
+          "pull_requests": [
+            356
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "f64f681e43f5f96074e57bb1647ae1a1936e7928",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 99165,
+      "text_sha256": "d0c922b388e0cd39deb927a5541f857f20fd0736247244c54041b1e066088eee",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6152dd035822fe6ee97fba712ef1c37434e19035",
+          "branches": [
+            "evidence/ghostpay-web-qualification-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "f6e50a86c5c76df25e094d868b13b3e41744ae1f",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 61072,
+      "text_sha256": "8e8ef8205e9f0035a47a69550a49beeeccaed3694f0555bcfa9882823271af62",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+          "branches": [
+            "future/p19-optional-fee-gateway"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "f7486f5978c8a1829b13a7c7d57ca27fb774b28e",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 224815,
+      "text_sha256": "72ca2a9a41f7a533403c45e5726af812ce163f9638800ece996e53631257e24a",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+          "branches": [
+            "fix/ghostpay-format-validation-20261120"
+          ],
+          "pull_requests": [
+            303
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "f9110fcc4587aa9d642f32f64511c1b50a24c7c7",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 63634,
+      "text_sha256": "e25d1be002518a2705df46562f70446b190eb7452a596b02a7ee836368e72d4e",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+          "branches": [
+            "automation/20261120T0641Z/bug/payment-uri-decimal-options"
+          ],
+          "pull_requests": [
+            313
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "f926a4e114fc5e20cb041897c68f4c381cb11ad4",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 220077,
+      "text_sha256": "0978f4a41a5d479eb527ae6395d345103c289c184264865e3f6ff15b009e4495",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "74dccc419bf5c82b21875d205ed5a97d0c4e69b6",
+          "branches": [
+            "work/ghostpay-required-v1-candidate-20261120"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "faa47e49c619d76b94d07c7a2fed55459e4030fb",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 65583,
+      "text_sha256": "3cc816d2a29c1cd9eb485ac66b8ec08d21bdd6951c0ab5ed5f5448fd4fed2410",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+          "branches": [
+            "integration/ghostpay-recovery-reconciled-20261119"
+          ],
+          "pull_requests": [
+            260
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "fd95ba010885bf98ce5f448c4909006c59a61f2b",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 79433,
+      "text_sha256": "3ce447a24c2f0dfe3d821e7efd3ab22cb95f717b1360e4c2045ee980ffbed7f0",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+          "branches": [
+            "future/f03-private-payment-links"
+          ],
+          "pull_requests": [
+            310
+          ]
+        }
+      ]
+    },
+    {
+      "blob_sha": "fee276bf6f1ab740230466790a585cf1c0c017b9",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 41956,
+      "text_sha256": "955b0a83886f8dd12768970d86735947237450b68f43c19ae5fd089af93a6b31",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+          "branches": [
+            "chatgpt/ghostpay-pages-idle-clock-20261118"
+          ],
+          "pull_requests": []
+        }
+      ]
+    },
+    {
+      "blob_sha": "ff5fe8fcc5fdf33ca53522e3a10c79a658c73d98",
+      "path": "docs/ai/ACTIVE_WORK.md",
+      "utf8_bytes": 160081,
+      "text_sha256": "82900ffe71535574803190f27ac637a49a9b93c9bd7061dd4e500d43b18b90c5",
+      "interpretation": "uninterpreted",
+      "sources": [
+        {
+          "source_sha": "ac7b7a11f00896d105fa7a06e44e218046bdc56c",
+          "branches": [
+            "repair/ghostpay-qr-surrogates-20261119"
+          ],
+          "pull_requests": []
+        }
+      ]
+    }
+  ]
+}

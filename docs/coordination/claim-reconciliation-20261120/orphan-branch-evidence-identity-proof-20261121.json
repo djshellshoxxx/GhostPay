@@ -1,0 +1,65 @@
+[
+  {
+    "name": "browser_product",
+    "ref": "76fbabcba18bef0cec696d9a5188794eb7537a4e^{tree}",
+    "expected": "2e61abb2a3ed37379bd16ecc90306d2d765e2ed3",
+    "actual": "2e61abb2a3ed37379bd16ecc90306d2d765e2ed3",
+    "matches": true
+  },
+  {
+    "name": "idle_product",
+    "ref": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3^{tree}",
+    "expected": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+    "actual": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+    "matches": true
+  },
+  {
+    "name": "vault_product",
+    "ref": "81598d93dd82cc440526c866d42b55be0657895b^{tree}",
+    "expected": "09a1504b468d7943ff5bdacd1a8c009d3681ce64",
+    "actual": "09a1504b468d7943ff5bdacd1a8c009d3681ce64",
+    "matches": true
+  },
+  {
+    "name": "hygiene_package",
+    "ref": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7:packages/hygiene",
+    "expected": "087f548c2e6203cac0a4184f66157ea21cf77879",
+    "actual": "087f548c2e6203cac0a4184f66157ea21cf77879",
+    "matches": true
+  },
+  {
+    "name": "fee_product",
+    "ref": "9dcd2d88ff32060e519ef18e2d8753691b56abc1^{tree}",
+    "expected": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+    "actual": "c482d227bbfdf326835d4f7f35a1dfcb86ef6f40",
+    "matches": true
+  },
+  {
+    "name": "browser_evidence_delta",
+    "base": "76fbabcba18bef0cec696d9a5188794eb7537a4e",
+    "head": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+    "changed_count": 62,
+    "only_docs": true
+  },
+  {
+    "name": "idle_evidence_delta",
+    "base": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+    "head": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+    "changed_count": 28,
+    "only_docs": true
+  },
+  {
+    "name": "vault_evidence_delta",
+    "base": "81598d93dd82cc440526c866d42b55be0657895b",
+    "head": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+    "changed_count": 3,
+    "only_docs": true
+  },
+  {
+    "name": "fee_evidence_delta",
+    "base": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+    "head": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+    "changed_count": 17,
+    "only_docs": true
+  }
+]

@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /workspace/scratch/fc3db078ca12/GhostPay-scan-350/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  18:34:38
+   Duration  1.18s (import 51%, transform 48%, tests 1%)
+

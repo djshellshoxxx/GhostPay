@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "snapshot": {
+    "sha256": "724ab0279925f832f2fad3153114bdf76e5c7eeee659e90ed75e35b1f5bee56f",
+    "observation_completed_utc": "2026-11-21T02:31:12Z",
+    "observation_notes": [
+      "GitHub connector GET results observed during this worker invocation before the completion timestamp; not an atomic multi-endpoint snapshot.",
+      "Branch enumeration uses git/matching-refs/heads (420 rows); open PR enumeration uses pull collection pages 1 and 2, sizes 100 and 20.",
+      "Each row preserves exact returned SHAs. Recheck refs before integration."
+    ],
+    "sources": [
+      "https://api.github.com/repos/djshellshoxxx/GhostPay/git/matching-refs/heads",
+      "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls?state=open&per_page=100&sort=updated&direction=desc",
+      "https://api.github.com/repos/djshellshoxxx/GhostPay/pulls?state=open&per_page=100&page=2&sort=updated&direction=desc",
+      "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/docs/consolidation/current-census-20261120/CENSUS.json"
+    ]
+  },
+  "targets": {
+    "main": {
+      "sha": "aec179910c39081d820396409ff3139ff2264132",
+      "tree_sha": "93588004b788f583bab76a72953be98f9d8e8591"
+    },
+    "integration": {
+      "pr": 307,
+      "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "tree_sha": "05b0425153c66260bc8e1da2ea82f57a248bf376"
+    }
+  },
+  "counts": {
+    "branches": 420,
+    "open_prs": 120,
+    "ownership_documents": 195,
+    "branches_unrelated_to_main": 1,
+    "branch_heads_in_main_history": 189,
+    "branch_heads_in_integration_history": 199,
+    "pr_head_ref_mismatches": 0,
+    "pr_base_ref_mismatches": 76
+  },
+  "qualification": {
+    "status": "not_assessed",
+    "note": "No tests, CI, review, semantic equivalence, readiness or ownership release is inferred by this inventory."
+  },
+  "interpretation": {
+    "branch_delta": "Changes from the unique merge base of pinned main and the branch head to that head. No delta is inferred for unrelated or multiple-merge-base histories.",
+    "pr_delta": "Changes from the unique merge base of the pinned PR base and head to that head; no mutable ref is used.",
+    "postimages": "Every changed path must have the same final blob, mode and type, including absence for deletions. Matching postimages do not establish patch provenance or semantic completeness.",
+    "history": "Ancestry proves historical inclusion, not preservation of behavior after later changes or reversions.",
+    "ownership": "Full raw claim documents are indexed by blob SHA and source commit. Their text and status remain uninterpreted; changed paths and overlaps do not establish ownership.",
+    "documentation": "Only narrative .md/.rst/.adoc/.txt under docs and root README/LICENSE/NOTICE are excluded from the non-documentation overlap list. Code, JSON, MDX and assets under docs remain included.",
+    "snapshots": "An inventory can span different endpoint times. Base/head SHA mismatches remain visible; this tool does not substitute later branch tips."
+  },
+  "lock_observation": {
+    "ref": "automation/ghostpay-integration-lock",
+    "sha": "c196151daf8233f96045fd205b2d899c9e8cc97d",
+    "status": "held",
+    "generation": 11,
+    "owner": "994a0d214fb9-root-r3",
+    "heartbeat_at": "2026-11-20T23:16:57.174Z",
+    "expires_at": "2026-11-21T00:16:57.174Z",
+    "note": "Expiry does not authorize takeover."
+  },
+  "branch_comparisons": [
+    {
+      "status": "complete",
+      "count": 405
+    },
+    {
+      "status": "multiple_merge_bases",
+      "count": 14
+    },
+    {
+      "status": "unrelated_history",
+      "count": 1
+    }
+  ],
+  "maximum_branch_delta_paths": 3902,
+  "open_pr_heads_in_integration_history": [
+    {
+      "number": 231,
+      "head_sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "title": "fix(web): ask before refreshing the displayed Sweep balance"
+    },
+    {
+      "number": 252,
+      "head_sha": "4085622463411d3ba27f4efb7b73a70575170535",
+      "title": "fix(web): repair standalone Sweep consent disclosure and reconcile main"
+    },
+    {
+      "number": 272,
+      "head_sha": "63ff40d57af879a3d82166450f63aadb7bf0d5ff",
+      "title": "Prevent stale Sweep quotes and signing handoffs; preserve explicit balance consent"
+    },
+    {
+      "number": 307,
+      "head_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "Consolidate reviewed fixes and complete invoice, backup, print and Tor features"
+    },
+    {
+      "number": 308,
+      "head_sha": "e60c69f32dbbd9edf7e81ed8866144d665e3de9a",
+      "title": "Complete static Tor hosting preparation and qualification gates"
+    },
+    {
+      "number": 313,
+      "head_sha": "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+      "title": "fix(payment-uri): reject invalid decimal precision options with typed errors"
+    },
+    {
+      "number": 315,
+      "head_sha": "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+      "title": "test(web): synchronize ledger activation after delayed vault read"
+    },
+    {
+      "number": 316,
+      "head_sha": "e0c583be2514b44af7f3b15619fb8160358f1470",
+      "title": "fix(web): isolate receipt and bill print output"
+    },
+    {
+      "number": 317,
+      "head_sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+      "title": "fix(web): scope encrypted tag list to selected chain and seller session"
+    },
+    {
+      "number": 319,
+      "head_sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1",
+      "title": "fix(web): separate unlock cancellation from durable vault writes"
+    },
+    {
+      "number": 320,
+      "head_sha": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+      "title": "Complete static Tor qualification inputs and exact origin assertions"
+    }
+  ],
+  "overlap_path_count": 1197,
+  "output_sha256": "e0ff17d180bf78ae5e5900ed12cda9d6ffd2e863332586629eda0cf584ba302d"
+}
