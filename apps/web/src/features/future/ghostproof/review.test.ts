@@ -135,7 +135,9 @@ describe('bounded untrusted receipt input', () => {
   it('rejects a modified digest and unknown digest fields', async () => {
     const text = await digestText();
     expect(await reviewReceipt(text.replace('Lunch split', 'Changed memo'), options())).toEqual({ ok: false, code: 'INVALID_RECEIPT' });
-    expect(await reviewReceipt(text.replace('{', '{"audience":"unexpected",'), options())).toEqual({ ok: false, code: 'INVALID_RECEIPT' });
+    expect(text.startsWith('{')).toBe(true);
+    const withUnknownField = '{"audience":"unexpected",' + text.slice(1);
+    expect(await reviewReceipt(withUnknownField, options())).toEqual({ ok: false, code: 'INVALID_RECEIPT' });
   });
 
   it('rejects future-dated receipts while retaining explicit freshness unknown for old receipts', async () => {
