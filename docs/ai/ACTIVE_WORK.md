@@ -1,3 +1,11 @@
+# Native Firefox/WebKit qualification — 2026-11-21 UTC
+
+Owner: `5ceb6203640a-root`; branch `qualify/ghostpay-native-browsers-20261121-5ceb`; base `bd024ca06cd3f55afcf0a4ba543f963eb6b0499b`.
+Owned source paths: new `apps/web/playwright.native.config.ts`, new `.github/workflows/native-browser-qualification.yml`, and the additive include in `apps/web/tsconfig.json`; this additive registry entry and scoped claim/handoff only. Acceptance and limits: [ownership claim](claims/NATIVE_BROWSER_QUALIFICATION_20261121_5CEB.md).
+Source application work remains owned by the recovery integration worker. Shared-target integration remains paused under the restored generation-11 prior-owner lease. Only this isolated branch can be prepared/published; no deployment, release or shared merge.
+
+---
+
 # Preserved composition ownership records
 
 ## #367 integration and this worker
