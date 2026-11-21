@@ -257,9 +257,11 @@ export interface PrintQrPolicy {
  */
 export function printQrPolicy(link: string | undefined, passphraseProtected: boolean): PrintQrPolicy {
   const hasLink = link !== undefined && link.length > 0;
+  // Only literal true can suppress the warning for links carrying their own decryption key.
+  const protectedByPassphrase = passphraseProtected === true;
   return {
     includeQr: hasLink && link.length <= MAX_PRINT_QR_LINK_CHARS,
-    kind: kindForPayload(passphraseProtected ? 'invoice-link-passphrase' : 'invoice-link-with-key'),
-    bearerWarning: hasLink && !passphraseProtected,
+    kind: kindForPayload(protectedByPassphrase ? 'invoice-link-passphrase' : 'invoice-link-with-key'),
+    bearerWarning: hasLink && !protectedByPassphrase,
   };
 }
