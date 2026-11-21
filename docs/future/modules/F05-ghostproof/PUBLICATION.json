@@ -1,0 +1,51 @@
+{
+  "schema": "ghostpay.publication-map/v1",
+  "branch": "future/f05-ghostproof",
+  "remoteBase": "a241d0a5556c23bf2670f6ba17e7c928b41d7eb4",
+  "validatedMain": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "sourceTip": "e08333af3eb830a36d375ecf2174db955f559d64",
+  "publishedTip": "1590e2c913dd1a5cd1aecf429e9d9b14d894e1e3",
+  "note": "Maps local source and review commits to public Git objects with identical complete tree hashes. This file records through the validated source checkpoint; later branch commits add qualification/publication documentation.",
+  "commits": [
+    {
+      "local": "3ae524e3325cf2b3efbdf6d88e36f73e71c8b433",
+      "published": "16b4864d5aa72e4cc42118d780140d4217ee5ed1",
+      "tree": "92e792cfc8ed7c6c00a6cf6fd663b962ddd5fd00"
+    },
+    {
+      "local": "7d64e0f48273640a5d00cfcfda529f68378593f9",
+      "published": "31b439ec1fb88b7eb71160d5fcb3d1a5874b1648",
+      "tree": "3720fef45987f1e1b90c86c9ae28864320ea045a"
+    },
+    {
+      "local": "726d16dc560f8b12e4c71f6c04895fd1dcbd34f4",
+      "published": "f6eeba53982e2cd1cf580c359bec0f48a476a3b5",
+      "tree": "65a05d5fbf60808f5a34489b944ad84ab1205f4f"
+    },
+    {
+      "local": "160acff6dfa40491d36aea151b0e7aa679f05307",
+      "published": "4f91a0d5b864ab86d66c08c6103c92b2082a2c17",
+      "tree": "e0a30b3d112380eecb61dc73045742f2cacbfb78"
+    },
+    {
+      "local": "d44604ce463cec708c77a230b068f0ac44669280",
+      "published": "035f946313c450e4db35c54dcb66021ea2cb13dd",
+      "tree": "d104bb2809584380426b57ff663c190ba0382c33"
+    },
+    {
+      "local": "f8aab16068bfd55210e0acbcf5bb8492f8c8f472",
+      "published": "1d949cf739fd40f5e607632d71d9d6187c27efdc",
+      "tree": "0dc180b13c04a5b65c439d253d1832cd00690f67"
+    },
+    {
+      "local": "840cddb59dc61411997182bff9dacdbe421574fe",
+      "published": "4df15e5f4e1a5709f8b1e58704b8aab8c93f4d61",
+      "tree": "b11da3a6fde53576e1cc963448d2fe736de645bc"
+    },
+    {
+      "local": "e08333af3eb830a36d375ecf2174db955f559d64",
+      "published": "1590e2c913dd1a5cd1aecf429e9d9b14d894e1e3",
+      "tree": "7db9d71c1a4b74fd411fb5af982991e29dc5569b"
+    }
+  ]
+}

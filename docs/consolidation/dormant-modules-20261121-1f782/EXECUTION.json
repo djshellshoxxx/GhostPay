@@ -1,0 +1,690 @@
+{
+  "format": "ghostpay-consolidation-execution/1",
+  "generated_at": "2026-11-21T07:16:36.600127+00:00",
+  "local_source_head": "e210890e744540b070282bf768942174004f591d",
+  "environment": {
+    "node": "v24.22.3",
+    "npm": "11.19.1"
+  },
+  "receipts": [
+    {
+      "name": "actions-pinned",
+      "command": [
+        "npm",
+        "run",
+        "ci:check-actions"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:33:56.959852+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T06:33:57.198278+00:00",
+      "exit_code": 0,
+      "log_file": "actions-pinned.log",
+      "log_sha256": "e97b01b4dd70912af696a5bde01cd23780bad4b85a3edf8906748036243eac1e"
+    },
+    {
+      "name": "baseline-build-full",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-baseline",
+      "source_head": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "source_tree": "d8aa628cbc531c6969bdf0af621795ceacfc00c3",
+      "started_at": "2026-11-21T06:31:19.074227+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "full"
+      },
+      "finished_at": "2026-11-21T06:31:37.853770+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-build-full.log",
+      "log_sha256": "181dfb96cadde851902f54f5fc2942b3f60ff11c66a41ef4212016681d84b636"
+    },
+    {
+      "name": "baseline-build-lean",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-baseline",
+      "source_head": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "source_tree": "d8aa628cbc531c6969bdf0af621795ceacfc00c3",
+      "started_at": "2026-11-21T06:31:37.891358+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+      },
+      "finished_at": "2026-11-21T06:31:57.968704+00:00",
+      "exit_code": 0,
+      "log_file": "baseline-build-lean.log",
+      "log_sha256": "3600bccd4ca4e061afa5d6ebb9a8fa468268e91be50d23e74fa0f97914798b18"
+    },
+    {
+      "name": "build-libs",
+      "command": [
+        "npm",
+        "run",
+        "build:libs"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "f324a7016b4d9697410326d22d89fd396dc44be2",
+      "source_tree": "64d28ac974cad3495c9178df7b394662fee6548b",
+      "started_at": "2026-11-21T06:20:48.044423+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "finished_at": "2026-11-21T06:22:35.859542+00:00",
+      "exit_code": 0,
+      "log_file": "build-libs.log",
+      "log_sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913"
+    },
+    {
+      "name": "fixture-module-tests",
+      "command": [
+        "npm",
+        "exec",
+        "--workspace",
+        "@ghostpay/web",
+        "--",
+        "vitest",
+        "run",
+        "src/features/future/merchant-dashboard",
+        "src/features/future/ghostproof",
+        "src/features/future/private-recurring",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "e210890e744540b070282bf768942174004f591d",
+      "source_tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "started_at": "2026-11-21T07:13:42.099739+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T07:13:46.003286+00:00",
+      "exit_code": 0,
+      "log_file": "fixture-module-tests.log",
+      "log_sha256": "214b044a557d1a8acd071e9ffc456188f8752f969b317065efcc8b3b1d482b8b"
+    },
+    {
+      "name": "fixture-web-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "e210890e744540b070282bf768942174004f591d",
+      "source_tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "started_at": "2026-11-21T07:14:23.071913+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T07:14:54.934714+00:00",
+      "exit_code": 0,
+      "log_file": "fixture-web-lint.log",
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "name": "fixture-web-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "e210890e744540b070282bf768942174004f591d",
+      "source_tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "started_at": "2026-11-21T07:13:42.097433+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T07:13:58.070164+00:00",
+      "exit_code": 0,
+      "log_file": "fixture-web-typecheck.log",
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "name": "future-module-tests",
+      "command": [
+        "npm",
+        "exec",
+        "--workspace",
+        "@ghostpay/web",
+        "--",
+        "vitest",
+        "run",
+        "src/features/future/merchant-dashboard",
+        "src/features/future/ghostproof",
+        "src/features/future/private-recurring",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "5cc99b56c214134b27cb9279f79bbdeeb7efc239",
+      "source_tree": "3e1a223e59a3a59a574ba50e056e3df4db8a9e52",
+      "started_at": "2026-11-21T06:23:32.814695+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "finished_at": "2026-11-21T06:23:35.863233+00:00",
+      "exit_code": 0,
+      "log_file": "future-module-tests.log",
+      "log_sha256": "c97c832918ccd2c261f2fbbbf81e0d24991cf09afdbdc24583d96887673766ec"
+    },
+    {
+      "name": "npm-ci-combined",
+      "command": [
+        "npm",
+        "ci",
+        "--ignore-scripts",
+        "--offline",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "f324a7016b4d9697410326d22d89fd396dc44be2",
+      "source_tree": "64d28ac974cad3495c9178df7b394662fee6548b",
+      "started_at": "2026-11-21T06:20:33.580255+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T06:20:47.997204+00:00",
+      "exit_code": 0,
+      "log_file": "npm-ci-combined.log",
+      "log_sha256": "0ea51832db4798573337e4bc955c478c8db653c05fb76cd58c345650589fc5b2"
+    },
+    {
+      "name": "repository-tooling",
+      "command": [
+        "bash",
+        "-c",
+        "node --test --test-concurrency=1 scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:26:02.349836+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T06:27:06.324026+00:00",
+      "exit_code": 1,
+      "log_file": "repository-tooling.log",
+      "log_sha256": "64ad44439a3760d771deb82331211ce80b861f2387781483259454bc11e3f400"
+    },
+    {
+      "name": "secret-scan",
+      "command": [
+        "npm",
+        "run",
+        "ci:scan-secrets"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:33:56.686035+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T06:33:56.924290+00:00",
+      "exit_code": 0,
+      "log_file": "secret-scan.log",
+      "log_sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9"
+    },
+    {
+      "name": "web-build-full",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:28:24.176122+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "full"
+      },
+      "finished_at": "2026-11-21T06:28:42.346128+00:00",
+      "exit_code": 0,
+      "log_file": "web-build-full.log",
+      "log_sha256": "57ea44e77da5679247880712f6abbdae5b58e4342f0e9f06a1dada2013d861d6"
+    },
+    {
+      "name": "web-build-lean",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:28:42.385697+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+      },
+      "finished_at": "2026-11-21T06:28:59.712841+00:00",
+      "exit_code": 0,
+      "log_file": "web-build-lean.log",
+      "log_sha256": "8e193f4691b88ade927d92ccb834e4a55944e9c2ceafe31f1a6e16cc2e840937"
+    },
+    {
+      "name": "web-coverage",
+      "command": [
+        "npm",
+        "exec",
+        "--workspace",
+        "@ghostpay/web",
+        "--",
+        "vitest",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:24:40.329472+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "finished_at": "2026-11-21T06:46:44.193995+00:00",
+      "exit_code": 0,
+      "log_file": "web-coverage.log",
+      "log_sha256": "4b112372def085aa24d283e3a167084b3db27f4fad26cc0e2af36a517af5f2e4"
+    },
+    {
+      "name": "web-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "5cc99b56c214134b27cb9279f79bbdeeb7efc239",
+      "source_tree": "3e1a223e59a3a59a574ba50e056e3df4db8a9e52",
+      "started_at": "2026-11-21T06:23:51.161743+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "finished_at": "2026-11-21T06:24:26.120771+00:00",
+      "exit_code": 0,
+      "log_file": "web-lint.log",
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "name": "web-nocoverage",
+      "command": [
+        "npm",
+        "exec",
+        "--workspace",
+        "@ghostpay/web",
+        "--",
+        "vitest",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+      "source_tree": "a2139c980bf1f6d83ce1233d2d512ba84e03f9df",
+      "started_at": "2026-11-21T06:51:33.131096+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "finished_at": "2026-11-21T06:51:56.442488+00:00",
+      "exit_code": 0,
+      "log_file": "web-nocoverage.log",
+      "log_sha256": "01b4f745ebf437a1ee2ff0edb716130596f43aace43487996e90eaf693b11c9f"
+    },
+    {
+      "name": "web-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "5cc99b56c214134b27cb9279f79bbdeeb7efc239",
+      "source_tree": "3e1a223e59a3a59a574ba50e056e3df4db8a9e52",
+      "started_at": "2026-11-21T06:23:35.894124+00:00",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=2048"
+      },
+      "finished_at": "2026-11-21T06:23:51.125889+00:00",
+      "exit_code": 0,
+      "log_file": "web-typecheck.log",
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    }
+  ],
+  "archive": {
+    "path": "EVIDENCE.json.gz",
+    "sha256": "57a1f04179fd54319717adc88f6057aecb6d2c3766409bb8781f6455f0e21e17",
+    "compressed_bytes": 109197,
+    "uncompressed_bytes": 701345,
+    "files": 75
+  },
+  "file_index": {
+    "evidence/actions-pinned.json": {
+      "sha256": "a29a8719b1e62b586bb23a351a6868b98418e4a37580e7208dba470ff94acede",
+      "bytes": 549
+    },
+    "evidence/actions-pinned.log": {
+      "sha256": "e97b01b4dd70912af696a5bde01cd23780bad4b85a3edf8906748036243eac1e",
+      "bytes": 310
+    },
+    "evidence/artifact-equivalence.json": {
+      "sha256": "c6bd8929e8fba81c95181cc1b67512afd7d22abd988fc7a30000b5b45b67c4b8",
+      "bytes": 460
+    },
+    "evidence/artifact-isolation.json": {
+      "sha256": "ccccece207c17de102ec90b84300dd79003690ccaa78537dbbb642c79225231c",
+      "bytes": 4075
+    },
+    "evidence/baseline-build-full.json": {
+      "sha256": "c27b41b0b1855ced94d581dea157efe0728bae1127d7d27a7a2fe44a5910315b",
+      "bytes": 678
+    },
+    "evidence/baseline-build-full.log": {
+      "sha256": "181dfb96cadde851902f54f5fc2942b3f60ff11c66a41ef4212016681d84b636",
+      "bytes": 2567
+    },
+    "evidence/baseline-build-lean.json": {
+      "sha256": "2a73895f7582785ea656b036a55ef1c80e979c25999c5c58c343fdd247257949",
+      "bytes": 678
+    },
+    "evidence/baseline-build-lean.log": {
+      "sha256": "3600bccd4ca4e061afa5d6ebb9a8fa468268e91be50d23e74fa0f97914798b18",
+      "bytes": 2512
+    },
+    "evidence/baseline-full-module-inventory.json": {
+      "sha256": "2e6cc0e90064548d0c21ac1209211d1ea9073abd993b4de5f0adbdaf316ecc18",
+      "bytes": 91528
+    },
+    "evidence/baseline-lean-module-inventory.json": {
+      "sha256": "bb1b1501961e1dd0b97e060031fa03eb0a5a1e7ac6b4d86aadc4a883235d024c",
+      "bytes": 98253
+    },
+    "evidence/build-libs.json": {
+      "sha256": "3548b075c63146d3bb9ea54aba7debe99da4d2ce9f213ff08b596650e7a160ef",
+      "bytes": 586
+    },
+    "evidence/build-libs.log": {
+      "sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913",
+      "bytes": 17496
+    },
+    "evidence/combined-tooling-directory-guard.log": {
+      "sha256": "7b845dfaa927bf2e171232318bba6ce74ed0b6299d3969851e4ad3a79ee9b83c",
+      "bytes": 1840
+    },
+    "evidence/combined-tooling-green-final.log": {
+      "sha256": "84326aca25e34ad3160c2579e294244e975cbf23f3459a03d1bc3bf1f8e39bf6",
+      "bytes": 1838
+    },
+    "evidence/combined-tooling-green.log": {
+      "sha256": "fddb900b28f4ef327638bc80536a26cc02d1ed5c335ab90f491298f309a33717",
+      "bytes": 2985
+    },
+    "evidence/combined-tooling-red.log": {
+      "sha256": "951b792ed3904327460cc936705028eba368c771d7c8b8acdc634d41e354ee84",
+      "bytes": 26820
+    },
+    "evidence/combined-tooling-vite-guard.log": {
+      "sha256": "bc627cc385765d223889b1865b1965dd3c4fe26f0481ae17c7f854530d7e4206",
+      "bytes": 2108
+    },
+    "evidence/fixture-module-tests.json": {
+      "sha256": "9c59488698b061abaad45a2fe0be57dfa0c0f1b054b2075adddd10e187fb62da",
+      "bytes": 788
+    },
+    "evidence/fixture-module-tests.log": {
+      "sha256": "214b044a557d1a8acd071e9ffc456188f8752f969b317065efcc8b3b1d482b8b",
+      "bytes": 576
+    },
+    "evidence/fixture-web-lint.json": {
+      "sha256": "b37c527914cfe983e65a737f01171c040ba42565320ebaa7dfc3f778ded0a690",
+      "bytes": 581
+    },
+    "evidence/fixture-web-lint.log": {
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+      "bytes": 228
+    },
+    "evidence/fixture-web-typecheck.json": {
+      "sha256": "42348f94c7ebf1554add8cc2c5de08475be37e4bbe550726adf607e4fa9cfe7b",
+      "bytes": 596
+    },
+    "evidence/fixture-web-typecheck.log": {
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+      "bytes": 216
+    },
+    "evidence/full-module-inventory.json": {
+      "sha256": "a8c54f22e8fbc9a8d2125bb09fd6c268360b68ee415258f23a750ef4f05c12e6",
+      "bytes": 94223
+    },
+    "evidence/future-module-tests.json": {
+      "sha256": "388e08bb29a0a30709312d67852f4f98a4cb6550b921badc7ab01b5a58f55df1",
+      "bytes": 837
+    },
+    "evidence/future-module-tests.log": {
+      "sha256": "c97c832918ccd2c261f2fbbbf81e0d24991cf09afdbdc24583d96887673766ec",
+      "bytes": 577
+    },
+    "evidence/lean-module-inventory.json": {
+      "sha256": "bb1b1501961e1dd0b97e060031fa03eb0a5a1e7ac6b4d86aadc4a883235d024c",
+      "bytes": 98253
+    },
+    "evidence/npm-ci-combined.json": {
+      "sha256": "9c9173a70d3b03f39c7402a62e5857a6f02c230d1ab638e4977464ead0179ddb",
+      "bytes": 602
+    },
+    "evidence/npm-ci-combined.log": {
+      "sha256": "0ea51832db4798573337e4bc955c478c8db653c05fb76cd58c345650589fc5b2",
+      "bytes": 402
+    },
+    "evidence/npm-ci.log": {
+      "sha256": "ec5990f40c585e73a6c0203709133c6ddf9d5f57897dc294e843122191755808",
+      "bytes": 402
+    },
+    "evidence/repository-tooling.json": {
+      "sha256": "d41533d55140810b1427b9821db0bc67d1e0713fb504ee35a5d5d2bca1ad3d9d",
+      "bytes": 677
+    },
+    "evidence/repository-tooling.log": {
+      "sha256": "64ad44439a3760d771deb82331211ce80b861f2387781483259454bc11e3f400",
+      "bytes": 23707
+    },
+    "evidence/secret-scan.json": {
+      "sha256": "6dc576b488fb40929a8c179af78fd96dbc65985ffa23df339def52d6f85e0cdb",
+      "bytes": 542
+    },
+    "evidence/secret-scan.log": {
+      "sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9",
+      "bytes": 266
+    },
+    "evidence/structure-review.json": {
+      "sha256": "3e34ab4a66155a5b8f82aa4b6caf33d518fe15e56cb6fbe139a5fa440ad8f34c",
+      "bytes": 18931
+    },
+    "evidence/web-build-full.json": {
+      "sha256": "d6bec3917238c6b35441a060cfb6be9945dee3153ea857c91f4661021bbabdc7",
+      "bytes": 673
+    },
+    "evidence/web-build-full.log": {
+      "sha256": "57ea44e77da5679247880712f6abbdae5b58e4342f0e9f06a1dada2013d861d6",
+      "bytes": 2572
+    },
+    "evidence/web-build-lean.json": {
+      "sha256": "9a9a304cf20ba23f07c21381c40a40e78ce202afd9b67d5a62da4951b6baadf8",
+      "bytes": 673
+    },
+    "evidence/web-build-lean.log": {
+      "sha256": "8e193f4691b88ade927d92ccb834e4a55944e9c2ceafe31f1a6e16cc2e840937",
+      "bytes": 2517
+    },
+    "evidence/web-coverage.json": {
+      "sha256": "78ee6032489f70ef67787f662f0c41d51c60792f38b7110c9b926b565f40bb33",
+      "bytes": 688
+    },
+    "evidence/web-coverage.log": {
+      "sha256": "4b112372def085aa24d283e3a167084b3db27f4fad26cc0e2af36a517af5f2e4",
+      "bytes": 12342
+    },
+    "evidence/web-lint.json": {
+      "sha256": "468140c98d3c5fd325168a4a72f1748a4e1e0cebea13487ab12ecca7650602c5",
+      "bytes": 616
+    },
+    "evidence/web-lint.log": {
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+      "bytes": 228
+    },
+    "evidence/web-nocoverage.json": {
+      "sha256": "5964790df673c9f94198793d8382d70b4faa74c44c0449283beaeb169f5fd040",
+      "bytes": 720
+    },
+    "evidence/web-nocoverage.log": {
+      "sha256": "01b4f745ebf437a1ee2ff0edb716130596f43aace43487996e90eaf693b11c9f",
+      "bytes": 823
+    },
+    "evidence/web-typecheck.json": {
+      "sha256": "2afca81f4dfc46020dce60f1c213a1908cb2e5d1de3f9b91d5cf5a96f39e8114",
+      "bytes": 631
+    },
+    "evidence/web-typecheck.log": {
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+      "bytes": 216
+    },
+    "ci-review-evidence/composition-source-review.json": {
+      "sha256": "e2cfb4a298bcab72eaf27255bcf377b92f41eb601fe97527ae799a92a72b0299",
+      "bytes": 9842
+    },
+    "ci-review-evidence/final-integration-approval.json": {
+      "sha256": "15038519d82b25f1794ea936e2e6932e65821572bcc30da5f590d304d56c079c",
+      "bytes": 3297
+    },
+    "ci-review-evidence/future-ci-diagnosis.json": {
+      "sha256": "a097b6482b767b4205b9c4809aff66df61c8289eed5f59b2cc457c8e1f785a39",
+      "bytes": 11177
+    },
+    "ci-review-evidence/guard-directory-negative-control.json": {
+      "sha256": "4676d51d14eb87a95fe67f35aa89e1beed592976e61db6877cc993442f6b628b",
+      "bytes": 1724
+    },
+    "ci-review-evidence/integration-ownership-review.md": {
+      "sha256": "076103e4870e7da874a3878c862385aeee0554d4a9ada85740fd4a4ccd305ec1",
+      "bytes": 9490
+    },
+    "ci-review-evidence/lightweight-node-tests-final.json": {
+      "sha256": "f1d1798d8ceec4cac12275cc8bcd2ae9c3359af1bf6f14d2f59b0378b2b8d207",
+      "bytes": 743
+    },
+    "ci-review-evidence/lightweight-node-tests-final.log": {
+      "sha256": "50cd9fb4f05deb269e071c9d34d36eb2650b4f1e323bdc9544fbeb52eed10485",
+      "bytes": 1841
+    },
+    "ci-review-evidence/verify_composition.py": {
+      "sha256": "c568311e7257f381a7738f59436413091cff02e5c372d056c21ba90eecd20a34",
+      "bytes": 5592
+    },
+    "defensive-review-19be5142/REVIEW.md": {
+      "sha256": "fb3e5a12e538a84afcc6317fcdf383810ef0aa5abdeee48478fa7325ec58c3dc",
+      "bytes": 2674
+    },
+    "defensive-review-19be5142/future-isolation-probe.test.mjs": {
+      "sha256": "49fe78b92f8c4fa9c3b279f083f09837423e3d0fbb4adabb98221a464c29b761",
+      "bytes": 6155
+    },
+    "defensive-review-19be5142/probe.json": {
+      "sha256": "9a3746f34cc6cfd3ce9aee33cd2ad923a8baaa34ced48a36462727fbecc91d12",
+      "bytes": 899
+    },
+    "defensive-review-19be5142/probe.log": {
+      "sha256": "6be3b0059edd0dbf654a24f37054670c5422d5d6652500be76404fed67fc0202",
+      "bytes": 4476
+    },
+    "defensive-review-19be5142/review.json": {
+      "sha256": "af6eab4473d4e79b2c85ed5fc4fe7d64d71a6b6fd39b37ac223b96b85995f537",
+      "bytes": 3572
+    },
+    "defensive-review-5cc99b56/REVIEW.md": {
+      "sha256": "da1a590c675e297fc71f298781bbd97fee7bea586cd7a7c401d9ea4b336520a0",
+      "bytes": 2676
+    },
+    "defensive-review-5cc99b56/future-isolation-probe.test.mjs": {
+      "sha256": "de98f298d97c5c6ec79d203ae117fb9a8b56f71690887536348a88d151a1a5ba",
+      "bytes": 10188
+    },
+    "defensive-review-5cc99b56/probe.json": {
+      "sha256": "0746fa37dac7a9d3a052ff4bcbdd063d1c6f073daa7ddc509e884fa1923526d2",
+      "bytes": 993
+    },
+    "defensive-review-5cc99b56/probe.log": {
+      "sha256": "bd7b2aed260f55292b5d5eedb53f1e98a9d5eba2594d66a9f8ebf75c265fffac",
+      "bytes": 1204
+    },
+    "defensive-review-5cc99b56/review.json": {
+      "sha256": "5ffbd205d990d1c3a69d8f9157f357bd3e00de6d63ac667cc60513761f50c244",
+      "bytes": 2315
+    },
+    "defensive-review-artifacts-751ca76d/FINAL_EVIDENCE_REVIEW.md": {
+      "sha256": "93d794c45d74ac08c25656744b3348c066b2bf11cd609d7bb35c1cd069a17d28",
+      "bytes": 6426
+    },
+    "defensive-review-artifacts-751ca76d/FIXTURE_FOLLOWUP_REVIEW.md": {
+      "sha256": "f2124a9b9c5dd4c022175dedbda3100942a972e2dc2c3fa4f94b20fd0032473c",
+      "bytes": 2937
+    },
+    "defensive-review-artifacts-751ca76d/REVIEW.md": {
+      "sha256": "2f1b5cca97d2881b0ef8dc99eebe588eb5586351020387c522ff05b67c8ff340",
+      "bytes": 2518
+    },
+    "defensive-review-artifacts-751ca76d/artifact-review.json": {
+      "sha256": "c82ae6eff73aab6c3c023074c049e91093958454240074d952523012f576fd53",
+      "bytes": 12868
+    },
+    "defensive-review-artifacts-751ca76d/verify_artifacts.py": {
+      "sha256": "b5d7c3808073c1179491a8409c6fef63488bd11b5c63c12e0c0ec428b5b9acc8",
+      "bytes": 7461
+    },
+    "run_gate.py": {
+      "sha256": "e69d9dea75460ee28b86dbcac83fb7346c4e6207c713ca5c1e8c05cf3e02b4b3",
+      "bytes": 1251
+    },
+    "prepare_publication.py": {
+      "sha256": "9cc612f9ba30f4e0cbdc803c24c7236a5f281f79842244892e371937799c87a9",
+      "bytes": 1979
+    },
+    "hosted-ci-371/codeql-identified.json": {
+      "sha256": "3f95f3ef4c97201fa160b3d0c532ce498cdfb29778625f0dc18dfaed7ecdef71",
+      "bytes": 1382
+    },
+    "hosted-ci-371/codeql-attribution.json": {
+      "sha256": "0a366a42cc8c92feee9263c1df65a4c9d424968dce38532e5554e706ee8d671d",
+      "bytes": 2014
+    },
+    "hosted-ci-371/codeql-donor-baselines.json": {
+      "sha256": "4407e1d538ce7c039b93d4f506c2aac3bcc60beefbce4601ea865c38ceceff38",
+      "bytes": 12171
+    }
+  },
+  "limits": [
+    "Local Node 24 execution does not replace hosted Node 22 qualification.",
+    "Broad Node tooling retains two failures: unavailable cast and gpg-agent startup.",
+    "Source and artifact approvals apply to disconnected M1 modules, not feature activation.",
+    "The baseline build reused copied dependencies and identical-source compiled libraries.",
+    "No live payment, deployment, branch deletion, main merge or integration-lock change was performed."
+  ]
+}

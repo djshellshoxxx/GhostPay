@@ -1,0 +1,11 @@
+{
+  "artifact-comparison.json": "20733ffe5ccc9406e22b1a82673a6ba1b63a2aea0804132781405eb636f75668",
+  "f05-current-main-bundle-scan.txt": "09c28266b7abe6d3ef480054c93e8aff6c668ed4dcabba0dbf1fd2a139b093ff",
+  "f05-current-main-focused-tests.txt": "cd5cac24b28af370a80a8b769fcbac5dc3d9099f36c185b549f6727a180ea9b2",
+  "f05-current-main-lean-build.txt": "24e60b84da3514d5c014ed92e14ea8ed19994042b6a5212319b182c7894dbc61",
+  "f05-current-main-web-typecheck.txt": "dc0e9fa43e4b61e394a05c5a0e41df0a9a300d8ad59e77dc96d4a28c33815bce",
+  "f05-final-coverage.txt": "c12d90b44cea8510134084ef1ba25e016214eb54fb5b98c0dcf63307be6e3e2c",
+  "f05-scoped-lint-coordinator.txt": "65c94b0d262a4d6f84cc569a866bac21f9d81b7b7793187e5666731d1b492cc3",
+  "f05-scoped-typecheck-coordinator.txt": "23b1d483e431e4b84847b409f365d62009d8b2eaf88eab0e2bbe012a90ad1685",
+  "initial-whole-web-typecheck-resource-failure.txt": "2a7e4786b20b44a82da9bdcfa31c4333902c039e3ba4f73ded61f39a5c964d4b"
+}
