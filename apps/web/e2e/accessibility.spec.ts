@@ -39,15 +39,26 @@ async function assertReflow(page: Page, label: string): Promise<void> {
 }
 
 test('reflow inspection ignores closed-disclosure descendants but still detects visible overflow', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 900 });
-  // Limit document scrolling independently of element geometry, so the control-boundary assertion is exercised.
-  await page.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0"><main style="max-width:320px;overflow:hidden"><details><summary><button type="button">Show more</button></summary><input aria-label="Hidden wide input" style="display:block;width:900px"></details></main></body></html>`);
-  await assertReflow(page, 'closed-disclosure-320px');
-  await page.locator('details').evaluate((element: HTMLDetailsElement) => { element.open = true; });
-  await expect(assertReflow(page, 'open-disclosure-320px')).rejects.toThrow('controls remain within the viewport');
-  await page.locator('details').evaluate((element: HTMLDetailsElement) => { element.open = false; });
-  await page.locator('summary button').evaluate((element: HTMLButtonElement) => { element.style.width = '900px'; });
-  await expect(assertReflow(page, 'visible-summary-320px')).rejects.toThrow('controls remain within the viewport');
+  // beforeEach opens the running app. Use a separate blank document so a pending app render
+  // cannot replace our synthetic fixture between the disclosure toggle and its measurement.
+  const probe = await page.context().newPage();
+  try {
+    await probe.setViewportSize({ width: 320, height: 900 });
+    // Clip document scrolling independently of element geometry to test the control-boundary assertion.
+    await probe.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0"><main style="max-width:320px;overflow:hidden"><details><summary><button type="button">Show more</button></summary><input aria-label="Hidden wide input" style="display:block;width:900px"></details></main></body></html>`);
+    await assertReflow(probe, 'closed-disclosure-320px');
+    await probe.locator('details').evaluate((element: HTMLDetailsElement) => { element.open = true; });
+    const openedInput = probe.getByRole('textbox', { name: 'Hidden wide input' });
+    await expect(openedInput).toBeVisible();
+    expect((await openedInput.boundingBox())?.width).toBeGreaterThan(320);
+    await expect(assertReflow(probe, 'open-disclosure-320px')).rejects.toThrow('controls remain within the viewport');
+    await probe.locator('details').evaluate((element: HTMLDetailsElement) => { element.open = false; });
+    await probe.locator('summary button').evaluate((element: HTMLButtonElement) => { element.style.width = '900px'; });
+    await expect(probe.getByRole('button', { name: 'Show more' })).toBeVisible();
+    await expect(assertReflow(probe, 'visible-summary-320px')).rejects.toThrow('controls remain within the viewport');
+  } finally {
+    await probe.close();
+  }
 });
 
 test.beforeEach(async ({ context, page }) => {
