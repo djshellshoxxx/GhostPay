@@ -1,0 +1,44 @@
+{
+  "observed_at_utc": "2026-11-21 02:52:23 UTC",
+  "source_snapshot_time": "2026-11-21 02:25:06 UTC",
+  "source_main": "aec179910c39081d820396409ff3139ff2264132",
+  "refreshed_main": "aec179910c39081d820396409ff3139ff2264132",
+  "branch_pages": [
+    100,
+    100,
+    100,
+    100,
+    23
+  ],
+  "open_pr_pages": [
+    100,
+    23
+  ],
+  "branch_count": 423,
+  "open_pr_count": 123,
+  "added_branches": [
+    {
+      "name": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b"
+    },
+    {
+      "name": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "sha": "f11792f7b9202512f0bf980a03f057e8a15836ae"
+    },
+    {
+      "name": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "sha": "8ce7f1db452167311876bd0707778c2e9c64f3df"
+    }
+  ],
+  "removed_branches": [],
+  "changed_branches": [],
+  "new_open_prs": [
+    355,
+    354,
+    353
+  ],
+  "closed_or_merged_prs": [],
+  "changed_pr_heads": [],
+  "ci_refreshed": false,
+  "notes": "Read-only source drift check. Original CI observations retain their own collection timestamps; live refs were not substituted into frozen comparisons."
+}

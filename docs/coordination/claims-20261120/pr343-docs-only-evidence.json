@@ -1,0 +1,40 @@
+{
+  "pr": 343,
+  "head_sha": "f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7",
+  "workflow_source": "https://github.com/djshellshoxxx/GhostPay/blob/f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7/.github/workflows/ci.yml",
+  "jobs": [
+    {
+      "name": "changes",
+      "id": 136633986444,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44836466983/job/136633986444",
+      "excerpts": [
+        "2026-11-21T00:21:50.1740294Z \u001b[36;1m  echo \"Docs-only change: heavy jobs skipped.\"\u001b[0m",
+        "2026-11-21T00:21:51.3550390Z Docs-only change: heavy jobs skipped."
+      ]
+    },
+    {
+      "id": 136656840641,
+      "name": "typescript",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44836466983/job/136656840641",
+      "excerpts": [
+        "2026-11-21T01:07:29.3648149Z ##[group]Run echo \"needs results: $RESULTS\"",
+        "2026-11-21T01:07:29.3649010Z \u001b[36;1mecho \"needs results: $RESULTS\"\u001b[0m",
+        "2026-11-21T01:07:29.4020116Z   RESULTS: success skipped skipped skipped skipped skipped",
+        "2026-11-21T01:07:29.4202624Z needs results: success skipped skipped skipped skipped skipped"
+      ],
+      "error": false
+    },
+    {
+      "id": 136656840621,
+      "name": "contracts",
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44836466983/job/136656840621",
+      "excerpts": [
+        "2026-11-21T01:07:34.2856738Z ##[group]Run echo \"needs results: $RESULTS\"",
+        "2026-11-21T01:07:34.2857339Z \u001b[36;1mecho \"needs results: $RESULTS\"\u001b[0m",
+        "2026-11-21T01:07:34.3121496Z   RESULTS: success skipped skipped skipped skipped skipped",
+        "2026-11-21T01:07:34.3248627Z needs results: success skipped skipped skipped skipped skipped"
+      ],
+      "error": false
+    }
+  ]
+}

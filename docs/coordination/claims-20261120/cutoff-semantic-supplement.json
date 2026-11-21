@@ -1,0 +1,263 @@
+{
+  "format": "ghostpay-final-cutoff-semantic-supplement-v1",
+  "repository": "djshellshoxxx/GhostPay",
+  "observed_at_utc": "2026-11-21 02:52:23 UTC",
+  "main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "snapshot_counts": {
+    "branches": 423,
+    "open_prs": 123
+  },
+  "scope": "Exactly the three newly observed PRs #353/#354/#355 at the final 02:52 cutoff; original 420 branch heads and main remained unchanged.",
+  "records": [
+    {
+      "number": 353,
+      "branch": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "head_sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "tree_sha": "d1a7092e4dce7fbf76830a993050e9b8576425b6",
+      "base": {
+        "ref": "integration/ghostpay-main-recovered-fixes-20261120",
+        "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+      },
+      "merge_base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "title": "test(web): preserve unsaved settings drafts across partial imports (GP-BUG-04)",
+      "state": "open",
+      "draft": true,
+      "user": "djshellshoxxx",
+      "all_changed_paths": [
+        "apps/web/src/views/Settings.partialImportDrafts.test.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/SETTINGS_IMPORT_DRAFTS_20261121.md"
+      ],
+      "non_document_changed_paths": [
+        "apps/web/src/views/Settings.partialImportDrafts.test.tsx"
+      ],
+      "path_blob_evidence": {
+        "apps/web/src/views/Settings.partialImportDrafts.test.tsx": {
+          "head_blob": "5a9e21c68feb7279f233bbf1351d1d719f02a26c"
+        }
+      },
+      "source_urls": [
+        "https://github.com/djshellshoxxx/GhostPay/pull/353",
+        "https://github.com/djshellshoxxx/GhostPay/commit/a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+        "https://github.com/djshellshoxxx/GhostPay/blob/a8c10a965f726a6c2dc8eb7391f495df833b3e9b/apps/web/src/views/Settings.partialImportDrafts.test.tsx"
+      ],
+      "qualification_claimed": false,
+      "ownership_released": false,
+      "ownership_note": "Existing branch owners and the integration coordinator retain their claims; this is a proposed reconciliation only.",
+      "classification": "stacked-test-review-pending",
+      "claim": "Preserve unrelated unsaved Settings drafts during selected partial imports.",
+      "disposition": "Two test scenarios cover preferences-only and explicitly trusted RPC-only import, check unrelated draft values survive, check unselected fields are not silently persisted, then check explicit Save. No production path changes. The branch is above #307, not directly above main.",
+      "reported_validation": "PR #353 explicitly says the new tests have NOT been executed, no independent review, and no full-suite pass. This audit inspected source only.",
+      "next_action": "Keep #353 with the current Settings/integration owner, execute/review its exact test on the selected #307 successor after the relevant request-file repair, and preserve separate current-head CI qualification. Do not call GP-BUG-04 resolved from an unexecuted test proposal.",
+      "source_evidence": [
+        {
+          "sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+          "path": "apps/web/src/views/Settings.partialImportDrafts.test.tsx",
+          "line_start": 19,
+          "line_end": 60,
+          "excerpt": "  it('applies selected preferences without erasing or prematurely saving unrelated RPC, relayer and signer drafts', async () => {\n    const user = userEvent.setup();\n    renderApp(makeServices());\n    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));\n\n    const rpc = screen.getByLabelText<HTMLInputElement>('Base Sepolia RPC URL');\n    const secondary = screen.getByLabelText<HTMLInputElement>('Base Sepolia second RPC URL (optional)');\n    const relayer = screen.getByLabelText<HTMLInputElement>('Relayer URL (optional)');\n    const pins = screen.getByLabelText<HTMLTextAreaElement>(/Pinned seller signing keys/);\n    const signer = `02${'ab'.repeat(32)}`;\n\n    await user.type(rpc, 'https://pending-rpc.example');\n    await user.type(secondary, 'https://pending-secondary.example');\n    await user.type(relayer, 'https://pending-relayer.example');\n    await user.type(pins, signer);\n    expect(window.localStorage.getItem(SETTINGS_KEY)).toBeNull();\n\n    const transfer = exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' });\n    fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: transfer } });\n    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));\n    expect(await screen.findByText('Review imported settings')).toBeTruthy();\n    await user.click(screen.getByRole('button', { name: 'Apply selected settings' }));\n\n    await waitFor(() => { expect(screen.getByLabelText<HTMLSelectElement>('Theme').value).toBe('dark'); });\n    expect(rpc.value).toBe('https://pending-rpc.example');\n    expect(secondary.value).toBe('https://pending-secondary.example');\n    expect(relayer.value).toBe('https://pending-relayer.example');\n    expect(pins.value).toBe(signer);\n    // Import writes only selected preferences; the unselected drafts must not leak into persistent settings.\n    expect(stored()['rpcUrls']).toEqual({});\n    expect(stored()['rpcUrlsSecondary']).toEqual({});\n    expect(stored()['relayerUrl']).toBe('');\n    expect(stored()['pinnedSigners']).toEqual([]);\n\n    // A later explicit save keeps both the imported preferences and the previously unsaved drafts.\n    await user.click(screen.getByRole('button', { name: 'Save settings' }));\n    await waitFor(() => {\n      expect(stored()).toMatchObject({\n        theme: 'dark',\n        rpcUrls: { '84532': 'https://pending-rpc.example/' },\n        rpcUrlsSecondary: { '84532': 'https://pending-secondary.example/' },\n        relayerUrl: 'https://pending-relayer.example/',",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/a8c10a965f726a6c2dc8eb7391f495df833b3e9b/apps/web/src/views/Settings.partialImportDrafts.test.tsx#L19-L60"
+        },
+        {
+          "sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+          "path": "apps/web/src/views/Settings.partialImportDrafts.test.tsx",
+          "line_start": 65,
+          "line_end": 106,
+          "excerpt": "  it('imports explicitly trusted RPCs while leaving unsaved preference, relayer and signer edits untouched', async () => {\n    const user = userEvent.setup();\n    renderApp(makeServices());\n    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));\n\n    await user.selectOptions(screen.getByLabelText('Theme'), 'light');\n    await user.type(screen.getByLabelText('Relayer URL (optional)'), 'https://draft-relayer.example');\n    const signer = `03${'cd'.repeat(32)}`;\n    await user.type(screen.getByLabelText(/Pinned seller signing keys/), signer);\n\n    const transfer = exportSettingsExchange(\n      { ...DEFAULT_SETTINGS, rpcUrls: { '84532': 'https://imported-rpc.example/' } },\n      ['rpcUrls'],\n      makeServices().chains.map((chain) => chain.chainId),\n    );\n    fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: transfer } });\n    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));\n    expect(await screen.findByText('Review imported settings')).toBeTruthy();\n    await user.click(screen.getByRole('checkbox', { name: 'Apply RPC endpoints' }));\n    await user.click(screen.getByRole('button', { name: 'Apply selected settings' }));\n    const confirmation = screen.getByRole('alertdialog', { name: 'Confirm trust changes' });\n    await user.click(within(confirmation).getByRole('button', { name: 'Confirm and apply' }));\n\n    await waitFor(() => {\n      expect(screen.getByLabelText<HTMLInputElement>('Base Sepolia RPC URL').value).toBe('https://imported-rpc.example/');\n    });\n    expect(screen.getByLabelText<HTMLSelectElement>('Theme').value).toBe('light');\n    expect(screen.getByLabelText<HTMLInputElement>('Relayer URL (optional)').value).toBe('https://draft-relayer.example');\n    expect(screen.getByLabelText<HTMLTextAreaElement>(/Pinned seller signing keys/).value).toBe(signer);\n    expect(stored()['theme']).toBe(DEFAULT_SETTINGS.theme);\n    expect(stored()['relayerUrl']).toBe('');\n    expect(stored()['pinnedSigners']).toEqual([]);\n\n    await user.click(screen.getByRole('button', { name: 'Save settings' }));\n    await waitFor(() => {\n      expect(stored()).toMatchObject({\n        theme: 'light',\n        rpcUrls: { '84532': 'https://imported-rpc.example/' },\n        relayerUrl: 'https://draft-relayer.example/',\n        pinnedSigners: [signer],\n      });\n    });",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/a8c10a965f726a6c2dc8eb7391f495df833b3e9b/apps/web/src/views/Settings.partialImportDrafts.test.tsx#L65-L106"
+        }
+      ]
+    },
+    {
+      "number": 354,
+      "branch": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+      "head_sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+      "tree_sha": "f97b2da334d0b245d6e912ad30ea49b01bf3e8b1",
+      "base": {
+        "ref": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+        "sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94"
+      },
+      "merge_base_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "title": "fix(web): restore privacy-safe focus after wallet disclosure",
+      "state": "open",
+      "draft": true,
+      "user": "djshellshoxxx",
+      "all_changed_paths": [
+        "apps/web/e2e/app.spec.ts",
+        "apps/web/e2e/flows.spec.ts",
+        "apps/web/src/components/WalletDisclosure.test.tsx",
+        "apps/web/src/components/WalletDisclosure.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/consolidation/privacy-browser-20261121-539818/BRANCH_RECONCILIATION.json",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION.json",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION_HISTORY.bundle",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION_HISTORY.json",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION_LOGS.json.gz",
+        "docs/consolidation/privacy-browser-20261121-539818/FILES.json",
+        "docs/consolidation/privacy-browser-20261121-539818/REPORT.md",
+        "docs/consolidation/privacy-browser-20261121-539818/SOURCE_REVIEW.md",
+        "docs/consolidation/privacy-browser-20261121-539818/dependency-reuse.json",
+        "docs/consolidation/privacy-browser-20261121-539818/independent-dependency-reuse.json",
+        "docs/consolidation/privacy-browser-20261121-539818/independent-focus-results.json",
+        "docs/consolidation/privacy-browser-20261121-539818/scan-review/PR350_EXECUTION.json",
+        "docs/consolidation/privacy-browser-20261121-539818/scan-review/PR350_REVIEW.md"
+      ],
+      "non_document_changed_paths": [
+        "apps/web/e2e/app.spec.ts",
+        "apps/web/e2e/flows.spec.ts",
+        "apps/web/src/components/WalletDisclosure.test.tsx",
+        "apps/web/src/components/WalletDisclosure.tsx"
+      ],
+      "path_blob_evidence": {
+        "apps/web/e2e/app.spec.ts": {
+          "head_blob": "c99fc0ace227b09a13e24b3ba6ea8a3e9fbbf51d"
+        },
+        "apps/web/e2e/flows.spec.ts": {
+          "head_blob": "a539f43c50aaf3e448102f612fbb350e67c8305a"
+        },
+        "apps/web/src/components/WalletDisclosure.test.tsx": {
+          "head_blob": "96144da7ab938bea7aa6649e28b251d08bf9f264"
+        },
+        "apps/web/src/components/WalletDisclosure.tsx": {
+          "head_blob": "094b9d4cce058b060c13821c7723449bafe0a743"
+        }
+      },
+      "source_urls": [
+        "https://github.com/djshellshoxxx/GhostPay/pull/354",
+        "https://github.com/djshellshoxxx/GhostPay/commit/8ce7f1db452167311876bd0707778c2e9c64f3df",
+        "https://github.com/djshellshoxxx/GhostPay/blob/8ce7f1db452167311876bd0707778c2e9c64f3df/apps/web/e2e/app.spec.ts",
+        "https://github.com/djshellshoxxx/GhostPay/blob/8ce7f1db452167311876bd0707778c2e9c64f3df/apps/web/e2e/flows.spec.ts",
+        "https://github.com/djshellshoxxx/GhostPay/blob/8ce7f1db452167311876bd0707778c2e9c64f3df/apps/web/src/components/WalletDisclosure.test.tsx",
+        "https://github.com/djshellshoxxx/GhostPay/blob/8ce7f1db452167311876bd0707778c2e9c64f3df/apps/web/src/components/WalletDisclosure.tsx"
+      ],
+      "qualification_claimed": false,
+      "ownership_released": false,
+      "ownership_note": "Existing branch owners and the integration coordinator retain their claims; this is a proposed reconciliation only.",
+      "classification": "overlapping-runtime-complementary-tests",
+      "claim": "Restore wallet-disclosure focus to a valid opener or a neutral privacy control.",
+      "shared_base_pr": 352,
+      "runtime_policy": "If a replacement dialog exists, preserve its focus ownership. Otherwise restore only a connected non-root, enabled, visible/non-inert HTMLElement opener, verify it became active, and fall back to focusPrivacyControl if it did not.",
+      "source_equivalence_scope": "The cross-head runtime diff only reorders the same conjunction terms and removes one explanatory comment. This supports equivalent intended focus policy; the two runtime blobs are not byte-identical and no browser behavior was executed in this audit.",
+      "runtime_comparison_diff": "diff --git a/apps/web/src/components/WalletDisclosure.tsx b/apps/web/src/components/WalletDisclosure.tsx\nindex 00a70efc..094b9d4c 100644\n--- a/apps/web/src/components/WalletDisclosure.tsx\n+++ b/apps/web/src/components/WalletDisclosure.tsx\n@@ -49,12 +49,12 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re\n     // Passive cleanup runs after the background's inert attribute is removed. A replacement dialog owns focus.\n     if (document.querySelector('.wallet-disclosure-dialog') !== null) return;\n     const opener = props.opener;\n-    if (opener instanceof HTMLElement && opener !== document.body && opener !== document.documentElement\n-      && opener.isConnected && opener.closest('[hidden], [inert]') === null && !opener.matches(':disabled')) {\n+    if (opener instanceof HTMLElement && opener.isConnected && opener !== document.body\n+      && opener !== document.documentElement && !opener.matches(':disabled')\n+      && opener.closest('[hidden], [inert]') === null) {\n       opener.focus();\n       if (document.activeElement === opener) return;\n     }\n-    // Async callers can lose focus while disabling their initiating control before requesting disclosure.\n     focusPrivacyControl();\n   }, [props.opener]);\n   const unknown = t('wallet.disclosure.unknown');",
+      "source_evidence": [
+        {
+          "sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+          "path": "apps/web/src/components/WalletDisclosure.tsx",
+          "line_start": 46,
+          "line_end": 63,
+          "excerpt": "    };\n  }, [props.controller, props.pending]);\n  useEffect(() => () => {\n    // Passive cleanup runs after the background's inert attribute is removed. A replacement dialog owns focus.\n    if (document.querySelector('.wallet-disclosure-dialog') !== null) return;\n    const opener = props.opener;\n    if (opener instanceof HTMLElement && opener.isConnected && opener !== document.body\n      && opener !== document.documentElement && !opener.matches(':disabled')\n      && opener.closest('[hidden], [inert]') === null) {\n      opener.focus();\n      if (document.activeElement === opener) return;\n    }\n    focusPrivacyControl();\n  }, [props.opener]);\n  const unknown = t('wallet.disclosure.unknown');\n  return <div className=\"wallet-disclosure-backdrop\">\n    <div className=\"wallet-disclosure-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby={title} aria-describedby={description} ref={dialog}>\n      <h2 id={title}>{t('wallet.disclosure.title')}</h2>",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/8ce7f1db452167311876bd0707778c2e9c64f3df/apps/web/src/components/WalletDisclosure.tsx#L46-L63"
+        }
+      ],
+      "next_action": "Prefer one coordinator-owned composed successor using #354\u2019s four-file scope, retaining one runtime body and adding #355\u2019s distinct quick-hide/PrivacyProvider lifecycle test group. Keep #354\u2019s seven-case fallback matrix and two browser assertion changes. Preserve #355\u2019s exact donor provenance and both ownership claims until the composition is reviewed/qualified; do not merge the two runtime changes independently.",
+      "qualification_limit": "All applicable exact-head broader compiler/lint/coverage/build/browser/hosted checks remain open. Different focused test reports are not additive evidence that the proposed combined successor passed.",
+      "unique_test_scope": [
+        "Seven cancel/fallback presenter cases: body, document element, disabled, nonfocusable, disconnected, hidden, inert opener.",
+        "app.spec.ts traverses the existing Privacy mode switch before Home in keyboard navigation.",
+        "flows.spec.ts verifies account invalidation through reconnection, concealed old account, removed prepare/send controls, zero provider sends, and retained no-transaction/no-journal assertions."
+      ],
+      "non_supersession": "The presenter test does not include #355\u2019s four quick-hide/real-PrivacyProvider lifecycle cases; the native browser quick-hide assertion retained from the base is a different test scope.",
+      "reported_validation": "PR report records independent red/green focused presenter checks and successful focused lifecycle checks, while preserving a failed combined invocation. It reports compiler/lint exit 137 and browser launch blocked before assertions; no complete web/browser/release pass is claimed. Those are source reports, not executions by this audit.",
+      "browser_delta": "diff --git a/apps/web/e2e/app.spec.ts b/apps/web/e2e/app.spec.ts\nindex 92afdb68..c99fc0ac 100644\n--- a/apps/web/e2e/app.spec.ts\n+++ b/apps/web/e2e/app.spec.ts\n@@ -229,6 +229,8 @@ test('keyboard: skip link and navigation are reachable, focus moves to the new v\n   await page.keyboard.press('Tab');\n   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();\n   await page.keyboard.press('Tab');\n+  await expect(page.getByRole('banner').getByRole('switch', { name: 'Privacy mode', exact: true })).toBeFocused();\n+  await page.keyboard.press('Tab');\n   await expect(page.getByRole('button', { name: 'Home' }).first()).toBeFocused();\n   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Settings' }).focus();\n   await page.keyboard.press('Enter');\ndiff --git a/apps/web/e2e/flows.spec.ts b/apps/web/e2e/flows.spec.ts\nindex a54df0d1..a539f43c 100644\n--- a/apps/web/e2e/flows.spec.ts\n+++ b/apps/web/e2e/flows.spec.ts\n@@ -169,7 +169,14 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',\n     await page.evaluate(() => { (window as unknown as { __e2eWallet: WalletControls }).__e2eWallet.changeAccountOnRecheck = true; });\n     await page.getByRole('button', { name: 'Send payment in my wallet' }).click();\n     await approveWalletDisclosure(page, 'eth_sendTransaction');\n-    await expect(page.getByRole('alert')).toContainText('changed');\n+    // Account invalidation discards the old operation's alert and requires deliberate reconnection.\n+    await expect(page.getByRole('button', { name: /Connect E2E Wallet/ })).toBeVisible();\n+    await expect(page.getByText('0x5555555555555555555555555555555555555555', { exact: true })).toHaveCount(0);\n+    await expect(page.getByRole('heading', { name: 'Final check before your wallet' })).toHaveCount(0);\n+    await expect(page.getByRole('button', { name: 'Send payment in my wallet' })).toHaveCount(0);\n+    await expect(page.getByRole('button', { name: 'Prepare payment', exact: true })).toHaveCount(0);\n+    expect(await page.evaluate(() => (window as unknown as { __e2eWallet: WalletControls })\n+      .__e2eWallet.calls.filter((method) => method === 'eth_sendTransaction'))).toHaveLength(0);\n     expect(state.sendCalls ?? 0).toBe(0);\n     expect(state.sent).toBeUndefined();\n     expect(await page.evaluate(() => window.sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();"
+    },
+    {
+      "number": 355,
+      "branch": "fix/ghostpay-disclosure-focus-recovery-20261120",
+      "head_sha": "f11792f7b9202512f0bf980a03f057e8a15836ae",
+      "tree_sha": "1fc319dcf9b2fbc5590f62be94e1174fdca9376e",
+      "base": {
+        "ref": "test/ghostpay-wallet-attempt-reveal-after-reconnect-20261121",
+        "sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94"
+      },
+      "merge_base_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "title": "fix(web): recover safe focus after wallet disclosure",
+      "state": "open",
+      "draft": true,
+      "user": "djshellshoxxx",
+      "all_changed_paths": [
+        "apps/web/src/components/WalletDisclosure.test.tsx",
+        "apps/web/src/components/WalletDisclosure.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/DISCLOSURE_FOCUS_RECOVERY_20261120.md"
+      ],
+      "non_document_changed_paths": [
+        "apps/web/src/components/WalletDisclosure.test.tsx",
+        "apps/web/src/components/WalletDisclosure.tsx"
+      ],
+      "path_blob_evidence": {
+        "apps/web/src/components/WalletDisclosure.test.tsx": {
+          "head_blob": "dc6748580947f2f2e9ac6be8798c4cb9d667705e"
+        },
+        "apps/web/src/components/WalletDisclosure.tsx": {
+          "head_blob": "00a70efc5f273da55d4ce4a76141a0b92fd5601a"
+        }
+      },
+      "source_urls": [
+        "https://github.com/djshellshoxxx/GhostPay/pull/355",
+        "https://github.com/djshellshoxxx/GhostPay/commit/f11792f7b9202512f0bf980a03f057e8a15836ae",
+        "https://github.com/djshellshoxxx/GhostPay/blob/f11792f7b9202512f0bf980a03f057e8a15836ae/apps/web/src/components/WalletDisclosure.test.tsx",
+        "https://github.com/djshellshoxxx/GhostPay/blob/f11792f7b9202512f0bf980a03f057e8a15836ae/apps/web/src/components/WalletDisclosure.tsx"
+      ],
+      "qualification_claimed": false,
+      "ownership_released": false,
+      "ownership_note": "Existing branch owners and the integration coordinator retain their claims; this is a proposed reconciliation only.",
+      "classification": "overlapping-runtime-complementary-tests",
+      "claim": "Restore wallet-disclosure focus to a valid opener or a neutral privacy control.",
+      "shared_base_pr": 352,
+      "runtime_policy": "If a replacement dialog exists, preserve its focus ownership. Otherwise restore only a connected non-root, enabled, visible/non-inert HTMLElement opener, verify it became active, and fall back to focusPrivacyControl if it did not.",
+      "source_equivalence_scope": "The cross-head runtime diff only reorders the same conjunction terms and removes one explanatory comment. This supports equivalent intended focus policy; the two runtime blobs are not byte-identical and no browser behavior was executed in this audit.",
+      "runtime_comparison_diff": "diff --git a/apps/web/src/components/WalletDisclosure.tsx b/apps/web/src/components/WalletDisclosure.tsx\nindex 00a70efc..094b9d4c 100644\n--- a/apps/web/src/components/WalletDisclosure.tsx\n+++ b/apps/web/src/components/WalletDisclosure.tsx\n@@ -49,12 +49,12 @@ function DisclosureDialog(props: { readonly pending: PendingWalletDisclosure; re\n     // Passive cleanup runs after the background's inert attribute is removed. A replacement dialog owns focus.\n     if (document.querySelector('.wallet-disclosure-dialog') !== null) return;\n     const opener = props.opener;\n-    if (opener instanceof HTMLElement && opener !== document.body && opener !== document.documentElement\n-      && opener.isConnected && opener.closest('[hidden], [inert]') === null && !opener.matches(':disabled')) {\n+    if (opener instanceof HTMLElement && opener.isConnected && opener !== document.body\n+      && opener !== document.documentElement && !opener.matches(':disabled')\n+      && opener.closest('[hidden], [inert]') === null) {\n       opener.focus();\n       if (document.activeElement === opener) return;\n     }\n-    // Async callers can lose focus while disabling their initiating control before requesting disclosure.\n     focusPrivacyControl();\n   }, [props.opener]);\n   const unknown = t('wallet.disclosure.unknown');",
+      "source_evidence": [
+        {
+          "sha": "f11792f7b9202512f0bf980a03f057e8a15836ae",
+          "path": "apps/web/src/components/WalletDisclosure.tsx",
+          "line_start": 46,
+          "line_end": 63,
+          "excerpt": "    };\n  }, [props.controller, props.pending]);\n  useEffect(() => () => {\n    // Passive cleanup runs after the background's inert attribute is removed. A replacement dialog owns focus.\n    if (document.querySelector('.wallet-disclosure-dialog') !== null) return;\n    const opener = props.opener;\n    if (opener instanceof HTMLElement && opener !== document.body && opener !== document.documentElement\n      && opener.isConnected && opener.closest('[hidden], [inert]') === null && !opener.matches(':disabled')) {\n      opener.focus();\n      if (document.activeElement === opener) return;\n    }\n    // Async callers can lose focus while disabling their initiating control before requesting disclosure.\n    focusPrivacyControl();\n  }, [props.opener]);\n  const unknown = t('wallet.disclosure.unknown');\n  return <div className=\"wallet-disclosure-backdrop\">\n    <div className=\"wallet-disclosure-dialog\" role=\"dialog\" aria-modal=\"true\" aria-labelledby={title} aria-describedby={description} ref={dialog}>\n      <h2 id={title}>{t('wallet.disclosure.title')}</h2>",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/f11792f7b9202512f0bf980a03f057e8a15836ae/apps/web/src/components/WalletDisclosure.tsx#L46-L63"
+        }
+      ],
+      "next_action": "Prefer one coordinator-owned composed successor using #354\u2019s four-file scope, retaining one runtime body and adding #355\u2019s distinct quick-hide/PrivacyProvider lifecycle test group. Keep #354\u2019s seven-case fallback matrix and two browser assertion changes. Preserve #355\u2019s exact donor provenance and both ownership claims until the composition is reviewed/qualified; do not merge the two runtime changes independently.",
+      "qualification_limit": "All applicable exact-head broader compiler/lint/coverage/build/browser/hosted checks remain open. Different focused test reports are not additive evidence that the proposed combined successor passed.",
+      "unique_test_scope": [
+        "Quick hide restores focus only after the privacy control is no longer inert, without a provider send.",
+        "Quick hide falls back from body and documentElement focus in a real PrivacyProvider/SensitiveContent composition.",
+        "Cancellation falls back when the real initiating button becomes disabled in that privacy composition."
+      ],
+      "exact_recovery": {
+        "donor_sha": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+        "runtime_blob": "00a70efc5f273da55d4ce4a76141a0b92fd5601a",
+        "test_blob": "dc6748580947f2f2e9ac6be8798c4cb9d667705e",
+        "paths": [
+          "apps/web/src/components/WalletDisclosure.tsx",
+          "apps/web/src/components/WalletDisclosure.test.tsx"
+        ],
+        "conclusion": "Both changed WalletDisclosure blobs are byte-identical to the original no-PR donor. The broad donor tree is not thereby adopted.",
+        "source_urls": [
+          "https://github.com/djshellshoxxx/GhostPay/blob/2affd298c364c284d4d74f703fd4a612cc0f16d9/apps/web/src/components/WalletDisclosure.tsx",
+          "https://github.com/djshellshoxxx/GhostPay/blob/2affd298c364c284d4d74f703fd4a612cc0f16d9/apps/web/src/components/WalletDisclosure.test.tsx"
+        ]
+      },
+      "non_supersession": "The presenter test does not contain #354\u2019s full seven-case cancellation matrix, and #355 does not change app.spec.ts or flows.spec.ts. It is not a complete replacement for #354\u2019s test/browser work.",
+      "reported_validation": "PR report records 3 failed/7 passed before the recovered runtime and 10 passed after it, plus independent static review; complete web/browser/hosted qualification remains pending. These source reports were not replayed in this audit."
+    }
+  ],
+  "overlap_summary": {
+    "base_pr": 352,
+    "base_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+    "prs": [
+      354,
+      355
+    ],
+    "same_runtime_policy": true,
+    "runtime_blobs_identical": false,
+    "test_relationship": "Complementary; neither final presenter test file is a superset of the other.",
+    "shared_changed_paths": [
+      "apps/web/src/components/WalletDisclosure.tsx",
+      "apps/web/src/components/WalletDisclosure.test.tsx"
+    ],
+    "preferred_action": "One reviewed successor under the existing integration coordinator: one runtime body, union of distinct presenter test scopes, and #354 browser assertion changes; preserve both source owners and original provenance."
+  },
+  "product_tests_run": [],
+  "remote_mutations_performed": []
+}

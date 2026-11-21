@@ -1,0 +1,659 @@
+{
+  "schema": "ghostpay-reconciliation-validation-phases/1",
+  "repository": "djshellshoxxx/GhostPay",
+  "initial_full_review": {
+    "frozen_main": "aec179910c39081d820396409ff3139ff2264132",
+    "generator_sha256": "235877bae3475feaffa5d49fbe07ce4fc3350b0454e9be56330168aacc1fdd83",
+    "snapshot_sha256": "73b74e686756a46e1496cb12419c17a1653f9960a54b9215e77b643d381a0a5a",
+    "artifact_sha256": {
+      "branch-ledger.json": "61120130492abaf84294361c68130ebadc8c40137c4f523b9d1c0548c2e8d843",
+      "branch-paths.json": "b8a7616a9b3c8c32e5a321bed0be3801b0e278dd263d23957a3873dac074af35",
+      "patch-equivalence.json": "93f353baf326de86887198e295fca919f78744970956c8edc20946316f64e587"
+    },
+    "checked_branch_records": 420,
+    "checked_pr_path_records": 120,
+    "checked_advertised_base_pr_path_records": 120,
+    "base_metadata_mismatches": 76,
+    "checked_path_state_entries": 64073,
+    "complete_branch_deltas_over_300": 46,
+    "complete_pr_deltas_over_300": 5,
+    "checked_overlapping_pr_pairs": 4734,
+    "all_provenance_hashes_match": true,
+    "all_paths_match_independent_name_only_diffs": true,
+    "all_encoded_source_states_match_git_trees": true,
+    "all_main_content_counts_verified": true,
+    "all_qualification_flags_false": true,
+    "non_main_base_dependencies": [
+      {
+        "pr": 352,
+        "head_sha": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+        "base_ref": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+        "base_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+        "live_base_head": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+        "base_commit_in_main": false,
+        "open_parent_pr": 348,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 351,
+        "head_sha": "0750012546aeb4336b4340fe16751f8d83804acd",
+        "base_ref": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+        "base_sha": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+        "live_base_head": "c9e7a21bf6353207fbddb6123ed1ef0379bdb00b",
+        "base_commit_in_main": false,
+        "open_parent_pr": 337,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 349,
+        "head_sha": "3433f7f098b5e61253a102a087dfb7e780dbb730",
+        "base_ref": "integration/ghostpay-main-recovered-fixes-20261120",
+        "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "live_base_head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "base_commit_in_main": false,
+        "open_parent_pr": 307,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 348,
+        "head_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+        "base_ref": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+        "base_sha": "410353a23631234aa888e46f38df22291c699a26",
+        "live_base_head": "410353a23631234aa888e46f38df22291c699a26",
+        "base_commit_in_main": false,
+        "open_parent_pr": 336,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 347,
+        "head_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+        "base_ref": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+        "base_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+        "live_base_head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+        "base_commit_in_main": false,
+        "open_parent_pr": 339,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 346,
+        "head_sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+        "base_ref": "codex/ghostpay-private-checkpoint-browser-20261119",
+        "base_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+        "live_base_head": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+        "base_commit_in_main": false,
+        "open_parent_pr": 269,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 344,
+        "head_sha": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+        "base_ref": "fix/ghostpay-receipt-archive-identity-20261120-r2",
+        "base_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+        "live_base_head": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+        "base_commit_in_main": false,
+        "open_parent_pr": 335,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 342,
+        "head_sha": "06fd87c3e90000118ffa94048529db36f0a67d41",
+        "base_ref": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+        "base_sha": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4",
+        "live_base_head": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4",
+        "base_commit_in_main": false,
+        "open_parent_pr": 340,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 341,
+        "head_sha": "78137622011528a646ae94155ee4acf7f72e1e2a",
+        "base_ref": "integration/ghostpay-main-recovered-fixes-20261120",
+        "base_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+        "live_base_head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "base_commit_in_main": false,
+        "open_parent_pr": 307,
+        "current_parent_head_in_child": false
+      },
+      {
+        "pr": 336,
+        "head_sha": "410353a23631234aa888e46f38df22291c699a26",
+        "base_ref": "feature/ghostpay-retention-focus-20261120",
+        "base_sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+        "live_base_head": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+        "base_commit_in_main": false,
+        "open_parent_pr": 327,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 335,
+        "head_sha": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+        "base_ref": "fix/ghostpay-backup-preflight-20261120-r2",
+        "base_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+        "live_base_head": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+        "base_commit_in_main": false,
+        "open_parent_pr": 333,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 333,
+        "head_sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+        "base_ref": "integration/ghostpay-idle-session-20261120-r2",
+        "base_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+        "live_base_head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+        "base_commit_in_main": false,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      },
+      {
+        "pr": 327,
+        "head_sha": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+        "base_ref": "feature/ghostpay-retention-completion-20261120",
+        "base_sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+        "live_base_head": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+        "base_commit_in_main": false,
+        "open_parent_pr": 326,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 326,
+        "head_sha": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+        "base_ref": "work/ghostpay-required-v11-candidate-20261120",
+        "base_sha": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+        "live_base_head": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+        "base_commit_in_main": false,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      },
+      {
+        "pr": 304,
+        "head_sha": "070fc5bbbf35bb667a6dacbc94ff49af4b22d874",
+        "base_ref": "integration/ghostpay-completion-20261120",
+        "base_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "live_base_head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "base_commit_in_main": false,
+        "open_parent_pr": 302,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 303,
+        "head_sha": "a9e0715573f7247d7a16f9d1d030cf0232708fb2",
+        "base_ref": "integration/ghostpay-completion-20261120",
+        "base_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "live_base_head": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "base_commit_in_main": false,
+        "open_parent_pr": 302,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 302,
+        "head_sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+        "base_ref": "release/ghostpay-beta-qualification-20261119",
+        "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "live_base_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base_commit_in_main": false,
+        "open_parent_pr": 278,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 300,
+        "head_sha": "137628961463fc5abd8b7927b2efe6b18a0a206a",
+        "base_ref": "snapshot/ghostpay-privacy-8be15289-20261120",
+        "base_sha": "d6819796a9542acc488b896786faffe83b913d9b",
+        "live_base_head": "d6819796a9542acc488b896786faffe83b913d9b",
+        "base_commit_in_main": false,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      },
+      {
+        "pr": 299,
+        "head_sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+        "base_ref": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+        "base_sha": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+        "live_base_head": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+        "base_commit_in_main": false,
+        "open_parent_pr": 296,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 298,
+        "head_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+        "base_ref": "release/ghostpay-beta-qualification-20261119",
+        "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "live_base_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base_commit_in_main": false,
+        "open_parent_pr": 278,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 297,
+        "head_sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+        "base_ref": "automation/20261120T004531Z/feature/clipboard-guard",
+        "base_sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "live_base_head": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "base_commit_in_main": false,
+        "open_parent_pr": 293,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 296,
+        "head_sha": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+        "base_ref": "automation/20261119T073600Z/coordinator/integration-lock",
+        "base_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+        "live_base_head": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+        "base_commit_in_main": false,
+        "open_parent_pr": 261,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 295,
+        "head_sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+        "base_ref": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+        "base_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "live_base_head": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "base_commit_in_main": false,
+        "open_parent_pr": 290,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 294,
+        "head_sha": "172695efb41665a4e50d335029e54184bbb5b328",
+        "base_ref": "release/ghostpay-beta-qualification-20261119",
+        "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+        "live_base_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base_commit_in_main": false,
+        "open_parent_pr": 278,
+        "current_parent_head_in_child": false
+      },
+      {
+        "pr": 293,
+        "head_sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+        "base_ref": "release/ghostpay-beta-qualification-20261119",
+        "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+        "live_base_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base_commit_in_main": false,
+        "open_parent_pr": 278,
+        "current_parent_head_in_child": false
+      },
+      {
+        "pr": 292,
+        "head_sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+        "base_ref": "release/ghostpay-beta-qualification-20261119",
+        "base_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "live_base_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base_commit_in_main": false,
+        "open_parent_pr": 278,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 290,
+        "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+        "base_ref": "release/ghostpay-beta-qualification-20261119",
+        "base_sha": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+        "live_base_head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base_commit_in_main": false,
+        "open_parent_pr": 278,
+        "current_parent_head_in_child": false
+      },
+      {
+        "pr": 277,
+        "head_sha": "8cbae85c95fa707210704ee72bb4416b36e5a4d7",
+        "base_ref": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+        "base_sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+        "live_base_head": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+        "base_commit_in_main": false,
+        "open_parent_pr": 276,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 275,
+        "head_sha": "dc821780e05483d1b35062a74b07be7ed9ca2f1c",
+        "base_ref": "codex/ghostpay-consolidation-followthrough-20261119",
+        "base_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+        "live_base_head": "73545f63112910d46002718354ab5e99f8652e1f",
+        "base_commit_in_main": false,
+        "open_parent_pr": 270,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 270,
+        "head_sha": "73545f63112910d46002718354ab5e99f8652e1f",
+        "base_ref": "codex/ghostpay-feature-consolidation-20261119",
+        "base_sha": "c7e09bc7cdb52e9172fa80fc2db83251fad6cd1a",
+        "live_base_head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+        "base_commit_in_main": false,
+        "open_parent_pr": 262,
+        "current_parent_head_in_child": false
+      },
+      {
+        "pr": 269,
+        "head_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+        "base_ref": "codex/ghostpay-feature-consolidation-20261119",
+        "base_sha": "cb7cfc9ec4f6c051e99805a25132c9458beb7af0",
+        "live_base_head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+        "base_commit_in_main": false,
+        "open_parent_pr": 262,
+        "current_parent_head_in_child": false
+      },
+      {
+        "pr": 260,
+        "head_sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+        "base_ref": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+        "base_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+        "live_base_head": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+        "base_commit_in_main": false,
+        "open_parent_pr": 239,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 251,
+        "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+        "base_ref": "integration/ghostpay-pages-completion-20261118",
+        "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "live_base_head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base_commit_in_main": false,
+        "open_parent_pr": 238,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 249,
+        "head_sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+        "base_ref": "integration/ghostpay-pages-completion-20261118",
+        "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "live_base_head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base_commit_in_main": false,
+        "open_parent_pr": 238,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 246,
+        "head_sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+        "base_ref": "integration/ghostpay-pages-completion-20261118",
+        "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "live_base_head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base_commit_in_main": false,
+        "open_parent_pr": 238,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 243,
+        "head_sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+        "base_ref": "integration/ghostpay-pages-completion-20261118",
+        "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "live_base_head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base_commit_in_main": false,
+        "open_parent_pr": 238,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 240,
+        "head_sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+        "base_ref": "integration/ghostpay-pages-completion-20261118",
+        "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "live_base_head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base_commit_in_main": false,
+        "open_parent_pr": 238,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 239,
+        "head_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+        "base_ref": "integration/ghostpay-pages-completion-20261118",
+        "base_sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "live_base_head": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+        "base_commit_in_main": false,
+        "open_parent_pr": 238,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 233,
+        "head_sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+        "base_ref": "privacy/hardening-recommendations",
+        "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "live_base_head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "base_commit_in_main": false,
+        "open_parent_pr": 222,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 230,
+        "head_sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+        "base_ref": "privacy/hardening-recommendations",
+        "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "live_base_head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "base_commit_in_main": false,
+        "open_parent_pr": 222,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 229,
+        "head_sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+        "base_ref": "claude/ghostpay-consolidation-9xhtxg-spec18",
+        "base_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+        "live_base_head": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+        "base_commit_in_main": false,
+        "open_parent_pr": 213,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 228,
+        "head_sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+        "base_ref": "privacy/hardening-recommendations",
+        "base_sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "live_base_head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "base_commit_in_main": false,
+        "open_parent_pr": 222,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 226,
+        "head_sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+        "base_ref": "nodata/jolly-rubin-u4zd45",
+        "base_sha": "1054daabc5cabe958466ec144582d76137b54910",
+        "live_base_head": "1054daabc5cabe958466ec144582d76137b54910",
+        "base_commit_in_main": false,
+        "open_parent_pr": 224,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 225,
+        "head_sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+        "base_ref": "claude/ghostpay-consolidation-9xhtxg-security",
+        "base_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+        "live_base_head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+        "base_commit_in_main": false,
+        "open_parent_pr": 212,
+        "current_parent_head_in_child": true
+      },
+      {
+        "pr": 160,
+        "head_sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+        "base_ref": "integration/consolidated-2026-11-14",
+        "base_sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2",
+        "live_base_head": "a89a2e948321314acf97db435e9776d9322a9461",
+        "base_commit_in_main": true,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      },
+      {
+        "pr": 153,
+        "head_sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+        "base_ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+        "base_sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+        "live_base_head": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+        "base_commit_in_main": true,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      },
+      {
+        "pr": 140,
+        "head_sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+        "base_ref": "claude/ghostpay-github-pages-up6cj6",
+        "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+        "live_base_head": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+        "base_commit_in_main": true,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      },
+      {
+        "pr": 139,
+        "head_sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+        "base_ref": "claude/ghostpay-github-pages-up6cj6",
+        "base_sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+        "live_base_head": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+        "base_commit_in_main": true,
+        "open_parent_pr": null,
+        "current_parent_head_in_child": null
+      }
+    ],
+    "deterministic_workers_1_vs_4": {
+      "byte_identical": true,
+      "artifact_sha256": {
+        "branch-ledger.json": "61120130492abaf84294361c68130ebadc8c40137c4f523b9d1c0548c2e8d843",
+        "branch-paths.json": "b8a7616a9b3c8c32e5a321bed0be3801b0e278dd263d23957a3873dac074af35",
+        "patch-equivalence.json": "93f353baf326de86887198e295fca919f78744970956c8edc20946316f64e587"
+      }
+    },
+    "fixture_validation": {
+      "branches": 12,
+      "open_prs": 3,
+      "all_assertions_passed": true,
+      "fixture_manifest": "ghostpay-ledger-review-ce5_x_0p/manifest.json",
+      "cases": [
+        "nonancestor historical patch then reverted remains unresolved",
+        "nonancestor changed source blob matches main",
+        "two source commits squashed to one main commit detected by net patch and current content",
+        "docs-only has no vacuous patch/content equivalence",
+        "main-only added application file is not treated as donor deletion",
+        "305 contributed application paths retained",
+        "sparse integration-lock is metadata not source",
+        "unrelated gh-pages remains deployment history",
+        "advanced stacked parent not contained by child is flagged",
+        "advertised PR base separate from frozen current branch tip",
+        "already-integrated retired parent gets retargeting review action"
+      ]
+    }
+  },
+  "final_cutoff_delta_review": {
+    "schema": "ghostpay-ledger-independent-delta-review/1",
+    "source_cutoff_utc": "2026-11-21 02:52:23 UTC",
+    "generator_sha256": "235877bae3475feaffa5d49fbe07ce4fc3350b0454e9be56330168aacc1fdd83",
+    "snapshot_sha256": "d3f1a7e8578e95a67646b3bdc70cf81cf1a76c79ed9f8e5a9b26dd4eb235e9b2",
+    "full_initial_review": "independent-ledger-validation.json",
+    "old_420_heads_unchanged": true,
+    "total_branches": 423,
+    "total_open_prs": 123,
+    "new_branch_path_checks": [
+      {
+        "branch": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+        "head_sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+        "verified_changed_paths": 218
+      },
+      {
+        "branch": "fix/ghostpay-disclosure-focus-recovery-20261120",
+        "head_sha": "f11792f7b9202512f0bf980a03f057e8a15836ae",
+        "verified_changed_paths": 1934
+      },
+      {
+        "branch": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+        "head_sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+        "verified_changed_paths": 1946
+      }
+    ],
+    "new_current_and_advertised_pr_paths": {
+      "353": [
+        "apps/web/src/views/Settings.partialImportDrafts.test.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/SETTINGS_IMPORT_DRAFTS_20261121.md"
+      ],
+      "354": [
+        "apps/web/e2e/app.spec.ts",
+        "apps/web/e2e/flows.spec.ts",
+        "apps/web/src/components/WalletDisclosure.test.tsx",
+        "apps/web/src/components/WalletDisclosure.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/consolidation/privacy-browser-20261121-539818/BRANCH_RECONCILIATION.json",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION.json",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION_HISTORY.bundle",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION_HISTORY.json",
+        "docs/consolidation/privacy-browser-20261121-539818/EXECUTION_LOGS.json.gz",
+        "docs/consolidation/privacy-browser-20261121-539818/FILES.json",
+        "docs/consolidation/privacy-browser-20261121-539818/REPORT.md",
+        "docs/consolidation/privacy-browser-20261121-539818/SOURCE_REVIEW.md",
+        "docs/consolidation/privacy-browser-20261121-539818/dependency-reuse.json",
+        "docs/consolidation/privacy-browser-20261121-539818/independent-dependency-reuse.json",
+        "docs/consolidation/privacy-browser-20261121-539818/independent-focus-results.json",
+        "docs/consolidation/privacy-browser-20261121-539818/scan-review/PR350_EXECUTION.json",
+        "docs/consolidation/privacy-browser-20261121-539818/scan-review/PR350_REVIEW.md"
+      ],
+      "355": [
+        "apps/web/src/components/WalletDisclosure.test.tsx",
+        "apps/web/src/components/WalletDisclosure.tsx",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/DISCLOSURE_FOCUS_RECOVERY_20261120.md"
+      ]
+    },
+    "original_120_qualification_records_unchanged": true,
+    "new_47_checks_roundtrip_verified": true,
+    "ci_totals": {
+      "open_prs": 123,
+      "unique_head_shas": 123,
+      "pr_records": 123,
+      "endpoint_requests": 369,
+      "collection_errors": 0,
+      "check_runs": 4064,
+      "status_contexts": 123,
+      "review_submissions": 10,
+      "approval_review_submissions": 0,
+      "exact_head_approval_review_submissions": 0,
+      "by_observed_ci": {
+        "pending": 13,
+        "failure_observed": 61,
+        "observed_checks_success_with_skips_or_neutral": 44,
+        "observed_checks_success": 5
+      },
+      "by_draft": {
+        "true": 117,
+        "false": 6
+      },
+      "selected_check_runs": 3994,
+      "excluded_check_runs": 70,
+      "workflow_context_reads": 21
+    },
+    "focus_repair_overlap_354_355": [
+      {
+        "path": "apps/web/src/components/WalletDisclosure.test.tsx",
+        "state_equal": false,
+        "pr354_state": [
+          "100644",
+          "96144da7ab938bea7aa6649e28b251d08bf9f264"
+        ],
+        "pr355_state": [
+          "100644",
+          "dc6748580947f2f2e9ac6be8798c4cb9d667705e"
+        ]
+      },
+      {
+        "path": "apps/web/src/components/WalletDisclosure.tsx",
+        "state_equal": false,
+        "pr354_state": [
+          "100644",
+          "094b9d4cce058b060c13821c7723449bafe0a743"
+        ],
+        "pr355_state": [
+          "100644",
+          "00a70efc5f273da55d4ce4a76141a0b92fd5601a"
+        ]
+      }
+    ],
+    "artifact_sha256": {
+      "source-snapshot.json": "d3f1a7e8578e95a67646b3bdc70cf81cf1a76c79ed9f8e5a9b26dd4eb235e9b2",
+      "branch-ledger.json": "60561713f3e04951a2e5fdbcbffe35124cf150dc1a9713a48e686d8d30d1b649",
+      "branch-paths.json": "f76ab012180bc683e58019ec918ec5a9d8c3659096c697ef52b95318b38d16ec",
+      "patch-equivalence.json": "caadc0e8bec27d610881d3454d17fbaaba10173a240bb707d0ad98e36edd47ba",
+      "qualification.json": "a08ec2620f78d5543dd0c6ca5f958855022c511625d64dc9e68d35176a5e47d6"
+    },
+    "result": "PASS",
+    "qualification_of_product_branches": false
+  },
+  "interpretation": "The generator is unchanged. The first review validates all 420 original refs, complete path/overlap accounting, deterministic reproduction and false-positive fixtures. The delta review validates all added data at the 423-ref cutoff. This validates the reconciliation evidence, not product release qualification."
+}

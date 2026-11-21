@@ -1,9 +1,13 @@
-# GhostPay authoritative completion ledger
+# GhostPay completion ledger — historical snapshots
 
-## Current status (2026-11-18 consolidation)
+## Historical status (2026-11-18 consolidation)
 
-This section is the present-tense status. The 2026-11-16 content below it is retained as source-pinned history for
-`2962554d`/`beb525dd`; where it says browser or analyzer results are pending, the table below supersedes it.
+This section records the **2026-11-18** candidate and its source-specific evidence; it is not current main or
+current-branch qualification. The #203 candidate is now in main history, and its branch name later advanced to
+documentation PR #221. Do not carry its green results forward to newer commits. See the
+[2026-11-20 branch-claim reconciliation](../coordination/claims-20261120/README.md) for the complete newer
+inventory, exact source relationships, and remaining verification. The 2026-11-16 content below remains
+source-pinned history for `2962554d`/`beb525dd`; the table below superseded it only for the named 2026-11-18 scope.
 
 Consolidation candidate: branch `nodata/wizardly-allen-qwol6u`, draft PR
 [#203](https://github.com/djshellshoxxx/GhostPay/pull/203), built on unified #187 (`beb525dd`) plus main ancestry,
@@ -38,7 +42,7 @@ Updated 2026-11-16. Coordinator: Caveman root. Integration branch: `codex/ghostp
 Product checkpoint for this update: `2962554d` (local source commit; later documentation does not change that source).
 Draft integration PR: [#187](https://github.com/djshellshoxxx/GhostPay/pull/187).
 
-This ledger supersedes current-status statements in older completion matrices. Historical reports remain evidence
+Within the 2026-11-16 snapshot, this ledger superseded status statements in older completion matrices. Historical reports remain evidence
 for their own source. Implementation, integration tests, independent agent review, external acceptance and release
 qualification are separate states. **Neither implementation-complete nor release-qualified is asserted.** All listed source lanes are integrated with independent agent review. Final hosted browser checks, analyzer campaigns and development artifact reproducibility remain active. No arbitrary completion
 percentage is used: an implementation count would conceal unresolved acceptance requirements.
