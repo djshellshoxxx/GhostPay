@@ -3,6 +3,7 @@ import { createInvoicePaymentSummarizer } from '@ghostpay/ux-vault/portable';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import { InvoicePaymentSummary } from './InvoicePaymentSummary';
+import { InvoiceTimestampRetentionControls } from './InvoiceTimestampRetentionControls';
 import { PrivateHistory } from './PrivateHistory';
 import { revokePrivacyReveal } from '../lib/privacyMode';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -490,6 +491,9 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             onRemove={(digest) => run(async (current) => current.removeInvoice(digest))}
             onClear={() => run(async (current) => current.clearInvoices())}
           />
+          {vault.current !== undefined && (
+            <InvoiceTimestampRetentionControls vault={vault.current} busy={busy} disabled={readOnly} run={run} />
+          )}
           <ReceiptArchive
             receipts={receipts}
             busy={busy}

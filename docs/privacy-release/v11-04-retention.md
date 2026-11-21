@@ -61,3 +61,10 @@ Separate branch per feature. Record ownership before edits in ACTIVE_WORK. Coord
 ## Handoff requirements
 
 Record base/head/tree, reused vs authored code, tests/commands/exits, failures/skips, known limitations and next bounded task. Do not count historical or different-source checks as current. No shared integration/main updates; existing active source branches stay intact. v1.1 must not become a v1.0 release dependency.
+
+
+## Persistent registration-time slice — 2026-11-21
+
+Current-source field review establishes `RegisteredInvoice.registeredAt` as nonessential local save-time metadata. The implemented manual adapter uses explicit document v4 / registration v2 with a null removed-time marker, preserving all other fields and complete financial/security records. Legacy versions remain readable; unknown versions fail closed and older readers cannot open updated v4 vaults. The UI explains the compatibility change.
+
+Approval is separate and starts off for every unlocked mounted scope. Preview exposes only category/count and is bound to exact ciphertext, handle and session; cancel/replay/intervening write/scope or session replacement cannot authorize cleanup. Confirmation performs one storage-transaction CAS without rebasing. Existing row redaction survives export, import, duplicate registration and reload; newly imported rows require a fresh review. No automatic persistent expiry, receipt/archive-time cleanup or new sensitive collection is implemented. Broader retention and M3 remain partial pending independent and exact-source release/browser gates.
