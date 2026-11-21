@@ -56,14 +56,21 @@ export function reduce(state, event, now) {
   if (event.type === 'start') {
     if (state.status !== 'idle') return no;
     if (!Number.isInteger(event.ttlSeconds) || event.ttlSeconds < MIN_TTL || event.ttlSeconds > MAX_TTL) throw new Error('bad-ttl');
-    if (event.dueMinor <= 0n) throw new Error('bad-amount');
+    if (typeof event.dueMinor !== 'bigint' || event.dueMinor <= 0n) throw new Error('bad-amount');
+    if (typeof now !== 'number' || !Number.isSafeInteger(now) || now < 0 || now > Number.MAX_SAFE_INTEGER - event.ttlSeconds)
+      throw new Error('bad-time-policy');
     return { accepted: true, state: { status: 'awaiting', sessionId: event.sessionId, invoiceId: event.invoiceId, currency: event.currency, dueMinor: event.dueMinor, paidMinor: 0n, expiresAt: now + event.ttlSeconds } };
   }
   if (state.status !== 'awaiting') return no;
+  if (typeof now !== 'number' || !Number.isSafeInteger(now) || now < 0 ||
+      typeof state.expiresAt !== 'number' || !Number.isSafeInteger(state.expiresAt) || state.expiresAt < 0)
+    throw new Error('bad-time-policy');
   if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
-  if (state.expiresAt !== undefined && now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
-  if (event.type === 'tick') return no;
-  if (event.invoiceId !== state.invoiceId || event.currency !== state.currency || event.amountMinor <= 0n) return no;
+  if (now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
+  if (event.type !== 'payment') return no;
+  if (event.invoiceId !== state.invoiceId || event.currency !== state.currency) return no;
+  if (typeof event.amountMinor !== 'bigint') throw new Error('bad-amount');
+  if (event.amountMinor <= 0n) return no;
   const paidMinor = state.paidMinor + event.amountMinor;
   const status = state.dueMinor !== undefined && paidMinor >= state.dueMinor ? 'paid' : 'awaiting';
   return { accepted: true, state: { ...state, paidMinor, status } };
