@@ -212,6 +212,18 @@ calls refuse invalid onion origins; I2P and clearnet behavior remains unchanged.
 Add bounded local validation regressions and record actual Node/lint/typecheck
 results. No application runtime, RPC profile, deployment activation, or external
 network behavior changes. This section is the worker's only registry edit.
+# Pages scan: distinguish duplicate router callbacks from distinct router announcements (2026-11-21 UTC)
+
+Cycle and coordinator: `20261121T0033Z-root`, one sequential assistant; no native subordinate workers or independent verifier available.
+Task branch: `automation/20261121T0033Z/bug/router-duplicate-warning`, base main `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: `apps/web/src/lib/scanMatches.ts`, `apps/web/src/lib/scanMatches.test.ts`, this additive task claim, and `docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md`. No other worker's branch or shared ledger is updated.
+Finding (bounded source audit, unverified in browser): `sharedRouterAddresses` marks the same router announcement twice as a shared one-time address, even though its contract requires two different router records; an asynchronous duplicate/update should not be counted as a second record. Existing `placeScanMatch` usually deduplicates the live UI, so this is a defensive P3 false-positive warning correction, not a payment/cryptographic vulnerability.
+Acceptance: a deterministic regression with duplicate announcement ID and same address does not trigger a shared-address warning, even after status refresh; two distinct router announcement IDs with the same address still trigger it. Preserve all public-scan replay filtering, one-time address identity, chain scope, and existing tests; no key, RPC, transaction, deployment or dependency changes.
+Ownership reconciliation: recent overlapping UI PRs #278/#307/#317/#318 and current #341/#345, plus #262/#264 and #302, were inspected for changed paths; none currently modifies `scanMatches.ts` or `scanMatches.test.ts` (bounded PR sample, not full historical inventory). Recheck before integration. The durable integration lease on `automation/ghostpay-integration-lock` is **held by another coordinator, generation 11**, last read 2026-11-20T23:16:57Z; do not claim, release or merge any protected/shared branch.
+Verification: add test before production fix, execute source-equivalent deterministic check only if original suite is unavailable, and preserve test/CI/independent-review limitations exactly. Existing `SECURITY.md` requirements apply. Draft PR only.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
@@ -1266,3 +1278,27 @@ preserved in `docs/consolidation/request-file-async-r3-20261120/`. Both focused
 coverage selections pass 17 behavioral cases but retain exit 1 at the unchanged
 global thresholds; no full-web coverage pass is claimed. Root owns independent
 review, exact published-source hosted/browser qualification and integration.
+
+## TRON range completeness recovery — 2026-11-20 continuation R2
+
+- Worker: `/root/branch_recovery_r2`; coordinator: `994a0d214fb9-root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`; exact base: `87c3bf5a59f4d443c9e5cf81368162554a5315c3` (PR #321, itself based on main `aa3df1cb37274fae73af0ca957183c15c51b62d3`).
+- Owned product paths: `packages/tron-adapter/src/rpc.ts` limited to `getBlockRange`; `packages/tron-adapter/src/scan.test.ts`; `apps/web/src/features/tron/fixtures.testutil.ts`; `apps/web/src/features/tron/chain.hardening.test.ts`. Owned evidence: `docs/consolidation/continuation-r2-20261120/` and this additive claim.
+- Acceptance: a requested block range must contain every requested height in order before scanner results or account/memo lookups proceed. Missing first, middle, last, or all blocks must fail with the existing typed invalid-response error. Preserve valid complete ranges, native/TRC-20 scanning, cancellation checks from #321, current RPC privacy isolation, parser bounds and original assertions.
+- Provenance: selectively recover missing source from PR #271 head `429a4de80b9ec53177b17d89d18ce8ec91a08814`, retaining original completeness contribution `22af2074a086d9957a18e310ef8572b28d1facd0` and fixture/regression correction `146e52481733fec5fc95580eb9d2d41a01a05df0`.
+- Ownership reconciliation: #271/#250 and broad #278/#262/#264 remain preserved donors. Root explicitly assigned this isolated recovery after current source/PR inspection. No existing donor branch is mutated. #321 owns `scan.ts` and its new cancellation test; those files remain unchanged. Other workers own retention and current CI triage. Root owns publication, shared refs, merge decisions and coordination metadata.
+- Sequence: save full live branch census and this claim; commit recovered tests/fixture before runtime; execute controlled RED checkpoint through coordinator scheduling; restore only the missing range check; run applicable qualification and independent review. No dependency installation/copy or broad workflow rerun is part of this worker's initial scope.
+- Evidence at claim: #271 has 36 successful hosted checks, three deployment-only skips and one beta failure during browser OS-package installation (Ubuntu mirror connection/resource failures, apt exit100). No beta assertions ran. Its prior successful source tests do not qualify this new composition. #321 current checks remain incomplete.
+
+
+## TRON range completeness independent qualification — 2026-11-20
+
+- Worker: `/root/range_qualification_r2`; coordinator: `/root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`. Frozen application/test input: `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272`, tree `46c186bfb4f7e15b384c9a0ba361790d8c7e6876`.
+- Owned changes: additive qualification status here and `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}` only. Product source and previous ownership records are immutable inputs.
+- Acceptance: read the independent source approval; verify the supplied RED evidence; rebuild matching libraries; execute original package coverage/typecheck/lint/build, all web TRON test files, full web TypeScript/typed lint, and the full-profile production build with original postbuild scan. Record exact commands, source, dependency reuse, results, limits and hashes. Preserve every original threshold and assertion.
+- State at claim: source review approved by `/root/ci_triage_r2`; original library build is running in a separate clean detached qualification worktree. No GREEN or complete qualification result is asserted by this claim.
+- Boundaries: no source/dependency/workflow changes, browser attempt, live RPC/funds, deployment, remote publication or shared-ref/lease mutation. Root owns publication and promotion.
+
+
+Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
