@@ -76,12 +76,12 @@ export function resolveRng(rng?: RandomSource): RandomSource {
 /**
  * Uniform integer in [0, n) by rejection sampling (no modular bias).
  *
- * @param n Exclusive upper bound, 1 <= n <= 2^64.
+ * @param n Exclusive upper bound, 1 <= n <= 2^256 (EVM uint256-sized noise range).
  * @param rng Optional source; production callers omit it.
  * @security Uses `crypto.getRandomValues` only. Math.random is never used.
  */
 export function randomBelow(n: bigint, rng?: RandomSource): bigint {
-  requireInput(n >= 1n && n <= 1n << 64n, 'bound out of range');
+  requireInput(n >= 1n && n <= 1n << 256n, 'bound out of range');
   if (n === 1n) return 0n;
   const source = resolveRng(rng);
   const bits = (n - 1n).toString(2).length;
