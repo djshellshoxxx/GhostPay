@@ -1,0 +1,257 @@
+✖ ordinary verification refuses an unpinned or missing identity without invoking Tor (21.13605ms)
+✖ first use is explicit, network-disabled, numeric-targeted and refuses a second initialization (9.083503ms)
+✖ a matching pin verifies through Tor without modifying the stored identity or printing private bytes (5.873829ms)
+✖ a wrong stored hostname and a forged hostname over different keys both fail closed (13.259766ms)
+✖ Tor repair or replacement of copied key files is refused and the originals remain untouched (4.647461ms)
+▶ partial, symlinked and permissive identities fail before offline Tor is invoked
+  ✖ missing (16.77827ms)
+  ✖ symlink (4.913445ms)
+  ✖ mode (4.538672ms)
+  ✖ directory (7.057798ms)
+✖ partial, symlinked and permissive identities fail before offline Tor is invoked (34.634419ms)
+✖ malformed pins and configured first-use origins are refused (9.002783ms)
+✖ a failed offline Tor process cannot replace an identity or leave a new one behind (5.380497ms)
+✖ an existing identity operation lock refuses concurrent initialization (5.038173ms)
+﹣ actual Tor derives the pinned hostname and rejects a mismatched restored keypair (0.258398ms) # GHOSTPAY_REAL_TOR_BIN unavailable; deterministic tests are not real-Tor identity proof
+ℹ tests 14
+ℹ suites 0
+ℹ pass 0
+ℹ fail 13
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 241.489414
+
+✖ failing tests:
+
+test at scripts/tor/identity.test.mjs:66:1
+✖ ordinary verification refuses an unpinned or missing identity without invoking Tor (21.13605ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /configured onion hostname/. Input:
+  
+  '_: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file\n'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:70:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '_: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file\n',
+    expected: /configured onion hostname/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:79:1
+✖ first use is explicit, network-disabled, numeric-targeted and refuses a second initialization (9.083503ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:80:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:94:1
+✖ a matching pin verifies through Tor without modifying the stored identity or printing private bytes (5.873829ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:95:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:105:1
+✖ a wrong stored hostname and a forged hostname over different keys both fail closed (13.259766ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:106:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:119:1
+✖ Tor repair or replacement of copied key files is refused and the originals remain untouched (4.647461ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:120:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:132:13
+✖ missing (16.77827ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:133:17)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:132:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:132:13
+✖ symlink (4.913445ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:133:17)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:132:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:132:13
+✖ mode (4.538672ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:133:17)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:132:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:132:13
+✖ directory (7.057798ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:133:17)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:132:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:153:1
+✖ malformed pins and configured first-use origins are refused (9.002783ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:154:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:167:1
+✖ a failed offline Tor process cannot replace an identity or leave a new one behind (5.380497ms)
+  AssertionError [ERR_ASSERTION]: _: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file
+  
+  
+  2 !== 0
+  
+      at initialized (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:55:10)
+      at async TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:168:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:178:1
+✖ an existing identity operation lock refuses concurrent initialization (5.038173ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /identity operation/. Input:
+  
+  '_: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file\n'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/0d42549ffbeb/GhostPay-tor-security/scripts/tor/identity.test.mjs:183:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '_: 1: .: cannot open /workspace/scratch/0d42549ffbeb/GhostPay-tor-security/deploy/tor-static/identity-check.sh: No such file\n',
+    expected: /identity operation/,
+    operator: 'match',
+    diff: 'simple'
+  }

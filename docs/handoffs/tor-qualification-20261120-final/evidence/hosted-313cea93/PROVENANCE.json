@@ -1,0 +1,14 @@
+{
+  "head": "313cea93d727a4ed620a69de6733a2bdff433400",
+  "workflow_run": 44868708242,
+  "job": 136738155737,
+  "artifact_id": 14693280827,
+  "artifact_sha256": "68704102483174551eb8102065be9754597b42e7322b16923534f585c339012c",
+  "browser": "PASSED",
+  "normal_compose": "PASSED",
+  "offline_compose": "PASSED",
+  "image_build": "PASSED",
+  "identity": "FAILED: explicit offline initialization exited 1",
+  "privateVolumesRemoved": true,
+  "real_tor_bootstrap": false
+}

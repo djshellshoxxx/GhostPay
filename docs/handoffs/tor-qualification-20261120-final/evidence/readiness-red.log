@@ -1,0 +1,70 @@
+✔ ordinary verification refuses an unpinned or missing identity without invoking Tor (25.611063ms)
+✔ first use is explicit, network-disabled, numeric-targeted and refuses a second initialization (160.322793ms)
+✔ a matching pin verifies through Tor without modifying the stored identity or printing private bytes (327.475584ms)
+✖ a hostname written before Tor installs signal handlers waits for startup readiness (127.83133ms)
+▶ a complete temporary identity never bypasses a missing readiness marker or failed shutdown
+  ✔ exit-before-ready (430.329877ms)
+  ✖ no-ready-marker (161.558062ms)
+  ✔ reject-stop (478.046275ms)
+✖ a complete temporary identity never bypasses a missing readiness marker or failed shutdown (1070.849961ms)
+✔ a wrong stored hostname and a forged hostname over different keys both fail closed (482.720831ms)
+✔ Tor repair or replacement of copied key files is refused and the originals remain untouched (368.811191ms)
+▶ partial, linked and permissive identities fail before offline Tor is invoked
+  ✔ missing (175.960023ms)
+  ✔ symlink (181.926627ms)
+  ✔ hardlink (180.560886ms)
+  ✔ mode (179.804495ms)
+  ✔ directory (156.766745ms)
+✔ partial, linked and permissive identities fail before offline Tor is invoked (876.222354ms)
+✔ malformed pins and configured first-use origins are refused (202.887621ms)
+✔ a failed offline Tor process cannot replace an identity or leave a new one behind (435.56898ms)
+✔ an existing identity operation lock refuses concurrent initialization (12.180453ms)
+﹣ actual Tor derives the pinned hostname and rejects a mismatched restored keypair (0.131959ms) # GHOSTPAY_REAL_TOR_BIN unavailable; deterministic tests are not real-Tor identity proof
+ℹ tests 20
+ℹ suites 0
+ℹ pass 16
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 4177.705708
+
+✖ failing tests:
+
+test at scripts/tor/identity.test.mjs:115:1
+✖ a hostname written before Tor installs signal handlers waits for startup readiness (127.83133ms)
+  AssertionError [ERR_ASSERTION]: Terminated
+  Offline Tor rejected the onion identity; no stored keys were replaced.
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///tmp/ghostpay-readiness-baseline-0widnkpf/scripts/tor/identity.test.mjs:118:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/tor/identity.test.mjs:132:13
+✖ no-ready-marker (161.558062ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///tmp/ghostpay-readiness-baseline-0widnkpf/scripts/tor/identity.test.mjs:135:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///tmp/ghostpay-readiness-baseline-0widnkpf/scripts/tor/identity.test.mjs:132:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

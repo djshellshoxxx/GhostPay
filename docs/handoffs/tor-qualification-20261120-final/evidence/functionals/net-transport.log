@@ -1,0 +1,35 @@
+
+ RUN  v5.0.5 /workspace/scratch/0d42549ffbeb/GhostPay-tor-qualification/packages/net-transport
+      Coverage enabled with v8
+
+
+ Test Files  6 passed (6)
+      Tests  193 passed (193)
+   Start at  20:45:06
+   Duration  8.65s (tests 48%, import 38%, transform 13%, worker 1%)
+
+     Import  84 modules were evaluated 129 times · 2.67s total, 38% of tracked time
+             ~930ms faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-----------------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s           
+-------------------|---------|----------|---------|---------|-----------------------------
+All files          |   97.56 |    95.94 |   96.42 |   97.93 |                             
+ bhttp.ts          |   98.97 |    97.56 |     100 |     100 | 181                         
+ fetchAdapter.ts   |   96.96 |    94.11 |     100 |     100 | 45,52                       
+ fetchTransport.ts |     100 |    95.83 |     100 |     100 | 71,75                       
+ onion.ts          |   93.75 |    94.28 |     100 |   97.36 | 83                          
+ profiles.ts       |   96.31 |    92.03 |   88.88 |   95.83 | 236,253,276,402,423-424,574 
+ request.ts        |   90.27 |    81.48 |   94.73 |      90 | 74-75,117-122               
+ socketReader.ts   |   97.91 |     90.9 |     100 |     100 | 99                          
+ socks5.ts         |   95.23 |    95.23 |     100 |   97.22 | 138-139                     
+-------------------|---------|----------|---------|---------|-----------------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97.56% ( 961/985 )
+Branches     : 95.94% ( 592/617 )
+Functions    : 96.42% ( 162/168 )
+Lines        : 97.93% ( 806/823 )
+================================================================================

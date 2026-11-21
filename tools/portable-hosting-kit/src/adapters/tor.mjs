@@ -6,6 +6,7 @@
 // This module also exports the small validation helpers shared with the I2P adapter (src/adapters/i2p.mjs).
 
 import path from 'node:path';
+import { validateOnionOrigin } from '../config/host-config.mjs';
 import { KitError, ERROR_CODES } from '../errors.mjs';
 
 /** @typedef {import('../types.mjs').HostConfig} HostConfig */
@@ -75,7 +76,6 @@ export const TOR_DOS_DEFAULTS = Object.freeze({
   maxStreams: 32, // kit choice: browsers open <= ~6 parallel connections per site; tor default is 0 (unlimited)
 });
 
-const ONION_ORIGIN_RE = /^http:\/\/[a-z2-7]{56}\.onion$/;
 const SAFE_ABS_PATH_RE = /^\/[A-Za-z0-9._/-]*$/;
 const DIGEST_IMAGE_RE = /^[a-z0-9][a-z0-9._/-]*(?::[A-Za-z0-9._-]+)?@sha256:[a-f0-9]{64}$/;
 const SAFE_LABEL_RE = /^[\x20-\x7e]*$/;
@@ -89,7 +89,7 @@ const SAFE_LABEL_RE = /^[\x20-\x7e]*$/;
  * validator; this is a defensive boundary check so that a raw object cannot produce an unsafe profile.
  * @param {unknown} hostConfig
  * @param {'onion' | 'i2p'} transport
- * @param {RegExp} originRe
+ * @param {RegExp} [originRe] I2P's existing origin pattern; onion uses the shared checksum validator.
  * @returns {HostConfig}
  */
 export function assertHostConfig(hostConfig, transport, originRe) {
@@ -99,8 +99,11 @@ export function assertHostConfig(hostConfig, transport, originRe) {
   if (hc.transport !== transport) {
     throw new KitError(CONFIG, `hostConfig.transport is "${String(hc.transport)}", this adapter needs "${transport}"`);
   }
-  if (hc.publicOrigin !== null && (typeof hc.publicOrigin !== 'string' || !originRe.test(hc.publicOrigin))) {
-    throw new KitError(CONFIG, `hostConfig.publicOrigin does not look like a ${transport} origin`, { publicOrigin: hc.publicOrigin });
+  if (hc.publicOrigin !== null) {
+    if (transport === 'onion') validateOnionOrigin('hostConfig.publicOrigin', hc.publicOrigin);
+    else if (typeof hc.publicOrigin !== 'string' || originRe?.test(hc.publicOrigin) !== true) {
+      throw new KitError(CONFIG, `hostConfig.publicOrigin does not look like a ${transport} origin`, { publicOrigin: hc.publicOrigin });
+    }
   }
   if (typeof hc.mirrorLabel !== 'string' || !SAFE_LABEL_RE.test(hc.mirrorLabel) || hc.mirrorLabel.length > 80) {
     throw new KitError(CONFIG, 'hostConfig.mirrorLabel must be printable ASCII, at most 80 characters');
@@ -499,12 +502,15 @@ function renderReadme(r) {
  */
 export function generateTorProfile(opts) {
   if (!opts || typeof opts !== 'object') throw new KitError(USAGE, 'options object is required');
-  const hostConfig = assertHostConfig(opts.hostConfig, 'onion', ONION_ORIGIN_RE);
+  const hostConfig = assertHostConfig(opts.hostConfig, 'onion');
   /** @type {string[]} */
   const warnings = [];
   const instance = normalizeInstance(opts.instance);
   const virtualPort = opts.virtualPort ?? 80;
   assertPort(virtualPort, 'virtualPort');
+  if (hostConfig.publicOrigin !== null && virtualPort !== 80) {
+    throw new KitError(CONFIG, 'virtualPort must be 80 when publicOrigin is configured');
+  }
   const pow = normalizePow(opts.powDefense);
   if (!pow) warnings.push('PoW defense disabled: the service has no adaptive protection against rendezvous floods');
 

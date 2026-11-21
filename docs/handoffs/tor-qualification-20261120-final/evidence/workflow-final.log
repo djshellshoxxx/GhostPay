@@ -1,0 +1,14 @@
+✔ every file in .github/workflows is a mapping with on and jobs (A5-2) (2.093167ms)
+✔ CI changes filter: docs-only and code pull requests are classified as before (audit L7-L4) (85.615187ms)
+✔ CI changes filter fails safe when the 3000-file list may be truncated (audit L7-L4) (586.179862ms)
+✔ Pages mirror builds every workspace lib from source, never from the Actions cache (audit L7-M4) (1.584662ms)
+✔ hosting-kit qualification runs for app-only changes and ties the package to the commit (0.593272ms)
+✔ native workspace shard receives the executable pinned compiler and fails before tests when it is missing (41.141998ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 858.369356

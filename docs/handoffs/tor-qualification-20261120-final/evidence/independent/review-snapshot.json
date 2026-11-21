@@ -1,0 +1,38 @@
+{
+  "format": "ghostpay-independent-review/1",
+  "reviewer": "tor_independent_final_review",
+  "recorded_at_utc": "2026-11-21T04:51:35.733121+00:00",
+  "integration_snapshot": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7",
+  "source_draft": "GhostPay-tor-security uncommitted snapshot",
+  "tested_sha256": {
+    "deploy/tor-static/identity-check.sh": "fb6203cee7effbc16cbd806fc82a4fe5449a13604517cf9500c91e286efeb682",
+    "deploy/tor-static/tor-start.sh": "70cf6b22e7353c05d430ce7b9fb9e8711a49db634bc8dbeb8d2885c670b8e002",
+    "scripts/tor/identity.test.mjs": "dcfc97456090c5183023beb90406892bd4b19ef03cac31b8a702b2d8a0e7f8c3",
+    "scripts/tor/hosting-config.test.mjs": "1af8e0b139ae39d4a1885a7e36a740a08adda0dff054754f4a7efbcdc325b1f4"
+  },
+  "unchanged_after_run": true,
+  "command": "node --test --test-concurrency=1 scripts/tor/identity.test.mjs scripts/tor/hosting-config.test.mjs",
+  "result": {
+    "tests": 26,
+    "passed": 24,
+    "failed": 0,
+    "skipped": 2,
+    "skips": [
+      "Docker Compose unavailable",
+      "GHOSTPAY_REAL_TOR_BIN unavailable"
+    ]
+  },
+  "checks": [
+    "No unexpected main blob differences beyond additive registry",
+    "No unexpected donor Tor blob differences beyond intended browser extension and registry",
+    "Browser extension node --check passed",
+    "git diff --check passed"
+  ],
+  "verdict": "INTERIM: no introduced source blocker identified; frozen final source, offline container and hosted browser results pending",
+  "limitations": [
+    "Deterministic Tor double only; real key derivation not executed locally",
+    "Chromium unavailable due Unix socket denial; extended UI not executed locally",
+    "No live onion, Tor Browser, network routing or payment acceptance claim",
+    "Shared integration lock generation11 remains held"
+  ]
+}

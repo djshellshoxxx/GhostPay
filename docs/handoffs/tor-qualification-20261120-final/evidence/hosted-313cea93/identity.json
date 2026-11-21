@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "status": "FAILED",
+  "scope": "offline Tor identity and container lifecycle",
+  "network": "none",
+  "bootstrap": false,
+  "image": "ghostpay-static-tor:0.4.9.17",
+  "imageId": "sha256:00e09b40581156bddfb0e86d9a72b64b4d8896e4a9f97c8a08bc60bb51634f7c",
+  "checks": [],
+  "error": "explicit offline initialization: Docker exited 1\n\n1 !== 0\n",
+  "privateVolumesRemoved": true
+}

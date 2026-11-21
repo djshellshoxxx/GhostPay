@@ -1,0 +1,127 @@
+{
+  "format": "ghostpay-static-hosting-browser/1",
+  "archiveSha256": "efa5e114e5d619d9f1432789f98cfc96e54c0ec308b62b6d1d2430a41ec80818",
+  "browser": {
+    "name": "chromium",
+    "version": "156.0.8078.4"
+  },
+  "cases": [
+    {
+      "basePath": "/",
+      "origin": "http://127.0.0.1:42441",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "layout": "desktop",
+      "checks": [
+        "render",
+        "CSP/headers",
+        "WebCrypto",
+        "storage separation",
+        "Tor preference persistence",
+        "no hash fallback",
+        "local key generation",
+        "encrypted keystore export and verification",
+        "signed passphrase invoice link transfer",
+        "wrong invoice passphrase refusal",
+        "independent encrypted backup restoration",
+        "wrong backup passphrase refusal",
+        "encrypted vault reload and unlock",
+        "wrong vault passphrase refusal"
+      ],
+      "requestCount": 24,
+      "requests": [
+        {
+          "path": "/",
+          "method": "GET",
+          "type": "document"
+        },
+        {
+          "path": "/assets/index-BW2canuw.js",
+          "method": "GET",
+          "type": "script"
+        },
+        {
+          "path": "/assets/rolldown-runtime-XKyaHtl9.js",
+          "method": "GET",
+          "type": "script"
+        },
+        {
+          "path": "/assets/style-sbKVpGL7.css",
+          "method": "GET",
+          "type": "stylesheet"
+        },
+        {
+          "path": "/assets/index-BW2canuw.js",
+          "method": "GET",
+          "type": "fetch"
+        }
+      ],
+      "externalRequestAttempts": 0
+    },
+    {
+      "basePath": "/mirror/ghostpay/",
+      "origin": "http://127.0.0.1:33475",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": "mobile-width",
+      "checks": [
+        "render",
+        "CSP/headers",
+        "WebCrypto",
+        "storage separation",
+        "Tor preference persistence",
+        "no hash fallback",
+        "local key generation",
+        "encrypted keystore export and verification",
+        "signed passphrase invoice link transfer",
+        "wrong invoice passphrase refusal",
+        "independent encrypted backup restoration",
+        "wrong backup passphrase refusal",
+        "encrypted vault reload and unlock",
+        "wrong vault passphrase refusal"
+      ],
+      "requestCount": 24,
+      "requests": [
+        {
+          "path": "/mirror/ghostpay/",
+          "method": "GET",
+          "type": "document"
+        },
+        {
+          "path": "/mirror/ghostpay/assets/index-BW2canuw.js",
+          "method": "GET",
+          "type": "script"
+        },
+        {
+          "path": "/mirror/ghostpay/assets/rolldown-runtime-XKyaHtl9.js",
+          "method": "GET",
+          "type": "script"
+        },
+        {
+          "path": "/mirror/ghostpay/assets/style-sbKVpGL7.css",
+          "method": "GET",
+          "type": "stylesheet"
+        },
+        {
+          "path": "/mirror/ghostpay/assets/index-BW2canuw.js",
+          "method": "GET",
+          "type": "fetch"
+        }
+      ],
+      "externalRequestAttempts": 0
+    }
+  ],
+  "limits": [
+    "Ordinary Chromium on loopback, not Tor Browser or live onion acceptance.",
+    "No external wallet, public RPC, chain payment or real funds.",
+    "Invoice transfer uses the existing signed link; invoice-file export/import is not implemented in this source.",
+    "Encrypted keystore recovery does not establish recovery of an interrupted or submitted payment.",
+    "The narrow viewport checks mobile layout only; no real mobile device or mobile Tor Browser was exercised.",
+    "Observed HTTP(S) requests and WebSocket attempts are checked; browser/extension traffic is outside this fixture."
+  ],
+  "status": "passed"
+}

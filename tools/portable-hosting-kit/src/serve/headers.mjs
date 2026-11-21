@@ -7,6 +7,7 @@
 // ", ". Anything Cloudflare would silently skip (bad lines, placeholders, absolute URLs) is an error here.
 
 import { KitError, ERROR_CODES } from '../errors.mjs';
+import { validateOnionOrigin } from '../config/host-config.mjs';
 import { DEFAULT_CACHE_CONTROL, KIT_DEFAULT_HEADERS_FILE, REQUIRED_CSP_DIRECTIVES, REQUIRED_HEADERS, extensionOf } from '../policy.mjs';
 
 /** @typedef {import('../types.mjs').HeaderRule} HeaderRule */
@@ -38,7 +39,6 @@ const PATTERN_RE = /^\/[A-Za-z0-9\-._~!&'()+,;=@/*]*$/;
 // Visible ASCII, space and tab.
 const VALUE_RE = /^[\x20-\x7e\t]*$/;
 const ABSOLUTE_URL_RE = /^[^\s]+:\/\//;
-const ONION_ORIGIN_RE = /^https?:\/\/[a-z2-7]{56}\.onion$/;
 
 /**
  * @param {string} message
@@ -418,11 +418,7 @@ export function transportHeaders(hostConfig, requestTarget = hostConfig.basePath
  * @returns {string}
  */
 export function onionOrigin(hostConfig) {
-  const origin = String(hostConfig.onionLocation).replace(/\/$/, '');
-  if (!ONION_ORIGIN_RE.test(origin)) {
-    throw new KitError(ERROR_CODES.CONFIG, `onionLocation must be an onion origin like http://<56 base32 chars>.onion, got ${JSON.stringify(hostConfig.onionLocation)}`);
-  }
-  return origin;
+  return validateOnionOrigin('onionLocation', hostConfig.onionLocation);
 }
 
 /**

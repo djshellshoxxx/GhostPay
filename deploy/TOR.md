@@ -1,4 +1,17 @@
-# Tor onion service (compose profile `onion`)
+# Tor onion hosting
+
+For the static GhostPay browser application, use the
+[static-only Tor recipe](tor-static/README.md). It prepares an artifact-verified
+nginx/Tor deployment without a relayer, removes host-published web ports, keeps
+identity material outside served artifacts and images, and checks Tor version and
+PoW capabilities. Preparation does not activate a service.
+
+## Legacy full-stack compose profile `onion`
+
+The existing recipe below includes the relayer. It is retained for existing
+operators and is not the static-only path. Its Debian-package image was not
+qualified by the static Tor completion work; do not infer its version or security
+status from the new source-pinned recipe.
 
 `docker compose --profile onion up -d` (or `selfhost.sh --onion`) builds `deploy/tor/Dockerfile` (Debian `tor` package) and runs it with `deploy/tor/torrc`: v3 hidden service, port 80 forwarded to `web:8080`, `SocksPort 0`, `ControlPort 0`, logs to stderr, no non-anonymous mode.
 

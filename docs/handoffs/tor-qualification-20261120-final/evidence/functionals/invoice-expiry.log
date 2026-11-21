@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /workspace/scratch/0d42549ffbeb/GhostPay-tor-qualification/packages/invoice-schema
+
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  20:46:08
+   Duration  362ms (transform 62%, import 33%, tests 4%, worker 1%)
+
