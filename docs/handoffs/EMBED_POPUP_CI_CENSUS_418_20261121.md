@@ -18,7 +18,7 @@ Captured: 2026-11-21 UTC. Repository: `djshellshoxxx/GhostPay`. No deploy, relea
 - **Redundant by ancestry:** the former #334 Bitcoin fee-floor branch is `ahead_by=0`; do not reapply.
 - **Focused open code:** #328 vault rekey, #337 popup, #338 Bitcoin network, #339 evidence-boundary, #340/#342 TRON genesis, #345 policy review, and #350 duplicate router callback; qualify separately.
 - **Stacked or overlapping:** receipt identity #332/#335, idle/backup #331/#333, transfer evidence #339/#347, privacy/wallet acceptance #348, recovery tests #346, request-file #344. Compare parent-vs-child commits rather than trusting huge main-relative changed-file lists.
-- Seven of the 26 comparisons returned exactly 300 files and may be truncated. Do not infer that missing files are absent.
+- Six of the 26 comparisons returned exactly 300 files and may be truncated. Do not infer that missing files are absent.
 - **Unfinished baseline review:** the original 392 branches were not all re-compared in this run; their older snapshot is not a current semantic uniqueness proof. Recheck exact heads before any selective merge.
 
 ## Handoff
