@@ -1,0 +1,12 @@
+
+ RUN  v5.1.0 /workspace/scratch/fc3db078ca12/GhostPay-focus-recovery/apps/web
+
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  18:56:17
+   Duration  3.86s (tests 31%, environment 31%, import 31%, transform 7%)
+
+    Isolate  2 workers spawned · ~678ms startup each (spawn + environment, per file)
+             at least ~678ms faster with isolate: false — reuses workers across files instead of one per file
+

@@ -1,0 +1,141 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "pinned_main": "aec179910c39081d820396409ff3139ff2264132",
+  "pinned_integration_307": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "verification_this_subtask": "Read-only local Git ancestry, focused diffs, mode/type/blob comparison against all 120 open PR heads, recorded-tree identity checks, plus GitHub metadata reads. No repository tests or builds were executed in this subtask.",
+  "branches": [
+    {
+      "name": "evidence/ghostpay-vault-rekey-qualification-20261120",
+      "head": "b9911c7228e95a3f8a6666d10aae50bcda08bd7d",
+      "disposition": "Evidence only above frozen PR #328; do not implement the fix again.",
+      "source_parent": "81598d93dd82cc440526c866d42b55be0657895b",
+      "source_paths": [
+        "packages/ux-vault/src/vault.ts",
+        "packages/ux-vault/src/vault.rekey-lock.test.ts"
+      ],
+      "exact_open_prs": [
+        328
+      ],
+      "main_and_307": "Neither contains the two target blobs.",
+      "evidence_delta_only_docs": true,
+      "recorded_prior_qualification": "285 package tests passed, no skips; original coverage/typecheck/lint/build passed and independent source review approved. These are prior retained execution results.",
+      "remaining_gate": "Refresh #328 current-source hosted checks and final integration composition; retain separate evidence branch."
+    },
+    {
+      "name": "integration/ghostpay-idle-session-20261120-r2",
+      "head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "disposition": "Existing recovered idle feature, already carried in descendant open PR family #333 → #335 → #344; not in pinned main/#307.",
+      "dependencies": {
+        "base_pr_325": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+        "donor_pr_256": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+      },
+      "exact_blob_result": "16 of 17 focused source/test/catalog blobs match #333, #335, and #344. SellerKeys.tsx differs only because #333 subsequently strengthens backup preflight and durable-write ownership.",
+      "ancestor_of_open_prs": [
+        333,
+        335,
+        344
+      ],
+      "remaining_gate": "Use qualified coordinator integration to bring the existing idle-plus-backup stack forward; do not replace newer SellerKeys with donor bytes. See chronology: #331 was merged into #325's branch after #325 had already merged into #307."
+    },
+    {
+      "name": "evidence/ghostpay-idle-session-r2-20261120",
+      "head": "ebc3fea4640e2a82585a6cfb73a97fbf0b907949",
+      "disposition": "Documentation-only child of idle source f5e04a30; source retention already covered by #333/#335/#344 ancestry.",
+      "source_parent": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "evidence_delta_only_docs": true,
+      "recorded_prior_qualification": "Original web gate: 3,155 passed, 13 existing skips, zero failures; original lean build/postbuild passed. No local browser assertions were run in that recorded qualification.",
+      "remaining_gate": "Preserve the full evidence and existing original-skip identities; later backup/receipt compositions require their own browser and hosted results."
+    },
+    {
+      "name": "fix/ghostpay-browser-acceptance-20261120-r3",
+      "head": "2affd298c364c284d4d74f703fd4a612cc0f16d9",
+      "disposition": "Substantive orphan recovery: runtime focus fix and some acceptance repairs are absent from every open PR. Other test edits overlap #348/#352 and must be reconciled selectively.",
+      "base_pr": 336,
+      "base_sha": "410353a23631234aa888e46f38df22291c699a26",
+      "owner": "/root/r3_browser_qualification",
+      "reviewer": "/root/r3_feature_completion",
+      "owner_release": "ACTIVE_WORK completion explicitly says all local processes stopped and source paths released to coordinator for isolated draft publication.",
+      "runtime_commit": "883b05b11e8973044434cce25adf98795164dbd9",
+      "runtime_path": "apps/web/src/components/WalletDisclosure.tsx",
+      "old_runtime_blob_in_348_and_352": "fe26789ff37a6802f23ee94d02631575ce1d01f7",
+      "recovered_runtime_blob": "00a70efc5f273da55d4ce4a76141a0b92fd5601a",
+      "test_path": "apps/web/src/components/WalletDisclosure.test.tsx",
+      "test_commits": [
+        "44d1558bedb71f095594fd5a269190ed61a4dc29",
+        "8eedfb0d9b9659c4a6f37f2ee9e0d4cb58d12414",
+        "270c1a5484f7b7c97f100b30a9287088fd0ec59a"
+      ],
+      "final_test_compatibility_commit": "76fbabcba18bef0cec696d9a5188794eb7537a4e",
+      "broader_overlapping_commit": "26cdd270946be976cb07c99a659cc6c72d3a9d1b",
+      "overlap": [
+        "#348 repairs matching-wallet locale context and the exact same inventory reference-count entry.",
+        "#352 repairs disconnected journal concealment and subsequent reconnected visibility in the same two devnet suites."
+      ],
+      "still_unique_acceptance_paths": [
+        "apps/web/e2e/app.spec.ts",
+        "apps/web/e2e/walletFixture.ts"
+      ],
+      "main_and_307": "WalletDisclosure.tsx is absent in both pinned trees; this belongs on the existing privacy stack, not a direct main-only cherry-pick.",
+      "recorded_prior_qualification": "92 focused DOM/wallet tests plus 6 inventory tests; full web typecheck/lint; independent source approval. No browser execution was claimed. Published final product tree matches recorded tested tree 2e61abb2a3ed37379bd16ecc90306d2d765e2ed3.",
+      "remaining_gate": "Recover focused runtime/regressions onto #352's current privacy stack, preserve #348/#352 work, run focused and required full/lean/browser/Pages/Beta checks against new composition."
+    },
+    {
+      "name": "qualify/ghostpay-hygiene-composition-20261120-9a4ab6",
+      "head": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7",
+      "disposition": "Existing qualified package composition, no new product behavior beyond #339/#347 plus #341.",
+      "dependencies": {
+        "pr_339": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+        "pr_347": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+        "pr_341": "78137622011528a646ae94155ee4acf7f72e1e2a"
+      },
+      "exact_blob_result": "Four focused files match #347; ledger.ts and ledger.browser-chains.test.ts match #341. All six target blobs are represented across those open PRs. Recorded full package tree 087f548c2e6203cac0a4184f66157ea21cf77879 matches the retained composition.",
+      "recorded_prior_qualification": "161 tests across seven files, no skips; original package coverage/typecheck/lint/build passed, independent source approval.",
+      "remaining_gate": "Reuse composition with donor provenance; final main/307 integration and privacy Sweep consumer wiring need separate applicable checks. The recorded search finds no hygiene browser caller in pinned #307."
+    },
+    {
+      "name": "evidence/ghostpay-fee-floor-qualification-20261120-r2",
+      "head": "aeb6cb376865443cb83af2a76fc6abfe7b7e4b7a",
+      "disposition": "Evidence-only child of merged PR #334; product already in current main. No duplicate implementation needed.",
+      "source_parent": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "source_paths": [
+        "packages/metadata-hardening/src/btc.ts",
+        "packages/metadata-hardening/src/btc.fee-policy.test.ts"
+      ],
+      "exact_blob_result": "Both blobs exactly match current main and descendant open PRs #345/#350. Pinned #307 has the older blobs.",
+      "recorded_prior_qualification": "118/118 package tests, no skips; original coverage/typecheck/lint/build; source approval with a retained nonblocking overflow-policy regression gap.",
+      "remaining_gate": "Preserve main's existing correction when reconciling #307. Evidence retention only; optional overflow-policy tests are a separate scope."
+    }
+  ],
+  "chronology": [
+    {
+      "pr": 325,
+      "head": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "merged_at": "2026-11-20T23:17:17Z",
+      "target": "integration/ghostpay-main-recovered-fixes-20261120",
+      "merge_commit": "394793b1276aeac337aedde30499548bb57eadf9",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/325"
+    },
+    {
+      "pr": 331,
+      "head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+      "merged_at": "2026-11-20T23:29:16Z",
+      "target": "integration/ghostpay-sweep-consent-20261120",
+      "merge_commit": "2748c9bfd55bd226c7801c15a7acdd955ab70339",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/331",
+      "implication": "This updated the already-merged #325 source branch after its earlier merge into #307; idle is not thereby integrated into #307."
+    },
+    {
+      "pr": 334,
+      "head": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+      "merged_at": "2026-11-20T23:30:15Z",
+      "target": "main",
+      "merge_commit": "aec179910c39081d820396409ff3139ff2264132",
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/334"
+    }
+  ],
+  "proof_files": [
+    "orphan-branch-blob-dispositions-20261121.json",
+    "orphan-branch-evidence-identity-proof-20261121.json"
+  ]
+}
+

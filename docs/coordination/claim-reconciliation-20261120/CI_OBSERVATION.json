@@ -1,0 +1,403 @@
+{
+  "observed_utc": "2026-11-21 02:49:22 UTC",
+  "repository": "djshellshoxxx/GhostPay",
+  "main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "integration_pr": 307,
+  "integration_head_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "integration_ci": {
+    "run_id": 44836230375,
+    "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44836230375",
+    "checkout_commit": "a55b0d07f4df48488929d742c935886ac2ecbd91",
+    "checkout_description": "GitHub merge of PR head 5a745d4b into base bfebea0a; verified from checkout log.",
+    "jobs": [
+      {
+        "id": 136633201787,
+        "name": "secrets-and-egress",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136633202326,
+        "name": "changes",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643806964,
+        "name": "contracts-static",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643806968,
+        "name": "e2e (lean)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643806995,
+        "name": "ts-check",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807007,
+        "name": "e2e (full)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807019,
+        "name": "ts-lint",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807023,
+        "name": "contracts-test",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807034,
+        "name": "ts-test-relayer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807050,
+        "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807064,
+        "name": "lean-candidate",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807073,
+        "name": "ts-test (rest-0)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807074,
+        "name": "contracts-coverage",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807102,
+        "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807106,
+        "name": "ts-test (rest-2)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807110,
+        "name": "ts-test (core-crypto)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807128,
+        "name": "ts-test (confidential-contracts)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807136,
+        "name": "ts-test (web)",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 136643807138,
+        "name": "ts-test (btc-silent-payments)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807143,
+        "name": "ts-test (rest-1)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807199,
+        "name": "contracts-slither",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136643807314,
+        "name": "ts-typecheck",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136693247581,
+        "name": "contracts",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136695334466,
+        "name": "typescript",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ],
+    "failed_web_job": {
+      "id": 136643807136,
+      "passed": 3084,
+      "failed": 1,
+      "skipped": 1,
+      "file": "apps/web/src/views/Pay.requestFile.test.tsx",
+      "test": "uses the existing passphrase flow without previewing private fields",
+      "error": "Unable to find role=\"heading\" and name \"Review payment\"",
+      "existing_repair_pr": 344,
+      "existing_repair_head": "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+    }
+  },
+  "workflows": [
+    {
+      "pr": 307,
+      "head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "runs": [
+        {
+          "id": 44836230487,
+          "name": "Integration",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 357,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230487/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230487/logs",
+          "workflow_id": 392297734
+        },
+        {
+          "id": 44836230551,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 334,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230551/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230551/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44836230390,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 339,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230390/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230390/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44836230318,
+          "name": "CLI operator qualification",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 304,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230318/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230318/logs",
+          "workflow_id": 412675588
+        },
+        {
+          "id": 44836230464,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 456,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230464/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230464/logs",
+          "workflow_id": 398745505
+        },
+        {
+          "id": 44836230494,
+          "name": "Tor static hosting",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 10,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230494/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230494/logs",
+          "workflow_id": 424694545
+        },
+        {
+          "id": 44836230375,
+          "name": "CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_number": 1615,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230375/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836230375/logs",
+          "workflow_id": 391558649
+        }
+      ]
+    },
+    {
+      "pr": 344,
+      "head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "runs": [
+        {
+          "id": 44836839498,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 340,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839498/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839498/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44836839524,
+          "name": "Tor static hosting",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 11,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839524/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839524/logs",
+          "workflow_id": 424694545
+        },
+        {
+          "id": 44836839540,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 335,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839540/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839540/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44836839436,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1617,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839436/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839436/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44836839505,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 457,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839505/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44836839505/logs",
+          "workflow_id": 398745505
+        }
+      ]
+    },
+    {
+      "pr": 350,
+      "head": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "runs": [
+        {
+          "id": 44845144737,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1627,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144737/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144737/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44845144758,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 343,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144758/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144758/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44845144759,
+          "name": "CLI operator qualification",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 310,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144759/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144759/logs",
+          "workflow_id": 412675588
+        },
+        {
+          "id": 44845144767,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 348,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144767/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144767/logs",
+          "workflow_id": 414091144
+        },
+        {
+          "id": 44845144764,
+          "name": "Hosting kit",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 467,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144764/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44845144764/logs",
+          "workflow_id": 398745505
+        }
+      ]
+    },
+    {
+      "pr": 352,
+      "head": "28f1e4bd0960a0d57ba2636b6456e7c1b3096e94",
+      "runs": [
+        {
+          "id": 44854044512,
+          "name": "CI",
+          "status": "queued",
+          "conclusion": null,
+          "run_number": 1632,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44854044512/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44854044512/logs",
+          "workflow_id": 391558649
+        },
+        {
+          "id": 44854044513,
+          "name": "Pages",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 348,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44854044513/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44854044513/logs",
+          "workflow_id": 392799214
+        },
+        {
+          "id": 44854044498,
+          "name": "Beta acceptance",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 353,
+          "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44854044498/jobs",
+          "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44854044498/logs",
+          "workflow_id": 414091144
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Workflow associations are source-pinned; a workflow-level success is not evidence that every conditional job ran.",
+    "The queued CI statuses must be refreshed before any qualification or merge decision.",
+    "PR307's failed web test is retained as a failure. The existing PR344 repair is not counted as passing full CI.",
+    "Focused local tests and static reviews do not replace complete coverage, browser, or hosted gates."
+  ]
+}
+

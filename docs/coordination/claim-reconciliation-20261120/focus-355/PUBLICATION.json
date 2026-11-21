@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "pr": 355,
+  "url": "https://github.com/djshellshoxxx/GhostPay/pull/355",
+  "draft": true,
+  "source_observation": "Final 2026-11-21T03:04:08Z snapshot, following publication and refetch.",
+  "head_ref": "fix/ghostpay-disclosure-focus-recovery-20261120",
+  "public_head_sha": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+  "local_head_sha": "fd928d498a01fdfcabd72c186655ac0d9a7ccaf2",
+  "exact_shared_tree": "e76571b61bfa8afbb745054df7f78e3b39d771e1",
+  "base_ref": "repair/ghostpay-privacy-browser-lifecycle-20261121-539818",
+  "base_sha": "8ce7f1db452167311876bd0707778c2e9c64f3df",
+  "ordered_parents": [
+    "f11792f7b9202512f0bf980a03f057e8a15836ae",
+    "8ce7f1db452167311876bd0707778c2e9c64f3df"
+  ],
+  "ref_update": {
+    "expected_old_sha": "f11792f7b9202512f0bf980a03f057e8a15836ae",
+    "force": false
+  },
+  "verification": [
+    "Fresh Git fetch of the published ref matches the local full tree and ordered parents.",
+    "The complete public/local tree diff is empty; commit metadata accounts for different commit IDs.",
+    "The complete base-to-head delta is a new WalletDisclosure.quickHide.test.tsx file and additive ownership/handoff documents.",
+    "All canonical #354 application, pre-existing test and browser files remain exact."
+  ],
+  "evidence_scope": "qualification.json is the preserved local executor report. Its no-remote-mutation statement describes that executor subtask; the coordinator subsequently published the source and retargeted the draft as recorded here.",
+  "remaining_gate": "Full combined-source and hosted product qualification remains pending."
+}

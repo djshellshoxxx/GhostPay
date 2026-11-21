@@ -1,3 +1,22 @@
+# Reconciliation tests in existing CI discovery — 2026-11-20 Pacific
+
+Worker: fc3db078ca12-r2-ci-review. Branch: test/ghostpay-reconciliation-ci-discovery-20261121-r2-fc3db0.
+Base: published PR358 head 508531da5665e3649d3f925673a2d8eb9347a2a1, tree 8ec4d555d364792ac998682f8e5f7f895f8468e0.
+Owned paths: new scripts/tests/reconcile-claims.test.mjs; new docs/coordination/claim-reconciliation-20261120/CI_DISCOVERY_20261121.md; this additive claim only.
+Finding: the current CI Node-test command selects scripts/testnet, scripts/regtest, scripts/tests and scripts/agent, so the existing scripts/coordination/reconcile-claims.test.mjs suite is not discovered.
+Acceptance: import the canonical suite from the existing discovered test directory; run its unchanged 13 cases through that dispatcher; verify exact current CI glob selection; preserve the original tool/test blobs, frozen report inputs and evidence, workflow, configuration and application runtime.
+Ownership: after the root's fresh remote fetch, inspected all 432 remote-tracking refs (425 unique heads) and 204 distinct ACTIVE_WORK blobs for the exact dispatcher path and explicit scripts/tests directory/glob claims; no dispatcher or matching claim was found. No shared integration ownership is acquired.
+State: local implementation complete. Direct module import and the CI-discovered dispatcher each passed the unchanged 13 cases with zero skips; the exact existing CI glob selects the dispatcher once among 29 files. Original source, workflow and frozen evidence identities are preserved. Root coordinates independent review and any publication; no remote mutation or workflow dispatch was performed by this worker.
+
+# Complete claim reconciliation — 2026-11-20 Pacific
+
+Worker: fc3db078ca12-root. Branch: audit/ghostpay-complete-claim-reconciliation-20261120.
+Base main: aec179910c39081d820396409ff3139ff2264132.
+Owned paths: new scripts/coordination/reconcile-claims.mjs and adjacent tests; new docs/coordination/claim-reconciliation-20261120/ evidence; this additive claim.
+Acceptance: deterministic exact-SHA comparison of the final 425 live branches and 125 open PRs against main and PR307; complete Git paths, blob/mode evidence, overlap and source-pinned raw claims; tested input validation and distinct ancestry/content/qualification results; independent review. The initial 420/120 snapshot remains separately identified.
+Ownership: PR343 is a four-PR documentation sample; inspected existing census branches contain reports without an equivalent reconciliation tool. Preserve their paths. Another coordinator holds integration lock generation 11. This task only adds an isolated reconciliation tool and evidence.
+State: complete local implementation and independent validation, retained for isolated draft review. Author and independent reviewer passed 13/13 tests; the final full inventory exited zero with SHA-256 ddc6c5688bc39640ffec9050f3111c3bce6e0de55f5da5b929776548a81033a3. Product recovery is separately preserved as tests-only PR355 above canonical PR354; this branch changes no product source. See docs/coordination/claim-reconciliation-20261120/README.md for exact sources, evidence limits and remaining integration work. Shared integration ownership was not acquired.
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.

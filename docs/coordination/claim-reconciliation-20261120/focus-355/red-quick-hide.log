@@ -1,0 +1,159 @@
+
+ RUN  v5.1.0 /workspace/scratch/fc3db078ca12/GhostPay-focus-recovery/apps/web
+
+ ❯ src/components/WalletDisclosure.quickHide.test.tsx (3 tests | 2 failed) 403ms
+   ❯ mounted wallet disclosure quick-hide focus recovery (3)
+     × quick hide focuses the privacy control when the caller left focus on body 56ms
+     × quick hide focuses the privacy control when the caller left focus on documentElement 56ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/WalletDisclosure.quickHide.test.tsx > mounted wallet disclosure quick-hide focus recovery > quick hide focuses the privacy control when the caller left focus on body
+AssertionError: expected <body><div><div>…(2)</div></div></body> to be <input role="switch" …(3)></input> // Object.is equality
+
+- Expected
++ Received
+
++ <body>
++   <div>
++     <div>
++       <header>
+          <input
+            aria-label="Privacy mode"
+            data-privacy-safe-control="true"
+            role="switch"
+            type="checkbox"
+          />
++         <button
++           type="button"
++         >
++           Reveal details
++         </button>
++         <p>
++           <button
++             aria-keyshortcuts="Alt+Shift+H"
++             class="btn"
++             type="button"
++           >
++             Hide sensitive details
++              (
++             <kbd>
++               Alt+Shift+H
++             </kbd>
++             )
++           </button>
++         </p>
++       </header>
++       <div
++         aria-hidden="true"
++         hidden=""
++         inert=""
++       >
++         <button
++           type="button"
++         >
++           Connect
++         </button>
++         <button
++           disabled=""
++           type="button"
++         >
++           Send
++         </button>
++         <p>
++           Cancelled
++         </p>
++       </div>
++     </div>
++   </div>
++ </body>
+
+ ❯ src/components/WalletDisclosure.quickHide.test.tsx:101:38
+     99|       const safe = screen.getByRole('switch', { name: 'Privacy mode' }…
+    100|       expect(safe.closest('[hidden], [inert]')).toBeNull();
+    101|       expect(document.activeElement).toBe(safe);
+       |                                      ^
+    102|     } finally { if (rootName === 'documentElement') root.removeAttribu…
+    103|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/WalletDisclosure.quickHide.test.tsx > mounted wallet disclosure quick-hide focus recovery > quick hide focuses the privacy control when the caller left focus on documentElement
+AssertionError: expected <html tabindex="-1">…(2)</html> to be <input role="switch" …(3)></input> // Object.is equality
+
+- Expected
++ Received
+
++ <html>
++   <head />
++   <body>
++     <div>
++       <div>
++         <header>
+            <input
+              aria-label="Privacy mode"
+              data-privacy-safe-control="true"
+              role="switch"
+              type="checkbox"
+            />
++           <button
++             type="button"
++           >
++             Reveal details
++           </button>
++           <p>
++             <button
++               aria-keyshortcuts="Alt+Shift+H"
++               class="btn"
++               type="button"
++             >
++               Hide sensitive details
++                (
++               <kbd>
++                 Alt+Shift+H
++               </kbd>
++               )
++             </button>
++           </p>
++         </header>
++         <div
++           aria-hidden="true"
++           hidden=""
++           inert=""
++         >
++           <button
++             type="button"
++           >
++             Connect
++           </button>
++           <button
++             disabled=""
++             type="button"
++           >
++             Send
++           </button>
++           <p>
++             Cancelled
++           </p>
++         </div>
++       </div>
++     </div>
++   </body>
++ </html>
+
+ ❯ src/components/WalletDisclosure.quickHide.test.tsx:101:38
+     99|       const safe = screen.getByRole('switch', { name: 'Privacy mode' }…
+    100|       expect(safe.closest('[hidden], [inert]')).toBeNull();
+    101|       expect(document.activeElement).toBe(safe);
+       |                                      ^
+    102|     } finally { if (rootName === 'documentElement') root.removeAttribu…
+    103|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  18:55:43
+   Duration  2.74s (environment 40%, import 35%, tests 16%, transform 9%)
+

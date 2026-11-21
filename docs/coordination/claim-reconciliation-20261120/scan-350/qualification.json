@@ -1,0 +1,169 @@
+{
+  "recorded_at_utc": "2026-11-21T02:35:55.545674+00:00",
+  "repository": "djshellshoxxx/GhostPay",
+  "pr": 350,
+  "head_sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+  "tree_sha": "c329fbd1bc08285da2278eac2a10d6b101e8a622",
+  "base_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "worktree_status": "",
+  "package_lock_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+  "source_blobs": {
+    "apps/web/src/lib/scanMatches.ts": "f82c8a31dfc162e7187ac61e49ee072caab29637",
+    "apps/web/src/lib/scanMatches.test.ts": "0e11f5d427345a594b0e3354b664d23903070830"
+  },
+  "runtime": {
+    "node": "v24.22.3",
+    "npm": "11.19.1",
+    "ci_node": "22",
+    "local_runtime_differs_from_ci": true
+  },
+  "dependency_versions": {
+    "typescript": {
+      "locked": "5.9.3",
+      "installed": "5.9.3"
+    },
+    "vitest": {
+      "locked": "5.0.5",
+      "installed": "5.0.5"
+    },
+    "vite": {
+      "locked": "8.3.5",
+      "installed": "8.3.5"
+    },
+    "jsdom": {
+      "locked": "30.1.3",
+      "installed": "30.1.3"
+    },
+    "react": {
+      "locked": "19.3.1",
+      "installed": "19.3.1"
+    },
+    "eslint": {
+      "locked": "10.15.0",
+      "installed": "10.15.0"
+    },
+    "zod": {
+      "locked": "4.6.7",
+      "installed": "4.6.7"
+    }
+  },
+  "completed_source_library_builds": [
+    "@ghostpay/address-safety",
+    "@ghostpay/btc-silent-payments",
+    "@ghostpay/core-crypto",
+    "@ghostpay/invoice-schema",
+    "@ghostpay/chain-adapters",
+    "@ghostpay/net-harness",
+    "@ghostpay/net-transport",
+    "@ghostpay/payment-uri",
+    "@ghostpay/policy-scheme",
+    "@ghostpay/qr-exchange",
+    "@ghostpay/pir-two-server",
+    "@ghostpay/scan-source",
+    "@ghostpay/secret-box",
+    "@ghostpay/solana-stealth",
+    "@ghostpay/tron-adapter",
+    "@ghostpay/tx-review",
+    "@ghostpay/ux-vault"
+  ],
+  "commands": [
+    {
+      "command": "npm ci --ignore-scripts --no-audit --no-fund",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350",
+      "exit_code": 137,
+      "outcome": "Killed before successful completion; no tests ran",
+      "log": "npm-ci.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=768 npm ci --workspace @ghostpay/web --include-workspace-root --ignore-scripts --no-audit --no-fund --prefer-offline --maxsockets=2",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350",
+      "exit_code": 0,
+      "outcome": "Added 305 packages in 8 seconds; exact lockfile unchanged; selected web workspace and dependencies",
+      "log": "npm-ci-web.log"
+    },
+    {
+      "command": "npm ls --workspace @ghostpay/web --depth=0",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350",
+      "exit_code": 0,
+      "outcome": "Selected dependency inventory; zod@4.6.7 is reported extraneous and matches the unchanged lockfile version; not a whole-monorepo integrity qualification",
+      "log": "web-dependencies.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 node scripts/build-workspaces.mjs --workspace @ghostpay/web",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350",
+      "exit_code": 137,
+      "outcome": "17 distinct dependency libraries built successfully from exact source. Web TypeScript phase killed before Vite or postbuild scan. Full web build NOT passed.",
+      "log": "build-web-closure.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run --maxWorkers=1 src/lib/scanMatches.test.ts src/views/Scan.test.tsx src/views/Scan.autoRescan.test.tsx src/views/Scan.privacy.test.tsx",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350/apps/web",
+      "exit_code": 137,
+      "outcome": "Killed after runner startup before any reported test outcome; no component pass or assertion failure established",
+      "log": "scan-focused.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=384 ../../node_modules/.bin/vitest run --maxWorkers=1 src/lib/scanMatches.test.ts",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350/apps/web",
+      "exit_code": 0,
+      "outcome": "1 file passed; 4 tests passed; zero skips; reported duration 1.18s. Original production code, original tests and original Vitest config. Focused run without coverage is supplementary evidence, not the full coverage gate.",
+      "log": "scan-matches-only.log"
+    },
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=512 ./node_modules/.bin/eslint --config eslint.config.js apps/web/src/lib/scanMatches.ts apps/web/src/lib/scanMatches.test.ts",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350",
+      "exit_code": 137,
+      "outcome": "Killed without lint diagnostics; scoped lint NOT passed",
+      "log": "scan-matches-eslint.log"
+    },
+    {
+      "command": "git diff --check && git diff --exit-code -- package-lock.json && git status --short",
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-scan-350",
+      "exit_code": 0,
+      "outcome": "Tracked source and lockfile unchanged; clean worktree"
+    }
+  ],
+  "logs": {
+    "build-web-closure.log": {
+      "bytes": 5494,
+      "sha256": "4ef5bf4fe6dd99d65683211d3af54fabf6c59fcd22e9dd635474c01b870611df"
+    },
+    "npm-ci-web.log": {
+      "bytes": 176,
+      "sha256": "daf66c3ce18f6fba1c2627d5a4722abe4fc1fd037e961143e866ab075969f192"
+    },
+    "npm-ci.log": {
+      "bytes": 272,
+      "sha256": "7ba22318edcaeba2d55ec1480b6f02bc7ba2afb3f8a61998fe67928f8073575b"
+    },
+    "scan-focused.log": {
+      "bytes": 74,
+      "sha256": "ffcb7ba016b74c10dd9ee23efb8bc18f91c18ad24971ed74f7387eaac0490ece"
+    },
+    "scan-matches-eslint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scan-matches-only.log": {
+      "bytes": 207,
+      "sha256": "28b9db580e8fdef7041de910a806a3fe8dbe35d541811a6ca16eb171d3915c9e"
+    },
+    "web-dependencies.log": {
+      "bytes": 11667,
+      "sha256": "ac24c49d9ac8f378288475f4d0636ffb47089086b68e4d516180f53c9c43c916"
+    }
+  },
+  "built_artifacts": {
+    "manifest": "built-library-artifacts.json",
+    "count": 702,
+    "sha256": "6c1d599108290606e3afafcf544fc64597446d54a06f7b5e0c927829815f5640"
+  },
+  "limits": [
+    "Core hosted checks and complete web coverage gate remain separate",
+    "No browser UI tests were run locally",
+    "Full web TypeScript/build and scoped lint were terminated before success",
+    "SIGKILL cause was not established; constrained local disk and memory availability observed",
+    "No remote mutations, network RPC or real-funds operations",
+    "No source, config, assertions, coverage thresholds, timeouts, or lockfile were changed"
+  ]
+}
