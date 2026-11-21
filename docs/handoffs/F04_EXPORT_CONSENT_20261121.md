@@ -24,11 +24,15 @@ The coordinator assumes a trusted, locally built projection and a trusted `Dashb
 ## Verification and limitations
 
 - Before source implementation, a local Node test failed because the export module was absent (RED).
-- Local Node 22.16.0, TypeScript 5.8.3, isolated stub of the existing F04 context helper, and the new actual `export.ts` implementation: standalone strict TS compilation exited 0; **eight local Node tests passed, zero failed** after repair. Local harness exercised exact string amounts, malformed selections, formulas/CSV quoting, preview replay, cancellation/session drift and byte cap.
+- Local Node 22.16.0, TypeScript 5.8.3, isolated stub of the existing F04 context helper, and the new actual `export.ts` implementation: standalone strict TS compilation exited 0; **eight local Node tests passed, zero failed** after repair. The TS check was repeated with GhostPay's strict, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax` and `isolatedModules` settings; this surfaced and prompted corrections to three test-fixture typing errors (missing-row checks), and the strict check then passed. Local harness exercised exact string amounts, malformed selections, formulas/CSV quoting, preview replay, cancellation/session drift and byte cap.
 - Two additional regressions failed before the second repair (accessor invocation and lossy UTF-16) and passed after it. The local tests used a stand-in `model.ts` and type-only projection scaffolding, not the real repository installation. They **do not** establish a full GhostPay test pass.
 - The committed `export.test.ts` contains eight Vitest cases, including one that creates a real unverified projection with `buildDashboardProjection`. These Vitest cases, repository lint, whole-web typecheck, coverage, build, CodeQL, browser, mobile and hosted CI are **not locally executed or claimed as passing** here.
 - A second, separate security review remains required; this same coordinator's review is not independent.
 - No payment, private key, merchant journal or live-network behavior was exercised. No deployment occurred.
+
+## Verified hard dependency status (current source comparison)
+
+The exact GitHub source comparison against main for `future/p03-local-stealth-scanning` and `future/p05-encrypted-local-state` shows each is documentation-only. Their own SPEC.md headers explicitly say **Specification only**, with no implementation, activation or test qualification. P03 is 5 commits ahead and 125 behind observed main; P05 is 6 ahead and 125 behind. The only compared paths are documentation and the module catalog/ownership metadata. Accordingly, these branches cannot supply the trusted current canonical event assessment or the transactional encrypted journal required to activate F04. Existing older scanner/vault primitives are usable foundations but are not proof that the proposed integration contracts exist.
 
 ## Remaining F04 milestones
 
