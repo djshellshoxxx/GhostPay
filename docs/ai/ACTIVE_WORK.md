@@ -1312,3 +1312,16 @@ review, exact published-source hosted/browser qualification and integration.
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# Isolated idle and scan qualification checkpoint — 2026-11-20 Pacific
+
+Worker: `fc3db078ca12-root-r2`; source reviewer `/root/r2_idle_composition_review`; execution reviewer `/root/r2_ci_review`; wallet-test author and benchmark diagnostic reviewer `/root/r2_privacy_qualification`.
+Owned branch: `integration/ghostpay-idle-scan-candidate-20261121-fc3db`.
+Tested local source: `8f75770d5b3a935eddfddfb215f86bceb9e874e8`; public source checkpoint: `418054d5ca041973d31d514406ee4c6157ca919f`; identical complete tree: `130f42e633929e5d2c630ac9741f62d7fe9764e4`.
+Source review: all original donor histories and 4,202 pre-existing nonregistry entries preserved; the only added product test is the four-case final-account regression file. Complete mapped publication trees and ordered parents were fetched and verified. This qualification addendum changes documentation only.
+Executed: wallet focused tests 4/4; full web coverage 3,181 passed / 13 existing-rule skips; metadata-hardening 118/118; TRON adapter 107/107; original typed lint, full/lean TypeScript builds and bundle scans; original repository secret scan. All original coverage thresholds remain intact. Focused and full web selections overlap and must not be summed.
+Unresolved: original separate no-coverage gate finished two passed / one failed at the cryptographic cost comparison; native Chromium failed during startup before page assertions, with 115 cases not run. Combined hosted CI and full/lean browser acceptance remain required. No local whole-gate or release pass is claimed.
+Evidence: `docs/consolidation/idle-scan-candidate-20261121-fc3db/REPORT.md` and adjacent composition, publication, execution and lossless log artifacts retain both setup failures and final outcomes. Earlier donor/author handoffs remain historical records.
+State: source and evidence prepared for isolated draft review. Shared integration/main remain outside this worker's ownership while generation 11 is held by `994a0d214fb9-root-r3`; no lock takeover, shared-target promotion, manual workflow dispatch, deployment or funds operation was performed.

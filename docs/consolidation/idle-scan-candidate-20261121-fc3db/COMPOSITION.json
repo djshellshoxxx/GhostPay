@@ -1,0 +1,574 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "reviewer": "/root/r2_idle_composition_review",
+  "review_result": "approved_for_source_preserving_qualification_and_isolated_draft",
+  "source_checkpoints": {
+    "reviewed_local": {
+      "commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "ordered_parents": [
+        "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+        "0330556ef3d3a95d5ca759fc620e9f10d38e62c3"
+      ]
+    },
+    "public_source": {
+      "commit": "418054d5ca041973d31d514406ee4c6157ca919f",
+      "tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "ordered_parents": [
+        "0d5d564d4ef7c07444b9969e5ba482935e1de879",
+        "80d237fe61be06bf8cc0bcee6c58f859eb1f0f78"
+      ]
+    },
+    "candidate_worktree_HEAD_verified": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+    "public_and_local_complete_trees_identical": true
+  },
+  "donors": {
+    "main": {
+      "commit": "aec179910c39081d820396409ff3139ff2264132",
+      "tree": "93588004b788f583bab76a72953be98f9d8e8591",
+      "ordered_parents": [
+        "784b445f6bc5c641e8e85d4e28b730e044791f40",
+        "9dcd2d88ff32060e519ef18e2d8753691b56abc1"
+      ]
+    },
+    "integration_pr307": {
+      "commit": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "tree": "05b0425153c66260bc8e1da2ea82f57a248bf376",
+      "ordered_parents": [
+        "36e8b8861990e909b8ab3662ea7ac16ef0d94102"
+      ]
+    },
+    "idle_stack_pr344": {
+      "commit": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "tree": "32d3a60ecb05a21a25ae42f253c2535b592c8611",
+      "ordered_parents": [
+        "6a3645ebe26858f67079382b304887d6feeef097"
+      ]
+    },
+    "scan_pr350": {
+      "commit": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "tree": "c329fbd1bc08285da2278eac2a10d6b101e8a622",
+      "ordered_parents": [
+        "94f25311b22fe4da6366d20eef5043bc03c6dc85"
+      ]
+    }
+  },
+  "ancestry": {
+    "main": {
+      "commit": "aec179910c39081d820396409ff3139ff2264132",
+      "ancestor_of_reviewed_local": true,
+      "ancestor_of_public_source": true
+    },
+    "integration_pr307": {
+      "commit": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "ancestor_of_reviewed_local": true,
+      "ancestor_of_public_source": true
+    },
+    "idle_stack_pr344": {
+      "commit": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "ancestor_of_reviewed_local": true,
+      "ancestor_of_public_source": true
+    },
+    "scan_pr350": {
+      "commit": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "ancestor_of_reviewed_local": true,
+      "ancestor_of_public_source": true
+    }
+  },
+  "ordered_topology": {
+    "local": [
+      {
+        "role": "ownership_claim",
+        "commit": "b0bc4fecbea288f646d7960ab2b58679e1887ef6",
+        "tree": "6d3fdf1b401b63efa7ffb6205822f261bf4dad6b",
+        "ordered_parents": [
+          "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        ]
+      },
+      {
+        "role": "merge_idle_stack",
+        "commit": "21d2faec5b8e540ee43cb2b6736c348323899360",
+        "tree": "9115ecdfcdbc48217053642919171edaf371e218",
+        "ordered_parents": [
+          "b0bc4fecbea288f646d7960ab2b58679e1887ef6",
+          "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+        ]
+      },
+      {
+        "role": "merge_scan_and_main",
+        "commit": "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+        "tree": "2548ec65768ec1b7f4e8244d790e450b1d5beb1e",
+        "ordered_parents": [
+          "21d2faec5b8e540ee43cb2b6736c348323899360",
+          "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+        ]
+      },
+      {
+        "role": "wallet_test_contribution",
+        "commit": "0330556ef3d3a95d5ca759fc620e9f10d38e62c3",
+        "tree": "88c1c49efb027d06ff9a06d2aa48a5dc9df13058",
+        "ordered_parents": [
+          "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        ]
+      },
+      {
+        "role": "merge_wallet_tests",
+        "commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+        "tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+        "ordered_parents": [
+          "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+          "0330556ef3d3a95d5ca759fc620e9f10d38e62c3"
+        ]
+      }
+    ],
+    "public": [
+      {
+        "role": "ownership_claim",
+        "commit": "800d15270fed350a2608bd619d408ababaa7ce2c",
+        "tree": "6d3fdf1b401b63efa7ffb6205822f261bf4dad6b",
+        "ordered_parents": [
+          "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        ]
+      },
+      {
+        "role": "merge_idle_stack",
+        "commit": "6127df8da920bfde8c8769987b18d363f0a6bae5",
+        "tree": "9115ecdfcdbc48217053642919171edaf371e218",
+        "ordered_parents": [
+          "800d15270fed350a2608bd619d408ababaa7ce2c",
+          "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+        ]
+      },
+      {
+        "role": "merge_scan_and_main",
+        "commit": "0d5d564d4ef7c07444b9969e5ba482935e1de879",
+        "tree": "2548ec65768ec1b7f4e8244d790e450b1d5beb1e",
+        "ordered_parents": [
+          "6127df8da920bfde8c8769987b18d363f0a6bae5",
+          "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+        ]
+      },
+      {
+        "role": "wallet_test_contribution",
+        "commit": "80d237fe61be06bf8cc0bcee6c58f859eb1f0f78",
+        "tree": "88c1c49efb027d06ff9a06d2aa48a5dc9df13058",
+        "ordered_parents": [
+          "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        ]
+      },
+      {
+        "role": "merge_wallet_tests",
+        "commit": "418054d5ca041973d31d514406ee4c6157ca919f",
+        "tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+        "ordered_parents": [
+          "0d5d564d4ef7c07444b9969e5ba482935e1de879",
+          "80d237fe61be06bf8cc0bcee6c58f859eb1f0f78"
+        ]
+      }
+    ],
+    "corresponding_public_local_trees_and_mapped_parent_order_verified": true,
+    "publication_details": "PUBLICATION.json"
+  },
+  "independent_four_source_reference": {
+    "first_merge_sources": [
+      "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+    ],
+    "first_unresolved_tree": "860a2a31e8532f42587c4891c4e18cb9d90ac50b",
+    "temporary_unreferenced_merge_commit": "0589ca5d6f2f64b05fa6d6dd129515d4070ad1be",
+    "second_merge_source": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+    "final_unresolved_tree": "5d9d949708245619588bd42003eeb46eabf03d8d",
+    "conflict_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "note": "Temporary reference trees contain registry conflict markers and were used only for nonregistry comparison. No reference was published or promoted."
+  },
+  "preservation": {
+    "composition_entries_before_wallet_test": 4203,
+    "final_source_entries": 4205,
+    "preserved_original_nonregistry_entries": 4202,
+    "unexpected_original_nonregistry_changes": [],
+    "final_delta_from_approved_composition": [
+      "apps/web/src/lib/wallet.finalAccount.test.ts",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md"
+    ],
+    "new_wallet_files_exact_to_author_commit": "0330556ef3d3a95d5ca759fc620e9f10d38e62c3",
+    "projection_sha256": "f66648bd910728976e2f888fc5cd15f782242cda83f0d7b2f65cff390a71f6ac",
+    "projection_algorithm": {
+      "input": "Recursive Git leaf entries from the reviewed final source tree, including modes, object types and object IDs.",
+      "exclude_paths": [
+        "apps/web/src/lib/wallet.finalAccount.test.ts",
+        "docs/ai/ACTIVE_WORK.md",
+        "docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md"
+      ],
+      "order": "Sort paths lexicographically as Python UTF-8-decoded strings.",
+      "rows": "Array of [path, mode, type, sha] arrays; all values are strings.",
+      "serialization": "Serialize the row array as compact JSON with Unicode characters emitted directly, comma and colon separators, no spaces, and no trailing newline; encode the resulting text as UTF-8.",
+      "digest": "SHA-256 of the serialized bytes."
+    }
+  },
+  "main_product_test_entries": {
+    "apps/web/src/features/tron/chain.hardening.test.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e58fc174451aae6a2cfc4e82f76a9adbc540724c"
+    },
+    "apps/web/src/features/tron/fixtures.testutil.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0843eafc6fabeccb6b1264407cd5dbc3d5c90470"
+    },
+    "packages/tron-adapter/src/rpc.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0a921bb15848c23db3338fa1c96e18146cbda88"
+    },
+    "packages/tron-adapter/src/scan.test.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "571666de60c6b6aec0dd80a94209e067a08f5a66"
+    },
+    "packages/metadata-hardening/src/btc.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "88baf602d4dc0f17425509ac6a050b74fd1cae24"
+    },
+    "packages/metadata-hardening/src/btc.fee-policy.test.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd20187e69cb539651de65dc55d1deebd18c3147"
+    }
+  },
+  "scan_entries": {
+    "apps/web/src/lib/scanMatches.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f82c8a31dfc162e7187ac61e49ee072caab29637"
+    },
+    "apps/web/src/lib/scanMatches.test.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e11f5d427345a594b0e3354b664d23903070830"
+    },
+    "docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3876a18e4086dec5bece9f012a215c9017217a98"
+    }
+  },
+  "wallet_addition_entries": {
+    "apps/web/src/lib/wallet.finalAccount.test.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0500d9e1c137632fe2f6fd2fb930c3311401872"
+    },
+    "docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98bfdda01e471b981ec5fbdf97923fec2215b894"
+    }
+  },
+  "unchanged_wallet_sources": {
+    "apps/web/src/lib/wallet.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "800cfa90810b887898d4184ff3f5ccfb2601c971"
+    },
+    "apps/web/src/lib/wallet.test.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0eef38ea9deb736072515d3240eeabfbd6b5e49b"
+    },
+    "apps/web/src/lib/duplicateAttemptJournal.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8c2ec1915b833a5b78286b9b9caca1c247e827c"
+    },
+    "apps/web/src/test/mockWallet.ts": {
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b533f45adb1fb9d334a592c30f3ef76007ed29f"
+    }
+  },
+  "ownership_preservation": {
+    "path": "docs/ai/ACTIVE_WORK.md",
+    "final_blob": "920a053903fe0e9a41ed7d11b98ec8298871043a",
+    "final_line_count": 1314,
+    "algorithm": "Read original blob bytes; splitlines(keepends=True); require each complete parent line sequence to be an ordered subsequence of the merged blob. This does not assert contiguous duplicate copies.",
+    "local_merge_checks": [
+      {
+        "source_commit": "b0bc4fecbea288f646d7960ab2b58679e1887ef6",
+        "target_commit": "21d2faec5b8e540ee43cb2b6736c348323899360",
+        "source_line_count": 1140,
+        "exact_parent_lines_preserved_in_order": true
+      },
+      {
+        "source_commit": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+        "target_commit": "21d2faec5b8e540ee43cb2b6736c348323899360",
+        "source_line_count": 1226,
+        "exact_parent_lines_preserved_in_order": true
+      },
+      {
+        "source_commit": "21d2faec5b8e540ee43cb2b6736c348323899360",
+        "target_commit": "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+        "source_line_count": 1268,
+        "exact_parent_lines_preserved_in_order": true
+      },
+      {
+        "source_commit": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+        "target_commit": "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+        "source_line_count": 785,
+        "exact_parent_lines_preserved_in_order": true
+      },
+      {
+        "source_commit": "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+        "target_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+        "source_line_count": 1304,
+        "exact_parent_lines_preserved_in_order": true
+      },
+      {
+        "source_commit": "0330556ef3d3a95d5ca759fc620e9f10d38e62c3",
+        "target_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+        "source_line_count": 1140,
+        "exact_parent_lines_preserved_in_order": true
+      }
+    ],
+    "all_original_donor_registry_lines_preserved_in_final": true,
+    "public_registry_identical_to_reviewed_local": true,
+    "conflict_markers_present": false
+  },
+  "contributions": [
+    {
+      "source": "current_main",
+      "comparison_base": "bfebea0acf213a113d2740366fd592042661ca67",
+      "head": "aec179910c39081d820396409ff3139ff2264132",
+      "nonregistry_changed_paths": 11,
+      "paths_outside_docs_directory": 6
+    },
+    {
+      "source": "idle_stack",
+      "comparison_base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "head": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "nonregistry_changed_paths": 141,
+      "paths_outside_docs_directory": 24
+    },
+    {
+      "source": "scan_helper",
+      "comparison_base": "aec179910c39081d820396409ff3139ff2264132",
+      "head": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "nonregistry_changed_paths": 3,
+      "paths_outside_docs_directory": 2
+    },
+    {
+      "source": "wallet_tests",
+      "comparison_base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "head": "0330556ef3d3a95d5ca759fc620e9f10d38e62c3",
+      "nonregistry_changed_paths": 2,
+      "paths_outside_docs_directory": 1
+    }
+  ],
+  "complete_change_inventory_from_integration": {
+    "base": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+    "head": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+    "changed_path_count": 158,
+    "paths_outside_docs_directory": 33,
+    "outside_docs_count_note": "Includes narrative apps/web/DEVIATIONS.md; this is a path classification, not a count of runtime files.",
+    "paths": [
+      "apps/web/DEVIATIONS.md",
+      "apps/web/e2e/backup-ownership.spec.ts",
+      "apps/web/e2e/core-journey.spec.ts",
+      "apps/web/e2e/idle-session.spec.ts",
+      "apps/web/e2e/pages-devnet.spec.ts",
+      "apps/web/locales/ar.json",
+      "apps/web/locales/en.json",
+      "apps/web/locales/es.json",
+      "apps/web/locales/ja.json",
+      "apps/web/src/AppShell.idleClock.test.tsx",
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx",
+      "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx",
+      "apps/web/src/components/ReceiptPanel.tsx",
+      "apps/web/src/components/TagArchive.test.tsx",
+      "apps/web/src/features/tron/chain.hardening.test.ts",
+      "apps/web/src/features/tron/fixtures.testutil.ts",
+      "apps/web/src/i18n/securityKeys.ts",
+      "apps/web/src/lib/keyVault.ts",
+      "apps/web/src/lib/scanCursorSlot.test.ts",
+      "apps/web/src/lib/scanCursorSlot.ts",
+      "apps/web/src/lib/scanMatches.test.ts",
+      "apps/web/src/lib/scanMatches.ts",
+      "apps/web/src/lib/session.idleLock.test.ts",
+      "apps/web/src/lib/session.ts",
+      "apps/web/src/lib/wallet.finalAccount.test.ts",
+      "apps/web/src/views/Pay.requestFile.test.tsx",
+      "apps/web/src/views/SellerKeys.ownership.test.tsx",
+      "apps/web/src/views/SellerKeys.tsx",
+      "docs/ai/ACTIVE_WORK.md",
+      "docs/consolidation/backup-preflight-r2-20261120/ARTIFACTS.md",
+      "docs/consolidation/backup-preflight-r2-20261120/EVIDENCE.json",
+      "docs/consolidation/backup-preflight-r2-20261120/INDEPENDENT_REVIEW.json",
+      "docs/consolidation/backup-preflight-r2-20261120/INDEPENDENT_REVIEW.md",
+      "docs/consolidation/backup-preflight-r2-20261120/PLAN_REVIEW.json",
+      "docs/consolidation/backup-preflight-r2-20261120/PLAN_REVIEW.md",
+      "docs/consolidation/backup-preflight-r2-20261120/REPORT.md",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-build-collection.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat-run.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-compat.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-dependency-reuse.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-full-collection.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green-run.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-green.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lean-build.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lean-collection.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-lint.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-original-gates.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red-run.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red.json.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-red.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r2-typecheck.log.json",
+      "docs/consolidation/backup-preflight-r2-20261120/outputs/backup-preflight-r3-author-evidence.json.json",
+      "docs/consolidation/continuation-r2-20261120/BRANCH_CENSUS.json",
+      "docs/consolidation/continuation-r2-20261120/BRANCH_CENSUS.md",
+      "docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.json",
+      "docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.md",
+      "docs/consolidation/idle-session-r2-20261120/EVIDENCE.json",
+      "docs/consolidation/idle-session-r2-20261120/REPORT.md",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-full.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-lean.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.json.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-lint.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.json.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-secrets.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-typecheck.log.json",
+      "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-whitespace.log.json",
+      "docs/consolidation/receipt-identity-r2-20261120/ARTIFACTS.md",
+      "docs/consolidation/receipt-identity-r2-20261120/EVIDENCE.json",
+      "docs/consolidation/receipt-identity-r2-20261120/INDEPENDENT_REVIEW.json",
+      "docs/consolidation/receipt-identity-r2-20261120/INDEPENDENT_REVIEW.md",
+      "docs/consolidation/receipt-identity-r2-20261120/LINT_REVIEW_ADDENDUM.json",
+      "docs/consolidation/receipt-identity-r2-20261120/LINT_REVIEW_ADDENDUM.md",
+      "docs/consolidation/receipt-identity-r2-20261120/REPORT.md",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-lint.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-original-gates.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-before-lint-fix-typecheck.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint-run.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-after-lint.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat-run.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-compat.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-corrected-worker-checkpoint.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-dependency-reuse.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-donor-checks.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-gates.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-lean-build.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-lint.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-secrets.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-typecheck.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-final-whitespace.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green-run.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-green.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-lint-fix-provenance.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-lint.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-original-gates.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red-run.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-red.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-source-integrity.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-source-pins.json.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-typecheck.log.artifact.json",
+      "docs/consolidation/receipt-identity-r2-20261120/outputs/receipt-identity-r2-worker-checkpoint.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/ARTIFACTS.md",
+      "docs/consolidation/request-file-async-r3-20261120/COORDINATOR_REVIEW.json",
+      "docs/consolidation/request-file-async-r3-20261120/COORDINATOR_REVIEW.md",
+      "docs/consolidation/request-file-async-r3-20261120/EVIDENCE.json",
+      "docs/consolidation/request-file-async-r3-20261120/REPORT.md",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-backup-hosted-original.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage--lcov.info.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-build-artifacts.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage--lcov.info.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-dependency-provenance.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-run.py.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets.log.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-source-provenance.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck-run.json.artifact.json",
+      "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck.log.artifact.json",
+      "docs/guides/troubleshooting-by-symptom.md",
+      "docs/handoffs/BTC_FEE_FLOOR_CAP_20261120.md",
+      "docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_R2_20261120.md",
+      "docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md",
+      "docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md",
+      "docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md",
+      "docs/handoffs/idle-session-20261119/COMPLETION.md",
+      "docs/handoffs/idle-session-20261119/REVIEW.md",
+      "docs/user/session-security.md",
+      "docs/user/set-up-stealth-meta-address.md",
+      "docs/user/troubleshooting.md",
+      "packages/metadata-hardening/src/btc.fee-policy.test.ts",
+      "packages/metadata-hardening/src/btc.ts",
+      "packages/tron-adapter/src/rpc.ts",
+      "packages/tron-adapter/src/scan.test.ts"
+    ]
+  },
+  "pre_publication_duplicate_check": {
+    "fetched_remote_refs_inspected": 429,
+    "distinct_heads_compared": 424,
+    "contributed_non_docs_postimages_compared": 32,
+    "matching_existing_heads": [],
+    "existing_refs_containing_all_three_integration_idle_scan_sources": [],
+    "scope": "Observed at the independent four-source planning checkpoint before this candidate was published; no current-ref or broad semantic-equivalence claim."
+  },
+  "test_design_review": {
+    "test_file": "apps/web/src/lib/wallet.finalAccount.test.ts",
+    "authored_cases": 4,
+    "result": "approved",
+    "findings": [
+      "The first account reread succeeds; the final reread after network checks alone returns another account.",
+      "The provider has no event emitter; session fields remain unchanged and no application revocation callback is supplied.",
+      "Negative send/sign cases assert the specific account-change error and provider call sequence before submission; the send case also proves no attempt-journal access or mutation.",
+      "Positive controls exercise successful single submission, preservation of the prior record, a new submitted journal entry and typed-data signing.",
+      "The existing event-emitting browser case remains unchanged. No new runtime defect or runtime correction is claimed."
+    ]
+  },
+  "review_boundaries": {
+    "performed": [
+      "Independent Git merge-object and complete tree/blob/mode/type comparisons.",
+      "Exact ancestor, ordered-parent and registry-line preservation checks.",
+      "Static review of the new test, relevant wallet runtime, MockWallet and existing browser account-change fixture; identity verification of the unchanged journal runtime.",
+      "Read-only verification of the named public source object and current local source HEAD."
+    ],
+    "not_performed": [
+      "No product tests, builds, CI dispatch, dependency installation, production/test edits, ref updates or remote publication by this review task.",
+      "No claim of full repository, real-chain, browser or release qualification."
+    ],
+    "execution_evidence": "Coordinator execution results are recorded separately in EXECUTION.json and EXECUTION_LOGS.json.gz.",
+    "ownership": "No ownership release, integration lease acquisition or authority to update shared targets is inferred.",
+    "receipt_written": "Only docs/consolidation/idle-scan-candidate-20261121-fc3db/COMPOSITION.json was created by this receipt-authoring task."
+  }
+}

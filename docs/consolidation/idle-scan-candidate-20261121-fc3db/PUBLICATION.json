@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "repository": "djshellshoxxx/GhostPay",
+  "branch": "integration/ghostpay-idle-scan-candidate-20261121-fc3db",
+  "tested_local_source": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+  "published_source": "418054d5ca041973d31d514406ee4c6157ca919f",
+  "identical_source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+  "publication_method": "GitHub Git data API; new owned branch, preserving both original source parents in merge commits. API metadata changes commit IDs; each complete tree and mapped ordered parent list are verified against local objects after fetch.",
+  "commits": [
+    {
+      "local_head": "b0bc4fecbea288f646d7960ab2b58679e1887ef6",
+      "public_head": "800d15270fed350a2608bd619d408ababaa7ce2c",
+      "tree": "6d3fdf1b401b63efa7ffb6205822f261bf4dad6b",
+      "local_parents": [
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+      ],
+      "public_parents": [
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+      ]
+    },
+    {
+      "local_head": "21d2faec5b8e540ee43cb2b6736c348323899360",
+      "public_head": "6127df8da920bfde8c8769987b18d363f0a6bae5",
+      "tree": "9115ecdfcdbc48217053642919171edaf371e218",
+      "local_parents": [
+        "b0bc4fecbea288f646d7960ab2b58679e1887ef6",
+        "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+      ],
+      "public_parents": [
+        "800d15270fed350a2608bd619d408ababaa7ce2c",
+        "a88157b53d1e0925350d5c8db047eabb4365f4e9"
+      ]
+    },
+    {
+      "local_head": "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+      "public_head": "0d5d564d4ef7c07444b9969e5ba482935e1de879",
+      "tree": "2548ec65768ec1b7f4e8244d790e450b1d5beb1e",
+      "local_parents": [
+        "21d2faec5b8e540ee43cb2b6736c348323899360",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+      ],
+      "public_parents": [
+        "6127df8da920bfde8c8769987b18d363f0a6bae5",
+        "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+      ]
+    },
+    {
+      "local_head": "0330556ef3d3a95d5ca759fc620e9f10d38e62c3",
+      "public_head": "80d237fe61be06bf8cc0bcee6c58f859eb1f0f78",
+      "tree": "88c1c49efb027d06ff9a06d2aa48a5dc9df13058",
+      "local_parents": [
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+      ],
+      "public_parents": [
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+      ]
+    },
+    {
+      "local_head": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "public_head": "418054d5ca041973d31d514406ee4c6157ca919f",
+      "tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "local_parents": [
+        "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+        "0330556ef3d3a95d5ca759fc620e9f10d38e62c3"
+      ],
+      "public_parents": [
+        "0d5d564d4ef7c07444b9969e5ba482935e1de879",
+        "80d237fe61be06bf8cc0bcee6c58f859eb1f0f78"
+      ]
+    }
+  ],
+  "verification": {
+    "status": "passed",
+    "verified_at_utc": "2026-11-21T05:16:21.503068+00:00",
+    "five_complete_trees_equal": true,
+    "five_ordered_parent_lists_match": true,
+    "fresh_public_branch_head_matches": true,
+    "all_four_original_sources_are_ancestors": true,
+    "observed_main_head": "aec179910c39081d820396409ff3139ff2264132",
+    "observed_lock_head": "c196151daf8233f96045fd205b2d899c9e8cc97d",
+    "donor_and_target_pr_heads_rechecked_at_utc": "2026-11-21T05:23:16Z",
+    "donor_and_target_pr_heads_rechecked": {
+      "307": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "344": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+      "350": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8"
+    }
+  },
+  "later_documentation_note": "A subsequent documentation-only commit may advance this branch. Execution receipts apply to the source checkpoint above; the PR records the final documentation head. Final source equivalence must exclude only docs changes."
+}
