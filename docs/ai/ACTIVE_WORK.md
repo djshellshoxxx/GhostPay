@@ -771,3 +771,16 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# BUG-ONLY cycle R9 — sweep-timing invalid urgency policy (2026-11-21)
+
+- Worker: autonomous GhostPay bug-repair coordinator, single sequential implementation/review; no independent verifier available.
+- Branch: `automation/20261121/bug/ux-fees-urgency-validation-r9`; exact base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths exclusively: `packages/ux-fees/src/timing.ts`, new `packages/ux-fees/src/timing.urgency-validation.test.ts`, this additive branch-local claim, and `docs/handoffs/UX_FEES_URGENCY_RUNTIME_VALIDATION_20261121.md`.
+- Reproduction: source blob `cafc7f958424f87ad867b852607bd2d6ed87a912` treats invalid runtime urgency `'emergency'` like normal urgency and produces `wait` for 1..100-gwei history/current 90 gwei, instead of rejecting malformed caller input. The documented strict input validation and `'normal' | 'urgent'` contract require invalid enum values to be refused.
+- Acceptance: failing regression committed before fix; reject unsupported urgency with existing `UxFeesError`/INVALID_INPUT, retain normal/default `wait`, valid urgent `ok`, and other advice/fee/privacy behavior. No new features, dependency, contracts, transport, deployment, release, or real traffic.
+- Ownership: 179 live open PR file inventories inspected in batches on 2026-11-21, zero changed paths under `packages/ux-fees/src/`; broad #278/#264/#262/#372 touch its package.json only. Reinspect before integration. The metadata-only generation-11 integration lock remains held by another coordinator; no lock takeover or main merge authorized.
+- Verification: only source-branch-equivalent reproduction executed before publication, not local repository Vitest. Hosted exact-head CI and independent review pending.
