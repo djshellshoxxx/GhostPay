@@ -72,6 +72,18 @@ function safeSupported(ctx: PayContext, chain: string, asset: string): boolean {
   }
 }
 
+/** An EVM checksum-casing change is not a change of the 20-byte recipient. */
+function addressesMatch(chain: string, previous: string, current: string): boolean {
+  if (previous === current) return true;
+  const evmHex = /^0x[0-9a-fA-F]{40}$/;
+  return (
+    chain.startsWith('eip155:') &&
+    evmHex.test(previous) &&
+    evmHex.test(current) &&
+    previous.toLowerCase() === current.toLowerCase()
+  );
+}
+
 function buildDraft(base: Base, ctx: PayContext, opts: PayAgainOptions): Result<PaymentDraft> {
   const c = checkContext(ctx, opts);
   if (!c.ok) return c;
@@ -85,7 +97,7 @@ function buildDraft(base: Base, ctx: PayContext, opts: PayAgainOptions): Result<
 
   const flags: DraftFlag[] = [];
 
-  if (base.prevAddress !== null && base.prevAddress !== address) {
+  if (base.prevAddress !== null && !addressesMatch(base.chain, base.prevAddress, address)) {
     flags.push({
       code: 'address-changed',
       severity: 'block',
