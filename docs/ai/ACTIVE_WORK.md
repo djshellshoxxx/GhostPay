@@ -1,3 +1,11 @@
+# Scope correction after cross-package audit — same cycle and branch
+
+At source checkpoint `8e8cee02d2160a4ff130fb0a448e2c2f7039a38c`, a follow-up cross-package audit found that `packages/merchant-ledger/src/decimal.ts` explicitly defines GhostPay's existing signed fiat-minor-unit model as **zero for a fixed eight-code list and two for all others, including KWD**. Changing `apps/web/src/lib/format.ts` to ISO 4217 exponents would reinterpret historical invoices and disagree with merchant-ledger and shop integrations. This is an unresolved protocol/compatibility policy; the ISO experiment must be reverted in the final diff. Preserve its commits and reasoning in history, but do not seek integration of the exponent change.
+
+Revised worker identity: same single assistant, isolated branch `automation/20261121T1033Z/bug/fiat-minor-units`, base main `eb59d93cffed7848c4aac37d0e9650b87239c6da`, no independent reviewer. Owned paths remain `apps/web/src/lib/format.ts`, `apps/web/src/lib/format.test.ts`, this claim, and its handoff. Revised accepted task: test-first guard `parseUnits` against malformed JavaScript runtime input and invalid decimal precision so it returns `undefined` (its existing contract) instead of an untyped TypeError/RangeError. Preserve GhostPay's 0/2 signed-invoice currency semantics, all valid string amount conversions, and existing error handling. Add preservation tests for KWD=2 and known currency fallback. No merge, release or policy change.
+
+---
+
 # Fiat minor-unit correctness — 2026-11-21 10:33 UTC
 
 Cycle/worker: `20261121T1033Z/bug/fiat-minor-units`; one assistant, sequential source audit, test implementation, repair and self-check. No independent verifier/agent available.
