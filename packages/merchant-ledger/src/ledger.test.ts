@@ -64,6 +64,19 @@ describe('decimal', () => {
     expect(formatMinor(1n, 3)).toBe('0.001');
     expect(formatMinor(2n ** 100n, 2)).toBe('12676506002282294014967032053.76');
   });
+  it('rejects invalid formatMinor precision instead of silently misformatting money', () => {
+    for (const exponent of [-1, 1.5, NaN, Infinity, -Infinity, 19]) {
+      expect(() => formatMinor(123n, exponent)).toThrow(LedgerError);
+      expect(() => formatMinor(123n, exponent)).toThrow(/bad-exponent/);
+    }
+    for (const exponent of [undefined, null, '2']) {
+      expect(() => formatMinor(123n, exponent as unknown as number)).toThrow(/bad-exponent/);
+    }
+    // The boundary applies only to invalid precisions; valid GhostPay money formatting stays unchanged.
+    expect(formatMinor(123n, 0)).toBe('123');
+    expect(formatMinor(123n, 18)).toBe('0.000000000000000123');
+    expect(formatMinor(-123n, 18)).toBe('-0.000000000000000123');
+  });
   it('exponents', () => {
     // The GhostPay app's exponent for invoice minor units (apps/web fiatDecimals), not ISO 4217's.
     expect(currencyExponent('USD')).toBe(2);
