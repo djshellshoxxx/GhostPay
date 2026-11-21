@@ -62,4 +62,47 @@ describe('Settings partial import: unselected unsaved form drafts (GP-BUG-04)', 
       });
     });
   });
+  it('imports explicitly trusted RPCs while leaving unsaved preference, relayer and signer edits untouched', async () => {
+    const user = userEvent.setup();
+    renderApp(makeServices());
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Settings' }));
+
+    await user.selectOptions(screen.getByLabelText('Theme'), 'light');
+    await user.type(screen.getByLabelText('Relayer URL (optional)'), 'https://draft-relayer.example');
+    const signer = `03${'cd'.repeat(32)}`;
+    await user.type(screen.getByLabelText(/Pinned seller signing keys/), signer);
+
+    const transfer = exportSettingsExchange(
+      { ...DEFAULT_SETTINGS, rpcUrls: { '84532': 'https://imported-rpc.example/' } },
+      ['rpcUrls'],
+    );
+    fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: transfer } });
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(await screen.findByText('Review imported settings')).toBeTruthy();
+    await user.click(screen.getByRole('checkbox', { name: 'Apply RPC endpoints' }));
+    await user.click(screen.getByRole('button', { name: 'Apply selected settings' }));
+    const confirmation = screen.getByRole('alertdialog', { name: 'Confirm trust changes' });
+    await user.click(within(confirmation).getByRole('button', { name: 'Confirm and apply' }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText<HTMLInputElement>('Base Sepolia RPC URL').value).toBe('https://imported-rpc.example/');
+    });
+    expect(screen.getByLabelText<HTMLSelectElement>('Theme').value).toBe('light');
+    expect(screen.getByLabelText<HTMLInputElement>('Relayer URL (optional)').value).toBe('https://draft-relayer.example');
+    expect(screen.getByLabelText<HTMLTextAreaElement>(/Pinned seller signing keys/).value).toBe(signer);
+    expect(stored()['theme']).toBe(DEFAULT_SETTINGS.theme);
+    expect(stored()['relayerUrl']).toBe('');
+    expect(stored()['pinnedSigners']).toEqual([]);
+
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    await waitFor(() => {
+      expect(stored()).toMatchObject({
+        theme: 'light',
+        rpcUrls: { '84532': 'https://imported-rpc.example/' },
+        relayerUrl: 'https://draft-relayer.example/',
+        pinnedSigners: [signer],
+      });
+    });
+  });
+
 });
