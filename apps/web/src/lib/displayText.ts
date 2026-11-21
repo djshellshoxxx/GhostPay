@@ -34,6 +34,7 @@ function capUnicodeText(s: string): string {
   }
   return s.slice(0, end);
 }
+
 /**
  * Prepares untrusted invoice text (memo, line-item descriptions) for display (audit S3-12).
  *
