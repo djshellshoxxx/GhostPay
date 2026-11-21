@@ -1,3 +1,14 @@
+# 2026-11-21 04:40 UTC — payment URI UTF-16 encoding fidelity (isolated)
+
+- Cycle / coordinator: `20261121T0440Z` / single ChatGPT operator; sequential reproduction, implementation and self-review. **No independent native agent** is available; independent approval is outstanding.
+- Branch: `automation/20261121T0440Z/bug/payment-uri-utf16-failclosed`, exact base `aec179910c39081d820396409ff3139ff2264132` (`main`).
+- Owned paths: `packages/payment-uri/src/query.ts`, new `packages/payment-uri/src/query-surrogate.test.ts`, additive claim here, and dedicated `docs/handoffs/PAYMENT_URI_UTF16_20261121.md`. No other source paths.
+- Source finding: public `pctEncode` forwards malformed UTF-16 strings to `TextEncoder`, which silently replaces unpaired high/low surrogate code units with U+FFFD. Exported `buildQuery` inherits this behavior. This is a defensive exported-API fidelity issue; current Solana/Bitcoin/TRON builders validate display text first, so no browser fund-loss or direct Pages exploit is asserted.
+- Acceptance: test-first rejection with existing typed `INVALID_ENCODING` for isolated high and low surrogates including embedded cases; intact surrogate pairs and ordinary Unicode preserve exact percent encoding and decoding. No wire change for valid inputs, dependencies, contract, hosting, workflow, relayer, policy or custody changes. Run actual checks if accessible, otherwise distinguish the native reproduction from repository tests. Obtain independent review before merging.
+- Coordination: current main and #307's `query.ts` match; #313 owns `decimal.ts`, not `query.ts`. #307's broad branch and existing PRs remain independently owned. Durable integration lock `automation/ghostpay-integration-lock` is held at generation 11 by another owner; **no shared integration or main update** authorized in this cycle. Recheck ownership/head/CI before future integration.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
