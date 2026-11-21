@@ -1,3 +1,17 @@
+## Static Tor current-main qualification — 2026-11-20 Pacific
+
+- Coordinator: `0d42549ffbeb-root`; independent workers: `tor_branch_reconciliation`, `tor_security_review`, and `tor_privacy_qa`.
+- Isolated branch: `integration/ghostpay-tor-qualified-20261121`; base main: `aec179910c39081d820396409ff3139ff2264132`.
+- Incoming source: PR #320 `e8010bbe002331ee0cb37dc6b16dfd91c8b8647d`, including PR #308 `e60c69f32dbbd9edf7e81ed8866144d665e3de9a` by ancestry. Preserve both donor histories and all existing ownership records.
+- Owned scope: additive reconciliation of this registry; unchanged Tor static deployment, hosting-kit validator/tests and qualification workflow from the donor; scoped fixes only after independently verified findings; new evidence under `docs/handoffs/tor-qualification-20261120-final/`.
+- Acceptance: reconcile relevant unique Tor code against live main; independently review security/privacy; run applicable hosting, transport, browser/build and source-integrity checks; preserve static/non-custodial optional-Tor behavior and all security gates. Separate source-integration qualification from real Tor Browser, restart/restore and payment-network acceptance.
+- Authorization: the current user explicitly requests merging completed work. Publishing this isolated candidate and merging qualified changes are in scope; deployment, live transactions, public onion publication and branch deletion are not.
+- Coordination: shared integration lock generation 11 was observed held by another coordinator with an expired lease. No takeover or shared protected-ref write is authorized merely by expiry; inspect and respect the existing ownership recovery procedure before integration. Candidate preparation and tests remain isolated.
+- State at claim: merge-tree preview found only this registry conflicts. Historical PR #320 hosted checks passed; those results do not automatically qualify the new main composition. Real Tor acceptance is not yet verified.
+- Independent functional reviewer: `tor_functional_verification` owns only `docs/handoffs/tor-qualification-20261120-final/FUNCTIONAL_REVIEW.md` and redacted test evidence. It runs bounded transport, journal, expiry and encrypted-backup regressions against `e5457a4a`; no production, dependency, wallet, contract or shared-ref changes.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
@@ -7,6 +21,60 @@ Evidence: GP-BUG-13/MC-01 in existing read-only bugcheck PR #312; abort during i
 Acceptance: preserve all valid native and TRC-20 detection, validation and pagination; return typed `ABORTED` rather than any further result after cancellation, including after delayed page or receipt readbacks and between same-page yields; add deterministic test-first Vitest regressions, with no real RPC/network or private keys; keep no-fee/non-custodial Pages behavior. No new dependencies, policy changes or contract edits.
 Ownership reconciliation: current integration PR #307 does not change TRON adapter scan source/tests; broad PRs #278/#262/#264 own `scan.test.ts` but not the `scan.ts` production file. Use a new focused test file to avoid their test ownership. Recheck all heads before any future integration. The durable integration lock is **held by another coordinator at generation 8**; do not acquire, update its metadata, or merge into main.
 Verification: run focused tests and applicable CI when available; record every not-run check and independent review requirement. Preserve unfinished work on a draft PR.
+# Tor qualification repair — 2026-11-20 (Pacific)
+
+Worker: `tor_completion`, delegated by the `994a0d214fb9-root` consolidation coordinator; independent reviewer: `integration_review`.
+Branch: `fix/ghostpay-tor-qualification-20261120`; base: `e60c69f32dbbd9edf7e81ed8866144d665e3de9a` (PR #308).
+Owned paths: `.github/workflows/tor-static.yml`, `tools/portable-hosting-kit/test/adapters/tor.test.mjs`, this additive registry entry, and `docs/handoffs/TOR_QUALIFICATION_REPAIR_20261120.md`.
+Acceptance: compare the generated README onion-origin line exactly; install/build the complete workspace library dependencies required by whole-web typechecking, including existing test imports; preserve all source, typecheck, browser, container, no-bootstrap and deployment restrictions. Execute bounded native tests and independent source review. Require successful exact-head CodeQL and static Tor hosted qualification before promotion; source review and native tests do not establish browser, daemon or live-onion acceptance.
+Coordination: root owns the generation-8 integration lease and all shared-target changes. This worker may publish only the new isolated repair branch and draft PR. Existing Tor, main, contracts, relayer runtime, dependency versions, and release/deployment gates remain outside this repair.
+
+---
+
+# Tor hosted qualification extension — 2026-11-19
+
+Worker: coordinator `/root`, same Tor completion branch and base as below.
+Owns new `.github/workflows/tor-static.yml` plus `scripts/tor/browser-acceptance.mjs`.
+Reason: local Chromium exits before page assertions because socket() is denied;
+Docker and Tor are unavailable. Add read-only CI for the lean artifact, offline
+browser acceptance, and container configuration without launching an onion service.
+No deployment credentials, Tor network bootstrap or public service.
+
+# Tor static-hosting completion — 2026-11-19
+
+Coordinator: ChatGPT `/root`; workers: `tor_scope_review`, `tor_hosting`, `tor_security`.
+Branch: `feat/ghostpay-tor-completion-20261119`.
+Base: `773a94be1c8328d6fa1720ae48f1b6a2d903f0c5` (live main fetched at task start).
+Scope: complete the existing 5g static HTTPS/onion hosting path with no mandatory
+relayer; reuse the portable hosting kit, preserve explicit RPC/wallet disclosures,
+and qualify the actual static browser artifact under independent origins/subpaths.
+Owned paths: new `deploy/tor-static/`; Tor adapter source/tests/docs under
+`tools/portable-hosting-kit/`; new Tor hosting tests/scripts and evidence under
+`scripts/tor/` and `docs/handoffs/tor-completion-20261119/`; `deploy/TOR.md`;
+new scoped spec `docs/specs/TOR_HOSTING_COMPLETION.md`; additive claim in this file.
+Existing web runtime/build paths are read-only unless a demonstrated hosting blocker
+requires a narrow, separately recorded ownership extension. Other open PR work is
+preserved; no automatic integration of overlapping recovery/privacy work.
+Acceptance: a static-only publish recipe with isolated identity storage, private
+backend listener, safe Tor config and no silent clearnet fallback; validated v3
+origins; focused tests, build/lint, browser request evidence, and independent defensive
+source review. Actual Tor/runtime checks are required before claiming those outcomes;
+missing capabilities stay explicit. No real funds or unsolicited live-service probes.
+No deployment, public onion identity, release signing, gate relaxation or force push.
+Status: claim recorded before implementation; design and current-source review begun.
+
+## Tor origin validation extension — 2026-11-19
+
+Worker: `tor_scope_review`, delegated by the Tor completion coordinator on the same
+`feat/ghostpay-tor-completion-20261119` branch and base above.
+Owned paths: `tools/portable-hosting-kit/src/config/host-config.mjs`,
+`src/adapters/tor.mjs`, `src/serve/headers.mjs`, their focused tests, and the kit's
+Tor/config documentation. Acceptance: one strict canonical HTTP v3 onion-origin
+validator with checksum and generated port-80 consistency; direct adapter/header
+calls refuse invalid onion origins; I2P and clearnet behavior remains unchanged.
+Add bounded local validation regressions and record actual Node/lint/typecheck
+results. No application runtime, RPC profile, deployment activation, or external
+network behavior changes. This section is the worker's only registry edit.
 
 ---
 
@@ -771,3 +839,24 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+## Tor offline workflow acceptance extension — 2026-11-20 (Pacific)
+
+- Worker: `/root/tor_privacy_qa`; coordinator: `/root`.
+- Branch: `test/ghostpay-tor-offline-workflows-20261121`; base `e5457a4aa8ff7a4cb7c7635a060be5b3003a0103`.
+- Owned path: `scripts/tor/browser-acceptance.mjs`; this additive claim.
+- Acceptance: extend the existing strict offline Chromium hosting acceptance with product invoice export/import where the unchanged artifact permits, encrypted backup export and independent import, reload and wrong-passphrase refusal. Preserve the origin/subpath request allowlist, WebSocket refusal, unchanged production build and no-private-material reporting. Reuse existing e2e selectors; do not weaken assertions or require public RPC, wallets, Tor bootstrap or real funds.
+- Evidence boundaries: ordinary Chromium fixture only; no Tor Browser, actual Tor routing, public-chain payment or universal network privacy claim. Root owns dependency preparation, artifact build, actual browser execution, integration and publication. Product/runtime sources are read-only.
+- Scope refinement: this integration source has invoice link/QR transfer, not invoice-file export/import. The acceptance extension explicitly states that limitation and verifies signed, passphrase-protected links without enabling payment. Root viewport is 1280x900; subpath viewport is 390x844 and is labeled mobile layout only.
+- Executed: script syntax and whitespace checks passed; independent network inventory tests passed 4/4 and controlled native HTTP isolation passed 19/19 (zero skips). The coordinator attempted local Chromium before any browser assertions; process startup failed because Unix socket creation was denied (`process_singleton_posix.cc: socket() Operation not permitted`). Extended browser behavior remains PENDING hosted CI; no browser or real-Tor pass is claimed.
+## Static Tor identity pin and offline restore verification — 2026-11-20
+
+- Worker: `/root/tor_security_review`; coordinator: `/root`.
+- Branch: `fix/ghostpay-tor-identity-pin-20261120`; base: `e8010bbe002331ee0cb37dc6b16dfd91c8b8647d` (PR #320).
+- Owned paths: `deploy/tor-static/**`, `scripts/tor/hosting-config.test.mjs`, new focused `scripts/tor/identity.test.mjs`, and this additive claim. Root owns the aggregate ledger and remote integration.
+- Finding: normal startup accepts a new or wrong identity volume without checking its onion address against the configured public origin; advertised origin is only validated during preparation.
+- Acceptance: explicit offline first-use initialization; ordinary starts require the configured canonical onion hostname and a complete, private, matching stored identity; verification uses Tor itself with networking disabled and numeric loopback targets before any normal service start; missing, wrong, corrupt or inconsistent identities fail without replacement or private-key output. Preserve static hosting, capability restrictions and original CI gates. Record real-Tor and deterministic-test evidence separately.
+- Source review: Tor's `hs_service.c` `load_service_keys()` loads/generates split ed25519 keys and rewrites hostname from the loaded public key; `--verify-config` does not load these keys. `DisableNetwork` blocks network connections but may allow configuration DNS resolution, so offline verification must use an isolated minimal torrc with numeric addresses. No live onion service, deployment or external wallet is in this worker's scope.
+- Additional coordinator-assigned owned path: `scripts/tor/identity-container.mjs`, the real-binary offline container qualification runner. Every container has `--network none`; reports contain no private keys or runtime logs.
+- Local verification: 70 passed, 0 failed, 2 explicit skips (Docker Compose and actual Tor binary unavailable) across identity/recipe/config/adapter/header suites; scoped ESLint, strict preparation typecheck, POSIX shell syntax and whitespace passed. New orchestration tests first failed before the identity helper existed. The real-container qualification runner parses but cannot run here; no actual Tor runtime/restart/restore pass is claimed. Final source reviewer identified the protected `/proc/1/exe` readiness observation; it now reads `/proc/1/comm` while preserving Tor debugger-attachment protection. Evidence output creation is exclusive and refuses an existing report.

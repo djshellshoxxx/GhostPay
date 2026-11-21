@@ -1,0 +1,236 @@
+{
+  "format": "ghostpay-tor-qualification-ledger/1",
+  "recorded_at_utc": "2026-11-21T04:56:11.171020+00:00",
+  "base_main": "aec179910c39081d820396409ff3139ff2264132",
+  "donor_head": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
+  "source_checkpoint": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079",
+  "readiness": "NOT READY",
+  "items": [
+    {
+      "id": "TOR-REC-001",
+      "component": "Branch reconciliation",
+      "status": "Passed",
+      "severity": "Low",
+      "owner": "tor_branch_reconciliation",
+      "files": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "evidence": "BRANCH_RECONCILIATION.json",
+      "resolution": "Current-main plus #320 preserves both donor histories. Registry was the sole conflict.",
+      "next_action": "Refresh source heads before publication and any merge.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-ID-001",
+      "component": "Onion identity continuity",
+      "status": "Pending",
+      "severity": "Medium",
+      "owner": "tor_security_review",
+      "files": [
+        "deploy/tor-static/tor-start.sh"
+      ],
+      "evidence": "evidence/identity-red.txt; evidence/identity-green.txt; evidence/hosting-final.log",
+      "resolution": "Implemented explicit offline initialization, canonical hostname pin, Tor-derived hostname verification, private complete-identity guards and refusal without replacement. Deterministic regressions pass; real-container qualification remains pending.",
+      "next_action": "Pass final offline Docker/Tor lifecycle CI before source integration.",
+      "source": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079"
+    },
+    {
+      "id": "TOR-BUILD-001",
+      "component": "Workspace dependencies and build",
+      "status": "Passed",
+      "severity": "Low",
+      "owner": "root",
+      "files": [
+        "package-lock.json"
+      ],
+      "evidence": "evidence/build-libs.log",
+      "resolution": "npm ci --ignore-scripts and complete library build passed.",
+      "next_action": "Preserve unchanged lockfile.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-WEB-001",
+      "component": "Whole-web production artifact",
+      "status": "Passed",
+      "severity": "Low",
+      "owner": "root",
+      "files": [
+        "apps/web"
+      ],
+      "evidence": "evidence/web-lean-build.log",
+      "resolution": "Whole-web TypeScript, lean Vite build and 17-file security scan passed at e5457a4a.",
+      "next_action": "Record final candidate CI separately.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-HOST-001",
+      "component": "Hosting kit and Tor configuration",
+      "status": "Passed",
+      "severity": "Low",
+      "owner": "root",
+      "files": [
+        "tools/portable-hosting-kit",
+        "scripts/tor/hosting-config.test.mjs"
+      ],
+      "evidence": "evidence/hosting-final.log; evidence/hosting-final-lint.log; evidence/hosting-final-types.log",
+      "resolution": "Final full hosting and Tor selection: 314 passed, 0 failed, 15 explicit skips. Kit lint/typecheck passed. Original skip conditions and assertions preserved.",
+      "next_action": "Complete capability-dependent Docker/Tor/browser checks in hosted CI.",
+      "source": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079"
+    },
+    {
+      "id": "TOR-AUDIT-001",
+      "component": "Web dependency audit",
+      "status": "Passed",
+      "severity": "Medium",
+      "owner": "root",
+      "files": [
+        "package-lock.json"
+      ],
+      "evidence": "evidence/npm-audit-production.json; evidence/npm-audit-all.json",
+      "resolution": "Both web audit scopes reported zero known vulnerabilities.",
+      "next_action": "No Tor-image vulnerability scan is implied.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-BROWSER-001",
+      "component": "Extended ordinary browser acceptance",
+      "status": "Blocked",
+      "severity": "High",
+      "owner": "tor_privacy_qa",
+      "files": [
+        "scripts/tor/browser-acceptance.mjs"
+      ],
+      "evidence": "evidence/browser-extended-initial.log",
+      "resolution": "Chromium failed before assertions because process_singleton_posix.cc socket creation is denied.",
+      "next_action": "Execute final desktop/mobile-viewport workflow in hosted CI.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-CONTAINER-001",
+      "component": "Final image and offline identity lifecycle",
+      "status": "Pending",
+      "severity": "High",
+      "owner": "tor_security_review",
+      "files": [
+        "deploy/tor-static",
+        ".github/workflows/tor-static.yml"
+      ],
+      "evidence": "Historical run 44772760709",
+      "resolution": "Donor image/runtime/config passed; new guard and restore acceptance need final CI.",
+      "next_action": "Build final image and run offline identity init/reuse/restore/refusal checks.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-LIVE-001",
+      "component": "Real Tor Browser and onion connection",
+      "status": "Blocked",
+      "severity": "High",
+      "owner": "operator",
+      "files": [
+        "deploy/tor-static"
+      ],
+      "evidence": "Local capability probes",
+      "resolution": "Docker/Tor absent; official source download is blocked with HTTP403. No actual onion/Tor Browser test executed.",
+      "next_action": "Use an authorized isolated Tor-capable host and record actual connection, CSP, assets and secure-context evidence.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-NET-001",
+      "component": "Deterministic transport isolation",
+      "status": "Passed",
+      "severity": "High",
+      "owner": "tor_privacy_qa + tor_functional_verification",
+      "files": [
+        "packages/net-transport",
+        "apps/web/src/lib/scanPrivacy.ts"
+      ],
+      "evidence": "FUNCTIONAL_REVIEW.md",
+      "resolution": "193 package transport tests and native HTTP/inventory checks pass. Browser ambient networking and external-wallet routes remain outside enforcement.",
+      "next_action": "Verify real Tor route, DNS and external integrations separately.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-PAY-001",
+      "component": "Deterministic interruption/expiry/recovery",
+      "status": "Passed",
+      "severity": "High",
+      "owner": "tor_functional_verification",
+      "files": [
+        "apps/web/src/lib/wallet.ts",
+        "apps/web/src/lib/duplicateAttemptJournal.ts",
+        "apps/web/src/lib/sweepSessionJournal.ts"
+      ],
+      "evidence": "FUNCTIONAL_REVIEW.md; evidence/functionals/INDEX.json",
+      "resolution": "389 total tests passed; 54 Pay cases explicitly deselected. Journals, expiry boundaries, unknown outcomes and encrypted backup behaviors verified.",
+      "next_action": "Actual Tor disconnect/reconnect, real-chain payment and cross-profile recovery remain unverified.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-REFUND-001",
+      "component": "Invoice expiry/refund characterization",
+      "status": "Passed",
+      "severity": "High",
+      "owner": "tor_functional_verification",
+      "files": [
+        "packages/invoice-schema/src/expiry.ts",
+        "apps/web/src/views/Pay.tsx"
+      ],
+      "evidence": "FUNCTIONAL_REVIEW.md",
+      "resolution": "Expiry is client-side policy. It does not cause an automatic blockchain refund or revoke an already submitted payment.",
+      "next_action": "Retain this limitation; do not advertise automatic refund or universal fund recovery.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-FINAL-001",
+      "component": "Independent final source review",
+      "status": "Passed",
+      "severity": "High",
+      "owner": "tor_independent_final_review",
+      "files": [],
+      "evidence": "INDEPENDENT_REVIEW.md; evidence/independent/final-identity-recipe.log",
+      "resolution": "Fresh independent source review passed; three review findings fixed. Independent final identity/recipe tests: 25 passed, 0 failed, 2 explicit capability skips. Source review does not qualify unexecuted browser/container/release gates.",
+      "next_action": "Require exact-candidate hosted execution and resolve integration ownership.",
+      "source": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079"
+    },
+    {
+      "id": "TOR-CI-001",
+      "component": "Final hosted CI and CodeQL",
+      "status": "Pending",
+      "severity": "High",
+      "owner": "root",
+      "files": [
+        ".github/workflows/tor-static.yml"
+      ],
+      "evidence": "Historical #320:31 successful checks",
+      "resolution": "Historical donor checks do not qualify the new composition.",
+      "next_action": "Publish isolated candidate and inspect complete final-source results.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-MERGE-001",
+      "component": "Qualified integration",
+      "status": "Blocked",
+      "severity": "High",
+      "owner": "existing integration coordinator",
+      "files": [
+        "docs/ai/ACTIVE_WORK.md"
+      ],
+      "evidence": "automation/ghostpay-integration-lock at c196151daf8233f96045fd205b2d899c9e8cc97d",
+      "resolution": "Generation11 remains held by 994a0d214fb9-root-r3. Expiration alone does not release it. Prior writer stopped/released proof is unavailable.",
+      "next_action": "Resolve owner handoff under the existing protocol, then merge only qualified source.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-DEPLOY-001",
+      "component": "Production deployment",
+      "status": "Skipped",
+      "severity": "High",
+      "owner": "operator",
+      "files": [],
+      "evidence": "Current engineering authorization",
+      "resolution": "No production deployment or public onion publication was performed.",
+      "next_action": "Requires separate activation authorization after release acceptance.",
+      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    }
+  ]
+}

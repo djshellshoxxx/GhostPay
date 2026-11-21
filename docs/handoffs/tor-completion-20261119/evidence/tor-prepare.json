@@ -1,0 +1,7 @@
+{
+  "outDir": "/workspace/scratch/82fb6102f244/tor-prepared",
+  "archiveSha256": "f8dfa738b7ba2f2aa58c36479cbbf0f8037c1b94ba213b73b2d4ab01dfceac6a",
+  "torVersion": "0.4.9.17",
+  "started": false,
+  "warnings": []
+}

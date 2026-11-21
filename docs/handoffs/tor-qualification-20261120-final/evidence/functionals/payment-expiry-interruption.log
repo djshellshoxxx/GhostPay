@@ -1,0 +1,75 @@
+
+ RUN  v5.0.5 /workspace/scratch/0d42549ffbeb/GhostPay-tor-qualification/apps/web
+
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > allows the same receipt file after a failed read and preserves a newer selection while the old read finishes
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > accepts a signed receipt only when its invoice digest and expected payment fields match
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > does not read private receipt details without explicit consent
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > does not accept a receipt under a trusted key that changed during file reading
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > accepts bounded QR text only through the same strict receipt verification flow
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > keeps a late context refresh from replacing the currently opened invoice
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > opens a link, shows the review, uses the required signature wording and clears the fragment
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > keeps the fragment when the user turns auto-clear off, and offers to remove it
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > manually clears an invoice fragment on a double-slash pathname while preserving origin, path and query
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > prompts for a passphrase, rejects a wrong one, and opens the invoice only after decryption
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > says payments are disabled on a chain with no manifest and offers no way forward
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > renders hostile text from the invoice as inert text
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > fails closed on a tampered fragment (corrupted encoding)
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > treats a re-signed-less edit as an INVALID signature hard stop
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > fails closed with a rejection, not a blank page, for a validly signed link whose expiry is 2^53-1 (G1-01)
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > shows a fixed token amount as the total, the fiat figure as the seller’s unchecked statement, and warns on a mismatch (L2-F4)
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > labels the fiat figure of a fixed-token invoice as unchecked, without a warning when it matches the stablecoin amount
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > shows the fixed amount of a token off the allowlist in base units with its address, not scaled by assumed decimals (B2-R3)
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > rejects an oversized fragment
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > rejects non-invoice hashes silently and accepts pasted links
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > reacts to a link pasted into the address bar while the app is open
+ ✓ src/views/Pay.test.tsx > Pay: invoice reading and review > blocks expired invoices 140ms
+ ↓ src/views/Pay.test.tsx > Pay: invoice reading and review > shows the no-feed message for fiat-priced invoices
+ ↓ src/views/Pay.test.tsx > Pay: sending > shows the connected wallet chain ID ungrouped
+ ↓ src/views/Pay.test.tsx > Pay: sending > discards a deferred preparation when the opened invoice changes
+ ↓ src/views/Pay.test.tsx > Pay: sending > shows decoded calldata, sends only after the explicit click, and reports an unverified result honestly (the RPC cannot see the transaction yet)
+ ↓ src/views/Pay.test.tsx > Pay: sending > retains a verified submission when notifying the embedding page fails
+ ↓ src/views/Pay.test.tsx > Pay: sending > retains a pending submission when notifying the embedding page fails
+ ↓ src/views/Pay.test.tsx > Pay: sending > verifies on the user RPC when one is configured and offers a local receipt
+ ↓ src/views/Pay.test.tsx > Pay: sending > never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)
+ ↓ src/views/Pay.test.tsx > Pay: sending > REFUSES (shows an error, not success) when the wallet mutates the transaction
+ ↓ src/views/Pay.test.tsx > Pay: sending > REFUSES a wallet that lies about its accounts or chain
+ ↓ src/views/Pay.test.tsx > Pay: sending > shows a clear message when no wallet is installed
+ ✓ src/views/Pay.test.tsx > Pay: sending > surfaces a user rejection and blocks a blind retry until explicit clearing 381ms
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > delay: nothing is signed while waiting, can be cancelled, or skipped with "send now"
+ ✓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > delay: revalidates at the due time and stops if the invoice expired while waiting 123ms
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > delay: becomes ready by itself after the (zero) interval
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > gas buffer: default off; enabling shows the native amount and the public-linkage notice; needs an RPC
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > gas buffer without an RPC explains what is missing
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > v2 invoice whose seller declines buffers offers none (ADR-0023)
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > v2 invoice with a seller minimum raises a smaller estimate to it and says so (ADR-0023)
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > native invoices offer no gas buffer
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > ERC-20 flow with a buffer: previews the exact approval, then approves and sends
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > permit token whose permit domain cannot be verified falls back to the exact approval path without a signature prompt (spec 04)
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > a signed permit the token rejects is explained, nothing is sent, and the next Prepare uses an exact approval (spec 04)
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > permit token with enough allowance already skips the permit signature (spec 04 already_allowed)
+ ↓ src/views/Pay.test.tsx > Pay: optional delay (Feature 6) and gas buffer (Feature 1) > ERC-20 flow with a buffer fails closed when the token transfer cannot be simulated (spec 13)
+ ✓ src/views/Pay.test.tsx > Pay: validity is rechecked before the initial approval > P1: an invoice that expired after prepare asks the wallet for nothing, not even the approval 174ms
+ ↓ src/views/Pay.test.tsx > Pay: validity is rechecked before the initial approval > P2: a buffer quote past its 60 s TTL asks the wallet for nothing, not even the approval
+ ✓ src/views/Pay.test.tsx > Pay: validity is rechecked before the initial approval > keeps the confirmed approval and hash when the invoice expires before payment 220ms
+ ✓ src/views/Pay.test.tsx > Pay: validity is rechecked before the initial approval > keeps the confirmed approval and hash when the buffer expires before payment 248ms
+ ↓ src/views/Pay.test.tsx > Pay: validity is rechecked before the initial approval > keeps payment ambiguity when the wallet loses its payment response after confirmed approval
+ ↓ src/views/Pay.test.tsx > Pay: validity is rechecked before the initial approval > keeps the approval hash when the invoice changes after broadcast but before confirmation
+ ↓ src/views/Pay.test.tsx > Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) > WEB-APP-02: after the wallet broadcast, a verification failure never re-enables Send and never says nothing was sent
+ ↓ src/views/Pay.test.tsx > Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) > WEB-APP-01: refuses to build a payment when the contracts on chain do not match the manifest
+ ↓ src/views/Pay.test.tsx > Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) > WEB-APP-01: without an RPC the manifest cannot be verified, so no payment is built
+ ↓ src/views/Pay.test.tsx > Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02) > WEB-APP-01: shows the unsigned-dev banner
+ ✓ src/views/Pay.test.tsx > Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) > native payment: a failing dry run on the retry keeps the unknown-outcome warning 167ms
+ ✓ src/views/Pay.test.tsx > Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) > native payment: an invoice that expired before the retry keeps the unknown-outcome warning 146ms
+ ✓ src/views/Pay.test.tsx > Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) > ERC-2612 permit payment: a failing dry run on the retry keeps the unknown-outcome warning 196ms
+ ✓ src/views/Pay.test.tsx > Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1) > pre-approved ERC-20 payment: a failing dry run on the retry keeps the unknown-outcome warning 163ms
+ ✓ src/views/Pay.test.tsx > Pay: invoice expiry never hides a payment that was already handed to the wallet (R05-2) > keeps the Submitted panel, receipt download and proof after the review tick sees the invoice expire 5339ms
+ ↓ src/views/Pay.test.tsx > Pay: invoice expiry never hides a payment that was already handed to the wallet (R05-2) > records a send that completes after the expiry tick as submitted for this invoice and leaves the busy state
+ ↓ src/views/Pay.test.tsx > Pay: the gas buffer opt-in belongs to one invoice (R05-3) > a newly opened ERC-20 invoice starts with the gas buffer unticked and no stale estimate
+ ↓ src/views/Pay.test.tsx > Pay: the gas buffer opt-in belongs to one invoice (R05-3) > a seller-declined v2 invoice opened after ticking the buffer elsewhere can still be prepared
+ ✓ src/views/Pay.test.tsx > Pay: expiry at the final send (A3-2) > refuses with nothing sent when the invoice expires between final check and send, before the review tick 306ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed | 54 skipped (66)
+   Start at  20:46:23
+   Duration  9.64s (tests 80%, import 10%, transform 5%, environment 5%)
+

@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
-import { parseHostConfig, defaultHostConfig, serializeHostConfig, isValidOnionV3Label } from '../../src/config/host-config.mjs';
+import { parseHostConfig, defaultHostConfig, serializeHostConfig, isValidOnionV3Label, validateOnionOrigin } from '../../src/config/host-config.mjs';
 import { KitError } from '../../src/errors.mjs';
 
 const B32 = 'abcdefghijklmnopqrstuvwxyz234567';
@@ -49,6 +49,27 @@ test('validates real and generated v3 onion addresses, rejects bad checksums', (
   throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: `http://${flipped}.onion` })), 'E_CONFIG', /checksum/);
   throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: 'http://abc.onion' })), 'E_CONFIG');
   throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: `https://${label}.onion` })), 'E_CONFIG', /https onions/);
+});
+
+test('onion origins are canonical before URL normalization and use the generated port 80', () => {
+  const label = makeOnion();
+  const origin = `http://${label}.onion`;
+  assert.equal(validateOnionOrigin('publicOrigin', origin), origin);
+  const rejected = [
+    origin.toUpperCase(), `http://${label.toUpperCase()}.onion`,
+    `${origin}:80`, `${origin}:080`, `${origin}:8080`, `${origin}/`,
+    `${origin}?`, `${origin}#`, ` ${origin}`, `${origin}\n`,
+    `http://%${label.charCodeAt(0).toString(16)}${label.slice(1)}.onion`,
+  ];
+  for (const raw of rejected) {
+    throwsCode(() => validateOnionOrigin('publicOrigin', raw), 'E_CONFIG');
+    throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: raw })), 'E_CONFIG');
+    throwsCode(() => parseHostConfig(base({ onionLocation: raw })), 'E_CONFIG');
+  }
+  for (const raw of [null, undefined, 80, {}, { toString: () => origin }]) {
+    throwsCode(() => validateOnionOrigin('publicOrigin', raw), 'E_CONFIG');
+  }
+  assert.equal(parseHostConfig(base({ transport: 'onion', publicOrigin: null })).publicOrigin, null);
 });
 
 test('i2p origins: plain http b32 only (b33 and https unsupported by the generated profiles)', () => {

@@ -1,0 +1,19 @@
+✔ static Tor recipe preserves artifact bytes, generates no backend and removes host ports in its final override (306.352997ms)
+✔ hash mismatch refuses export and leaves original input untouched (292.16622ms)
+✔ expected hash is mandatory and must be a primitive lowercase SHA-256 (38.814776ms)
+✔ an artifact without its response-header policy is refused before export (205.502716ms)
+✔ existing output and symlink destinations are preserved (117.99976ms)
+✔ the recipe accepts only a regular archive and validated onion configuration (39.231376ms)
+✔ subpaths require explicit acceptance and keep files under the requested prefix (151.145589ms)
+✔ source-pinned image checks bytes before extraction and excludes identity material from its build context (111.929795ms)
+✔ runtime reports require supported stable Tor, PoW and GPL puzzles (208.498416ms)
+✔ startup scripts parse as POSIX shell and reject unsupported arguments before running Tor (16.169977ms)
+﹣ combined Compose model has only web and Tor, no published ports, and a private web network (4.974074ms) # Docker Compose unavailable; no image build or live Tor acceptance is implied
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 1729.380845

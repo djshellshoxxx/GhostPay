@@ -1,0 +1,7 @@
+# Never send an onion identity, backup, config, or web artifact to the image builder.
+**
+!Dockerfile
+!.dockerignore
+!runtime-check.sh
+!identity-check.sh
+!tor-start.sh
