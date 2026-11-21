@@ -61,7 +61,7 @@ describe('local-only browser capability checks', () => {
   it('fails the SHA-256 check if the digest resolves to wrong bytes', async () => {
     const checks = await runBrowserChecks({
       secureContext: true,
-      digest: async () => new Uint8Array(32).buffer,
+      digest: () => Promise.resolve(new Uint8Array(32).buffer),
       probeKey: 'probe',
     });
     expect(checks.find((check) => check.id === 'digest')?.status).toBe('fail');
@@ -70,7 +70,7 @@ describe('local-only browser capability checks', () => {
   it('fails the SHA-256 check if the digest rejects without disclosing an exception', async () => {
     const checks = await runBrowserChecks({
       secureContext: true,
-      digest: async () => { throw new Error('secret provider details'); },
+      digest: () => Promise.reject(new Error('secret provider details')),
       probeKey: 'probe',
     });
     expect(checks.find((check) => check.id === 'digest')?.status).toBe('fail');

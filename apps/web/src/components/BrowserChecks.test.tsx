@@ -47,9 +47,9 @@ describe('shared mobile-friendly self-check footer', () => {
     check.mockImplementationOnce(() => new Promise<readonly BrowserCheck[]>((resolve) => { finishOld = resolve; }));
     check.mockResolvedValueOnce(failing);
     render(<BrowserChecks />);
-    await act(async () => { fireEvent.focus(window); });
+    await act(async () => { fireEvent.focus(window); await Promise.resolve(); });
     await waitFor(() => { expect(screen.getByRole('region', { name: 'Browser self-checks' }).textContent).toContain('Check browser capabilities'); });
-    await act(async () => { finishOld?.(passing); });
+    await act(async () => { finishOld?.(passing); await Promise.resolve(); });
     expect(screen.getByRole('region', { name: 'Browser self-checks' }).textContent).toContain('Check browser capabilities');
   });
 });
