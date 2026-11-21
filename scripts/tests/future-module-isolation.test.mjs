@@ -12,7 +12,8 @@ const DIRECTORIES = ['merchant-dashboard', 'ghostproof', 'private-recurring']
   .map((name) => `features/future/${name}/`);
 const PACKAGES = ['@ghostpay/ux-receipts', '@ghostpay/merchant-billing', '@ghostpay/merchant-hooks'];
 const localPath = (file) => relative(SRC, file).split('\\').join('/');
-const isDormant = (file) => DIRECTORIES.some((prefix) => localPath(file).startsWith(prefix));
+const isDormant = (file) => DIRECTORIES.some((prefix) =>
+  localPath(file) === prefix.slice(0, -1) || localPath(file).startsWith(prefix));
 
 function productionSources(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -73,6 +74,9 @@ test('isolation inspection detects static, side-effect, re-export, dynamic and C
     "const module = import('../features/future/ghostproof/index.js');",
     "const module = import(`../features/future/private-recurring/index`);",
     "const module = require('../features/future/merchant-dashboard/index');",
+    "import '../features/future/ghostproof';",
+    "export * from '../features/future/private-recurring/';",
+    "import '../features/future/merchant-dashboard';",
     "import module = require('@ghostpay/merchant-billing/internal');",
   ]) assert.equal(blockedImports(file, statement).length, 1, statement);
 });
