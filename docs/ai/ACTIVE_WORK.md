@@ -1018,6 +1018,10 @@ Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98
 - Boundaries: no production UI activation, signing/issuance/persistence feature additions, remote services, contract edits, external dependency version changes, deployment or branch deletion. The root owns publication of this isolated candidate; shared integration requires the existing coordination protocol.
 - Status: claim recorded before composition. Exact-head candidate qualification is not yet asserted.
 
+Qualification update (2026-11-21 UTC): source `751ca76d6b0b3a09b5712b01723b3c230978ef52` preserves all 17 donor source/test blobs and now incorporates main `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Whole-web coverage passed 3,027 tests with 13 existing conditional skips; the separate no-coverage suite passed three tests. Both full/lean builds and original scans passed, and every emitted artifact file is byte-identical to the corresponding captured-main build (19 full, 17 lean). The original tooling selection passed 242 of 244 tests; missing `cast` and unavailable `gpg-agent` remain recorded environment failures. Independent source/artifact review approved the disconnected milestones. Exact receipts, reviewed limitations and the public/local source mapping are under `docs/consolidation/dormant-modules-20261121-1f782/`. Hosted Node 22, mandatory Anvil and browser qualification remain pending.
+
+Ownership correction: shared lock commit `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` restored the prior generation-11 held record owned by `994a0d214fb9-root-r3`; its correction explicitly rejects expiration alone as takeover evidence. This task has not changed the lock. The isolated candidate is ready for hosted review; shared-target integration remains blocked until the prior owner releases it or verified stopped-writer handoff establishes a valid recovery. Existing feature source branches and other active workers remain preserved.
+
 ## F05 final qualification and publication record — 2026-11-20
 
 Worker: ChatGPT coordinator. Tested head `e08333af3eb830a36d375ecf2174db955f559d64`.
