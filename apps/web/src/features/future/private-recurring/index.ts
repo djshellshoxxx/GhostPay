@@ -13,3 +13,5 @@ export {
   createRecurringPlan, reviseRecurringPlan, transitionRecurringPlan,
   type RecurringMutationContext, type RecurringPlanTransition,
 } from './lifecycle';
+
+export { RecurringPreparationController } from './prepare';
