@@ -1,0 +1,36 @@
+{
+  "command_record": {
+    "command": [
+      "npm",
+      "exec",
+      "-w",
+      "@ghostpay/web",
+      "--",
+      "vitest",
+      "run",
+      "src/features/policy/PolicyPay.pendingEdit.test.tsx",
+      "src/features/policy/send.test.ts",
+      "src/features/policy/PolicyView.guard.test.tsx",
+      "--maxWorkers=1",
+      "--coverage.enabled=false"
+    ],
+    "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-policy",
+    "source_head": "d0e6f3c9711b7e0f896362a7ffd953e2f2ee1f95",
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_at": "2026-11-21T00:18:21.895309+00:00",
+    "completed_at": "2026-11-21T00:18:36.384308+00:00",
+    "duration_seconds": 14.489,
+    "exit_code": 0,
+    "environment_overrides": {
+      "NODE_OPTIONS": "--max-old-space-size=384"
+    },
+    "log_sha256": "59c77f62f30f25497a8a549e7041aa5053001b0363837da38c83cf354e809982"
+  },
+  "output": {
+    "format": "lossless-process-output-v1",
+    "encoding": "utf-8",
+    "bytes": 575,
+    "sha256": "59c77f62f30f25497a8a549e7041aa5053001b0363837da38c83cf354e809982",
+    "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-policy/apps/web\n\n\n Test Files  3 passed (3)\n      Tests  50 passed (50)\n   Start at  16:18:22\n   Duration  13.49s (tests 43%, transform 23%, import 22%, environment 12%)\n\n    Isolate  3 workers spawned \u00b7 ~654ms startup each (spawn + environment, per file)\n             at least ~1.31s faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n"
+  }
+}

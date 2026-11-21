@@ -1,0 +1,44 @@
+{
+  "recorded_utc": "2026-11-21T00:01:43.792105+00:00",
+  "scope": "Frozen source search under apps/web; no browser execution or current remote-state claim. Git grep exit 1 means no matches.",
+  "searches": [
+    {
+      "label": "coordinator-confirmed frozen #307",
+      "source_head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "argv": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "@ghostpay/hygiene|addressFreeReceipt|sweepConfirmed|spentCheck",
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 1,
+      "stdout_utf8": "",
+      "stderr_utf8": "",
+      "stdout_base64": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "separate privacy input",
+      "source_head": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "argv": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "@ghostpay/hygiene|addressFreeReceipt|sweepConfirmed|spentCheck",
+        "2bc2098298d90928eb1acafad969f28316bb05fc",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "stdout_utf8": "2bc2098298d90928eb1acafad969f28316bb05fc:apps/web/package.json:23:    \"@ghostpay/hygiene\": \"0.1.0\",\n2bc2098298d90928eb1acafad969f28316bb05fc:apps/web/src/lib/sweep.ts:20:import { DestLedger, fundingGuard } from '@ghostpay/hygiene';\n",
+      "stderr_utf8": "",
+      "stdout_base64": "MmJjMjA5ODI5OGQ5MDkyOGViMWFjYWZhZDk2OWYyODMxNmJiMDVmYzphcHBzL3dlYi9wYWNrYWdlLmpzb246MjM6ICAgICJAZ2hvc3RwYXkvaHlnaWVuZSI6ICIwLjEuMCIsCjJiYzIwOTgyOThkOTA5MjhlYjFhY2FmYWQ5NjlmMjgzMTZiYjA1ZmM6YXBwcy93ZWIvc3JjL2xpYi9zd2VlcC50czoyMDppbXBvcnQgeyBEZXN0TGVkZ2VyLCBmdW5kaW5nR3VhcmQgfSBmcm9tICdAZ2hvc3RwYXkvaHlnaWVuZSc7Cg==",
+      "stdout_sha256": "286e46bc8c09ef72f8a8180e15bd541d5ebaa9492a52e6aef794f2fb5d1920cf"
+    }
+  ]
+}

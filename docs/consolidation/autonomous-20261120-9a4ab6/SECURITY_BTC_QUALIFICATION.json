@@ -1,0 +1,217 @@
+{
+  "format": "ghostpay-security-btc-qualification/1",
+  "baseline": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "test_only_composition": "8ff918c634415bb42cebffdc18f6d59b19b95a1c",
+  "qualified_application_source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+  "donor_pr": 338,
+  "donor_head": "692cac58b1c345137264936e60bee7b1e2eed8b2",
+  "donor_test_commit": "498a72ed5dfb4b68f7557cf1ddfd34ea6cbf3d91",
+  "donor_runtime_commit": "0860e8fb518fd9f357e4ec9c5482ae823f0eb2ba",
+  "runtime_blob": "4bd08c0b56f7321e0ea06941e4f48e0659f66273",
+  "test_blob": "8ffcf80a6a37178fe36ada08340e58fb43926a17",
+  "donor_blobs_exactly_preserved": true,
+  "node_version": "v24.22.3",
+  "npm_version": "11.19.1",
+  "unchanged_coverage_thresholds": {
+    "statements": 95,
+    "branches": 90,
+    "functions": 95,
+    "lines": 95
+  },
+  "coverage_result": {
+    "passed_tests": 563,
+    "failed_tests": 0,
+    "skipped_tests": 0,
+    "passed_files": 33,
+    "statements": 97.8,
+    "branches": 95.86,
+    "functions": 98.44,
+    "lines": 99.46
+  },
+  "dependency_reuse": {
+    "source": "/workspace/scratch/3d4e69bb7cff/GhostPay",
+    "method": "Coordinator verified76 manifest/configuration inputs and no missing nonoptional lock paths, then created separate workspace dependency directories with hardlinked installed third-party files. Not a fresh install.",
+    "workspace_dependency_build_required": false
+  },
+  "independent_source_review": {
+    "reviewer": "/root/branch_recovery",
+    "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+    "result": "APPROVED; no blocking finding.",
+    "checks": "Exact two donor blobs/modes; validator before preview arithmetic; requested-network binding; no new secret/network access; existing regular-address/signing/fee behavior unchanged; tests cover both mismatch directions, malformed prefix and valid-network fee control.",
+    "limitation": "Reviewer did not execute tests. Existing @throws comment omits decoder-specific errors; nonblocking documentation debt."
+  },
+  "checks": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/btc-silent-payments"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "start_utc": "2026-11-20T23:40:57.008492+00:00",
+      "elapsed_seconds": 2.344,
+      "exit_code": 0,
+      "log_bytes": 225,
+      "log_sha256": "0e34269851ec2c3a2f601fc729ec75640cbc5c06ac78dcbd63db0906ef3c2737",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-package-build.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/btc-silent-payments@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+    },
+    {
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@ghostpay/btc-silent-payments",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=768"
+      },
+      "start_utc": "2026-11-20T23:38:55.879146+00:00",
+      "elapsed_seconds": 73.206,
+      "exit_code": 0,
+      "log_bytes": 3065,
+      "log_sha256": "0d541a12809425f7fba061688f839628dd5ba59b642821bd4d7358dc68e62999",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-package-coverage-serial.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/btc-silent-payments@0.1.0 test\n> vitest run --coverage --maxWorkers=1\n\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\n      Coverage enabled with v8\n\n\n Test Files  33 passed (33)\n      Tests  563 passed (563)\n   Start at  15:38:57\n   Duration  71.94s (tests 91%, import 5%, transform 3%, worker 1%)\n\n    Isolate  33 workers spawned \u00b7 ~144ms startup each (spawn + environment, per file)\n             at least ~4.62s faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n % Coverage report from v8\n-------------------|---------|----------|---------|---------|-------------------\nFile               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n-------------------|---------|----------|---------|---------|-------------------\nAll files          |    97.8 |    95.86 |   98.44 |   99.46 |                   \n src               |   97.87 |    96.02 |   98.91 |   99.34 |                   \n  adapter.ts       |     100 |    91.66 |     100 |     100 | 129-131           \n  bip32.ts         |   93.75 |       90 |     100 |     100 | 34,65             \n  ecc.ts           |   93.33 |       92 |   93.33 |      95 | 24,44             \n  headerchain.ts   |   95.57 |    91.25 |    98.3 |   98.31 | 602-605           \n  inputs.ts        |    98.3 |     98.5 |     100 |     100 | 23                \n  labels.ts        |   96.96 |    92.85 |     100 |     100 | 54                \n  receiver.ts      |   97.46 |    95.74 |     100 |     100 | 158,231           \n  secret.ts        |    93.1 |      100 |    92.3 |      92 | 29,35             \n  sender.ts        |   96.87 |     90.9 |     100 |     100 | 169,178           \n  spend.ts         |   98.81 |    96.56 |     100 |     100 | ...27,518,603,694 \n  tx.ts            |   98.36 |    97.72 |     100 |     100 | 94                \n  units.ts         |     100 |    94.11 |     100 |     100 | 41                \n  witness.ts       |   98.47 |    95.31 |     100 |     100 | 89,92,124         \n src/scan          |   97.64 |    95.64 |   97.27 |   99.68 |                   \n  blindbit.ts      |   97.18 |    98.09 |   86.36 |     100 | 147,181           \n  grpcWebUnary.ts  |   99.18 |    97.46 |     100 |     100 | 106-111           \n  headersync.ts    |   96.52 |    95.28 |     100 |     100 | ...69,254,295,307 \n  scanner.ts       |   95.75 |    95.38 |     100 |   98.33 | 253-254           \n  state.ts         |   97.88 |    91.42 |     100 |     100 | ...92,210-212,218 \n-------------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 97.8% ( 2366/2419 )\nBranches     : 95.86% ( 1715/1789 )\nFunctions    : 98.44% ( 380/386 )\nLines        : 99.46% ( 1861/1871 )\n================================================================================\n"
+    },
+    {
+      "command": [
+        "npm",
+        "test",
+        "-w",
+        "@ghostpay/btc-silent-payments"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "start_utc": "2026-11-20T23:37:11.643478+00:00",
+      "elapsed_seconds": 45.286,
+      "exit_code": 137,
+      "log_bytes": 742,
+      "log_sha256": "3e3748c43a45fbc12b182b7a811566c45368036ed8e3ef496c5d268c8e292128",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-package-coverage.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/btc-silent-payments@0.1.0 test\n> vitest run --coverage\n\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\n      Coverage enabled with v8\n\nKilled\nnpm error Lifecycle script `test` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\nnpm error workspace @ghostpay/btc-silent-payments@0.1.0\nnpm error location /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\nnpm error command failed\nnpm error command sh -c vitest run --coverage\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/btc-silent-payments"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=384"
+      },
+      "start_utc": "2026-11-20T23:40:59.352698+00:00",
+      "elapsed_seconds": 8.422,
+      "exit_code": 0,
+      "log_bytes": 541,
+      "log_sha256": "35b28b4c8b1a933f4733223547ab8537af5b7372c76bc08a469d236364fcf87e",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-package-lint-384.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/btc-silent-payments@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n\n/workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments/src/scan/proto/indexing_server_pb.ts\n  3:1  warning  Unused eslint-disable directive (no problems were reported)\n\n\u2716 1 problem (0 errors, 1 warning)\n  0 errors and 1 warning potentially fixable with the `--fix` option.\n\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/btc-silent-payments"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=768"
+      },
+      "start_utc": "2026-11-20T23:40:12.164988+00:00",
+      "elapsed_seconds": 5.543,
+      "exit_code": 137,
+      "log_bytes": 659,
+      "log_sha256": "e87a2ecc632ae5a5fd1bf9033691138dafb082d0211c0cd8d4a966800dba710f",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-package-lint.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/btc-silent-payments@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\nKilled\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 137\nnpm error path /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\nnpm error workspace @ghostpay/btc-silent-payments@0.1.0\nnpm error location /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src\n"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/btc-silent-payments"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=768"
+      },
+      "start_utc": "2026-11-20T23:40:09.085261+00:00",
+      "elapsed_seconds": 3.08,
+      "exit_code": 0,
+      "log_bytes": 232,
+      "log_sha256": "d794faa5a596296efaf352bc0296a9f44fea36d275e3e295b0142e1bd459a831",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-package-typecheck.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/btc-silent-payments@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+    },
+    {
+      "command": [
+        "npm",
+        "exec",
+        "-w",
+        "@ghostpay/btc-silent-payments",
+        "--",
+        "vitest",
+        "run",
+        "src/spend.preview.network.test.ts"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "cd5f01ff1d6fef2041654d213509d1a1ec3e0be6",
+      "start_utc": "2026-11-20T23:37:10.409181+00:00",
+      "elapsed_seconds": 1.234,
+      "exit_code": 0,
+      "log_bytes": 388,
+      "log_sha256": "069763cad86cbc082c30920c79daa38903939887fd2227df42cca623c5c8cce8",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-preview-green.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  15:37:11\n   Duration  478ms (transform 49%, import 47%, tests 2%, worker 1%)\n\n"
+    },
+    {
+      "command": [
+        "npm",
+        "exec",
+        "-w",
+        "@ghostpay/btc-silent-payments",
+        "--",
+        "vitest",
+        "run",
+        "src/spend.preview.network.test.ts"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-security",
+      "source": "8ff918c634415bb42cebffdc18f6d59b19b95a1c",
+      "start_utc": "2026-11-20T23:36:56.690111+00:00",
+      "elapsed_seconds": 2.464,
+      "exit_code": 1,
+      "log_bytes": 3145,
+      "log_sha256": "d67eac58d70987255faa4ad9e49be74bba5c204ba92e54eb9b72f474653c0159",
+      "log_path": "/workspace/scratch/9a4ab6c3d117/evidence/security/btc-preview-red.log",
+      "log_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-security/packages/btc-silent-payments\n\n \u276f src/spend.preview.network.test.ts (4 tests | 3 failed) 11ms\n   \u276f previewSweep silent-payment destination validation (GP-BUG-17) (4)\n     \u00d7 rejects a valid testnet silent-payment address when previewing mainnet 8ms\n     \u00d7 rejects a valid mainnet silent-payment address when previewing testnet 1ms\n     \u00d7 rejects a malformed silent-payment address rather than treating its prefix as sufficient 1ms\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 3 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n\n FAIL  src/spend.preview.network.test.ts > previewSweep silent-payment destination validation (GP-BUG-17) > rejects a valid testnet silent-payment address when previewing mainnet\nAssertionError: expected 'NO_THROW' to be 'NETWORK_MISMATCH' // Object.is equality\n\nExpected: \"NETWORK_MISMATCH\"\nReceived: \"NO_THROW\"\n\n \u276f src/spend.preview.network.test.ts:24:77\n     22| describe('previewSweep silent-payment destination validation (GP-BUG-1\u2026\n     23|   it('rejects a valid testnet silent-payment address when previewing m\u2026\n     24|     expect(codeOf({ ...common, network: 'mainnet', address: testAddres\u2026\n       |                                                                             ^\n     25|   });\n     26|\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/3]\u23af\n\n FAIL  src/spend.preview.network.test.ts > previewSweep silent-payment destination validation (GP-BUG-17) > rejects a valid mainnet silent-payment address when previewing testnet\nAssertionError: expected 'NO_THROW' to be 'NETWORK_MISMATCH' // Object.is equality\n\nExpected: \"NETWORK_MISMATCH\"\nReceived: \"NO_THROW\"\n\n \u276f src/spend.preview.network.test.ts:28:77\n     26|\n     27|   it('rejects a valid mainnet silent-payment address when previewing t\u2026\n     28|     expect(codeOf({ ...common, network: 'testnet', address: mainAddres\u2026\n       |                                                                             ^\n     29|   });\n     30|\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/3]\u23af\n\n FAIL  src/spend.preview.network.test.ts > previewSweep silent-payment destination validation (GP-BUG-17) > rejects a malformed silent-payment address rather than treating its prefix as sufficient\nAssertionError: expected 'NO_THROW' to be 'INVALID_ADDRESS' // Object.is equality\n\nExpected: \"INVALID_ADDRESS\"\nReceived: \"NO_THROW\"\n\n \u276f src/spend.preview.network.test.ts:42:78\n     40|\n     41|   it('rejects a malformed silent-payment address rather than treating \u2026\n     42|     expect(codeOf({ ...common, network: 'mainnet', address: 'sp1qqqqqq\u2026\n       |                                                                              ^\n     43|   });\n     44| });\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/3]\u23af\n\n\n Test Files  1 failed (1)\n      Tests  3 failed | 1 passed (4)\n   Start at  15:36:58\n   Duration  811ms (transform 62%, import 34%, tests 2%, worker 2%)\n\n"
+    }
+  ],
+  "limits": [
+    "No browser, external wallet, live-chain, full-web or full-candidate hosted qualification executed by this worker.",
+    "Default-concurrency complete coverage command killed137; unchanged serial retry passed563/563 at original thresholds.",
+    "Original typed lint at768MiB old-space killed137; same command at384MiB passed with one existing generated-protobuf unused-disable warning.",
+    "Test concurrency and Node heap caps were execution resource controls; no config, coverage, timeout, assertion, skip or source changes occurred between attempts.",
+    "No shared integration target, release or deployment was modified."
+  ]
+}

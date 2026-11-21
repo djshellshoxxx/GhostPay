@@ -1,0 +1,24 @@
+{
+  "source_head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+  "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene",
+  "argv": [
+    "npm",
+    "run",
+    "lint",
+    "-w",
+    "@ghostpay/hygiene"
+  ],
+  "environment_override": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-20T23:59:14.298431+00:00",
+  "completed_utc": "2026-11-20T23:59:19.514949+00:00",
+  "duration_seconds": 5.217,
+  "exit_code": 134,
+  "merged_stdout_stderr_encoding": "base64",
+  "merged_stdout_stderr_base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgbGludAo+IGVzbGludCAtLWNvbmZpZyAuLi8uLi9lc2xpbnQuY29uZmlnLmpzIHNyYwoKCjwtLS0gTGFzdCBmZXcgR0NzIC0tLT4KClsxODoweDM5MTJiMDAwXSAgICAgNDc2NiBtczogTWFyay1Db21wYWN0IChyZWR1Y2UpIDI1Mi44ICgyNTguMCkgLT4gMjQ5LjAgKDI1NC4zKSBNQiwgcG9vbGVkOiAwIE1CLCA3OS4wOCAvIDAuMDEgbXMgICgrIDAuMSBtcyBpbiAxMCBzdGVwcyBzaW5jZSBzdGFydCBvZiBtYXJraW5nLCBiaWdnZXN0IHN0ZXAgMC4xIG1zLCB3YWxsdGltZSBzaW5jZSBzdGFydCBvZiBtYXJraW5nIDgyIG1zKSAoYXZlcmFnZSBtdSA9IDAuMjA2LCBjdXJyZW50IG11IApGQVRBTCBFUlJPUjogSW5lZmZlY3RpdmUgbWFyay1jb21wYWN0cyBuZWFyIGhlYXAgbGltaXQgQWxsb2NhdGlvbiBmYWlsZWQgLSBKYXZhU2NyaXB0IGhlYXAgb3V0IG9mIG1lbW9yeQotLS0tLSBOYXRpdmUgc3RhY2sgdHJhY2UgLS0tLS0KCiAxOiAweDkxZGY5MCAgW25vZGVdCiAyOiAweDc1YmI5ZiBub2RlOjpPT01FcnJvckhhbmRsZXIoY2hhciBjb25zdCosIHY4OjpPT01EZXRhaWxzIGNvbnN0JikgW25vZGVdCiAzOiAweGM3NzI4MCAgW25vZGVdCiA0OiAweGM3NzM3ZiAgW25vZGVdCiA1OiAweGYyNzJiNSAgW25vZGVdCiA2OiAweGYyNzJlMiAgW25vZGVdCiA3OiAweGYyNzY2NCAgW25vZGVdCiA4OiAweGYzOTNjYSAgW25vZGVdCiA5OiAweGYzZDg4MCAgW25vZGVdCjEwOiAweDFhNDIwYzEgIFtub2RlXQpBYm9ydGVkCm5wbSBlcnJvciBMaWZlY3ljbGUgc2NyaXB0IGBsaW50YCBmYWlsZWQgd2l0aCBlcnJvcjoKbnBtIGVycm9yIGNvZGUgMTM0Cm5wbSBlcnJvciBwYXRoIC93b3Jrc3BhY2Uvc2NyYXRjaC85YTRhYjZjM2QxMTcvR2hvc3RQYXktaHlnaWVuZS9wYWNrYWdlcy9oeWdpZW5lCm5wbSBlcnJvciB3b3Jrc3BhY2UgQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAKbnBtIGVycm9yIGxvY2F0aW9uIC93b3Jrc3BhY2Uvc2NyYXRjaC85YTRhYjZjM2QxMTcvR2hvc3RQYXktaHlnaWVuZS9wYWNrYWdlcy9oeWdpZW5lCm5wbSBlcnJvciBjb21tYW5kIGZhaWxlZApucG0gZXJyb3IgY29tbWFuZCBzaCAtYyBlc2xpbnQgLS1jb25maWcgLi4vLi4vZXNsaW50LmNvbmZpZy5qcyBzcmMK",
+  "merged_stdout_stderr_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n\n<--- Last few GCs --->\n\n[18:0x3912b000]     4766 ms: Mark-Compact (reduce) 252.8 (258.0) -> 249.0 (254.3) MB, pooled: 0 MB, 79.08 / 0.01 ms  (+ 0.1 ms in 10 steps since start of marking, biggest step 0.1 ms, walltime since start of marking 82 ms) (average mu = 0.206, current mu \nFATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory\n----- Native stack trace -----\n\n 1: 0x91df90  [node]\n 2: 0x75bb9f node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node]\n 3: 0xc77280  [node]\n 4: 0xc7737f  [node]\n 5: 0xf272b5  [node]\n 6: 0xf272e2  [node]\n 7: 0xf27664  [node]\n 8: 0xf393ca  [node]\n 9: 0xf3d880  [node]\n10: 0x1a420c1  [node]\nAborted\nnpm error Lifecycle script `lint` failed with error:\nnpm error code 134\nnpm error path /workspace/scratch/9a4ab6c3d117/GhostPay-hygiene/packages/hygiene\nnpm error workspace @ghostpay/hygiene@0.1.0\nnpm error location /workspace/scratch/9a4ab6c3d117/GhostPay-hygiene/packages/hygiene\nnpm error command failed\nnpm error command sh -c eslint --config ../../eslint.config.js src\n",
+  "raw_sha256": "06d1d8a4d5f1653d53113f387f9f4768813a3239cab3a36f270efa5cd658c152",
+  "node_version": "v24.22.3",
+  "npm_version": "11.19.1"
+}

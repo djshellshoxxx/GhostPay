@@ -1,0 +1,966 @@
+{
+  "format": "privacy-release-source-comparison-v1",
+  "audit_base": "ab622aa0f59dd2b70d48308123c2bb9fee91893c",
+  "main": "aec179910c39081d820396409ff3139ff2264132",
+  "integration": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "privacy_stack": "410353a23631234aa888e46f38df22291c699a26",
+  "privacy_tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+  "hosted_checkout": "de0abd3f33f5f147a506743f87919230ad038197",
+  "hosted_checkout_tree_equals_privacy_tree": true,
+  "ancestry": [
+    {
+      "ancestor": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "target": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "is_ancestor": true
+    },
+    {
+      "ancestor": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "target": "410353a23631234aa888e46f38df22291c699a26",
+      "is_ancestor": true
+    },
+    {
+      "ancestor": "410353a23631234aa888e46f38df22291c699a26",
+      "target": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "is_ancestor": false
+    },
+    {
+      "ancestor": "410353a23631234aa888e46f38df22291c699a26",
+      "target": "aec179910c39081d820396409ff3139ff2264132",
+      "is_ancestor": false
+    }
+  ],
+  "paths": [
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "integration": {
+        "blob": "22c6d0b76c97584bd7059f830ae6aa8134a4a3a9",
+        "bytes": 15894,
+        "sha256": "f290b87e11f909b12da7242c43a2ba8bb21fa9706d4aef4160dd2d0238d6ddc0",
+        "lines": 323
+      },
+      "privacy_stack": {
+        "blob": "349d23d980d972375303c40c617817379d1eb5c5",
+        "bytes": 29090,
+        "sha256": "08a3dd04e0655b4f5e2779d0343eb5139db5fe51a91f7699e029eab1eee7b72e",
+        "lines": 568
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/AppShell.privacy.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "b6ad5d4408bc537b0fb39e36852e743c0ca10742",
+        "bytes": 19500,
+        "sha256": "3fedf67504df249d32d8ebb369b65ac2d08c05ddf632dccf73b4e1d2f01ec93a",
+        "lines": 307
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/Common.tsx",
+      "integration": {
+        "blob": "71b607b3e92f583b6bc784c7ec929567dd6f75da",
+        "bytes": 5056,
+        "sha256": "3502b1d634c67ed7fbf05e6697176d90d471c29acf0f60f5bee057d88e830fb5",
+        "lines": 135
+      },
+      "privacy_stack": {
+        "blob": "a0645c985ad1cc7988cb2fe80a96e87ca56dfb90",
+        "bytes": 5681,
+        "sha256": "8f9a8b69a58e21664389b0318bbe9e96da84cc3a96a301733834cc574940c135",
+        "lines": 142
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/Common.clipboardPrivacy.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "38cfb9190449966f4e130fad06345ce2f0c13686",
+        "bytes": 10390,
+        "sha256": "8efc913db45b96a5fe2e20a590ca61983058eab0f4b10256376ee8d7131f9032",
+        "lines": 202
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/ClipboardPrivacyControls.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "b9e3a56bc77a731e4302063dfe07a122ad226340",
+        "bytes": 1601,
+        "sha256": "2b8eadd9c9f67b127d43a20e7cff9c0ebfa60f5bad6fb67420c48b6671fb289c",
+        "lines": 31
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/ClipboardPrivacySync.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "f0d0138c6cc30f181110a65d32d317345e52139b",
+        "bytes": 490,
+        "sha256": "1f4363355b97dffa0ee05544cff50cae5db232faa867a1f244e50b729dab469c",
+        "lines": 13
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/PrivacyControls.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "590b40b5ed2f984870122cbbaff9da47f651d4d6",
+        "bytes": 1472,
+        "sha256": "0689c0bc235977b9b526c8524b394b7e1399bd7a64420dd2a374b931cfdc0b10",
+        "lines": 29
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/PrivacyQuickHide.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "7e855836d25e8e70ed17430161efd12116794d52",
+        "bytes": 1158,
+        "sha256": "be3d365c37806aa59a3a91e2427a4b5e30626ec0fe8d7f9e48b3f05b8f82ea93",
+        "lines": 28
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/SensitiveContent.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "e4b64ba4f3312c3392e2498ca5c6b306fd0871d5",
+        "bytes": 1721,
+        "sha256": "e57e22af4c1b133e845c0146159517579abba4f369087701072062b4fb94d1ab",
+        "lines": 31
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/PrivateHistory.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "1919f8a37f42fe5994450713c86c8f3fc276fb35",
+        "bytes": 1289,
+        "sha256": "01892a36db80a6abea491e64968b0505a0f0dbfb5a94ae02deb80f1df589c7b5",
+        "lines": 22
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.tsx",
+      "integration": {
+        "blob": "70ba12b8ae8d07460266c07f4dbd25e6126bfb80",
+        "bytes": 2049,
+        "sha256": "a3a95509043ed7407feb7138fff6a93dc59b15e6500def16eec9db8f232641dd",
+        "lines": 34
+      },
+      "privacy_stack": {
+        "blob": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+        "bytes": 2691,
+        "sha256": "b0d05ee1f07970d34eba1e88add1afa42145b69a9a63754e454884fcc4f9ffa6",
+        "lines": 42
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/WalletAttempts.test.tsx",
+      "integration": {
+        "blob": "8109cae9dd53a8645ce4c5fcda524b752b95cb6b",
+        "bytes": 1067,
+        "sha256": "529c8822498699c6092a8f22063dc130010b648e2a9f09d3707263a3dc04e2cf",
+        "lines": 18
+      },
+      "privacy_stack": {
+        "blob": "d7fda34e0967a86ecd591892076d9883903c19cd",
+        "bytes": 4272,
+        "sha256": "d6b125ab3b07518818c0a453c32ec5f76ff447e60a9aa74fa771256ee0d77a39",
+        "lines": 69
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+      "integration": {
+        "blob": "a48fbe04da171154ba009ce11132e30ffbcaf80f",
+        "bytes": 14908,
+        "sha256": "bdfb7a63d691df4faa324ec1a0351cb0db2aa2571eada007411f0a5027c8ece2",
+        "lines": 238
+      },
+      "privacy_stack": {
+        "blob": "a48fbe04da171154ba009ce11132e30ffbcaf80f",
+        "bytes": 14908,
+        "sha256": "bdfb7a63d691df4faa324ec1a0351cb0db2aa2571eada007411f0a5027c8ece2",
+        "lines": 238
+      },
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.tsx",
+      "integration": {
+        "blob": "c190e0efeb942fb7bcb91f5e14f9f3e6c3df5d67",
+        "bytes": 32489,
+        "sha256": "48e3c963ef91fc48afaadaece43f3780678c6101842d72b9d1c55a401f0fb469",
+        "lines": 796
+      },
+      "privacy_stack": {
+        "blob": "07e736bb80b10e16b49e9e09b2aff9d3085a2a82",
+        "bytes": 32754,
+        "sha256": "b6de14838ef5fa7e42499b60d482105fda734c3aaec52acd0672eaf4fdb1b908",
+        "lines": 801
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+        "bytes": 4275,
+        "sha256": "a8df740a5cbac59e0211e757288612e2eda84eaca5448c2cf78fb9dd163c657c",
+        "lines": 79
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/TagArchive.tsx",
+      "integration": {
+        "blob": "4f4ce4036ccc4e7e931074a872e54cf9a4cfbc21",
+        "bytes": 26232,
+        "sha256": "df61502b21c04da8ef0da97df302f39fff31f6044905f2e7ab3db7b6b200fa54",
+        "lines": 471
+      },
+      "privacy_stack": {
+        "blob": "4f4ce4036ccc4e7e931074a872e54cf9a4cfbc21",
+        "bytes": 26232,
+        "sha256": "df61502b21c04da8ef0da97df302f39fff31f6044905f2e7ab3db7b6b200fa54",
+        "lines": 471
+      },
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/WalletDisclosure.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "fe26789ff37a6802f23ee94d02631575ce1d01f7",
+        "bytes": 8149,
+        "sha256": "196404e61209b4160dece34ba0b48d37eda9ff45394062c062ab1d4de79476ed",
+        "lines": 135
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/WalletDisclosure.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "f560c3ba9ce4d16024794c9bd1d5babed4c143ce",
+        "bytes": 7265,
+        "sha256": "f2965a6586bdffac5efdc354442e61b1d54b6f8fded5e3034cc680379b85e28d",
+        "lines": 113
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/AddressReuseNotice.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "f28b886b47aad0b4fc14c2bc27796db2bfe3dd6d",
+        "bytes": 1009,
+        "sha256": "a83af3a343f5c84512c73fdaea320ec6bb0878f5b28c035510937e2888fe4a80",
+        "lines": 19
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/MetadataRetentionControls.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "62e3a3855979a8ea8040249149fa6d5633ae22d2",
+        "bytes": 4992,
+        "sha256": "f90aa1b9c1a08c5ea559e6241bd525d2fd0346c3925bbd66b0ef1cfcb6d88de9",
+        "lines": 72
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/MetadataRetentionControls.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "b0426862cb038717aee15fb5c5223784e2f2849c",
+        "bytes": 10210,
+        "sha256": "35bb23e17a09bb0b3a688c69f432481e26a29981d547631666d9e8aae8af52b7",
+        "lines": 171
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/PaymentRequestQr.tsx",
+      "integration": {
+        "blob": "3fbf35a0bc17650ae04f574fe74a00f1825c0a67",
+        "bytes": 7531,
+        "sha256": "332b5b4892ed84178677a7ae24f6eb81e81fdd6f4e2257c682a9c1d89e61dd29",
+        "lines": 173
+      },
+      "privacy_stack": {
+        "blob": "348f0fb38645c9add4f842c47586b8322a35abf6",
+        "bytes": 8461,
+        "sha256": "76df038c1373b3a5147161de3b7516603a6e8bf5b1aab5885e695695885ff5c0",
+        "lines": 184
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/PaymentProofQr.retention.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "e3277aba985ff0c716c11a17242672230ca5a8b0",
+        "bytes": 13997,
+        "sha256": "435066ace2a9e2908eacfa3f4885af6f93151b74054e43d975b183387d53fe29",
+        "lines": 250
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/MerchantTemplateIssuer.tsx",
+      "integration": {
+        "blob": "f3f3cee46e379f423fcbc2fa04512a4d96f8e85e",
+        "bytes": 6857,
+        "sha256": "dd3460843b3a9e14e9ae4572ce653ca4cbe751bff42245768675e4b320683842",
+        "lines": 89
+      },
+      "privacy_stack": {
+        "blob": "59236b8f63f43fad0f71ae40128cf174f3fa3f50",
+        "bytes": 7947,
+        "sha256": "b35be2ce98296c283edecd38b97986fef9e7eefba2f36d5fdc9a225183058a55",
+        "lines": 102
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/components/MerchantTemplateIssuer.retention.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "679b9fa5abfd29283b3fbe4ec164a1a1d4be9733",
+        "bytes": 11162,
+        "sha256": "486ee923ef20d396c7b46444a1c314b094df583781f2773637e0f15b7543dc02",
+        "lines": 189
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/features/registry/RegistryView.tsx",
+      "integration": {
+        "blob": "68e1c58aa7dd21d9208c3d67fc752b576f7d780f",
+        "bytes": 17634,
+        "sha256": "7c868197f288567d6aa765d919af791fccc1c84952386a4a8b6df946c37aa6b6",
+        "lines": 359
+      },
+      "privacy_stack": {
+        "blob": "5f07784b0e5cd29b24da38c5a3003667460d73ab",
+        "bytes": 19598,
+        "sha256": "064d9ca5dc27b29fad183b5b862f8554d901972b6c43b9ce2070aa8ff9ef54c4",
+        "lines": 401
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/features/policy/PolicyView.tsx",
+      "integration": {
+        "blob": "92b02eb63315b9afd01e653b268a5a6de9b59d64",
+        "bytes": 7725,
+        "sha256": "8c8308eed28f3427e8df343d8f7095de0636c9ff77af81c444e11df113aa6095",
+        "lines": 156
+      },
+      "privacy_stack": {
+        "blob": "0dad3f9f4dbf69c84de2000c55dfa03c8d6b1afc",
+        "bytes": 9691,
+        "sha256": "8b2ef0c927993a4e5f83ccf6145bb9df7bdfbc4a01134afec40ea0c167d23bcd",
+        "lines": 197
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/features/policy/chain.ts",
+      "integration": {
+        "blob": "758e19ef20d5f1ad2d3388979fb2d59e9db6578c",
+        "bytes": 10942,
+        "sha256": "f84773fd2ae17e707ff18972f24fa890e310e1412487ed9c23278d393a89ffbd",
+        "lines": 197
+      },
+      "privacy_stack": {
+        "blob": "b8ba3e9ef15aed86b2f8e6139ba8ff37430af62c",
+        "bytes": 10943,
+        "sha256": "d63f16e9196bc94d97b242055c36eef4e3fc348c5739b729cf13412a7eaeaa57",
+        "lines": 197
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/privacyMode.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "1ab179b7a39c6e5c4f54fb114d21e70f83f6effa",
+        "bytes": 5560,
+        "sha256": "6c0a7823bf35e46d142397e72cada021e8ee7a3617e14919e9403961c8d44bf8",
+        "lines": 119
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/privacyMode.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "b70402daeada1ead5a91e2c6bf77ba06a61b2bdf",
+        "bytes": 7219,
+        "sha256": "b60f87091162d7090bad750fb085d6cb9d97b1b123538b94b42b792f3c810ac3",
+        "lines": 150
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/clipboardPrivacy.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "a9d84e38c348e4c2b238f52cf506263117babc13",
+        "bytes": 4265,
+        "sha256": "d207dbd72521ae9e11d0ec24f0c33ad6330256a0d167efe0b5b4dda4a720e413",
+        "lines": 96
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/clipboardPrivacy.test.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "18c81c21dfa680c5498b2f907633cbdca32c09e5",
+        "bytes": 4855,
+        "sha256": "1904aaabc4737de3095eaf8d0e5bcb99c337eaf7d5b9911234ba5b65caaba49d",
+        "lines": 111
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/useWalletPrivacy.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "184de9bc514eec9900a1a4843ab3752777cec0c7",
+        "bytes": 3185,
+        "sha256": "438aff82ba159df0791edf7995adb3e2dfe60ce2c40631964d941e93eaf3a59a",
+        "lines": 92
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/useWalletPrivacy.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "73b31c9c9b11f875f9f7099725de6e9dc8714a35",
+        "bytes": 4952,
+        "sha256": "ddc3132a1d98da117cbe97bd2ab7dcc005f44334d062ef1d0e6c9c67791ca4d8",
+        "lines": 71
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/wallet.ts",
+      "integration": {
+        "blob": "800cfa90810b887898d4184ff3f5ccfb2601c971",
+        "bytes": 25669,
+        "sha256": "7a29be1f740cce8b83c66dbd6ba792d1f58de31fd5db35c9933422e1f807ddcf",
+        "lines": 519
+      },
+      "privacy_stack": {
+        "blob": "666b9d9774a3de841c23196c7ccde14c335e14ba",
+        "bytes": 30934,
+        "sha256": "075a24dd44f6045846e7a8a9a58bfc34b687203eb2e4cebc1afa3f6088ab2cf3",
+        "lines": 618
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/wallet.disclosure.test.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "16da6157bdf6c9183e75f81b30dc409901ab0135",
+        "bytes": 15118,
+        "sha256": "ac849fa5c1e0e47689da6f7b21b3fa344380d46df69bcce1e6e6e3397525dfa3",
+        "lines": 269
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/walletDisclosure.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "a0700207e8781ccb4184e3d70fd1c78e6d442766",
+        "bytes": 10302,
+        "sha256": "8d5bc6d875d766d3e70121ab8910cb82c0e39ef5cac113d9130c1f1c7dec16ae",
+        "lines": 191
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/walletDisclosure.test.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "cbf2be26f006866939ee58b2e335871fe95d130a",
+        "bytes": 10673,
+        "sha256": "a26a724d356ecf0ce6960b449476b3996c1545ad21ee6a70b3483e17dae1fe50",
+        "lines": 180
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/addressReuse.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "13381202cdf23ba9c03d7d51443b346df860fea2",
+        "bytes": 4580,
+        "sha256": "1e6cdce2bbdf458c4f90cd26a53f2010a68dd6fc00f0848668e6b4e30f9496af",
+        "lines": 102
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/addressReuse.test.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "65b7f75b115bc7aa544195918fa0b160b4c3b323",
+        "bytes": 5576,
+        "sha256": "9f248e6b41b657ff77a164982f1b32445602143b9eb6b7b6b6b042584a66db0b",
+        "lines": 90
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/useAddressReuse.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "f57424b189c7449f87168fe8a358b2681f0c61bd",
+        "bytes": 3760,
+        "sha256": "ebab34793f94ea022ba8fca53f23e9cfd51eeee9a2ff5b3518d76fea02204051",
+        "lines": 89
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/useAddressReuse.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "810f79aeebc387da0a5283940d0761a0ee542789",
+        "bytes": 8888,
+        "sha256": "db741a0ab32a8358d7963bd481b3e99aca9e579e1d6c6f2466f745ceb30f122a",
+        "lines": 162
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceMetadata.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "c8782f2c2979fba537aa4b8a5e39680bf61e5220",
+        "bytes": 1576,
+        "sha256": "5756ad65ef4a1c467d11749729ecdc9a3fc5867f7d910533c6effb2a997fa156",
+        "lines": 28
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceMetadata.test.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "a1108ca1f657e97b7a49a7aea627c4201ad636b5",
+        "bytes": 3144,
+        "sha256": "350f9a1a39010362ea62fa2916b2c936ff6f54ae912c45597c0c69a6dcc37d68",
+        "lines": 57
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/invoiceCreate.ts",
+      "integration": {
+        "blob": "4f1f9c81c07c1068e49942a163421596288f6dba",
+        "bytes": 9461,
+        "sha256": "dd39e19d4a333432531bd569bf9d751600d11658d73497c059881592005f7df9",
+        "lines": 176
+      },
+      "privacy_stack": {
+        "blob": "5acf835b39f1886af0f802c8dd780dfbe48b82e4",
+        "bytes": 9863,
+        "sha256": "a187cd1778da8c50d4bc2eaf1b387a474ff5b19268aa85dc105d974f45fde337",
+        "lines": 180
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/merchantTemplate.ts",
+      "integration": {
+        "blob": "045efb594a73a610662e8f5d45a6b270de0e589e",
+        "bytes": 5177,
+        "sha256": "8bb7e7bcadb5922abd6baf2ee541d81c16a84fae778e828a1e7b523138ac4ce1",
+        "lines": 88
+      },
+      "privacy_stack": {
+        "blob": "0905953c5a0d1ad3b20a2917e3780e874c6b9600",
+        "bytes": 5425,
+        "sha256": "4c85d33b46be80129e8956fb58b550a2c8e00a5526f13ba9f90563226d5bb516",
+        "lines": 91
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/metadataRetention.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "f21e7498c3f619b9fb87f1abc22872f5fd5c3378",
+        "bytes": 5861,
+        "sha256": "05e11b804e099f6fce70c4f98510b9e3f4679b68d0f1074ec28d743f6e78010a",
+        "lines": 113
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/metadataRetention.test.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "78da47cc88a159053cec9a97e31eac77d7c13bf1",
+        "bytes": 8068,
+        "sha256": "953f5a1f720a13e2a6a518df304551f6850541329817836bfb3abd1f1d14689f",
+        "lines": 160
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/useInvoicePreviewRetention.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "a3eaa1795391fc7c4eea9208ebc3d1d1cbdd31e7",
+        "bytes": 1782,
+        "sha256": "27f12a62d433556ccbada94d5c43d4e6c7ecacf10319a2337ab9b220476e9d6c",
+        "lines": 34
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/tagArchive.ts",
+      "integration": {
+        "blob": "9400fce95a499d0ea2f0df1aa7238364470fffa9",
+        "bytes": 3958,
+        "sha256": "4473b8affee8f45a2a11a62a443b697ea55fc0782b3706d41b12fc3297fadcf3",
+        "lines": 72
+      },
+      "privacy_stack": {
+        "blob": "fe863a7fd84a3238803381e31041fe35ccb0bf6b",
+        "bytes": 3799,
+        "sha256": "5b0618d43b03d5adb0d9e4229455c52481d10177f3be255dbfad018d2c2995a7",
+        "lines": 70
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "443e62404c232922a3a5f485275dcc86cfd1c77f",
+        "bytes": 23626,
+        "sha256": "5864fbbce2374e260b2a060167846289892bf58b7099da050562357466577d75",
+        "lines": 475
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/settings.ts",
+      "integration": {
+        "blob": "24b906e163e6bd314c73f172d95332dce4340233",
+        "bytes": 5938,
+        "sha256": "3ed46f7b7f79fbf87d0024081638cecacaaf5878cdb1b8668eee6b4843beb1f0",
+        "lines": 158
+      },
+      "privacy_stack": {
+        "blob": "666aff245eac46a61633b74257bc65c39fb6093e",
+        "bytes": 11800,
+        "sha256": "56b2c357304370772f3ed7979e018c87ee4094bf27b843ec022a416f7a207e6d",
+        "lines": 265
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "integration": {
+        "blob": "a351684b70b84a73705c7aed73dee65bd45cf36c",
+        "bytes": 40360,
+        "sha256": "f9cf3b32f817d3ff3c6f10f53c01d76918aef5e10e5d7e555f285e99ddfa9b5f",
+        "lines": 761
+      },
+      "privacy_stack": {
+        "blob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+        "bytes": 53986,
+        "sha256": "783adf54a9956b3e1d12763797e869e1de893532970d8f8b6a7df1ae5cc696ee",
+        "lines": 1062
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "integration": {
+        "blob": "197e5f2d69fee42b3fc5d368e22bb4c1581b0540",
+        "bytes": 75934,
+        "sha256": "98c4c143ba203d078c238b598316a4fbb73d5442e26bbbf1e49a7c29cec6065f",
+        "lines": 1421
+      },
+      "privacy_stack": {
+        "blob": "213396721bb63d68bc3d0c51755f9389ab3e2746",
+        "bytes": 87389,
+        "sha256": "28612fda00d61eb788a208729dbc376933f5cf79e5b95f188d3939a565ea5ec2",
+        "lines": 1576
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/views/Pay.addressReuse.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "74d20aa205992a304c8e2fa8074c1f9ad9a3cf36",
+        "bytes": 8871,
+        "sha256": "5a0da4be3b9b1ee4410dab37e415ea692868e4b896792ece144ed80a03977831",
+        "lines": 161
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.tsx",
+      "integration": {
+        "blob": "1a31bebd47e897e63ea34c367228cb35262c9098",
+        "bytes": 22086,
+        "sha256": "a29908bf2ee2d612b97dd5899f0678f322e4c6c35c80c9e14dca4cbab0b42835",
+        "lines": 398
+      },
+      "privacy_stack": {
+        "blob": "fccc19766b1a62b044b2e24a194c36681e34eb60",
+        "bytes": 24155,
+        "sha256": "5b8eefc99d1c69f06d5fb59caaee6a15b4f93b18a8a24c38310c61f83121b712",
+        "lines": 429
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "e882d1107eb8a88c4583094a1081a82fc7d1f644",
+        "bytes": 6468,
+        "sha256": "02f74659c22ba98a440b4ab77ecce88129b31d8b38f202714413de822d127408",
+        "lines": 118
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/views/Settings.tsx",
+      "integration": {
+        "blob": "05179dfa993616e1cf59f19717a1263d61f6c31e",
+        "bytes": 34805,
+        "sha256": "945ca1bd90146194bc30e62d1571b35a5b65078fdf02289e5ff503694e4cb9d6",
+        "lines": 500
+      },
+      "privacy_stack": {
+        "blob": "70ccf62fca5aa3cfb80b18e7f543f418206f66e5",
+        "bytes": 50454,
+        "sha256": "0ea9c8badc831deda6cc7e0a125a944b9679a035154ead3e10874a30b7521807",
+        "lines": 738
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/src/views/WalletPrivacy.lifecycle.test.tsx",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "2c8aef1b74be39ea08d8eaf7b90db12bb7e61929",
+        "bytes": 14033,
+        "sha256": "b9bf57115f4bbd570041875bb1d4019c9e73a6fdced8ddff5ba1de3c172f4c7f",
+        "lines": 247
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/privacy-mask-history.spec.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "4e46d29af387b23ae28b79055dd38d440f1911b9",
+        "bytes": 5799,
+        "sha256": "7c744c5df8b6c71947bdbae7740c80124192df48726e18f42dfde977f8339ad0",
+        "lines": 98
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/clipboard-privacy.spec.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "bfa4bb354f148e5a0a53232896c8aa9fe4041e39",
+        "bytes": 3927,
+        "sha256": "e2c14ffb0c2b680f294246e547279cfae347df3b079531a2b7ea0e6a2af5910a",
+        "lines": 75
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/wallet-disclosure.spec.ts",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "6bde4cbc654658bc1468c6683c6d17ea1b50b357",
+        "bytes": 4834,
+        "sha256": "23b671669bbb0ec8916e243fd579f226bcd46b7d87c12896247dac7f6113d64e",
+        "lines": 77
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/app.spec.ts",
+      "integration": {
+        "blob": "5e295217b712af3a57d046f96fad556640763ef6",
+        "bytes": 12861,
+        "sha256": "f856deada3e6a7fc2c3cf25f4a82071f8beb1b97ed8dd04940937f995938225a",
+        "lines": 251
+      },
+      "privacy_stack": {
+        "blob": "92afdb684409110c7b542d4e842fc8d915d81b43",
+        "bytes": 13483,
+        "sha256": "3de758e7faeb865eeed05156bc4f9cadd517c6332d77e13d78e85f9663c34362",
+        "lines": 268
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/flows.spec.ts",
+      "integration": {
+        "blob": "1d01f09beae3ee3693e74bdc0dd1fec942a200f5",
+        "bytes": 30766,
+        "sha256": "1beac9ed70e151e8e738c7db8a0657787400a2a46a17ecb84c57b7af68c14a97",
+        "lines": 541
+      },
+      "privacy_stack": {
+        "blob": "a54df0d1b2e764fcf42236edeb826cb69acad2f8",
+        "bytes": 30996,
+        "sha256": "71104b7fc6e913fdafcc6d105ccb77a0a8494fe5fab572a54ecfb1ea81ad3277",
+        "lines": 507
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/devnet-journey.spec.ts",
+      "integration": {
+        "blob": "0b37e89513340df81a1c0dbf3410ff9e474df6c5",
+        "bytes": 19516,
+        "sha256": "42e4adb1198dc6b396d5898fc69f348779509cf5c4ab41ac1c88d3c7e2c9bc57",
+        "lines": 312
+      },
+      "privacy_stack": {
+        "blob": "b6e3cdea64b3e84feb932692d71cb7d2cf65d25c",
+        "bytes": 20562,
+        "sha256": "34457e8d51b88ebad1f60ff2a8b04d04752f7ccebcfbf8c231cf63429ef21ba0",
+        "lines": 327
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/pages-devnet.spec.ts",
+      "integration": {
+        "blob": "46dabb22224684a8638a26c536c53db4aea605ea",
+        "bytes": 70450,
+        "sha256": "05a3bca0cfb7c89669caed824760da66ad3c179b47f92628dd24e05488b0fae5",
+        "lines": 1072
+      },
+      "privacy_stack": {
+        "blob": "008f7a72d59bd8128eb5ca972fee61e9ee58c7b2",
+        "bytes": 73043,
+        "sha256": "2db1c326780f25647b6a6404206c1342432301f2e605bb31f4505049a5dcf607",
+        "lines": 1106
+      },
+      "identical": false
+    },
+    {
+      "path": "apps/web/e2e/devnet/ui.ts",
+      "integration": {
+        "blob": "a48e444572702aec5542fb96fcfe82ce6e3e1c55",
+        "bytes": 3945,
+        "sha256": "3e37984dce8a932b826b9ad9ca23cb17a3396cf99239240e8bd01f873404311f",
+        "lines": 59
+      },
+      "privacy_stack": {
+        "blob": "f8903c87ce37d9869273d12d322469c81da90d57",
+        "bytes": 4061,
+        "sha256": "9741e70567fe755324a25ee6dd49caed8e8fc83e0bf96f46d0c6a6d77b313313",
+        "lines": 61
+      },
+      "identical": false
+    },
+    {
+      "path": "scripts/tests/network-egress-inventory.test.mjs",
+      "integration": {
+        "blob": "062277c30f3e1e3e03515337068ae15e2045ca0d",
+        "bytes": 5463,
+        "sha256": "7fa7e51c0a8088e9f1515a19d3aa255707d97e309374ed47d560f3a55615c48f",
+        "lines": 89
+      },
+      "privacy_stack": {
+        "blob": "d48716335d66af3ce36c5add29fcaf05da53e8ad",
+        "bytes": 13905,
+        "sha256": "5a476d47880d8a9990fad05d9f0798da6841963cc12974ad46049370d62e078a",
+        "lines": 195
+      },
+      "identical": false
+    },
+    {
+      "path": "docs/privacy-release/STATUS.md",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "26238321fe267fcd2db6ce0d308dc32770fde385",
+        "bytes": 17783,
+        "sha256": "3d25a44eddeb978e361c3d24328168b4ab79fe04e0f3af56b1fead468cbea0e8",
+        "lines": 94
+      },
+      "identical": false
+    },
+    {
+      "path": "docs/privacy-release/evidence/retention-gen2-census.md",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "751be71d6b125bbda87062c1b811955b93aba4f0",
+        "bytes": 6865,
+        "sha256": "4ac6b428a23b2f1e67a098ef974fa2b318a019d0a394f9b9f32803b7a59dc5b5",
+        "lines": 32
+      },
+      "identical": false
+    },
+    {
+      "path": "docs/consolidation/devnet-wallet-consent-r2-20261120/REPORT.md",
+      "integration": null,
+      "privacy_stack": {
+        "blob": "9a0366cbd128a92bf2e510ae11e56c724b77717b",
+        "bytes": 8930,
+        "sha256": "1466b7ada1742694dc0f3f1ebd2336e45584b98ba4d74cba1feb2867ae45acc9",
+        "lines": 68
+      },
+      "identical": false
+    }
+  ],
+  "ownership": {
+    "frozen_pr_count": 111,
+    "report_prefix": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_RELEASE_",
+    "exact_report_path_overlap": [],
+    "existing_source_owners_preserved": [
+      326,
+      327,
+      336
+    ]
+  },
+  "verification": {
+    "product_tests_executed": 0,
+    "source_comparison": "git object reads only",
+    "hosted_log_roundtrip": "6/6 SHA-256 and byte counts match; all six identify the same checked-out source",
+    "full_decoded_log_bytes": 1099637
+  }
+}

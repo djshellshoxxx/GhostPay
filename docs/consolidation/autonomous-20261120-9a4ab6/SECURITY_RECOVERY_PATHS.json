@@ -1,0 +1,117 @@
+{
+  "integration_source": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "spec18_donor_source": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+  "files": [
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "eb21473822afb6d01b0304bd44017fa3c21450e2"
+      }
+    },
+    {
+      "path": "apps/web/src/lib/stealthExport.ts",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "abfaf722906562156ca976ad88b1e84af64b7433"
+      }
+    },
+    {
+      "path": "apps/web/src/components/StealthExportPayment.tsx",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "eb37229287dbf9a5e4a900e72b30fce03f7adb98"
+      }
+    },
+    {
+      "path": "apps/web/src/components/StealthExportMaster.tsx",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "fee1fc2efb3a437a43fffb9bb31e3d9fbcd4353b"
+      }
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "bafc0cf5f301c0d3b7b8c01953411504a797413d"
+      }
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+      }
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.mjs",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "ffff60f9b18e1b387bd1e859b003c4e49b9ff14c"
+      }
+    },
+    {
+      "path": "scripts/recovery/raw-key-anvil.test.mjs",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "a774988a1f1f775f27da69c84dd348ec843fa4ac"
+      }
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "7e4fd4c0ee186f81a6d12eea47a027d049db5bd6"
+      }
+    },
+    {
+      "path": "apps/web/e2e/stealth-export.spec.ts",
+      "integration": {
+        "exists": false,
+        "blob_sha": null
+      },
+      "spec18_donor": {
+        "exists": true,
+        "blob_sha": "6bd0682c19890e58e396188955e962e215f06b17"
+      }
+    }
+  ],
+  "scope": "Tracked path presence only, not runtime or financial recovery acceptance."
+}

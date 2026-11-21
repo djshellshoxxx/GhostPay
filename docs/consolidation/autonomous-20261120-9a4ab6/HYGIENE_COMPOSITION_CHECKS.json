@@ -1,0 +1,158 @@
+{
+  "checks": [
+    {
+      "check": "coverage",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "@ghostpay/hygiene",
+        "--",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-composition",
+      "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "hygiene_tree": "087f548c2e6203cac0a4184f66157ea21cf77879",
+      "node_version": "v24.22.3",
+      "npm_version": "11.19.1",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=256"
+      },
+      "started_at_utc": "2026-11-21T00:23:20.665967+00:00",
+      "finished_at_utc": "2026-11-21T00:23:32.283333+00:00",
+      "duration_seconds": 11.617,
+      "exit_code": 0,
+      "output": {
+        "encoding": "utf-8",
+        "bytes": 1574,
+        "sha256": "860bd92e665ea133647c6b8e1e8e38079e8f4f2a57f2f7e25c1a38aefaa1906f",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 test\n> vitest run --coverage --maxWorkers=1\n\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-composition/packages/hygiene\n      Coverage enabled with v8\n\n\n Test Files  7 passed (7)\n      Tests  161 passed (161)\n   Start at  16:23:21\n   Duration  10.80s (tests 64%, import 29%, transform 5%, worker 1%)\n\n    Isolate  7 workers spawned \u00b7 ~130ms startup each (spawn + environment, per file)\n             at least ~781ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n % Coverage report from v8\n------------------|---------|----------|---------|---------|-------------------\nFile              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n------------------|---------|----------|---------|---------|-------------------\nAll files         |   99.52 |    99.12 |     100 |     100 |                   \n ledger.ts        |     100 |    98.98 |     100 |     100 | 66                \n verify.ts        |   98.85 |    98.63 |     100 |     100 | 97,106            \n------------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.52% ( 422/424 )\nBranches     : 99.12% ( 341/344 )\nFunctions    : 100% ( 75/75 )\nLines        : 100% ( 337/337 )\n================================================================================\n",
+        "base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgdGVzdAo+IHZpdGVzdCBydW4gLS1jb3ZlcmFnZSAtLW1heFdvcmtlcnM9MQoKCiBSVU4gIHY1LjAuNSAvd29ya3NwYWNlL3NjcmF0Y2gvOWE0YWI2YzNkMTE3L0dob3N0UGF5LWh5Z2llbmUtY29tcG9zaXRpb24vcGFja2FnZXMvaHlnaWVuZQogICAgICBDb3ZlcmFnZSBlbmFibGVkIHdpdGggdjgKCgogVGVzdCBGaWxlcyAgNyBwYXNzZWQgKDcpCiAgICAgIFRlc3RzICAxNjEgcGFzc2VkICgxNjEpCiAgIFN0YXJ0IGF0ICAxNjoyMzoyMQogICBEdXJhdGlvbiAgMTAuODBzICh0ZXN0cyA2NCUsIGltcG9ydCAyOSUsIHRyYW5zZm9ybSA1JSwgd29ya2VyIDElKQoKICAgIElzb2xhdGUgIDcgd29ya2VycyBzcGF3bmVkIMK3IH4xMzBtcyBzdGFydHVwIGVhY2ggKHNwYXduICsgZW52aXJvbm1lbnQsIHBlciBmaWxlKQogICAgICAgICAgICAgYXQgbGVhc3Qgfjc4MW1zIGZhc3RlciB3aXRoIGlzb2xhdGU6IGZhbHNlIOKAlCByZXVzZXMgd29ya2VycyBhY3Jvc3MgZmlsZXMgaW5zdGVhZCBvZiBvbmUgcGVyIGZpbGUKCiAlIENvdmVyYWdlIHJlcG9ydCBmcm9tIHY4Ci0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0KRmlsZSAgICAgICAgICAgICAgfCAlIFN0bXRzIHwgJSBCcmFuY2ggfCAlIEZ1bmNzIHwgJSBMaW5lcyB8IFVuY292ZXJlZCBMaW5lICNzIAotLS0tLS0tLS0tLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS0tLS0tLS0tLS0tCkFsbCBmaWxlcyAgICAgICAgIHwgICA5OS41MiB8ICAgIDk5LjEyIHwgICAgIDEwMCB8ICAgICAxMDAgfCAgICAgICAgICAgICAgICAgICAKIGxlZGdlci50cyAgICAgICAgfCAgICAgMTAwIHwgICAgOTguOTggfCAgICAgMTAwIHwgICAgIDEwMCB8IDY2ICAgICAgICAgICAgICAgIAogdmVyaWZ5LnRzICAgICAgICB8ICAgOTguODUgfCAgICA5OC42MyB8ICAgICAxMDAgfCAgICAgMTAwIHwgOTcsMTA2ICAgICAgICAgICAgCi0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0KCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gQ292ZXJhZ2Ugc3VtbWFyeSA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ClN0YXRlbWVudHMgICA6IDk5LjUyJSAoIDQyMi80MjQgKQpCcmFuY2hlcyAgICAgOiA5OS4xMiUgKCAzNDEvMzQ0ICkKRnVuY3Rpb25zICAgIDogMTAwJSAoIDc1Lzc1ICkKTGluZXMgICAgICAgIDogMTAwJSAoIDMzNy8zMzcgKQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQo="
+      }
+    },
+    {
+      "check": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "-w",
+        "@ghostpay/hygiene"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-composition",
+      "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "hygiene_tree": "087f548c2e6203cac0a4184f66157ea21cf77879",
+      "node_version": "v24.22.3",
+      "npm_version": "11.19.1",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=256"
+      },
+      "started_at_utc": "2026-11-21T00:23:32.284918+00:00",
+      "finished_at_utc": "2026-11-21T00:23:34.925879+00:00",
+      "duration_seconds": 2.641,
+      "exit_code": 0,
+      "output": {
+        "encoding": "utf-8",
+        "bytes": 220,
+        "sha256": "2806d567c3286f3d4f627dc9bb234fc5f4ec5ccfa9329d9aa7c57458fc40566b",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n",
+        "base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgdHlwZWNoZWNrCj4gdHNjIC1wIHRzY29uZmlnLmpzb24gLS1ub0VtaXQKCg=="
+      }
+    },
+    {
+      "check": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "-w",
+        "@ghostpay/hygiene"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-composition",
+      "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "hygiene_tree": "087f548c2e6203cac0a4184f66157ea21cf77879",
+      "node_version": "v24.22.3",
+      "npm_version": "11.19.1",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=512"
+      },
+      "started_at_utc": "2026-11-21T00:23:34.927527+00:00",
+      "finished_at_utc": "2026-11-21T00:23:39.264730+00:00",
+      "duration_seconds": 4.337,
+      "exit_code": 0,
+      "output": {
+        "encoding": "utf-8",
+        "bytes": 228,
+        "sha256": "df260ec89441b01a69ea106fd5f846d0e1c324d716e0a63d678c8b37bdb1cc66",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n",
+        "base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgbGludAo+IGVzbGludCAtLWNvbmZpZyAuLi8uLi9lc2xpbnQuY29uZmlnLmpzIHNyYwoK"
+      }
+    },
+    {
+      "check": "build",
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "-w",
+        "@ghostpay/hygiene"
+      ],
+      "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-composition",
+      "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "hygiene_tree": "087f548c2e6203cac0a4184f66157ea21cf77879",
+      "node_version": "v24.22.3",
+      "npm_version": "11.19.1",
+      "environment_overrides": {
+        "NODE_OPTIONS": "--max-old-space-size=256"
+      },
+      "started_at_utc": "2026-11-21T00:23:39.265571+00:00",
+      "finished_at_utc": "2026-11-21T00:23:41.245383+00:00",
+      "duration_seconds": 1.98,
+      "exit_code": 0,
+      "output": {
+        "encoding": "utf-8",
+        "bytes": 213,
+        "sha256": "09f896713f8ef44360426e6a47f3f8a6d6b270a135bde1115673ab74149e0913",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 build\n> tsc -p tsconfig.build.json\n\n",
+        "base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgYnVpbGQKPiB0c2MgLXAgdHNjb25maWcuYnVpbGQuanNvbgoK"
+      }
+    }
+  ],
+  "final_light_checks": [
+    {
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "checked_at_utc": "2026-11-21T00:26:40.889822+00:00",
+      "exit_code": 0,
+      "output": {
+        "encoding": "utf-8",
+        "bytes": 50,
+        "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+        "content": "OK: no committed env files or key material found.\n",
+        "base64": "T0s6IG5vIGNvbW1pdHRlZCBlbnYgZmlsZXMgb3Iga2V5IG1hdGVyaWFsIGZvdW5kLgo="
+      }
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "checked_at_utc": "2026-11-21T00:26:40.896036+00:00",
+      "exit_code": 0,
+      "output": {
+        "encoding": "utf-8",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "content": "",
+        "base64": ""
+      }
+    }
+  ],
+  "registry_additive_verified": true
+}

@@ -1,0 +1,994 @@
+{
+  "format": "merchant-feature-github-snapshot-v1",
+  "observed_at_utc": "2026-11-21 00:10:04 UTC",
+  "repository": "djshellshoxxx/GhostPay",
+  "prs": [
+    {
+      "pr": {
+        "number": 310,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/310",
+        "title": "feat: add signed invoice request-file interchange (F03)",
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "mergeable": false,
+        "head": "future/f03-private-payment-links",
+        "head_sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+        "base": "main",
+        "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+        "updated_at": "2026-11-20T16:57:54Z"
+      },
+      "workflow_runs": {
+        "workflow_runs": [
+          {
+            "id": 44778314085,
+            "name": "Beta acceptance",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 319,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314085/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314085/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 44778313990,
+            "name": "Hosting kit",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 436,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778313990/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778313990/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 44778314237,
+            "name": "CLI operator qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 291,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314237/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314237/logs",
+            "workflow_id": 412675588
+          },
+          {
+            "id": 44778314204,
+            "name": "Pages",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 314,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314204/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314204/logs",
+            "workflow_id": 392799214
+          },
+          {
+            "id": 44778314192,
+            "name": "CI",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 1569,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314192/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44778314192/logs",
+            "workflow_id": 391558649
+          }
+        ]
+      },
+      "ci_jobs": {
+        "jobs": [
+          {
+            "id": 136504398355,
+            "name": "changes",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136504398915,
+            "name": "secrets-and-egress",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640644,
+            "name": "ts-test-relayer",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640729,
+            "name": "e2e (full)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640758,
+            "name": "ts-typecheck",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640777,
+            "name": "e2e (lean)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640852,
+            "name": "contracts-coverage",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640866,
+            "name": "ts-lint",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640868,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640915,
+            "name": "ts-check",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640918,
+            "name": "lean-candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640921,
+            "name": "ts-test (rest-1)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640946,
+            "name": "ts-test (rest-0)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640953,
+            "name": "contracts-static",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640955,
+            "name": "ts-test (confidential-contracts)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549640960,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549641058,
+            "name": "contracts-slither",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549641091,
+            "name": "ts-test (web)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549641095,
+            "name": "ts-test (core-crypto)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549641108,
+            "name": "contracts-test",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549642035,
+            "name": "ts-test (btc-silent-payments)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136549642387,
+            "name": "ts-test (rest-2)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136621653620,
+            "name": "contracts",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136628284039,
+            "name": "typescript",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          }
+        ]
+      }
+    },
+    {
+      "pr": {
+        "number": 322,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/322",
+        "title": "feat(f04): add evidence-qualified local merchant projections",
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "mergeable": false,
+        "head": "future/f04-merchant-dashboard",
+        "head_sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+        "base": "main",
+        "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+        "updated_at": "2026-11-20T16:49:03Z"
+      },
+      "workflow_runs": {
+        "workflow_runs": [
+          {
+            "id": 44777150502,
+            "name": "Beta acceptance",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 316,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150502/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150502/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 44777150413,
+            "name": "Pages",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 311,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150413/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150413/logs",
+            "workflow_id": 392799214
+          },
+          {
+            "id": 44777150449,
+            "name": "Hosting kit",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 433,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150449/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150449/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 44777150648,
+            "name": "CI",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 1566,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150648/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777150648/logs",
+            "workflow_id": 391558649
+          }
+        ]
+      },
+      "ci_jobs": {
+        "jobs": [
+          {
+            "id": 136429884087,
+            "name": "secrets-and-egress",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136429884464,
+            "name": "changes",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807590,
+            "name": "ts-typecheck",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807669,
+            "name": "contracts-test",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807740,
+            "name": "lean-candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807753,
+            "name": "ts-check",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807754,
+            "name": "contracts-slither",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807797,
+            "name": "contracts-coverage",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807801,
+            "name": "contracts-static",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807873,
+            "name": "ts-test (rest-0)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807878,
+            "name": "ts-lint",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807884,
+            "name": "ts-test-relayer",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807898,
+            "name": "ts-test (rest-1)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807916,
+            "name": "ts-test (core-crypto)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807942,
+            "name": "ts-test (rest-2)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807952,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483807979,
+            "name": "ts-test (confidential-contracts)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483808008,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483808011,
+            "name": "ts-test (btc-silent-payments)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483808035,
+            "name": "e2e (lean)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483808076,
+            "name": "ts-test (web)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136483808299,
+            "name": "e2e (full)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136551095526,
+            "name": "contracts",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136551994673,
+            "name": "typescript",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          }
+        ]
+      }
+    },
+    {
+      "pr": {
+        "number": 323,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/323",
+        "title": "feat(f05): add offline receipt assurance review",
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "mergeable": false,
+        "head": "future/f05-ghostproof",
+        "head_sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+        "base": "main",
+        "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+        "updated_at": "2026-11-20T18:37:23Z"
+      },
+      "workflow_runs": {
+        "workflow_runs": [
+          {
+            "id": 44777155138,
+            "name": "Pages",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 312,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155138/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155138/logs",
+            "workflow_id": 392799214
+          },
+          {
+            "id": 44777155100,
+            "name": "Hosting kit",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 434,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155100/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155100/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 44777155003,
+            "name": "Beta acceptance",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 317,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155003/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155003/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 44777154841,
+            "name": "CLI operator qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 289,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777154841/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777154841/logs",
+            "workflow_id": 412675588
+          },
+          {
+            "id": 44777155115,
+            "name": "CI",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_number": 1567,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155115/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777155115/logs",
+            "workflow_id": 391558649
+          }
+        ]
+      },
+      "ci_jobs": {
+        "jobs": [
+          {
+            "id": 136429898145,
+            "name": "secrets-and-egress",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136429898753,
+            "name": "changes",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487178704,
+            "name": "ts-check",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487178802,
+            "name": "ts-lint",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487178928,
+            "name": "contracts-coverage",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487178998,
+            "name": "e2e (full)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179020,
+            "name": "contracts-test",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179036,
+            "name": "e2e (lean)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179061,
+            "name": "contracts-static",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179073,
+            "name": "lean-candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179074,
+            "name": "ts-test (btc-silent-payments)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179116,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179167,
+            "name": "ts-test-relayer",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179173,
+            "name": "ts-test (rest-1)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179180,
+            "name": "ts-test (confidential-contracts)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179193,
+            "name": "ts-test (rest-2)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179204,
+            "name": "ts-test (core-crypto)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179207,
+            "name": "ts-test (rest-0)",
+            "status": "completed",
+            "conclusion": "failure",
+            "failed_steps": [
+              {
+                "name": "Unit tests",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 6
+              }
+            ]
+          },
+          {
+            "id": 136487179221,
+            "name": "contracts-slither",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179287,
+            "name": "ts-test (web)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179377,
+            "name": "ts-typecheck",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136487179773,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136570530797,
+            "name": "contracts",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136574084394,
+            "name": "typescript",
+            "status": "completed",
+            "conclusion": "failure",
+            "failed_steps": [
+              {
+                "name": "Run echo \"needs results: $RESULTS\"",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "pr": {
+        "number": 324,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/324",
+        "title": "feat(f10): add bounded recurring-invoice previews",
+        "state": "open",
+        "draft": true,
+        "merged": false,
+        "mergeable": false,
+        "head": "future/f10-private-recurring",
+        "head_sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+        "base": "main",
+        "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+        "updated_at": "2026-11-20T16:49:06Z"
+      },
+      "workflow_runs": {
+        "workflow_runs": [
+          {
+            "id": 44777159934,
+            "name": "Pages",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 313,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159934/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159934/logs",
+            "workflow_id": 392799214
+          },
+          {
+            "id": 44777159458,
+            "name": "CLI operator qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 290,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159458/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159458/logs",
+            "workflow_id": 412675588
+          },
+          {
+            "id": 44777159361,
+            "name": "Hosting kit",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 435,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159361/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159361/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 44777159422,
+            "name": "Beta acceptance",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 318,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159422/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159422/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 44777159872,
+            "name": "CI",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_number": 1568,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159872/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44777159872/logs",
+            "workflow_id": 391558649
+          }
+        ]
+      },
+      "ci_jobs": {
+        "jobs": [
+          {
+            "id": 136429914870,
+            "name": "changes",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136429915289,
+            "name": "secrets-and-egress",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576418,
+            "name": "ts-check",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576460,
+            "name": "ts-test-relayer",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576489,
+            "name": "ts-typecheck",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576572,
+            "name": "ts-lint",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576616,
+            "name": "ts-test (btc-silent-payments)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576626,
+            "name": "contracts-slither",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576644,
+            "name": "ts-test (core-crypto)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576652,
+            "name": "ts-test (rest-1)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576761,
+            "name": "ts-test (web)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576762,
+            "name": "ts-test (rest-2)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576772,
+            "name": "ts-test (rest-0)",
+            "status": "completed",
+            "conclusion": "failure",
+            "failed_steps": [
+              {
+                "name": "Unit tests",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 6
+              }
+            ]
+          },
+          {
+            "id": 136494576806,
+            "name": "contracts-test",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576836,
+            "name": "lean-candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576890,
+            "name": "contracts-extra (payer-hiding-contracts, packages/payer-hiding-contracts, true, false)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494576914,
+            "name": "ts-test (confidential-contracts)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494577047,
+            "name": "contracts-static",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494577073,
+            "name": "contracts-coverage",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494577118,
+            "name": "e2e (full)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494577134,
+            "name": "contracts-extra (pool-contracts, packages/pool-contracts, true, true)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136494577641,
+            "name": "e2e (lean)",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136557366158,
+            "name": "contracts",
+            "status": "completed",
+            "conclusion": "success",
+            "failed_steps": []
+          },
+          {
+            "id": 136561356148,
+            "name": "typescript",
+            "status": "completed",
+            "conclusion": "failure",
+            "failed_steps": [
+              {
+                "name": "Run echo \"needs results: $RESULTS\"",
+                "status": "completed",
+                "conclusion": "failure",
+                "number": 2
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "normalization": "Selected PR/workflow/job fields; failed step names retained. Full decisive logs are in the indexed gzip archive."
+}

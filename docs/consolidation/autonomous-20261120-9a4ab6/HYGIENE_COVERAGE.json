@@ -1,0 +1,26 @@
+{
+  "source_head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+  "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene",
+  "argv": [
+    "npm",
+    "run",
+    "test",
+    "-w",
+    "@ghostpay/hygiene",
+    "--",
+    "--maxWorkers=1"
+  ],
+  "environment_override": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-20T23:58:39.961913+00:00",
+  "completed_utc": "2026-11-20T23:58:51.385334+00:00",
+  "duration_seconds": 11.423,
+  "exit_code": 0,
+  "merged_stdout_stderr_encoding": "base64",
+  "merged_stdout_stderr_base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgdGVzdAo+IHZpdGVzdCBydW4gLS1jb3ZlcmFnZSAtLW1heFdvcmtlcnM9MQoKCiBSVU4gIHY1LjAuNSAvd29ya3NwYWNlL3NjcmF0Y2gvOWE0YWI2YzNkMTE3L0dob3N0UGF5LWh5Z2llbmUvcGFja2FnZXMvaHlnaWVuZQogICAgICBDb3ZlcmFnZSBlbmFibGVkIHdpdGggdjgKCgogVGVzdCBGaWxlcyAgNiBwYXNzZWQgKDYpCiAgICAgIFRlc3RzICAxNDkgcGFzc2VkICgxNDkpCiAgIFN0YXJ0IGF0ICAxNTo1ODo0MAogICBEdXJhdGlvbiAgMTAuNjdzICh0ZXN0cyA3MCUsIGltcG9ydCAyNCUsIHRyYW5zZm9ybSA2JSwgd29ya2VyIDElKQoKICAgIElzb2xhdGUgIDYgd29ya2VycyBzcGF3bmVkIMK3IH4xMjJtcyBzdGFydHVwIGVhY2ggKHNwYXduICsgZW52aXJvbm1lbnQsIHBlciBmaWxlKQogICAgICAgICAgICAgYXQgbGVhc3QgfjYxMW1zIGZhc3RlciB3aXRoIGlzb2xhdGU6IGZhbHNlIOKAlCByZXVzZXMgd29ya2VycyBhY3Jvc3MgZmlsZXMgaW5zdGVhZCBvZiBvbmUgcGVyIGZpbGUKCiAlIENvdmVyYWdlIHJlcG9ydCBmcm9tIHY4Ci0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0KRmlsZSAgICAgICAgICAgICAgfCAlIFN0bXRzIHwgJSBCcmFuY2ggfCAlIEZ1bmNzIHwgJSBMaW5lcyB8IFVuY292ZXJlZCBMaW5lICNzIAotLS0tLS0tLS0tLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLXwtLS0tLS0tLS0tLS0tLS0tLS0tCkFsbCBmaWxlcyAgICAgICAgIHwgICA5OS41MiB8ICAgICA5OS4xIHwgICAgIDEwMCB8ICAgICAxMDAgfCAgICAgICAgICAgICAgICAgICAKIGxlZGdlci50cyAgICAgICAgfCAgICAgMTAwIHwgICAgIDk4LjkgfCAgICAgMTAwIHwgICAgIDEwMCB8IDUyICAgICAgICAgICAgICAgIAogdmVyaWZ5LnRzICAgICAgICB8ICAgOTguODUgfCAgICA5OC42MyB8ICAgICAxMDAgfCAgICAgMTAwIHwgOTcsMTA2ICAgICAgICAgICAgCi0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tLXwtLS0tLS0tLS18LS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0KCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0gQ292ZXJhZ2Ugc3VtbWFyeSA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09ClN0YXRlbWVudHMgICA6IDk5LjUyJSAoIDQxOS80MjEgKQpCcmFuY2hlcyAgICAgOiA5OS4xJSAoIDMzMy8zMzYgKQpGdW5jdGlvbnMgICAgOiAxMDAlICggNzQvNzQgKQpMaW5lcyAgICAgICAgOiAxMDAlICggMzM0LzMzNCApCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Cg==",
+  "merged_stdout_stderr_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 test\n> vitest run --coverage --maxWorkers=1\n\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-hygiene/packages/hygiene\n      Coverage enabled with v8\n\n\n Test Files  6 passed (6)\n      Tests  149 passed (149)\n   Start at  15:58:40\n   Duration  10.67s (tests 70%, import 24%, transform 6%, worker 1%)\n\n    Isolate  6 workers spawned \u00b7 ~122ms startup each (spawn + environment, per file)\n             at least ~611ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n % Coverage report from v8\n------------------|---------|----------|---------|---------|-------------------\nFile              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n------------------|---------|----------|---------|---------|-------------------\nAll files         |   99.52 |     99.1 |     100 |     100 |                   \n ledger.ts        |     100 |     98.9 |     100 |     100 | 52                \n verify.ts        |   98.85 |    98.63 |     100 |     100 | 97,106            \n------------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 99.52% ( 419/421 )\nBranches     : 99.1% ( 333/336 )\nFunctions    : 100% ( 74/74 )\nLines        : 100% ( 334/334 )\n================================================================================\n",
+  "raw_sha256": "07e255b6af9807d48954d5024794d07a962337dd645c01732c0353bb86fa0ccb",
+  "node_version": "v24.22.3",
+  "npm_version": "11.19.1"
+}

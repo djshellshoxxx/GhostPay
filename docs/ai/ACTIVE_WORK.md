@@ -1,3 +1,393 @@
+# Completed isolated publication cycle — 20 November 2026 (Pacific)
+
+Coordinator: 9a4ab6c3d117-root; branch codex/ghostpay-autonomous-20261120-9a4ab6.
+Frozen main aec179910c39081d820396409ff3139ff2264132 and #307
+5a745d4b5fba69b66a9779f88aefc63c253a4f27 remain shared targets.
+Only the Sweep journal and its new test change in this branch's application tree;
+70 selected tests and independent source review pass. Broader web gates remain open.
+
+Published isolated contributions: #346 recovery interoperability on #269;
+#347 hygiene lint repair on #339; #348 privacy fixture/inventory correction on #336.
+Their authenticated API publication trees match the reviewed local trees exactly.
+The #339/#347/#341 composition is independently reviewed and passes all 161 original
+package tests, coverage, compiler, lint and build. Its qualification ref is
+qualify/ghostpay-hygiene-composition-20261120-9a4ab6 at
+0e19ccc7d52b0d160fb756089e6a843a1d2831d7; original feature PRs remain authoritative.
+#345 passed 50 focused cases but typed lint remains blocked. The original #328 was
+reopened as draft, with unchanged source and preserved prior qualification.
+
+All delegated scopes in this cycle are complete. Complete source-specific results,
+failed attempts, active feature ownership and next commands are under
+ docs/consolidation/autonomous-20261120-9a4ab6/CYCLE_REPORT.md.
+Original local execution/review commits are preserved in EXECUTION_HISTORY.bundle
+with a verified hash/index. This record does not claim full release completion.
+The held generation-11 lock was not acquired or mutated; expiry alone does not
+permit takeover under scripts/automation/integration-lock.mjs. No shared target,
+release or deployment changed. All earlier registry claims remain below.
+
+---
+
+# Hygiene evidence and seven-testnet ledger composition — 2026-11-20 (Pacific)
+
+Worker: `/root/hygiene_composition`, delegated by `9a4ab6c3d117-root`.
+Branch: `qualify/ghostpay-hygiene-composition-20261120-9a4ab6`.
+Exact base: published #347 `95e60ce4948b7430865dafbd1ad01434310a75f7`, tree-identical
+with reviewed local #339 test-lint checkpoint `ed3f400d29e8ff72e2dbadc4c92722581694c8f7`.
+Donor: authoritative #341 `78137622011528a646ae94155ee4acf7f72e1e2a`; reuse only its
+original test `0284eead8822306c625981d5095e983f8364cb93` and runtime
+`26d2ba95a045bb60d9344cb3e4a84224c2b74b50` with provenance.
+Owned source: `packages/hygiene/src/ledger.ts` and
+`packages/hygiene/src/ledger.browser-chains.test.ts` for exact donor composition only.
+Owned documentation: this additive claim/status and
+`docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_*`.
+Acceptance: compare donor/base blobs; preserve all #339 verification corrections,
+#347 lint repair and existing assertions; qualify the first combined package tree
+with original full coverage, typecheck, lint and build. Verify lock/source/build-input
+identity before cache reuse. No new payload, baseline reproduction, feature, network,
+configuration, dependency, timeout, threshold or skip change. No browser or live
+financial action. Current #307 has no browser hygiene caller; privacy wiring and
+final release acceptance remain separately owned. Existing #339/#341/#347 stay
+authoritative; no shared branch, integration lease, remote ref or competing PR change.
+Heavy execution waits for the policy and privacy fixture workers. Source/metadata
+review and isolated preparation proceed first. Current three PR heads matched
+these pins before the claim. Status: claimed before source composition.
+Completion: exact combined source `6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb` passes
+161 original tests across seven files, zero skips, original coverage thresholds,
+typecheck, typed lint and package build; no retries or gate/source adjustments.
+All 24 other package files retain #347; both final ledger blobs match #341.
+Coordinator root independently reviewed and approved this exact package diff.
+Lossless evidence is in `HYGIENE_COMPOSITION_*`; browser/hosted integration
+remains separate. Heavy slot released; no remote/shared-target mutation.
+
+---
+
+---
+
+## Current-wallet privacy acceptance fixtures — 2026-11-20 (Pacific)
+
+Worker: `/root/privacy_fixture_repair`, delegated by `9a4ab6c3d117-root`.
+Branch: `test/ghostpay-privacy-fixtures-20261120-9a4ab6`. Exact base: existing
+PR #336 `410353a23631234aa888e46f38df22291c699a26`; refreshed live head unchanged.
+Owned writes: `apps/web/src/components/SharedComponents.i18n.test.tsx`, the reviewed
+reference count in `docs/privacy/network-egress-inventory.json`, and only if an
+assertion-preserving setup is established, the post-reload spans in
+`apps/web/e2e/{devnet-journey,pages-devnet}.spec.ts`. Evidence prefix:
+`docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_*`. Existing #336
+remains authoritative. Runtime, privacy/disclosure policy, signing, journal
+retention, focus/cancellation tests, dependencies, configuration and gates are
+read-only. Preserve original locale/hash/duplicate/refusal/no-send/outcome
+assertions; provide current account/chain context; independently review the added
+network reference before updating its count; run original affected gates and
+report unavailable environments. No baseline reproduction, live financial action,
+remote write, shared-ref or lease mutation. Root independently reviews and owns
+publication. The frozen 111-PR path inventory and newer #345–#347 were inspected;
+existing broader owners retain their claims. This is a narrow stacked correction.
+
+
+### Privacy fixture correction completed
+
+Corrective source `a02d640b7f847c006526d561467db9f348910d5a` changes exactly two
+lines: the locale fixture supplies its existing wallet scope; the independently
+reviewed Pay reference count changes 6 to 7 while three calls remain. Twenty tests
+in two complete affected component files and all six original inventory checks
+passed with zero skips/retries. Root independently approved the complete source
+diff and account/chain/reference semantics. Production code, every assertion and
+all gates remain unchanged. Matching-cache provenance and lossless results are in
+`PRIVACY_FIXTURE_REPAIR.md` and adjacent records. Browser files were not modified
+because required Anvil/Forge executables are unavailable; their acceptance and
+other privacy failures remain open. Full-web and changed-head compiler/typed-lint
+qualification are unclaimed. No heavy process remains; paths are released to root
+for stacked draft publication into existing #336.
+
+---
+
+# Existing policy correction qualification — completion
+
+Worker `/root/policy_qualification` completed source review and 50/50 original
+corrected-source tests at PR #345 `9a10d335d048b197e90d257a5322ff5d5260572d`.
+Seven required dependency packages rebuilt from that source. Narrow original
+typed lint remains blocked: 512 MiB V8 exhaustion, then the sole 768 MiB retry
+killed with exit 137 and no diagnostics. No broad web/native-browser pass is
+claimed. All outputs and exact input hashes are preserved in `POLICY_*` evidence.
+The heavy-job slot is released. Existing #345 stays authoritative; root owns
+publication and the current integration coordinator owns shared-target decisions.
+This completion adds documentation only and preserves every earlier claim.
+
+---
+
+# Independent existing policy correction qualification — 20 November 2026 (Pacific)
+
+Worker: `/root/policy_qualification`, delegated by `9a4ab6c3d117-root`.
+Branch: `qualify/ghostpay-policy-evidence-20261120-9a4ab6`.
+Exact source: existing PR #345 `9a10d335d048b197e90d257a5322ff5d5260572d`,
+based on main `aec179910c39081d820396409ff3139ff2264132`.
+Owned writes: this additive registry entry and
+`docs/consolidation/autonomous-20261120-9a4ab6/POLICY_*` evidence only.
+Existing #345 and the overlapping #278 retain their source ownership. The worker
+will review the corrected source and existing tests, verify dependency provenance,
+and execute bounded existing corrected-source checks when prerequisites permit.
+Optional experimental full-profile policy UI is separate from the lean Pages
+release. Native browser, full-web and final-composition gates require their own
+evidence. No runtime/test/config edits, baseline reproduction, new payloads,
+financial actions, shared-ref writes, remote publication or lease operations.
+The coordinator owns publication and the current integration queue.
+
+---
+
+---
+
+# Invoice and merchant source review completion — 2026-11-20 (Pacific)
+
+The four exact feature heads remain unchanged. F03 behavior is retained in #307;
+current #310 and #322 CI pass. #323/#324 each fail the generated workspace-map
+and explicit dependency-closure assertions, with their web/compiler/lint/browser
+jobs passing. Three future M1 modules remain unmounted and absent from #307.
+`MERCHANT_FEATURE_REVIEW.md` and source/hosted-log evidence preserve ownership,
+actual checkouts, failure causes and next commands. No product test was executed
+or shared target changed by this reviewer. Root owns publication and coordination.
+
+---
+
+# Invoice and merchant feature source review — 2026-11-20 (Pacific)
+
+Worker: `/root/merchant_feature_review`, delegated by `9a4ab6c3d117-root`.
+Branch: `audit/ghostpay-merchant-feature-review-20261120-9a4ab6`.
+Exact base: PR #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`;
+frozen main: `aec179910c39081d820396409ff3139ff2264132`.
+Owned writes: this strictly additive registry entry and
+`docs/consolidation/autonomous-20261120-9a4ab6/MERCHANT_FEATURE_*` only.
+Acceptance: inspect #310/#322/#323/#324 exact heads, original ownership,
+source/caller retention and existing qualification; distinguish implemented
+primitives, incomplete UI, missing integration and unverified release gates.
+The frozen 111-PR changed-path inventory has no owner for this evidence prefix.
+Existing F03/F04/F05/F10 implementation owners remain authoritative.
+No product/test/configuration changes, test execution, exploit reproduction,
+remote messages/writes, merge, lease operation, release or deployment.
+
+---
+
+---
+
+# Bounded required-privacy release source review — 2026-11-20 (Pacific)
+
+Worker: `/root/privacy_release_review`, delegated by `9a4ab6c3d117-root`.
+Branch: `audit/ghostpay-privacy-release-20261120-9a4ab6`.
+Exact audit base: `ab622aa0f59dd2b70d48308123c2bb9fee91893c`; product comparison:
+#307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27` and existing privacy stack
+#326 `a34ce43e296e302e3e65ed077ea8ac892c5189a1` →
+#327 `9608ec996fb159f11b84b9baec0b48033a48a6a5` →
+#336 `410353a23631234aa888e46f38df22291c699a26`.
+Owned writes: only this additive registry entry and
+`docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_RELEASE_*` evidence.
+Acceptance: map the five issue #286 v1.0 requirements and four issue #287 v1.1
+requirements to actual source, existing tests and source-pinned acceptance;
+distinguish missing integration, partial retention and pending browser/hosted
+gates. Existing privacy source owners remain authoritative. No product edits,
+new tests, heavy execution, payloads, remote writes, external messages, shared refs, lease
+changes, live payments, deployment or future privacy modules. Root owns later
+publication. This report extends the existing registry, not a competing ledger.
+Status: source review complete. Nine issue requirements mapped; eight bounded
+implementations plus partial retention remain on the separate privacy stack.
+Current #336 hosted CI/Pages/Beta gates are failed, with six exact-tree logs and
+71 path comparisons preserved in `PRIVACY_RELEASE_*`. No product tests or remote
+writes were executed. Root owns publication; existing privacy owners retain fixes.
+
+---
+
+---
+
+# Independent seven-testnet destination ledger qualification — 2026-11-20 (Pacific)
+
+Worker: `/root/ledger_qualification`, delegated by `9a4ab6c3d117-root`.
+Branch: `qualify/ghostpay-ledger-evidence-20261120-9a4ab6`.
+Exact existing PR #341 source: `78137622011528a646ae94155ee4acf7f72e1e2a`;
+its current head was independently refreshed and unchanged before this claim.
+Owned writes: this additive entry and
+`docs/consolidation/autonomous-20261120-9a4ab6/LEDGER_*` evidence only.
+Acceptance: independently review the existing ledger-specific testnet correction;
+run original package coverage, typecheck, lint and build with unchanged gates;
+record exact dependency/source provenance and source-pinned results; distinguish
+package qualification from missing browser wiring and final composition gates.
+The frozen 111-PR comparison identifies #341 as the sole owner of the two ledger
+source/test paths; #339 owns disjoint hygiene verification paths and stays separate.
+No production/test/configuration edits, new regressions, live-chain actions, remote
+writes, lease operations, shared-target changes, release or deployment. The held
+generation-11 integration lease remains under its existing coordinator.
+Status: independent source review and original package qualification completed.
+154/154 tests in six files, unchanged coverage thresholds, typecheck, typed lint
+and build passed. Exact dependency-source mismatch prevented cache-output reuse;
+all three dependency packages were rebuilt successfully from this source.
+Evidence: `LEDGER_QUALIFICATION.md`, `LEDGER_SOURCE.json`, `LEDGER_CHECKS.json`
+and supporting lossless/provenance records. Current #307 and this source have no
+browser caller; privacy-stack composition and browser/hosted gates remain open.
+No runtime or test edits, remote writes, shared-target or lease changes occurred.
+
+---
+
+---
+
+## Existing hygiene PR #339 package qualification — 2026-11-20
+
+- Worker: `9a4ab6c3d117/hygiene_qualification`, delegated by the autonomous consolidation coordinator.
+- Branch: `qualify/ghostpay-hygiene-evidence-20261120-9a4ab6`; exact base and existing PR #339 head: `d03600ca87c7156d4acd1ff78bef6e92c20d9ea4`.
+- Owned paths: `docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_*` and this additive ownership entry only. Existing product, tests, configuration, dependency versions and original donor history remain unchanged.
+- Acceptance: inspect the final corrected source and full correction sequence; verify dependency provenance; execute the original hygiene package coverage, typecheck, lint and build sequentially with bounded resources; preserve exact commands, raw results and limitations. Use corrected source only, without baseline reproduction or additional test cases.
+- Scope: source qualification of the existing testnet hygiene package. Current #307 has no hygiene browser caller; separate privacy-stack wiring and browser acceptance are outside this qualification. PR #339 remains the authoritative feature PR.
+- Coordination: isolated local evidence only; no remote publication, PR changes, shared refs, merge, deployment, release or chain transactions. The coordinator owns later integration and exact-head hosted-CI decisions.
+- Status at claim: root manifest, full lockfile, relevant workspace manifests and root TypeScript/ESLint configuration match the supplied dependency donors byte-for-byte. No test or build pass is yet asserted.
+- Qualification result: original corrected-source package coverage passes 149/149 tests (6/6 files), statements 99.52%, branches 99.1%, functions/lines 100%; original typecheck and build pass. Lint first exhausted the 256 MiB heap, then the sole 512 MiB resource retry completed with seven existing test-file lint errors. Source and tests remain unchanged; package qualification is blocked pending those corrections on existing PR #339. Full source/dependency provenance and lossless logs are in `docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_QUALIFICATION.md` and adjacent `HYGIENE_*.json`. No browser or hosted-CI pass is claimed.
+
+---
+
+# Qualified integration queue source review — 2026-11-20
+
+Worker: `/root/queue_review`, delegated by `9a4ab6c3d117-root`.
+Branch: `audit/ghostpay-qualified-queue-20261120-9a4ab6`.
+Exact base: `5e882df84df70f1eca7a02b2079ab5e502cd76c0`; frozen integration
+source: PR #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Owned writes: this additive claim and
+`docs/consolidation/autonomous-20261120-9a4ab6/QUEUE_REVIEW.*` only.
+Acceptance: refresh exact PR/review/check metadata; distinguish closed/merged
+state from ancestry and behavior; preserve already completed #328 qualification;
+reconcile #331/#333/#335/#344 and current-main #329/#334 dependency order; report
+exact-source evidence and remaining composition gates. No product edits, test
+execution, exploit reproduction, external messages, push, deployment, competing
+ledger or shared-ref mutation. The generation-11 lease remains with
+`994a0d214fb9-root-r3`; only its current holder may update shared targets.
+
+Status: source/metadata review complete; `QUEUE_REVIEW.md`, `.github.json` and
+`.source.json` preserve the qualified reuse decisions, current failed/pending
+gates and composition boundaries. No product tests or shared-target actions
+were performed. Root owns publication and any later integration.
+
+---
+
+# Current isolated journal correction — 2026-11-20 (Pacific)
+
+Coordinator: `9a4ab6c3d117-root`; branch `codex/ghostpay-autonomous-20261120-9a4ab6`.
+Base #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`; runtime correction
+`526f9849233f3d809a2847565f732415fe9dbcd2`. Seventy selected journal/wallet
+tests pass; fresh `journal_review` independently approved it. Full web compiler,
+lint and build qualification remain blocked by recorded process/heap failures;
+original thresholds, configuration and assertions remain. Only the journal
+source and its new test change in the application tree. Source/Actions scans pass.
+See `JOURNAL_QUALIFICATION.md` and lossless evidence. Bitcoin source remains on
+its separate #338 qualification branch; only that branch's report is included
+here. The existing #269 recovery stack has a separate owned interoperability
+test. No shared target or held lease changed. Earlier claims remain preserved.
+
+---
+
+# Independent Bitcoin preview network qualification — 2026-11-20 (Pacific)
+
+Worker: `9a4ab6c3d117-root/security_recovery`.
+Branch: `codex/ghostpay-security-recovery-20261120-9a4ab6`.
+Base: `95a1e93c` (claim-only successor of PR #307 source
+`5a745d4b5fba69b66a9779f88aefc63c253a4f27`).
+Owned source/test paths: `packages/btc-silent-payments/src/spend.ts` and
+`packages/btc-silent-payments/src/spend.preview.network.test.ts`; additive registry
+and `docs/consolidation/autonomous-20261120-9a4ab6/SECURITY_*` evidence.
+Reuse exact donor #338 test `498a72ed` and production `0860e8fb` commits rather than
+create a competing fix. Existing PR #338 remains the authoritative feature PR.
+Independent overlap census inspected all 111 open PRs at exact head/base SHAs:
+only #338 changes these two paths. Its frozen head is
+`692cac58b1c345137264936e60bee7b1e2eed8b2`, base
+`aa3df1cb37274fae73af0ca957183c15c51b62d3`.
+Main's #334 fee-cap change is in `packages/metadata-hardening`, a separate module
+without a dependency on this preview guard, and is therefore not copied here.
+Acceptance: reproduce wrong-network/malformed-address failures with unchanged
+runtime, preserve matching-network fee calculations, run original focused/package
+checks using matching dependencies, and retain exact donor and composition evidence.
+No custody, signer, fee, profile, dependency, workflow or browser-enablement change.
+Root owns publication/coordination. No shared target or integration-lease mutation.
+Completion: exact donor source/test composition `cd5f01ff1d6fef2041654d213509d1a1ec3e0be6`
+reproduced three baseline failures and one valid control, then passed 4/4 focused
+and 563/563 complete package cases, zero skips, original coverage thresholds,
+typecheck, build and original typed lint. Original default coverage and first lint
+attempts exited 137; unchanged source passed after serial/heap-limited execution.
+Independent `branch_recovery` source review approved both exact donor blobs/modes.
+Full raw command evidence and recovery limits are in `SECURITY_BTC_QUALIFICATION.*`.
+
+---
+
+# Payment-safety source assessment and worker handoff — 2026-11-20 (Pacific)
+
+Worker: `/root/payment_safety`; same dedicated branch and immutable #307 source
+as the claims below. The coordinator narrowed this worker to documentation only.
+Completed report: `docs/consolidation/autonomous-20261120-9a4ab6/PAYMENT_SAFETY.md`.
+It distinguishes inspected source behavior from runtime qualification for expiry,
+uncertain transactions, refunds, reconciliation, custody and restart recovery.
+No automatic invoice-refund executor or universal recovery guarantee is asserted.
+No payment services were contacted; no runtime, browser or external-wallet checks
+were executed for this assessment. No reproduction instructions are included.
+
+The previously committed test checkpoint remains
+`25bf08c48a79447ffa0f41b1d61cb41e35c357b4`; production journal source is unchanged.
+This completion changes only the report and this additive status. Root owns any
+subsequent parser correction, qualification, publication and integration. The full
+111-open-PR exact-head path comparison supplied by `branch_recovery` found no overlap
+with the two narrowly claimed journal paths. Existing feature owners and the external
+integration lease remain untouched. Broader financial-safety acceptance stays open.
+
+---
+
+# Sweep journal strict JSON state validation — 2026-11-20 (Pacific)
+
+Worker: `/root/payment_safety`, coordinated by `9a4ab6c3d117-root`.
+Branch: `codex/ghostpay-payment-safety-20261120-9a4ab6`.
+Exact base: `95a1e93c62bbc378e02716a23c05a1993d0f79db`, claim-only successor
+of PR #307 source `5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Owned product paths: `apps/web/src/lib/sweepAttemptJournal.ts` and new
+`apps/web/src/lib/sweepAttemptJournal.strictJson.test.ts` only. Owned evidence:
+`docs/consolidation/autonomous-20261120-9a4ab6/PAYMENT_*` and this additive claim.
+Mechanism: native JSON parsing accepts repeated object fields before the journal's
+shape validator runs. An ambiguous persisted status, identity or order field can
+therefore be accepted as one of its values instead of making the journal unavailable.
+This is local malformed-state hardening; no remote exploit, actual duplicate payout
+or observed fund loss is claimed.
+Acceptance: commit deterministic regressions before changing runtime code; reject
+duplicate decoded keys at both lock and nested-order levels on read and write;
+preserve the malformed bytes without an attempted overwrite; retain every valid
+record and original storage/capacity/replacement behavior. Reuse the existing
+invoice-schema `parseStrictJson`; no schema, dependency, custody, signing, network,
+refund or persistence-lifetime change. Root approved this exact scope. Full open-PR
+overlap reconciliation is being checked by `branch_recovery` before runtime edits.
+The external integration lease remains untouched; root owns publication and review.
+
+---
+
+# Autonomous consolidation and financial-safety continuation — 2026-11-20 (Pacific)
+
+Coordinator: `9a4ab6c3d117-root`; task branch: `codex/ghostpay-autonomous-20261120-9a4ab6`.
+Immutable starting integration source: PR #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Observed main: `aec179910c39081d820396409ff3139ff2264132`.
+The integration metadata branch is held by `994a0d214fb9-root-r3`, generation 11;
+this continuation must not take over that lease or modify shared integration refs.
+Existing #325 Sweep functionality is incorporated. #331 is merged into its original
+stack, which is not by itself evidence of ancestry in the current #307 head.
+
+Parallel assignments, initially source review only until path ownership is reconciled:
+
+| Worker | Dedicated branch | Owned evidence and initial acceptance |
+| --- | --- | --- |
+| `branch_recovery` | `codex/ghostpay-census-20261120-9a4ab6` | `docs/consolidation/autonomous-20261120-9a4ab6/BRANCH_*`; enumerate exact remote heads, compare ancestry and patch/behavior equivalence with both main and #307, prioritize historical application candidates, and identify reusable unique fixes without duplicating active PRs. |
+| `payment_safety` | `codex/ghostpay-payment-safety-20261120-9a4ab6` | `docs/consolidation/autonomous-20261120-9a4ab6/PAYMENT_*`; trace expiry, timeout, uncertain transactions, duplicate sends, reconciliation and refund authority; identify a minimal unowned repair with deterministic regression evidence before extending source ownership. |
+| `security_recovery` | `codex/ghostpay-security-recovery-20261120-9a4ab6` | `docs/consolidation/autonomous-20261120-9a4ab6/SECURITY_*`; independently review backup/key recovery and network/replay boundaries, verify existing donor fixes and seek a nonoverlapping correction. |
+
+The coordinator owns this additive registry entry, source-pinned cycle evidence,
+dependency preparation, qualification scheduling, independent integration review and
+publication of isolated reviewable contributions. Each worker must reread AGENTS.md,
+WORKFLOW.md, HANDOFF.md, current claims and relevant open PRs; append its own exact
+path claim before changing product code. Preserve all previous ownership records.
+No competing task ledger is created: these are evidence snapshots linked to this registry.
+Acceptance: tested, independently reviewed source contributions and explicit pending
+hosted/browser/recovery gates. Preserve original tests, coverage, dependencies, fees,
+noncustodial static Pages architecture and HTTPS/Tor constraints. No release, deployment,
+branch deletion, force-push, live transactions or shared-target mutation while another
+coordinator holds the lease. Unverified guarantees must remain explicitly unverified.
+
+---
+
 # R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
 
 Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
@@ -1125,3 +1515,28 @@ Prior full web build attempts were environment-limited (heap OOM 134, killed137)
 final full typecheck/build, browser acceptance and exact-head hosted gates remain.
 See the source-pinned handoff for commands and limits. Candidate remains draft.
 No deployment, release or real transaction is authorized by this worker claim.
+
+---
+
+# Independent Sweep journal corrective-source review — 2026-11-20
+
+Worker: `/root/journal_review`, coordinated by `9a4ab6c3d117-root`.
+Isolated branch: `audit/ghostpay-journal-review-20261120-9a4ab6`.
+Exact review base: `5e882df84df70f1eca7a02b2079ab5e502cd76c0`; production
+correction: `526f9849233f3d809a2847565f732415fe9dbcd2`.
+Owned edits: this additive ownership entry and
+`docs/consolidation/autonomous-20261120-9a4ab6/JOURNAL_REVIEW.md` only.
+Acceptance: independently inspect the shared strict parser substitution, legitimate
+stored-record compatibility, journal capacity/order/replacement semantics, error
+mapping, the existing journal suites and the added strict-JSON tests; review the
+coordinator's supplied execution evidence without relabeling it independent testing.
+No product-source changes, baseline reproduction, new malformed-state examples,
+external system operations or test execution are assigned to this worker. Root owns
+execution, publication, integration and required hosted qualification. Existing claims,
+the separate integration lease and all release/deployment gates remain unchanged.
+
+Status: independent corrective-source review complete; no blocking source issue
+found. `JOURNAL_REVIEW.md` records compatibility for writer-produced records, the
+stricter raw-number syntax boundary, preserved journal/error behavior, and the
+reviewer's hash verification of the coordinator's four-file/70-test pass. No
+reviewer-run tests or broader application/hosted qualification are claimed.

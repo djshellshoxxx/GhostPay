@@ -1,0 +1,34 @@
+{
+  "command_record": {
+    "command": [
+      "npm",
+      "exec",
+      "-w",
+      "@ghostpay/web",
+      "--",
+      "eslint",
+      "--config",
+      "../../eslint.config.js",
+      "src/features/policy/PolicyPay.tsx",
+      "src/features/policy/PolicyPay.pendingEdit.test.tsx"
+    ],
+    "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-policy",
+    "source_head": "d0e6f3c9711b7e0f896362a7ffd953e2f2ee1f95",
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_at": "2026-11-21T00:19:06.250637+00:00",
+    "completed_at": "2026-11-21T00:19:13.843136+00:00",
+    "duration_seconds": 7.593,
+    "exit_code": 134,
+    "environment_overrides": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "log_sha256": "0bb334d51724e51f28a5464762edfb83d3fde0e2f00e4789347b9a4f4a7b0a66"
+  },
+  "output": {
+    "format": "lossless-process-output-v1",
+    "encoding": "utf-8",
+    "bytes": 961,
+    "sha256": "0bb334d51724e51f28a5464762edfb83d3fde0e2f00e4789347b9a4f4a7b0a66",
+    "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n<--- Last few GCs --->\n\n[28:0x15019000]     6956 ms: Mark-Compact 507.1 (515.0) -> 506.1 (515.5) MB, pooled: 0 MB, 152.26 / 0.00 ms  (average mu = 0.306, current mu = 0.090) allocation failure; scavenge might not succeed\n[28:0x15019000]     7111 ms: Mark-Compact 508.1 (515.5) -> 507.1 (520.5) MB, pooled: 0 MB, 147.70 / 0.00 ms  (average mu = 0.201, current mu = 0.049) allocation failure; scavenge might not succeed\n\nFATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory\n----- Native stack trace -----\n\n 1: 0x91df90  [node]\n 2: 0x75bb9f node::OOMErrorHandler(char const*, v8::OOMDetails const&) [node]\n 3: 0xc77280  [node]\n 4: 0xc7737f  [node]\n 5: 0xf272b5  [node]\n 6: 0xf39d2c  [node]\n 7: 0xf0c52b  [node]\n 8: 0xee1a24  [node]\n 9: 0x1409fdd  [node]\n10: 0x1b5c9b6  [node]\nAborted\n"
+  }
+}

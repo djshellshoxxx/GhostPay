@@ -1,0 +1,188 @@
+{
+  "qualified_source_head": "78137622011528a646ae94155ee4acf7f72e1e2a",
+  "test_count": 154,
+  "test_files": 6,
+  "failed_tests": 0,
+  "skipped_tests": 0,
+  "coverage": {
+    "statements": {
+      "covered": 398,
+      "total": 398,
+      "percent": 100,
+      "threshold": 95
+    },
+    "branches": {
+      "covered": 313,
+      "total": 314,
+      "percent": 99.68,
+      "threshold": 90
+    },
+    "functions": {
+      "covered": 73,
+      "total": 73,
+      "percent": 100,
+      "threshold": 95
+    },
+    "lines": {
+      "covered": 317,
+      "total": 317,
+      "percent": 100,
+      "threshold": 95
+    }
+  },
+  "original_test_timeout_ms": 60000,
+  "records": [
+    {
+      "label": "ledger-dependency-build",
+      "metadata": {
+        "command": [
+          "npm",
+          "run",
+          "build",
+          "-w",
+          "@ghostpay/chain-adapters"
+        ],
+        "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-ledger",
+        "source_head": "6972f1f51a1a991457c616b03c04d916e4a7d8be",
+        "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "started_at": "2026-11-21T00:06:20.480579+00:00",
+        "completed_at": "2026-11-21T00:06:26.931152+00:00",
+        "duration_seconds": 6.451,
+        "exit_code": 0,
+        "environment_overrides": {
+          "NODE_OPTIONS": "--max-old-space-size=256"
+        },
+        "log_sha256": "0c23b911559b89e433d22d1b767842b7480e342ccb16a04b717b6fe0129d0990"
+      },
+      "process_output": {
+        "format": "lossless-process-output-v1",
+        "encoding": "utf-8",
+        "bytes": 590,
+        "sha256": "0c23b911559b89e433d22d1b767842b7480e342ccb16a04b717b6fe0129d0990",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/chain-adapters@0.1.0 build\n> npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/invoice-schema@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+      }
+    },
+    {
+      "label": "ledger-coverage",
+      "metadata": {
+        "command": [
+          "npm",
+          "run",
+          "test",
+          "-w",
+          "@ghostpay/hygiene",
+          "--",
+          "--maxWorkers=1"
+        ],
+        "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-ledger",
+        "source_head": "6972f1f51a1a991457c616b03c04d916e4a7d8be",
+        "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "started_at": "2026-11-21T00:06:51.594522+00:00",
+        "completed_at": "2026-11-21T00:07:03.212342+00:00",
+        "duration_seconds": 11.618,
+        "exit_code": 0,
+        "environment_overrides": {
+          "NODE_OPTIONS": "--max-old-space-size=256"
+        },
+        "log_sha256": "ea581e6b02d1f28a0e8fdb12b5c333004f16e5992bcab153147d9facf5fea0d1"
+      },
+      "process_output": {
+        "format": "lossless-process-output-v1",
+        "encoding": "utf-8",
+        "bytes": 1479,
+        "sha256": "ea581e6b02d1f28a0e8fdb12b5c333004f16e5992bcab153147d9facf5fea0d1",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 test\n> vitest run --coverage --maxWorkers=1\n\n\n RUN  v5.0.5 /workspace/scratch/9a4ab6c3d117/GhostPay-ledger/packages/hygiene\n      Coverage enabled with v8\n\n\n Test Files  6 passed (6)\n      Tests  154 passed (154)\n   Start at  16:06:53\n   Duration  10.04s (tests 68%, import 26%, transform 5%, worker 1%)\n\n    Isolate  6 workers spawned \u00b7 ~122ms startup each (spawn + environment, per file)\n             at least ~608ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n % Coverage report from v8\n------------------|---------|----------|---------|---------|-------------------\nFile              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n------------------|---------|----------|---------|---------|-------------------\nAll files         |     100 |    99.68 |     100 |     100 |                   \n ledger.ts        |     100 |    98.98 |     100 |     100 | 66                \n------------------|---------|----------|---------|---------|-------------------\n\n=============================== Coverage summary ===============================\nStatements   : 100% ( 398/398 )\nBranches     : 99.68% ( 313/314 )\nFunctions    : 100% ( 73/73 )\nLines        : 100% ( 317/317 )\n================================================================================\n"
+      }
+    },
+    {
+      "label": "ledger-typecheck",
+      "metadata": {
+        "command": [
+          "npm",
+          "run",
+          "typecheck",
+          "-w",
+          "@ghostpay/hygiene"
+        ],
+        "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-ledger",
+        "source_head": "6972f1f51a1a991457c616b03c04d916e4a7d8be",
+        "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "started_at": "2026-11-21T00:07:12.540555+00:00",
+        "completed_at": "2026-11-21T00:07:15.553859+00:00",
+        "duration_seconds": 3.013,
+        "exit_code": 0,
+        "environment_overrides": {
+          "NODE_OPTIONS": "--max-old-space-size=256"
+        },
+        "log_sha256": "2806d567c3286f3d4f627dc9bb234fc5f4ec5ccfa9329d9aa7c57458fc40566b"
+      },
+      "process_output": {
+        "format": "lossless-process-output-v1",
+        "encoding": "utf-8",
+        "bytes": 220,
+        "sha256": "2806d567c3286f3d4f627dc9bb234fc5f4ec5ccfa9329d9aa7c57458fc40566b",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+      }
+    },
+    {
+      "label": "ledger-lint",
+      "metadata": {
+        "command": [
+          "npm",
+          "run",
+          "lint",
+          "-w",
+          "@ghostpay/hygiene"
+        ],
+        "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-ledger",
+        "source_head": "6972f1f51a1a991457c616b03c04d916e4a7d8be",
+        "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "started_at": "2026-11-21T00:07:43.087789+00:00",
+        "completed_at": "2026-11-21T00:07:47.945840+00:00",
+        "duration_seconds": 4.858,
+        "exit_code": 0,
+        "environment_overrides": {
+          "NODE_OPTIONS": "--max-old-space-size=512"
+        },
+        "log_sha256": "df260ec89441b01a69ea106fd5f846d0e1c324d716e0a63d678c8b37bdb1cc66"
+      },
+      "process_output": {
+        "format": "lossless-process-output-v1",
+        "encoding": "utf-8",
+        "bytes": 228,
+        "sha256": "df260ec89441b01a69ea106fd5f846d0e1c324d716e0a63d678c8b37bdb1cc66",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 lint\n> eslint --config ../../eslint.config.js src\n\n"
+      }
+    },
+    {
+      "label": "ledger-build",
+      "metadata": {
+        "command": [
+          "npm",
+          "run",
+          "build",
+          "-w",
+          "@ghostpay/hygiene"
+        ],
+        "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-ledger",
+        "source_head": "6972f1f51a1a991457c616b03c04d916e4a7d8be",
+        "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "started_at": "2026-11-21T00:08:12.375940+00:00",
+        "completed_at": "2026-11-21T00:08:14.848349+00:00",
+        "duration_seconds": 2.472,
+        "exit_code": 0,
+        "environment_overrides": {
+          "NODE_OPTIONS": "--max-old-space-size=256"
+        },
+        "log_sha256": "09f896713f8ef44360426e6a47f3f8a6d6b270a135bde1115673ab74149e0913"
+      },
+      "process_output": {
+        "format": "lossless-process-output-v1",
+        "encoding": "utf-8",
+        "bytes": 213,
+        "sha256": "09f896713f8ef44360426e6a47f3f8a6d6b270a135bde1115673ab74149e0913",
+        "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+      }
+    }
+  ]
+}
