@@ -1,3 +1,15 @@
+# GP-DISPLAY-BOUNDARY-01 — preserve valid Unicode at 4096-unit truncation (2026-11-21)
+
+Cycle: `20261121T1835Z`; worker: one ChatGPT coordinator, sequential audit/implementation/verification phases; no independently delegated worker available.
+Branch: `automation/20261121T1835Z/bug/display-surrogate-cut`; base `eb59d93cffed7848c4aac37d0e9650b87239c6da` (live main at preflight).
+Owned paths: `apps/web/src/lib/displayText.ts`, new `apps/web/src/lib/displayText.truncation.test.ts`, this additive claim and `docs/handoffs/DISPLAY_SURROGATE_CUT_20261121.md`. No shared tracking branch or others' PR paths are owned.
+Finding: `safeText` slices overlong signed-invoice display text by UTF-16 code units. A valid supplementary character split at code unit 4096 becomes a spurious unpaired-surrogate warning, misrepresenting the original memo. Node 22 reproduced a valid U+D83D U+DE00 pair split into a lone U+D83D. This is display correctness only; no payment bypass or exploitable leak established.
+Acceptance: test-first failing regression at the exact boundary; preserve whole emoji if both units fit, omit the pair if it crosses truncation, and still expose genuinely unpaired surrogate as an existing visible warning; preserve 4096-unit maximum and flagged status; no invoice schema, signed bytes, key handling, dependencies, contract or deployment changes.
+Ownership: inspected current main, #307, #372, #278, #384, #405, #416, and nearby PR changed-file inventories. #372/#278 modify `displayText.test.ts` but not `displayText.ts`; do not modify their test file. Recheck fresh heads before integration. Existing durable lock `automation/ghostpay-integration-lock` remains **held generation 11 by another coordinator**; no shared integrations, lease updates or main merges authorized this cycle.
+Verification: repository checkout currently fails DNS (`github.com`), so isolated replay and exact-head hosted CI are needed. Independent reviewer and exact-head checks required before integration.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
