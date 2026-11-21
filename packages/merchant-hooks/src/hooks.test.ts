@@ -74,6 +74,16 @@ describe('webhook signing', () => {
     const r = verifyWebhook(SECRET, '{"a":1}', h, { now: NOW + 10, nonces: new MemoryNonceStore() });
     expect(r).toEqual({ ok: true, timestamp: NOW, nonce: NONCE });
   });
+  it('never signs a timestamp the webhook header verifier cannot parse', () => {
+    const upperBound = 999_999_999_999;
+    const header = signWebhook(SECRET, 'body', { now: upperBound, nonce: NONCE });
+    expect(verifyWebhook(SECRET, 'body', header, { now: upperBound, nonces: new MemoryNonceStore() })).toEqual({
+      ok: true, timestamp: upperBound, nonce: NONCE,
+    });
+    for (const now of [1_000_000_000_000, Number.MAX_SAFE_INTEGER]) {
+      expect(() => signWebhook(SECRET, 'body', { now, nonce: NONCE })).toThrow(/bad-nonce/);
+    }
+  });
   it('rejects tamper, wrong secret, header edits', () => {
     const h = signWebhook(SECRET, 'body', { now: NOW, nonce: NONCE });
     const ctx = () => ({ now: NOW, nonces: new MemoryNonceStore() });

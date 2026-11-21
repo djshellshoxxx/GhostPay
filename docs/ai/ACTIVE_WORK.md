@@ -1,3 +1,10 @@
+# GP-BUG-20261121-WH — align webhook timestamp signer with header parser
+
+Worker: ChatGPT, bug-only bounded test-first repair. Base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`; branch `fix/ghostpay-webhook-signer-timestamp-width-20261121`. Owned: `packages/merchant-hooks/src/webhooks.ts`, `packages/merchant-hooks/src/hooks.test.ts`, additive `docs/ai/ACTIVE_WORK.md`, new `docs/handoffs/WEBHOOK_TIMESTAMP_WIDTH_20261121.md`.
+Confirmed mismatch: `signWebhook` accepts any safe nonnegative integer timestamp (up to 16 decimal digits); `parseHeader` in `verifyWebhook` allows only 1..12 digits. Thus `t=1000000000000` can be signed but never verified by the same package. Acceptable fix: signer must reject timestamps its own parser cannot accept, preserving current header protocol, messages and ordinary timestamps; test RED first, then repair. No webhook feature additions, dependency/contract/API changes, deployments or funds. Active PR file ownership of broad #262/#278/#307/#365/#372 and focused #389/#392 checked with no conflicts; fresh ownership/CI/review required before merge.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
