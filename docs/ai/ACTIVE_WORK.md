@@ -1,3 +1,15 @@
+# F10 M2 pure recurring-plan lifecycle — 2026-11-21 Pacific
+
+- Worker: ChatGPT F10 M2 scoped implementation; no independent subagent available in this environment.
+- Branch: `feature/f10-lifecycle-m2-20261121` from consolidation PR #371 source head `1de6e0247e0f76afe6f1615b43e55007ece25d9b` (not from production main).
+- Owned paths: new `apps/web/src/features/future/private-recurring/lifecycle.ts`, new `lifecycle.test.ts`, narrowly scoped exports in `index.ts`, error-code union in `model.ts`, additive `docs/future/modules/F10-private-recurring/M2_LIFECYCLE_HANDOFF.md`, and this additive registry claim.
+- Acceptance: immutable and strictly validated paused-plan creation, pause/resume/cancel, revision of future terms while paused, fail-closed revision/profile preconditions, monotonic cursor, UTC month-end catch-up skipping, no historical artifact erasure, and deterministic tests. No signing, storage writes, network, wallet activity, UI activation or deployment.
+- Dependencies: existing F10 M1, billing UTC schedule helpers, P04/P05 future transactional provider contracts. This pure helper is not a persisted CAS, cross-tab lock, or issuance authorization; future P05 must commit it atomically.
+- Ownership: original F10 #324 and dormant consolidation #371 source tips remain untouched. This is a stacked successor branch to permit review, not authority to merge #371 or modify the integration lock. Reinspect heads and ownership before any retarget/merge.
+- Verification: test-first and hosted checks; publish exact results when available. No local full-repository executor or independent review claimed at task start.
+
+---
+
 # F04 source-preserving current-main consolidation — 2026-11-20 Pacific
 
 - Worker: `/root/branch_inventory`; coordinator: `1f782d9c4748-root`.
