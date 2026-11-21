@@ -21,6 +21,7 @@ const root = await mkdtemp(join(tmpdir(), `${prefix}-`));
 const volumes = [];
 const containers = [];
 const report = { schemaVersion: 1, status: 'FAILED', scope: 'offline Tor identity and container lifecycle', network: 'none', bootstrap: false, image, imageId: '', checks: [] };
+let currentStage = 'prepare offline identity acceptance';
 
 // Only these exact, authored guard messages may influence public diagnostics.
 // Never include arbitrary Docker/Tor output, paths or identity bytes in reports.
@@ -57,6 +58,7 @@ function failureCode(result) {
   return codes.values().next().value ?? 'UNCLASSIFIED';
 }
 function docker(args, label, expected = 0) {
+  currentStage = label;
   const result = spawnSync('docker', args, { encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 });
   // Do not attach raw Docker output: even unexpected failures must not copy a
   // private identity, runtime log or environment into a CI artifact.
@@ -117,7 +119,9 @@ async function start(name, identity, pin) {
 }
 
 try {
-  report.imageId = docker(['image', 'inspect', '--format', '{{.Id}}', image], 'read prebuilt image identity');
+  const imageId = docker(['image', 'inspect', '--format', '{{.Id}}', image], 'read prebuilt image identity');
+  assert.match(imageId, /^sha256:[0-9a-f]{64}$/);
+  report.imageId = imageId;
   await writeFile(join(root, 'empty'), '', { mode: 0o644 });
   await writeFile(join(root, 'torrc'), 'DataDirectory /var/lib/tor\nSocksPort 0\nControlPort 0\nORPort 0\nDirPort 0\nDisableNetwork 1\nClientOnly 1\nRunAsDaemon 0\nSafeLogging 1\nHiddenServiceDir /var/lib/tor/ghostpay\nHiddenServiceVersion 3\nHiddenServicePort 80 127.0.0.1:9\n', { mode: 0o644 });
   const original = volume('original');
@@ -172,8 +176,11 @@ try {
   run(original, pin, ['--check-identity'], 'original retained identity after negative checks');
   passed('original identity remains valid after all negative restore checks');
   report.status = 'PASSED';
-} catch (error) {
-  report.error = error instanceof Error ? error.message : 'Offline identity acceptance failed';
+} catch {
+  // Native assertion and subprocess errors may embed compared values, including
+  // a hostname or unexpected stdout. Preserve only authored stage/code fields.
+  report.failure ??= { stage: currentStage, code: 'ACCEPTANCE_CHECK_FAILED', exitCode: null };
+  report.error = 'Offline identity acceptance failed; inspect the bounded failure code.';
   process.exitCode = 1;
 } finally {
   let clean = true;

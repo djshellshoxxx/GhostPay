@@ -1,9 +1,9 @@
 {
   "format": "ghostpay-tor-qualification-ledger/1",
-  "recorded_at_utc": "2026-11-21T05:26:16.153596+00:00",
+  "recorded_at_utc": "2026-11-21T05:35:37.654088+00:00",
   "base_main": "aec179910c39081d820396409ff3139ff2264132",
   "donor_head": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
-  "source_checkpoint": "7aa8a2783cd1fa45645a89107bb4b0c7ec799b80",
+  "source_checkpoint": "3758a6cce3705c374b988018b1cb54b0e44726ed",
   "readiness": "NOT READY",
   "items": [
     {
@@ -129,9 +129,9 @@
       "files": [
         "deploy/tor-static"
       ],
-      "evidence": "Local capability probes",
-      "resolution": "Docker/Tor absent; official source download is blocked with HTTP403. No actual onion/Tor Browser test executed.",
-      "next_action": "Use an authorized isolated Tor-capable host and record actual connection, CSP, assets and secure-context evidence.",
+      "evidence": "../../../deploy/tor-static/LIVE_ACCEPTANCE.md",
+      "resolution": "Hosted real Tor Browser automation is technically plausible; official release metadata was verified. Matching release launcher/profile/driver behavior could not be verified because exact source access returned403/access denied. No guessed harness, executable download, activation, descriptor/address publication or live workflow was added.",
+      "next_action": "Obtain permitted exact-release source/bundle access, implement and independently review the opt-in harness, and obtain the separately required live-test/dispatch approval.",
       "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
     },
     {
@@ -203,7 +203,7 @@
       ],
       "evidence": "evidence/hosted-313cea93/; readiness correction pending new hosted run",
       "resolution": "First published tree passed extended ordinary Chromium, actual Compose parsing and Tor image build; real offline initialization failed. Most other checks have passed; no full CI claim.",
-      "next_action": "Publish the reviewed readiness correction with bounded diagnostics; require complete final-source results.",
+      "next_action": "Publish the independently reviewed reporting correction and inspect complete final-source results. Automatic predecessor run44870933855 atc0dd03e2 remains separate evidence.",
       "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
     },
     {
@@ -262,6 +262,21 @@
       "evidence": "../TOR_IDENTITY_READINESS_20261121.md; evidence/readiness-red.log; evidence/readiness-worker-green.log; evidence/readiness-integrated.log; evidence/readiness-workflow.log",
       "resolution": "A deterministic regression proved hostname-before-handler termination. The helper now requires the private startup notice and valid hostname before clean shutdown. Existing identity guards and network isolation remain. Independent exact-blob review passed; integrated focused tests85 passed,0 failed,2 explicit environment skips; workflow checks6 passed.",
       "next_action": "Run the actual pinned Tor0.4.9.17 container lifecycle. The original hosted failure cause remains unconfirmed."
+    },
+    {
+      "id": "TOR-REDACT-001",
+      "component": "Acceptance assertion output redaction",
+      "status": "Passed",
+      "severity": "Medium",
+      "owner": "root + tor_startup_race_review",
+      "source": "3758a6cce3705c374b988018b1cb54b0e44726ed",
+      "files": [
+        "scripts/tor/identity-container.mjs",
+        "scripts/tor/identity-diagnostics.test.mjs"
+      ],
+      "evidence": "evidence/assertion-redaction-red.log; evidence/assertion-redaction-green.log; ASSERTION_REDACTION_REVIEW.md",
+      "resolution": "Three synthetic failures reproduced value disclosure through error.message or unvalidated image stdout. Catch now emits fixed fields and validates imageId; 13 diagnostics cases pass, zero skips; production identity helper and all checks unchanged. Fresh independent exact-blob review approved; separate diagnostics rerun13 passed,0 failed,0 skipped.",
+      "next_action": "Qualify final published head in existing offline CI."
     }
   ]
 }

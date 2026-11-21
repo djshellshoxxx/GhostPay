@@ -97,8 +97,12 @@ not permitted`. It exits before assertions; no sandbox workaround was used.
 Ordinary loopback HTTP works and is a different capability. Docker/Tor/Tor Browser
 are absent. The official pinned Tor source download returned HTTP 403 with
 `x-openai-site-blocked`. Final image/offline identity checks need hosted CI;
-real Tor Browser acceptance needs a suitable isolated environment. A hosted
-acceptance feasibility review is underway; no live Tor result is inferred.
+real Tor Browser acceptance needs a suitable isolated environment. The hosted
+feasibility review found official signed browser/driver artifacts, but matching
+release launcher/profile source access was blocked. The pinned design and exact
+source/activation gates are documented in
+[the live acceptance plan](../../../deploy/tor-static/LIVE_ACCEPTANCE.md). No
+executable harness, live workflow or live Tor result is claimed.
 
 The integration lock was last observed at
 `c196151daf8233f96045fd205b2d899c9e8cc97d`, held generation 11 by
@@ -158,3 +162,24 @@ whitespace in the RED assertion traceback; source whitespace checks exclude raw
 evidence logs. The detailed independent
 review and source basis are in
 [the readiness handoff](../TOR_IDENTITY_READINESS_20261121.md).
+
+
+## Acceptance-report value redaction
+
+Source correction: `3758a6cce3705c374b988018b1cb54b0e44726ed`. Three synthetic
+Docker regressions demonstrated that native assertion messages could export
+unexpected verification stdout or a compared hostname, and that image-inspection
+stdout was not validated before entering the report. No actual private identity
+was used in these tests.
+
+The runner now validates the image digest before assigning it to evidence and
+records only authored stage/code fields plus a fixed failure message. Existing
+refusals, identity comparisons, network isolation and cleanup remain unchanged.
+The three new cases failed before the repair; all **13 diagnostics cases pass**
+afterward, with no skips. Node syntax, source whitespace and the secret scan pass.
+Raw evidence is retained in `evidence/assertion-redaction-{red,green}.log`.
+This reporting correction does not change the production identity helper and
+does not substitute for actual container acceptance. A fresh independent reviewer
+approved both exact blobs and independently reran all 13 diagnostics tests with
+zero failures/skips; see [ASSERTION_REDACTION_REVIEW.md](ASSERTION_REDACTION_REVIEW.md).
+Final published-source hosted execution remains required.

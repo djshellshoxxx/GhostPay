@@ -1,5 +1,5 @@
 {
-  "source_checkpoint": "7aa8a2783cd1fa45645a89107bb4b0c7ec799b80",
+  "source_checkpoint": "3758a6cce3705c374b988018b1cb54b0e44726ed",
   "files": [
     {
       "path": "evidence/action-pins-baseline.log",
@@ -15,6 +15,16 @@
       "path": "evidence/artifact-validation.json",
       "bytes": 153,
       "sha256": "b71566c22f8cabae2ac1c8aac381b502a6234b0289bc6fec473592cb2914a3c4"
+    },
+    {
+      "path": "evidence/assertion-redaction-green.log",
+      "bytes": 1377,
+      "sha256": "cc072bb9298e66b4bef70a35691620c43a6ab05d65cdd6d4ae2b08e5478b8ce6"
+    },
+    {
+      "path": "evidence/assertion-redaction-red.log",
+      "bytes": 2561,
+      "sha256": "0fe7f45289b88354f725ea459ca4ff6511d51da0f49cc8dd5f9d6092e0a982ff"
     },
     {
       "path": "evidence/browser-extended-initial.log",
