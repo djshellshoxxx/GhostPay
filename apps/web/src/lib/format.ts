@@ -65,6 +65,8 @@ export function formatCountdown(ms: number): string {
  * renders as `invalid time` instead of throwing, so an untrusted time can never take down a render (G1-01).
  */
 export function formatUnix(seconds: number): string {
+  // Reject runtime-invalid values before arithmetic; coercion can mislabel dates or run hostile hooks.
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds)) return 'invalid time';
   const date = new Date(seconds * 1000);
   if (Number.isNaN(date.getTime())) return 'invalid time';
   return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
