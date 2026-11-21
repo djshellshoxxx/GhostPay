@@ -49,6 +49,7 @@ describe('F10 M2 — local-only, immutable recurring-plan lifecycle', () => {
     const fetchSpy = vi.fn(() => { throw new Error('unexpected network'); });
     const walletSpy = vi.fn(() => { throw new Error('unexpected wallet'); });
     const previousFetch = globalThis.fetch;
+    vi.stubGlobal('ethereum', { request: walletSpy });
     try {
       globalThis.fetch = fetchSpy as typeof fetch;
       const next = transitionRecurringPlan(original, 'plan-1', 'pause', 'terms-1', 'terms-2', context());
@@ -61,6 +62,7 @@ describe('F10 M2 — local-only, immutable recurring-plan lifecycle', () => {
       expect(walletSpy).not.toHaveBeenCalled();
     } finally {
       globalThis.fetch = previousFetch;
+      vi.unstubAllGlobals();
     }
   });
 
@@ -172,6 +174,19 @@ describe('F10 M2 — local-only, immutable recurring-plan lifecycle', () => {
       .toThrowError(new RecurringError('STALE_MUTATION'));
     expect(() => transitionRecurringPlan(snapshot, 'absent', 'pause', 'terms-1', 'terms-2', context()))
       .toThrowError(new RecurringError('PLAN_MISSING'));
+  });
+
+  it('refuses stale follow-up writes against a newly revised snapshot', () => {
+    const original = snapshotFixture();
+    const paused = transitionRecurringPlan(original, 'plan-1', 'pause', 'terms-1', 'terms-2', context());
+    expect(() => transitionRecurringPlan(paused, 'plan-1', 'cancel', 'terms-2', 'terms-3', context()))
+      .toThrowError(new RecurringError('STALE_MUTATION'));
+    const cancelled = transitionRecurringPlan(paused, 'plan-1', 'cancel', 'terms-2', 'terms-3', {
+      ...context(), expectedSnapshotRevision: 'snapshot-2', nextSnapshotRevision: 'snapshot-3',
+    });
+    expect(cancelled.plans[0]!.plan.status).toBe('cancelled');
+    expect(paused.plans[0]!.plan.status).toBe('paused');
+    expect(original.plans[0]!.plan.status).toBe('active');
   });
 
   it('rejects invalid actions, clocks, ambiguous mutation input and revoked status transitions', () => {
