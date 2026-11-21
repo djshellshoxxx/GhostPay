@@ -1,0 +1,5055 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    248,
+    266
+  ],
+  "results": [
+    {
+      "branch": "codex/ghostpay-hosting-timestamp-main-20261119",
+      "head_sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 119,
+      "merge_base_sha": "57dff1ad7706959bc78861fa4cf9af58952f4643",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-integrate-product-cli-20261109",
+      "head_sha": "3ec039c554f7052b859975facb2b634a1763d5cf",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1108,
+      "merge_base_sha": "3ec039c554f7052b859975facb2b634a1763d5cf",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-mythril-recovery-20261116",
+      "head_sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 298,
+      "merge_base_sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-observability-20261116",
+      "head_sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 272,
+      "merge_base_sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-ops-response-cap-20261116",
+      "head_sha": "73371b57040c61bdb480e724e8593313d95c6781",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 272,
+      "merge_base_sha": "73371b57040c61bdb480e724e8593313d95c6781",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-policy-localization-20261109",
+      "head_sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1156,
+      "merge_base_sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-private-checkpoint-browser-20261119",
+      "head_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "status": "diverged",
+      "ahead_by": 239,
+      "behind_by": 127,
+      "merge_base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "files_returned": 300,
+      "capped": true,
+      "category": "capped-review",
+      "files": [
+        {
+          "path": ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": ".github/actions/setup-forge/action.yml",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 3
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 4
+        },
+        {
+          "path": "README.md",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/Dockerfile",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/PRIVACY.md",
+          "status": "modified",
+          "additions": 54,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 52,
+          "deletions": 8
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 86,
+          "deletions": 5
+        },
+        {
+          "path": "apps/relayer/src/hardening.test.ts",
+          "status": "added",
+          "additions": 490,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/harness.testutil.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/lane.ts",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/log.ts",
+          "status": "modified",
+          "additions": 54,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/main.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/privacy.test.ts",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/runtime.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/src/server.ts",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 10
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 57,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/stress.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/validate.ts",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/tsconfig.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/vitest.config.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/e2e/app.spec.ts",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/backup-panel.spec.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/btc-spentness.spec.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/btc-worker.spec.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/devnet/invoiceTamper.ts",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/devnet/pages.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/helpers.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/idle-session.spec.ts",
+          "status": "added",
+          "additions": 179,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/invoice-signer.spec.ts",
+          "status": "added",
+          "additions": 330,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/network-authorization.spec.ts",
+          "status": "added",
+          "additions": 355,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 23
+        },
+        {
+          "path": "apps/web/e2e/privacy-settings.spec.ts",
+          "status": "added",
+          "additions": 76,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+          "status": "added",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "status": "added",
+          "additions": 509,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealthExportFixtures.ts",
+          "status": "added",
+          "additions": 342,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.d.mts",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.mjs",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/csp.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/csp.mjs",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 159,
+          "deletions": 62
+        },
+        {
+          "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "modified",
+          "additions": 164,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.d.mts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "modified",
+          "additions": 314,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/AppShell.network.test.tsx",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 273,
+          "deletions": 77
+        },
+        {
+          "path": "apps/web/src/buildScripts.test.ts",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.tsx",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "status": "added",
+          "additions": 154,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "additions": 51,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/components/StealthExportArchive.tsx",
+          "status": "added",
+          "additions": 128,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "status": "added",
+          "additions": 190,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportMaster.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "status": "added",
+          "additions": 311,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.tsx",
+          "status": "added",
+          "additions": 196,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+          "status": "added",
+          "additions": 430,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.tsx",
+          "status": "added",
+          "additions": 289,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+          "status": "added",
+          "additions": 200,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.tsx",
+          "status": "added",
+          "additions": 108,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.headers.test.tsx",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+          "status": "added",
+          "additions": 233,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 67,
+          "deletions": 25
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.isolation.test.ts",
+          "status": "added",
+          "additions": 69,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 74
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.test.ts",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.test.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleWorker.test.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 44,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.localSpends.test.ts",
+          "status": "added",
+          "additions": 119,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.spends.test.ts",
+          "status": "added",
+          "additions": 74,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.ts",
+          "status": "modified",
+          "additions": 81,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorker.test.ts",
+          "status": "modified",
+          "additions": 117,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+          "status": "modified",
+          "additions": 37,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerSource.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/chainViews.i18n.test.tsx",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.network.test.tsx",
+          "status": "added",
+          "additions": 192,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.selfcheck.test.ts",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "modified",
+          "additions": 79,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.network.test.tsx",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 19
+        },
+        {
+          "path": "apps/web/src/features/solana/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/solana/scan.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/features/solana/sweep.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.privacy.test.tsx",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/scan.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/sweep.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/i18n/message.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/displayText.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/errors.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceSignerPins.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceSignerPins.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceVerification.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceVerification.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkOperation.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkOperation.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkSelection.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentExportRpc.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentExportRpc.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanLifecycle.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanPerformance.nocov.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanStore.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanStore.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/receipts.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/receipts.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerContract.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.scheduler.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/services.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.atomicity.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.idleLock.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.loopback.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settingsExchange.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/stealthExport.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/transportCancellation.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/transportNative.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/privacyInvariants.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/releaseKeyDenylist.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/test/pagesInvoiceTamper.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Home.authorization.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.signer.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.authorization.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.exchange.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/BUILD-WEB.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/TOR.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/render-security-headers.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/DEPLOYMENT_MANIFEST.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/08-completion-gates.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/17-final-security-snapshot.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/mythril-reevaluation-20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-03-invoice-parser-fuzz.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-04-browser-csp-xss-referrer.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/static-server.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/static-server.test.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/CODEQL_RECONCILIATION_2026-11-19.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/POLICY_VALIDATION_RECOVERY_2026-11-18.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/RECOVERY_RECONCILIATION_2026-11-18.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/RUNTIME_RECOVERY_2026-11-18.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/EVIDENCE.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-build-cache-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-header-red.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-library-focused.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-lint-1024.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-lint.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-web-disclosure-rerun.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-web-focused.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-web-integration-rerun.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/evidence/build.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/evidence/focused-green.txt.gz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/evidence/lint.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/evidence/typecheck.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/evidence/upstream-regression-red.txt.gz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/exact-source-diagnostic.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/canonical-array-20261119/receipt.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/codeql-initial-annotations.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/initial-pr-matrix.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/full-kit.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/kit-lint.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/kit-typecheck.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-green.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-red.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/unused-time-wrapper.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/receipt.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/manifest-test-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/manifest-test-20261119/evidence/manifest-green.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/manifest-test-20261119/evidence/manifest-red.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/COMBINED_435C_SOURCE_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/DEPLOYMENT_HISTORY_INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/EVIDENCE_INDEX.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/FOCUSED_PROMOTION_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INITIAL_CI_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INITIAL_FEATURE_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INITIAL_HISTORY_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/ghostpay-private-scan-lint-20261119",
+      "head_sha": "1b010ec910d04df105fd662cc360629cb0a2f5dd",
+      "status": "diverged",
+      "ahead_by": 221,
+      "behind_by": 127,
+      "merge_base_sha": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "files_returned": 300,
+      "capped": true,
+      "category": "capped-review",
+      "files": [
+        {
+          "path": ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": ".github/actions/setup-forge/action.yml",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 3
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 4
+        },
+        {
+          "path": "README.md",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/Dockerfile",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/PRIVACY.md",
+          "status": "modified",
+          "additions": 54,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 52,
+          "deletions": 8
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 86,
+          "deletions": 5
+        },
+        {
+          "path": "apps/relayer/src/hardening.test.ts",
+          "status": "added",
+          "additions": 490,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/harness.testutil.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/lane.ts",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/log.ts",
+          "status": "modified",
+          "additions": 54,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/main.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/privacy.test.ts",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/runtime.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/src/server.ts",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 10
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 57,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/stress.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/validate.ts",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/tsconfig.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/vitest.config.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/e2e/app.spec.ts",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/backup-panel.spec.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/btc-spentness.spec.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/btc-worker.spec.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/devnet/invoiceTamper.ts",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/devnet/pages.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/helpers.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/idle-session.spec.ts",
+          "status": "added",
+          "additions": 179,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/invoice-signer.spec.ts",
+          "status": "added",
+          "additions": 330,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/network-authorization.spec.ts",
+          "status": "added",
+          "additions": 355,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 23
+        },
+        {
+          "path": "apps/web/e2e/privacy-settings.spec.ts",
+          "status": "added",
+          "additions": 76,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/private-scan-checkpoints.spec.ts",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "status": "added",
+          "additions": 509,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealthExportFixtures.ts",
+          "status": "added",
+          "additions": 342,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.d.mts",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.mjs",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/csp.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/csp.mjs",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 159,
+          "deletions": 62
+        },
+        {
+          "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "modified",
+          "additions": 164,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.d.mts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "modified",
+          "additions": 314,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/AppShell.network.test.tsx",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 273,
+          "deletions": 77
+        },
+        {
+          "path": "apps/web/src/buildScripts.test.ts",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.tsx",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "status": "added",
+          "additions": 154,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/InvoiceSignerVerification.test.tsx",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/InvoiceSignerVerification.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "additions": 51,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/components/StealthExportArchive.tsx",
+          "status": "added",
+          "additions": 128,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "status": "added",
+          "additions": 190,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportMaster.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "status": "added",
+          "additions": 311,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.tsx",
+          "status": "added",
+          "additions": 196,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+          "status": "added",
+          "additions": 430,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.tsx",
+          "status": "added",
+          "additions": 289,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+          "status": "added",
+          "additions": 200,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.tsx",
+          "status": "added",
+          "additions": 108,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.headerOwnership.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.headers.test.tsx",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.spentness.test.tsx",
+          "status": "added",
+          "additions": 233,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 67,
+          "deletions": 25
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.isolation.test.ts",
+          "status": "added",
+          "additions": 69,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 74
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.test.ts",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.test.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleWorker.test.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 44,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.localSpends.test.ts",
+          "status": "added",
+          "additions": 119,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.spends.test.ts",
+          "status": "added",
+          "additions": 74,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.ts",
+          "status": "modified",
+          "additions": 81,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorker.test.ts",
+          "status": "modified",
+          "additions": 117,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerSource.test.ts",
+          "status": "modified",
+          "additions": 37,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerSource.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/chainViews.i18n.test.tsx",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.network.test.tsx",
+          "status": "added",
+          "additions": 192,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.selfcheck.test.ts",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "modified",
+          "additions": 79,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.network.test.tsx",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 19
+        },
+        {
+          "path": "apps/web/src/features/solana/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/solana/scan.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/features/solana/sweep.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.privacy.test.tsx",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/scan.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/sweep.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/i18n/message.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.privacySelection.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/displayText.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/errors.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/hardening.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceSignerPins.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceSignerPins.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceVerification.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceVerification.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.profileConsistency.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkOperation.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkOperation.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkSelection.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.expiry.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanLifecycle.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanLifecycle.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanPerformance.nocov.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanStore.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/privateScanStore.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/receipts.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/receipts.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.idb.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerContract.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.scheduler.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/services.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.atomicity.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.idleLock.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.loopback.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settingsExchange.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settingsPrivacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/stealthExport.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/transportCancellation.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/transportNative.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/privacyInvariants.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/releaseKeyDenylist.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/test/pagesInvoiceTamper.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.privacy.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Home.authorization.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.signer.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.privateCheckpoint.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.exchange.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/BUILD-WEB.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/TOR.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/render-security-headers.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/DEPLOYMENT_MANIFEST.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/08-completion-gates.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/17-final-security-snapshot.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/mythril-reevaluation-20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-03-invoice-parser-fuzz.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-04-browser-csp-xss-referrer.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/static-server.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/static-server.test.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/CODEQL_RECONCILIATION_2026-11-19.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/POLICY_VALIDATION_RECOVERY_2026-11-18.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/RECOVERY_RECONCILIATION_2026-11-18.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/RUNTIME_RECOVERY_2026-11-18.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/EVIDENCE.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-build-cache-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-header-red.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-library-focused.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-lint-1024.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-lint.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-web-disclosure-rerun.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-web-focused.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/btc-20261119/evidence/btc-web-integration-rerun.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/FEATURE_MATRIX.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/codeql-initial-annotations.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/feature-completion-20261119/initial-pr-matrix.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/full-kit.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/kit-lint.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/kit-typecheck.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-green.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/static-export-red.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/evidence/unused-time-wrapper.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/hosting-timestamp-20261119/receipt.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/manifest-test-20261119/QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/manifest-test-20261119/evidence/manifest-green.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/manifest-test-20261119/evidence/manifest-red.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/COMBINED_435C_SOURCE_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/DEPLOYMENT_HISTORY_INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/EVIDENCE_INDEX.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/FOCUSED_PROMOTION_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INITIAL_CI_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INITIAL_FEATURE_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INITIAL_HISTORY_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/INTEGRATION_REPAIRS.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/POLICY_INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/PR242_QUALIFICATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/PR255_GATE_SOURCE_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/PROGRESS.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/RECOVERY_INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/RUNTIME_INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/SELECTIVE_PR246_SOURCE_REVIEW.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/census-refresh-20261119-0720.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/combined-435c-reviewed-blobs.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/master-20261118/focused-promotion-review.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/ghostpay-product-20261109",
+      "head_sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1180,
+      "merge_base_sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "head_sha": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "status": "diverged",
+      "ahead_by": 19,
+      "behind_by": 1694,
+      "merge_base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files_returned": 188,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/relayer.config.example.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/abuse.test.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/abuse.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 75,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/config.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 3
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 62,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 145,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/e2e/recovery.spec.ts",
+          "status": "added",
+          "additions": 303,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 428,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/_headers",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/public/ghostpay-embed-v2.js",
+          "status": "added",
+          "additions": 231,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.d.mts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.mjs",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/localBuildProfile.test.mjs",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "added",
+          "additions": 228,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/App.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 182
+        },
+        {
+          "path": "apps/web/src/AppLean.test.tsx",
+          "status": "added",
+          "additions": 109,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppLean.tsx",
+          "status": "added",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "added",
+          "additions": 196,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.test.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestQr.tsx",
+          "status": "added",
+          "additions": 172,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.test.tsx",
+          "status": "added",
+          "additions": 101,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PrintableBill.tsx",
+          "status": "added",
+          "additions": 121,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+          "status": "added",
+          "additions": 91,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 39,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.invoices.test.tsx",
+          "status": "added",
+          "additions": 218,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.test.tsx",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReconciliationLedger.tsx",
+          "status": "modified",
+          "additions": 286,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/embedHeaders.test.ts",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/embedV2.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 97,
+          "deletions": 67
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 36,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.test.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/btc/sweep.ts",
+          "status": "modified",
+          "additions": 27,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyCreate.tsx",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "added",
+          "additions": 105,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "added",
+          "additions": 215,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.more.test.tsx",
+          "status": "added",
+          "additions": 201,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.test.tsx",
+          "status": "added",
+          "additions": 227,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "added",
+          "additions": 138,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/chain.ts",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/create.ts",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 224,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/flag.ts",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/guard.ts",
+          "status": "added",
+          "additions": 115,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/pay.ts",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/policy.logic.test.ts",
+          "status": "added",
+          "additions": 372,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/scan2.ts",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "added",
+          "additions": 89,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/withdraw.ts",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 50,
+          "deletions": 48
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/tron/network.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedHost.ts",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.test.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/embedProtocol.ts",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/invoiceCreate.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.test.ts",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 65,
+          "deletions": 21
+        },
+        {
+          "path": "apps/web/src/lib/pay.test.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/pay.ts",
+          "status": "modified",
+          "additions": 121,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/payExec.acceptance.test.ts",
+          "status": "added",
+          "additions": 164,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/payExec.test.ts",
+          "status": "modified",
+          "additions": 348,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "status": "modified",
+          "additions": 41,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/qrKinds.ts",
+          "status": "modified",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.test.ts",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.testutil.ts",
+          "status": "added",
+          "additions": 28,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationMatch.ts",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.invoices.test.ts",
+          "status": "added",
+          "additions": 300,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/reconciliationVault.ts",
+          "status": "modified",
+          "additions": 205,
+          "deletions": 30
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 193,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.clients.test.ts",
+          "status": "added",
+          "additions": 37,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "added",
+          "additions": 328,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "added",
+          "additions": 512,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 78,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/styles/print.css",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/About.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 14
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.register.test.tsx",
+          "status": "added",
+          "additions": 82,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 60,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/views/Pay.test.tsx",
+          "status": "modified",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 58,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Scan.privacy.test.tsx",
+          "status": "added",
+          "additions": 77,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.completion.test.tsx",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.recovery.test.tsx",
+          "status": "added",
+          "additions": 189,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.storage.test.tsx",
+          "status": "added",
+          "additions": 130,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.test.tsx",
+          "status": "modified",
+          "additions": 191,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 143,
+          "deletions": 78
+        },
+        {
+          "path": "apps/web/src/views/Settings.scanPrivacy.test.tsx",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 345,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 133,
+          "deletions": 44
+        },
+        {
+          "path": "apps/web/vite.config.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/nginx.conf",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/nginx/security-headers-embed.conf",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-0024-invoice-v2-buffer-policy.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0
+        },
+        {
+          "path": "docs/adr/ADR-LOG.md",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "docs/chains/SOURCES-2026-10-25.md",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_20261026.json",
+          "status": "added",
+          "additions": 974,
+          "deletions": 0
+        },
+        {
+          "path": "docs/evidence/ROOT_TEST_SUPERVISOR_20261026.py",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/CODEX_RESTART_2026-10-28.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/LOCAL_CHECKPOINT_2026-10-26_PAYMENT_SWEEP_GUARDS.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PR30_LEAN_STATUS.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/RECOVERED_LOCAL_LEAN_CHECKPOINT_2026-10-28.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/solana-payments.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/tron-payments.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/errors.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headerchain.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/headers.testutil.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/scanner.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/state.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/sender.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/signer.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/spend.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/witness.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/config/tokens.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/permit.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/envelope.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/merchantProfile.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/schema.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/browser.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/client.test.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/index.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/record.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/src/window.ts",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/policy-scheme/vectors/client-v1.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/types.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.test.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "packages/scan-source/src/validate.ts",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/devnet/e2e.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/normalize-sbom.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/normalize-sbom.test.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/README.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/repack-viem.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.LICENSE.txt",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.provenance.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "vendor/viem-2.22.14-ghostpay-deps2.tgz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/ghostpay-registry-recovery-20261116",
+      "head_sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 298,
+      "merge_base_sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "head_sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-research-documentation-ux-41750257638",
+      "head_sha": "96fc22c42a704d1c590d56d624fff15a945c8231",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "96fc22c42a704d1c590d56d624fff15a945c8231",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-research-release-qualification-41750257638",
+      "head_sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-research-security-review-41750257638",
+      "head_sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/ghostpay-resume-20261028",
+      "head_sha": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 1555,
+      "merge_base_sha": "6a3e85c084661532619d72475641732e21b7f740",
+      "files_returned": 1,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/CODEX_RESTART_2026-10-28.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "head_sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 1385,
+      "merge_base_sha": "dfd5cbdd94d982985c73551355906723ac70a97e",
+      "files_returned": 15,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/relayer/src/api.test.ts",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/src/secrets.test.ts",
+          "status": "added",
+          "additions": 63,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/secrets.ts",
+          "status": "modified",
+          "additions": 28,
+          "deletions": 18
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/txGuard.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/25-security-triage-2026-10-30.md",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/developer/api/chain-adapters.md",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 5
+        },
+        {
+          "path": "docs/handoffs/HANDOFF_FOR_NEXT_AGENT_2026-10-29.md",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 7
+        },
+        {
+          "path": "packages/chain-adapters/src/errors.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "packages/chain-adapters/src/logs.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 1
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-adapters/src/scanHardening.test.ts",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/ghostpay-spec09-matrix-20261116",
+      "head_sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 273,
+      "merge_base_sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}
