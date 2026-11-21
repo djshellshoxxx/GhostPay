@@ -21,3 +21,20 @@
 
 ## Qualification / handoff
 Status: isolated ownership recorded before test edits. Last known #348 Pages and Beta checks fail as above; CI queued and Hosting passed. Implementation and exact-head verification pending. No merge, deployment or release.
+
+## Published implementation and consolidation checkpoint
+
+- Draft [#352](https://github.com/djshellshoxxx/GhostPay/pull/352), directly stacked on #348 head `26b45165c1d6de9e23f5b943ed46f3aa0908f45c` (itself stacked on #336).
+- QA edits: `5960979d35b82232a61a41248a3c47bad7e3f664` (Devnet), `9002a10bb36d054edb2db26a6fc06b7acc4c4a53` (Pages). Registry: `71e428add04dcd5e3ba8dd7535675124d60c30d9`.
+- Previous real-chain E2E failed on exact head #348. The repaired assertions have **not** been executed locally. Newly published #352 workflows were queued on inspection; pending outcomes are not passes. Production code remains unchanged.
+- [420-branch incremental ledger](BRANCH_DELTA_420_WALLET_JOURNAL_20261121.json) committed at `c90eb832251dfb01dcfd363617d2f9004445e91d`: paged 100/100/100/100/20/0; reconciles the 392-name historical baseline and the prior 26-name delta against two new exact-SHA branch comparisons, all at main `aec179910c39081d820396409ff3139ff2264132`. Historic 392 heads and prior 26 heads were **not revalidated in this cycle**, and 300-file truncated compare results are not used to assert semantic uniqueness.
+- Integration overlap: #336 and broad #307 both change the E2E files. Keep #352 in its current dependency chain, never bulk merge the main comparison (459 ahead and 76 behind); only the four-file incremental PR #352 patch is under review.
+- Candidate #329 (TRON range completeness) at `cff631b5c32a86adfa2d79c342e497e91a8573a5` now reports all five workflows successful (CI, Pages, Hosting kit, Beta acceptance, CLI operator qualification), but **has no submitted PR reviews**. A request to mark it ready for review returned GitHub GraphQL FORBIDDEN; this identity cannot perform that transition. No merge attempted.
+- No mainline code merge, deployment, release, or custody/fee/relayer behavior change in this cycle.
+
+## Next checkpoint
+
+1. Read exact latest head and all required workflows of #352; fix only demonstrated failures with test-first changes. Pay special attention to matching account+chain on the Pay view and temporary privacy-reveal UI.
+2. After #352 green and independently reviewed, integrate the incremental test edits into #348/#336 without duplicate ownership. Re-run Pages/Beta/browser acceptance on the combined exact head.
+3. Have an authorized PR maintainer transition #329 from draft and secure an independent review; recheck against latest main and integration lock before any selective merge.
+4. Reconcile overlapped #307 receipt/backup/privacy/Pay tests semantically; do not treat diff stats or a partial 300-file listing as evidence of recoverability.
