@@ -1,0 +1,55 @@
+{
+  "schema": "ghostpay-final-publication-packet-review/1",
+  "repository": "djshellshoxxx/GhostPay",
+  "reviewed_local_commit": "12c8be6c915063f95bfdc599fb0718ad51bf9295",
+  "reviewed_at_utc": "2026-11-21T03:11:05.522845+00:00",
+  "source_cutoff_utc": "2026-11-21 02:52:23 UTC",
+  "frozen_main": "aec179910c39081d820396409ff3139ff2264132",
+  "result": "PASS",
+  "blockers": [],
+  "scope": "Bounded final consistency review of assembled publication packet; prior full 420-branch review and final 3-branch delta proof retained. No product tests, source reconstruction or generator fixtures rerun.",
+  "reviewed_file_sha256": {
+    "README.md": "14f08eb3bd94e9b15238ca442194a802b266c91553bd1599109b9f369fbefe49",
+    "validation.md": "6c72135b1201e26248a7c6397f66db9c0aea0714e1dc3386da752a116647f696",
+    "branch-index.md": "b08bdd535b3b2fae01816e32bd64bbc5b91d9524abf5608b7ec48f92b2ee6b6e",
+    "pr-queue.md": "7c36aac6c147c12c008a3e9a1a5103473b4707926b47526d298449c68213dc4e",
+    "claim-ledger.json": "f14be9159843cc151203dbf10b56403db3253ed371a146ac754dcaf84a1e2d14",
+    "independent-validation.json": "67be23c365e00f4d7add64de16be3eef0c3557a828f20298a7a015b69f2e46d5",
+    "residual-dispositions.json": "6c3296dd8311264fcc484961e2648f9ec7046b90a659138ba61c5cee47552633",
+    "cutoff-semantic-supplement.json": "1aa259de5cf96bab859a71aa374b338eb9303318bad85e84556cf1bad6714de8",
+    "source-snapshot.json": "d3f1a7e8578e95a67646b3bdc70cf81cf1a76c79ed9f8e5a9b26dd4eb235e9b2",
+    "initial-source-snapshot.json": "73b74e686756a46e1496cb12419c17a1653f9960a54b9215e77b643d381a0a5a",
+    "branch-ledger.json": "60561713f3e04951a2e5fdbcbffe35124cf150dc1a9713a48e686d8d30d1b649",
+    "qualification.json": "a08ec2620f78d5543dd0c6ca5f958855022c511625d64dc9e68d35176a5e47d6"
+  },
+  "checks": {
+    "branch_index_rows_and_head_pins": 423,
+    "pr_queue_rows_head_base_path_and_ci_pins": 123,
+    "registry_read_results": 423,
+    "registry_present": 255,
+    "registry_absent": 168,
+    "unique_section_texts": 506,
+    "preserved_record_ids": 507,
+    "registry_occurrences": 14210,
+    "preserved_residual_rows": 79,
+    "current_residual_set_matched": 78,
+    "cutoff_semantic_prs": [
+      353,
+      354,
+      355
+    ],
+    "source_and_generator_hashes_match_prior_receipts": true,
+    "qualification_classes_match": {
+      "pending": 13,
+      "failure_observed": 61,
+      "observed_checks_success_with_skips_or_neutral": 44,
+      "observed_checks_success": 5
+    },
+    "all_record_qualification_and_release_flags_false": true,
+    "manual_readme_and_validation_review": "PASS: exact cutoff and main pin, separate initial/final validation phases, historic docs-only CI limitation, source-only donor evidence and composed-successor recommendation, no whole-branch retirement, qualification, release or ownership transfer inferred."
+  },
+  "product_tests_run": [],
+  "remote_mutations_performed": [],
+  "qualification_of_product_branches": false,
+  "ownership_released": false
+}

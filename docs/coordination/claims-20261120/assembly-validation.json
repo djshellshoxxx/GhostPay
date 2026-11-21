@@ -1,0 +1,18 @@
+{
+  "schema": "ghostpay-root-final-assembly-validation/1",
+  "source_cutoff_utc": "2026-11-21 02:52:23 UTC",
+  "main": "aec179910c39081d820396409ff3139ff2264132",
+  "branch_count": 423,
+  "open_pr_count": 123,
+  "source_versions_read": 418,
+  "source_section_occurrences_verified": 14210,
+  "absent_registries_verified": 168,
+  "unique_section_texts": 506,
+  "preserved_record_identities": 507,
+  "qualification_pr_to_head_mapping": "exact",
+  "all_snapshot_hashes_match": true,
+  "classification_counts_sum": 423,
+  "no_product_qualification_inferred": true,
+  "result": "PASS",
+  "scope": "Root independently reconstructed every original registry section from pinned Git objects and validated cross-artifact source/accounting joins. This is evidence validation; no product tests ran."
+}

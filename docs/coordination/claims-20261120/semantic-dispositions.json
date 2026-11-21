@@ -1,0 +1,2292 @@
+{
+  "format": "ghostpay-targeted-semantic-claim-reconciliation-v1",
+  "repository": "djshellshoxxx/GhostPay",
+  "snapshot_observed_at_utc": "2026-11-21 02:25:06 UTC",
+  "main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "candidate_307_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "snapshot_counts": {
+    "branches": 420,
+    "open_prs": 120
+  },
+  "audit_completed_at_utc": "2026-11-21T02:40:14.169456+00:00",
+  "scope": "Targeted human/source reconciliation of priority claims; supplements the exhaustive all-branch ledger and does not replace ACTIVE_WORK ownership. No runtime qualification is inferred.",
+  "verification_methods": [
+    "GitHub PR metadata for exact merge destinations/times",
+    "git merge-base --is-ancestor with frozen SHAs",
+    "git rev-list --left-right --count",
+    "git diff and full local tree mode/blob comparisons",
+    "git cherry patch-equivalence comparison",
+    "bounded source and source-pinned handoff inspection"
+  ],
+  "product_tests_run": false,
+  "remote_mutations_performed": false,
+  "records": [
+    {
+      "id": "core-integration-307",
+      "sources": [
+        {
+          "pr": 307,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/307",
+          "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+          "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        }
+      ],
+      "decision": "candidate_requires_current_main_reconciliation",
+      "summary": "#307 contains the first #325 Sweep source and main through bfebea0, but is not the current main or the latest source in every follow-up lane.",
+      "next_action": "Compose current main #329/#334 and the later idle/backup stack under the existing coordinator; qualify that combined source rather than reusing parent checks.",
+      "head_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "main_sha": "aec179910c39081d820396409ff3139ff2264132",
+      "ahead_of_main": 88,
+      "behind_main": 10,
+      "merge_base": "bfebea0acf213a113d2740366fd592042661ca67",
+      "evidence": [
+        {
+          "path": "docs/consolidation/current-main-r3-20261120/REPORT.md",
+          "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/docs/consolidation/current-main-r3-20261120/REPORT.md",
+          "line_start": 1,
+          "line_end": 26,
+          "text": "1: # Qualified Sweep integration and current-main refresh\n2: \n3: ## Result\n4: \n5: PR #325 was merged into the core consolidation PR #307 at\n6: `394793b1276aeac337aedde30499548bb57eadf9` after every applicable source-head\n7: workflow completed successfully. Its tree is exactly\n8: `29ebe360170da1bd1edfa046dc2271bbbf16b325`, matching the qualified #325 head\n9: `1788f1e0a0fe1fb22bb887427c47bdd62db78c1a`. Its ordered parents preserve original\n10: #307 `2876b7db580e47a880d5951ce9e62941bcf76fdf` and #325.\n11: \n12: An isolated successor then incorporates current main\n13: `bfebea0acf213a113d2740366fd592042661ca67`, retaining the separately merged #321\n14: TRON cancellation and #330 branch census. It preserves the original sixteen\n15: recovered modules and completed invoice, backup, print, Tor and Sweep work.\n16: \n17: The reviewed local composition is `b8fe24507e7f8100c70287f86b0932f9c83f31aa`, tree\n18: `9ca0b6d25c5ec46e4f3302164578ddcb744bb9bd`. Its parents are the additive ownership\n19: claim `106524ee42bbb860aa0283679d4850d2194509e3` and current main. This report is a\n20: later documentation-only checkpoint; the public mapping is recorded with publication.\n21: \n22: ## Conflict and independent review\n23: \n24: The only conflict was `docs/ai/ACTIVE_WORK.md`. Both complete ownership texts were\n25: preserved in their original line order, along with the new coordinator claim.\n26: There was no product-code conflict and no source rewrite. Coordinator verification"
+        }
+      ],
+      "source_commit_containment": {
+        "321": true,
+        "325": true,
+        "329": false,
+        "331": false,
+        "334": false
+      }
+    },
+    {
+      "id": "f03-request-files-represented-307",
+      "sources": [
+        {
+          "pr": 310,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/310",
+          "branch": "future/f03-private-payment-links",
+          "sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec"
+        },
+        {
+          "pr": 307,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/307",
+          "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+          "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        }
+      ],
+      "decision": "implementation_represented_in_candidate_not_main",
+      "summary": "All 14 F03 implementation/test paths outside shared locale/key-registry files are byte-identical in #307. The five differing shared files only change Sweep disclosures. The two #310 commits absent from #307 are its current-main merge and documentation checkpoint.",
+      "next_action": "Keep #310 qualification/audit documents and the active invoice-file follow-ups; integrate and qualify F03 through the current #307 lineage once, without replaying duplicate runtime edits.",
+      "comparison_target_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "scope_paths": [
+        "apps/web/e2e/payment-request-file.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/PaymentRequestDownload.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/requestFileInterop.test.ts",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "apps/web/src/views/Pay.requestFile.test.tsx",
+        "apps/web/src/views/Pay.tsx",
+        "packages/invoice-schema/src/index.ts",
+        "packages/invoice-schema/src/requestFile.interop.test.ts",
+        "packages/invoice-schema/src/requestFile.test.ts",
+        "packages/invoice-schema/src/requestFile.ts"
+      ],
+      "exact_paths": [
+        "apps/web/e2e/payment-request-file.spec.ts",
+        "apps/web/src/components/PaymentRequestDownload.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.tsx",
+        "apps/web/src/lib/requestFileInterop.test.ts",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "apps/web/src/views/Pay.requestFile.test.tsx",
+        "apps/web/src/views/Pay.tsx",
+        "packages/invoice-schema/src/index.ts",
+        "packages/invoice-schema/src/requestFile.interop.test.ts",
+        "packages/invoice-schema/src/requestFile.test.ts",
+        "packages/invoice-schema/src/requestFile.ts"
+      ],
+      "shared_different_paths": [
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/i18n/securityKeys.ts"
+      ],
+      "locale_differences": {
+        "apps/web/locales/ar.json": [
+          "messages.scanPrivacy.disclosure.sweepAuto",
+          "messages.sweep.balanceRead.note",
+          "messages.sweep.balanceRead.warning"
+        ],
+        "apps/web/locales/en.json": [
+          "messages.scanPrivacy.disclosure.sweepAuto",
+          "messages.sweep.balanceRead.note",
+          "messages.sweep.balanceRead.warning"
+        ],
+        "apps/web/locales/es.json": [
+          "messages.scanPrivacy.disclosure.sweepAuto",
+          "messages.sweep.balanceRead.note",
+          "messages.sweep.balanceRead.warning"
+        ],
+        "apps/web/locales/ja.json": [
+          "messages.scanPrivacy.disclosure.sweepAuto",
+          "messages.sweep.balanceRead.note",
+          "messages.sweep.balanceRead.warning"
+        ]
+      },
+      "security_keys_difference": "diff --git a/apps/web/src/i18n/securityKeys.ts b/apps/web/src/i18n/securityKeys.ts\nindex 28cb523d..3cdc5ce0 100644\n--- a/apps/web/src/i18n/securityKeys.ts\n+++ b/apps/web/src/i18n/securityKeys.ts\n@@ -1107,2 +1107,3 @@ export const SECURITY_KEY_GROUPS = {\n     'sweep.balanceRead.warning',\n+    'sweep.balanceRead.note',\n   ],",
+      "absent_commits": [
+        "dad6bc74 docs(f03): retain current-main qualification and fresh independent audit",
+        "7c30385a merge: reconcile F03 request files with current main"
+      ],
+      "evidence": [
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/e2e/payment-request-file.spec.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/e2e/payment-request-file.spec.ts"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3f964ae6b4109e5729383316f7cbf3445b2b2851"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3f964ae6b4109e5729383316f7cbf3445b2b2851"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/components/PaymentRequestDownload.test.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/components/PaymentRequestDownload.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "27ab300574119f72d9e96450a0fcc651d6168d5c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "27ab300574119f72d9e96450a0fcc651d6168d5c"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/components/PaymentRequestDownload.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bdd942f53dcbca6daaaef6dadfd79f63eb08388e"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bdd942f53dcbca6daaaef6dadfd79f63eb08388e"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/components/PaymentRequestFileInput.test.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/components/PaymentRequestFileInput.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "487a1892d9d78daca50d48fde488f65f8d5d9101"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "487a1892d9d78daca50d48fde488f65f8d5d9101"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/components/PaymentRequestFileInput.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/lib/requestFileInterop.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "954c6f24e2279ec0820df1710100ad1d848a5c47"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "954c6f24e2279ec0820df1710100ad1d848a5c47"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/lib/requestFileInterop.test.ts"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1a31bebd47e897e63ea34c367228cb35262c9098"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1a31bebd47e897e63ea34c367228cb35262c9098"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/views/CreateInvoice.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "404da9ba3f203c0192ddb01145fdb8a9776db015"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "404da9ba3f203c0192ddb01145fdb8a9776db015"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/views/Pay.invoiceQr.test.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/views/Pay.requestFile.test.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "89cb8d83c1275ca466efe70b45572b846b505cfb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "89cb8d83c1275ca466efe70b45572b846b505cfb"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/views/Pay.requestFile.test.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "apps/web/src/views/Pay.tsx",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "197e5f2d69fee42b3fc5d368e22bb4c1581b0540"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "197e5f2d69fee42b3fc5d368e22bb4c1581b0540"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/apps/web/src/views/Pay.tsx"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "packages/invoice-schema/src/index.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "34d2e76882ba3a8975930f3bfcee35ae1f7e395c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "34d2e76882ba3a8975930f3bfcee35ae1f7e395c"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/packages/invoice-schema/src/index.ts"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "packages/invoice-schema/src/requestFile.interop.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0a722695a606f524bcf512652e9fbbe42b27f871"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0a722695a606f524bcf512652e9fbbe42b27f871"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/packages/invoice-schema/src/requestFile.interop.test.ts"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "packages/invoice-schema/src/requestFile.test.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "68c194bf5c6fc12d0f17ff3a39afb9ec01d902cb"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "68c194bf5c6fc12d0f17ff3a39afb9ec01d902cb"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/packages/invoice-schema/src/requestFile.test.ts"
+        },
+        {
+          "method": "git ls-tree mode/blob identity",
+          "path": "packages/invoice-schema/src/requestFile.ts",
+          "source": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4eb802016bc54f6d3e53e7061f08a2272bc29a3a"
+          },
+          "candidate": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4eb802016bc54f6d3e53e7061f08a2272bc29a3a"
+          },
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/5a745d4b5fba69b66a9779f88aefc63c253a4f27/packages/invoice-schema/src/requestFile.ts"
+        }
+      ]
+    },
+    {
+      "id": "future-m1-322",
+      "sources": [
+        {
+          "pr": 322,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/322",
+          "branch": "future/f04-merchant-dashboard",
+          "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d"
+        }
+      ],
+      "decision": "distinct_dormant_partial_implementation",
+      "summary": "Evidence-qualified in-memory projections exist, with explicit chain/asset amounts and injected evidence; UI, trusted provider integration, encrypted persistence, crash/cross-tab recovery, export and browser acceptance remain unfinished.",
+      "next_action": "Continue the existing module owner with P03 canonical evidence and P05 journal integration before activating a dashboard route.",
+      "owned_paths": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts"
+      ],
+      "main_module_absent": true,
+      "candidate_307_module_absent": true,
+      "all_non_document_delta": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts"
+      ],
+      "evidence": [
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/index.ts",
+          "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/066731b4d6d19d96469dd18fa082b264f3efed5d/apps/web/src/features/future/merchant-dashboard/index.ts",
+          "line_start": 1,
+          "line_end": 5,
+          "text": "1: export { DASHBOARD_LIMITS, DashboardError, decodeDashboardSnapshot } from './model';\n2: export type { DashboardContext, DashboardEvidenceClaim, DashboardInvoice, DashboardObservation, DashboardSnapshot, EvidenceAssessment, EvidenceKind } from './model';\n3: export { buildDashboardProjection } from './projection';\n4: export type { DashboardEvidenceProvider, DashboardIssueCode, DashboardProjection, DashboardRow, DashboardState, DashboardTotals } from './projection';\n5: export { selectDashboardRows } from './select';"
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+          "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/066731b4d6d19d96469dd18fa082b264f3efed5d/docs/future/modules/F04-merchant-dashboard/HANDOFF.md"
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+          "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/066731b4d6d19d96469dd18fa082b264f3efed5d/docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md"
+        }
+      ],
+      "qualification_note": "Source and reported milestone boundaries checked; prior test counts are not rerun or promoted to current combined-head qualification."
+    },
+    {
+      "id": "future-m1-323",
+      "sources": [
+        {
+          "pr": 323,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/323",
+          "branch": "future/f05-ghostproof",
+          "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3"
+        }
+      ],
+      "decision": "distinct_dormant_partial_implementation",
+      "summary": "Offline receipt review and cancellable import sessions exist. Signature/digest checks do not establish chain settlement, ownership, audience/challenge claims or zero-knowledge proof generation. UI and provider integration remain unfinished.",
+      "next_action": "Continue the existing module owner with disabled localized import/review UI and real app-lock lifecycle; add selective-proof/evidence providers only when their contracts are implemented.",
+      "owned_paths": [
+        "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+        "apps/web/src/features/future/ghostproof/index.ts",
+        "apps/web/src/features/future/ghostproof/review.test.ts",
+        "apps/web/src/features/future/ghostproof/review.ts",
+        "apps/web/src/features/future/ghostproof/session.test.ts",
+        "apps/web/src/features/future/ghostproof/session.ts"
+      ],
+      "main_module_absent": true,
+      "candidate_307_module_absent": true,
+      "all_non_document_delta": [
+        "apps/web/package.json",
+        "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+        "apps/web/src/features/future/ghostproof/index.ts",
+        "apps/web/src/features/future/ghostproof/review.test.ts",
+        "apps/web/src/features/future/ghostproof/review.ts",
+        "apps/web/src/features/future/ghostproof/session.test.ts",
+        "apps/web/src/features/future/ghostproof/session.ts",
+        "package-lock.json"
+      ],
+      "evidence": [
+        {
+          "path": "apps/web/src/features/future/ghostproof/index.ts",
+          "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/ccd1b16dea7be84552f40d3bcd0f23b4224699d3/apps/web/src/features/future/ghostproof/index.ts",
+          "line_start": 1,
+          "line_end": 4,
+          "text": "1: export { reviewReceipt, UNSUPPORTED_RECEIPT_CLAIMS, type DisclosureField, type ReceiptCaveat,\n2:   type ReceiptClaim, type ReceiptReview, type ReceiptReviewError, type ReceiptReviewOptions,\n3:   type ReceiptReviewResult } from './review';\n4: export { createReceiptImportSession, type ReceiptImportState } from './session';"
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/HANDOFF.md",
+          "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/ccd1b16dea7be84552f40d3bcd0f23b4224699d3/docs/future/modules/F05-ghostproof/HANDOFF.md"
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/COORDINATOR_VERIFICATION.md",
+          "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/ccd1b16dea7be84552f40d3bcd0f23b4224699d3/docs/future/modules/F05-ghostproof/COORDINATOR_VERIFICATION.md"
+        }
+      ],
+      "qualification_note": "Source and reported milestone boundaries checked; prior test counts are not rerun or promoted to current combined-head qualification."
+    },
+    {
+      "id": "future-m1-324",
+      "sources": [
+        {
+          "pr": 324,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/324",
+          "branch": "future/f10-private-recurring",
+          "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd"
+        }
+      ],
+      "decision": "distinct_dormant_partial_implementation",
+      "summary": "Plan validation, bounded due-period previews and single-use local review exist. No invoice issuance, signing, durable reservation, reminders or production route is implemented in this milestone.",
+      "next_action": "Continue the existing owner with P04 templates and P05 transactional reservation, then two-tab/crash/export-retry and voluntary payer browser acceptance.",
+      "owned_paths": [
+        "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+        "apps/web/src/features/future/private-recurring/index.ts",
+        "apps/web/src/features/future/private-recurring/model.test.ts",
+        "apps/web/src/features/future/private-recurring/model.ts",
+        "apps/web/src/features/future/private-recurring/review.test.ts",
+        "apps/web/src/features/future/private-recurring/review.ts"
+      ],
+      "main_module_absent": true,
+      "candidate_307_module_absent": true,
+      "all_non_document_delta": [
+        "apps/web/package.json",
+        "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+        "apps/web/src/features/future/private-recurring/index.ts",
+        "apps/web/src/features/future/private-recurring/model.test.ts",
+        "apps/web/src/features/future/private-recurring/model.ts",
+        "apps/web/src/features/future/private-recurring/review.test.ts",
+        "apps/web/src/features/future/private-recurring/review.ts",
+        "package-lock.json"
+      ],
+      "evidence": [
+        {
+          "path": "apps/web/src/features/future/private-recurring/index.ts",
+          "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a48f2f09b1334036a6a88bab4e51f958cee46dd/apps/web/src/features/future/private-recurring/index.ts",
+          "line_start": 1,
+          "line_end": 11,
+          "text": "1: export {\n2:   MAX_RECURRING_PLANS, MAX_RECURRING_SNAPSHOT_BYTES, MAX_RECURRING_TIMESTAMP,\n3:   RecurringError, parseRecurringSnapshot, validateRecurringPlan, validateRecurringSnapshot,\n4:   type RecurringErrorCode, type RecurringPlanV1, type RecurringPlanStateV1,\n5:   type RecurringInvoiceReferenceV1, type RecurringSnapshotV1, type TokenAtomicAmount,\n6: } from './model';\n7: export {\n8:   MAX_DUE_PREVIEW_PERIODS, RECURRING_REVIEW_SECONDS, RecurringReviewController, previewDue,\n9:   type DuePeriod, type DuePreview, type RecurringReviewContext, type RecurringReview,\n10:   type ApprovedRecurringPeriod,\n11: } from './review';"
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/HANDOFF.md",
+          "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a48f2f09b1334036a6a88bab4e51f958cee46dd/docs/future/modules/F10-private-recurring/HANDOFF.md"
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/COORDINATOR_VERIFICATION.md",
+          "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a48f2f09b1334036a6a88bab4e51f958cee46dd/docs/future/modules/F10-private-recurring/COORDINATOR_VERIFICATION.md"
+        }
+      ],
+      "qualification_note": "Source and reported milestone boundaries checked; prior test counts are not rerun or promoted to current combined-head qualification."
+    },
+    {
+      "id": "spec18-complementary-sources",
+      "sources": [
+        {
+          "pr": 239,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/239",
+          "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+          "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5"
+        },
+        {
+          "pr": 240,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/240",
+          "branch": "chatgpt/spec18-recovery-completion-20261118",
+          "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495"
+        },
+        {
+          "pr": 260,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/260",
+          "branch": "integration/ghostpay-recovery-reconciled-20261119",
+          "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461"
+        }
+      ],
+      "decision": "complementary_source_preserved_not_adopted_in_main",
+      "summary": "#239 and #240 are sibling implementations with complementary safeguards, not interchangeable whole branches. #260 retains #239 atomic replacement/generated-ciphertext retry and recovers #240 byte-exact file validation/event-time unload checks. The six named Spec18 modules are absent from frozen main and #307.",
+      "next_action": "Resume source reconciliation from existing #260 and downstream recovery owners; preserve both safeguards and reconcile current session/idle authority. Avoid implementing these modules again or bulk-merging their old #238 ancestry.",
+      "module_presence": [
+        {
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "main_entry": null,
+          "candidate_307_entry": null,
+          "reconciled_260_entry": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+          },
+          "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/components/StealthExportCommon.tsx",
+          "command": "git ls-tree <exact_sha> -- apps/web/src/components/StealthExportCommon.tsx"
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.tsx",
+          "main_entry": null,
+          "candidate_307_entry": null,
+          "reconciled_260_entry": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "fda705e782c147702ebcbac125ddb30ffee94910"
+          },
+          "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/components/StealthExportRecovery.tsx",
+          "command": "git ls-tree <exact_sha> -- apps/web/src/components/StealthExportRecovery.tsx"
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.tsx",
+          "main_entry": null,
+          "candidate_307_entry": null,
+          "reconciled_260_entry": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8"
+          },
+          "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/components/StealthExportVerification.tsx",
+          "command": "git ls-tree <exact_sha> -- apps/web/src/components/StealthExportVerification.tsx"
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "main_entry": null,
+          "candidate_307_entry": null,
+          "reconciled_260_entry": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "eb21473822afb6d01b0304bd44017fa3c21450e2"
+          },
+          "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/lib/paymentKeyExport.ts",
+          "command": "git ls-tree <exact_sha> -- apps/web/src/lib/paymentKeyExport.ts"
+        },
+        {
+          "path": "packages/ux-vault/src/stealth-export-portable.ts",
+          "main_entry": null,
+          "candidate_307_entry": null,
+          "reconciled_260_entry": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+          },
+          "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/packages/ux-vault/src/stealth-export-portable.ts",
+          "command": "git ls-tree <exact_sha> -- packages/ux-vault/src/stealth-export-portable.ts"
+        },
+        {
+          "path": "scripts/recovery/stealth-export-recover.mjs",
+          "main_entry": null,
+          "candidate_307_entry": null,
+          "reconciled_260_entry": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+          },
+          "source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/scripts/recovery/stealth-export-recover.mjs",
+          "command": "git ls-tree <exact_sha> -- scripts/recovery/stealth-export-recover.mjs"
+        }
+      ],
+      "source_relationships": {
+        "239_ancestor_240": false,
+        "239_ancestor_260": true,
+        "240_ancestor_260": false,
+        "260_ancestor_main": false,
+        "260_ancestor_307": false
+      },
+      "evidence": [
+        {
+          "path": "docs/handoffs/RECOVERY_RECONCILIATION_20261119.md",
+          "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/docs/handoffs/RECOVERY_RECONCILIATION_20261119.md",
+          "line_start": 1,
+          "line_end": 65,
+          "text": "1: # Complementary Spec 18 recovery reconciliation\n2: \n3: ## Scope and source identities\n4: \n5: This candidate reconciles the complementary recovery behavior in two already published\n6: branches. It does not replace their source-pinned evidence with a claim that this combined\n7: candidate passed the same checks.\n8: \n9: | Input | Source | Decision |\n10: | --- | --- | --- |\n11: | PR #238 | `198aa5baff22272453733a0f3dcfcac0e0994eec` | Existing consolidation ancestry retained through #239. |\n12: | PR #239 | `4a1b181c89e02ee564b5568d4b4b8d689f5e42c5` | Base: retain atomic session replacement, generated-ciphertext retry, verification state invalidation, and deterministic real-crypto synchronization. |\n13: | PR #240 | `38d69832ddc58ec27a19c00dbe3c89347c577495` | Recover BOM-byte refusals, event-time before-unload custody checks, and complementary browser acceptance cases. |\n14: | Focused BOM source | `032c42fc3d5e52d8428a7907775835b5d1ed3704` | Source of the strict ASCII-byte checks and actual-file regressions. |\n15: | Ownership claim | `a848be30` | New isolated branch `integration/ghostpay-recovery-reconciled-20261119`; both source branches remain unchanged. |\n16: | Reconciled product/test commit | `3110611e4a49d2b3f426fc0b770a0823109ac3d4` | Nine web files changed; no dependency, contract, gate, or deployment changes. |\n17: \n18: The source PR heads were reread from GitHub before editing. Main was observed at\n19: `e454de6abfefda70d82784fafc1d8949b277c334` when this lane was assigned. The root\n20: coordinator owns any later publication, main reconciliation, required CI and merge.\n21: \n22: The root published the reviewed product candidate as draft\n23: [PR #260](https://github.com/djshellshoxxx/GhostPay/pull/260), stacked on #239.\n24: GitHub Git Data API publication preserves the exact local trees:\n25: \n26: | Local commit | Published commit | Identical complete tree |\n27: | --- | --- | --- |\n28: | `a848be30` | `1b76c84622f61ad5638856608f8c0d5ae606b425` | `fe247c5bdbda23dcf8e33025ba0db0b5e88ee31d` |\n29: | `3110611e4a49d2b3f426fc0b770a0823109ac3d4` | `789e63501c1628d602006dbd324a36f8a9c50d71` | `e8c79567504010c91d86655711899e1751133498` |\n30: \n31: This publication does not merge the unqualified #238/#239 ancestors into main. It\n32: starts the source candidate's hosted checks while local validation proceeds.\n33: \n34: ## Recovered behavior\n35: \n36: `File.text()` removes a UTF-8 byte-order mark. Previously, a modified file could be\n37: accepted after normalization even though the independent strict decoder rejected its\n38: bytes. Recovery now requires the selected file's byte length to equal its ASCII text\n39: length before opening or verifying. Saved-download verification requires both the\n40: expected ASCII byte count and exact generated text. The portable codec continues to\n41: reject other invalid characters and malformed data. The checks happen before the KDF.\n42: \n43: The before-unload handler now applies to every loaded session. At the event it checks\n44: whether keys are still loaded and whether a complete external copy is verified. A\n45: browser-local vault alone does not suppress the warning: another tab could delete that\n46: vault without updating this tab's cached custody summary. External-copy verification\n47: is read at the event even when it did not change the cached React summary.\n48: \n49: The #239 retry panel remains intact. A blocked download keeps its generated ciphertext,\n50: and retrying does not repeat key derivation or export. Verification still becomes stale\n51: after a passphrase edit. Replacement still stages all keys before clearing the existing\n52: session. The sealing-barrier test and real-KDF promise observers remain intact.\n53: \n54: ## Acceptance coverage\n55: \n56: The combined test changes retain existing assertions and add or recover:\n57: \n58: - Actual BOM bytes rejected by both recovery actions before keys can be installed or\n59:   marked verified; existing wallet identity and custody remain unchanged.\n60: - BOM-prefixed saved downloads rejected before verification or backup-success status.\n61: - Cross-tab local-vault deletion still triggers an unload warning.\n62: - Newly verified external backups immediately suppress that warning, even without a\n63:   changed cached custody summary; a newly generated invoice-signing key still needs\n64:   its own recoverable copy.\n65: - Full/lean browser cases for real BOM files, master restoration with renewed"
+        }
+      ],
+      "limits": "This is an absence finding for the named Spec18 module family, not a claim that main lacks its older seller-keystore backup or sweep facilities; no fund-recovery guarantee or refund behavior was tested."
+    },
+    {
+      "id": "spec18-downstream-recovery-evidence",
+      "sources": [
+        {
+          "pr": 260,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/260",
+          "branch": "integration/ghostpay-recovery-reconciled-20261119",
+          "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461"
+        },
+        {
+          "pr": 278,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/278",
+          "branch": "release/ghostpay-beta-qualification-20261119",
+          "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd"
+        },
+        {
+          "pr": 292,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/292",
+          "branch": "fix/ghostpay-pages-integrity-gate-20261120",
+          "sha": "936d054ed067d89c773310d42e33939c1129bbfa"
+        },
+        {
+          "pr": 302,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/302",
+          "branch": "integration/ghostpay-completion-20261120",
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6"
+        },
+        {
+          "pr": 346,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/346",
+          "branch": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+          "sha": "37760c3655c48fa190c0f2324072cb506cf1b88d"
+        }
+      ],
+      "decision": "existing_downstream_content_and_acceptance_work",
+      "summary": "The recovery codec, standalone decoder, recovery UI and verification UI from #260 are byte-identical in #278/#292/#302/#346, despite lack of #260 commit ancestry. Other session/key-export files evolved. #346 adds browser-to-standalone-recovery evidence on its own older lineage; none of this establishes adoption by main/#307.",
+      "next_action": "Preserve the existing recovery implementation and #346 interoperability work during selective current-main recovery; qualify the combined version with current session/idle and browser gates.",
+      "file_matrix": [
+        {
+          "pr": 239,
+          "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "d430bc359cb40d4295dc49963d04a203dc66c385"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "1fa430acb1a1bdac01525e803faa1395b8501f45"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "eb21473822afb6d01b0304bd44017fa3c21450e2"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "79e144ae0e0a86c27dcd1fef5e29b2acf5d92e7b"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "0b7718da4874ad99b1329fde88a57fe893e41f59"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/4a1b181c89e02ee564b5568d4b4b8d689f5e42c5/apps/web/src/AppShell.tsx"
+            }
+          }
+        },
+        {
+          "pr": 240,
+          "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "bafc0cf5f301c0d3b7b8c01953411504a797413d"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9a62805e089fe7cedbcc18f03ae10c4b2314669e"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "eb21473822afb6d01b0304bd44017fa3c21450e2"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "ffff60f9b18e1b387bd1e859b003c4e49b9ff14c"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "6e03cb0dd211f3320e12926aa0c518536bcaa66d"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "e813f712cc6e13e8a3f39fdbcf24e80fd27e4a03"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/38d69832ddc58ec27a19c00dbe3c89347c577495/apps/web/src/AppShell.tsx"
+            }
+          }
+        },
+        {
+          "pr": 260,
+          "sha": "f3bb7c662274c4a4394324c405b49517ad2b1461",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "fda705e782c147702ebcbac125ddb30ffee94910"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "eb21473822afb6d01b0304bd44017fa3c21450e2"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "79e144ae0e0a86c27dcd1fef5e29b2acf5d92e7b"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "e813f712cc6e13e8a3f39fdbcf24e80fd27e4a03"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/f3bb7c662274c4a4394324c405b49517ad2b1461/apps/web/src/AppShell.tsx"
+            }
+          }
+        },
+        {
+          "pr": 278,
+          "sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "fda705e782c147702ebcbac125ddb30ffee94910"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9440ec16a0283f70b8fc317f13f98db0de0194e0"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/417f7c71daf8645e1432f2ec8f070110879b80bd/apps/web/src/AppShell.tsx"
+            }
+          }
+        },
+        {
+          "pr": 292,
+          "sha": "936d054ed067d89c773310d42e33939c1129bbfa",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "fda705e782c147702ebcbac125ddb30ffee94910"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9440ec16a0283f70b8fc317f13f98db0de0194e0"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/936d054ed067d89c773310d42e33939c1129bbfa/apps/web/src/AppShell.tsx"
+            }
+          }
+        },
+        {
+          "pr": 302,
+          "sha": "e22c1748a3de6eb02f5be3abe27d634b238c67c6",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "4c62a819ba7bccbd6af6698d4a6bed0f039c4e5a"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "fda705e782c147702ebcbac125ddb30ffee94910"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9440ec16a0283f70b8fc317f13f98db0de0194e0"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/e22c1748a3de6eb02f5be3abe27d634b238c67c6/apps/web/src/AppShell.tsx"
+            }
+          }
+        },
+        {
+          "pr": 346,
+          "sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+          "files": {
+            "apps/web/src/components/StealthExportCommon.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "bc18fbcad9d3aa88f4b05aee039f2ad04efeab55"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/apps/web/src/components/StealthExportCommon.tsx"
+            },
+            "apps/web/src/components/StealthExportRecovery.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "fda705e782c147702ebcbac125ddb30ffee94910"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/apps/web/src/components/StealthExportRecovery.tsx"
+            },
+            "apps/web/src/components/StealthExportVerification.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9c01f02e5fe7a0a6f1ff5c9839ca36d0176f20d8"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/apps/web/src/components/StealthExportVerification.tsx"
+            },
+            "apps/web/src/lib/paymentKeyExport.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "a2d67e2a7373546574c27c327e5a8beecb9a3bbd"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/apps/web/src/lib/paymentKeyExport.ts"
+            },
+            "packages/ux-vault/src/stealth-export-portable.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c677180b208bae95573fc4f14ab8ce06d8099cb9"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/packages/ux-vault/src/stealth-export-portable.ts"
+            },
+            "scripts/recovery/stealth-export-recover.mjs": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "c33e64770aa71b2d0751ce6104853725b0f2cbd7"
+              },
+              "exact_260": true,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/scripts/recovery/stealth-export-recover.mjs"
+            },
+            "apps/web/src/lib/session.ts": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "9440ec16a0283f70b8fc317f13f98db0de0194e0"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/apps/web/src/lib/session.ts"
+            },
+            "apps/web/src/AppShell.tsx": {
+              "entry": {
+                "mode": "100644",
+                "type": "blob",
+                "sha": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+              },
+              "exact_260": false,
+              "url": "https://github.com/djshellshoxxx/GhostPay/blob/37760c3655c48fa190c0f2324072cb506cf1b88d/apps/web/src/AppShell.tsx"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/346",
+          "sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+          "kind": "current open test follow-up"
+        }
+      ]
+    },
+    {
+      "id": "idle-merged-after-parent-promotion",
+      "sources": [
+        {
+          "pr": 256,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/256",
+          "branch": "integration/ghostpay-idle-session-completion-20261119",
+          "sha": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+        },
+        {
+          "pr": 325,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/325",
+          "branch": "integration/ghostpay-sweep-consent-20261120",
+          "sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a"
+        },
+        {
+          "pr": 331,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/331",
+          "branch": "integration/ghostpay-idle-session-20261120-r2",
+          "sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3"
+        },
+        {
+          "pr": 333,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/333",
+          "branch": "fix/ghostpay-backup-preflight-20261120-r2",
+          "sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87"
+        }
+      ],
+      "decision": "merged_into_feature_branch_not_main_or_307",
+      "summary": "#325 was merged into #307 at 23:17:17Z. #331 was then merged into the still-existing #325 source branch at 23:29:16Z. Its later idle-lock work is not in #307 or main. #333 contains #331 source and is the active backup follow-up.",
+      "next_action": "Carry the later #331 source forward through the existing #333 chain onto a current #307/main composition. Do not retire idle work because GitHub says #331 merged; destination and order matter.",
+      "merge_events": [
+        {
+          "number": 325,
+          "title": "Complete Sweep balance consent and signing lifecycle",
+          "state": "closed",
+          "merged": true,
+          "base": "integration/ghostpay-main-recovered-fixes-20261120",
+          "base_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+          "head": "integration/ghostpay-sweep-consent-20261120",
+          "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+          "merge_commit_sha": "394793b1276aeac337aedde30499548bb57eadf9",
+          "merged_at": "2026-11-20T23:17:17Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/325"
+        },
+        {
+          "number": 331,
+          "title": "Complete sleep-aware idle locking on the current Sweep candidate",
+          "state": "closed",
+          "merged": true,
+          "base": "integration/ghostpay-sweep-consent-20261120",
+          "base_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+          "head": "integration/ghostpay-idle-session-20261120-r2",
+          "head_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+          "merge_commit_sha": "2748c9bfd55bd226c7801c15a7acdd955ab70339",
+          "merged_at": "2026-11-20T23:29:16Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/331"
+        }
+      ],
+      "verified_relationships": {
+        "325_merge_ancestor_307": true,
+        "331_head_ancestor_307": false,
+        "331_head_ancestor_main": false,
+        "331_head_ancestor_333": true,
+        "256_head_ancestor_333": true
+      },
+      "main_session_url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/session.ts",
+      "idle_source_url": "https://github.com/djshellshoxxx/GhostPay/blob/f5e04a30bd538b5dba6202885c8e1c3cceb31fa3/apps/web/src/lib/session.ts"
+    },
+    {
+      "id": "backup-ownership-selective-recovery",
+      "sources": [
+        {
+          "pr": 314,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/314",
+          "branch": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+          "sha": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544"
+        },
+        {
+          "pr": 319,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/319",
+          "branch": "fix/ghostpay-backup-completion-20261120",
+          "sha": "627ab977c9cc4e5ebc682eda822cfe792cd76fc1"
+        },
+        {
+          "pr": 333,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/333",
+          "branch": "fix/ghostpay-backup-preflight-20261120-r2",
+          "sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87"
+        },
+        {
+          "pr": 307,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/307",
+          "branch": "integration/ghostpay-main-recovered-fixes-20261120",
+          "sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        }
+      ],
+      "decision": "partial_parent_retained_followup_contains_missing_guards",
+      "summary": "#319 is already an ancestor of #307 and #333. It is not an ancestral extension of #314. #333 selectively recovers #314 preflight/export/durable-write guards, and its renamed ownership test file is byte-identical to #314. #333 is not yet in main/#307.",
+      "next_action": "Qualify the current #333 stack while preserving #319 cancellation/write lifetime behavior; avoid independently replaying #314 or replacing newer SellerKeys code with its older complete file.",
+      "test_blob_equivalence": {
+        "source_pr": 314,
+        "source_path": "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "target_pr": 333,
+        "target_path": "apps/web/src/views/SellerKeys.ownership.test.tsx",
+        "entry": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "05c846289be5827c2e9028c28661b1c2f242c9b0"
+        }
+      },
+      "source_relationships": {
+        "314_ancestor_319": false,
+        "319_ancestor_307": true,
+        "319_ancestor_333": true,
+        "333_ancestor_main": false,
+        "333_ancestor_307": false
+      },
+      "implementation_paths": [
+        "apps/web/src/views/SellerKeys.tsx",
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/src/views/SellerKeys.ownership.test.tsx",
+        "apps/web/e2e/backup-ownership.spec.ts"
+      ],
+      "evidence": [
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/3172a93ceb8fce5a4343a93b453dcc0e68f09d87/apps/web/src/views/SellerKeys.tsx",
+          "line_start": 182,
+          "line_end": 204,
+          "text": "182:     const controller = new AbortController(); operation.current = controller; operationKind.current = kind; return controller;\n183:   };\n184:   const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current === controller && !controller.signal.aborted;\n185:   const finishUnlockPreflight = (controller: AbortController): void => {\n186:     if (operation.current !== controller) return;\n187:     operation.current = null;\n188:     operationKind.current = undefined;\n189:     if (mounted.current) setUnlockBusy(false);\n190:   };\n191:   const startVaultWrite = (): symbol | undefined => {\n192:     if (vaultWrite.current !== null || operationKind.current === 'unlock') return undefined;\n193:     const owner = Symbol('vault-write');\n194:     vaultWrite.current = owner;\n195:     setVaultWriteBusy(true);\n196:     return owner;\n197:   };\n198:   const currentVaultWrite = (owner: symbol): boolean => mounted.current && vaultWrite.current === owner;\n199:   const finishVaultWrite = (owner: symbol): void => {\n200:     if (vaultWrite.current !== owner) return;\n201:     vaultWrite.current = null;\n202:     if (mounted.current) setVaultWriteBusy(false);\n203:   };\n204:   // Installing our own keys triggers the session effect above. Only explicit cancellation, edits or another operation"
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/3172a93ceb8fce5a4343a93b453dcc0e68f09d87/apps/web/src/views/SellerKeys.tsx",
+          "line_start": 247,
+          "line_end": 263,
+          "text": "247:     const stepUp = exportStepUp;\n248:     setBusy(true);\n249:     setMessage({ kind: 'ok', text: { key: 'sellerKeys.encrypting' } });\n250:     void (async () => {\n251:       // Keys tied to a vault leave this tab only with that vault's passphrase (L1-02).\n252:       await authorizeKeyExport(stepUp);\n253:       if (!currentOperation(controller)) return undefined;\n254:       unchanged();\n255:       return exportKeystore(pass);\n256:     })().then(\n257:       (text) => {\n258:         if (!currentOperation(controller) || text === undefined) return;\n259:         try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }\n260:         try {\n261:           downloadText('ghostpay-keystore.json', text, 'application/json');\n262:         } catch (error) {\n263:           // A blocked download produced no file: report it, re-enable the form and leave the backup unrecorded."
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "sha": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/3172a93ceb8fce5a4343a93b453dcc0e68f09d87/apps/web/src/views/SellerKeys.tsx",
+          "line_start": 374,
+          "line_end": 410,
+          "text": "374:     // The recoverability read and decryption share one cancellable owner.\n375:     const controller = startOperation('unlock');\n376:     setUnlockBusy(true);\n377:     setConfirmReplace(false);\n378:     // Unlocking replaces the loaded keys; keys with no backup would be lost with every payment to them (L1-01). As for a\n379:     // wipe, a vault copy is looked up in storage first, because another tab may have deleted or replaced it since this page\n380:     // last read it (C-R12). A key change during that read drops the request.\n381:     if (getSessionBackup() === undefined || sessionHasExternalCopy()) { unlockVault(false, controller); return; }\n382:     const unchanged = captureSessionVersionGuard();\n383:     void loadedKeysRecoverable().then(\n384:       (recoverable) => {\n385:         if (!currentOperation(controller)) return;\n386:         try { unchanged(); } catch { finishUnlockPreflight(controller); return; }\n387:         if (recoverable) unlockVault(false, controller);\n388:         else { finishUnlockPreflight(controller); setConfirmReplace(true); }\n389:       },\n390:       (error: unknown) => {\n391:         if (!currentOperation(controller)) return;\n392:         try { unchanged(); } catch { finishUnlockPreflight(controller); return; }\n393:         finishUnlockPreflight(controller);\n394:         fail(error);\n395:       },\n396:     );\n397:   };\n398: \n399:   const unlockVault = (replaceUnsavedKeys: boolean, pending?: AbortController): void => {\n400:     if (vaultWrite.current !== null) return;\n401:     const controller = pending ?? startOperation('unlock');\n402:     if (!currentOperation(controller)) return;\n403:     const id = generation.current;\n404:     setConfirmReplace(false);\n405:     setUnlockBusy(true);\n406:     void unlockEncryptedVault(vaultUnlockPass, undefined, controller.signal, { replaceUnsavedKeys }).then(\n407:       (installed) => {\n408:         if (!ownCompletion(id, installed)) return;\n409:         setVaultUnlockPass('');\n410:         setBackupQr(undefined);"
+        }
+      ]
+    },
+    {
+      "id": "tron-adapter-and-btc-cap-adoption",
+      "sources": [
+        {
+          "pr": 321,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/321",
+          "branch": "automation/20261120T1635Z/bug/tron-scan-abort",
+          "sha": "87c3bf5a59f4d443c9e5cf81368162554a5315c3"
+        },
+        {
+          "pr": 329,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/329",
+          "branch": "integration/ghostpay-tron-range-20261120-r2",
+          "sha": "cff631b5c32a86adfa2d79c342e497e91a8573a5"
+        },
+        {
+          "pr": 334,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/334",
+          "branch": "automation/20261120/bug/btc-fee-floor-config",
+          "sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1"
+        }
+      ],
+      "decision": "source_merged_into_main",
+      "summary": "TRON scan cancellation (#321), complete-range validation (#329) and Bitcoin fee-cap consistency (#334) have actual main merge commits contained in frozen main. Older pending-main census descriptions for these sources are superseded.",
+      "next_action": "Retain the merged main source; remove duplicate implementation work for those exact repairs, and revalidate after any combined candidate integration.",
+      "merge_events": [
+        {
+          "number": 321,
+          "title": "fix(tron): stop scan results after buffered-page cancellation (GP-BUG-13)",
+          "state": "closed",
+          "merged": true,
+          "base": "main",
+          "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+          "head": "automation/20261120T1635Z/bug/tron-scan-abort",
+          "head_sha": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+          "merge_commit_sha": "8c75581f0217dbc4ba6d052e54351594274e7b6e",
+          "merged_at": "2026-11-20T22:06:53Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/321"
+        },
+        {
+          "number": 329,
+          "title": "Reject incomplete TRON block ranges before scanning payments",
+          "state": "closed",
+          "merged": true,
+          "base": "main",
+          "base_sha": "8c75581f0217dbc4ba6d052e54351594274e7b6e",
+          "head": "integration/ghostpay-tron-range-20261120-r2",
+          "head_sha": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+          "merge_commit_sha": "784b445f6bc5c641e8e85d4e28b730e044791f40",
+          "merged_at": "2026-11-20T23:28:42Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/329"
+        },
+        {
+          "number": 334,
+          "title": "fix(metadata-hardening): reject Bitcoin fee caps below minimum (GP-BUG-12)",
+          "state": "closed",
+          "merged": true,
+          "base": "main",
+          "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+          "head": "automation/20261120/bug/btc-fee-floor-config",
+          "head_sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+          "merge_commit_sha": "aec179910c39081d820396409ff3139ff2264132",
+          "merged_at": "2026-11-20T23:30:15Z",
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/334"
+        }
+      ],
+      "limitation": "Ancestry confirms source adoption; it does not constitute a new runtime/chain/browser test or permanent proof against future regression."
+    },
+    {
+      "id": "tron-browser-genesis-independent",
+      "sources": [
+        {
+          "pr": 340,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/340",
+          "branch": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+          "sha": "f9344a16fdefd1151189d8fd613ef3d1ca6a75c4"
+        },
+        {
+          "pr": 342,
+          "url": "https://github.com/djshellshoxxx/GhostPay/pull/342",
+          "branch": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+          "sha": "06fd87c3e90000118ffa94048529db36f0a67d41"
+        }
+      ],
+      "decision": "distinct_browser_guard_still_pending",
+      "summary": "#340/#342 bind the selected browser TRON network to its genesis and repair old test callers. This is separate from the adapter scan/range work in merged #321/#329. #340 is an ancestor of #342; neither head is in main.",
+      "next_action": "Retain parent #340 plus child #342 test repair as one ordered qualification unit; preserve newly merged adapter fixes and require current combined browser/typecheck evidence.",
+      "source_relationships": {
+        "340_ancestor_342": true,
+        "340_ancestor_main": false,
+        "342_ancestor_main": false
+      },
+      "paths": [
+        "apps/web/src/features/tron/rpc.ts",
+        "apps/web/src/features/tron/TronView.tsx",
+        "apps/web/src/features/tron/chain.hardening.test.ts"
+      ],
+      "evidence": [
+        {
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/06fd87c3e90000118ffa94048529db36f0a67d41/docs/handoffs/TRON_GENESIS_LEGACY_TESTS_AND_CENSUS_20261120.md"
+        },
+        {
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/f9344a16fdefd1151189d8fd613ef3d1ca6a75c4/docs/handoffs/TRON_SELECTED_GENESIS_20261120.md"
+        }
+      ]
+    }
+  ],
+  "historical_ledger_row_dispositions": [
+    {
+      "sourceBranch": "origin/claude/ghostpay-lean-core-milestone-t5lwox",
+      "sourceSha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "pr": 151,
+      "recovered": [
+        "6cb957a (A5-2) removal of stale .github/workflows/openai-agents.yml; prompt copy and test already in baseline"
+      ],
+      "filesChanged": [
+        ".github/workflows/openai-agents.yml"
+      ],
+      "conflicts": [
+        "215f98d: ghostpay-codex-cloud.yml + test (baseline gate stronger: path policy, exact-head checks, approval, match-head-commit)",
+        "cede5cf: pay.ts/payExec.ts + tests (baseline already has assertInvoiceStillPayable/boundedDeadline)"
+      ],
+      "testsRun": [
+        "node --test scripts/tests/workflow-files.test.mjs scripts/tests/ghostpay-codex-cloud-workflow.test.mjs: 7 pass"
+      ],
+      "result": "integrated",
+      "reason": "Only A5-2 workflow deletion was missing. A5-1, A5-3, ci scripts/tests step, A3-2 already in baseline or superseded by stronger version; A7 tests and reachability test already patch-equivalent in baseline.",
+      "live_sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "+ 6cb957a70c5066b0a5c2fc168a7dca46b43d66bf fix(ci): move non-workflow openai-agents.yml out of workflows (A5-2)",
+        "+ 215f98d801266d4e0d7f15e4e0926cfb3197da20 fix(ci): gate codex-cloud auto-merge on same-repo, author, approval (A5-1)",
+        "- dd5be2e28c4e4f6afc273c77bc2c1c68acdcd9d8 fix(ci): extend scan-secrets patterns for named keys and API tokens (A5-3)",
+        "- 7fa75889273d596b63d6948f6157acd98334a5b3 fix(ci): allowlist strips only the dev-key substring in scan-secrets (A5-3)",
+        "+ ebf9214778f388bdeb2d9d6dfe9b7df248332415 ci: run scripts/tests regression suites in CI",
+        "+ cede5cfda895b42e28708ba99d253e976490b963 fix(web-pay): enforce invoice/quote expiry at final send, cap router deadline (A3-2)",
+        "- 4c4baf273e009a88d564c987630444e08325e733 test(web-pay): direct fail-closed tests for deployment and manifest-for-flow (A7-2, A7-3)",
+        "- 2527d6b9367887508d7d8f678a18564132652a03 test(scope): lock lean-core reachability of deferred code"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": null,
+      "semantic_evidence": [
+        {
+          "path": ".github/workflows/openai-agents.yml",
+          "main_entry": null
+        },
+        {
+          "path": "apps/web/src/lib/payExec.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/payExec.ts",
+          "line_start": 250,
+          "line_end": 270,
+          "text": "250:   }\n251:   if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.aPermitPaymentNeedsAnRPCToReadTheToken' });\n252:   // One deadline for the signed permit and the router calldata, bounded by invoice/fiat validity (never clamped later).\n253:   const deadline = boundedDeadline(ctx.review.invoice, now);\n254:   const td = await buildPermit(rt.rpc, {\n255:     chainId: ctx.chain.chainId,\n256:     token: token.address,\n257:     owner: session.account,\n258:     spender: ctx.manifest.router,\n259:     value: ctx.request.grossAmount,\n260:     deadline: BigInt(deadline),\n261:   });\n262:   reportTransactionStatus(status, { phase: 'awaiting-authorization', message: { key: 'transaction.status.permit', values: { amount: formatUnits(ctx.request.grossAmount, token.decimals), symbol: token.symbol } } });\n263:   assertCurrent?.();\n264:   const sig = await signTypedDataViaWallet(session, typedDataJson(td), assertCurrent);\n265:   assertCurrent?.();\n266:   // The wallet may have held the request open: re-read the clock before using the signature.\n267:   assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());\n268:   await assertPermitSigner(td, sig, session.account);\n269:   assertCurrent?.();\n270:   // Spec 04 post-sign pre-flight: nonce, recovery and a static permit call. A front-run permit (allowance now set)"
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/.github/workflows/ghostpay-codex-cloud.yml",
+          "line_start": 107,
+          "line_end": 129,
+          "text": "107:             # Review state is from GitHub, not from a PR body/label/comment. Require the\n108:             # latest submitted review by an independent human to APPROVE this exact head.\n109:             # If any API lookup fails, no automated merge is permitted.\n110:             reviewers=\"$(gh api --paginate \"repos/$GH_REPO/pulls/$number/reviews?per_page=100\" \\\n111:               --jq '.[] | {login: .user.login, state: .state, commit_id: .commit_id, author_association: .author_association, submitted_at: .submitted_at}' |\n112:               jq -s -r --arg head \"$head\" --arg author \"$author\" '\n113:                 sort_by(.submitted_at // \"\") | group_by(.login) | .[] | last |\n114:                 select(.state == \"APPROVED\" and .commit_id == $head and .login != $author) |\n115:                 select((.login | endswith(\"[bot]\")) | not) |\n116:                 select(.author_association == \"OWNER\" or .author_association == \"MEMBER\" or .author_association == \"COLLABORATOR\") |\n117:                 .login')\" || { echo \"PR #$number review API unavailable; not merged\"; continue; }\n118:             approved=false\n119:             while IFS= read -r reviewer; do\n120:               [ -n \"$reviewer\" ] || continue\n121:               permission=\"$(gh api \"repos/$GH_REPO/collaborators/$reviewer/permission\" --jq '.permission' 2>/dev/null || true)\"\n122:               case \"$permission\" in admin|maintain|write) approved=true; break ;; esac\n123:             done <<< \"$reviewers\"\n124:             if [ \"$approved\" != true ]; then\n125:               echo \"PR #$number missing independent current-head human approval; not merged\"\n126:               continue\n127:             fi\n128:             # --match-head-commit: GitHub refuses the merge if the head moved after the checks above.\n129:             gh pr merge \"$number\" --match-head-commit \"$head\" --squash --delete-branch ||"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/.github/workflows/ci.yml",
+          "line_start": 185,
+          "line_end": 196,
+          "text": "185:                 anvil_bin=\"$(command -v anvil)\"\n186:                 solc_bin=\"$HOME/.svm/0.8.28/solc-0.8.28\"\n187:                 test -x \"$anvil_bin\"\n188:                 test -x \"$solc_bin\"\n189:                 ANVIL_BIN=\"$anvil_bin\" SOLC_BIN=\"$solc_bin\" REQUIRE_ANVIL=1 npm test \"${anvil_args[@]}\" --if-present\n190:               fi\n191:               if [[ ${#other_args[@]} -gt 0 ]]; then npm test \"${other_args[@]}\" --if-present; fi\n192:               if [ \"$shard\" = 0 ]; then\n193:                 node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs scripts/agent/*.test.mjs\n194:               fi\n195:               ;;\n196:           esac"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sourceSha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "pr": 162,
+      "recovered": [
+        "aa827a43 scanSpam off-filter regression test",
+        "6e986e85 scanSpam estimateSimilarTransfers rejects off-filter address/block logs",
+        "f471ab4e docs pin"
+      ],
+      "filesChanged": [
+        "apps/web/src/lib/scanSpam.ts",
+        "apps/web/src/lib/scanSpam.test.ts",
+        "docs/ai/PAGES_BROWSER_FIXES_COMBINED_2026-11-14.md"
+      ],
+      "conflicts": [
+        "f1948463 qrKinds.test.ts comment-only; skipped, bearer QR fix already in baseline"
+      ],
+      "testsRun": [
+        "vitest run scanSpam.test.ts qrKinds.test.ts in apps/web: 29 pass"
+      ],
+      "result": "integrated",
+      "reason": "Off-filter transfer rejection was missing in baseline; bearer QR classification already present.",
+      "live_sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "- 9245659a833100db3c5f59c8265156b30e524957 test(pages): port independently reproduced browser boundary regressions",
+        "- 6b693bf404e423f1a19959195c9fcabd79c561be test(pages): port independently reproduced browser boundary regressions",
+        "- b719e9896a58d69f6e3f59b756ad69f837d50a61 fix(pages): integrate bounded relayer reads and filtered telemetry validation",
+        "- b25ed7ba933dbfea9739a385fcb2705ac3aae8a1 fix(pages): integrate bounded relayer reads and filtered telemetry validation",
+        "- 73923350fcda62f00be0f2b83ad346f416a24bb6 docs(ai): pin combined Pages fix sources and verification gates",
+        "+ f19484630338b21798ee123eb9d7af1f04c7822b test(pages): retain bearer QR classification on combined candidate (RED)",
+        "- 26f83ccdda98ee82c26ad5f71c3f90d90ad68c20 fix(pages): preserve bearer QR classification under caution flags (RED\u2192GREEN)"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": null,
+      "semantic_evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.ts",
+          "line_start": 150,
+          "line_end": 160,
+          "text": "150:       const logs = await o.client.getLogs({ address: o.token as Address, topics: [TRANSFER_TOPIC], fromBlock: next, toBlock: to });\n151:       seen += logs.length;\n152:       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };\n153:       for (const log of logs) {\n154:         // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.\n155:         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };\n156:         const block = BigInt(log.blockNumber);\n157:         if (block < next || block > to) return { status: 'unknown', reason: 'error' };\n158:         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;\n159:         const value = BigInt(log.data) * 4n;\n160:         if (value >= low && value <= high) count++;"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.test.ts",
+          "line_start": 236,
+          "line_end": 255,
+          "text": "236:   it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {\n237:     const head = 50_000n;\n238:     const foreign = {\n239:       ...transfer(49_990, 1_000_000n, 1),\n240:       address: '0x9999999999999999999999999999999999999999',\n241:     };\n242:     const wrongToken = await estimateSimilarTransfers({\n243:       client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,\n244:     });\n245:     expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });\n246: \n247:     // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.\n248:     const unfiltered = mockRpc(84532, (method) => {\n249:       if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');\n250:       return [transfer(10, 1_000_000n, 2)];\n251:     });\n252:     const wrongWindow = await estimateSimilarTransfers({\n253:       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,\n254:     });\n255:     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sourceSha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "pr": 163,
+      "recovered": [],
+      "filesChanged": [],
+      "conflicts": [],
+      "testsRun": [
+        "covered by scanSpam.test.ts run"
+      ],
+      "result": "superseded",
+      "reason": "cf5e876 and 2f43fe9 are identical in effect to the scanSpam fix/test recovered from #162; docs-only ACTIVE_WORK edit is stale.",
+      "live_sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "+ eef050a2c9de91b092230c6ff6030097578aab00 docs(ai): reserve Pages transfer-filter compatibility qualification on #157",
+        "- 2f43fe9d2d875dde6d72e16e7345957e324c1b23 test(pages): reproduce off-filter RPC transfer estimate against latest #157",
+        "- cf5e876ce164e63d535fb6e40319573798b746e1 fix(pages): reject off-filter Transfer logs after owner-head RED regression"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": null,
+      "semantic_evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.ts",
+          "line_start": 150,
+          "line_end": 160,
+          "text": "150:       const logs = await o.client.getLogs({ address: o.token as Address, topics: [TRANSFER_TOPIC], fromBlock: next, toBlock: to });\n151:       seen += logs.length;\n152:       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };\n153:       for (const log of logs) {\n154:         // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.\n155:         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };\n156:         const block = BigInt(log.blockNumber);\n157:         if (block < next || block > to) return { status: 'unknown', reason: 'error' };\n158:         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;\n159:         const value = BigInt(log.data) * 4n;\n160:         if (value >= low && value <= high) count++;"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.test.ts",
+          "line_start": 236,
+          "line_end": 255,
+          "text": "236:   it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {\n237:     const head = 50_000n;\n238:     const foreign = {\n239:       ...transfer(49_990, 1_000_000n, 1),\n240:       address: '0x9999999999999999999999999999999999999999',\n241:     };\n242:     const wrongToken = await estimateSimilarTransfers({\n243:       client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,\n244:     });\n245:     expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });\n246: \n247:     // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.\n248:     const unfiltered = mockRpc(84532, (method) => {\n249:       if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');\n250:       return [transfer(10, 1_000_000n, 2)];\n251:     });\n252:     const wrongWindow = await estimateSimilarTransfers({\n253:       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,\n254:     });\n255:     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/chatgpt/pages-browser-fixes-combined-20261114",
+      "sourceSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "pr": 161,
+      "recovered": [
+        "same three commits as #162 (b25ed7b, 6b693bf, 7392335)"
+      ],
+      "filesChanged": [],
+      "conflicts": [],
+      "testsRun": [],
+      "result": "superseded",
+      "reason": "Same tip commit as pages-qr-combined and rpc-filter-guard-beta; applied once via #162 lineage.",
+      "live_sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "- 9245659a833100db3c5f59c8265156b30e524957 test(pages): port independently reproduced browser boundary regressions",
+        "- 6b693bf404e423f1a19959195c9fcabd79c561be test(pages): port independently reproduced browser boundary regressions",
+        "- b719e9896a58d69f6e3f59b756ad69f837d50a61 fix(pages): integrate bounded relayer reads and filtered telemetry validation",
+        "- b25ed7ba933dbfea9739a385fcb2705ac3aae8a1 fix(pages): integrate bounded relayer reads and filtered telemetry validation",
+        "- 73923350fcda62f00be0f2b83ad346f416a24bb6 docs(ai): pin combined Pages fix sources and verification gates"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": "73923350 is identical only to rpc-filter-guard-beta; #162/pages-qr-combined is the distinct later tip 26f83ccd. All five #161 commits are patch-equivalent against frozen main.",
+      "semantic_evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.ts",
+          "line_start": 150,
+          "line_end": 160,
+          "text": "150:       const logs = await o.client.getLogs({ address: o.token as Address, topics: [TRANSFER_TOPIC], fromBlock: next, toBlock: to });\n151:       seen += logs.length;\n152:       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };\n153:       for (const log of logs) {\n154:         // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.\n155:         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };\n156:         const block = BigInt(log.blockNumber);\n157:         if (block < next || block > to) return { status: 'unknown', reason: 'error' };\n158:         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;\n159:         const value = BigInt(log.data) * 4n;\n160:         if (value >= low && value <= high) count++;"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.test.ts",
+          "line_start": 236,
+          "line_end": 255,
+          "text": "236:   it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {\n237:     const head = 50_000n;\n238:     const foreign = {\n239:       ...transfer(49_990, 1_000_000n, 1),\n240:       address: '0x9999999999999999999999999999999999999999',\n241:     };\n242:     const wrongToken = await estimateSimilarTransfers({\n243:       client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,\n244:     });\n245:     expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });\n246: \n247:     // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.\n248:     const unfiltered = mockRpc(84532, (method) => {\n249:       if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');\n250:       return [transfer(10, 1_000_000n, 2)];\n251:     });\n252:     const wrongWindow = await estimateSimilarTransfers({\n253:       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,\n254:     });\n255:     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "sourceSha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "pr": null,
+      "recovered": [],
+      "filesChanged": [],
+      "conflicts": [],
+      "testsRun": [],
+      "result": "superseded",
+      "reason": "Identical tip to pages-browser-fixes-combined.",
+      "live_sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "- 9245659a833100db3c5f59c8265156b30e524957 test(pages): port independently reproduced browser boundary regressions",
+        "- 6b693bf404e423f1a19959195c9fcabd79c561be test(pages): port independently reproduced browser boundary regressions",
+        "- b719e9896a58d69f6e3f59b756ad69f837d50a61 fix(pages): integrate bounded relayer reads and filtered telemetry validation",
+        "- b25ed7ba933dbfea9739a385fcb2705ac3aae8a1 fix(pages): integrate bounded relayer reads and filtered telemetry validation",
+        "- 73923350fcda62f00be0f2b83ad346f416a24bb6 docs(ai): pin combined Pages fix sources and verification gates"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": null,
+      "semantic_evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.ts",
+          "line_start": 150,
+          "line_end": 160,
+          "text": "150:       const logs = await o.client.getLogs({ address: o.token as Address, topics: [TRANSFER_TOPIC], fromBlock: next, toBlock: to });\n151:       seen += logs.length;\n152:       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };\n153:       for (const log of logs) {\n154:         // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.\n155:         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };\n156:         const block = BigInt(log.blockNumber);\n157:         if (block < next || block > to) return { status: 'unknown', reason: 'error' };\n158:         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;\n159:         const value = BigInt(log.data) * 4n;\n160:         if (value >= low && value <= high) count++;"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.test.ts",
+          "line_start": 236,
+          "line_end": 255,
+          "text": "236:   it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {\n237:     const head = 50_000n;\n238:     const foreign = {\n239:       ...transfer(49_990, 1_000_000n, 1),\n240:       address: '0x9999999999999999999999999999999999999999',\n241:     };\n242:     const wrongToken = await estimateSimilarTransfers({\n243:       client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,\n244:     });\n245:     expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });\n246: \n247:     // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.\n248:     const unfiltered = mockRpc(84532, (method) => {\n249:       if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');\n250:       return [transfer(10, 1_000_000n, 2)];\n251:     });\n252:     const wrongWindow = await estimateSimilarTransfers({\n253:       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,\n254:     });\n255:     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "sourceSha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "pr": null,
+      "recovered": [],
+      "filesChanged": [],
+      "conflicts": [],
+      "testsRun": [],
+      "result": "superseded",
+      "reason": "Same scanSpam address/block check and test as recovered.",
+      "live_sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "- cad182aed09ea2cb33c272f52f17095cb14741f2 test(scan): reject off-filter transfer logs in privacy estimate",
+        "+ dfed84c18b5f02c568c87f14a4fa4cec20fea80b fix(scan): reject off-filter RPC logs in privacy estimate"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": null,
+      "semantic_evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.ts",
+          "line_start": 150,
+          "line_end": 160,
+          "text": "150:       const logs = await o.client.getLogs({ address: o.token as Address, topics: [TRANSFER_TOPIC], fromBlock: next, toBlock: to });\n151:       seen += logs.length;\n152:       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };\n153:       for (const log of logs) {\n154:         // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.\n155:         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };\n156:         const block = BigInt(log.blockNumber);\n157:         if (block < next || block > to) return { status: 'unknown', reason: 'error' };\n158:         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;\n159:         const value = BigInt(log.data) * 4n;\n160:         if (value >= low && value <= high) count++;"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.test.ts",
+          "line_start": 236,
+          "line_end": 255,
+          "text": "236:   it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {\n237:     const head = 50_000n;\n238:     const foreign = {\n239:       ...transfer(49_990, 1_000_000n, 1),\n240:       address: '0x9999999999999999999999999999999999999999',\n241:     };\n242:     const wrongToken = await estimateSimilarTransfers({\n243:       client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,\n244:     });\n245:     expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });\n246: \n247:     // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.\n248:     const unfiltered = mockRpc(84532, (method) => {\n249:       if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');\n250:       return [transfer(10, 1_000_000n, 2)];\n251:     });\n252:     const wrongWindow = await estimateSimilarTransfers({\n253:       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,\n254:     });\n255:     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sourceSha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "pr": 159,
+      "recovered": [],
+      "filesChanged": [],
+      "conflicts": [],
+      "testsRun": [],
+      "result": "superseded",
+      "reason": "Same scanSpam address/block check and test as recovered.",
+      "live_sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "- ebbddcb1a5660b5e1f0b9971dd6064e0dfdabdba test(pages): reject off-filter RPC transfer telemetry (RED baseline)",
+        "- 7b6c4983e5c0ba048edf97aaff7399bd77980234 fix(pages): reject off-filter token and block logs in transfer estimate"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": null,
+      "semantic_evidence": [
+        {
+          "path": "apps/web/src/lib/scanSpam.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.ts",
+          "line_start": 150,
+          "line_end": 160,
+          "text": "150:       const logs = await o.client.getLogs({ address: o.token as Address, topics: [TRANSFER_TOPIC], fromBlock: next, toBlock: to });\n151:       seen += logs.length;\n152:       if (seen > PRIVACY_TRANSFER_MAX_LOGS) return { status: 'unknown', reason: 'limit' };\n153:       for (const log of logs) {\n154:         // An RPC provider can ignore eth_getLogs filters. Never turn off-filter data into a privacy estimate.\n155:         if (log.address.toLowerCase() !== o.token.toLowerCase()) return { status: 'unknown', reason: 'error' };\n156:         const block = BigInt(log.blockNumber);\n157:         if (block < next || block > to) return { status: 'unknown', reason: 'error' };\n158:         if (log.topics.length !== 3 || log.topics[0]?.toLowerCase() !== TRANSFER_TOPIC || !WORD_HEX.test(log.data)) continue;\n159:         const value = BigInt(log.data) * 4n;\n160:         if (value >= low && value <= high) count++;"
+        },
+        {
+          "path": "apps/web/src/lib/scanSpam.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/scanSpam.test.ts",
+          "line_start": 236,
+          "line_end": 255,
+          "text": "236:   it('fails closed when the RPC returns another token or an out-of-window transfer', async () => {\n237:     const head = 50_000n;\n238:     const foreign = {\n239:       ...transfer(49_990, 1_000_000n, 1),\n240:       address: '0x9999999999999999999999999999999999999999',\n241:     };\n242:     const wrongToken = await estimateSimilarTransfers({\n243:       client: clientWith([foreign]), chain, token: TOKEN, amount: 1_000_000n, head,\n244:     });\n245:     expect(wrongToken).toEqual({ status: 'unknown', reason: 'error' });\n246: \n247:     // An RPC implementation may ignore filters; the client must not trust even a well-shaped log outside the window.\n248:     const unfiltered = mockRpc(84532, (method) => {\n249:       if (method !== 'eth_getLogs') throw new Error('unexpected RPC request');\n250:       return [transfer(10, 1_000_000n, 2)];\n251:     });\n252:     const wrongWindow = await estimateSimilarTransfers({\n253:       client: unfiltered, chain, token: TOKEN, amount: 1_000_000n, head,\n254:     });\n255:     expect(wrongWindow).toEqual({ status: 'unknown', reason: 'error' });"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/codex/ghostpay-security-audit-20261030",
+      "sourceSha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "pr": null,
+      "recovered": [],
+      "filesChanged": [],
+      "conflicts": [
+        "363bb43 D3 relayer (baseline has it plus broader test)",
+        "8daa03c B2R sweep/chain-adapters (baseline ported as executionReverted, stricter)"
+      ],
+      "testsRun": [],
+      "result": "superseded",
+      "reason": "Remaining commits already patch-equivalent in baseline; 1d28f24 only edits a dated historical handoff doc (rejected as stale).",
+      "live_sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "+ 363bb43ae47fcecaf01c2c4f6ba20cdb0373a9fd fix(relayer): refuse a deadline that lapsed in the lane as deadline_too_soon (audit 24 review D3)",
+        "- 97787665d316395f54b3f3dbd1ef70d4beaa2959 fix(chain-adapters): reset the served range when the getLogs window regrows (audit 24 review AR2)",
+        "+ 8daa03cf3dda60c60864a134ecb3bc5e658e1010 fix(sweep): read a missing operator fee as zero only on a plain revert (audit 24 review B2R)",
+        "+ 1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78 docs(handoff): record the D3, AR2 and B2R fixes; match the halt texts of the verified client",
+        "- 63994db6cff8b3b3ca698427eee9e95904230546 fix(relayer): bind secret validation and reads to one file descriptor"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": "D3 and B2R are semantically retained, not literally patch-equivalent. AR2 and descriptor-bound secret loading are patch-equivalent. Exclude the dated handoff from runtime recovery.",
+      "semantic_evidence": [
+        {
+          "path": "apps/relayer/src/service.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/relayer/src/service.ts",
+          "line_start": 761,
+          "line_end": 764,
+          "text": "761:     // Queue time can consume the sweep's margin. Keep the same neutral, pre-broadcast reason as at admission.\n762:     const deadlineTooSoon = (): boolean =>\n763:       requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);\n764:     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');"
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/relayer/src/service.ts",
+          "line_start": 804,
+          "line_end": 808,
+          "text": "804:     let call = requested;\n805:     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');\n806:     const state = await op(() => client.readOrderState(call));\n807:     // A slow RPC can also consume that margin; check before attributing a state or permit error to the owner.\n808:     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');"
+        },
+        {
+          "path": "apps/web/src/lib/opStackFee.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/opStackFee.ts",
+          "line_start": 32,
+          "line_end": 42,
+          "text": "32: /**\n33:  * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call\n34:  * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.\n35:  */\n36: async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {\n37:   try {\n38:     return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));\n39:   } catch (e) {\n40:     if (e instanceof ChainAdapterError && e.executionReverted) return 0n;\n41:     throw e;\n42:   }"
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/packages/chain-adapters/src/rpc.test.ts",
+          "line_start": 233,
+          "line_end": 248,
+          "text": "233:   // Ported from PR 39 (8daa03c, B2R), whose `halted` flag is the inverse of `executionReverted` for a failed execution.\n234:   // Its row \"code 3 without a message\" (halted: false) is not ported: here that is no positively identified revert,\n235:   // so `executionReverted` stays false (asserted above) and the operator fee read fails closed.\n236:   it.each([\n237:     ['code 3 with revert data', { code: 3, message: 'execution reverted: x', data: '0x08c379a000' }, false],\n238:     ['-32000 execution reverted (geth)', { code: -32000, message: 'execution reverted' }, false],\n239:     ['-32015 with the revert in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'Reverted 0x08c379a0' }, false],\n240:     ['-32000 out of gas (geth)', { code: -32000, message: 'out of gas' }, true],\n241:     ['-32000 invalid opcode (geth)', { code: -32000, message: 'invalid opcode: INVALID' }, true],\n242:     ['-32003 out of gas (reth, op-reth)', { code: -32003, message: 'out of gas: gas required exceeds: 21000' }, true],\n243:     ['-32003 another EVM halt (reth)', { code: -32003, message: 'EVM error: InvalidFEOpcode' }, true],\n244:     ['-32015 with invalid instruction in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'invalid instruction' }, true],\n245:   ] as const)('B2R: %s is a failed execution; only a plain revert is executionReverted', async (_n, error, halted) => {\n246:     const e = await callError(error);\n247:     expect(e.reverted).toBe(true);\n248:     expect(e.executionReverted).toBe(!halted);"
+        },
+        {
+          "path": "packages/relayer-guard/src/secrets.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/packages/relayer-guard/src/secrets.ts",
+          "line_start": 51,
+          "line_end": 74,
+          "text": "51:     let fd: number | undefined;\n52:     try {\n53:       // NOFOLLOW refuses leaf symlinks atomically; NONBLOCK prevents a swapped FIFO from hanging startup.\n54:       const flags = constants.O_RDONLY | (process.platform === 'win32' ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK);\n55:       fd = openSync(path, flags);\n56:       const st = fstatSync(fd);\n57:       if (!st.isFile() || st.size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);\n58:       if (process.platform !== 'win32' && (st.mode & 0o077) !== 0) {\n59:         throw new ConfigError(`${src.fileVar}: file mode must not allow group/world access (chmod 600)`);\n60:       }\n61:       const uid = process.getuid?.();\n62:       if (process.platform !== 'win32' && uid !== undefined && st.uid !== uid && st.uid !== 0) {\n63:         throw new ConfigError(`${src.fileVar}: file must be owned by the service user or root`);\n64:       }\n65:       // Check actual bytes too: a regular file may grow after fstat. Never read an unbounded file.\n66:       const bytes = Buffer.alloc(4097);\n67:       let size = 0;\n68:       while (size < bytes.length) {\n69:         const n = readSync(fd, bytes, size, bytes.length - size, null);\n70:         if (n === 0) break;\n71:         size += n;\n72:       }\n73:       if (size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);\n74:       text = bytes.subarray(0, size).toString('utf8');"
+        }
+      ]
+    },
+    {
+      "sourceBranch": "origin/claude/gifted-planck-115x2k",
+      "sourceSha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "pr": null,
+      "recovered": [],
+      "filesChanged": [],
+      "conflicts": [
+        "same commits as security-audit branch"
+      ],
+      "testsRun": [],
+      "result": "superseded",
+      "reason": "D3/B2R already in baseline; AR2 patch-equivalent in baseline.",
+      "live_sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "main_ancestor": false,
+      "patch_comparison_main": "aec179910c39081d820396409ff3139ff2264132",
+      "git_cherry": [
+        "+ 363bb43ae47fcecaf01c2c4f6ba20cdb0373a9fd fix(relayer): refuse a deadline that lapsed in the lane as deadline_too_soon (audit 24 review D3)",
+        "- 97787665d316395f54b3f3dbd1ef70d4beaa2959 fix(chain-adapters): reset the served range when the getLogs window regrows (audit 24 review AR2)",
+        "+ 8daa03cf3dda60c60864a134ecb3bc5e658e1010 fix(sweep): read a missing operator fee as zero only on a plain revert (audit 24 review B2R)",
+        "+ 1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78 docs(handoff): record the D3, AR2 and B2R fixes; match the halt texts of the verified client"
+      ],
+      "test_results_policy": "Original testsRun entries remain historical; no product tests rerun in this audit.",
+      "required_wording_correction": "D3/B2R semantic retention and AR2 literal patch equivalence are separate evidence types; the dated handoff is not a missing runtime repair.",
+      "semantic_evidence": [
+        {
+          "path": "apps/relayer/src/service.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/relayer/src/service.ts",
+          "line_start": 761,
+          "line_end": 764,
+          "text": "761:     // Queue time can consume the sweep's margin. Keep the same neutral, pre-broadcast reason as at admission.\n762:     const deadlineTooSoon = (): boolean =>\n763:       requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);\n764:     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');"
+        },
+        {
+          "path": "apps/relayer/src/service.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/relayer/src/service.ts",
+          "line_start": 804,
+          "line_end": 808,
+          "text": "804:     let call = requested;\n805:     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');\n806:     const state = await op(() => client.readOrderState(call));\n807:     // A slow RPC can also consume that margin; check before attributing a state or permit error to the owner.\n808:     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');"
+        },
+        {
+          "path": "apps/web/src/lib/opStackFee.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/apps/web/src/lib/opStackFee.ts",
+          "line_start": 32,
+          "line_end": 42,
+          "text": "32: /**\n33:  * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call\n34:  * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.\n35:  */\n36: async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {\n37:   try {\n38:     return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));\n39:   } catch (e) {\n40:     if (e instanceof ChainAdapterError && e.executionReverted) return 0n;\n41:     throw e;\n42:   }"
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/packages/chain-adapters/src/rpc.test.ts",
+          "line_start": 233,
+          "line_end": 248,
+          "text": "233:   // Ported from PR 39 (8daa03c, B2R), whose `halted` flag is the inverse of `executionReverted` for a failed execution.\n234:   // Its row \"code 3 without a message\" (halted: false) is not ported: here that is no positively identified revert,\n235:   // so `executionReverted` stays false (asserted above) and the operator fee read fails closed.\n236:   it.each([\n237:     ['code 3 with revert data', { code: 3, message: 'execution reverted: x', data: '0x08c379a000' }, false],\n238:     ['-32000 execution reverted (geth)', { code: -32000, message: 'execution reverted' }, false],\n239:     ['-32015 with the revert in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'Reverted 0x08c379a0' }, false],\n240:     ['-32000 out of gas (geth)', { code: -32000, message: 'out of gas' }, true],\n241:     ['-32000 invalid opcode (geth)', { code: -32000, message: 'invalid opcode: INVALID' }, true],\n242:     ['-32003 out of gas (reth, op-reth)', { code: -32003, message: 'out of gas: gas required exceeds: 21000' }, true],\n243:     ['-32003 another EVM halt (reth)', { code: -32003, message: 'EVM error: InvalidFEOpcode' }, true],\n244:     ['-32015 with invalid instruction in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'invalid instruction' }, true],\n245:   ] as const)('B2R: %s is a failed execution; only a plain revert is executionReverted', async (_n, error, halted) => {\n246:     const e = await callError(error);\n247:     expect(e.reverted).toBe(true);\n248:     expect(e.executionReverted).toBe(!halted);"
+        },
+        {
+          "path": "packages/relayer-guard/src/secrets.ts",
+          "sha": "aec179910c39081d820396409ff3139ff2264132",
+          "url": "https://github.com/djshellshoxxx/GhostPay/blob/aec179910c39081d820396409ff3139ff2264132/packages/relayer-guard/src/secrets.ts",
+          "line_start": 51,
+          "line_end": 74,
+          "text": "51:     let fd: number | undefined;\n52:     try {\n53:       // NOFOLLOW refuses leaf symlinks atomically; NONBLOCK prevents a swapped FIFO from hanging startup.\n54:       const flags = constants.O_RDONLY | (process.platform === 'win32' ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK);\n55:       fd = openSync(path, flags);\n56:       const st = fstatSync(fd);\n57:       if (!st.isFile() || st.size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);\n58:       if (process.platform !== 'win32' && (st.mode & 0o077) !== 0) {\n59:         throw new ConfigError(`${src.fileVar}: file mode must not allow group/world access (chmod 600)`);\n60:       }\n61:       const uid = process.getuid?.();\n62:       if (process.platform !== 'win32' && uid !== undefined && st.uid !== uid && st.uid !== 0) {\n63:         throw new ConfigError(`${src.fileVar}: file must be owned by the service user or root`);\n64:       }\n65:       // Check actual bytes too: a regular file may grow after fstat. Never read an unbounded file.\n66:       const bytes = Buffer.alloc(4097);\n67:       let size = 0;\n68:       while (size < bytes.length) {\n69:         const n = readSync(fd, bytes, size, bytes.length - size, null);\n70:         if (n === 0) break;\n71:         size += n;\n72:       }\n73:       if (size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);\n74:       text = bytes.subarray(0, size).toString('utf8');"
+        }
+      ]
+    }
+  ],
+  "future_ref_deltas": [
+    {
+      "branch": "future/f01-ghosttips",
+      "sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f02-ghoststore",
+      "sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f03-private-payment-links",
+      "sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+      "non_document_delta_paths": [
+        "apps/web/e2e/payment-request-file.spec.ts",
+        "apps/web/locales/ar.json",
+        "apps/web/locales/en.json",
+        "apps/web/locales/es.json",
+        "apps/web/locales/ja.json",
+        "apps/web/src/components/PaymentRequestDownload.test.tsx",
+        "apps/web/src/components/PaymentRequestDownload.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+        "apps/web/src/components/PaymentRequestFileInput.tsx",
+        "apps/web/src/i18n/securityKeys.ts",
+        "apps/web/src/lib/requestFileInterop.test.ts",
+        "apps/web/src/views/CreateInvoice.tsx",
+        "apps/web/src/views/Pay.invoiceQr.test.tsx",
+        "apps/web/src/views/Pay.requestFile.test.tsx",
+        "apps/web/src/views/Pay.tsx",
+        "packages/invoice-schema/src/index.ts",
+        "packages/invoice-schema/src/requestFile.interop.test.ts",
+        "packages/invoice-schema/src/requestFile.test.ts",
+        "packages/invoice-schema/src/requestFile.ts"
+      ],
+      "decision": "non_document_implementation_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f03-private-payment-links-spec",
+      "sha": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "non_document_delta_paths": [
+        "apps/web/src/features/future/merchant-dashboard/index.ts",
+        "apps/web/src/features/future/merchant-dashboard/model.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+        "apps/web/src/features/future/merchant-dashboard/projection.ts",
+        "apps/web/src/features/future/merchant-dashboard/select.ts"
+      ],
+      "decision": "non_document_implementation_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f05-ghostproof",
+      "sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "non_document_delta_paths": [
+        "apps/web/package.json",
+        "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+        "apps/web/src/features/future/ghostproof/index.ts",
+        "apps/web/src/features/future/ghostproof/review.test.ts",
+        "apps/web/src/features/future/ghostproof/review.ts",
+        "apps/web/src/features/future/ghostproof/session.test.ts",
+        "apps/web/src/features/future/ghostproof/session.ts",
+        "package-lock.json"
+      ],
+      "decision": "non_document_implementation_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f06-encrypted-backups",
+      "sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f07-ghostpayouts",
+      "sha": "90b86766119d3f72870948ee83d039b989659b5f",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "non_document_delta_paths": [
+        "apps/web/package.json",
+        "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+        "apps/web/src/features/future/private-recurring/index.ts",
+        "apps/web/src/features/future/private-recurring/model.test.ts",
+        "apps/web/src/features/future/private-recurring/model.ts",
+        "apps/web/src/features/future/private-recurring/review.test.ts",
+        "apps/web/src/features/future/private-recurring/review.ts",
+        "package-lock.json"
+      ],
+      "decision": "non_document_implementation_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f13-fiat-conversion",
+      "sha": "ad773b53615c294ee227f42b4a36f4b83e5d4ff1",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "sha": "2c7c48310aa6337b30677299ec04933b37129d46",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f15-private-rpc",
+      "sha": "83898237e1b602f94f2e959ef761b5bd63db6590",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f16-per-client-identities",
+      "sha": "4e2917416cf73eb9ca232606000a130db53dc9b0",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f17-private-funds",
+      "sha": "bb759e7faab75c1120fbf4a86fbf109d06ac8380",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/f18-privacy-modes",
+      "sha": "5c0f12c5d3373d81ab3fda9095bc3c64b8bd777a",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/fee01-modular-fee-policy",
+      "sha": "4210e1ae1f41e16b72f790cb02e96410a5a94e92",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p01-tor-onion-hosting",
+      "sha": "25017e720df43d371f956830ba7fd6cb5f81590f",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p02-rpc-policy",
+      "sha": "a453777b5b66933571294da3d9aa7be6843070a4",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p03-local-stealth-scanning",
+      "sha": "ccfd4c225505ca9ed2ef1ecc6fa5d962a8f1f464",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p04-encrypted-offline-invoices",
+      "sha": "3090069a59d14932667acce2aeebe10e3d0f18fd",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p05-encrypted-local-state",
+      "sha": "e03b9ed3e88842a5c26a9d2726e9fb26c22fd17d",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p06-key-role-separation",
+      "sha": "db5b5cdaf08a08fc11ee3e772f96410ff1da6738",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p07-encrypted-device-sync",
+      "sha": "cb45f9c86ce01d884d24484adde4cff5f6bcbd90",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p08-linkability-analysis",
+      "sha": "80bc065fa666b31445ad6a1078e0d751dcfe4259",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p09-noncustodial-gas-services",
+      "sha": "36c5f3579b55f1e71117b8cc6546176392a112c7",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p10-private-submission",
+      "sha": "8cd3f30f38006668ec6544f88d05084a1d68f369",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p11-metadata-timing-policy",
+      "sha": "7af8c93edbaa98677c5c3f18ed3b8c997bb37b13",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p12-selective-disclosure-proofs",
+      "sha": "6131e3c28e05438d8c796af74665cf74f51b7453",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p13-confidential-amounts",
+      "sha": "8846d5553469753d963258023974ea044467cd6c",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p14-shielded-payments",
+      "sha": "59432dbd4c3802954b0f1879d4bcb02e42ac0449",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p15-anonymous-withdrawals",
+      "sha": "5da7ed870e85c2d1c46db594db442f26f3a7f339",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p16-shielded-cross-chain",
+      "sha": "470cc1045cedd44f9797300c65c1ef05a139e5ac",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p17-private-fee-outputs",
+      "sha": "18fc7f914b57d3c659df4950f0b9fd57520917ee",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p18-telemetry-release-integrity",
+      "sha": "70862d040066167bc3ba2d311913b92a6b327fc5",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/p19-optional-fee-gateway",
+      "sha": "6fda0db00ea5b96b3cfcdc2620f74723229e16d7",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/t01-staggered-transfers",
+      "sha": "7b9da145ea5305586d31d9fd1d34f9489ca6909e",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    },
+    {
+      "branch": "future/t02-intermediary-routing",
+      "sha": "b618d324df0a730650a8a6de9e0595e9f96382c0",
+      "non_document_delta_paths": [],
+      "decision": "documentation_only_ref_delta",
+      "scope_note": "Ref delta only; implementations of the named concept may exist on other branches."
+    }
+  ],
+  "review_of_root_documentation_edits": {
+    "files": [
+      "docs/consolidation/ledger-code-branches.json",
+      "docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md"
+    ],
+    "result": "approved in scoped independent source review",
+    "details": "Three reason corrections preserve source/result/test provenance; historical banner correctly distinguishes merged #203 source from later #221 branch head. New claims report link must exist at delivery."
+  }
+}

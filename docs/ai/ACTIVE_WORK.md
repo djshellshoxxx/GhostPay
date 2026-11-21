@@ -1,3 +1,16 @@
+# PR #343 exhaustive branch-claim reconciliation — 2026-11-20 America/Los_Angeles
+
+- Worker: ChatGPT root `d4505675e06a`, with separate ownership, CI-evidence, and lineage reviewers.
+- Task branch: `docs/ghostpay-claims-reconciliation-20261120`; intended documentation continuation: `docs/ghostpay-coordination-ledger-20261120` / PR #343.
+- Branch base: `f9f2d9f42f3a7e733e8057bedf4f5ad95aeb22d7`; frozen comparison main: `aec179910c39081d820396409ff3139ff2264132`.
+- Owned paths: `docs/coordination/RECONCILIATION_20261120.md`, new `docs/coordination/claims-20261120/` evidence and reproduction tooling, narrow claim-wording corrections in `docs/consolidation/ledger-code-branches.json`, the historical-status banner in `docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md`, and this additive claim only.
+- Scope: replace the four-PR sample's next-action gap with an exhaustive source-pinned inventory of 423 live branches and 123 open PRs, reconcile inherited ownership claims, classify exact content/patch relationships, and record current CI/review evidence. Preserve prior censuses and active owners.
+- Acceptance: all paginated branch/PR rows accounted for; comparison uses immutable commit IDs and full local Git trees; duplicate/stack claims have explicit evidence; missing checks remain unknown; no branch becomes qualified from ancestry, mergeability, partial tests, or historical prose. Independently review generated accounting and important dispositions.
+- Boundaries: documentation/evidence only. Product source, workflow policy, integration lock, branch ownership, main, releases and deployment are outside this task. No stale claim or expired lease is reassigned automatically.
+- Status: reconciliation evidence completed for the 2026-11-21 02:52:23 UTC cutoff. The report covers all 423 refs, 123 open PRs and 14,210 claim-section occurrences; 79 reviewed source rows account for all 78 mechanically unresolved refs. Independent source/accounting checks passed; product acceptance and ownership decisions remain with the existing lanes. See `docs/coordination/claims-20261120/README.md` and `validation.md`.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.

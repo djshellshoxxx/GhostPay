@@ -1,0 +1,67 @@
+[
+  {
+    "number": 321,
+    "title": "fix(tron): stop scan results after buffered-page cancellation (GP-BUG-13)",
+    "state": "closed",
+    "merged": true,
+    "base": "main",
+    "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "head": "automation/20261120T1635Z/bug/tron-scan-abort",
+    "head_sha": "87c3bf5a59f4d443c9e5cf81368162554a5315c3",
+    "merge_commit_sha": "8c75581f0217dbc4ba6d052e54351594274e7b6e",
+    "merged_at": "2026-11-20T22:06:53Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/321"
+  },
+  {
+    "number": 325,
+    "title": "Complete Sweep balance consent and signing lifecycle",
+    "state": "closed",
+    "merged": true,
+    "base": "integration/ghostpay-main-recovered-fixes-20261120",
+    "base_sha": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+    "head": "integration/ghostpay-sweep-consent-20261120",
+    "head_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "merge_commit_sha": "394793b1276aeac337aedde30499548bb57eadf9",
+    "merged_at": "2026-11-20T23:17:17Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/325"
+  },
+  {
+    "number": 329,
+    "title": "Reject incomplete TRON block ranges before scanning payments",
+    "state": "closed",
+    "merged": true,
+    "base": "main",
+    "base_sha": "8c75581f0217dbc4ba6d052e54351594274e7b6e",
+    "head": "integration/ghostpay-tron-range-20261120-r2",
+    "head_sha": "cff631b5c32a86adfa2d79c342e497e91a8573a5",
+    "merge_commit_sha": "784b445f6bc5c641e8e85d4e28b730e044791f40",
+    "merged_at": "2026-11-20T23:28:42Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/329"
+  },
+  {
+    "number": 331,
+    "title": "Complete sleep-aware idle locking on the current Sweep candidate",
+    "state": "closed",
+    "merged": true,
+    "base": "integration/ghostpay-sweep-consent-20261120",
+    "base_sha": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+    "head": "integration/ghostpay-idle-session-20261120-r2",
+    "head_sha": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3",
+    "merge_commit_sha": "2748c9bfd55bd226c7801c15a7acdd955ab70339",
+    "merged_at": "2026-11-20T23:29:16Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/331"
+  },
+  {
+    "number": 334,
+    "title": "fix(metadata-hardening): reject Bitcoin fee caps below minimum (GP-BUG-12)",
+    "state": "closed",
+    "merged": true,
+    "base": "main",
+    "base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+    "head": "automation/20261120/bug/btc-fee-floor-config",
+    "head_sha": "9dcd2d88ff32060e519ef18e2d8753691b56abc1",
+    "merge_commit_sha": "aec179910c39081d820396409ff3139ff2264132",
+    "merged_at": "2026-11-20T23:30:15Z",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/334"
+  }
+]
