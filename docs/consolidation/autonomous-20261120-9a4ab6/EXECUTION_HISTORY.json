@@ -1,0 +1,82 @@
+{
+  "format": "git-bundle-execution-history-v1",
+  "created_at_utc": "2026-11-21T00:31:12.232378+00:00",
+  "purpose": "Preserve original local execution commits, authorship and reviews after tree-identical API publication changes commit metadata. This artifact predates the final publication/index commit to avoid self-reference.",
+  "artifact": "EXECUTION_HISTORY.bundle",
+  "bytes": 2111534,
+  "sha256": "4c57512d83f14dd41ea0378acbb3e5949e80695b0850fdea994e837f048aadb3",
+  "source_checkpoint": "9d5ea2094cab0a1f9fe7bfc60241ac012f926628",
+  "included_heads": [
+    {
+      "sha": "b2347885beb2ff95b98f66911542b8c0f92ee106",
+      "ref": "refs/heads/audit/ghostpay-journal-review-20261120-9a4ab6"
+    },
+    {
+      "sha": "cefd2e5bc18a5e7820021a240466e641c8880fcf",
+      "ref": "refs/heads/audit/ghostpay-merchant-feature-review-20261120-9a4ab6"
+    },
+    {
+      "sha": "f898abf87636fe932cb5062be627e50c9ac30a4e",
+      "ref": "refs/heads/audit/ghostpay-privacy-release-20261120-9a4ab6"
+    },
+    {
+      "sha": "ecc4331c1792ef8d4b86d77029894858c7f122de",
+      "ref": "refs/heads/audit/ghostpay-qualified-queue-20261120-9a4ab6"
+    },
+    {
+      "sha": "9d5ea2094cab0a1f9fe7bfc60241ac012f926628",
+      "ref": "refs/heads/codex/ghostpay-autonomous-20261120-9a4ab6"
+    },
+    {
+      "sha": "dbc83ebb54921830d9d730ad66bb882e7d1f26e2",
+      "ref": "refs/heads/codex/ghostpay-census-20261120-9a4ab6"
+    },
+    {
+      "sha": "85a7c4353d1ccad476d8fcd8378ec3e0f87de173",
+      "ref": "refs/heads/codex/ghostpay-payment-safety-20261120-9a4ab6"
+    },
+    {
+      "sha": "c536f998eceefa6bd87f8066f904db7ced4b7071",
+      "ref": "refs/heads/codex/ghostpay-security-recovery-20261120-9a4ab6"
+    },
+    {
+      "sha": "f993b9b3fef4be4a43b5b57ecd41a6c262a98f07",
+      "ref": "refs/heads/qualify/ghostpay-hygiene-composition-20261120-9a4ab6"
+    },
+    {
+      "sha": "c1ec0046c87bd01a940c8ccfec92d8b66b3b4ce3",
+      "ref": "refs/heads/qualify/ghostpay-hygiene-evidence-20261120-9a4ab6"
+    },
+    {
+      "sha": "d4a74e1832f365713c88ec22ce8f8b4be01c5fc4",
+      "ref": "refs/heads/qualify/ghostpay-ledger-evidence-20261120-9a4ab6"
+    },
+    {
+      "sha": "e24ac126591d9cbf00c4ddb3bacbf7fd81fb704b",
+      "ref": "refs/heads/qualify/ghostpay-policy-evidence-20261120-9a4ab6"
+    },
+    {
+      "sha": "ed3f400d29e8ff72e2dbadc4c92722581694c8f7",
+      "ref": "refs/heads/test/ghostpay-hygiene-lint-20261120-9a4ab6"
+    },
+    {
+      "sha": "def63bd588fbeec71f65802557facf2294ccf0b3",
+      "ref": "refs/heads/test/ghostpay-privacy-fixtures-20261120-9a4ab6"
+    },
+    {
+      "sha": "327b4016ae44e5f9c84891d71f1e6e2d1db598be",
+      "ref": "refs/heads/test/ghostpay-recovery-interoperability-20261120-9a4ab6"
+    }
+  ],
+  "excluded_boundary_commits": [
+    "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+    "683f8587b8de45448f14aab0539cb07a5f21bce3",
+    "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+    "78137622011528a646ae94155ee4acf7f72e1e2a",
+    "410353a23631234aa888e46f38df22291c699a26",
+    "9a10d335d048b197e90d257a5322ff5d5260572d",
+    "95e60ce4948b7430865dafbd1ad01434310a75f7"
+  ],
+  "verify_exit_code": 0,
+  "verify_output": "The bundle contains these 15 refs:\nb2347885beb2ff95b98f66911542b8c0f92ee106 refs/heads/audit/ghostpay-journal-review-20261120-9a4ab6\ncefd2e5bc18a5e7820021a240466e641c8880fcf refs/heads/audit/ghostpay-merchant-feature-review-20261120-9a4ab6\nf898abf87636fe932cb5062be627e50c9ac30a4e refs/heads/audit/ghostpay-privacy-release-20261120-9a4ab6\necc4331c1792ef8d4b86d77029894858c7f122de refs/heads/audit/ghostpay-qualified-queue-20261120-9a4ab6\n9d5ea2094cab0a1f9fe7bfc60241ac012f926628 refs/heads/codex/ghostpay-autonomous-20261120-9a4ab6\ndbc83ebb54921830d9d730ad66bb882e7d1f26e2 refs/heads/codex/ghostpay-census-20261120-9a4ab6\n85a7c4353d1ccad476d8fcd8378ec3e0f87de173 refs/heads/codex/ghostpay-payment-safety-20261120-9a4ab6\nc536f998eceefa6bd87f8066f904db7ced4b7071 refs/heads/codex/ghostpay-security-recovery-20261120-9a4ab6\nf993b9b3fef4be4a43b5b57ecd41a6c262a98f07 refs/heads/qualify/ghostpay-hygiene-composition-20261120-9a4ab6\nc1ec0046c87bd01a940c8ccfec92d8b66b3b4ce3 refs/heads/qualify/ghostpay-hygiene-evidence-20261120-9a4ab6\nd4a74e1832f365713c88ec22ce8f8b4be01c5fc4 refs/heads/qualify/ghostpay-ledger-evidence-20261120-9a4ab6\ne24ac126591d9cbf00c4ddb3bacbf7fd81fb704b refs/heads/qualify/ghostpay-policy-evidence-20261120-9a4ab6\ned3f400d29e8ff72e2dbadc4c92722581694c8f7 refs/heads/test/ghostpay-hygiene-lint-20261120-9a4ab6\ndef63bd588fbeec71f65802557facf2294ccf0b3 refs/heads/test/ghostpay-privacy-fixtures-20261120-9a4ab6\n327b4016ae44e5f9c84891d71f1e6e2d1db598be refs/heads/test/ghostpay-recovery-interoperability-20261120-9a4ab6\nThe bundle requires these 7 refs:\n683f8587b8de45448f14aab0539cb07a5f21bce3 \n78137622011528a646ae94155ee4acf7f72e1e2a \n5a745d4b5fba69b66a9779f88aefc63c253a4f27 \n9a10d335d048b197e90d257a5322ff5d5260572d \n410353a23631234aa888e46f38df22291c699a26 \n95e60ce4948b7430865dafbd1ad01434310a75f7 \nd03600ca87c7156d4acd1ff78bef6e92c20d9ea4 \nThe bundle uses this hash algorithm: sha1\ndocs/consolidation/autonomous-20261120-9a4ab6/EXECUTION_HISTORY.bundle is okay\n"
+}

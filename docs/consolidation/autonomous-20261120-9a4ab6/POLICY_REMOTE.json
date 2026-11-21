@@ -1,0 +1,96 @@
+{
+  "observed_start_utc": "2026-11-21T00:20:55.553Z",
+  "observed_end_utc": "2026-11-21T00:20:56.051Z",
+  "qualification_source": "9a10d335d048b197e90d257a5322ff5d5260572d",
+  "results": [
+    {
+      "number": 345,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/345",
+      "title": "fix(policy): revoke pending reviewed sends after form edits (GP-BUG-07)",
+      "state": "open",
+      "draft": true,
+      "head": "automation/20261120/bug/policy-review-revocation-r1",
+      "head_sha": "9a10d335d048b197e90d257a5322ff5d5260572d",
+      "base": "main",
+      "base_sha": "aec179910c39081d820396409ff3139ff2264132",
+      "merge_commit_sha": "d66ed9ad250cc478ab5fa87edbd4307d0cc79de3",
+      "merged": false,
+      "updated_at": "2026-11-21T00:11:57Z",
+      "created_at": "2026-11-21T00:11:57Z"
+    },
+    {
+      "number": 278,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/278",
+      "title": "GhostPay 1.0 Beta consolidation: recovery, authority, native fee review and qualification",
+      "state": "open",
+      "draft": true,
+      "head": "release/ghostpay-beta-qualification-20261119",
+      "head_sha": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+      "base": "main",
+      "base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "merge_commit_sha": null,
+      "merged": false,
+      "updated_at": "2026-11-20T01:28:42Z",
+      "created_at": "2026-11-19T11:57:40Z"
+    },
+    {
+      "index": 2,
+      "data": {
+        "workflow_runs": [
+          {
+            "id": 44842199757,
+            "name": "Hosting kit",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 461,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199757/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199757/logs",
+            "workflow_id": 398745505
+          },
+          {
+            "id": 44842199739,
+            "name": "Pages",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 337,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199739/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199739/logs",
+            "workflow_id": 392799214
+          },
+          {
+            "id": 44842199717,
+            "name": "Beta acceptance",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 342,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199717/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199717/logs",
+            "workflow_id": 414091144
+          },
+          {
+            "id": 44842199985,
+            "name": "CI",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 1621,
+            "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199985/jobs",
+            "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842199985/logs",
+            "workflow_id": 391558649
+          }
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "data": {
+        "statuses": [
+          {
+            "context": "security/snyk (djshellshoxxx)",
+            "state": "success",
+            "target_url": "https://app.snyk.io/org/djshellshoxxx/pr-checks/da75a653-8756-4777-952b-980fac31aca4"
+          }
+        ]
+      }
+    }
+  ]
+}

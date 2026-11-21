@@ -1,0 +1,24 @@
+{
+  "source_head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+  "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene",
+  "argv": [
+    "npm",
+    "run",
+    "typecheck",
+    "-w",
+    "@ghostpay/hygiene"
+  ],
+  "environment_override": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-20T23:59:03.982952+00:00",
+  "completed_utc": "2026-11-20T23:59:06.796249+00:00",
+  "duration_seconds": 2.813,
+  "exit_code": 0,
+  "merged_stdout_stderr_encoding": "base64",
+  "merged_stdout_stderr_base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgdHlwZWNoZWNrCj4gdHNjIC1wIHRzY29uZmlnLmpzb24gLS1ub0VtaXQKCg==",
+  "merged_stdout_stderr_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n",
+  "raw_sha256": "2806d567c3286f3d4f627dc9bb234fc5f4ec5ccfa9329d9aa7c57458fc40566b",
+  "node_version": "v24.22.3",
+  "npm_version": "11.19.1"
+}

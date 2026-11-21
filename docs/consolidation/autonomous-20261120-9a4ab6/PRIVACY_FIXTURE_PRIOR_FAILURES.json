@@ -1,0 +1,23 @@
+{
+  "qualified_source": "410353a23631234aa888e46f38df22291c699a26",
+  "hosted_checkout": "de0abd3f33f5f147a506743f87919230ad038197",
+  "source_tree": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+  "copied_from_archive_sha256": "3175669bc213a09be5be1aca0728b74f7472cafe6d0d9b67a6cbec1a7762c827",
+  "compressed_sha256": "e836d03a3251e89161a7ae8d7581e6e61a7239c4f3c6b3e678ccac3d020f7aeb",
+  "uncompressed_sha256": "7ad0dc409d9e8d519fd00e55862b75ead84ce3092989ad95ee5238dc3cf2c562",
+  "uncompressed_bytes": 716017,
+  "logs": [
+    {
+      "job_id": 136570703109,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44805158399/job/136570703109",
+      "bytes": 328925,
+      "sha256": "e9a2bafd293fbc4794a46f4d796ef126d6c7a86cc9c04d1f37868e6b0eb44c3d"
+    },
+    {
+      "job_id": 136570703240,
+      "url": "https://github.com/djshellshoxxx/GhostPay/actions/runs/44805158399/job/136570703240",
+      "bytes": 304879,
+      "sha256": "7a4e303a00dc5d1e861ee1f26c50bc171aa873cd1fa70525baca286030763838"
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "qualified_source": "9a10d335d048b197e90d257a5322ff5d5260572d",
+  "qualified_tree": "25d6ea641c0bfdf65d42974cb3fdc1457fb4d9aa",
+  "main_base": "aec179910c39081d820396409ff3139ff2264132",
+  "worker_claim_head": "d0e6f3c9711b7e0f896362a7ffd953e2f2ee1f95",
+  "policy_source_changes": [
+    "apps/web/src/features/policy/PolicyPay.pendingEdit.test.tsx",
+    "apps/web/src/features/policy/PolicyPay.tsx"
+  ],
+  "source_hashes": {
+    "apps/web/src/features/policy/PolicyPay.tsx": {
+      "sha256": "b9bbb718e4a9844fb146afb4d183151eede5f290591f4ba65e38666c5c456681",
+      "git_blob": "0cccc1ad2b645989baa764e65364a09088ebc431"
+    },
+    "apps/web/src/features/policy/PolicyPay.pendingEdit.test.tsx": {
+      "sha256": "266d6cbf530259782e19e644a7fba128a0368eddf54584b2074e6d8ae2d378f2",
+      "git_blob": "dcc3b2a3471183ad48af4b6e9d405527f1c2a4dd"
+    },
+    "apps/web/src/features/policy/send.ts": {
+      "sha256": "e78a011ebba1ce6802913e69e1a2300b85e66beb7f25390d3c9393aa36c97d64",
+      "git_blob": "7058f958a66eafc4c6bc77156cb968e5bd23cc40"
+    },
+    "apps/web/src/features/policy/send.test.ts": {
+      "sha256": "407ec29b9553515bfc420629758308d61afa03a1f2e20b7bf034a942cef4cebd",
+      "git_blob": "2d6e6e6a6afe4f066c4e23027366bf9dd9d57577"
+    },
+    "apps/web/src/features/policy/PolicyView.guard.test.tsx": {
+      "sha256": "e8f7e853a22e9c6fb1d5302aa04b90f69865240144a50075de2b2634f2ae33d6",
+      "git_blob": "9ccdadb0fd50fed4112e5abc399c0598ba26f93d"
+    },
+    "apps/web/src/features/policy/PolicyView.tsx": {
+      "sha256": "8c8308eed28f3427e8df343d8f7095de0636c9ff77af81c444e11df113aa6095",
+      "git_blob": "92b02eb63315b9afd01e653b268a5a6de9b59d64"
+    },
+    "apps/web/src/features/policy/chain.ts": {
+      "sha256": "f84773fd2ae17e707ff18972f24fa890e310e1412487ed9c23278d393a89ffbd",
+      "git_blob": "758e19ef20d5f1ad2d3388979fb2d59e9db6578c"
+    },
+    "apps/web/src/features/policy/flag.ts": {
+      "sha256": "a4e2ebc035702c2799ef5ee46ccecdda37863277358bff11fb165844434f6f5d",
+      "git_blob": "0102c120e4a94724919e6e5ea7e097f04d60e802"
+    },
+    "apps/web/src/features/policy/fixtures.testutil.ts": {
+      "sha256": "08991ddd446993041541f834de1cf0b400059299333156fe94a6db8a754481dd",
+      "git_blob": "5237abb184401270ac2cb96f75fb9507969f32df"
+    },
+    "apps/web/src/lib/wallet.ts": {
+      "sha256": "d2f24aa7c4afcc36ea610f2636b2acafa01e9367c62b683e88f0dedcec541815",
+      "git_blob": "fb1d864f3223ce007e35d81c19a308df88657121"
+    },
+    "apps/web/src/lib/payExec.ts": {
+      "sha256": "9b10f6b61cbd845318fcb16558e761fea2f5fb112291bd01ff603291f2b7aedb",
+      "git_blob": "3ce29cb9498df24def6a1137e2c0030b656d771f"
+    },
+    "apps/web/src/lib/session.ts": {
+      "sha256": "2166d1a70d72f5fc6b5d779b6f467518a52d23ec36e377545ecae7b00651e757",
+      "git_blob": "4b5d36e9ed7651d1d6f3e4b63e805b41667e8f0a"
+    },
+    "apps/web/src/lib/duplicateAttemptJournal.ts": {
+      "sha256": "6cc7d35e6bd54de1554cc1788620a2a778fa631b84ab91794da6a8f9e50265ef",
+      "git_blob": "b8c2ec1915b833a5b78286b9b9caca1c247e827c"
+    },
+    "apps/web/src/test/render.tsx": {
+      "sha256": "a5ba7977104bbde52a557a43f53e0a848da99add86da4a5845fdd3857056878a",
+      "git_blob": "dbd0a6a491b6284a39a7e185847713184a97be88"
+    },
+    "apps/web/src/test/mockWallet.ts": {
+      "sha256": "22cbd95cbdf9c04b8a1ab6ee5bea1c4eca9baa780e27afe0eec6127bed2383ac",
+      "git_blob": "9b533f45adb1fb9d334a592c30f3ef76007ed29f"
+    },
+    "apps/web/src/App.tsx": {
+      "sha256": "36a64f84fc04c0af8e05f3a2ff018557113c1e7986656b00286f30253ced3c52",
+      "git_blob": "14d318dc3abc774a06e05e33ac03d2a7645afe6e"
+    },
+    "apps/web/src/AppLean.tsx": {
+      "sha256": "71e758fe2f6a277917b5d9371efbdf9e507a72fdaa7ab56b28d3af7f0c32434f",
+      "git_blob": "b9bbdfe053510ba13ef5ebac4488411a04f6770e"
+    },
+    "apps/web/vite.config.ts": {
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+    },
+    "eslint.config.js": {
+      "sha256": "e79aa68274998f725199c99bce57d8e5664fa266a5a4adc2c517b77834972476",
+      "git_blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee"
+    },
+    "package-lock.json": {
+      "sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+      "git_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae"
+    }
+  },
+  "artifacts": [
+    {
+      "file": "POLICY_DEPENDENCIES_BUILD.json",
+      "command_exit": 0,
+      "log_sha256": "b2a15ec8d2b8d87fedb2e135b8091d54743c5a51f2db07efb2ef3f1a4c30b786",
+      "log_bytes": 1405
+    },
+    {
+      "file": "POLICY_FOCUSED.json",
+      "command_exit": 0,
+      "log_sha256": "59c77f62f30f25497a8a549e7041aa5053001b0363837da38c83cf354e809982",
+      "log_bytes": 575
+    },
+    {
+      "file": "POLICY_FOCUSED_LINT.json",
+      "command_exit": 134,
+      "log_sha256": "0bb334d51724e51f28a5464762edfb83d3fde0e2f00e4789347b9a4f4a7b0a66",
+      "log_bytes": 961
+    },
+    {
+      "file": "POLICY_FOCUSED_LINT_RETRY.json",
+      "command_exit": 137,
+      "log_sha256": "6f707a68e65e52e2da3d69ac8b2679e9599ad358d298e6875313dddb0c5dd91d",
+      "log_bytes": 157
+    }
+  ],
+  "unchanged_controls_from_main": {
+    "apps/web/src/features/policy/send.ts": true,
+    "apps/web/src/features/policy/send.test.ts": true,
+    "apps/web/src/features/policy/PolicyView.guard.test.tsx": true,
+    "apps/web/src/features/policy/PolicyView.tsx": true,
+    "apps/web/src/features/policy/chain.ts": true,
+    "apps/web/src/features/policy/flag.ts": true,
+    "apps/web/src/features/policy/fixtures.testutil.ts": true,
+    "apps/web/src/lib/wallet.ts": true,
+    "apps/web/src/lib/payExec.ts": true,
+    "apps/web/src/lib/session.ts": true,
+    "apps/web/src/lib/duplicateAttemptJournal.ts": true,
+    "apps/web/src/test/render.tsx": true,
+    "apps/web/src/test/mockWallet.ts": true,
+    "apps/web/src/App.tsx": true,
+    "apps/web/src/AppLean.tsx": true,
+    "apps/web/vite.config.ts": true,
+    "eslint.config.js": true,
+    "package-lock.json": true
+  },
+  "frozen_ownership": {
+    "inventory_sha256": "f0953ac815ca69ba63c521e5c2fde35e48d23af54e158184f9b57571b10de7f6",
+    "prs": 111,
+    "runtime_owners": [
+      {
+        "pr": 211,
+        "head": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+        "base": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      },
+      {
+        "pr": 246,
+        "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 251,
+        "head": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+        "base": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      },
+      {
+        "pr": 262,
+        "head": "40b64e8f3a0f34f7b19235ba4655ef918687f22e",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      },
+      {
+        "pr": 264,
+        "head": "bf510471283cb0aa9cf6ff79e640e0b50a0b5d0a",
+        "base": "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      },
+      {
+        "pr": 278,
+        "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+        "base": "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      }
+    ],
+    "new_test_owners": [],
+    "evidence_prefix_owners": [],
+    "limits": "Frozen 111-PR inventory predates #345; current #345/#278 source metadata is recorded separately. No product ownership is claimed."
+  },
+  "overlap_278": {
+    "head": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+    "runtime_blob": "2c29b545732754997b4ac0c3fb93096f125ee511",
+    "sha256": "fcb16172aa05a634539c7c808752638cf7401df333f7480e5189be9f00aed1da",
+    "reviewRevision_identifier_present": false
+  }
+}

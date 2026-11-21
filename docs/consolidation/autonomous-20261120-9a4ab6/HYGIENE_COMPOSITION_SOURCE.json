@@ -1,0 +1,253 @@
+{
+  "created_at_utc": "2026-11-21T00:23:44.713775+00:00",
+  "base": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+  "donor": "78137622011528a646ae94155ee4acf7f72e1e2a",
+  "source_head": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+  "hygiene_tree": "087f548c2e6203cac0a4184f66157ea21cf77879",
+  "base_ledger_blob": "05d7f8eb0cb723266eac7a9a644053e29c2d653c",
+  "donor_prior_ledger_blob": "05d7f8eb0cb723266eac7a9a644053e29c2d653c",
+  "original_donor_commits": [
+    "0284eead8822306c625981d5095e983f8364cb93",
+    "26d2ba95a045bb60d9344cb3e4a84224c2b74b50"
+  ],
+  "composed_commits": [
+    "c2cee3c835f00be066a0b7d498efe26084ae243e",
+    "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb"
+  ],
+  "files": [
+    {
+      "path": "packages/hygiene/DEVIATIONS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "51ad9a46d2586d0a965103a962def0f400f254e0",
+      "sha256": "3866a7523b4c46df87bed14ac678943a8f54772f6092175eb9690b3fbe130ecb",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "87304f0c40e97246ccdb72585b5d42345d0ef3dd",
+      "sha256": "449cba07361328533811bc5a7bea737e7f6112f0e4881e53470f66e6fb0bb1e2",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3c41ab007f618adc531943cd4720c506a03bf7c",
+      "sha256": "8a6ee1be611f97471226950f277ff011fb8fb8657af0563b8742c57e19f4ae23",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/addr.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "367a652dd0aa368a338de5d0d546f33fc20e117a",
+      "sha256": "c49fbd40b0717493e1287e217a5ce6046d7a675ded8daf88f38cc9aae439c990",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/buffer.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "365b99cdf060ade859b188d6b107e1019e59587e",
+      "sha256": "35e52c4a736ba1498d945c7546ca86ba92d05943fff89f5eb0a8bd420b3c8970",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/buffer.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b315a0c8feb0325bf16bd495b764f5c559da4494",
+      "sha256": "e9c854c41b8b7a28fa5d76ec167b89c866a4b6bfd8c257e96bf126b9cd49d37d",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/consolidation.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5ab0df2417788351b2178941bf52b533099bdf61",
+      "sha256": "5bfdf4d9abe44fa5a99a406835864d86aee5fe449d275d99e714e98c0b3961f8",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/destination.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17428fd39a1abdce421326bb14d4069ccf00c2aa",
+      "sha256": "f45a4caddf9b6c3ef0b21f4a236ecf6e9c6b1c569e062808869f48eb8cfad1fc",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/destination.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bcf7487353406e81653c8b3e22261bee026d8be9",
+      "sha256": "94d68030a03a9f18cff3c4358cebe949973586aa1b2a163a11d99b6474abb1f7",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/errors.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd65796a7d14831d16aadd57f7009428b5d8bfef",
+      "sha256": "1c6a2e947413966622fbc5a4a9c3f7cac7b07e96fbbe00599042e1940e9f2dee",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/fixtures.testutil.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "600219676c9c6bbfbbc52574d514cf80b54fa68a",
+      "sha256": "b9c46ff487bece45c7ffe5c015d2141a92d097bcbe158792916d2b1949867507",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/guard.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f13b8e96965b950268b38f117ec2f2a0e15c9f1b",
+      "sha256": "1ae44343b8edacd79a4c284f98b203a28d049660011b1364b7d0a492594572bd",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/hop-source.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "66fea14996baf0da07c122e69e0dd1114974f31f",
+      "sha256": "bca1f2cae6fda267c859ef9de5cfbc98af323940987cfe301a03feaa4a9ba3d4",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/hop-source.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef87f0b90184425d67bfc99cda05cf51da0e8324",
+      "sha256": "cb0d619f197c6b99fa5000df7db67db32586bf1fa3177128d2c89a61aac65ef2",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/index.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c8d8141024eead713960d7212a8de4577022d2ce",
+      "sha256": "11273c1481aa76ce74771df4d9361255227da31c2a38da845910d93f74e655a3",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.browser-chains.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b76b6cb0143901027b0006f892232cf5107be420",
+      "sha256": "bfb3b910db21edd56484f4559ae1e1ae69d8142898f25e938063d1439bde6a48",
+      "relationship": "exact #341 donor"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1fdcb829fba6d2c6918d9e2f291620a67f78e5b6",
+      "sha256": "b7175c770bf7e26ea1ce39af493abca3769e01e9869775ace4a7ea1335a9c5b8",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7bc637d024db317e12bc08847d19e8348e4cbcd9",
+      "sha256": "5d63d967502b8f04157dd7d4ec9ac0d9f409639eae8f652d944eadf0b04cb418",
+      "relationship": "exact #341 donor"
+    },
+    {
+      "path": "packages/hygiene/src/options.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1edb3f0571204628340584332a6ca208d2daed91",
+      "sha256": "a1a7d9ce91830df2f5d9c2533ccb9eea1031b2f4765f7bbebeed6a35424d74c7",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/testnet.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d20f046b8a61f8882e776e9c020eb49efbcb006a",
+      "sha256": "ddb2e30138d86569fbb005ad68be9de3eeaa935dede5dc5088c8193c62113596",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/verify.evidence-boundary.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "33f00dc3942f98201b0abe83f4ce2062ce9ac47c",
+      "sha256": "34750ee58486c1694733bb7977380d97b0c4cf0390b85a4fd9df4d717115af42",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/verify.test.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fb4ea2674bf23b57fa3302e5ba37adc6dd528bed",
+      "sha256": "8f66ac86642a9189dc839ef3fd2b8254e35a94d6a7216bdfc6551d709a100d01",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/src/verify.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46f2c12c7418e84cf019f1e8b9ac4156683adba9",
+      "sha256": "9a1f52195bac204fe641f58c9e7e64bdb4b0ddc4dfd304cc970bfa6eaad2a792",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/tsconfig.build.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2f2e9c3808a4726ccb530e67be1d21e888a2439",
+      "sha256": "c1f01189cd614b6932a2229b65a2eaed4a281d6b8428c95fc6454c4bfe151325",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/tsconfig.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "sha256": "a7afeb9eb63100201233658ba907c3a78c757acb63f83fc0df7908740000f962",
+      "relationship": "unchanged #347 / #339"
+    },
+    {
+      "path": "packages/hygiene/vitest.config.ts",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c",
+      "relationship": "unchanged #347 / #339"
+    }
+  ],
+  "changed_paths": [
+    "docs/ai/ACTIVE_WORK.md",
+    "packages/hygiene/src/ledger.browser-chains.test.ts",
+    "packages/hygiene/src/ledger.ts"
+  ],
+  "consumer_searches": [
+    {
+      "role": "integration307",
+      "source": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "exit_code": 1,
+      "output": ""
+    },
+    {
+      "role": "combined",
+      "source": "6a5cff0c1a6b521fd6fe0656edfc51c06eabf7eb",
+      "exit_code": 1,
+      "output": ""
+    },
+    {
+      "role": "privacy336",
+      "source": "410353a23631234aa888e46f38df22291c699a26",
+      "exit_code": 0,
+      "output": "410353a23631234aa888e46f38df22291c699a26:apps/web/package.json:24:    \"@ghostpay/hygiene\": \"0.1.0\",\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:33:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OWNER, OTHER]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:34:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(store))).toBe('used');\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:39:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(undefined))).toBe('used');\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:46:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(wrapper))).toBe('used');\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:55:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:67:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:74:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:77:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:85:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:89:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:91:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OTHER]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:101:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(blocked))).toBe('used');\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:107:    const snapshot = sweep.loadDestLedger(undefined);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:109:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:112:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1103:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1104:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined))).toBeUndefined();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1106:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1112:    expect(sweepModule.destinationWarning(DEST, OTHER, 84532, sweepModule.loadDestLedger(st))).toBe('used');\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1114:    expect(sweepModule.loadDestLedger(st).linkedSources(84532, DEST)).toHaveLength(2);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1115:    expect(sweepModule.destinationWarning(DEST, OWNER, 11155111, sweepModule.loadDestLedger(st))).toBeUndefined();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1119:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1122:    expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:20:import { DestLedger, fundingGuard } from '@ghostpay/hygiene';\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:98:let destinationLedger = new DestLedger();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:120:  destinationLedger = new DestLedger();\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:145:export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:148:  return DestLedger.from(destinationLedger.toJSON());\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:183:  ledger: DestLedger,\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.test.tsx:187:    await waitFor(() => { expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toHaveLength(2); });\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.test.tsx:215:      expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.tsx:11:import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';\n410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.tsx:139:  const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));\n"
+    }
+  ],
+  "composed_diff": "diff --git a/packages/hygiene/src/ledger.browser-chains.test.ts b/packages/hygiene/src/ledger.browser-chains.test.ts\nnew file mode 100644\nindex 00000000..b76b6cb0\n--- /dev/null\n+++ b/packages/hygiene/src/ledger.browser-chains.test.ts\n@@ -0,0 +1,70 @@\n+import { describe, expect, it } from 'vitest';\n+import { CHAINS } from '@ghostpay/chain-adapters';\n+import { DestLedger } from './ledger.js';\n+import { assertTestnetChain } from './testnet.js';\n+import { HygieneError } from './errors.js';\n+import { A1, A2, A3 } from './fixtures.testutil.js';\n+\n+/**\n+ * GP-BUG-06 / CC-01: the browser offers seven EVM testnets, but the\n+ * sweep destination history previously accepted only Sepolia and Base.\n+ * Keep the ledger policy bound to enabled testnet chain metadata without\n+ * widening the smaller PoC-only RPC helper allowlist.\n+ */\n+const enabledBrowserTestnets = CHAINS.filter((c) => c.enabled && c.testnet).map((c) => c.chainId);\n+\n+describe('GP-BUG-06: destination history follows the enabled browser testnets', () => {\n+  it('pins the supported seven EVM testnets to detect chain policy drift', () => {\n+    expect([...enabledBrowserTestnets].sort((a, b) => a - b)).toEqual(\n+      [97, 80002, 43113, 421614, 84532, 11155111, 11155420].sort((a, b) => a - b),\n+    );\n+  });\n+\n+  it.each(enabledBrowserTestnets)('records, retrieves and protects reuse on testnet %i', (chainId) => {\n+    const ledger = new DestLedger();\n+    expect(ledger.canUse(chainId, A1, A2)).toEqual({ ok: true });\n+    ledger.record(chainId, A1, A2, 0);\n+    expect(ledger.linkedSources(chainId, A1)).toEqual([A2]);\n+    expect(ledger.canUse(chainId, A1, A3)).toEqual({ ok: false, reason: 'DEST_HAS_OTHER_SOURCE' });\n+    expect(() => ledger.record(chainId, A1, A3)).toThrow(HygieneError);\n+\n+    // A session restoring its encrypted ledger must retain the advisory.\n+    const restored = DestLedger.from(JSON.parse(JSON.stringify(ledger.toJSON())) as unknown);\n+    expect(restored.linkedSources(chainId, A1)).toEqual([A2]);\n+    expect(restored.canUse(chainId, A1, A3)).toEqual({ ok: false, reason: 'DEST_HAS_OTHER_SOURCE' });\n+  });\n+\n+  it('preserves Anvil for local testing without enabling other networks', () => {\n+    const ledger = new DestLedger();\n+    ledger.record(31337, A1, A2);\n+    expect(ledger.linkedSources(31337, A1)).toEqual([A2]);\n+    expect(DestLedger.from(ledger.toJSON()).linkedSources(31337, A1)).toEqual([A2]);\n+  });\n+\n+  it('rejects every listed mainnet, unknown chain and malformed chain ID', () => {\n+    const bad = [...CHAINS.filter((c) => !c.enabled || !c.testnet).map((c) => c.chainId), 0, -1, 9999999, 1.5, Number.NaN, Number.POSITIVE_INFINITY];\n+    for (const id of bad) {\n+      const ledger = new DestLedger();\n+      expect(() => ledger.canUse(id, A1, A2)).toThrow(HygieneError);\n+      expect(() => ledger.record(id, A1, A2)).toThrow(HygieneError);\n+      expect(() => ledger.linkedSources(id, A1)).toThrow(HygieneError);\n+      expect(() => DestLedger.from([{ chainId: id, destination: A1, sources: [A2] }])).toThrow(HygieneError);\n+    }\n+  });\n+\n+  it('keeps the narrower experimental hygiene RPC helper guard unchanged', () => {\n+    expect(() => assertTestnetChain(11155111)).not.toThrow();\n+    expect(() => assertTestnetChain(84532)).not.toThrow();\n+    expect(() => assertTestnetChain(31337)).not.toThrow();\n+    for (const id of [97, 80002, 43113, 421614, 11155420]) {\n+      expect(() => assertTestnetChain(id)).toThrow(HygieneError);\n+    }\n+  });\n+\n+  it('does not mix one chain\\'s source history with another', () => {\n+    const ledger = new DestLedger();\n+    ledger.record(11155111, A1, A2);\n+    expect(ledger.linkedSources(84532, A1)).toEqual([]);\n+    expect(ledger.canUse(84532, A1, A3)).toEqual({ ok: true });\n+  });\n+});\ndiff --git a/packages/hygiene/src/ledger.ts b/packages/hygiene/src/ledger.ts\nindex 05d7f8eb..7bc637d0 100644\n--- a/packages/hygiene/src/ledger.ts\n+++ b/packages/hygiene/src/ledger.ts\n@@ -1,4 +1,4 @@\n-import { assertTestnetChain } from './testnet.js';\n+import { findChain } from '@ghostpay/chain-adapters';\n import { normAddress, type Address } from './addr.js';\n import { fail } from './errors.js';\n \n@@ -22,6 +22,20 @@ const MAX_U32 = 0xffff_ffff;\n const ZERO = '0x0000000000000000000000000000000000000000';\n const ROW_KEYS = new Set(['chainId', 'destination', 'sources', 'index']);\n \n+/**\n+ * The session-only sweep reuse ledger serves every enabled browser EVM testnet,\n+ * plus local Anvil. Other hygiene PoC helpers deliberately retain their smaller\n+ * `assertTestnetChain` allowlist; widening it could enable unreviewed RPC paths.\n+ * Derive this policy from the browser's authoritative chain table, not a\n+ * second independently maintained list.\n+ */\n+function assertLedgerChain(chainId: number): void {\n+  const chain = Number.isSafeInteger(chainId) ? findChain(chainId) : undefined;\n+  if (chainId !== 31337 && (chain === undefined || !chain.testnet || !chain.enabled)) {\n+    fail('CHAIN_NOT_ALLOWED', 'testnet-only: chain id not allowed');\n+  }\n+}\n+\n /**\n  * Local destination ledger (HY-CON): one destination receives from one source address only.\n  *\n@@ -56,7 +70,7 @@ export class DestLedger {\n \n   /** Sources already swept to `destination` on `chainId` (empty if none). */\n   public linkedSources(chainId: number, destination: string): readonly Address[] {\n-    assertTestnetChain(chainId);\n+    assertLedgerChain(chainId);\n     const r = this.rows.get(DestLedger.key(chainId, normAddress(destination)));\n     return r === undefined ? [] : [...r.sources];\n   }\n@@ -68,7 +82,7 @@ export class DestLedger {\n    * @throws {HygieneError} `CHAIN_NOT_ALLOWED`, `INVALID_ADDRESS`.\n    */\n   public canUse(chainId: number, destination: string, source: string): CanUse {\n-    assertTestnetChain(chainId);\n+    assertLedgerChain(chainId);\n     const d = normAddress(destination);\n     const s = normAddress(source);\n     if (d === ZERO || this.protocol.has(d)) return { ok: false, reason: 'DEST_IS_PROTOCOL' };\n@@ -99,7 +113,7 @@ export class DestLedger {\n    * @throws {HygieneError} `DEST_REUSE`, `INVALID_LEDGER`.\n    */\n   public recordAcknowledgedReuse(chainId: number, destination: string, source: string): void {\n-    assertTestnetChain(chainId);\n+    assertLedgerChain(chainId);\n     const d = normAddress(destination);\n     const s = normAddress(source);\n     const v = this.canUse(chainId, d, s);\n@@ -160,7 +174,7 @@ export class DestLedger {\n       const { chainId, destination, sources, index } = o;\n       if (typeof chainId !== 'number') return fail('INVALID_LEDGER', 'bad chainId');\n       try {\n-        assertTestnetChain(chainId);\n+        assertLedgerChain(chainId);\n       } catch {\n         return fail('INVALID_LEDGER', 'bad chainId');\n       }"
+}

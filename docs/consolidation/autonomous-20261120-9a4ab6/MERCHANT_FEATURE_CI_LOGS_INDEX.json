@@ -1,0 +1,30 @@
+{
+  "format": "workflow-log-archive-index-v1",
+  "archive": "MERCHANT_FEATURE_CI_LOGS.json.gz",
+  "uncompressed_bytes": 829637,
+  "uncompressed_sha256": "c36e5e42f5065c080db3843ab9df8941e96d1b74ffe78f23f5b6469c4afa2620",
+  "compressed_bytes": 145022,
+  "compressed_sha256": "9bf9d2cf27b09a04cb95bab1bbce703227d5048bdd3af1ae877475ff2f5dcbe7",
+  "logs": [
+    {
+      "job_id": 136487179207,
+      "utf8_bytes": 243553,
+      "sha256": "e77508992244c5e29a719f92c627a357921abfa88c02c4804f763edde42c5c81"
+    },
+    {
+      "job_id": 136494576772,
+      "utf8_bytes": 245798,
+      "sha256": "7a803d69a2316955c22b2595a463925bb5ad3cb3f5f182c5c23716fb9a20b72f"
+    },
+    {
+      "job_id": 136549640729,
+      "utf8_bytes": 115582,
+      "sha256": "675fbe0b115588b53d1d4a5da5b34c6b42ce31c291f7659945c7ae1e25b915f8"
+    },
+    {
+      "job_id": 136549640777,
+      "utf8_bytes": 169575,
+      "sha256": "f925e1adbf8944efe077cdc302535c9ab7b734f20818792900e42e2910b6a156"
+    }
+  ]
+}

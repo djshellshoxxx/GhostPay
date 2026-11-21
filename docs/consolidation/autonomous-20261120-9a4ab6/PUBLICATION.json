@@ -1,0 +1,690 @@
+{
+  "schema": "ghostpay-cycle-publication-v1",
+  "main": "aec179910c39081d820396409ff3139ff2264132",
+  "integration_head": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+  "lease": {
+    "ref_sha": "c196151daf8233f96045fd205b2d899c9e8cc97d",
+    "status": "held",
+    "owner": "994a0d214fb9-root-r3",
+    "generation": 11,
+    "expires_at": "2026-11-21T00:16:57.174Z",
+    "expiry_permits_takeover": false,
+    "mutated": false
+  },
+  "transport": {
+    "shell_git_push": "missing shell credentials",
+    "authenticated_github": "identical blob/tree publication; commit metadata differs",
+    "force_push": false,
+    "shared_target_changes": false
+  },
+  "contributions": [
+    {
+      "name": "recovery",
+      "branch": "test/ghostpay-recovery-interoperability-20261120-9a4ab6",
+      "base_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+      "local_head": "327b4016ae44e5f9c84891d71f1e6e2d1db598be",
+      "base_tree_sha": "b1adc223bb49ebfbdfa6d809ecbb2d44dfa92eac",
+      "local_tree_sha": "5b06caab299285c12ef7b04a30b4ec9f209bbb52",
+      "entries": [
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.interop.test.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "48322f29d828f3fbdf4645c39a461e4044635a52",
+          "size": 7476
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "65097e785ab0e8355cb74bad8ea5891bb5ef64ca",
+          "size": 134336
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_ARTIFACTS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cd2c4ec1f2bb0a6f0e968df9eccb59a056cd618",
+          "size": 2288
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_DEPENDENCIES.json.gz",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b2799c4af8fcb6285fc2643492bbc54702a3b257",
+          "size": 138238
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_INDEPENDENT_REVIEW.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a4c68f70574bc6064036de6054f55091e3e4e7da",
+          "size": 13118
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_OWNERSHIP.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a5ca16dfbc8d5aeb758668de6ece23956016d03c",
+          "size": 67707
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_REVIEW.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f1c5efc1c15f141802cc627583338d820feeab86",
+          "size": 11256
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_final_checks.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d93fd6d645b526e16a39df403e156db7ea4be74",
+          "size": 2449
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_invoice_build.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ea5f93939627b5f3df2bbc56966671c175c76563",
+          "size": 591
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_invoice_build.log.artifact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "74ec09151cf5cdc152dd681a406e91bc5107d668",
+          "size": 469
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_secrets.log.artifact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fe206e61ea0b396757c473d38f3d644373699d01",
+          "size": 286
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_source_whitespace.log.artifact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f5be15fef21d75cb49294a12c8b789b789031d72",
+          "size": 244
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_heap128.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "48eceed5aca46f8931379c5b0087d4926f79c413",
+          "size": 1874
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_heap128.log.artifact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5c825b656be2041897798946ec3603d04ab0b7d1",
+          "size": 462
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_initial.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f0b7daca29a35897a4902fcea599ba49bc683d6",
+          "size": 1662
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_test_initial.log.artifact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d4aa14712c10ece0a570d6836c192dfff357d328",
+          "size": 1669
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/RECOVERY_INTEROP_whitespace.log.artifact.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a12bf60f920f04a2dba2412515db8a4ed4223300",
+          "size": 562
+        }
+      ],
+      "remote_commit": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+      "remote_tree": "5b06caab299285c12ef7b04a30b4ec9f209bbb52",
+      "pr": 346,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/346",
+      "pr_created_at_utc": "2026-11-21T00:12:09Z"
+    },
+    {
+      "name": "hygiene",
+      "branch": "test/ghostpay-hygiene-lint-20261120-9a4ab6",
+      "base_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+      "local_head": "ed3f400d29e8ff72e2dbadc4c92722581694c8f7",
+      "base_tree_sha": "1c224184281b97d84e9772c0e3ac9a05ad16aba2",
+      "local_tree_sha": "fcf9e125911bd2ed5cbf60053c8012bc51edb8d9",
+      "entries": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "85bafde7f64a1a1c88f9b13c396a80a6a0721915",
+          "size": 74729
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_BUILD_REUSE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c44b3a9d83b683f79054a8694fe371de7bbad761",
+          "size": 1842
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_COVERAGE_RESULT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a29ef08b0cd45b531320cb25c91244ee31439687",
+          "size": 4536
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_DEPENDENCIES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fa0834d68038f59cecdc1e99cc3c7fa547ceb6b5",
+          "size": 69095
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_LCOV.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "701bf72f7af75677b57bac1cf935e6a7e20b8c37",
+          "size": 16693
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_LINT_RESULT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "48a0baa0304e6c636203c9a0748a1315cce6542b",
+          "size": 1354
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_REPAIR.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4f7b1e3de46c3b3af570b0ee90469863458b88b6",
+          "size": 6920
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_REVIEW.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d3c8cc264cb9cf33ff12ddaf5c8bba1c3fd76093",
+          "size": 873
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_SOURCE_PROOF.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "533b04d2b7c459673ef0e49503a1a3c2cb37bf23",
+          "size": 821
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_LINT_TYPECHECK_RESULT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b9c33410316a9d4ec78e5cdb42d06f0af77a47f2",
+          "size": 1343
+        },
+        {
+          "path": "packages/hygiene/src/verify.evidence-boundary.test.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "33f00dc3942f98201b0abe83f4ce2062ce9ac47c",
+          "size": 3434
+        }
+      ],
+      "remote_commit": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+      "remote_tree": "fcf9e125911bd2ed5cbf60053c8012bc51edb8d9",
+      "pr": 347,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/347",
+      "pr_created_at_utc": "2026-11-21T00:12:11Z"
+    },
+    {
+      "name": "privacy",
+      "branch": "test/ghostpay-privacy-fixtures-20261120-9a4ab6",
+      "base_sha": "410353a23631234aa888e46f38df22291c699a26",
+      "local_head": "def63bd588fbeec71f65802557facf2294ccf0b3",
+      "base_tree_sha": "a506f54f1cd2c7ee5bbc007299e4a82a78d62a87",
+      "local_tree_sha": "d7ea42d23c5fed1f1a474b9733636004a039b22f",
+      "entries": [
+        {
+          "path": "apps/web/src/components/SharedComponents.i18n.test.tsx",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "70ee87d9e163e10e4dd0d807f5b48adfa41576c8",
+          "size": 14965
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "35e1209ad0253916c2355fee8868fed1d3a0cd8d",
+          "size": 261543
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_DEPENDENCIES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d207c0cec1d58e4151a7fd976ed0898da1ca7523",
+          "size": 423294
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_FINAL_CHECKS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "260fd723e2e74b73042c2da23c4bcb06fcf5254a",
+          "size": 786
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_INVENTORY.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cba093fed13b045f9f4ccfbf9ae70079ae84b103",
+          "size": 2629
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_OWNERSHIP.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "462a627989a1640bac335ebe3a28ef91977a1955",
+          "size": 5591
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_PRIOR_FAILURES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "985e3102a799f2976e77f3724e9918b5a018f750",
+          "size": 1025
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_PRIOR_FAILURES.json.gz",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "66dcc3e0568dcec7193d99e77f8f35d9f8223fd2",
+          "size": 122733
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_REPAIR.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d1ac3efe4fc4fbcc94ad931251774165a5547e8",
+          "size": 10145
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_SOURCE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "25e08f81298ae265969f660e224075b00c56065e",
+          "size": 2569
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_UNIT.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "27b94e605781d585a8a54d915913e6081e7094b5",
+          "size": 2369
+        },
+        {
+          "path": "docs/privacy/network-egress-inventory.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "40571dc76d476eab8c00baf2b0b973923500c9ea",
+          "size": 164151
+        }
+      ],
+      "remote_commit": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+      "remote_tree": "d7ea42d23c5fed1f1a474b9733636004a039b22f",
+      "pr": 348,
+      "url": "https://github.com/djshellshoxxx/GhostPay/pull/348",
+      "pr_created_at_utc": "2026-11-21T00:28:34Z"
+    },
+    {
+      "name": "composition",
+      "branch": "qualify/ghostpay-hygiene-composition-20261120-9a4ab6",
+      "base_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+      "local_head": "f993b9b3fef4be4a43b5b57ecd41a6c262a98f07",
+      "base_tree_sha": "fcf9e125911bd2ed5cbf60053c8012bc51edb8d9",
+      "local_tree_sha": "9931d0f3eed2a458ff72d18beff91c3890068bf7",
+      "entries": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f1fa257f67b0b312d32639f0316fced658b22a23",
+          "size": 77048
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_CHECKS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8c6790c50935afbe58159a3cf309d7cb8ac83196",
+          "size": 10041
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_CURRENT_PRS.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91111fda568333345f3df3d2fa3f21830f57b775",
+          "size": 1288
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_DEPENDENCIES.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b352b5570280ccb7b33ced044d8078f97e476dc0",
+          "size": 139611
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_LCOV.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b068cf5cfd6123f5ded5bd75f033e9ebe1c4fdb5",
+          "size": 30663
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_REVIEW.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7e549aa97512aedfa6654661ac01e0dd895192df",
+          "size": 7925
+        },
+        {
+          "path": "docs/consolidation/autonomous-20261120-9a4ab6/HYGIENE_COMPOSITION_SOURCE.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e243ae16f065bd926d834c141208e11b66d534b8",
+          "size": 22221
+        },
+        {
+          "path": "packages/hygiene/src/ledger.browser-chains.test.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b76b6cb0143901027b0006f892232cf5107be420",
+          "size": 3441
+        },
+        {
+          "path": "packages/hygiene/src/ledger.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7bc637d024db317e12bc08847d19e8348e4cbcd9",
+          "size": 9180
+        }
+      ],
+      "remote_commit": "0e19ccc7d52b0d160fb756089e6a843a1d2831d7",
+      "remote_tree": "9931d0f3eed2a458ff72d18beff91c3890068bf7",
+      "pr": null,
+      "url": null
+    }
+  ],
+  "reopened": {
+    "pr": 328,
+    "head_sha": "81598d93dd82cc440526c866d42b55be0657895b",
+    "state": "open",
+    "draft": true,
+    "source_changed": false
+  },
+  "baseline_refs_observed_at_utc": "2026-11-21T00:36:42Z",
+  "publication_map_recorded_at_utc": "2026-11-21T00:36:42Z",
+  "timestamp_note": "Baseline ref observation and contribution publication are separate events; each contribution retains its immutable commit/tree identity.",
+  "workflow_snapshot": {
+    "observed_at_utc": "2026-11-21T00:36:42Z",
+    "checks": [
+      {
+        "name": "root",
+        "pr": 349,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/349",
+        "head_sha": "81674a63fd8e3c39ae43a0cb4e596bc998e87dfc",
+        "base": "integration/ghostpay-main-recovered-fixes-20261120",
+        "base_sha": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:35:08Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44844803943,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 465,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803943/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803943/logs",
+              "workflow_id": 398745505
+            },
+            {
+              "id": 44844803954,
+              "name": "CLI operator qualification",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 308,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803954/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803954/logs",
+              "workflow_id": 412675588
+            },
+            {
+              "id": 44844803914,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 346,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803914/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803914/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44844803856,
+              "name": "Pages",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 341,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803856/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803856/logs",
+              "workflow_id": 392799214
+            },
+            {
+              "id": 44844803968,
+              "name": "Tor static hosting",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 12,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803968/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803968/logs",
+              "workflow_id": 424694545
+            },
+            {
+              "id": 44844803806,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1625,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803806/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844803806/logs",
+              "workflow_id": 391558649
+            }
+          ]
+        }
+      },
+      {
+        "name": "recovery",
+        "pr": 346,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/346",
+        "head_sha": "37760c3655c48fa190c0f2324072cb506cf1b88d",
+        "base": "codex/ghostpay-private-checkpoint-browser-20261119",
+        "base_sha": "683f8587b8de45448f14aab0539cb07a5f21bce3",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:12:09Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44842224511,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 343,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224511/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224511/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44842224187,
+              "name": "CLI operator qualification",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 306,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224187/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224187/logs",
+              "workflow_id": 412675588
+            },
+            {
+              "id": 44842224169,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1622,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224169/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224169/logs",
+              "workflow_id": 391558649
+            },
+            {
+              "id": 44842224189,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 462,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224189/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842224189/logs",
+              "workflow_id": 398745505
+            }
+          ]
+        }
+      },
+      {
+        "name": "hygiene",
+        "pr": 347,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/347",
+        "head_sha": "95e60ce4948b7430865dafbd1ad01434310a75f7",
+        "base": "fix/ghostpay-hygiene-transfer-evidence-20261120",
+        "base_sha": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:12:11Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44842227151,
+              "name": "Pages",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 339,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227151/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227151/logs",
+              "workflow_id": 392799214
+            },
+            {
+              "id": 44842227264,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 463,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227264/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842227264/logs",
+              "workflow_id": 398745505
+            },
+            {
+              "id": 44842226986,
+              "name": "CLI operator qualification",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 307,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226986/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226986/logs",
+              "workflow_id": 412675588
+            },
+            {
+              "id": 44842226995,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 344,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226995/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226995/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44842226988,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1623,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226988/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44842226988/logs",
+              "workflow_id": 391558649
+            }
+          ]
+        }
+      },
+      {
+        "name": "privacy",
+        "pr": 348,
+        "url": "https://github.com/djshellshoxxx/GhostPay/pull/348",
+        "head_sha": "26b45165c1d6de9e23f5b943ed46f3aa0908f45c",
+        "base": "fix/ghostpay-devnet-wallet-consent-20261120-r2",
+        "base_sha": "410353a23631234aa888e46f38df22291c699a26",
+        "state": "open",
+        "draft": true,
+        "created_at": "2026-11-21T00:28:34Z",
+        "workflows": {
+          "workflow_runs": [
+            {
+              "id": 44844067229,
+              "name": "Hosting kit",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 464,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067229/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067229/logs",
+              "workflow_id": 398745505
+            },
+            {
+              "id": 44844067244,
+              "name": "CI",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 1624,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067244/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067244/logs",
+              "workflow_id": 391558649
+            },
+            {
+              "id": 44844067221,
+              "name": "Beta acceptance",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 345,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067221/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067221/logs",
+              "workflow_id": 414091144
+            },
+            {
+              "id": 44844067142,
+              "name": "Pages",
+              "status": "queued",
+              "conclusion": null,
+              "run_number": 340,
+              "jobs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067142/jobs",
+              "logs_url": "https://api.github.com/repos/djshellshoxxx/GhostPay/actions/runs/44844067142/logs",
+              "workflow_id": 392799214
+            }
+          ]
+        }
+      }
+    ],
+    "note": "Applies to these queried immutable heads. A later documentation-only publication-map update does not transfer their hosted status to a new commit."
+  }
+}

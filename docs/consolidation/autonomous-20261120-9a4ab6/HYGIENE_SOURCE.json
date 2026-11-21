@@ -1,0 +1,211 @@
+{
+  "recorded_utc": "2026-11-20T23:59:34.144456+00:00",
+  "source_head": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+  "source_tree": "1c224184281b97d84e9772c0e3ac9a05ad16aba2",
+  "hygiene_tree": "94cdab13ec016107609b0138a29a004ad39d36df",
+  "existing_feature_pr": 339,
+  "base_main": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+  "hygiene_changed_paths_from_base": [
+    "packages/hygiene/src/fixtures.testutil.ts",
+    "packages/hygiene/src/verify.evidence-boundary.test.ts",
+    "packages/hygiene/src/verify.test.ts",
+    "packages/hygiene/src/verify.ts"
+  ],
+  "ordered_hygiene_donor_history": [
+    {
+      "commit": "86be64572c37f46c12daccf9bb00b7af298e5073",
+      "subject": "test(hygiene): reproduce off-filter and duplicate Transfer evidence (GP-BUG-11)",
+      "changed_paths": [
+        "packages/hygiene/src/verify.evidence-boundary.test.ts"
+      ]
+    },
+    {
+      "commit": "951cd589ed96dc9382b04762ee0dad91cf3fea89",
+      "subject": "fix(hygiene): validate and dedupe on-chain Transfer evidence at RPC boundary",
+      "changed_paths": [
+        "packages/hygiene/src/verify.ts"
+      ]
+    },
+    {
+      "commit": "b8cf3dcdc173ef7e46d39d59771534a3fe2e7cd2",
+      "subject": "test(hygiene): supply canonical block hash in Transfer RPC fixtures",
+      "changed_paths": [
+        "packages/hygiene/src/fixtures.testutil.ts"
+      ]
+    },
+    {
+      "commit": "06baa1c1e2a32ed939778683b0aadb5b0a57c18e",
+      "subject": "test(hygiene): align Transfer fixtures with exact requested blocks and event indices",
+      "changed_paths": [
+        "packages/hygiene/src/verify.test.ts"
+      ]
+    },
+    {
+      "commit": "d2101b783cbed5a052228642445c2e3804048a17",
+      "subject": "test(hygiene): preserve exact-optional fixture typing and avoid unused bindings",
+      "changed_paths": [
+        "packages/hygiene/src/verify.evidence-boundary.test.ts"
+      ]
+    },
+    {
+      "commit": "44d9a35a23803a838f4d2f66685e7b0668ab98e5",
+      "subject": "fix(hygiene): narrow validated block hash before event-identity construction",
+      "changed_paths": [
+        "packages/hygiene/src/verify.ts"
+      ]
+    },
+    {
+      "commit": "ab7640f734a5e407dee386d7629b2fd6235d9fcc",
+      "subject": "test(hygiene): discard conflicting duplicate on-chain event identities",
+      "changed_paths": [
+        "packages/hygiene/src/verify.evidence-boundary.test.ts"
+      ]
+    }
+  ],
+  "tracked_hygiene_files": [
+    {
+      "path": "packages/hygiene/DEVIATIONS.md",
+      "git_blob": "51ad9a46d2586d0a965103a962def0f400f254e0",
+      "sha256": "3866a7523b4c46df87bed14ac678943a8f54772f6092175eb9690b3fbe130ecb"
+    },
+    {
+      "path": "packages/hygiene/README.md",
+      "git_blob": "87304f0c40e97246ccdb72585b5d42345d0ef3dd",
+      "sha256": "449cba07361328533811bc5a7bea737e7f6112f0e4881e53470f66e6fb0bb1e2"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "git_blob": "d3c41ab007f618adc531943cd4720c506a03bf7c",
+      "sha256": "8a6ee1be611f97471226950f277ff011fb8fb8657af0563b8742c57e19f4ae23"
+    },
+    {
+      "path": "packages/hygiene/src/addr.ts",
+      "git_blob": "367a652dd0aa368a338de5d0d546f33fc20e117a",
+      "sha256": "c49fbd40b0717493e1287e217a5ce6046d7a675ded8daf88f38cc9aae439c990"
+    },
+    {
+      "path": "packages/hygiene/src/buffer.test.ts",
+      "git_blob": "365b99cdf060ade859b188d6b107e1019e59587e",
+      "sha256": "35e52c4a736ba1498d945c7546ca86ba92d05943fff89f5eb0a8bd420b3c8970"
+    },
+    {
+      "path": "packages/hygiene/src/buffer.ts",
+      "git_blob": "b315a0c8feb0325bf16bd495b764f5c559da4494",
+      "sha256": "e9c854c41b8b7a28fa5d76ec167b89c866a4b6bfd8c257e96bf126b9cd49d37d"
+    },
+    {
+      "path": "packages/hygiene/src/consolidation.ts",
+      "git_blob": "5ab0df2417788351b2178941bf52b533099bdf61",
+      "sha256": "5bfdf4d9abe44fa5a99a406835864d86aee5fe449d275d99e714e98c0b3961f8"
+    },
+    {
+      "path": "packages/hygiene/src/destination.test.ts",
+      "git_blob": "17428fd39a1abdce421326bb14d4069ccf00c2aa",
+      "sha256": "f45a4caddf9b6c3ef0b21f4a236ecf6e9c6b1c569e062808869f48eb8cfad1fc"
+    },
+    {
+      "path": "packages/hygiene/src/destination.ts",
+      "git_blob": "bcf7487353406e81653c8b3e22261bee026d8be9",
+      "sha256": "94d68030a03a9f18cff3c4358cebe949973586aa1b2a163a11d99b6474abb1f7"
+    },
+    {
+      "path": "packages/hygiene/src/errors.ts",
+      "git_blob": "bd65796a7d14831d16aadd57f7009428b5d8bfef",
+      "sha256": "1c6a2e947413966622fbc5a4a9c3f7cac7b07e96fbbe00599042e1940e9f2dee"
+    },
+    {
+      "path": "packages/hygiene/src/fixtures.testutil.ts",
+      "git_blob": "600219676c9c6bbfbbc52574d514cf80b54fa68a",
+      "sha256": "b9c46ff487bece45c7ffe5c015d2141a92d097bcbe158792916d2b1949867507"
+    },
+    {
+      "path": "packages/hygiene/src/guard.ts",
+      "git_blob": "f13b8e96965b950268b38f117ec2f2a0e15c9f1b",
+      "sha256": "1ae44343b8edacd79a4c284f98b203a28d049660011b1364b7d0a492594572bd"
+    },
+    {
+      "path": "packages/hygiene/src/hop-source.test.ts",
+      "git_blob": "66fea14996baf0da07c122e69e0dd1114974f31f",
+      "sha256": "bca1f2cae6fda267c859ef9de5cfbc98af323940987cfe301a03feaa4a9ba3d4"
+    },
+    {
+      "path": "packages/hygiene/src/hop-source.ts",
+      "git_blob": "ef87f0b90184425d67bfc99cda05cf51da0e8324",
+      "sha256": "cb0d619f197c6b99fa5000df7db67db32586bf1fa3177128d2c89a61aac65ef2"
+    },
+    {
+      "path": "packages/hygiene/src/index.ts",
+      "git_blob": "c8d8141024eead713960d7212a8de4577022d2ce",
+      "sha256": "11273c1481aa76ce74771df4d9361255227da31c2a38da845910d93f74e655a3"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.test.ts",
+      "git_blob": "1fdcb829fba6d2c6918d9e2f291620a67f78e5b6",
+      "sha256": "b7175c770bf7e26ea1ce39af493abca3769e01e9869775ace4a7ea1335a9c5b8"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.ts",
+      "git_blob": "05d7f8eb0cb723266eac7a9a644053e29c2d653c",
+      "sha256": "cf2df9d5552e134d37e013c5bc57cd02623f1a62129ef137832d935f59db5762"
+    },
+    {
+      "path": "packages/hygiene/src/options.ts",
+      "git_blob": "1edb3f0571204628340584332a6ca208d2daed91",
+      "sha256": "a1a7d9ce91830df2f5d9c2533ccb9eea1031b2f4765f7bbebeed6a35424d74c7"
+    },
+    {
+      "path": "packages/hygiene/src/testnet.ts",
+      "git_blob": "d20f046b8a61f8882e776e9c020eb49efbcb006a",
+      "sha256": "ddb2e30138d86569fbb005ad68be9de3eeaa935dede5dc5088c8193c62113596"
+    },
+    {
+      "path": "packages/hygiene/src/verify.evidence-boundary.test.ts",
+      "git_blob": "e4949376bb4d8a9438e6e85d111da3ed335ec021",
+      "sha256": "189ac7968b426d1c636c140e820e2d809451d9e51e2b6ef3c6fef43667498149"
+    },
+    {
+      "path": "packages/hygiene/src/verify.test.ts",
+      "git_blob": "fb4ea2674bf23b57fa3302e5ba37adc6dd528bed",
+      "sha256": "8f66ac86642a9189dc839ef3fd2b8254e35a94d6a7216bdfc6551d709a100d01"
+    },
+    {
+      "path": "packages/hygiene/src/verify.ts",
+      "git_blob": "46f2c12c7418e84cf019f1e8b9ac4156683adba9",
+      "sha256": "9a1f52195bac204fe641f58c9e7e64bdb4b0ddc4dfd304cc970bfa6eaad2a792"
+    },
+    {
+      "path": "packages/hygiene/tsconfig.build.json",
+      "git_blob": "e2f2e9c3808a4726ccb530e67be1d21e888a2439",
+      "sha256": "c1f01189cd614b6932a2229b65a2eaed4a281d6b8428c95fc6454c4bfe151325"
+    },
+    {
+      "path": "packages/hygiene/tsconfig.json",
+      "git_blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "sha256": "a7afeb9eb63100201233658ba907c3a78c757acb63f83fc0df7908740000f962"
+    },
+    {
+      "path": "packages/hygiene/vitest.config.ts",
+      "git_blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c"
+    }
+  ],
+  "worktree_source_matches_head": true,
+  "test_policy": {
+    "script": "vitest run --coverage",
+    "include": "src/**/*.test.ts",
+    "test_timeout_ms": 60000,
+    "pool": "forks",
+    "cli_resource_override": "--maxWorkers=1",
+    "node_options": "--max-old-space-size=256",
+    "coverage_provider": "v8",
+    "thresholds": {
+      "statements": 95,
+      "branches": 90,
+      "functions": 95,
+      "lines": 95
+    },
+    "new_or_changed_tests": false,
+    "baseline_execution": false,
+    "network_or_chain_execution": false
+  }
+}

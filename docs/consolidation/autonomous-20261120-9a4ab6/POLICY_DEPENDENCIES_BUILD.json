@@ -1,0 +1,37 @@
+{
+  "command_record": {
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "-w",
+      "@ghostpay/chain-adapters",
+      "-w",
+      "@ghostpay/payment-uri",
+      "-w",
+      "@ghostpay/qr-exchange",
+      "-w",
+      "@ghostpay/policy-scheme",
+      "-w",
+      "@ghostpay/tron-adapter"
+    ],
+    "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-policy",
+    "source_head": "d0e6f3c9711b7e0f896362a7ffd953e2f2ee1f95",
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_at": "2026-11-21T00:17:38.207786+00:00",
+    "completed_at": "2026-11-21T00:17:51.102443+00:00",
+    "duration_seconds": 12.895,
+    "exit_code": 0,
+    "environment_overrides": {
+      "NODE_OPTIONS": "--max-old-space-size=256"
+    },
+    "log_sha256": "b2a15ec8d2b8d87fedb2e135b8091d54743c5a51f2db07efb2ef3f1a4c30b786"
+  },
+  "output": {
+    "format": "lossless-process-output-v1",
+    "encoding": "utf-8",
+    "bytes": 1405,
+    "sha256": "b2a15ec8d2b8d87fedb2e135b8091d54743c5a51f2db07efb2ef3f1a4c30b786",
+    "content": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/chain-adapters@0.1.0 build\n> npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/invoice-schema@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/payment-uri@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/qr-exchange@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/policy-scheme@0.1.0 build\n> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\n\n> @ghostpay/tron-adapter@0.1.0 build\n> npm run build -w @ghostpay/core-crypto --if-present && tsc -p tsconfig.build.json\n\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/core-crypto@0.1.0 build\n> tsc -p tsconfig.build.json\n\n"
+  }
+}

@@ -1,0 +1,1117 @@
+{
+  "format": "merchant-feature-source-comparison-v1",
+  "targets": {
+    "main": "aec179910c39081d820396409ff3139ff2264132",
+    "integration": "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+  },
+  "claim_commit": "57b15a86cda2dc71cd3543df9cbf2ce5a8599c6e",
+  "inventory": {
+    "count": 111,
+    "sha256": "f0953ac815ca69ba63c521e5c2fde35e48d23af54e158184f9b57571b10de7f6",
+    "evidence_prefix_conflicts": []
+  },
+  "prs": [
+    {
+      "pr": 310,
+      "head_sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+      "comparison_base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "source_application_paths": [
+        {
+          "path": "apps/web/e2e/payment-request-file.spec.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f",
+            "sha256": "800d9c8cb7fcd3a7c4ef077654b34d610ca7f1a012f96e757f3159db6b520cbb",
+            "bytes": 12086
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "085bbccd0ad1d434e8c6f67965d7fbdf1fe72d4f",
+              "sha256": "800d9c8cb7fcd3a7c4ef077654b34d610ca7f1a012f96e757f3159db6b520cbb",
+              "bytes": 12086
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "source": {
+            "mode": "100644",
+            "git_blob": "1556d84a2ef2fd744368dfe11acc1d8f2838f043",
+            "sha256": "c56ed5b4aa082aad384f18b7fe38c22fe43354b332584a7f14e9e42191f573c2",
+            "bytes": 318863
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "0fe1428731b36ce90a432379eae6ce850566c847",
+              "sha256": "c4b2db21b79ca27176fa8c7cc77e7ee0c3b4a32584754707307f380e83f74f4a",
+              "bytes": 317604
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "734af2fb7f17e150d7235b15d9c007f896a2dd3b",
+              "sha256": "624ba3139b76b8ac5db9f6f73f466be2a32b904b07fa30c64816fec28a5c33b1",
+              "bytes": 319365
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "source": {
+            "mode": "100644",
+            "git_blob": "7250b01ae6d9fcdc9afe351f94a5171233f1833d",
+            "sha256": "d1daecb25a6781c153222c65da294dfbc85364f711054f61fc29c9c2c89d8a9b",
+            "bytes": 236614
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "cc7464eac7f565bff3f08849e82b0533c176cd09",
+              "sha256": "d12ba07263630fbf82a7aa3e9f535207ba5e45a06a45805c1c04915ae23be0ea",
+              "bytes": 235355
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "afd359647e11d684096774a0c711c997a7319ef1",
+              "sha256": "9ab2775e67a742d16c2518effefa6042228e22fce767e607f63338cd56e11dce",
+              "bytes": 237246
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "source": {
+            "mode": "100644",
+            "git_blob": "8da429e3d53d05f26077b0a792b7b0e9f6dc6e8f",
+            "sha256": "2cd689421537a96d48c4c298818c08170c052ad76c27694db9c07f5630a61a8b",
+            "bytes": 265560
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "f764f118056b9705aca06586a04f44ac9ec722db",
+              "sha256": "89704acee39dbec381979c1ce2c1d535b34ff2f82039a4357e18d515aa792bcf",
+              "bytes": 264301
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "1ff38b5bab8ba0a9833d338a6369c49583a146bc",
+              "sha256": "67e77cbc79698f40820659a08e0a1bb476bd0a21b26d8b4232e6d9278e2dffda",
+              "bytes": 266189
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "source": {
+            "mode": "100644",
+            "git_blob": "192984fc8c0d13e013e219b2e912b78fba23af3c",
+            "sha256": "7f8cbd11e6375a90bcc919a1db085a47ea8eae707077a9846a3425c13bb52aac",
+            "bytes": 312313
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "9ddf270217cb47623f894558b0d083c83173429c",
+              "sha256": "69d9a5f1ccb0b2c11e9d055aff58297bc45115d979fe16246395c3f75260c126",
+              "bytes": 311054
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "2758d892030bac000259d02dfe627eced61c234d",
+              "sha256": "63f85920b756002157b9c36a0b24234030581c385086816e513fd747a29efd58",
+              "bytes": 312865
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "3f964ae6b4109e5729383316f7cbf3445b2b2851",
+            "sha256": "9f0fb05e56781078682ef3c645f607c996a225aa5fbba4c1520dc4d67907257b",
+            "bytes": 3355
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "3f964ae6b4109e5729383316f7cbf3445b2b2851",
+              "sha256": "9f0fb05e56781078682ef3c645f607c996a225aa5fbba4c1520dc4d67907257b",
+              "bytes": 3355
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestDownload.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "27ab300574119f72d9e96450a0fcc651d6168d5c",
+            "sha256": "5d73667eabb321a25ac2ec85d8bad7b880dc7265188df4fbc9e9220f8f9467f7",
+            "bytes": 1150
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "27ab300574119f72d9e96450a0fcc651d6168d5c",
+              "sha256": "5d73667eabb321a25ac2ec85d8bad7b880dc7265188df4fbc9e9220f8f9467f7",
+              "bytes": 1150
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "bdd942f53dcbca6daaaef6dadfd79f63eb08388e",
+            "sha256": "4d93a00b0032a1c1e47dcf3232b576888a09bb60f076eb2c96be2cd03dfc65ac",
+            "bytes": 12531
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "bdd942f53dcbca6daaaef6dadfd79f63eb08388e",
+              "sha256": "4d93a00b0032a1c1e47dcf3232b576888a09bb60f076eb2c96be2cd03dfc65ac",
+              "bytes": 12531
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestFileInput.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "487a1892d9d78daca50d48fde488f65f8d5d9101",
+            "sha256": "8195a816791de490aeccbceb50dfd7fa3d414a47be60da179b111927dc231f9d",
+            "bytes": 7527
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "487a1892d9d78daca50d48fde488f65f8d5d9101",
+              "sha256": "8195a816791de490aeccbceb50dfd7fa3d414a47be60da179b111927dc231f9d",
+              "bytes": 7527
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "28cb523ddceb6ce45fd6619296c551475fd0fce2",
+            "sha256": "1e691d745d9fe7ee93b2cc748b78fbca1806a63801af29994bac86a28238b2dd",
+            "bytes": 80990
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "4a94633e89b8aa6b3455191a953e008a6399c546",
+              "sha256": "65641973516db8573ec18943935a192865dda9652c8211b59da7252ba5dab190",
+              "bytes": 80553
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "3cdc5ce0fb5b8d96487dff6479d2595d1ecbb3cf",
+              "sha256": "c4e90d4a8242748f7523aaa871ac18d19629a21688ca299b5b5e057c9c2cf76b",
+              "bytes": 81020
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/src/lib/requestFileInterop.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "954c6f24e2279ec0820df1710100ad1d848a5c47",
+            "sha256": "7c2aa1d427ba3c129a085dc6ff25a494e0ef982e4b353ce9ed277627dbad14a2",
+            "bytes": 4324
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "954c6f24e2279ec0820df1710100ad1d848a5c47",
+              "sha256": "7c2aa1d427ba3c129a085dc6ff25a494e0ef982e4b353ce9ed277627dbad14a2",
+              "bytes": 4324
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "1a31bebd47e897e63ea34c367228cb35262c9098",
+            "sha256": "a29908bf2ee2d612b97dd5899f0678f322e4c6c35c80c9e14dca4cbab0b42835",
+            "bytes": 22086
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "cb7cf3244a39c2a3b6894c616f71b562f4bab025",
+              "sha256": "547db49a2467122bea30a80fb537135ac11c9931cf7e2252ff11d576f18ceb0d",
+              "bytes": 21935
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "1a31bebd47e897e63ea34c367228cb35262c9098",
+              "sha256": "a29908bf2ee2d612b97dd5899f0678f322e4c6c35c80c9e14dca4cbab0b42835",
+              "bytes": 22086
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "404da9ba3f203c0192ddb01145fdb8a9776db015",
+            "sha256": "7f0980d22fedf25d4e0a999c898dfa0bb52c4fe1f722b525ee0a902558321c57",
+            "bytes": 24123
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "3eb5ab0072c4cf5c61b7502d68d0e141dfd3b133",
+              "sha256": "0ca23cc88d588dcf4f44e24a6607783427c8c2b23e33bc66c8c5b6cee22d4c1c",
+              "bytes": 24111
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "404da9ba3f203c0192ddb01145fdb8a9776db015",
+              "sha256": "7f0980d22fedf25d4e0a999c898dfa0bb52c4fe1f722b525ee0a902558321c57",
+              "bytes": 24123
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/views/Pay.requestFile.test.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "89cb8d83c1275ca466efe70b45572b846b505cfb",
+            "sha256": "64885408cff75e07d4e250b1227fa303f05674c297b985630a10e1c26bcf4fd5",
+            "bytes": 15657
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "89cb8d83c1275ca466efe70b45572b846b505cfb",
+              "sha256": "64885408cff75e07d4e250b1227fa303f05674c297b985630a10e1c26bcf4fd5",
+              "bytes": 15657
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "source": {
+            "mode": "100644",
+            "git_blob": "197e5f2d69fee42b3fc5d368e22bb4c1581b0540",
+            "sha256": "98c4c143ba203d078c238b598316a4fbb73d5442e26bbbf1e49a7c29cec6065f",
+            "bytes": 75934
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "579cbe531c39c83745e9a188b176b5a479a32a6b",
+              "sha256": "c7978eb0bb66be2ad87ab8e37556185470561e811d8a7b30155402a935ba3cb4",
+              "bytes": 74659
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "197e5f2d69fee42b3fc5d368e22bb4c1581b0540",
+              "sha256": "98c4c143ba203d078c238b598316a4fbb73d5442e26bbbf1e49a7c29cec6065f",
+              "bytes": 75934
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "packages/invoice-schema/README.md",
+          "source": {
+            "mode": "100644",
+            "git_blob": "f70c48ba0955a3c07bb1b109d208892c71ebb560",
+            "sha256": "fb5e668e4a46fb8c165397ee1139b7d6f6585d2dbe5ec4bfadc96c59524237ff",
+            "bytes": 9877
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "d09d2cd2ebd3dad0b609f6b2ad8976ff95f2e69d",
+              "sha256": "bd5fe59da5e9fc4b9576dc97f71315aed408f151688335566ee951c75a3d710e",
+              "bytes": 8051
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "f70c48ba0955a3c07bb1b109d208892c71ebb560",
+              "sha256": "fb5e668e4a46fb8c165397ee1139b7d6f6585d2dbe5ec4bfadc96c59524237ff",
+              "bytes": 9877
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "34d2e76882ba3a8975930f3bfcee35ae1f7e395c",
+            "sha256": "f7ef7078e6200e331c1579962a85c3d19b0454785ac4b0e879359ef698fd641f",
+            "bytes": 1844
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "f93afefe76b28ed39a45e6e8d726931e865f4c5f",
+              "sha256": "c3fbe2caa3ab089824b5d4c3140d1abd6a2c6b41f788b94e9d97946159236f28",
+              "bytes": 1570
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "34d2e76882ba3a8975930f3bfcee35ae1f7e395c",
+              "sha256": "f7ef7078e6200e331c1579962a85c3d19b0454785ac4b0e879359ef698fd641f",
+              "bytes": 1844
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "packages/invoice-schema/src/requestFile.interop.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "0a722695a606f524bcf512652e9fbbe42b27f871",
+            "sha256": "7aa2cefcec85b4b06227cc601ff304365c73f49110b9254a5c65581a5909786b",
+            "bytes": 6313
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "0a722695a606f524bcf512652e9fbbe42b27f871",
+              "sha256": "7aa2cefcec85b4b06227cc601ff304365c73f49110b9254a5c65581a5909786b",
+              "bytes": 6313
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "packages/invoice-schema/src/requestFile.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "68c194bf5c6fc12d0f17ff3a39afb9ec01d902cb",
+            "sha256": "58ac2333fd77e832404aa918cd2bc7f64cbda2af093c404cbadcf429676f119e",
+            "bytes": 9526
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "68c194bf5c6fc12d0f17ff3a39afb9ec01d902cb",
+              "sha256": "58ac2333fd77e832404aa918cd2bc7f64cbda2af093c404cbadcf429676f119e",
+              "bytes": 9526
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        },
+        {
+          "path": "packages/invoice-schema/src/requestFile.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "4eb802016bc54f6d3e53e7061f08a2272bc29a3a",
+            "sha256": "fb5b20491603f2b94758825b433f54009bc6911279971710fb105de50500d5d1",
+            "bytes": 4839
+          },
+          "targets": {
+            "main": null,
+            "integration": {
+              "mode": "100644",
+              "git_blob": "4eb802016bc54f6d3e53e7061f08a2272bc29a3a",
+              "sha256": "fb5b20491603f2b94758825b433f54009bc6911279971710fb105de50500d5d1",
+              "bytes": 4839
+            }
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "identical"
+          }
+        }
+      ],
+      "counts": {
+        "main": {
+          "absent": 10,
+          "different": 10
+        },
+        "integration": {
+          "identical": 15,
+          "different": 5
+        }
+      },
+      "target_ancestry": {
+        "main": false,
+        "integration": false
+      },
+      "all_merge_bases": {
+        "main": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ],
+        "integration": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+          "1de98f6c9371010883253450446e6f7294da84fa"
+        ]
+      }
+    },
+    {
+      "pr": 322,
+      "head_sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "comparison_base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "source_application_paths": [
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/index.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "3b5d874487c290c1fb4ea17dac21cd69be160fcf",
+            "sha256": "f8a9028a427cb23207a1a80ee4575056833889cadda2d84ac5714b8e6439bb02",
+            "bytes": 507
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/model.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "c2f2711e66a6e182e84ceb9fcb8349e1bb601680",
+            "sha256": "de3082b30b8e8d6fc049c70e20e655a8ac70a9fbb52feaeb2f9f5c512d8fb717",
+            "bytes": 8937
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "6cac65615c82c8f805999d17f1792ac95af29463",
+            "sha256": "19d1b08ad285db78ec42c57529d78d572c430d80ba873ea17a56b98171214f21",
+            "bytes": 20297
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/projection.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "18fe22d6e8b503982499d094ae37dbe04e42c949",
+            "sha256": "969bd8e018290a53e01bb549da067db298125f4431fb0f5f9f288be7285cdd9d",
+            "bytes": 11671
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/select.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "65571703bc46a6787ec929a67da7d305a3280c16",
+            "sha256": "6884c8d27a9e4be2c6901418c29fad56871401bd8bc7f85b20eec70f84fb8459",
+            "bytes": 2668
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        }
+      ],
+      "counts": {
+        "main": {
+          "absent": 5
+        },
+        "integration": {
+          "absent": 5
+        }
+      },
+      "target_ancestry": {
+        "main": false,
+        "integration": false
+      },
+      "all_merge_bases": {
+        "main": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ],
+        "integration": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ]
+      },
+      "outside_module_caller_search": {
+        "pattern": "merchant-dashboard|buildDashboardProjection|selectDashboardRows|decodeDashboardSnapshot",
+        "searched": "apps/web excluding own future module",
+        "exit_code": 1,
+        "matches": [],
+        "scope": "Bounded identifier/module-name search; no route path changes occur in the feature diff; preserved coordinator reports separately record lean artifact identity."
+      },
+      "web_dependency_changes": {
+        "dependencies": {},
+        "devDependencies": {}
+      }
+    },
+    {
+      "pr": 323,
+      "head_sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "comparison_base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "source_application_paths": [
+        {
+          "path": "apps/web/package.json",
+          "source": {
+            "mode": "100644",
+            "git_blob": "a7a28d8439c27d639e2656e09d4e69a571218641",
+            "sha256": "2b75a9cf62e04a2d66971c1603b3993b1a461337623201be785a8a1d136c0b20",
+            "bytes": 1835
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+              "sha256": "766ebac733fe942d55be72643beb308aa451e713bbd9d1299cd06f2a6d627ab5",
+              "bytes": 1797
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+              "sha256": "766ebac733fe942d55be72643beb308aa451e713bbd9d1299cd06f2a6d627ab5",
+              "bytes": 1797
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "75848125f1734b8c66033480fcbaf83efc540063",
+            "sha256": "c7adafad462f0665f8808a2ad7664d2ce07d2e4bff2d3d8d40f4237e06db6235",
+            "bytes": 2042
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/index.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "6dcd8461d0f4df712d7249254b2dd84519ab70d7",
+            "sha256": "6fa877e07929bcdee027185ee18e32971ab38727bb0ff674b551e58c08da16f4",
+            "bytes": 314
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/review.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "a6ff93e43d99751cc3d580c2b7e8e4881696c584",
+            "sha256": "928cd9ded7b1845bb68b2f1e578833f96f5f3798e5e8e461dec61192998b8f0f",
+            "bytes": 12321
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/review.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "461d05a7b3df8979df94411eb095806b2b206ba8",
+            "sha256": "9eaf83048da50e9072a5d73921816df0173032f2dabee3088eb0f22ee203c3a8",
+            "bytes": 12541
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/session.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "757650546e5ee93c5ba4deddaaa2558a8d231ccb",
+            "sha256": "c5b527bcb7d249083edcb04c5003755a80834dab363ed328b361e57e81cd7cb9",
+            "bytes": 6391
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/session.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "9015c43f8ff483767b395949b3b62b4c585a943c",
+            "sha256": "d85e0f483057d4c9d6c8c2d3a22a3d61364cfcef9f3a6f16d962f5359bc809e0",
+            "bytes": 3065
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        }
+      ],
+      "counts": {
+        "main": {
+          "different": 1,
+          "absent": 6
+        },
+        "integration": {
+          "different": 1,
+          "absent": 6
+        }
+      },
+      "target_ancestry": {
+        "main": false,
+        "integration": false
+      },
+      "all_merge_bases": {
+        "main": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ],
+        "integration": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ]
+      },
+      "outside_module_caller_search": {
+        "pattern": "ghostproof|reviewReceipt|createReceiptImportSession",
+        "searched": "apps/web excluding own future module",
+        "exit_code": 1,
+        "matches": [],
+        "scope": "Bounded identifier/module-name search; no route path changes occur in the feature diff; preserved coordinator reports separately record lean artifact identity."
+      },
+      "web_dependency_changes": {
+        "dependencies": {
+          "@ghostpay/ux-receipts": "0.1.0"
+        },
+        "devDependencies": {}
+      }
+    },
+    {
+      "pr": 324,
+      "head_sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "comparison_base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "source_application_paths": [
+        {
+          "path": "apps/web/package.json",
+          "source": {
+            "mode": "100644",
+            "git_blob": "63369bf544ca173ab54eb1fa5d46849779e69f4f",
+            "sha256": "58978a97a86e1d817b4b2b1b935398a5e98bd529f44f3bdd9f7579fcc506483b",
+            "bytes": 1840
+          },
+          "targets": {
+            "main": {
+              "mode": "100644",
+              "git_blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+              "sha256": "766ebac733fe942d55be72643beb308aa451e713bbd9d1299cd06f2a6d627ab5",
+              "bytes": 1797
+            },
+            "integration": {
+              "mode": "100644",
+              "git_blob": "087747cbd56412fe67551b10d874805d01e7f2a4",
+              "sha256": "766ebac733fe942d55be72643beb308aa451e713bbd9d1299cd06f2a6d627ab5",
+              "bytes": 1797
+            }
+          },
+          "classification": {
+            "main": "different",
+            "integration": "different"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "d79d2b55fa4a78427810c5d17b0ebc8c67001a91",
+            "sha256": "e6f3c5e42f58d852c0ad8011ca623f313d3b9afcc661a699be95a6d00ab25d77",
+            "bytes": 1076
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/index.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "402ff344d0fbc897c32d86894731eeafaf9ef0b0",
+            "sha256": "b6be525b116d5c70d3a559fba8d46183cb5aa16a8ecbb1fed2d396dc2aa5ee96",
+            "bytes": 597
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/model.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "dc76f2de8642c0374e12bcb1d9deee8cc2b16eb0",
+            "sha256": "fd31869f1303c5a8fb0a4e625a8d7f404f628419814549f9879702a31b483006",
+            "bytes": 9096
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/model.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "82db328c47cba42ac02fac3c1f1a639bb8092a0b",
+            "sha256": "4cdb6cedcfee95f62e1140f83ce67224bd072c70a2eee04957dee08ff2b28da2",
+            "bytes": 10138
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/review.test.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "548b0695a711694daa07a0fd199afa19b6278216",
+            "sha256": "c81292d0c254bed267307e944e25aa8ff75efc7dd895741cf1978da36cc25de7",
+            "bytes": 12250
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/review.ts",
+          "source": {
+            "mode": "100644",
+            "git_blob": "690e554544481ddcb9e0efec98c2c20710742118",
+            "sha256": "4d30bb1edaea281b4a9bcf58d2fe1f24b4213301a6e3b7970edf2ab3d4c1d8b4",
+            "bytes": 6142
+          },
+          "targets": {
+            "main": null,
+            "integration": null
+          },
+          "classification": {
+            "main": "absent",
+            "integration": "absent"
+          }
+        }
+      ],
+      "counts": {
+        "main": {
+          "different": 1,
+          "absent": 6
+        },
+        "integration": {
+          "different": 1,
+          "absent": 6
+        }
+      },
+      "target_ancestry": {
+        "main": false,
+        "integration": false
+      },
+      "all_merge_bases": {
+        "main": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ],
+        "integration": [
+          "aa3df1cb37274fae73af0ca957183c15c51b62d3"
+        ]
+      },
+      "outside_module_caller_search": {
+        "pattern": "private-recurring|RecurringReviewController|previewDue|parseRecurringSnapshot",
+        "searched": "apps/web excluding own future module",
+        "exit_code": 1,
+        "matches": [],
+        "scope": "Bounded identifier/module-name search; no route path changes occur in the feature diff; preserved coordinator reports separately record lean artifact identity."
+      },
+      "web_dependency_changes": {
+        "dependencies": {
+          "@ghostpay/merchant-billing": "0.1.0"
+        },
+        "devDependencies": {}
+      }
+    }
+  ],
+  "f03_catalog_retention": [
+    {
+      "path": "apps/web/locales/ar.json",
+      "selected_keys": [
+        "requestFile.download",
+        "requestFile.downloadHint",
+        "requestFile.downloadFailed",
+        "requestFile.summarySuffix",
+        "requestFile.label",
+        "requestFile.hint",
+        "requestFile.reading",
+        "requestFile.ready",
+        "requestFile.rejected",
+        "requestFile.tooLarge",
+        "requestFile.invalid",
+        "requestFile.reviewAria",
+        "requestFile.reviewHeading",
+        "requestFile.open",
+        "requestFile.clear"
+      ],
+      "all_values_identical": true
+    },
+    {
+      "path": "apps/web/locales/en.json",
+      "selected_keys": [
+        "requestFile.download",
+        "requestFile.downloadHint",
+        "requestFile.downloadFailed",
+        "requestFile.summarySuffix",
+        "requestFile.label",
+        "requestFile.hint",
+        "requestFile.reading",
+        "requestFile.ready",
+        "requestFile.rejected",
+        "requestFile.tooLarge",
+        "requestFile.invalid",
+        "requestFile.reviewAria",
+        "requestFile.reviewHeading",
+        "requestFile.open",
+        "requestFile.clear"
+      ],
+      "all_values_identical": true
+    },
+    {
+      "path": "apps/web/locales/es.json",
+      "selected_keys": [
+        "requestFile.download",
+        "requestFile.downloadHint",
+        "requestFile.downloadFailed",
+        "requestFile.summarySuffix",
+        "requestFile.label",
+        "requestFile.hint",
+        "requestFile.reading",
+        "requestFile.ready",
+        "requestFile.rejected",
+        "requestFile.tooLarge",
+        "requestFile.invalid",
+        "requestFile.reviewAria",
+        "requestFile.reviewHeading",
+        "requestFile.open",
+        "requestFile.clear"
+      ],
+      "all_values_identical": true
+    },
+    {
+      "path": "apps/web/locales/ja.json",
+      "selected_keys": [
+        "requestFile.download",
+        "requestFile.downloadHint",
+        "requestFile.downloadFailed",
+        "requestFile.summarySuffix",
+        "requestFile.label",
+        "requestFile.hint",
+        "requestFile.reading",
+        "requestFile.ready",
+        "requestFile.rejected",
+        "requestFile.tooLarge",
+        "requestFile.invalid",
+        "requestFile.reviewAria",
+        "requestFile.reviewHeading",
+        "requestFile.open",
+        "requestFile.clear"
+      ],
+      "all_values_identical": true
+    }
+  ],
+  "f03_security_key_retention": {
+    "path": "apps/web/src/i18n/securityKeys.ts",
+    "lines": [
+      "    'requestFile.downloadHint',",
+      "    'requestFile.downloadFailed',",
+      "    'requestFile.hint',",
+      "    'requestFile.ready',",
+      "    'requestFile.rejected',",
+      "    'requestFile.tooLarge',",
+      "    'requestFile.invalid',",
+      "  'requestFile.download',",
+      "  'requestFile.summarySuffix',",
+      "  'requestFile.label',",
+      "  'requestFile.reading',",
+      "  'requestFile.reviewAria',",
+      "  'requestFile.reviewHeading',",
+      "  'requestFile.open',",
+      "  'requestFile.clear',"
+    ],
+    "all_lines_identical": true
+  },
+  "hosted_checkouts": {
+    "310": "cbe4cd039eced42d2260e085f108bf4388390617",
+    "323": "09f3bcc032bd3ae089f9ff07484b6c50c912224b",
+    "324": "0e78c6af01654a88dec0d19eb6d9d37328926f1b"
+  },
+  "limitations": [
+    "No product tests executed by this worker.",
+    "Hosted checkout SHAs are taken from archived job logs; tests belong to those compositions, not current main or #307.",
+    "All four feature heads remain outside main and #307 ancestry; F03 retained behavior is established separately by blobs and catalog entries."
+  ]
+}

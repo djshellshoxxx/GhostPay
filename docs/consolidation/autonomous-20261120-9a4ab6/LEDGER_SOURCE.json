@@ -1,0 +1,1002 @@
+{
+  "reviewed_at_utc": "2026-11-21T00:07:39.446154+00:00",
+  "worker": "/root/ledger_qualification",
+  "source_head": "78137622011528a646ae94155ee4acf7f72e1e2a",
+  "feature_base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+  "claim_commit": "6972f1f51a1a991457c616b03c04d916e4a7d8be",
+  "production_correction": "26d2ba95a045bb60d9344cb3e4a84224c2b74b50",
+  "test_commit": "0284eead8822306c625981d5095e983f8364cb93",
+  "source_tree": "50a617fe3d1a0371abed067084f07966546ede1b",
+  "tracked_package_files": [
+    {
+      "path": "packages/hygiene/DEVIATIONS.md",
+      "blob": "51ad9a46d2586d0a965103a962def0f400f254e0",
+      "sha256": "3866a7523b4c46df87bed14ac678943a8f54772f6092175eb9690b3fbe130ecb"
+    },
+    {
+      "path": "packages/hygiene/README.md",
+      "blob": "87304f0c40e97246ccdb72585b5d42345d0ef3dd",
+      "sha256": "449cba07361328533811bc5a7bea737e7f6112f0e4881e53470f66e6fb0bb1e2"
+    },
+    {
+      "path": "packages/hygiene/package.json",
+      "blob": "d3c41ab007f618adc531943cd4720c506a03bf7c",
+      "sha256": "8a6ee1be611f97471226950f277ff011fb8fb8657af0563b8742c57e19f4ae23"
+    },
+    {
+      "path": "packages/hygiene/src/addr.ts",
+      "blob": "367a652dd0aa368a338de5d0d546f33fc20e117a",
+      "sha256": "c49fbd40b0717493e1287e217a5ce6046d7a675ded8daf88f38cc9aae439c990"
+    },
+    {
+      "path": "packages/hygiene/src/buffer.test.ts",
+      "blob": "365b99cdf060ade859b188d6b107e1019e59587e",
+      "sha256": "35e52c4a736ba1498d945c7546ca86ba92d05943fff89f5eb0a8bd420b3c8970"
+    },
+    {
+      "path": "packages/hygiene/src/buffer.ts",
+      "blob": "b315a0c8feb0325bf16bd495b764f5c559da4494",
+      "sha256": "e9c854c41b8b7a28fa5d76ec167b89c866a4b6bfd8c257e96bf126b9cd49d37d"
+    },
+    {
+      "path": "packages/hygiene/src/consolidation.ts",
+      "blob": "5ab0df2417788351b2178941bf52b533099bdf61",
+      "sha256": "5bfdf4d9abe44fa5a99a406835864d86aee5fe449d275d99e714e98c0b3961f8"
+    },
+    {
+      "path": "packages/hygiene/src/destination.test.ts",
+      "blob": "17428fd39a1abdce421326bb14d4069ccf00c2aa",
+      "sha256": "f45a4caddf9b6c3ef0b21f4a236ecf6e9c6b1c569e062808869f48eb8cfad1fc"
+    },
+    {
+      "path": "packages/hygiene/src/destination.ts",
+      "blob": "bcf7487353406e81653c8b3e22261bee026d8be9",
+      "sha256": "94d68030a03a9f18cff3c4358cebe949973586aa1b2a163a11d99b6474abb1f7"
+    },
+    {
+      "path": "packages/hygiene/src/errors.ts",
+      "blob": "bd65796a7d14831d16aadd57f7009428b5d8bfef",
+      "sha256": "1c6a2e947413966622fbc5a4a9c3f7cac7b07e96fbbe00599042e1940e9f2dee"
+    },
+    {
+      "path": "packages/hygiene/src/fixtures.testutil.ts",
+      "blob": "bac04217818e4f4d08ec43575a5a2d3c6a983a67",
+      "sha256": "9b8d6b2e4013fe105141b48e0d4525e75cd806f9089ffadff5bfdcb1841d105e"
+    },
+    {
+      "path": "packages/hygiene/src/guard.ts",
+      "blob": "f13b8e96965b950268b38f117ec2f2a0e15c9f1b",
+      "sha256": "1ae44343b8edacd79a4c284f98b203a28d049660011b1364b7d0a492594572bd"
+    },
+    {
+      "path": "packages/hygiene/src/hop-source.test.ts",
+      "blob": "66fea14996baf0da07c122e69e0dd1114974f31f",
+      "sha256": "bca1f2cae6fda267c859ef9de5cfbc98af323940987cfe301a03feaa4a9ba3d4"
+    },
+    {
+      "path": "packages/hygiene/src/hop-source.ts",
+      "blob": "ef87f0b90184425d67bfc99cda05cf51da0e8324",
+      "sha256": "cb0d619f197c6b99fa5000df7db67db32586bf1fa3177128d2c89a61aac65ef2"
+    },
+    {
+      "path": "packages/hygiene/src/index.ts",
+      "blob": "c8d8141024eead713960d7212a8de4577022d2ce",
+      "sha256": "11273c1481aa76ce74771df4d9361255227da31c2a38da845910d93f74e655a3"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.browser-chains.test.ts",
+      "blob": "b76b6cb0143901027b0006f892232cf5107be420",
+      "sha256": "bfb3b910db21edd56484f4559ae1e1ae69d8142898f25e938063d1439bde6a48"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.test.ts",
+      "blob": "1fdcb829fba6d2c6918d9e2f291620a67f78e5b6",
+      "sha256": "b7175c770bf7e26ea1ce39af493abca3769e01e9869775ace4a7ea1335a9c5b8"
+    },
+    {
+      "path": "packages/hygiene/src/ledger.ts",
+      "blob": "7bc637d024db317e12bc08847d19e8348e4cbcd9",
+      "sha256": "5d63d967502b8f04157dd7d4ec9ac0d9f409639eae8f652d944eadf0b04cb418"
+    },
+    {
+      "path": "packages/hygiene/src/options.ts",
+      "blob": "1edb3f0571204628340584332a6ca208d2daed91",
+      "sha256": "a1a7d9ce91830df2f5d9c2533ccb9eea1031b2f4765f7bbebeed6a35424d74c7"
+    },
+    {
+      "path": "packages/hygiene/src/testnet.ts",
+      "blob": "d20f046b8a61f8882e776e9c020eb49efbcb006a",
+      "sha256": "ddb2e30138d86569fbb005ad68be9de3eeaa935dede5dc5088c8193c62113596"
+    },
+    {
+      "path": "packages/hygiene/src/verify.test.ts",
+      "blob": "d83bdc376af2a492c73c3ad2d8367316cacf7bae",
+      "sha256": "b87560c4195e75ba7948843260a0a17c4a56e745fe6a00a018fba519057b884d"
+    },
+    {
+      "path": "packages/hygiene/src/verify.ts",
+      "blob": "7bbcbe44b385053f5308e1cfa380e2655eef95d1",
+      "sha256": "9ebe81ba76f8862df79bd6286c1e65e64da1476e824f15f1c08b172c76ff4139"
+    },
+    {
+      "path": "packages/hygiene/tsconfig.build.json",
+      "blob": "e2f2e9c3808a4726ccb530e67be1d21e888a2439",
+      "sha256": "c1f01189cd614b6932a2229b65a2eaed4a281d6b8428c95fc6454c4bfe151325"
+    },
+    {
+      "path": "packages/hygiene/tsconfig.json",
+      "blob": "b993144d440999a587dd0c2a9bbb35510742dcc3",
+      "sha256": "a7afeb9eb63100201233658ba907c3a78c757acb63f83fc0df7908740000f962"
+    },
+    {
+      "path": "packages/hygiene/vitest.config.ts",
+      "blob": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c"
+    }
+  ],
+  "diff": "diff --git a/packages/hygiene/src/ledger.browser-chains.test.ts b/packages/hygiene/src/ledger.browser-chains.test.ts\nnew file mode 100644\nindex 00000000..b76b6cb0\n--- /dev/null\n+++ b/packages/hygiene/src/ledger.browser-chains.test.ts\n@@ -0,0 +1,70 @@\n+import { describe, expect, it } from 'vitest';\n+import { CHAINS } from '@ghostpay/chain-adapters';\n+import { DestLedger } from './ledger.js';\n+import { assertTestnetChain } from './testnet.js';\n+import { HygieneError } from './errors.js';\n+import { A1, A2, A3 } from './fixtures.testutil.js';\n+\n+/**\n+ * GP-BUG-06 / CC-01: the browser offers seven EVM testnets, but the\n+ * sweep destination history previously accepted only Sepolia and Base.\n+ * Keep the ledger policy bound to enabled testnet chain metadata without\n+ * widening the smaller PoC-only RPC helper allowlist.\n+ */\n+const enabledBrowserTestnets = CHAINS.filter((c) => c.enabled && c.testnet).map((c) => c.chainId);\n+\n+describe('GP-BUG-06: destination history follows the enabled browser testnets', () => {\n+  it('pins the supported seven EVM testnets to detect chain policy drift', () => {\n+    expect([...enabledBrowserTestnets].sort((a, b) => a - b)).toEqual(\n+      [97, 80002, 43113, 421614, 84532, 11155111, 11155420].sort((a, b) => a - b),\n+    );\n+  });\n+\n+  it.each(enabledBrowserTestnets)('records, retrieves and protects reuse on testnet %i', (chainId) => {\n+    const ledger = new DestLedger();\n+    expect(ledger.canUse(chainId, A1, A2)).toEqual({ ok: true });\n+    ledger.record(chainId, A1, A2, 0);\n+    expect(ledger.linkedSources(chainId, A1)).toEqual([A2]);\n+    expect(ledger.canUse(chainId, A1, A3)).toEqual({ ok: false, reason: 'DEST_HAS_OTHER_SOURCE' });\n+    expect(() => ledger.record(chainId, A1, A3)).toThrow(HygieneError);\n+\n+    // A session restoring its encrypted ledger must retain the advisory.\n+    const restored = DestLedger.from(JSON.parse(JSON.stringify(ledger.toJSON())) as unknown);\n+    expect(restored.linkedSources(chainId, A1)).toEqual([A2]);\n+    expect(restored.canUse(chainId, A1, A3)).toEqual({ ok: false, reason: 'DEST_HAS_OTHER_SOURCE' });\n+  });\n+\n+  it('preserves Anvil for local testing without enabling other networks', () => {\n+    const ledger = new DestLedger();\n+    ledger.record(31337, A1, A2);\n+    expect(ledger.linkedSources(31337, A1)).toEqual([A2]);\n+    expect(DestLedger.from(ledger.toJSON()).linkedSources(31337, A1)).toEqual([A2]);\n+  });\n+\n+  it('rejects every listed mainnet, unknown chain and malformed chain ID', () => {\n+    const bad = [...CHAINS.filter((c) => !c.enabled || !c.testnet).map((c) => c.chainId), 0, -1, 9999999, 1.5, Number.NaN, Number.POSITIVE_INFINITY];\n+    for (const id of bad) {\n+      const ledger = new DestLedger();\n+      expect(() => ledger.canUse(id, A1, A2)).toThrow(HygieneError);\n+      expect(() => ledger.record(id, A1, A2)).toThrow(HygieneError);\n+      expect(() => ledger.linkedSources(id, A1)).toThrow(HygieneError);\n+      expect(() => DestLedger.from([{ chainId: id, destination: A1, sources: [A2] }])).toThrow(HygieneError);\n+    }\n+  });\n+\n+  it('keeps the narrower experimental hygiene RPC helper guard unchanged', () => {\n+    expect(() => assertTestnetChain(11155111)).not.toThrow();\n+    expect(() => assertTestnetChain(84532)).not.toThrow();\n+    expect(() => assertTestnetChain(31337)).not.toThrow();\n+    for (const id of [97, 80002, 43113, 421614, 11155420]) {\n+      expect(() => assertTestnetChain(id)).toThrow(HygieneError);\n+    }\n+  });\n+\n+  it('does not mix one chain\\'s source history with another', () => {\n+    const ledger = new DestLedger();\n+    ledger.record(11155111, A1, A2);\n+    expect(ledger.linkedSources(84532, A1)).toEqual([]);\n+    expect(ledger.canUse(84532, A1, A3)).toEqual({ ok: true });\n+  });\n+});\ndiff --git a/packages/hygiene/src/ledger.ts b/packages/hygiene/src/ledger.ts\nindex 05d7f8eb..7bc637d0 100644\n--- a/packages/hygiene/src/ledger.ts\n+++ b/packages/hygiene/src/ledger.ts\n@@ -1,4 +1,4 @@\n-import { assertTestnetChain } from './testnet.js';\n+import { findChain } from '@ghostpay/chain-adapters';\n import { normAddress, type Address } from './addr.js';\n import { fail } from './errors.js';\n \n@@ -22,6 +22,20 @@ const MAX_U32 = 0xffff_ffff;\n const ZERO = '0x0000000000000000000000000000000000000000';\n const ROW_KEYS = new Set(['chainId', 'destination', 'sources', 'index']);\n \n+/**\n+ * The session-only sweep reuse ledger serves every enabled browser EVM testnet,\n+ * plus local Anvil. Other hygiene PoC helpers deliberately retain their smaller\n+ * `assertTestnetChain` allowlist; widening it could enable unreviewed RPC paths.\n+ * Derive this policy from the browser's authoritative chain table, not a\n+ * second independently maintained list.\n+ */\n+function assertLedgerChain(chainId: number): void {\n+  const chain = Number.isSafeInteger(chainId) ? findChain(chainId) : undefined;\n+  if (chainId !== 31337 && (chain === undefined || !chain.testnet || !chain.enabled)) {\n+    fail('CHAIN_NOT_ALLOWED', 'testnet-only: chain id not allowed');\n+  }\n+}\n+\n /**\n  * Local destination ledger (HY-CON): one destination receives from one source address only.\n  *\n@@ -56,7 +70,7 @@ export class DestLedger {\n \n   /** Sources already swept to `destination` on `chainId` (empty if none). */\n   public linkedSources(chainId: number, destination: string): readonly Address[] {\n-    assertTestnetChain(chainId);\n+    assertLedgerChain(chainId);\n     const r = this.rows.get(DestLedger.key(chainId, normAddress(destination)));\n     return r === undefined ? [] : [...r.sources];\n   }\n@@ -68,7 +82,7 @@ export class DestLedger {\n    * @throws {HygieneError} `CHAIN_NOT_ALLOWED`, `INVALID_ADDRESS`.\n    */\n   public canUse(chainId: number, destination: string, source: string): CanUse {\n-    assertTestnetChain(chainId);\n+    assertLedgerChain(chainId);\n     const d = normAddress(destination);\n     const s = normAddress(source);\n     if (d === ZERO || this.protocol.has(d)) return { ok: false, reason: 'DEST_IS_PROTOCOL' };\n@@ -99,7 +113,7 @@ export class DestLedger {\n    * @throws {HygieneError} `DEST_REUSE`, `INVALID_LEDGER`.\n    */\n   public recordAcknowledgedReuse(chainId: number, destination: string, source: string): void {\n-    assertTestnetChain(chainId);\n+    assertLedgerChain(chainId);\n     const d = normAddress(destination);\n     const s = normAddress(source);\n     const v = this.canUse(chainId, d, s);\n@@ -160,7 +174,7 @@ export class DestLedger {\n       const { chainId, destination, sources, index } = o;\n       if (typeof chainId !== 'number') return fail('INVALID_LEDGER', 'bad chainId');\n       try {\n-        assertTestnetChain(chainId);\n+        assertLedgerChain(chainId);\n       } catch {\n         return fail('INVALID_LEDGER', 'bad chainId');\n       }\n",
+  "unchanged_narrow_guard": {
+    "path": "packages/hygiene/src/testnet.ts",
+    "before_blob": "d20f046b8a61f8882e776e9c020eb49efbcb006a",
+    "after_blob": "d20f046b8a61f8882e776e9c020eb49efbcb006a"
+  },
+  "policy": {
+    "enabled_testnets": [
+      97,
+      80002,
+      43113,
+      421614,
+      84532,
+      11155111,
+      11155420
+    ],
+    "additional_local_test_chain": 31337,
+    "definition_path": "packages/chain-adapters/src/config/chains.ts",
+    "definition_sha256": "d9f24f2be8a172e1e35bde28fe3e3cf588939889782bf06472cf7c7f2492a3b7",
+    "runtime_rule": "Allow safe-integer chain IDs when findChain returns enabled and testnet, plus local Anvil; reject mainnet, disabled and unknown IDs."
+  },
+  "consumer_searches": [
+    {
+      "role": "integration_307",
+      "ref": "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "DestLedger|@ghostpay/hygiene",
+        "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 1,
+      "matches": []
+    },
+    {
+      "role": "ledger_341",
+      "ref": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "DestLedger|@ghostpay/hygiene",
+        "78137622011528a646ae94155ee4acf7f72e1e2a",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 1,
+      "matches": []
+    },
+    {
+      "role": "privacy_326",
+      "ref": "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "DestLedger|@ghostpay/hygiene",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "matches": [
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/package.json:24:    \"@ghostpay/hygiene\": \"0.1.0\",",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:33:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OWNER, OTHER]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:34:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(store))).toBe('used');",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:39:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(undefined))).toBe('used');",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:46:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(wrapper))).toBe('used');",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:55:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:67:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:74:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:77:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:85:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:89:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:91:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OTHER]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:101:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(blocked))).toBe('used');",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:107:    const snapshot = sweep.loadDestLedger(undefined);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:109:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.destinations.privacy.test.ts:112:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1103:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1104:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined))).toBeUndefined();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1106:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1112:    expect(sweepModule.destinationWarning(DEST, OTHER, 84532, sweepModule.loadDestLedger(st))).toBe('used');",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1114:    expect(sweepModule.loadDestLedger(st).linkedSources(84532, DEST)).toHaveLength(2);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1115:    expect(sweepModule.destinationWarning(DEST, OWNER, 11155111, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1119:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.test.ts:1122:    expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.ts:20:import { DestLedger, fundingGuard } from '@ghostpay/hygiene';",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.ts:98:let destinationLedger = new DestLedger();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.ts:120:  destinationLedger = new DestLedger();",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.ts:145:export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.ts:148:  return DestLedger.from(destinationLedger.toJSON());",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/lib/sweep.ts:183:  ledger: DestLedger,",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/views/Sweep.test.tsx:187:    await waitFor(() => { expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toHaveLength(2); });",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/views/Sweep.test.tsx:215:      expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/views/Sweep.tsx:11:import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';",
+        "a34ce43e296e302e3e65ed077ea8ac892c5189a1:apps/web/src/views/Sweep.tsx:139:  const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));"
+      ]
+    },
+    {
+      "role": "privacy_327",
+      "ref": "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "DestLedger|@ghostpay/hygiene",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "matches": [
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/package.json:24:    \"@ghostpay/hygiene\": \"0.1.0\",",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:33:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OWNER, OTHER]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:34:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(store))).toBe('used');",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:39:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(undefined))).toBe('used');",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:46:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(wrapper))).toBe('used');",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:55:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:67:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:74:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:77:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:85:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:89:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:91:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OTHER]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:101:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(blocked))).toBe('used');",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:107:    const snapshot = sweep.loadDestLedger(undefined);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:109:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.destinations.privacy.test.ts:112:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1103:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1104:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined))).toBeUndefined();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1106:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1112:    expect(sweepModule.destinationWarning(DEST, OTHER, 84532, sweepModule.loadDestLedger(st))).toBe('used');",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1114:    expect(sweepModule.loadDestLedger(st).linkedSources(84532, DEST)).toHaveLength(2);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1115:    expect(sweepModule.destinationWarning(DEST, OWNER, 11155111, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1119:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.test.ts:1122:    expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.ts:20:import { DestLedger, fundingGuard } from '@ghostpay/hygiene';",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.ts:98:let destinationLedger = new DestLedger();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.ts:120:  destinationLedger = new DestLedger();",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.ts:145:export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.ts:148:  return DestLedger.from(destinationLedger.toJSON());",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/lib/sweep.ts:183:  ledger: DestLedger,",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/views/Sweep.test.tsx:187:    await waitFor(() => { expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toHaveLength(2); });",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/views/Sweep.test.tsx:215:      expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/views/Sweep.tsx:11:import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';",
+        "9608ec996fb159f11b84b9baec0b48033a48a6a5:apps/web/src/views/Sweep.tsx:139:  const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));"
+      ]
+    },
+    {
+      "role": "privacy_336",
+      "ref": "410353a23631234aa888e46f38df22291c699a26",
+      "command": [
+        "git",
+        "grep",
+        "-n",
+        "-E",
+        "DestLedger|@ghostpay/hygiene",
+        "410353a23631234aa888e46f38df22291c699a26",
+        "--",
+        "apps/web"
+      ],
+      "exit_code": 0,
+      "matches": [
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/package.json:24:    \"@ghostpay/hygiene\": \"0.1.0\",",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:33:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OWNER, OTHER]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:34:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(store))).toBe('used');",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:39:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(undefined))).toBe('used');",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:46:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(wrapper))).toBe('used');",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:55:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:67:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:74:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:77:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:85:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:89:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:91:    expect(sweep.loadDestLedger(store).linkedSources(CHAIN, DEST)).toEqual([OTHER]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:101:    expect(sweep.destinationWarning(DEST, OTHER, CHAIN, sweep.loadDestLedger(blocked))).toBe('used');",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:107:    const snapshot = sweep.loadDestLedger(undefined);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:109:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.destinations.privacy.test.ts:112:    expect(sweep.loadDestLedger(undefined).linkedSources(CHAIN, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1103:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1104:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined))).toBeUndefined();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1106:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1112:    expect(sweepModule.destinationWarning(DEST, OTHER, 84532, sweepModule.loadDestLedger(st))).toBe('used');",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1114:    expect(sweepModule.loadDestLedger(st).linkedSources(84532, DEST)).toHaveLength(2);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1115:    expect(sweepModule.destinationWarning(DEST, OWNER, 11155111, sweepModule.loadDestLedger(st))).toBeUndefined();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1119:    expect(sweepModule.destinationWarning(DEST, OWNER, 84532, sweepModule.loadDestLedger(undefined), [DEST])).toBe('known-wallet');",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.test.ts:1122:    expect(sweepModule.destinationWarning(DEST, OWNER, 1, sweepModule.loadDestLedger(broken))).toBeUndefined();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:20:import { DestLedger, fundingGuard } from '@ghostpay/hygiene';",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:98:let destinationLedger = new DestLedger();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:120:  destinationLedger = new DestLedger();",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:145:export function loadDestLedger(storage: LedgerStorage | undefined): DestLedger {",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:148:  return DestLedger.from(destinationLedger.toJSON());",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/lib/sweep.ts:183:  ledger: DestLedger,",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.test.tsx:187:    await waitFor(() => { expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toHaveLength(2); });",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.test.tsx:215:      expect(sweepLib.loadDestLedger(window.localStorage).linkedSources(84532, DEST)).toEqual([]);",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.tsx:11:import { captureDestinationLedgerGuard, checkDestination, destinationWarning, loadDestLedger, recordSweepDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';",
+        "410353a23631234aa888e46f38df22291c699a26:apps/web/src/views/Sweep.tsx:139:  const destWarning = sel === undefined || chainId === undefined ? undefined : destinationWarning(destination, sel.match.stealthAddress, chainId, loadDestLedger(browserStorage()));"
+      ]
+    }
+  ],
+  "ownership": {
+    "snapshot": "/workspace/scratch/9a4ab6c3d117/evidence/open-pr-path-overlap.json",
+    "sha256": "f0953ac815ca69ba63c521e5c2fde35e48d23af54e158184f9b57571b10de7f6",
+    "pr_count": 111,
+    "exact_owned_source_matches": [
+      {
+        "pr": 341,
+        "head": "78137622011528a646ae94155ee4acf7f72e1e2a",
+        "base": "2876b7db580e47a880d5951ce9e62941bcf76fdf",
+        "matches": [
+          "packages/hygiene/src/ledger.browser-chains.test.ts",
+          "packages/hygiene/src/ledger.ts"
+        ]
+      }
+    ],
+    "authoritative_feature_pr": 341,
+    "parallel_disjoint_feature_pr": 339
+  },
+  "compiled_outputs": [
+    {
+      "package": "core-crypto",
+      "files": [
+        {
+          "path": "packages/core-crypto/dist/errors.d.ts",
+          "sha256": "7c98fd35ea65f2d9a635cad9369d734c1205e95b35308a9d9c1b7e2804965298"
+        },
+        {
+          "path": "packages/core-crypto/dist/errors.js",
+          "sha256": "d8a6befaedca843950b7e0688f069b03b69bf8a54443b1950dac1be20cbf584c"
+        },
+        {
+          "path": "packages/core-crypto/dist/errors.js.map",
+          "sha256": "2a61a80025850241dc04a887ee75f6d656b8b1514f76b16e1514eab697d1d352"
+        },
+        {
+          "path": "packages/core-crypto/dist/hex.d.ts",
+          "sha256": "c7ea379f5de1750c05b0e7213649b5e0ddf5cf90c4e1e443477317002d2bdef7"
+        },
+        {
+          "path": "packages/core-crypto/dist/hex.js",
+          "sha256": "f1465a67de2be6e6f9f02a3f585380c640beda3728cf8626b51c15a4742a1061"
+        },
+        {
+          "path": "packages/core-crypto/dist/hex.js.map",
+          "sha256": "1faace0411aca99ab431ad6fdfcfa0b02d56f58745f4cee24a5889aa41036d46"
+        },
+        {
+          "path": "packages/core-crypto/dist/index.d.ts",
+          "sha256": "cbd89a752fbc1edc8adc498cb19586d636a4ec9ffc038416b1611d580172a9bc"
+        },
+        {
+          "path": "packages/core-crypto/dist/index.js",
+          "sha256": "e6a7ed0e0601f6745e9d19b59f6d13ba143911eac9307b2406bf34bc083bb8e3"
+        },
+        {
+          "path": "packages/core-crypto/dist/index.js.map",
+          "sha256": "0314325625b56684f99e9cea01d32506f78e5dad48f0b284520146bf4771daee"
+        },
+        {
+          "path": "packages/core-crypto/dist/keys.d.ts",
+          "sha256": "ad3d9ea6f22e60d8e749dd233201efe3c9fae2ff81fa30421f177036761218c9"
+        },
+        {
+          "path": "packages/core-crypto/dist/keys.js",
+          "sha256": "046d9ddf6ebe7c6b44561c8063764018abc5dc91b909d8e293b2dcb0786b29a9"
+        },
+        {
+          "path": "packages/core-crypto/dist/keys.js.map",
+          "sha256": "57749666a6b6864798b809a132e2e0ae8e6523f8ed5b31390b3622d079d417c0"
+        },
+        {
+          "path": "packages/core-crypto/dist/metadata.d.ts",
+          "sha256": "3bc4494596c0728fc136c444e0f5e83783b4d4265664fcbdb8b5f3f6118c0fa8"
+        },
+        {
+          "path": "packages/core-crypto/dist/metadata.js",
+          "sha256": "e4b6b3addf8e66c4c97902c7f38867965d9d8609f9c11327b15685e854135248"
+        },
+        {
+          "path": "packages/core-crypto/dist/metadata.js.map",
+          "sha256": "c8e5dbc26eb12e5de8c3ffcf00eced92face72203ea25883ea8dc58cb6a3e978"
+        },
+        {
+          "path": "packages/core-crypto/dist/rng.d.ts",
+          "sha256": "3238c9778b28b0a1dd5a31c548f85d5be9a0ba60d2a91ffd77822002e19067b4"
+        },
+        {
+          "path": "packages/core-crypto/dist/rng.js",
+          "sha256": "b828f5145fcb982897b081ccf62649da7f86ed97589b13503f041376a3c87b9b"
+        },
+        {
+          "path": "packages/core-crypto/dist/rng.js.map",
+          "sha256": "34a41f212306466e92d92071838dce73e05ec79736edd6d40f4199d5b53138df"
+        },
+        {
+          "path": "packages/core-crypto/dist/secret.d.ts",
+          "sha256": "e010ba7967c243c5c84fccf738fa5ff4ece9c18b4329116f4acd9daa6adf9130"
+        },
+        {
+          "path": "packages/core-crypto/dist/secret.js",
+          "sha256": "10c734d6ed21c742607255e6e2502520b38bbbd5f6b7e382c7b0397aa6f352dd"
+        },
+        {
+          "path": "packages/core-crypto/dist/secret.js.map",
+          "sha256": "0baf78261622eed5fd2413dc1de5eddca3c782d1b9b771f958a69907818d11ed"
+        },
+        {
+          "path": "packages/core-crypto/dist/stealth.d.ts",
+          "sha256": "85f5847ba6685604680d0fc040985ca9f1d20e2566266d776f9c89450458c659"
+        },
+        {
+          "path": "packages/core-crypto/dist/stealth.js",
+          "sha256": "b0e14125052ae90e9049781d10dd4faad08cd70cba3630c6f9aa489cf2c7acc4"
+        },
+        {
+          "path": "packages/core-crypto/dist/stealth.js.map",
+          "sha256": "4d5683f92c11bb0312441421076050b47df5f6f283c0e2c2ff13d7e9423d2e24"
+        }
+      ],
+      "provenance": "Original own-source chain-adapters package build; complete command output preserved separately."
+    },
+    {
+      "package": "invoice-schema",
+      "files": [
+        {
+          "path": "packages/invoice-schema/dist/base64url.d.ts",
+          "sha256": "8edfeda57160d57397312846a9d2a9e237b81ad5171cb8837957fa9dc5277823"
+        },
+        {
+          "path": "packages/invoice-schema/dist/base64url.js",
+          "sha256": "4db1d47e57a9aa16942b01bdc7f94ef142569fbe2b1104c39c4e8865dabfea91"
+        },
+        {
+          "path": "packages/invoice-schema/dist/base64url.js.map",
+          "sha256": "c5905a1659c1af6d6be86288f2808b4deddaa03f66ed971f711b109c68f68763"
+        },
+        {
+          "path": "packages/invoice-schema/dist/envelope.d.ts",
+          "sha256": "ea777fd4668e25322eb1bb76e5c0c1d646d170bcab52d3be39e041bf1d59d110"
+        },
+        {
+          "path": "packages/invoice-schema/dist/envelope.js",
+          "sha256": "e919c47b0ac080238c3c0d590aff8398b5a57e0ecde3f895539faa1fa061626a"
+        },
+        {
+          "path": "packages/invoice-schema/dist/envelope.js.map",
+          "sha256": "a7b6262985fb489b9d2c3f0828dd98030590abeff95a8073e0e14e6af3767180"
+        },
+        {
+          "path": "packages/invoice-schema/dist/errors.d.ts",
+          "sha256": "93881fb36b7f33d560888879f34b4f871d251e87948da3c918105ec1129a17d0"
+        },
+        {
+          "path": "packages/invoice-schema/dist/errors.js",
+          "sha256": "843701155bce02fa449eb77a3f8f723ad3f263eeca6f4456b4d03adf86bf787e"
+        },
+        {
+          "path": "packages/invoice-schema/dist/errors.js.map",
+          "sha256": "3a1e667d4a0b3638c305012ae38d5365fb2eb9528ad039725134e702e2527d5d"
+        },
+        {
+          "path": "packages/invoice-schema/dist/expiry.d.ts",
+          "sha256": "7c75a1177352f890779ad322d246f0cf589ef7168e0a2b8c7d224433a7fdc2f8"
+        },
+        {
+          "path": "packages/invoice-schema/dist/expiry.js",
+          "sha256": "56ae4cdc332d7e6d1115a9493c734bb6ead38654d3051340cbe2df1beb469a85"
+        },
+        {
+          "path": "packages/invoice-schema/dist/expiry.js.map",
+          "sha256": "52f0ad18d6b382c49385c0a5b0731bea0e7896a7bbc6c84a6f1e1d2ddf59bffd"
+        },
+        {
+          "path": "packages/invoice-schema/dist/index.d.ts",
+          "sha256": "686f2227e3b9aea025661ea78b0162bbf44a03edcf5c8be09ce47146c87ed187"
+        },
+        {
+          "path": "packages/invoice-schema/dist/index.js",
+          "sha256": "3b274927cc397cb55bf2ebd1b5fa2aceea48ecc34688d4322d1c9bb9fd968dfc"
+        },
+        {
+          "path": "packages/invoice-schema/dist/index.js.map",
+          "sha256": "971afd14194ae1a1f01f546a8d4d929d2156ba36600edcb2da9e57b1e400874b"
+        },
+        {
+          "path": "packages/invoice-schema/dist/json.d.ts",
+          "sha256": "3a59fffc721ec9aa950e3d69f3799f500f828dda47d8a338f909075b548fcff8"
+        },
+        {
+          "path": "packages/invoice-schema/dist/json.js",
+          "sha256": "d992f4155857e2ee79381a9778ab743ee9682ba93a590c5d7b6dcc7d1eff9395"
+        },
+        {
+          "path": "packages/invoice-schema/dist/json.js.map",
+          "sha256": "156015858c866daca4689aa7bc6df22ac5687fd723d9ae436ed73b8fc4c647dc"
+        },
+        {
+          "path": "packages/invoice-schema/dist/merchantProfile.d.ts",
+          "sha256": "45cfe8642c0172544aa672f9e83c64fc41a45ce948256da0713c23218113baa3"
+        },
+        {
+          "path": "packages/invoice-schema/dist/merchantProfile.js",
+          "sha256": "170e8764d3f726cd73b54b4c404182ca0bdf428d820e97312067ba2687005704"
+        },
+        {
+          "path": "packages/invoice-schema/dist/merchantProfile.js.map",
+          "sha256": "2761e36fc22d9128b9d926a35d040249c7e6ce88ae11e4f0e2d63b727b7a7811"
+        },
+        {
+          "path": "packages/invoice-schema/dist/passphrase.d.ts",
+          "sha256": "e384817e39b7e0c60052d16033ff70b227f17a653138d09d62ce699b826f46b3"
+        },
+        {
+          "path": "packages/invoice-schema/dist/passphrase.js",
+          "sha256": "f23aa5f03cc768fc463eb4682da3aed3b67ca8cfd067dc579dd9033e4803491e"
+        },
+        {
+          "path": "packages/invoice-schema/dist/passphrase.js.map",
+          "sha256": "d453f55685a21292b7e8977a21d50216733198f0c09083eb83e28f7c95180708"
+        },
+        {
+          "path": "packages/invoice-schema/dist/receipts.d.ts",
+          "sha256": "c3403eb6ab582ccd105029ccbb8ec903f45ba02916f13a4e1ef6031d15124efe"
+        },
+        {
+          "path": "packages/invoice-schema/dist/receipts.js",
+          "sha256": "45811ead4455de7ce91d27c56f28aa63e1748463aefc4be86831df82d5103653"
+        },
+        {
+          "path": "packages/invoice-schema/dist/receipts.js.map",
+          "sha256": "dad03849036052ef1c17307a5355ad0b6fd558345dc4f81fa609ac1749fd6a87"
+        },
+        {
+          "path": "packages/invoice-schema/dist/requestFile.d.ts",
+          "sha256": "e18d31b07d37191ad0437988f45e98706539602389f3b3b23f8ea17f5352e60c"
+        },
+        {
+          "path": "packages/invoice-schema/dist/requestFile.js",
+          "sha256": "637a9277092220e7cad5dbb99dc9e3ab3a833869ca8e7905142b8f8eec2785fc"
+        },
+        {
+          "path": "packages/invoice-schema/dist/requestFile.js.map",
+          "sha256": "122be156cebeed13c4201b7d321574db36061caed19b98fad2f1a251dd2de0a2"
+        },
+        {
+          "path": "packages/invoice-schema/dist/schema.d.ts",
+          "sha256": "bfb116682b8e4c303f97c742449a369b11e301b8f98faee069a4a6caf4d2ed48"
+        },
+        {
+          "path": "packages/invoice-schema/dist/schema.js",
+          "sha256": "79370f3fd778c3b543e654d5da386c852d9531e03d834b64b828b3e399af6a58"
+        },
+        {
+          "path": "packages/invoice-schema/dist/schema.js.map",
+          "sha256": "7ebb64fa460d2e2a708c039138783299e34708bee7c14e6ac748270d1840957f"
+        },
+        {
+          "path": "packages/invoice-schema/dist/sign.d.ts",
+          "sha256": "53049f237e12ad0006543b7c7330b38b10f65e91b9337ac2d3593ac38da68dec"
+        },
+        {
+          "path": "packages/invoice-schema/dist/sign.js",
+          "sha256": "128cf0cd2547d3260bccd62a083f02629471f2db7e1bb6098b6cb39781e4bb40"
+        },
+        {
+          "path": "packages/invoice-schema/dist/sign.js.map",
+          "sha256": "3bf12d203896c63b44424e075db1ea399daf4442055ca5eafdafe2b0ee404943"
+        }
+      ],
+      "provenance": "Original own-source chain-adapters package build; complete command output preserved separately."
+    },
+    {
+      "package": "chain-adapters",
+      "files": [
+        {
+          "path": "packages/chain-adapters/dist/abi/announcer.d.ts",
+          "sha256": "c0b77ecc5971b241669402503adbc88b4be2e51c22efa245b3d45b75a48ff13a"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/announcer.js",
+          "sha256": "fca523b0eb5681d500a462596b30113a15d7e42ce5ade0be75aca3005a220ce8"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/announcer.js.map",
+          "sha256": "b1ab8ab69f312f7b036e1c3660e3cddc339c95ef5db8db84e169abb5fb545720"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/chainlinkAggregator.d.ts",
+          "sha256": "5e536c3fcfc3d472499affd1a980d9faa12b631b570c8e96a67cdbf7f180abe7"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/chainlinkAggregator.js",
+          "sha256": "62ff4b69fadae748b297bfa3cff2c15553017a8bace3dd6e26c6d88b2d0cd090"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/chainlinkAggregator.js.map",
+          "sha256": "aa6ef0d5ddb2a55ed4c521731b6885d3bd3a77f091562ef8d79e5453c53da5d9"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc20.d.ts",
+          "sha256": "613b33f62ab44d9c954759d89dc30894ee60cef6f3c35f682763bd0af4a9e822"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc20.js",
+          "sha256": "c280790ce2dd7b8f2eccf734e51690446ba59b11cdfe116f85829a815445fc2b"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc20.js.map",
+          "sha256": "e8786a1b9efd8f4efd78a0a90f6e822b2156fd1e5d7ca025f80ed429aebcc4f4"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc20Metadata.d.ts",
+          "sha256": "64f9157b90e340d46f5ccb15daf63bd8b663534f0b33919cd15fcef35610f52f"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc20Metadata.js",
+          "sha256": "f5fe7c26e59b5d4e03da737efc228262f2445fedda1f13a40709242f3de4e97f"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc20Metadata.js.map",
+          "sha256": "62905690a2625ad03cd6d1d8fcb702adae38d8aedfb6428d84446d6d1211843d"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc2612.d.ts",
+          "sha256": "01417884079dc1c4a7cf4c5780f0611ec977c2062cadcac6b3c5705f41002066"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc2612.js",
+          "sha256": "901106369b1a9bc6fb3f136239174e2fa48e750c468d75c42de6aa31aa0f2c10"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc2612.js.map",
+          "sha256": "38e6d363297d3e071fa0ca73726039dbed6ed6a4f9cf04d84ea6e5d4b530c9be"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc6538Registry.d.ts",
+          "sha256": "f2fc6f019bb68f06e4d8037c74dfb9a5ac7a81e8a57f22bfae83f4fd7b382cd4"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc6538Registry.js",
+          "sha256": "c30e9d91b2e7c467c3dfa167b089a556a41770e0b1dec61f70448d7798a6dc0d"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/erc6538Registry.js.map",
+          "sha256": "6d4060d98ffb1cfe85d74333bcfda01844dd11d6bfc6a5a7a8df30f2e37ea403"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/router.d.ts",
+          "sha256": "06f1ed72da504d79a948492de6e34260164c7896cc8d4cf12c3eb5abd0e99cbe"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/router.js",
+          "sha256": "13863678dca949a13928b7e05a2a62270d83e960ed116cfa8dd26ea16acdc318"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/router.js.map",
+          "sha256": "93e7d2a5f3b09f116da125bd99718301bb8aac8c7c52ba4a3a0fab32ea9cd2e4"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/sweepRelayer.d.ts",
+          "sha256": "1f933ea49102bbff663790d77b8c88ab03be017f3fe058e24daef2f17195366d"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/sweepRelayer.js",
+          "sha256": "f8e5b4b835224e469177c7e420c3315a867e4ada3bab67603d19b7bdf05ecedc"
+        },
+        {
+          "path": "packages/chain-adapters/dist/abi/sweepRelayer.js.map",
+          "sha256": "57b4479fa48d9538a89cb0c130e925bf2729481d9711b53c8e3ddf56f1d28544"
+        },
+        {
+          "path": "packages/chain-adapters/dist/adapter.d.ts",
+          "sha256": "c0e9572a0fd6003f5de46d29718434612284cd971a7b84305b14bc031beec12d"
+        },
+        {
+          "path": "packages/chain-adapters/dist/adapter.js",
+          "sha256": "024da0aff50d72b2b5e49d0df6c0c27174dcdb70612f27051e89e14fc38a4ee6"
+        },
+        {
+          "path": "packages/chain-adapters/dist/adapter.js.map",
+          "sha256": "de33255f26c57dd09eab7a4da54a2afc703c0f5adb7082c08a9b0c5b494c7aee"
+        },
+        {
+          "path": "packages/chain-adapters/dist/config/chains.d.ts",
+          "sha256": "8b95c88c7c057b856ed7427295e7bc36a749bc9588d27e1e384a83e4ae450d01"
+        },
+        {
+          "path": "packages/chain-adapters/dist/config/chains.js",
+          "sha256": "73b5802889ee919386551ed13d0fda72ce6a3b8363b9613abb6ab68fef9b5a2e"
+        },
+        {
+          "path": "packages/chain-adapters/dist/config/chains.js.map",
+          "sha256": "329c69e47102cc04baaca3f56fe3c59e89faaac515ce1e592eb32877a1ecc98f"
+        },
+        {
+          "path": "packages/chain-adapters/dist/config/tokens.d.ts",
+          "sha256": "1658c07744970ad8ffd3cec70da299811b050c7dcb845d3ab096a705470cd114"
+        },
+        {
+          "path": "packages/chain-adapters/dist/config/tokens.js",
+          "sha256": "1fec3e7c924cc9562928d717469e52ca0e06178f0e18fc2be04e8722ae43ff1a"
+        },
+        {
+          "path": "packages/chain-adapters/dist/config/tokens.js.map",
+          "sha256": "0de41a197cfce4f1d2becf8bd710844465dfdd47bd1b5c26169761b2291eeef1"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deepscan.d.ts",
+          "sha256": "0db05eda9e9a414816f914a49694cc079d8f525f1b02c685b6fde19d1e828dad"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deepscan.js",
+          "sha256": "6457fe17f089eae4e29f5a1db3ea15f83e68ac82083094fc7e4c0edc81a445c6"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deepscan.js.map",
+          "sha256": "5603e5c7308a99c353bd71108a679bdd20edbf47bf50f579d31b6971e5f2a734"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deployments.d.ts",
+          "sha256": "2ddfb3f414c019e6a7df521f9c8d29a4669908f8705d699f9e24b4cf80ba5ebf"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deployments.js",
+          "sha256": "92a3afe15516166b20869164cd6def5084b129249f54e3c3e93daa0560c55ee2"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deployments.js.map",
+          "sha256": "e5ffacb278ece74e399d5c5674ce326e184f66f20cb02889d8175ac229761960"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deploymentsSignature.d.ts",
+          "sha256": "5595ed60cdc356f59bd2bf513c98717e978f1c17b540526ca0f0aa56b0e78173"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deploymentsSignature.js",
+          "sha256": "f6c81264d36be587b5ed2ece83005e91f7a6a8ba7f3d9b5d63581780920c1e36"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deploymentsSignature.js.map",
+          "sha256": "7fee60288441835df5b69ceee56c9bd7d7e4fd5dbce02d260d2a93983ea9388e"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deploymentsVerify.d.ts",
+          "sha256": "dc670b447c97b84209267910913e8d013a9de4e62a9b46c0185a8f984fee85c9"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deploymentsVerify.js",
+          "sha256": "260eb79a188f23877e4b808c87ca469219c952f972cc3b2011898fb2291de496"
+        },
+        {
+          "path": "packages/chain-adapters/dist/deploymentsVerify.js.map",
+          "sha256": "3d9f9cda70c59eb073b51d88519844a4c9e16c7f2a580a0f77184edb9032e5e9"
+        },
+        {
+          "path": "packages/chain-adapters/dist/errors.d.ts",
+          "sha256": "ccb46b0935f2213923a060ab41c3dcb1cb8724526d2a23a7b31ec592bc6f24dd"
+        },
+        {
+          "path": "packages/chain-adapters/dist/errors.js",
+          "sha256": "c8e0e500fa2763c7f7eee7f5dae5bb49bbc71263a4b7409e7360783706bd3c7a"
+        },
+        {
+          "path": "packages/chain-adapters/dist/errors.js.map",
+          "sha256": "2fa94bf591016cbee137793cbcda40d9dc2c58b1052ddf8c2faa0299a385d8e3"
+        },
+        {
+          "path": "packages/chain-adapters/dist/fees.d.ts",
+          "sha256": "f98eafdf7a31d28710fdcb613efd4ca2b7aa4dd49493786daaf960579ac03c2c"
+        },
+        {
+          "path": "packages/chain-adapters/dist/fees.js",
+          "sha256": "1930b82e89c7652af71f63a13286fce07cbf846e59db380f96ba0305c9ed875d"
+        },
+        {
+          "path": "packages/chain-adapters/dist/fees.js.map",
+          "sha256": "9f757613662c4717c35da627a9fa859b3af6e3808659e6c0f0884656c1431a7c"
+        },
+        {
+          "path": "packages/chain-adapters/dist/index.d.ts",
+          "sha256": "3e02bfb229e0bbd31d116e3cca7b7015380f0e6f6d04e8b161549433a5320ee0"
+        },
+        {
+          "path": "packages/chain-adapters/dist/index.js",
+          "sha256": "029c7f8c1aefdacba0566fd6168e2129a4a58eb2815d21afb12ac5d66f55c55a"
+        },
+        {
+          "path": "packages/chain-adapters/dist/index.js.map",
+          "sha256": "515be905ffc1c49df333964d3eb11c8852eaa7fbbea9b7f99e76e2ebe559a424"
+        },
+        {
+          "path": "packages/chain-adapters/dist/logs.d.ts",
+          "sha256": "8a7764d5b481557de4694131779a1328d7fc9a352aba30658476ed02c42304d2"
+        },
+        {
+          "path": "packages/chain-adapters/dist/logs.js",
+          "sha256": "cc84acd5bfeb6ddfd0ecb62e6c22e9ec89208a4c4c4e2d6ef01255d0e3eace3b"
+        },
+        {
+          "path": "packages/chain-adapters/dist/logs.js.map",
+          "sha256": "8ad4d455017bfa13d2c8dcc7d0a7d2a40d10920a535caf59d48ec11997a9d314"
+        },
+        {
+          "path": "packages/chain-adapters/dist/payments.d.ts",
+          "sha256": "6d0e2dcb926c9c0a2e74efbb3522b9545c1b53962f6aa2feb422b8ea12261f60"
+        },
+        {
+          "path": "packages/chain-adapters/dist/payments.js",
+          "sha256": "0da4a1f94b38de8512b70ff8386986a66ce9aa114650bf42d9c5b590e3521581"
+        },
+        {
+          "path": "packages/chain-adapters/dist/payments.js.map",
+          "sha256": "cfc8f3209cccb1abc5a91cb3a482600970a55c64ff0bed5e5a5fb3ec5bc69f1f"
+        },
+        {
+          "path": "packages/chain-adapters/dist/permit.d.ts",
+          "sha256": "984f71ad93fbc4d91b4773ac58b2fe9fee6b33bbef9623a02eddbbd50c917c22"
+        },
+        {
+          "path": "packages/chain-adapters/dist/permit.js",
+          "sha256": "b1c3861ac802c41b490962efd1ed7ef8b18981d61cb81b472d8e58fd6b698361"
+        },
+        {
+          "path": "packages/chain-adapters/dist/permit.js.map",
+          "sha256": "eeb57b7900c20f5e920196de7269527e0781b3c9dc742a0820bdb234fa7489bd"
+        },
+        {
+          "path": "packages/chain-adapters/dist/quote.d.ts",
+          "sha256": "ff5feb6d72f07747e0d6d9c5a071e94b843cb449c683744f373887683fa3af85"
+        },
+        {
+          "path": "packages/chain-adapters/dist/quote.js",
+          "sha256": "432b99bf4c4015a05fa7a4798b7155d71836a6f3cdceb23afe2b0c6e77f7c9a6"
+        },
+        {
+          "path": "packages/chain-adapters/dist/quote.js.map",
+          "sha256": "81d202fbc0622d659e1b01aab87471949b3926eec909ca01918747f7d936af29"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registry.d.ts",
+          "sha256": "64765841653d9b05ce5a48ab7b6711ce735fdf5ddf658d61711d656e7e731c88"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registry.js",
+          "sha256": "a78f08dac105c5cb3a95f710482a83a896448e17adec5d5f2768aa1f5a863f9a"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registry.js.map",
+          "sha256": "4063a413599b39d406ee79e794a4bfc8b9a55544bbf0bf4779c6e87046c4475b"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registryDelegation.d.ts",
+          "sha256": "ff177300a2966ed1aa9b9c914864a462f7b5d38fb11577327488e832f53d1fa0"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registryDelegation.js",
+          "sha256": "af0f2f99c102ab97ad1080625348996567564d89bfa53ff723d5a03008b89581"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registryDelegation.js.map",
+          "sha256": "e6f43a02c1a846daee45b951bd4e48f4d46a98b8d3e518e7d7257f3181fe662a"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registryEns.d.ts",
+          "sha256": "74d239c8ae0c9385c0e3a1dcff7cb0f205f3c94103a3692c2e66c2fc4486ef93"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registryEns.js",
+          "sha256": "51e98bfc217b3974fe3168b7fe3ba09e3b47f4ebdaa9264695d597a53db4057b"
+        },
+        {
+          "path": "packages/chain-adapters/dist/registryEns.js.map",
+          "sha256": "c94577123f6290adebaa9cedd5073f588502fa1c9a1f805747e62351801c4b38"
+        },
+        {
+          "path": "packages/chain-adapters/dist/router.d.ts",
+          "sha256": "741e5c74c9940863ce19822cabdc950cb1b3dc598762cfe6dc110160d5bc8fd6"
+        },
+        {
+          "path": "packages/chain-adapters/dist/router.js",
+          "sha256": "309315c185a7aec6dfdbf03311ce43501bd2329f5d46b95940f5e4ffade35cfc"
+        },
+        {
+          "path": "packages/chain-adapters/dist/router.js.map",
+          "sha256": "64de935843942028089d48e4ced9c28c6ca86c59408fcba7a9549d3f81411104"
+        },
+        {
+          "path": "packages/chain-adapters/dist/rpc.d.ts",
+          "sha256": "259bc92ffc9bae20df693b4eaeac49bcc6b2e799f647c60bf609aa830ed8a758"
+        },
+        {
+          "path": "packages/chain-adapters/dist/rpc.js",
+          "sha256": "760eb6fd27e2d7f852c27caa1368b8b032df08e435da054f04aab20825b037f0"
+        },
+        {
+          "path": "packages/chain-adapters/dist/rpc.js.map",
+          "sha256": "35b37d33e6a72db91a22bae973a39d0755399d411f12fc9af4cf7fce82c85494"
+        },
+        {
+          "path": "packages/chain-adapters/dist/scanVerify.d.ts",
+          "sha256": "d694b210b0dfd6f066c8303f7f078ff97ead2ab64636caccaf00bb380e054022"
+        },
+        {
+          "path": "packages/chain-adapters/dist/scanVerify.js",
+          "sha256": "41f1c941d0529d1896ad90f5a42bde8939eb2e6b98745ebe18d190f7ac07e656"
+        },
+        {
+          "path": "packages/chain-adapters/dist/scanVerify.js.map",
+          "sha256": "a749987c70f44430114cc92824ac92256f9509fe0732efaa8ed416ef7565329e"
+        },
+        {
+          "path": "packages/chain-adapters/dist/sweep.d.ts",
+          "sha256": "abd630539195c029c996590ae615a1dde56a96ece6455cb97d4ab70d5882abe3"
+        },
+        {
+          "path": "packages/chain-adapters/dist/sweep.js",
+          "sha256": "6b1468b5f9c3c257fc11c42a69920a59b4df57c3cad021a488d615d190d14db0"
+        },
+        {
+          "path": "packages/chain-adapters/dist/sweep.js.map",
+          "sha256": "b50c2b22ebc4a99b855c8626576b2bff9773488171cc74054ea64dc4d1c8b6f5"
+        },
+        {
+          "path": "packages/chain-adapters/dist/types.d.ts",
+          "sha256": "9b9d96edcf6678c10fe160f106dc4e2be0b314bf966d8cf5605e8360e03654c3"
+        },
+        {
+          "path": "packages/chain-adapters/dist/types.js",
+          "sha256": "4fcc44263c5c6c5a0b403b76542a0b3bc0e20d44bbf231d71449b52853a7e48d"
+        },
+        {
+          "path": "packages/chain-adapters/dist/types.js.map",
+          "sha256": "78465b0b743287b60d2611a31a7c4ac2aa88f3ebbe9100c8e195da855f89cbbb"
+        },
+        {
+          "path": "packages/chain-adapters/dist/verify.d.ts",
+          "sha256": "87d71a8ec60cf1d6a5ba4224cf61d9b581e5ba63162cf061414dfb7fc71f7595"
+        },
+        {
+          "path": "packages/chain-adapters/dist/verify.js",
+          "sha256": "9de9373d4a336dad9d5596c709d5da1b28c38db859117d6ce5bc246413b29788"
+        },
+        {
+          "path": "packages/chain-adapters/dist/verify.js.map",
+          "sha256": "490da0e317f26c809f0e841c935d35246dd9cdb0c3e9525487901ff351922b35"
+        }
+      ],
+      "provenance": "Original own-source chain-adapters package build; complete command output preserved separately."
+    }
+  ],
+  "findings": [
+    "No blocking defect found in the limited existing correction/source review.",
+    "The ledger is an in-memory model. toJSON/from serialization itself is neither encryption nor browser persistence.",
+    "No hygiene/DestLedger browser caller exists in frozen #307 or #341 apps/web. The inspected privacy stack has the dependency and sweep caller.",
+    "The new helper shares the existing static enabled/testnet metadata policy; it does not independently observe a live RPC network or finality.",
+    "Package tests and build do not qualify a combined #339/#341/privacy application tree or browser bundle."
+  ]
+}
