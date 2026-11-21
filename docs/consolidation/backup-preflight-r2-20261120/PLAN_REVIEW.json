@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "date": "2026-11-20",
+  "scope": "read-only immutable local Git source review",
+  "baseline": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+  "donor_head": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+  "donor_runtime": "49535f3bdbdda6f133e397097e56a8dde8413d94",
+  "donor_runtime_identical_at_refreshed_head": true,
+  "tests_executed": false,
+  "source_edits": false,
+  "reference_mutations": false,
+  "recommendation": "Recover three narrow ownership checks while preserving current separate busy state, durable writes, own-completion and idle suspension behavior.",
+  "paths": [
+    {
+      "path": "apps/web/src/views/SellerKeys.tsx",
+      "baseline_blob": "84c801a8e9eb1550a96802177045360988c85900",
+      "donor_blob": "d509e675dda2910850c4a95a5697761107807f69"
+    },
+    {
+      "path": "apps/web/src/views/SellerKeys.operation.test.tsx",
+      "baseline_blob": "29fd9ccaf8226c501e7c1d6e075822960507017c",
+      "donor_blob": "05c846289be5827c2e9028c28661b1c2f242c9b0"
+    },
+    {
+      "path": "apps/web/e2e/backup-ownership.spec.ts",
+      "baseline_blob": null,
+      "donor_blob": "78bc60dcd7e871166d632dd3b92302cc643eac8e"
+    }
+  ],
+  "missing_behaviors": [
+    {
+      "id": "export_authorization_owner",
+      "location": "SellerKeys.onExport",
+      "change": "Check currentOperation and captured session immediately after authorizeKeyExport, before exportKeystore.",
+      "acceptance": "Superseded authorization resolution invokes neither encryption nor download and leaves the new owner pending."
+    },
+    {
+      "id": "unlock_preflight_owner",
+      "location": "SellerKeys.onUnlockVault / unlockVault",
+      "change": "Own recoverability preflight using the same controller passed to decryption; retire only this owner on false, stale or rejected preflight.",
+      "acceptance": "Cancel preflight, begin durable delete, resolve preflight: no unlock call, no stale notice, delete remains busy. False/rejected current preflight releases controls appropriately."
+    },
+    {
+      "id": "synchronous_durable_write_owner",
+      "location": "SellerKeys.onSaveVault / onDeleteVault / unlock entries",
+      "change": "Independent ref/token rejects overlapping save/delete and unlock; only initiating durable settlement releases it.",
+      "acceptance": "Forced resubmit during pending save invokes save once; cancellation, session replacement and idle lock do not release save/delete ownership."
+    }
+  ],
+  "donor_case_groups": [
+    {"group": "superseded export authorization", "cases": 1, "disposition": "missing"},
+    {"group": "export to verification, resolve/reject", "cases": 2, "disposition": "present; assertions strengthened"},
+    {"group": "verification to export, resolve/reject", "cases": 2, "disposition": "present; assertions strengthened"},
+    {"group": "unlock to verify/export, resolve/reject", "cases": 4, "disposition": "present; matrix strengthened"},
+    {"group": "verification to unlock", "cases": 1, "disposition": "present"},
+    {"group": "cancel verification and newer verification", "cases": 1, "disposition": "present"},
+    {"group": "verification lock/session/unmount", "cases": 3, "disposition": "present"},
+    {"group": "save lifetime with forced resubmit", "cases": 1, "disposition": "lifetime present; synchronous guard missing"},
+    {"group": "delete lifetime through edits/cancel/lock", "cases": 1, "disposition": "present"},
+    {"group": "canceled preflight then durable delete", "cases": 1, "disposition": "missing"}
+  ],
+  "donor_expanded_case_count": 17,
+  "must_preserve": [
+    "Separate unlockBusy and vaultWriteBusy lifetimes",
+    "Current pending deletion test's explicit session-replacement boundary",
+    "Own completion after session effects; exact installed summary identity",
+    "No generation increment for own session installation effect",
+    "Vault step-up, exact-ciphertext deletion and VaultSavedForPreviousKeysError",
+    "Suspended sole-copy encrypted recovery and hidden ordinary identity/archive/registry",
+    "Current session/key-vault/Sweep safeguards"
+  ],
+  "e2e_source_review": {
+    "journeys": 2,
+    "real_crypto": true,
+    "holds": ["native AES-GCM completion", "designated uploaded file read"],
+    "new_product_fixture_required_from_source": false,
+    "case_timeout_seconds": 120,
+    "external_requests": "blocked",
+    "does_not_cover": ["vault recoverability preflight", "durable save/delete", "actual idle suspension"],
+    "execution_status": "not executed"
+  },
+  "out_of_scope": [
+    "Whole donor component replacement",
+    "KeyOperation/pendingOperation state rewrite unless integration requires it",
+    "Session/key-vault/Sweep semantic changes",
+    "Hosted relayer, fees and contracts"
+  ],
+  "blockers_from_source_review": [],
+  "integration_owner": "/root"
+}

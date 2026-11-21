@@ -1,0 +1,198 @@
+{
+  "reviewer": "994a0d214fb9-root-r3",
+  "at_utc": "2026-11-20T23:25:16.125010+00:00",
+  "verdict": "APPROVE bounded test synchronization for publication; exact-source hosted qualification remains required",
+  "base": "e31a090501b3f5e77afcee812323e6f69e1fd565",
+  "qualified_source": "9ca941305028fca0e68f86ca7e3ebe2becee724d",
+  "qualified_tree": "4f2a1e769e71534130a2971e4472fdad6a6fdff6",
+  "reviewed_paths": [
+    "apps/web/src/views/Pay.requestFile.test.tsx"
+  ],
+  "added_lines": 9,
+  "deleted_lines": 0,
+  "original_test_reconstructible_byte_for_byte": true,
+  "real_KDF_and_actual_submitted_promise_preserved": true,
+  "no_additional_operation_or_mocked_result": true,
+  "original_assertions_and_15s_query_and_60s_test_limit_unchanged": true,
+  "all_production_config_dependency_and_workflow_objects_unchanged": true,
+  "artifact_count": 29,
+  "original_bytes": 9076754,
+  "all_wrappers_match_hash_length_and_original_bytes": true,
+  "artifacts": [
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-backup-hosted-original.log.artifact.json",
+      "original": "r3-backup-hosted-original.log",
+      "bytes": 330518,
+      "sha256": "c3512cbf4a860b3444f418b2070476c9cc0ccc3baff73db6a270abc696ccfa89"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage--lcov.info.artifact.json",
+      "original": "r3-request-file-baseline-coverage/lcov.info",
+      "bytes": 400604,
+      "sha256": "59cc6f09c90be5fa6a5c65f6bf5963b2465649b102c845f2cbfc5244dfb1ba21"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage-run.json.artifact.json",
+      "original": "r3-request-file-baseline-coverage-run.json",
+      "bytes": 879,
+      "sha256": "3930a7e8bef1aacfc5f9db8516e0d0cd953fcd6d01a19fe34f768e3e5a74f9ec"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.json.artifact.json",
+      "original": "r3-request-file-baseline-coverage.json",
+      "bytes": 3706167,
+      "sha256": "22713c72b51938ce9eea1e2ef17a7cc62f7bb52f846d4ca30de927201255d26b"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-coverage.log.artifact.json",
+      "original": "r3-request-file-baseline-coverage.log",
+      "bytes": 13911,
+      "sha256": "23ab66cee15a412bc9021019dc0e9e826b44d5eba1267a6a7e773bcf53a0b1c5"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline-run.json.artifact.json",
+      "original": "r3-request-file-baseline-run.json",
+      "bytes": 637,
+      "sha256": "e16d8e5cbc39768a92eee0075046d792cfb4543c39e78b133faf26487177ec68"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.json.artifact.json",
+      "original": "r3-request-file-baseline.json",
+      "bytes": 6528,
+      "sha256": "b6edce4c13e696f09fcd7d4aa0c8665e5818f2b958bd190edc4487cc44353c84"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-baseline.log.artifact.json",
+      "original": "r3-request-file-baseline.log",
+      "bytes": 603,
+      "sha256": "3c60b39f9d64f979869e7bd7d5849752bd715fd0867d942ed579a0d62d57622d"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-build-artifacts.json.artifact.json",
+      "original": "r3-request-file-build-artifacts.json",
+      "bytes": 2998,
+      "sha256": "81855e26fe223cd171fe6511310ecd0fa291430fc711a354ed0b05aa24905b7b"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility-run.json.artifact.json",
+      "original": "r3-request-file-compatibility-run.json",
+      "bytes": 924,
+      "sha256": "6697a5a0ab7a3a975791f4db3d25f3a3d5775910db9e4221143bf946c7b65bb3"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.json.artifact.json",
+      "original": "r3-request-file-compatibility.json",
+      "bytes": 64193,
+      "sha256": "626d371156377a31d97f8d28ff0521ba63b7720c749bef1fec9b14334c5db98c"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-compatibility.log.artifact.json",
+      "original": "r3-request-file-compatibility.log",
+      "bytes": 4286,
+      "sha256": "26306b8ef91a1a86df9430e86c002051eb6d9e3996ba4bd313ea1193d2277da5"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage--lcov.info.artifact.json",
+      "original": "r3-request-file-corrected-coverage/lcov.info",
+      "bytes": 400604,
+      "sha256": "d4e0d47d7735c0cadf378691aff20cc9f8d05851d552d6758ae21189cdd2167a"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage-run.json.artifact.json",
+      "original": "r3-request-file-corrected-coverage-run.json",
+      "bytes": 905,
+      "sha256": "8f3e0549ca90b3b936d7d2777681a1f140efc220fc69eb1a33bb1ec53eb7b30e"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.json.artifact.json",
+      "original": "r3-request-file-corrected-coverage.json",
+      "bytes": 3706169,
+      "sha256": "a3a181476d1a740d3a1abfa8defdabc3666bd8428bff51abcc304226d5c1eeb8"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-corrected-coverage.log.artifact.json",
+      "original": "r3-request-file-corrected-coverage.log",
+      "bytes": 14080,
+      "sha256": "f5eb2e5da64a3c6c10e75e43a7763a3027d7cedee7be282a88d9f3cc61b40665"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-dependency-provenance.json.artifact.json",
+      "original": "r3-request-file-dependency-provenance.json",
+      "bytes": 408027,
+      "sha256": "6ea87aa01d537753fc17b34043aa77514386f573f20f05d639928d8360a796e2"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build-run.json.artifact.json",
+      "original": "r3-request-file-lean-build-run.json",
+      "bytes": 665,
+      "sha256": "fe6b723482e3e8de5cedbdda62aedd9021287834b214b0e1a517f82357a6e7f2"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lean-build.log.artifact.json",
+      "original": "r3-request-file-lean-build.log",
+      "bytes": 2509,
+      "sha256": "936de55b422668bb74532f73555356b1dae788b1bd944695300c61409241132e"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-run.json.artifact.json",
+      "original": "r3-request-file-lint-run.json",
+      "bytes": 559,
+      "sha256": "2ea99c11b26e15a40ffd62a169dfaa47ae01606c823aebb8ea81649cfa3a513c"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial-run.json.artifact.json",
+      "original": "r3-request-file-lint-serial-run.json",
+      "bytes": 558,
+      "sha256": "70c5e55f602ae0327e125ab88eae61a5f25384a77b580e92bdb4e8aa529b1b54"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint-serial.log.artifact.json",
+      "original": "r3-request-file-lint-serial.log",
+      "bytes": 228,
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-lint.log.artifact.json",
+      "original": "r3-request-file-lint.log",
+      "bytes": 593,
+      "sha256": "441a148de077441d4ee1d6003d6d631ece87ce6fe28d440dc39ce83772761986"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-run.py.artifact.json",
+      "original": "r3-request-file-run.py",
+      "bytes": 1651,
+      "sha256": "12ce73ee49180d005961a6cd32faee3c0724f948693a8c3a0d02372f6a50b906"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets-run.json.artifact.json",
+      "original": "r3-request-file-secrets-run.json",
+      "bytes": 542,
+      "sha256": "155f7685729f472810e91ee07d72db56bcd2db10f3e33e895fd4c5f367f72998"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-secrets.log.artifact.json",
+      "original": "r3-request-file-secrets.log",
+      "bytes": 266,
+      "sha256": "273277e5da1ce7eea08d91903610788d94c50266906f03c78a247dc730dd22b9"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-source-provenance.json.artifact.json",
+      "original": "r3-request-file-source-provenance.json",
+      "bytes": 6372,
+      "sha256": "420e0a0ed7f9757d8f30b8a8ef0c2640153a19cd04d8828377cdd4f0769d9450"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck-run.json.artifact.json",
+      "original": "r3-request-file-typecheck-run.json",
+      "bytes": 562,
+      "sha256": "2decc7d9db22f44af967ef1f1019a729e39889561231cb2c520e22ee108ac2b4"
+    },
+    {
+      "path": "docs/consolidation/request-file-async-r3-20261120/outputs/r3-request-file-typecheck.log.artifact.json",
+      "original": "r3-request-file-typecheck.log",
+      "bytes": 216,
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    }
+  ],
+  "execution_note": "Independent source/integrity review; no duplicate test run. Author qualification and failed attempts remain source-pinned."
+}
