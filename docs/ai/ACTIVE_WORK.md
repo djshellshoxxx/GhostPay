@@ -1,3 +1,32 @@
+# Solana/TRON interoperability recovery — 2026-11-21 UTC
+
+Worker: `/root/chain_interop_recovery`, delegated by coordinator `5ceb6203640a-root`.
+Owned branch: `recover/ghostpay-chain-interop-20261121-5ceb`.
+Verified live main/base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/chain-solana/**`, `packages/chain-tron/**`,
+`test-vectors/meta-address-sol-tron-v1.json`, and the three relevant CLI files
+`packages/cli/src/chain-commands.test.ts`, `packages/cli/src/commands/chain.ts`,
+`packages/cli/src/payment-context.ts`; additive claim and a source-pinned handoff.
+Task: selectively recover existing #211 G5/G5b compatibility and safe request
+construction changes, preserving exact current browser-facing adapter sources.
+Current #211 head `a92658b1ef6b95ff0145b2e1933d0047d51289d5` says its workers
+finished; its original branch remains reserved and unchanged. #218 remains an
+open historical CLI owner, but its three relevant files match current main.
+No existing PR or other worktree is modified. #369 owns separate web TRON adapter
+paths, which are outside this recovery.
+Acceptance: documented Solana/TRON formats and deterministic shared reference
+vectors agree with the browser packages; unsupported unbound TRON construction
+refuses; CLI reports the supported Solana cluster and fixed legacy-format errors.
+Run corrected-source package/CLI coverage, ordinary interoperability properties,
+typecheck, lint and builds. Preserve original assertions and exact donor SHAs.
+Do not execute vulnerability reproductions, construct exploits or send real
+payments. No contracts, fees, custody, dependencies or network policy changes.
+The generation-11 integration lease remains held by `994a0d214fb9-root-r3`.
+This worker has no remote-write, merge, deployment or release authority. Root
+owns independent review, new owned publication and final shared integration gates.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
