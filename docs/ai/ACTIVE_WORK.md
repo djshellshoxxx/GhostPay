@@ -771,3 +771,13 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# GP-BUG-R4 — fiat separator round-trip failure (2026-11-21)
+
+- Worker: one isolated bug-repair coordinator, no independent verifier available. Branch: `automation/20261121/bug/fiat-overlapping-separator-r4`; exact starting main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned paths only: `packages/ux-fiat/src/format.ts`, new `packages/ux-fiat/src/format.separator.test.ts`, this additive ownership entry, and new `docs/handoffs/FIAT_SEPARATOR_ROUNDTRIP_20261121.md`. Do not change shared existing `fiat.test.ts` (broad PRs #278/#372 include it).
+- Observed defect: `formatFiatParts` accepts groupSeparator `'..'` and decimalSeparator `'.'`, and renders 1,234.56 minor-equivalent as `1..234.56`; `parseFiatInput` rejects that emitted text as multiple decimal separators. Source blob `ef6adf3fb5833d9746eb272813e7c4f5bc2c1409`; isolated Node 22 source-equivalent reproduction RED (not repository Vitest).
+- Acceptance: regression committed before source change; parse existing valid rendered multi-character group separators by longest complete token, preserve normal US/DE grouping and explicit malformed-input rejection. Scope only the existing pure fiat formatter/parser; no payment interactions, dependencies, feature additions, deployment, broad refactors or shared branches.
+- Ownership: at discovery, live open-PR title/body search for `ux-fiat` returned none; exhaustive per-file pagination of broad #278 (1,495 files) and #372 (1,907 files) found `fiat.test.ts` but not `format.ts` or new focused test. Sampled other broad #302/#307/#367/#371 and recent #390/#395/#404/#407/#409 without overlaps. Recheck all relevant heads before merge. Integration metadata ref `automation/ghostpay-integration-lock` at `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` reports generation-11 held by another coordinator: no merge/lock changes authorized.
