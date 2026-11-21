@@ -1,0 +1,502 @@
+{
+  "schema": 1,
+  "base": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    0,
+    230
+  ],
+  "source_files": [
+    "COMPARE_000_015.json",
+    "COMPARE_016_031.json",
+    "COMPARE_032_049.json",
+    "COMPARE_050_067.json",
+    "COMPARE_068_085.json",
+    "COMPARE_086_103.json",
+    "COMPARE_104_121.json",
+    "COMPARE_122_139.json",
+    "COMPARE_140_157.json",
+    "COMPARE_158_175.json",
+    "COMPARE_176_193.json",
+    "COMPARE_194_211.json",
+    "COMPARE_212_229.json"
+  ],
+  "count": 230,
+  "counts": {
+    "ancestry-redundant": 133,
+    "non-code-candidate": 17,
+    "code-candidate": 67,
+    "capped-review": 13
+  },
+  "capped": [
+    {
+      "branch": "automation/20261120T003500Z/coordinator/qr-runtime-qualification",
+      "head_sha": "ec546311f994fe1db544fe85ff2aa6db428d67d4",
+      "ahead_by": 399
+    },
+    {
+      "branch": "automation/20261120T003500Z/coordinator/qualification-evidence",
+      "head_sha": "52122f8b7076b2636d47f59f8bb607b189d3ab39",
+      "ahead_by": 402
+    },
+    {
+      "branch": "automation/20261120T0035Z/worker/qr-flag-coverage",
+      "head_sha": "4493793ad2c438fcc0f45f96851eac8967cb607a",
+      "ahead_by": 402
+    },
+    {
+      "branch": "automation/20261120T004531Z/feature/clipboard-guard",
+      "head_sha": "6c648770f5647ca7993cc108ef9e5ede9b46b4c9",
+      "ahead_by": 402
+    },
+    {
+      "branch": "automation/20261120T0115Z/coordinator/clipboard-qualification",
+      "head_sha": "04910f65dc0268e41519c4b1a44e83264272f0bf",
+      "ahead_by": 405
+    },
+    {
+      "branch": "automation/20261120T0115Z/worker/receipt-hash-validation",
+      "head_sha": "acbf39ee21ad35e9d14df958fa16fbcc2e230cae",
+      "ahead_by": 429
+    },
+    {
+      "branch": "automation/ghostpay-integration-lock",
+      "head_sha": "6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79",
+      "ahead_by": 24
+    },
+    {
+      "branch": "chatgpt/ghostpay-idle-lifecycle-20261119",
+      "head_sha": "7e6089e2e40a2a7daf93961eddef17d3fe8501fd",
+      "ahead_by": 84
+    },
+    {
+      "branch": "chatgpt/ghostpay-pinned-signer-completion-20261119",
+      "head_sha": "276aed60f19671cc6fa551be616b61041cb45b50",
+      "ahead_by": 91
+    },
+    {
+      "branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "head_sha": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "ahead_by": 85
+    },
+    {
+      "branch": "chatgpt/ghostpay-tm-hardening-20261118",
+      "head_sha": "c17e5c387e3c2b83f48b02ac33a669c44c69ced6",
+      "ahead_by": 86
+    },
+    {
+      "branch": "chatgpt/spec18-recovery-completion-20261118",
+      "head_sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "ahead_by": 89
+    },
+    {
+      "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "head_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "ahead_by": 89
+    }
+  ],
+  "errors": [],
+  "code_candidates": [
+    {
+      "branch": "audit/f03-browser-qualification-20261120",
+      "head_sha": "9a0e268034ee2321c5e333c35a3aa1825b1c8f63",
+      "ahead_by": 11,
+      "files": 107
+    },
+    {
+      "branch": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "head_sha": "c9e53c2c5908cbb64c104d096ce84773cf804ccc",
+      "ahead_by": 2,
+      "files": 33
+    },
+    {
+      "branch": "automation/20261119T073600Z/coordinator/integration-lock",
+      "head_sha": "61f2b3729fa4b78c90d43a1ecd8c351e9c22f577",
+      "ahead_by": 2,
+      "files": 19
+    },
+    {
+      "branch": "automation/20261119T083600Z/bug/json-canonical-array",
+      "head_sha": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+      "ahead_by": 6,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "head_sha": "ddfc8cfafa44b09103ced821f160c1d37fdfe552",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "head_sha": "a4c6f945adef0438bfd0b347fb7c11057e3973ce",
+      "ahead_by": 5,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "head_sha": "856b2d60fd38eabb8a1c856c95ad82f1c7d30c64",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261120/bug/policy-review-revocation-r1",
+      "head_sha": "ccc8c3521511e2a2b9b66ef11f12723d87ce5f44",
+      "ahead_by": 13,
+      "files": 9
+    },
+    {
+      "branch": "automation/20261120T0035Z/coordinator/cycle-checkpoint",
+      "head_sha": "a47648872e648fe7848a17080a5ffa1473e98e8b",
+      "ahead_by": 6,
+      "files": 70
+    },
+    {
+      "branch": "automation/20261120T0035Z/worker/qr-kind-primitives",
+      "head_sha": "17333ceda784ecdf5734a666ef57ee1d1e599296",
+      "ahead_by": 5,
+      "files": 5
+    },
+    {
+      "branch": "automation/20261120T0115Z/coordinator/cycle-checkpoint",
+      "head_sha": "77e01d9a78cde3073ac6881608ba1497d5cc7d0e",
+      "ahead_by": 10,
+      "files": 136
+    },
+    {
+      "branch": "automation/20261120T0243Z/worker/format-units-validation",
+      "head_sha": "7523da612ba365451f1d5c2dbc01d0bdeedbe8c7",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261120T0434Z/bug/erc20-simulation-result",
+      "head_sha": "87cf6c603338ad64ec02300fe42b96c3e0a205b9",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261120T0641Z/bug/payment-uri-decimal-options",
+      "head_sha": "c48c9917708ea86ea1a82a9d5d44f3add9876c98",
+      "ahead_by": 5,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261120T0835Z/bug/sellerkeys-operation-supersession",
+      "head_sha": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+      "ahead_by": 8,
+      "files": 5
+    },
+    {
+      "branch": "automation/20261120T1042Z/bug/ledger-actionable-activation",
+      "head_sha": "7e1a189c065f4ae437a2570f03922eb66ca38c2c",
+      "ahead_by": 3,
+      "files": 3
+    },
+    {
+      "branch": "automation/20261120T1241Z/bug/receipt-print-css",
+      "head_sha": "e0c583be2514b44af7f3b15619fb8160358f1470",
+      "ahead_by": 8,
+      "files": 11
+    },
+    {
+      "branch": "automation/20261120T1435Z/bug/chain-scoped-tags",
+      "head_sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+      "ahead_by": 9,
+      "files": 5
+    },
+    {
+      "branch": "automation/20261120T1600Z/bug/scan-tags-session-lifecycle",
+      "head_sha": "caa4bd7e3465b5d6655eb3dbe86e5f240eb21462",
+      "ahead_by": 9,
+      "files": 5
+    },
+    {
+      "branch": "automation/20261120T1840Z/bug/receipt-archive-identity",
+      "head_sha": "71632fa389ae93824b2f42d265278a9bd0f6de59",
+      "ahead_by": 5,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261120T2036Z/bug/btc-preview-network",
+      "head_sha": "692cac58b1c345137264936e60bee7b1e2eed8b2",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261120T2234Z/bug/sweep-ledger-seven-testnets",
+      "head_sha": "78137622011528a646ae94155ee4acf7f72e1e2a",
+      "ahead_by": 71,
+      "files": 196
+    },
+    {
+      "branch": "automation/20261121T0033Z/bug/router-duplicate-warning",
+      "head_sha": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261121T0238Z/qa/settings-partial-import-drafts",
+      "head_sha": "a8c10a965f726a6c2dc8eb7391f495df833b3e9b",
+      "ahead_by": 93,
+      "files": 218
+    },
+    {
+      "branch": "automation/20261121T0440Z/bug/payment-uri-utf16-failclosed",
+      "head_sha": "2844ec6c22fe179987585679a934e10033ff3384",
+      "ahead_by": 4,
+      "files": 4
+    },
+    {
+      "branch": "automation/20261121T0638Z/bug/payment-uri-runtime-types",
+      "head_sha": "3d57d9881033f60786fecb3a71562af445441a3e",
+      "ahead_by": 9,
+      "files": 6
+    },
+    {
+      "branch": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "head_sha": "08d2111a5fd3b71a148fc8648481200e680faf53",
+      "ahead_by": 8,
+      "files": 6
+    },
+    {
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "head_sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "ahead_by": 6,
+      "files": 3
+    },
+    {
+      "branch": "chatgpt/btc-spent-private-scan-20261118",
+      "head_sha": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "ahead_by": 18,
+      "files": 63
+    },
+    {
+      "branch": "chatgpt/btc-spent-qualification-20261119",
+      "head_sha": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "ahead_by": 20,
+      "files": 64
+    },
+    {
+      "branch": "chatgpt/btc-spentness-private-scan-20261118",
+      "head_sha": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "ahead_by": 15,
+      "files": 57
+    },
+    {
+      "branch": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "head_sha": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "ahead_by": 7,
+      "files": 7
+    },
+    {
+      "branch": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+      "head_sha": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+      "ahead_by": 2,
+      "files": 21
+    },
+    {
+      "branch": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "head_sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "ahead_by": 7,
+      "files": 16
+    },
+    {
+      "branch": "chatgpt/ghostpay-own-node-guard-20261118",
+      "head_sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "ahead_by": 3,
+      "files": 108
+    },
+    {
+      "branch": "chatgpt/ghostpay-pages-artifact-integrity-20261119",
+      "head_sha": "f39a9dd36c09f8b02d937c5f3d19676d334976d6",
+      "ahead_by": 6,
+      "files": 3
+    },
+    {
+      "branch": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "head_sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "ahead_by": 3,
+      "files": 114
+    },
+    {
+      "branch": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "head_sha": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "ahead_by": 3,
+      "files": 75
+    },
+    {
+      "branch": "chatgpt/ghostpay-recovery-review-20261118",
+      "head_sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "ahead_by": 7,
+      "files": 42
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "head_sha": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "ahead_by": 2,
+      "files": 2
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "head_sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "ahead_by": 5,
+      "files": 5
+    },
+    {
+      "branch": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "head_sha": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "ahead_by": 6,
+      "files": 6
+    },
+    {
+      "branch": "chatgpt/ghostpay-sonar-review-20261118",
+      "head_sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "ahead_by": 6,
+      "files": 41
+    },
+    {
+      "branch": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "head_sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "ahead_by": 1,
+      "files": 14
+    },
+    {
+      "branch": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "head_sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "ahead_by": 3,
+      "files": 107
+    },
+    {
+      "branch": "chatgpt/pages-browser-fixes-combined-20261114",
+      "head_sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "ahead_by": 5,
+      "files": 5
+    },
+    {
+      "branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "head_sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "ahead_by": 2,
+      "files": 2
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "head_sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "ahead_by": 1,
+      "files": 1
+    },
+    {
+      "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "head_sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "ahead_by": 2,
+      "files": 2
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "head_sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "ahead_by": 1,
+      "files": 1
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "head_sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "ahead_by": 3,
+      "files": 3
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "head_sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "ahead_by": 7,
+      "files": 7
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "head_sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "ahead_by": 2,
+      "files": 2
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "head_sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "ahead_by": 1,
+      "files": 1
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "head_sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "ahead_by": 2,
+      "files": 2
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "head_sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "ahead_by": 3,
+      "files": 2
+    },
+    {
+      "branch": "claude/exciting-brown-7v69cr",
+      "head_sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "ahead_by": 34,
+      "files": 57
+    },
+    {
+      "branch": "claude/ghostpay-completion-audit-ot5jjm",
+      "head_sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "ahead_by": 24,
+      "files": 45
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "head_sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "ahead_by": 1,
+      "files": 7
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+      "head_sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "ahead_by": 6,
+      "files": 14
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "head_sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "ahead_by": 6,
+      "files": 41
+    },
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "head_sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "ahead_by": 8,
+      "files": 15
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "head_sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "ahead_by": 4,
+      "files": 12
+    },
+    {
+      "branch": "claude/happy-maxwell-onl4x5",
+      "head_sha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "ahead_by": 1,
+      "files": 2
+    },
+    {
+      "branch": "claude/lucid-meitner-apalzc",
+      "head_sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+      "ahead_by": 19,
+      "files": 28
+    },
+    {
+      "branch": "claude/vibrant-cori-scu18b",
+      "head_sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "ahead_by": 1,
+      "files": 25
+    },
+    {
+      "branch": "claude/vigilant-johnson-yjgq94",
+      "head_sha": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "ahead_by": 1,
+      "files": 1
+    }
+  ]
+}
