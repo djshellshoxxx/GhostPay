@@ -393,7 +393,7 @@ export class EsploraClient {
 
   /** True when the outpoint is unspent according to the server (mempool included). */
   public async isUnspent(txid: string, vout: number, signal?: AbortSignal): Promise<boolean> {
-    if (!HEX64.test(txid) || !Number.isInteger(vout) || vout < 0) throw new SilentPaymentError('INVALID_INPUT');
+    if (!HEX64.test(txid) || !Number.isSafeInteger(vout) || vout < 0 || vout > 0xffff_ffff) throw new SilentPaymentError('INVALID_INPUT');
     const body = await this.json(`/tx/${txid}/outspend/${String(vout)}`, signal);
     if (!isRecord(body) || typeof body['spent'] !== 'boolean') return bad();
     return !body['spent'];
