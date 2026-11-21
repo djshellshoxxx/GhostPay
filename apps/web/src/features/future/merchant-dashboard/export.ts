@@ -76,6 +76,17 @@ function exportRefs(input: unknown): ReadonlySet<string> {
   return refs;
 }
 
+/** Do not silently replace malformed UTF-16 when turning merchant text into UTF-8 bytes. */
+function wellFormed(value: string): void {
+  for (let i = 0; i < value.length; i++) {
+    const unit = value.charCodeAt(i);
+    if (unit >= 0xd800 && unit <= 0xdbff) {
+      const next = value.charCodeAt(++i);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) return invalid();
+    } else if (unit >= 0xdc00 && unit <= 0xdfff) return invalid();
+  }
+}
+
 /** Read only own frozen data slots from the authenticated, already-built projection. */
 function cell(row: DashboardRow, column: DashboardExportColumn): string | number | readonly string[] {
   const descriptor = Object.getOwnPropertyDescriptor(row, column);
@@ -91,6 +102,7 @@ function cell(row: DashboardRow, column: DashboardExportColumn): string | number
     return Object.freeze(refs);
   }
   if (typeof value !== 'string') return invalid();
+  wellFormed(value);
   if (MONEY.has(column) && !ATOMIC_TOTAL.test(value)) return invalid();
   return value;
 }
@@ -144,8 +156,10 @@ export class DashboardExportCoordinator {
     const columns = exportColumns(form['columns']);
     const selected = exportRefs(form['invoiceRefs']);
     const rows: DashboardRow[] = [];
-    for (const row of projection.rows) {
-      if (!Object.isFrozen(row)) return invalid();
+    for (const candidate of ownArray(source['rows'], PROJECTION_ROWS_MAX)) {
+      if (candidate === null || typeof candidate !== 'object' || Array.isArray(candidate) || !Object.isFrozen(candidate) ||
+          Object.getPrototypeOf(candidate) !== Object.prototype) return invalid();
+      const row = candidate as DashboardRow;
       const invoiceRef = Object.getOwnPropertyDescriptor(row, 'invoiceRef');
       if (!invoiceRef || !Object.hasOwn(invoiceRef, 'value')) return invalid();
       if (selected.has(reference(invoiceRef.value as unknown))) rows.push(row);
