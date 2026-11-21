@@ -1,0 +1,443 @@
+{
+  "schema": "ghostpay-backup-preflight-qualification/1",
+  "scope": "SellerKeys operation ownership on the static Pages browser candidate",
+  "local_base": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+  "published_base": {
+    "pr": 331,
+    "head": "f5e04a30bd538b5dba6202885c8e1c3cceb31fa3"
+  },
+  "base_shared_tree": "9cf5006b14404c3d96ea0d040a42b5feab8d87ca",
+  "idle_runtime": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+  "tests_only": "1a69f706223f8bb976ec62f86d317aca8103290b",
+  "tests_tree": "9a23421e9d861c6781fbde4de5a76342685eeb93",
+  "reviewed_runtime": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+  "reviewed_tree": "bb94ccbebf3b672dbb3a726174fd1529aae510c4",
+  "runtime_blob": "eaa2b33de93edfab885ec2bbc98df6f2c8a23c19",
+  "donor": {
+    "pr": 314,
+    "head": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+    "runtime": "49535f3bdbdda6f133e397097e56a8dde8413d94",
+    "runtime_blob": "d509e675dda2910850c4a95a5697761107807f69",
+    "ownership_test_blob": "05c846289be5827c2e9028c28661b1c2f242c9b0",
+    "browser_test_blob": "78bc60dcd7e871166d632dd3b92302cc643eac8e"
+  },
+  "original_operation_test_blob": "29fd9ccaf8226c501e7c1d6e075822960507017c",
+  "runtime_diff": {
+    "paths": [
+      "apps/web/src/views/SellerKeys.tsx"
+    ],
+    "insertions": 57,
+    "deletions": 24
+  },
+  "independent_review": {
+    "decision": "approve scoped source; execution qualification remains separate",
+    "reviewer": "/root/backup_independent_review_r2",
+    "blocking_findings": [],
+    "report": "INDEPENDENT_REVIEW.md",
+    "data": "INDEPENDENT_REVIEW.json",
+    "reviewer_executed_tests": false
+  },
+  "runs": {
+    "red": {
+      "numTotalTests": 22,
+      "numPassedTests": 19,
+      "numFailedTests": 3,
+      "numPendingTests": 0,
+      "success": false
+    },
+    "green": {
+      "numTotalTests": 22,
+      "numPassedTests": 22,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "compat": {
+      "numTotalTests": 246,
+      "numPassedTests": 246,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  },
+  "counts_note": "The22-case GREEN and246-case compatibility runs overlap; do not add their totals. Compatibility covers12 complete files: eight SellerKeys files, two session files and two Sweep files.",
+  "execution_owners": {
+    "red": "/root",
+    "green_and_compatibility": "/root/remaining_branches_r3",
+    "original_typecheck_lint_build_collection": "/root"
+  },
+  "original_gates": {
+    "source": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+    "tree": "bb94ccbebf3b672dbb3a726174fd1529aae510c4",
+    "runtime": {
+      "node": "v24.22.3",
+      "npm": "11.19.1"
+    },
+    "results": [
+      {
+        "name": "typecheck",
+        "command": [
+          "npm",
+          "run",
+          "typecheck",
+          "--workspace",
+          "@ghostpay/web"
+        ],
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T18:48:45.343886+00:00",
+        "status": "finished",
+        "log": "/workspace/scratch/994a0d214fb9/backup-preflight-r2-typecheck.log",
+        "exit_code": 0,
+        "elapsed_seconds": 20.065
+      },
+      {
+        "name": "lint",
+        "command": [
+          "npm",
+          "run",
+          "lint",
+          "--workspace",
+          "@ghostpay/web"
+        ],
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T18:49:05.409562+00:00",
+        "status": "finished",
+        "log": "/workspace/scratch/994a0d214fb9/backup-preflight-r2-lint.log",
+        "exit_code": 0,
+        "elapsed_seconds": 40.798
+      }
+    ]
+  },
+  "lean_build_and_collection": {
+    "source": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+    "tree": "bb94ccbebf3b672dbb3a726174fd1529aae510c4",
+    "results": [
+      {
+        "name": "lean-build",
+        "command": [
+          "npm",
+          "run",
+          "build",
+          "--workspace",
+          "@ghostpay/web"
+        ],
+        "profile": "lean",
+        "GP_COMMIT": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T18:50:40.124360+00:00",
+        "status": "finished",
+        "log": "/workspace/scratch/994a0d214fb9/backup-preflight-r2-lean-build.log",
+        "exit_code": 0,
+        "elapsed_seconds": 21.366
+      },
+      {
+        "name": "full-collection",
+        "command": [
+          "npm",
+          "run",
+          "test:e2e",
+          "--workspace",
+          "@ghostpay/web",
+          "--",
+          "e2e/backup-ownership.spec.ts",
+          "--list"
+        ],
+        "profile": "full",
+        "GP_COMMIT": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T18:51:01.497292+00:00",
+        "status": "finished",
+        "log": "/workspace/scratch/994a0d214fb9/backup-preflight-r2-full-collection.log",
+        "exit_code": 0,
+        "elapsed_seconds": 1.269
+      },
+      {
+        "name": "lean-collection",
+        "command": [
+          "npm",
+          "run",
+          "test:e2e",
+          "--workspace",
+          "@ghostpay/web",
+          "--",
+          "e2e/backup-ownership.spec.ts",
+          "--list"
+        ],
+        "profile": "lean",
+        "GP_COMMIT": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+        "NODE_OPTIONS": "--max-old-space-size=1536",
+        "started_at": "2026-11-20T18:51:02.766755+00:00",
+        "status": "finished",
+        "log": "/workspace/scratch/994a0d214fb9/backup-preflight-r2-lean-collection.log",
+        "exit_code": 0,
+        "elapsed_seconds": 1.507
+      }
+    ],
+    "browser_execution": false,
+    "artifact_files": [
+      {
+        "path": "_headers",
+        "bytes": 1761,
+        "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+      },
+      {
+        "path": "assets/ar-95zXR6fS.js",
+        "bytes": 307018,
+        "sha256": "e5f9952535fd90c1b5547c932fe6cf2812fdba6549da0d50ea7d0e05ba050c7a"
+      },
+      {
+        "path": "assets/es-WiftYO7y.js",
+        "bytes": 253485,
+        "sha256": "624dcddf7692419789c069276dcba7b3793f02515a753047298bd31fa5a4cb8b"
+      },
+      {
+        "path": "assets/index-lx_hRjVR.js",
+        "bytes": 1292896,
+        "sha256": "0a63ea7c01923021428930c3da3a841dc55a8c7e6c266bbcaa39c82a8452f5db"
+      },
+      {
+        "path": "assets/ja-C67A-DnB.js",
+        "bytes": 300359,
+        "sha256": "76dea40798727e60ed3d1ac42894521736e1e38414c10d7d9c6a9487f3e0e20b"
+      },
+      {
+        "path": "assets/jsQR-Ct1FLwmy.js",
+        "bytes": 129988,
+        "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f"
+      },
+      {
+        "path": "assets/rolldown-runtime-XKyaHtl9.js",
+        "bytes": 726,
+        "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+      },
+      {
+        "path": "assets/scanner.worker-k6gTvtBx.js",
+        "bytes": 62202,
+        "sha256": "4e2d5eb463bb7e379cba83fedd952078bb17fbfbb4466897fc39ee5e13f4dc16"
+      },
+      {
+        "path": "assets/style-CF4XsaTc.css",
+        "bytes": 11888,
+        "sha256": "e49301963aa3230db49475ca90ac300577214eba0dd095a49210a33670d8201d"
+      },
+      {
+        "path": "build-info.json",
+        "bytes": 178,
+        "sha256": "76d31ea3a7852a648a2c86e5b37f9861515ce56e5b2f49c11567dc58ef404a1a"
+      },
+      {
+        "path": "deployments/README.md",
+        "bytes": 861,
+        "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+      },
+      {
+        "path": "favicon.svg",
+        "bytes": 332,
+        "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+      },
+      {
+        "path": "ghostpay-lean-build.json",
+        "bytes": 103384,
+        "sha256": "d1b6efd2aa5e3b144a85ba9d54af683b8f8d7e078262451ebc19d614ad405668"
+      },
+      {
+        "path": "help.css",
+        "bytes": 3283,
+        "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+      },
+      {
+        "path": "help.html",
+        "bytes": 16886,
+        "sha256": "79e7721df4dafbb1548bb47377666ec402613ba07588423c5d4b21dd97cf64fd"
+      },
+      {
+        "path": "index.html",
+        "bytes": 3402,
+        "sha256": "a9fb9396ab8ac2fd4ccd100f61cd0f9b801f3ca36c1bbc8faadd2c68b0274a4e"
+      },
+      {
+        "path": "privacy.html",
+        "bytes": 8062,
+        "sha256": "7ef981ca48e292d4f898cd73904cf29eba468f7673933e1a8186eabb105d1890"
+      }
+    ],
+    "artifact_total_bytes": 2496711,
+    "build_info": {
+      "app": "ghostpay-web",
+      "version": "0.1.0",
+      "commit": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+      "manifestsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  },
+  "browser_execution": false,
+  "dependency_changes": false,
+  "config_or_threshold_changes": false,
+  "source_frozen_across_gates": true,
+  "lossless_artifacts": [
+    {
+      "original_filename": "backup-preflight-r2-red.json",
+      "path": "outputs/backup-preflight-r2-red.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 10827,
+      "original_sha256": "2053ea3aa90ad7e2469a065878c52d124e9903cc021c25dac71a4ec9b2045c5c"
+    },
+    {
+      "original_filename": "backup-preflight-r2-red.log",
+      "path": "outputs/backup-preflight-r2-red.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 84,
+      "original_sha256": "e237f64bc0af156fd4d77e4c5e6e78c31250f2aa15e9a44044dde642ec9d3f9e"
+    },
+    {
+      "original_filename": "backup-preflight-r2-red-run.json",
+      "path": "outputs/backup-preflight-r2-red-run.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 464,
+      "original_sha256": "24be95d77e1cf4a87c2043b0fb7cd183b1e142c2665131ec43781273eb4e3067"
+    },
+    {
+      "original_filename": "backup-preflight-r2-green.json",
+      "path": "outputs/backup-preflight-r2-green.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 9336,
+      "original_sha256": "b85b7559f83625fe98524e45a177fbfd94bc2bbf1ceedd4722b0e63907a827ad"
+    },
+    {
+      "original_filename": "backup-preflight-r2-green.log",
+      "path": "outputs/backup-preflight-r2-green.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 86,
+      "original_sha256": "130a7fc764e73fd8e45d64761a7ba09bc96c37fe807c111eeec5aea9290875ef"
+    },
+    {
+      "original_filename": "backup-preflight-r2-green-run.json",
+      "path": "outputs/backup-preflight-r2-green-run.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 685,
+      "original_sha256": "474d47239cb4520fe47754a8a81e7533629b42e22cf25604f9e0c5d972c5361b"
+    },
+    {
+      "original_filename": "backup-preflight-r2-compat.json",
+      "path": "outputs/backup-preflight-r2-compat.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 94812,
+      "original_sha256": "2eaa7b842a5c81e52e2e64dcf330381046b5b69f9e879d20b83df038c8c4eb0f"
+    },
+    {
+      "original_filename": "backup-preflight-r2-compat.log",
+      "path": "outputs/backup-preflight-r2-compat.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 87,
+      "original_sha256": "515f7366b3fcaad0b8e34c6d718004b76d8e9a4f86952fc5c604a8496156bc14"
+    },
+    {
+      "original_filename": "backup-preflight-r2-compat-run.json",
+      "path": "outputs/backup-preflight-r2-compat-run.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 1617,
+      "original_sha256": "c76dee9b75a115fdf477e7771dbc503aa9c5e425b98dbf17a9394814c97689dd"
+    },
+    {
+      "original_filename": "backup-preflight-r2-dependency-reuse.json",
+      "path": "outputs/backup-preflight-r2-dependency-reuse.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 566,
+      "original_sha256": "aa425f70b442dd05584370f788dc5fe8536c3a623247fea1d520ddb694dbe777"
+    },
+    {
+      "original_filename": "backup-preflight-r2-original-gates.json",
+      "path": "outputs/backup-preflight-r2-original-gates.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 1056,
+      "original_sha256": "07d511893ac0571b34dad3f7a150c2f581684d8f166f5de8e9a1f0efbe32d69a"
+    },
+    {
+      "original_filename": "backup-preflight-r2-typecheck.log",
+      "path": "outputs/backup-preflight-r2-typecheck.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 216,
+      "original_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "original_filename": "backup-preflight-r2-lint.log",
+      "path": "outputs/backup-preflight-r2-lint.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 228,
+      "original_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "original_filename": "backup-preflight-r2-build-collection.json",
+      "path": "outputs/backup-preflight-r2-build-collection.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 4810,
+      "original_sha256": "054a6f0ab95bc2c0ec64c22d1417f8aa52030057c2dbe83fc72de079cf61655a"
+    },
+    {
+      "original_filename": "backup-preflight-r2-lean-build.log",
+      "path": "outputs/backup-preflight-r2-lean-build.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 2509,
+      "original_sha256": "bdab9903612dd7085e277dba0c42916b811dba6276bc2d71da56252d91b2b6e8"
+    },
+    {
+      "original_filename": "backup-preflight-r2-full-collection.log",
+      "path": "outputs/backup-preflight-r2-full-collection.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 547,
+      "original_sha256": "34d2d2a5bffd263ff5b590f431f182421d4e44e489a67adb439eeaa0516d195c"
+    },
+    {
+      "original_filename": "backup-preflight-r2-lean-collection.log",
+      "path": "outputs/backup-preflight-r2-lean-collection.log.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 547,
+      "original_sha256": "34d2d2a5bffd263ff5b590f431f182421d4e44e489a67adb439eeaa0516d195c"
+    },
+    {
+      "original_filename": "backup-preflight-r3-author-evidence.json",
+      "path": "outputs/backup-preflight-r3-author-evidence.json.json",
+      "encoding": "gzip+base64",
+      "original_bytes": 16372,
+      "original_sha256": "e77c0cce8a80f8fd342ae8f195e2fce976ca6af79027f68c92723bde6e06be7d"
+    },
+    {
+      "original_filename": "backup-preflight-independent-review-r2.md",
+      "path": "INDEPENDENT_REVIEW.md",
+      "encoding": "identity",
+      "original_bytes": 6485,
+      "original_sha256": "cb3f5367d6cbb600d7160be25bf66b265fa105cd202216286229a6dd5ed84d4d"
+    },
+    {
+      "original_filename": "backup-preflight-independent-review-r2.json",
+      "path": "INDEPENDENT_REVIEW.json",
+      "encoding": "identity",
+      "original_bytes": 5376,
+      "original_sha256": "64a7570d58d96fa5c34ee20abca89c0b79f0fe722af256d6bca6da3bd78ea7d3"
+    },
+    {
+      "original_filename": "backup-preflight-independent-plan-r3.md",
+      "path": "PLAN_REVIEW.md",
+      "encoding": "identity",
+      "original_bytes": 8169,
+      "original_sha256": "f19ef842f71cfd087b5755a7a2845c81bb8b2bf19b315ee93e08cee5c7e07be6"
+    },
+    {
+      "original_filename": "backup-preflight-independent-plan-r3.json",
+      "path": "PLAN_REVIEW.json",
+      "encoding": "identity",
+      "original_bytes": 4802,
+      "original_sha256": "5d2dfcf7818ab73e4d1ab47fc413e1e12250c4db7e98ea4982c934411594b222"
+    }
+  ],
+  "remaining_gates": [
+    "Required checks on the exact published candidate, including the original full web coverage/no-coverage suite.",
+    "Actual full/lean hosted browser acceptance and applicable security/Pages promotion gates."
+  ],
+  "limits": [
+    "No local browser test body ran; static collection is not execution. The original e6 donor browser bodies also remained unexecuted after launch failure.",
+    "No full-web-suite or coverage-threshold success is claimed for this backup runtime.",
+    "Lean build uses GP_COMMIT equal to the local reviewed runtime, not a future published commit or the final docs commit.",
+    "The final handoff commit changes documentation only; application/test/configuration bytes remain those of the reviewed runtime.",
+    "No main merge, deployment, release or real transaction is claimed."
+  ]
+}

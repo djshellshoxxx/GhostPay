@@ -94,13 +94,13 @@ export function mockTron(wallet: TronWallet): MockTron {
         case '/wallet/getblockbylimitnext': {
           const start = body['startNum'] as number;
           const end = body['endNum'] as number;
-          const all = [
-            { n: 0, b: block(0, []) },
-            { n: FUNDED_BLOCK, b: block(FUNDED_BLOCK, [tx]) },
-          ];
-          const list = all.filter((x) => x.n >= start && x.n < end).map((x) => x.b);
           if (start === 0 && end === 1) {
             return ok({ block: [{ ...(block(0, []) as object), blockID: chain.genesis }] });
+          }
+          // A valid range includes empty blocks too; the adapter rejects silently omitted heights.
+          const list: unknown[] = [];
+          for (let n = start; n < end && n <= TIP_BLOCK; n++) {
+            list.push(block(n, n === FUNDED_BLOCK ? [tx] : []));
           }
           return ok({ block: list });
         }

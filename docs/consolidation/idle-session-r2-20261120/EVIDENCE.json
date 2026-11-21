@@ -1,0 +1,1210 @@
+{
+  "format": "ghostpay-idle-session-recovery/1",
+  "branch": "integration/ghostpay-idle-session-20261120-r2",
+  "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+  "donor": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+  "product_source": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+  "product_tree": "a349e60b012bff674530933088ed16196d701d22",
+  "documentation_predecessor": "2605e1bf7a8528b0ccbf66161a17fcdf7298e541",
+  "results": {
+    "red_passed": 10,
+    "red_expected_failed": 18,
+    "red_filtered": 40,
+    "green_passed": 575,
+    "green_failed": 0,
+    "green_skipped": 0,
+    "green_files": 26,
+    "full_web_typecheck": "passed",
+    "full_web_typed_lint": "passed",
+    "full_web_coverage_nocov": "pending separate frozen-head qualification",
+    "lean_build": "pending separate frozen-head qualification",
+    "browser_assertions_executed": 0,
+    "browser_collection_per_profile": 17
+  },
+  "records": {
+    "red": {
+      "source": "c13ee784410771dc56d818fd96ac684deba2ccc3",
+      "tree": "7516385a230ac599bdee995dd57fea7c43fba938",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/AppShell.idleClock.test.tsx",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "independent clock changes|never installs an unchecked second|keeps a new session on its own deadline|rejects a queued timeout|does not lock a replacement installed synchronously|does not let a queued timer|does not grant a fresh activity lease|locks before a resumed target handler|rejects an async secret-operation completion",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/idle-r2-red.json"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web",
+      "started_at": "2026-11-20T18:01:40.008081+00:00",
+      "elapsed_seconds": 4.336,
+      "exit_code": 1,
+      "dependency_reuse_record": "idle-r2-dependency-reuse.json"
+    },
+    "green": {
+      "source": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+      "tree": "a349e60b012bff674530933088ed16196d701d22",
+      "command": [
+        "node",
+        "../../node_modules/vitest/vitest.mjs",
+        "run",
+        "src/AppShell.idleClock.test.tsx",
+        "src/lib/session.idleLock.test.ts",
+        "src/lib/session.test.ts",
+        "src/lib/keyVault.test.ts",
+        "src/lib/keyVault.idb.test.ts",
+        "src/lib/scanCursorSlot.test.ts",
+        "src/lib/scanCheckpointPrivacy.test.ts",
+        "src/App.test.tsx",
+        "src/AppLean.test.tsx",
+        "src/AppShell.i18n.test.tsx",
+        "src/components/TagArchive.test.tsx",
+        "src/views/SellerKeys.test.tsx",
+        "src/views/SellerKeys.completion.test.tsx",
+        "src/views/SellerKeys.operation.test.tsx",
+        "src/views/SellerKeys.lock.test.tsx",
+        "src/views/SellerKeys.recovery.test.tsx",
+        "src/views/SellerKeys.storage.test.tsx",
+        "src/views/SellerKeys.i18n.test.tsx",
+        "src/lib/sweep.reviewAuthority.test.ts",
+        "src/lib/sweep.test.ts",
+        "src/views/Sweep.test.tsx",
+        "src/views/Sweep.quoteLifecycle.test.tsx",
+        "src/views/Sweep.privacy.test.tsx",
+        "src/lib/scanPrivacy.test.ts",
+        "src/i18n/securityKeys.test.ts",
+        "src/views/Scan.tags.scope.test.tsx",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/workspace/scratch/994a0d214fb9/idle-r2-green.json"
+      ],
+      "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep/apps/web",
+      "started_at": "2026-11-20T18:08:15.496816+00:00",
+      "elapsed_seconds": 117.064,
+      "exit_code": 0,
+      "selected_files": 26,
+      "coverage": false,
+      "dependency_reuse_record": "idle-r2-dependency-reuse.json"
+    },
+    "files": [
+      {
+        "file": "src/App.test.tsx",
+        "passed": 17,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/AppLean.test.tsx",
+        "passed": 13,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/AppShell.i18n.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/AppShell.idleClock.test.tsx",
+        "passed": 68,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/components/TagArchive.test.tsx",
+        "passed": 10,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/i18n/securityKeys.test.ts",
+        "passed": 12,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/Scan.tags.scope.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.completion.test.tsx",
+        "passed": 8,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.i18n.test.tsx",
+        "passed": 1,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.lock.test.tsx",
+        "passed": 2,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.operation.test.tsx",
+        "passed": 5,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.recovery.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.storage.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/SellerKeys.test.tsx",
+        "passed": 39,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/Sweep.privacy.test.tsx",
+        "passed": 17,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/Sweep.quoteLifecycle.test.tsx",
+        "passed": 71,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/views/Sweep.test.tsx",
+        "passed": 55,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/keyVault.idb.test.ts",
+        "passed": 5,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/keyVault.test.ts",
+        "passed": 23,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/scanCheckpointPrivacy.test.ts",
+        "passed": 7,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/scanCursorSlot.test.ts",
+        "passed": 17,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/scanPrivacy.test.ts",
+        "passed": 32,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/session.idleLock.test.ts",
+        "passed": 16,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/session.test.ts",
+        "passed": 25,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/sweep.reviewAuthority.test.ts",
+        "passed": 19,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      },
+      {
+        "file": "src/lib/sweep.test.ts",
+        "passed": 99,
+        "failed": 0,
+        "filtered_or_skipped": 0
+      }
+    ],
+    "gates": {
+      "source": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+      "tree": "a349e60b012bff674530933088ed16196d701d22",
+      "results": [
+        {
+          "name": "typecheck",
+          "command": [
+            "npm",
+            "run",
+            "typecheck",
+            "--workspace",
+            "@ghostpay/web"
+          ],
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep",
+          "started_at": "2026-11-20T18:10:25.496976+00:00",
+          "elapsed_seconds": 17.451,
+          "exit_code": 0,
+          "log": "/workspace/scratch/994a0d214fb9/idle-r2-typecheck.log"
+        },
+        {
+          "name": "lint",
+          "command": [
+            "npm",
+            "run",
+            "lint",
+            "--workspace",
+            "@ghostpay/web"
+          ],
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep",
+          "started_at": "2026-11-20T18:10:42.952517+00:00",
+          "elapsed_seconds": 39.144,
+          "exit_code": 0,
+          "log": "/workspace/scratch/994a0d214fb9/idle-r2-lint.log"
+        },
+        {
+          "name": "secrets",
+          "command": [
+            "bash",
+            "scripts/scan-secrets.sh"
+          ],
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep",
+          "started_at": "2026-11-20T18:11:22.109708+00:00",
+          "elapsed_seconds": 0.114,
+          "exit_code": 0,
+          "log": "/workspace/scratch/994a0d214fb9/idle-r2-secrets.log"
+        },
+        {
+          "name": "whitespace",
+          "command": [
+            "git",
+            "diff",
+            "--check",
+            "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+            "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4"
+          ],
+          "cwd": "/workspace/scratch/994a0d214fb9/GhostPay-sweep",
+          "started_at": "2026-11-20T18:11:22.227325+00:00",
+          "elapsed_seconds": 0.035,
+          "exit_code": 0,
+          "log": "/workspace/scratch/994a0d214fb9/idle-r2-whitespace.log"
+        }
+      ]
+    },
+    "dependency_reuse": {
+      "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "donor": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "dependency_source": "df7da89f7a5a5ba9a2b4223d16e3d34429582d50",
+      "configuration_identity_paths": [
+        "package.json",
+        "package-lock.json",
+        "apps/web/package.json",
+        "apps/web/vite.config.ts",
+        "apps/web/vitest.nocov.config.ts",
+        "apps/web/tsconfig.json",
+        "tsconfig.base.json",
+        "eslint.config.js"
+      ],
+      "fresh_install": false,
+      "mode": "reuse existing own worktree dependencies without mutation",
+      "configuration_identities": [
+        {
+          "path": "package.json",
+          "blob": "a4b3282474dbf3b55e1945c201d4a862aeb13670"
+        },
+        {
+          "path": "package-lock.json",
+          "blob": "8ce2a5bb315cd84f45d3351131de0914337224ae"
+        },
+        {
+          "path": "apps/web/package.json",
+          "blob": "087747cbd56412fe67551b10d874805d01e7f2a4"
+        },
+        {
+          "path": "apps/web/vite.config.ts",
+          "blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+        },
+        {
+          "path": "apps/web/vitest.nocov.config.ts",
+          "blob": "294c480e9bb915656cd8f525110d9f18b60727e0"
+        },
+        {
+          "path": "apps/web/tsconfig.json",
+          "blob": "6500e86eb5839bfa98d0193c88615e7a3c13039d"
+        },
+        {
+          "path": "tsconfig.base.json",
+          "blob": "8ccd16b348db2b9cdb3a99cade2a78df5e5a0797"
+        },
+        {
+          "path": "eslint.config.js",
+          "blob": "21ccbc8a72ff4b0fd2ee6ca6dae97d345e4c02ee"
+        }
+      ],
+      "checked_product_source": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+      "note": "Web tests use vite.config.ts; all listed files were verified present and blob-identical.",
+      "all_package_source_tree": "431df584223bbec5f165b6f97e75855de8c540f3",
+      "all_package_source_matches_existing_build_source": true
+    },
+    "source_manifest": {
+      "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "donor": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "head": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+      "tree": "a349e60b012bff674530933088ed16196d701d22",
+      "parents": [
+        "c13ee784410771dc56d818fd96ac684deba2ccc3",
+        "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+      ],
+      "paths": [
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "blob": "eb28639c0d949b1fe117d82def0a9aefa9ec2d87",
+          "sha256": "91f8f007256eced93eb632de0bde5c8a6f21d49bc63ffe1f34346ca9fc7bcc90",
+          "bytes": 30976
+        },
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "blob": "ff6b60cd8c04fa7c7429525e94ecaa94dbb65f23",
+          "sha256": "dba348b86d764aa4e7defc2e6ea498687df84201347a5e9bae4664626607de2f",
+          "bytes": 43865
+        },
+        {
+          "path": "apps/web/e2e/idle-session.spec.ts",
+          "blob": "c38a3ce515e22ec1af30c99058d228261a0028b7",
+          "sha256": "9205ced2ca237bc850c912018b50533ed795b2586dae902485e5007758232ed8",
+          "bytes": 9712
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "blob": "f8546586bd5d31946d47c0d2668a762d6456abe1",
+          "sha256": "aed0bd8e04be93ecd0a81bea672633563f01c0151254dd3ad7d3c67ff5a1d60c",
+          "bytes": 70848
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "blob": "4a9b7bc43151a0f1e0a0be9c42c7fe2396c71d24",
+          "sha256": "0941ccda351d1da0afcb404598e87fd12dc2ef1df6b3c0ef9e7927960dbc3087",
+          "bytes": 320646
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "blob": "527add3d4c0aa6d165da37ba56ed70ee44531aff",
+          "sha256": "3a1dc34f1c9cbcb79973f007a35929f0b6959f1eca5400a4bb7228c9bef76965",
+          "bytes": 238031
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "blob": "4e93535e4beebc8c1b7063ae0e0df020c2de6919",
+          "sha256": "18c0e2b42257c743d6b103630810241bd5d463d0dbd72e954f9b1f5791dfdbab",
+          "bytes": 267113
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "blob": "65d4e9ab1b885a127504efb552dc8d7740304c9e",
+          "sha256": "aef6eaea3ca95a92246f559908daa6c086d105f8500392a98b8192e71837bc7a",
+          "bytes": 313993
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "blob": "ba81445f5861a3895a364fb0c357fe09a3842d6e",
+          "sha256": "254b0308391e8bf98cf292c14a3162dbc42cdeb2eff106f385131ee6da00d5b7",
+          "bytes": 18077
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "blob": "50e26946f3061ccbb27a07de3498b04141ddf6f6",
+          "sha256": "866638df3683a4e800ed7b2bda77a6ccda1ee5fe0737d32a5c57f37819b78c78",
+          "bytes": 21063
+        },
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "blob": "87339004576a07cd42e526b7f6d6774910e103af",
+          "sha256": "3084fb1a1ac7961cea83289cc93b0a6cf0b8c8055ce903751cef7215c1707fa9",
+          "bytes": 18928
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "blob": "1f86243ef4b43d1696f7931f72d66b7ef72c6d48",
+          "sha256": "b36c455c2b9af746a03ca047108b4b520be683d36a44bc0203ed57ae481f2eb7",
+          "bytes": 81153
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "blob": "64cc5d20e5130258fdd124b8699132698472eb61",
+          "sha256": "668b5b1024938d78ec1884912871ebb5b15f6a0ace411dc10d301e0814056685",
+          "bytes": 20044
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+          "sha256": "3d6e10c5bb6b9d6dcd01d38601fcbf9409eeb3ac8a623e876ddf04b7ba380b5c",
+          "bytes": 20115
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+          "sha256": "79e45e76acf8e58a0570f895f0afc8a33aa6c6d8d9f3cf254e846a0db76467e3",
+          "bytes": 5763
+        },
+        {
+          "path": "apps/web/src/lib/session.idleLock.test.ts",
+          "blob": "6687571e30c952245c8a62c24e4b75b598a8d88d",
+          "sha256": "278bd3ec919e02d0f023daca5adad1e67b22c43db0f4c185be586118a524aaef",
+          "bytes": 15251
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "blob": "a5e257722752faf19699f5fa508e82d573c49d42",
+          "sha256": "cd8b9272f99b0f7f8e353a58e5c879adafe54bf4ce7c6c1188bab4217c667e88",
+          "bytes": 27224
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "blob": "84c801a8e9eb1550a96802177045360988c85900",
+          "sha256": "4e225ed27d7c961356b31b3cb0554e49b3b9a71413836a0b5a5e8fb47bf7c12b",
+          "bytes": 38824
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "blob": "e58a1ee3390fc3ca116617af676de1297af6332d",
+          "sha256": "e5ad6e84e8b14b3c024f807702b3733c72ae3525431a0e37e97ab2fca9993f49",
+          "bytes": 110788
+        },
+        {
+          "path": "docs/handoffs/idle-session-20261119/COMPLETION.md",
+          "blob": "aacc749fc566964d291726f2a91e428a3c7cea48",
+          "sha256": "6fa6b34b57bb1194f4b6d9e792aef8aabdc2a1bc407c910d9c2f5fdd9630e033",
+          "bytes": 11636
+        },
+        {
+          "path": "docs/handoffs/idle-session-20261119/REVIEW.md",
+          "blob": "6d7869c181f7021605e5a72ff91a814c18109517",
+          "sha256": "dd42e2ae2045f65c3135737b79d0a41ba4000bcf2881e615927531857b135e3d",
+          "bytes": 6485
+        },
+        {
+          "path": "docs/user/session-security.md",
+          "blob": "9c1843342a0147cc6ecd10d85a0c82a5b85645cd",
+          "sha256": "01a8b55fc55ba4192462b1baaf8e1e48537f93af09306e2d9da59f41d116e4e3",
+          "bytes": 5900
+        },
+        {
+          "path": "docs/user/set-up-stealth-meta-address.md",
+          "blob": "a88236c482be04e905951719d3e4470f5c493892",
+          "sha256": "cd3c87d71038a0525de0a33e98154466aaeb32ef5098796e2f41c2bee3805c77",
+          "bytes": 4734
+        },
+        {
+          "path": "docs/user/troubleshooting.md",
+          "blob": "89f07f026c7cdaf14592762822120f53d6772973",
+          "sha256": "b7a9b3f9dd701abbbe92deb454128900b8cf9ebc0b58f070a68f4821d20f5c0d",
+          "bytes": 6983
+        }
+      ]
+    },
+    "independent_source_review": {
+      "format": "ghostpay-independent-idle-recovery-review/1",
+      "reviewer": "/root/idle_review_r2",
+      "reviewed_at": "2026-11-20T18:08:33.070687+00:00",
+      "decision": "APPROVED FOR GREEN QUALIFICATION; no blocking runtime or test finding",
+      "validation_scope": "Read-only immutable source/test/fixture review, ancestry and blob comparisons, locale/claim preservation checks and git diff --check. No test, build, lint, typecheck, browser or live-RPC execution by this reviewer.",
+      "source": {
+        "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+        "donor": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+        "tests_only": "c13ee784410771dc56d818fd96ac684deba2ccc3",
+        "head": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+        "tree": "a349e60b012bff674530933088ed16196d701d22",
+        "parents": [
+          "c13ee784410771dc56d818fd96ac684deba2ccc3",
+          "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+        ],
+        "donor_exact_paths": [
+          "apps/web/src/AppShell.tsx",
+          "apps/web/src/lib/session.ts",
+          "apps/web/src/lib/keyVault.ts",
+          "apps/web/src/lib/scanCursorSlot.ts",
+          "apps/web/src/AppShell.idleClock.test.tsx",
+          "apps/web/src/lib/session.idleLock.test.ts",
+          "apps/web/src/lib/scanCursorSlot.test.ts",
+          "apps/web/src/components/TagArchive.test.tsx",
+          "apps/web/e2e/idle-session.spec.ts"
+        ],
+        "protected_equal_base_paths": [
+          "apps/web/src/views/Sweep.tsx",
+          "apps/web/src/views/Sweep.test.tsx",
+          "apps/web/src/views/Sweep.privacy.test.tsx",
+          "apps/web/src/lib/sweep.ts",
+          "apps/web/src/lib/sweep.test.ts",
+          "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+          "apps/web/src/views/SellerKeys.operation.test.tsx",
+          "apps/web/src/views/Scan.tsx",
+          "apps/web/src/views/Scan.tags.scope.test.tsx",
+          "apps/web/src/lib/scanPrivacy.ts",
+          "package.json",
+          "package-lock.json",
+          "apps/web/package.json",
+          "eslint.config.js",
+          "tsconfig.base.json",
+          "apps/web/tsconfig.json",
+          "apps/web/vitest.nocov.config.ts",
+          "apps/web/vite.config.ts"
+        ],
+        "sellerkeys_operation_handlers_byte_identical": true,
+        "catalogs": [
+          {
+            "path": "apps/web/locales/ar.json",
+            "retained_keys": 2269,
+            "added_keys": [
+              "app.idle.keptUnconfirmed",
+              "app.idle.suspended.body",
+              "app.idle.suspended.title",
+              "error.session.lockedBackupOnly"
+            ]
+          },
+          {
+            "path": "apps/web/locales/en.json",
+            "retained_keys": 2269,
+            "added_keys": [
+              "app.idle.keptUnconfirmed",
+              "app.idle.suspended.body",
+              "app.idle.suspended.title",
+              "error.session.lockedBackupOnly"
+            ]
+          },
+          {
+            "path": "apps/web/locales/es.json",
+            "retained_keys": 2269,
+            "added_keys": [
+              "app.idle.keptUnconfirmed",
+              "app.idle.suspended.body",
+              "app.idle.suspended.title",
+              "error.session.lockedBackupOnly"
+            ]
+          },
+          {
+            "path": "apps/web/locales/ja.json",
+            "retained_keys": 2269,
+            "added_keys": [
+              "app.idle.keptUnconfirmed",
+              "app.idle.suspended.body",
+              "app.idle.suspended.title",
+              "error.session.lockedBackupOnly"
+            ]
+          }
+        ],
+        "all_parent_nonempty_claim_lines_retained": true,
+        "changed_files": [
+          {
+            "path": "apps/web/DEVIATIONS.md",
+            "mode": "100644",
+            "blob": "eb28639c0d949b1fe117d82def0a9aefa9ec2d87",
+            "sha256": "91f8f007256eced93eb632de0bde5c8a6f21d49bc63ffe1f34346ca9fc7bcc90",
+            "bytes": 30976
+          },
+          {
+            "path": "apps/web/e2e/core-journey.spec.ts",
+            "mode": "100644",
+            "blob": "ff6b60cd8c04fa7c7429525e94ecaa94dbb65f23",
+            "sha256": "dba348b86d764aa4e7defc2e6ea498687df84201347a5e9bae4664626607de2f",
+            "bytes": 43865
+          },
+          {
+            "path": "apps/web/e2e/idle-session.spec.ts",
+            "mode": "100644",
+            "blob": "c38a3ce515e22ec1af30c99058d228261a0028b7",
+            "sha256": "9205ced2ca237bc850c912018b50533ed795b2586dae902485e5007758232ed8",
+            "bytes": 9712
+          },
+          {
+            "path": "apps/web/e2e/pages-devnet.spec.ts",
+            "mode": "100644",
+            "blob": "f8546586bd5d31946d47c0d2668a762d6456abe1",
+            "sha256": "aed0bd8e04be93ecd0a81bea672633563f01c0151254dd3ad7d3c67ff5a1d60c",
+            "bytes": 70848
+          },
+          {
+            "path": "apps/web/locales/ar.json",
+            "mode": "100644",
+            "blob": "4a9b7bc43151a0f1e0a0be9c42c7fe2396c71d24",
+            "sha256": "0941ccda351d1da0afcb404598e87fd12dc2ef1df6b3c0ef9e7927960dbc3087",
+            "bytes": 320646
+          },
+          {
+            "path": "apps/web/locales/en.json",
+            "mode": "100644",
+            "blob": "527add3d4c0aa6d165da37ba56ed70ee44531aff",
+            "sha256": "3a1dc34f1c9cbcb79973f007a35929f0b6959f1eca5400a4bb7228c9bef76965",
+            "bytes": 238031
+          },
+          {
+            "path": "apps/web/locales/es.json",
+            "mode": "100644",
+            "blob": "4e93535e4beebc8c1b7063ae0e0df020c2de6919",
+            "sha256": "18c0e2b42257c743d6b103630810241bd5d463d0dbd72e954f9b1f5791dfdbab",
+            "bytes": 267113
+          },
+          {
+            "path": "apps/web/locales/ja.json",
+            "mode": "100644",
+            "blob": "65d4e9ab1b885a127504efb552dc8d7740304c9e",
+            "sha256": "aef6eaea3ca95a92246f559908daa6c086d105f8500392a98b8192e71837bc7a",
+            "bytes": 313993
+          },
+          {
+            "path": "apps/web/src/AppShell.idleClock.test.tsx",
+            "mode": "100644",
+            "blob": "ba81445f5861a3895a364fb0c357fe09a3842d6e",
+            "sha256": "254b0308391e8bf98cf292c14a3162dbc42cdeb2eff106f385131ee6da00d5b7",
+            "bytes": 18077
+          },
+          {
+            "path": "apps/web/src/AppShell.tsx",
+            "mode": "100644",
+            "blob": "50e26946f3061ccbb27a07de3498b04141ddf6f6",
+            "sha256": "866638df3683a4e800ed7b2bda77a6ccda1ee5fe0737d32a5c57f37819b78c78",
+            "bytes": 21063
+          },
+          {
+            "path": "apps/web/src/components/TagArchive.test.tsx",
+            "mode": "100644",
+            "blob": "87339004576a07cd42e526b7f6d6774910e103af",
+            "sha256": "3084fb1a1ac7961cea83289cc93b0a6cf0b8c8055ce903751cef7215c1707fa9",
+            "bytes": 18928
+          },
+          {
+            "path": "apps/web/src/i18n/securityKeys.ts",
+            "mode": "100644",
+            "blob": "1f86243ef4b43d1696f7931f72d66b7ef72c6d48",
+            "sha256": "b36c455c2b9af746a03ca047108b4b520be683d36a44bc0203ed57ae481f2eb7",
+            "bytes": 81153
+          },
+          {
+            "path": "apps/web/src/lib/keyVault.ts",
+            "mode": "100644",
+            "blob": "64cc5d20e5130258fdd124b8699132698472eb61",
+            "sha256": "668b5b1024938d78ec1884912871ebb5b15f6a0ace411dc10d301e0814056685",
+            "bytes": 20044
+          },
+          {
+            "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+            "mode": "100644",
+            "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+            "sha256": "3d6e10c5bb6b9d6dcd01d38601fcbf9409eeb3ac8a623e876ddf04b7ba380b5c",
+            "bytes": 20115
+          },
+          {
+            "path": "apps/web/src/lib/scanCursorSlot.ts",
+            "mode": "100644",
+            "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+            "sha256": "79e45e76acf8e58a0570f895f0afc8a33aa6c6d8d9f3cf254e846a0db76467e3",
+            "bytes": 5763
+          },
+          {
+            "path": "apps/web/src/lib/session.idleLock.test.ts",
+            "mode": "100644",
+            "blob": "6687571e30c952245c8a62c24e4b75b598a8d88d",
+            "sha256": "278bd3ec919e02d0f023daca5adad1e67b22c43db0f4c185be586118a524aaef",
+            "bytes": 15251
+          },
+          {
+            "path": "apps/web/src/lib/session.ts",
+            "mode": "100644",
+            "blob": "a5e257722752faf19699f5fa508e82d573c49d42",
+            "sha256": "cd8b9272f99b0f7f8e353a58e5c879adafe54bf4ce7c6c1188bab4217c667e88",
+            "bytes": 27224
+          },
+          {
+            "path": "apps/web/src/views/SellerKeys.tsx",
+            "mode": "100644",
+            "blob": "84c801a8e9eb1550a96802177045360988c85900",
+            "sha256": "4e225ed27d7c961356b31b3cb0554e49b3b9a71413836a0b5a5e8fb47bf7c12b",
+            "bytes": 38824
+          },
+          {
+            "path": "docs/ai/ACTIVE_WORK.md",
+            "mode": "100644",
+            "blob": "e58a1ee3390fc3ca116617af676de1297af6332d",
+            "sha256": "e5ad6e84e8b14b3c024f807702b3733c72ae3525431a0e37e97ab2fca9993f49",
+            "bytes": 110788
+          },
+          {
+            "path": "docs/handoffs/idle-session-20261119/COMPLETION.md",
+            "mode": "100644",
+            "blob": "aacc749fc566964d291726f2a91e428a3c7cea48",
+            "sha256": "6fa6b34b57bb1194f4b6d9e792aef8aabdc2a1bc407c910d9c2f5fdd9630e033",
+            "bytes": 11636
+          },
+          {
+            "path": "docs/handoffs/idle-session-20261119/REVIEW.md",
+            "mode": "100644",
+            "blob": "6d7869c181f7021605e5a72ff91a814c18109517",
+            "sha256": "dd42e2ae2045f65c3135737b79d0a41ba4000bcf2881e615927531857b135e3d",
+            "bytes": 6485
+          },
+          {
+            "path": "docs/user/session-security.md",
+            "mode": "100644",
+            "blob": "9c1843342a0147cc6ecd10d85a0c82a5b85645cd",
+            "sha256": "01a8b55fc55ba4192462b1baaf8e1e48537f93af09306e2d9da59f41d116e4e3",
+            "bytes": 5900
+          },
+          {
+            "path": "docs/user/set-up-stealth-meta-address.md",
+            "mode": "100644",
+            "blob": "a88236c482be04e905951719d3e4470f5c493892",
+            "sha256": "cd3c87d71038a0525de0a33e98154466aaeb32ef5098796e2f41c2bee3805c77",
+            "bytes": 4734
+          },
+          {
+            "path": "docs/user/troubleshooting.md",
+            "mode": "100644",
+            "blob": "89f07f026c7cdaf14592762822120f53d6772973",
+            "sha256": "b7a9b3f9dd701abbbe92deb454128900b8cf9ebc0b58f070a68f4821d20f5c0d",
+            "bytes": 6983
+          }
+        ],
+        "source_diff_whitespace": "pass"
+      },
+      "findings": [
+        {
+          "id": "IDLE-R2-DOC-01",
+          "severity": "low",
+          "blocking": false,
+          "path": "docs/guides/troubleshooting-by-symptom.md",
+          "scope": "Live guidance rows under My keys or tags are gone",
+          "description": "The legacy guidance still counts a downloaded keystore as a recoverable idle copy and suggests a typed waiver can allow invoicing after unsaved keys survive idle. The recovered runtime requires a verified external copy for disposal and leaves a retained sole copy suspended with only encrypted backup/save/verification available.",
+          "recommended_change": "Update the two key/idle rows to distinguish a verified copy from an unverified download, describe suspended encrypted recovery, and require normal import or vault unlock to resume ordinary authority. Preserve the original source qualification checkpoint; this can be a documentation-only follow-up.",
+          "status": "Reported to root and author; nonblocking for runtime qualification."
+        }
+      ],
+      "assessed_invariants": [
+        "Idle lock increments session revision and suspends ordinary access before vault reads or view notifications; pending empty-session imports and captured operations become stale.",
+        "Ordinary synchronous/async secret borrowing and key guards evaluate the current idle deadline, including a promise continuation before browser events. Async temporary copies are tracked and wiped on suspension or clear, and stale results are refused.",
+        "Encrypted-only recovery uses a separately scoped guard for encrypted export, vault save and backup verification. It does not resume ordinary signing/scanning/spending; normal installation clears suspension and starts a new lease.",
+        "Clock observations are sampled once as a finite nonnegative pair; either elapsed deadline or rollback revokes. Session identity, active-effect flag, timer revision and lock revision guard queued callbacks and late custody results.",
+        "Activity after expiry cannot renew ordinary authority. Post-lock input renews only transient recovery-form cleanup, preserving the pending custody-decision identity.",
+        "Current private-checkpoint cache token checks active authority; the lender rechecks holder identity after borrowing and wipes refused temporary copies.",
+        "The SellerKeys automatic merge changes imports, subscription and visibility wrappers only. The full state/operation-handler region, including unlockBusy/vaultWriteBusy separation, is byte-identical to325.",
+        "Current Sweep source/helpers/tests, scanner/tag-scope code and dependency/configuration files are unchanged by the recovery.",
+        "The archive regression preserves mounted input-scrubbing assertions and separately checks actual expiry hides the archive, removes input values, retains the exact sole copy and permits only encrypted recovery.",
+        "Existing locale metadata and 2,269 message values per locale remain exact; only four idle notices were added. All nonempty parent ownership lines remain present.",
+        "A normal merge retains current #325, tests-only checkpoint and donor256 ancestry. All 24 changed files have mode 100644; no workflow, dependency, contract, crypto/KDF or release configuration changes."
+      ],
+      "browser_fixture_review": {
+        "core_initialization": "newProfile installs the mock clock and creates a blank page. openPayer only injects the wallet. The expiresAt\u2212300seconds anchor therefore runs before AppShell is mounted. reviewToFinalCheck invokes openFresh, which navigates about:blank and then the invoice URL.",
+        "pages_initialization": "The separate clocked payer context is created without changing the seller context. openPayer only creates a page/injects its wallet. Clock installation at expiresAt\u2212300seconds precedes openFresh.",
+        "deadline_isolation": "Each fixture advances to signed expiresAt + 300 seconds after final review. Ten wall-clock minutes cross invoice expiry within the unchanged 15-minute idle interval.",
+        "preserved_assertions": [
+          "Exact expired-invoice message",
+          "No Submitted heading",
+          "Zero wallet requests/transactions",
+          "Empty payment journal in core journey",
+          "Expired invoice reopening refuses Continue",
+          "Pages nonce/dry-run/on-chain expiry assertions unchanged"
+        ],
+        "execution_limit": "Source ordering is verified; the corrected full/lean browser journeys have not been executed by this reviewer and remain hosted qualification gates."
+      },
+      "qualifications_required": [
+        "Run complete original idle/AppShell/session/keyVault/checkpoint/archive/SellerKeys and preserved Sweep integration regression selections on the combined product source.",
+        "Run applicable original TypeScript, typed lint and build checks without weakening thresholds or policies.",
+        "Execute actual current-head full/lean browser and other required hosted/security checks before promotion; source approval and historical donor passes do not substitute.",
+        "Bind any later source correction to fresh review/qualification; documentation-only follow-ups may retain the product-source pin with exact tree provenance."
+      ]
+    },
+    "independent_integrity": {
+      "base": "1788f1e0a0fe1fb22bb887427c47bdd62db78c1a",
+      "donor": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "tests_only": "c13ee784410771dc56d818fd96ac684deba2ccc3",
+      "head": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+      "tree": "a349e60b012bff674530933088ed16196d701d22",
+      "parents": [
+        "c13ee784410771dc56d818fd96ac684deba2ccc3",
+        "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+      ],
+      "donor_exact_paths": [
+        "apps/web/src/AppShell.tsx",
+        "apps/web/src/lib/session.ts",
+        "apps/web/src/lib/keyVault.ts",
+        "apps/web/src/lib/scanCursorSlot.ts",
+        "apps/web/src/AppShell.idleClock.test.tsx",
+        "apps/web/src/lib/session.idleLock.test.ts",
+        "apps/web/src/lib/scanCursorSlot.test.ts",
+        "apps/web/src/components/TagArchive.test.tsx",
+        "apps/web/e2e/idle-session.spec.ts"
+      ],
+      "protected_equal_base_paths": [
+        "apps/web/src/views/Sweep.tsx",
+        "apps/web/src/views/Sweep.test.tsx",
+        "apps/web/src/views/Sweep.privacy.test.tsx",
+        "apps/web/src/lib/sweep.ts",
+        "apps/web/src/lib/sweep.test.ts",
+        "apps/web/src/lib/sweep.reviewAuthority.test.ts",
+        "apps/web/src/views/SellerKeys.operation.test.tsx",
+        "apps/web/src/views/Scan.tsx",
+        "apps/web/src/views/Scan.tags.scope.test.tsx",
+        "apps/web/src/lib/scanPrivacy.ts",
+        "package.json",
+        "package-lock.json",
+        "apps/web/package.json",
+        "eslint.config.js",
+        "tsconfig.base.json",
+        "apps/web/tsconfig.json",
+        "apps/web/vitest.nocov.config.ts",
+        "apps/web/vite.config.ts"
+      ],
+      "sellerkeys_operation_handlers_byte_identical": true,
+      "catalogs": [
+        {
+          "path": "apps/web/locales/ar.json",
+          "retained_keys": 2269,
+          "added_keys": [
+            "app.idle.keptUnconfirmed",
+            "app.idle.suspended.body",
+            "app.idle.suspended.title",
+            "error.session.lockedBackupOnly"
+          ]
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "retained_keys": 2269,
+          "added_keys": [
+            "app.idle.keptUnconfirmed",
+            "app.idle.suspended.body",
+            "app.idle.suspended.title",
+            "error.session.lockedBackupOnly"
+          ]
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "retained_keys": 2269,
+          "added_keys": [
+            "app.idle.keptUnconfirmed",
+            "app.idle.suspended.body",
+            "app.idle.suspended.title",
+            "error.session.lockedBackupOnly"
+          ]
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "retained_keys": 2269,
+          "added_keys": [
+            "app.idle.keptUnconfirmed",
+            "app.idle.suspended.body",
+            "app.idle.suspended.title",
+            "error.session.lockedBackupOnly"
+          ]
+        }
+      ],
+      "all_parent_nonempty_claim_lines_retained": true,
+      "changed_files": [
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "mode": "100644",
+          "blob": "eb28639c0d949b1fe117d82def0a9aefa9ec2d87",
+          "sha256": "91f8f007256eced93eb632de0bde5c8a6f21d49bc63ffe1f34346ca9fc7bcc90",
+          "bytes": 30976
+        },
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "mode": "100644",
+          "blob": "ff6b60cd8c04fa7c7429525e94ecaa94dbb65f23",
+          "sha256": "dba348b86d764aa4e7defc2e6ea498687df84201347a5e9bae4664626607de2f",
+          "bytes": 43865
+        },
+        {
+          "path": "apps/web/e2e/idle-session.spec.ts",
+          "mode": "100644",
+          "blob": "c38a3ce515e22ec1af30c99058d228261a0028b7",
+          "sha256": "9205ced2ca237bc850c912018b50533ed795b2586dae902485e5007758232ed8",
+          "bytes": 9712
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "mode": "100644",
+          "blob": "f8546586bd5d31946d47c0d2668a762d6456abe1",
+          "sha256": "aed0bd8e04be93ecd0a81bea672633563f01c0151254dd3ad7d3c67ff5a1d60c",
+          "bytes": 70848
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "mode": "100644",
+          "blob": "4a9b7bc43151a0f1e0a0be9c42c7fe2396c71d24",
+          "sha256": "0941ccda351d1da0afcb404598e87fd12dc2ef1df6b3c0ef9e7927960dbc3087",
+          "bytes": 320646
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "mode": "100644",
+          "blob": "527add3d4c0aa6d165da37ba56ed70ee44531aff",
+          "sha256": "3a1dc34f1c9cbcb79973f007a35929f0b6959f1eca5400a4bb7228c9bef76965",
+          "bytes": 238031
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "mode": "100644",
+          "blob": "4e93535e4beebc8c1b7063ae0e0df020c2de6919",
+          "sha256": "18c0e2b42257c743d6b103630810241bd5d463d0dbd72e954f9b1f5791dfdbab",
+          "bytes": 267113
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "mode": "100644",
+          "blob": "65d4e9ab1b885a127504efb552dc8d7740304c9e",
+          "sha256": "aef6eaea3ca95a92246f559908daa6c086d105f8500392a98b8192e71837bc7a",
+          "bytes": 313993
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "mode": "100644",
+          "blob": "ba81445f5861a3895a364fb0c357fe09a3842d6e",
+          "sha256": "254b0308391e8bf98cf292c14a3162dbc42cdeb2eff106f385131ee6da00d5b7",
+          "bytes": 18077
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "mode": "100644",
+          "blob": "50e26946f3061ccbb27a07de3498b04141ddf6f6",
+          "sha256": "866638df3683a4e800ed7b2bda77a6ccda1ee5fe0737d32a5c57f37819b78c78",
+          "bytes": 21063
+        },
+        {
+          "path": "apps/web/src/components/TagArchive.test.tsx",
+          "mode": "100644",
+          "blob": "87339004576a07cd42e526b7f6d6774910e103af",
+          "sha256": "3084fb1a1ac7961cea83289cc93b0a6cf0b8c8055ce903751cef7215c1707fa9",
+          "bytes": 18928
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "mode": "100644",
+          "blob": "1f86243ef4b43d1696f7931f72d66b7ef72c6d48",
+          "sha256": "b36c455c2b9af746a03ca047108b4b520be683d36a44bc0203ed57ae481f2eb7",
+          "bytes": 81153
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "mode": "100644",
+          "blob": "64cc5d20e5130258fdd124b8699132698472eb61",
+          "sha256": "668b5b1024938d78ec1884912871ebb5b15f6a0ace411dc10d301e0814056685",
+          "bytes": 20044
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "mode": "100644",
+          "blob": "3565f11dd4ef6cee70789fa26c9da22e4230a03d",
+          "sha256": "3d6e10c5bb6b9d6dcd01d38601fcbf9409eeb3ac8a623e876ddf04b7ba380b5c",
+          "bytes": 20115
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "mode": "100644",
+          "blob": "4997190d33dceca56b2a9ec4f24238fec44ce0dd",
+          "sha256": "79e45e76acf8e58a0570f895f0afc8a33aa6c6d8d9f3cf254e846a0db76467e3",
+          "bytes": 5763
+        },
+        {
+          "path": "apps/web/src/lib/session.idleLock.test.ts",
+          "mode": "100644",
+          "blob": "6687571e30c952245c8a62c24e4b75b598a8d88d",
+          "sha256": "278bd3ec919e02d0f023daca5adad1e67b22c43db0f4c185be586118a524aaef",
+          "bytes": 15251
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "mode": "100644",
+          "blob": "a5e257722752faf19699f5fa508e82d573c49d42",
+          "sha256": "cd8b9272f99b0f7f8e353a58e5c879adafe54bf4ce7c6c1188bab4217c667e88",
+          "bytes": 27224
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "mode": "100644",
+          "blob": "84c801a8e9eb1550a96802177045360988c85900",
+          "sha256": "4e225ed27d7c961356b31b3cb0554e49b3b9a71413836a0b5a5e8fb47bf7c12b",
+          "bytes": 38824
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "mode": "100644",
+          "blob": "e58a1ee3390fc3ca116617af676de1297af6332d",
+          "sha256": "e5ad6e84e8b14b3c024f807702b3733c72ae3525431a0e37e97ab2fca9993f49",
+          "bytes": 110788
+        },
+        {
+          "path": "docs/handoffs/idle-session-20261119/COMPLETION.md",
+          "mode": "100644",
+          "blob": "aacc749fc566964d291726f2a91e428a3c7cea48",
+          "sha256": "6fa6b34b57bb1194f4b6d9e792aef8aabdc2a1bc407c910d9c2f5fdd9630e033",
+          "bytes": 11636
+        },
+        {
+          "path": "docs/handoffs/idle-session-20261119/REVIEW.md",
+          "mode": "100644",
+          "blob": "6d7869c181f7021605e5a72ff91a814c18109517",
+          "sha256": "dd42e2ae2045f65c3135737b79d0a41ba4000bcf2881e615927531857b135e3d",
+          "bytes": 6485
+        },
+        {
+          "path": "docs/user/session-security.md",
+          "mode": "100644",
+          "blob": "9c1843342a0147cc6ecd10d85a0c82a5b85645cd",
+          "sha256": "01a8b55fc55ba4192462b1baaf8e1e48537f93af09306e2d9da59f41d116e4e3",
+          "bytes": 5900
+        },
+        {
+          "path": "docs/user/set-up-stealth-meta-address.md",
+          "mode": "100644",
+          "blob": "a88236c482be04e905951719d3e4470f5c493892",
+          "sha256": "cd3c87d71038a0525de0a33e98154466aaeb32ef5098796e2f41c2bee3805c77",
+          "bytes": 4734
+        },
+        {
+          "path": "docs/user/troubleshooting.md",
+          "mode": "100644",
+          "blob": "89f07f026c7cdaf14592762822120f53d6772973",
+          "sha256": "b7a9b3f9dd701abbbe92deb454128900b8cf9ebc0b58f070a68f4821d20f5c0d",
+          "bytes": 6983
+        }
+      ],
+      "source_diff_whitespace": "pass"
+    },
+    "browser_collection": {
+      "source": "1ca7105e050f7d76aee18fe3efee3cd02cd72cb4",
+      "mode": "collection only; no browser/server/assertion execution",
+      "results": [
+        {
+          "profile": "full",
+          "command": [
+            "npm",
+            "run",
+            "test:e2e",
+            "--workspace",
+            "@ghostpay/web",
+            "--",
+            "e2e/idle-session.spec.ts",
+            "e2e/core-journey.spec.ts",
+            "--list"
+          ],
+          "started_at": "2026-11-20T18:11:58.260637+00:00",
+          "elapsed_seconds": 2.561,
+          "exit_code": 0,
+          "executed_browser_assertions": 0
+        },
+        {
+          "profile": "lean",
+          "command": [
+            "npm",
+            "run",
+            "test:e2e",
+            "--workspace",
+            "@ghostpay/web",
+            "--",
+            "e2e/idle-session.spec.ts",
+            "e2e/core-journey.spec.ts",
+            "--list"
+          ],
+          "started_at": "2026-11-20T18:12:00.822212+00:00",
+          "elapsed_seconds": 1.115,
+          "exit_code": 0,
+          "executed_browser_assertions": 0
+        }
+      ]
+    },
+    "documentation_review": {
+      "reviewer": "/root (consolidation coordinator)",
+      "reviewed_documentation_commit": "2605e1bf7a8528b0ccbf66161a17fcdf7298e541",
+      "finding": "IDLE-R2-DOC-01",
+      "result": "Coordinator source review approved both row corrections and requested the relative link correction incorporated in this documentation checkpoint.",
+      "link_target": "docs/user/session-security.md",
+      "link_from_guide": "../user/session-security.md",
+      "link_target_tracked_and_exists": true,
+      "application_test_configuration_changes_after_product": false,
+      "qualification_scope": "Source documentation review; no additional browser execution implied."
+    }
+  },
+  "raw_artifacts": [
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.json.json",
+      "original_bytes": 34377,
+      "original_sha256": "74320fd6eb0630448c4cbc7a66919444f3504c71fdf7717bed4d1f8eadbbfa33",
+      "wrapper_sha256": "ef435c16db50527cd18da3800dd761b15721718e39fbd0ebd413e918d480db57"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-red.log.json",
+      "original_bytes": 72,
+      "original_sha256": "7e70dee95beff704bb121a09a626e349595824d19af55d02125b8d567cdb1ab7",
+      "wrapper_sha256": "127bb1af364b720f5862a434f1d2133e51e2a20b9b4db8781e5dd65bc39e66f7"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.json.json",
+      "original_bytes": 231161,
+      "original_sha256": "9769a4086d4f2bf5b5d572d267d73abbdaee97cec134a89660ca1a45380c40be",
+      "wrapper_sha256": "78cda6a2d57c7daccb817fe35a523ff0952aea4bf4c20965c294b2e5cb87635c"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-green.log.json",
+      "original_bytes": 74,
+      "original_sha256": "d792d5704f7a05516af4c80e442a9378a60d769fc7709ca2d887cf379736fb46",
+      "wrapper_sha256": "213c9f01a46063051740ac8e45dd1ba5fb0a56240f7431da026e9d16d49464c8"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-typecheck.log.json",
+      "original_bytes": 216,
+      "original_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+      "wrapper_sha256": "54d5c7515f4633985bff5486ef6715bba4aaa5dfc1ff959a3eebe42bcba186ba"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-lint.log.json",
+      "original_bytes": 228,
+      "original_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+      "wrapper_sha256": "e163187f77d87523aec802499071a2a6c7f7d03348089ee8d457b287b7f9d0c6"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-secrets.log.json",
+      "original_bytes": 50,
+      "original_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "wrapper_sha256": "856e4694e8d9bfbaad040374cb7104286ca0020f603a0abb6db70c86c00bd9e4"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-whitespace.log.json",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wrapper_sha256": "19c16aa61edc28246ef363fe95e338cd51c4a27c645b01706c33c1b48ee08c15"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-full.log.json",
+      "original_bytes": 2539,
+      "original_sha256": "64f365142e4600e6dedb1fc80f38936b404732bf942951b4db5ae68ec0b676cb",
+      "wrapper_sha256": "e5bb0074a7ae2741c171af9fa62a30f0eae24d1994560b82d348cde38b0fc5a8"
+    },
+    {
+      "path": "docs/consolidation/idle-session-r2-20261120/outputs/idle-r2-browser-collect-lean.log.json",
+      "original_bytes": 2539,
+      "original_sha256": "64f365142e4600e6dedb1fc80f38936b404732bf942951b4db5ae68ec0b676cb",
+      "wrapper_sha256": "8cf308661a815bae8c1f84d6e10ee1288b44c61038a0fac93c24ba348fef3b51"
+    }
+  ],
+  "limits": [
+    "Source-specific local focused qualification, not the complete web test gate.",
+    "Complete original coverage/nocov and lean build are coordinator-scheduled next on the frozen final tree; evidence will be published separately without moving this source.",
+    "Full and lean browser tests were collected, not executed. Original hosted browser/security/Pages gates remain required.",
+    "No new persistent deletion policy, custody, signing scheme, dependencies, workflows or release policy."
+  ]
+}

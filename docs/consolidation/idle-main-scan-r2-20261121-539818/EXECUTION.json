@@ -1,0 +1,140 @@
+{
+  "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+  "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+  "combined_candidate_tests": 391,
+  "combined_candidate_files": 31,
+  "separate_export_typecheck_is_not_part_of_candidate_test_total": true,
+  "archive": "EXECUTION_LOGS.json.gz",
+  "archive_sha256": "614e3dd38098ee362e195e40c03ec9566d92a1bb0cc00d2132dadc43baf4fee8",
+  "executions": [
+    {
+      "id": "install",
+      "command": "NODE_OPTIONS=--max-old-space-size=512 npm ci",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-install.log",
+      "output_bytes": 786,
+      "output_sha256": "309161b35623df266839ccc8cb66afb3dfacf3e5b8c3d6173b3c153afef3e009"
+    },
+    {
+      "id": "libraries",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 npm run build:libs",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-build-libs.log",
+      "output_bytes": 17496,
+      "output_sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913"
+    },
+    {
+      "id": "web_typecheck",
+      "command": "NODE_OPTIONS=--max-old-space-size=1536 npm run typecheck --workspace @ghostpay/web",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-web-typecheck.log",
+      "output_bytes": 216,
+      "output_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
+    },
+    {
+      "id": "web_lint",
+      "command": "NODE_OPTIONS=--max-old-space-size=1536 npm run lint --workspace @ghostpay/web",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-web-lint.log",
+      "output_bytes": 228,
+      "output_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "id": "focused_web",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 ../../node_modules/.bin/vitest run src/lib/session.idleLock.test.ts src/AppShell.idleClock.test.tsx src/views/SellerKeys.ownership.test.tsx src/views/SellerKeys.storage.test.tsx src/views/SellerKeys.recovery.test.tsx src/components/ReceiptPanel.archive.test.tsx src/components/ReceiptPanel.archive.regeneration.test.tsx src/views/Pay.requestFile.test.tsx src/lib/scanMatches.test.ts src/views/Scan.test.tsx --maxWorkers=1",
+      "cwd": "apps/web",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-focused-web.log",
+      "output_bytes": 423,
+      "output_sha256": "33aba2d10821ce2dbd1d13434226af34032c5be73e3173f31dd681ebef639de9",
+      "result": {
+        "complete_files_passed": 10,
+        "tests_passed": 166,
+        "tests_failed": 0,
+        "tests_skipped": 0
+      }
+    },
+    {
+      "id": "tron",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 npm run test --workspace @ghostpay/tron-adapter -- --maxWorkers=1",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-tron.log",
+      "output_bytes": 1836,
+      "output_sha256": "3944a181fd23b45b546d3244811c99d66ac375e87a1c10cab1bff32ef50e2b46",
+      "result": {
+        "complete_files_passed": 10,
+        "tests_passed": 107,
+        "tests_failed": 0,
+        "tests_skipped": 0
+      }
+    },
+    {
+      "id": "metadata",
+      "command": "NODE_OPTIONS=--max-old-space-size=768 npm run test --workspace @ghostpay/metadata-hardening -- --maxWorkers=1",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-metadata.log",
+      "output_bytes": 1629,
+      "output_sha256": "96c2ec029c6810432dde8febfe884dd6a174d9e772111844a7da24799ad7ab97",
+      "result": {
+        "complete_files_passed": 11,
+        "tests_passed": 118,
+        "tests_failed": 0,
+        "tests_skipped": 0
+      }
+    },
+    {
+      "id": "build_full",
+      "command": "GHOSTPAY_LOCAL_BUILD_PROFILE=full NODE_OPTIONS=--max-old-space-size=1536 npm run build --workspace @ghostpay/web",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-web-build-full.log",
+      "output_bytes": 2558,
+      "output_sha256": "e2735a5765df79d8baf4e4190ea96820c17f94802cc92e3dbf5dd31898ce0fca"
+    },
+    {
+      "id": "build_lean",
+      "command": "GHOSTPAY_LOCAL_BUILD_PROFILE=lean NODE_OPTIONS=--max-old-space-size=1536 npm run build --workspace @ghostpay/web",
+      "cwd": ".",
+      "exit_code": 0,
+      "source_commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+      "source_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+      "log": "composition-web-build-lean.log",
+      "output_bytes": 2503,
+      "output_sha256": "39e180d20659c2a61eecf3c2f3a089b87955bd22f6c06eaa54220bc82772c10a"
+    },
+    {
+      "id": "separate_export_typecheck",
+      "command": "NODE_OPTIONS=--max-old-space-size=1536 npm run typecheck --workspace @ghostpay/web",
+      "cwd": "../GhostPay-export-recovery",
+      "exit_code": 0,
+      "source_commit": "e678261f6527d487bfaeedc34a7ec957526c5fe9",
+      "source_tree": "0b09c320d2b9fc1e5cf222da1a57ac5bad885d7e",
+      "log": "export-whole-web-typecheck.log",
+      "output_bytes": 223,
+      "output_sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+      "published_source": "4ccb3db334de7d7cada305a11243c9e3efddc4f6"
+    }
+  ]
+}

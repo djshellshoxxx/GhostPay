@@ -1,0 +1,30 @@
+[
+  {
+    "donor_label": "PR344 idle backup receipt and request-file stack",
+    "predecessor": "412ee60f901f50868b840532c6e6a0fb75791169",
+    "donor": "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+    "mechanical_tree": "3b52423ed9e4ba60d71fba68a83aa0c9876a8c77",
+    "resolved_tree": "93897ed891bbd17b1b836bf4866dbe6829ddbf97",
+    "commit": "cc0a1e58bc35c3400f77a0a0eaaaad3da1b899c6",
+    "conflicts": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "manual_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ]
+  },
+  {
+    "donor_label": "PR350 Scan correction and current main",
+    "predecessor": "cc0a1e58bc35c3400f77a0a0eaaaad3da1b899c6",
+    "donor": "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+    "mechanical_tree": "804dd6cd33f95816b6b06fe173c3f385de88f98a",
+    "resolved_tree": "53106efd966f6f70d60be05b96905bd5bc583a74",
+    "commit": "7ef2b91d0485d42caea97edbbda67b4b5a04580e",
+    "conflicts": [
+      "docs/ai/ACTIVE_WORK.md"
+    ],
+    "manual_paths": [
+      "docs/ai/ACTIVE_WORK.md"
+    ]
+  }
+]

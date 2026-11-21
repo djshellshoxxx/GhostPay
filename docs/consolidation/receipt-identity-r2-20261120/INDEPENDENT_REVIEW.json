@@ -1,0 +1,155 @@
+{
+  "schema": "ghostpay-independent-receipt-identity-review/1",
+  "reviewed_at_utc": "2026-11-20T19:04:33.165611+00:00",
+  "reviewer": "/root/backup_independent_review_r2",
+  "decision": "approve scoped source; execution qualification remains separate",
+  "blocking_findings": [],
+  "repository": "djshellshoxxx/GhostPay",
+  "worktree": "/workspace/scratch/994a0d214fb9/GhostPay-receipt",
+  "base_pr": 333,
+  "base": "3172a93ceb8fce5a4343a93b453dcc0e68f09d87",
+  "base_tree": "2b91fe95c2eec65c0359dc627af400b7d1756b44",
+  "donor_pr": 332,
+  "donor": "71632fa389ae93824b2f42d265278a9bd0f6de59",
+  "tests_only": "0bbe400ec804f250f21f056117e31aca77191367",
+  "tests_only_tree": "778df982e98dcd45f17885d87da1610b9b33d36d",
+  "reviewed_head": "06c17144d3839f5a093dec3ed9041374fb2de79e",
+  "reviewed_tree": "7ae1d27c8d1f70df765763165a215e06fcf1acf9",
+  "parent": "0bbe400ec804f250f21f056117e31aca77191367",
+  "working_tree_clean": true,
+  "changed_paths_from_base": [
+    "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx",
+    "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx",
+    "apps/web/src/components/ReceiptPanel.tsx",
+    "docs/ai/ACTIVE_WORK.md"
+  ],
+  "runtime_diff_numstat": "21\t2\tapps/web/src/components/ReceiptPanel.tsx",
+  "runtime_blob": "e056b485f4dbaab5ac9fdc1af78349a8e633b516",
+  "blobs": {
+    "apps/web/src/components/ReceiptPanel.tsx": "e056b485f4dbaab5ac9fdc1af78349a8e633b516",
+    "apps/web/src/components/ReceiptPanel.archive.regeneration.test.tsx": "a43a5e9e5e5c073ce96b58d001aaea6237ad879f",
+    "apps/web/src/components/ReceiptPanel.archive.rejection.test.tsx": "d6ba6e2be79ca95560bf4f394fd57e0fda48ba03",
+    "apps/web/src/components/ReceiptPanel.test.tsx": "21d4c479733284408e29f64ed8262f06a0746b7a",
+    "apps/web/src/components/ReceiptPanel.archive.test.tsx": "93dc56732d3fc433d640fb88b04d1f13295beac1",
+    "apps/web/src/components/ReceiptPanel.invoice.test.tsx": "909b92a8ba967c82af14dfffe0385b34ef4331ad",
+    "apps/web/src/components/ReceiptPanel.profile.test.tsx": "ba9b2d6b690c2494cad7c4c3633abff7de6a0d4c",
+    "apps/web/src/components/ReceiptPanel.i18n.test.tsx": "ee6c99f0a4dc9d5c3a8d47194f9e6425c24e8d06",
+    "apps/web/src/lib/usePrintTarget.ts": "38b127b71d71597847c82a5e0f1cd96ed9a0b3bc",
+    "apps/web/src/lib/usePrintTarget.test.tsx": "d12258ee57a39c2b2f5ca248c63fcf7b2fa2d24c",
+    "apps/web/src/components/PrintableBill.tsx": "946f38f0d2c8b31c9f5b58309eab726ad23b1989",
+    "apps/web/src/styles/print.css": "ae75e16e8cb78c604e9f2c06feaf52edf0acc5e7",
+    "apps/web/src/styles/app.css": "073bdae58e1af0a31a5e2d1a428516de4adc3c0c",
+    "apps/web/src/lib/session.ts": "a5e257722752faf19699f5fa508e82d573c49d42",
+    "apps/web/src/lib/reconciliationVault.ts": "b9be19c98c20fb904d7ca149f2e89af302f00a97",
+    "packages/ux-vault/src/reconciliation-portable.ts": "78d7b8ec843514d3446b69fa22b84e35b178a694",
+    "apps/web/src/views/Scan.tsx": "aa06ef54e732908005734096c4300c2f6e8423cf",
+    "apps/web/src/views/Sweep.tsx": "4b6a65c45863f2b312f2f5383d17f7c21bf21649",
+    "apps/web/src/views/SellerKeys.tsx": "eaa2b33de93edfab885ec2bbc98df6f2c8a23c19",
+    "apps/web/src/AppShell.tsx": "50e26946f3061ccbb27a07de3498b04141ddf6f6",
+    "package.json": "a4b3282474dbf3b55e1945c201d4a862aeb13670",
+    "package-lock.json": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+    "apps/web/vite.config.ts": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+    "apps/web/package.json": "087747cbd56412fe67551b10d874805d01e7f2a4"
+  },
+  "protected_paths_match_base": [
+    "apps/web/src/components/ReceiptPanel.test.tsx",
+    "apps/web/src/components/ReceiptPanel.archive.test.tsx",
+    "apps/web/src/components/ReceiptPanel.invoice.test.tsx",
+    "apps/web/src/components/ReceiptPanel.profile.test.tsx",
+    "apps/web/src/components/ReceiptPanel.i18n.test.tsx",
+    "apps/web/src/lib/usePrintTarget.ts",
+    "apps/web/src/lib/usePrintTarget.test.tsx",
+    "apps/web/src/components/PrintableBill.tsx",
+    "apps/web/src/styles/print.css",
+    "apps/web/src/styles/app.css",
+    "apps/web/src/lib/session.ts",
+    "apps/web/src/lib/reconciliationVault.ts",
+    "packages/ux-vault/src/reconciliation-portable.ts",
+    "apps/web/src/views/Scan.tsx",
+    "apps/web/src/views/Sweep.tsx",
+    "apps/web/src/views/SellerKeys.tsx",
+    "apps/web/src/AppShell.tsx",
+    "package.json",
+    "package-lock.json",
+    "apps/web/vite.config.ts",
+    "apps/web/package.json"
+  ],
+  "normalization_proof": "Independent in-memory comparison: reviewed component equals donor exactly after removing only four preserved current print-target adaptations and normalizing the per-panel scope comment.",
+  "review_findings": [
+    "Per-receipt archive status and completion generation reset on invoice invalidation, accepted invoice reload and successful new receipt signing.",
+    "Pending write ref and state are separate from receipt status and are not reset by invoice/match/session-prop view invalidation.",
+    "Write acquisition sets the ref synchronously before awaited vault creation; duplicate and overlapping writes from this panel are refused.",
+    "Both success and failure continuations require the captured generation; stale A cannot set archived status or an error on B.",
+    "Outer finally releases the pending owner regardless of staleness or rejection, updating UI only while mounted.",
+    "Existing unmount increments generation; an old mounted instance cannot update a remounted instance.",
+    "Existing inner finally locks the acquired vault on both success and failure.",
+    "Receipt signing/binding, lean restrictions, session/idle guards, storage compare-and-swap and print selection are unchanged.",
+    "Source explicitly limits serialization to this mounted panel; global/cross-panel behavior is not claimed."
+  ],
+  "test_review": {
+    "donor_regeneration_file_exact": true,
+    "supplemental_rejection_test_added_before_runtime": true,
+    "signed_receipt_validity_and_distinct_signatures_asserted": true,
+    "writes_verify_A_then_B_exact_signatures": true,
+    "held_A_blocks_B_until_settlement": true,
+    "old_success_and_failure_cannot_mark_or_report_for_B": true,
+    "vault_lock_and_new_B_success_asserted": true,
+    "root_red_summary_reviewed": {
+      "numTotalTests": 13,
+      "numPassedTests": 10,
+      "numFailedTests": 3,
+      "numPendingTests": 0,
+      "success": false
+    },
+    "root_red_failures_reviewed": [
+      {
+        "name": "ReceiptPanel archive ownership across receipt regeneration lets a distinct receipt B be archived after receipt A was already archived",
+        "first_failure_line": "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Archive in encrypted vault\""
+      },
+      {
+        "name": "ReceiptPanel archive ownership across receipt regeneration does not attribute the delayed archive completion of A to B",
+        "first_failure_line": "AssertionError: expected <button type=\"button\" \u2026(2)></button> to be null"
+      },
+      {
+        "name": "retires a rejected archive of A without reporting an error for newly signed B",
+        "first_failure_line": "AssertionError: expected <div \u2026(2)>\u2026(2)</div> to be null"
+      }
+    ],
+    "existing_controls_passed": {
+      "ReceiptPanel.archive.test.tsx": 4,
+      "ReceiptPanel.test.tsx": 6
+    }
+  },
+  "execution": {
+    "reviewer_ran_tests": false,
+    "reviewer_ran_typecheck_lint_build": false,
+    "reviewer_ran_browser": false,
+    "static_diff_check_exit_code": 0,
+    "red_owned_by": "/root/receipt_identity_completion_r2",
+    "green": "Separate author/coordinator qualification; no executed GREEN claim in this review"
+  },
+  "artifacts_examined": [
+    {
+      "path": "/workspace/scratch/994a0d214fb9/receipt-identity-r2-red.json",
+      "bytes": 36580,
+      "sha256": "d1834f70ec1b057c4aafd950542361148c4bd230cc38c4c9bb90f6ce41f5959e"
+    },
+    {
+      "path": "/workspace/scratch/994a0d214fb9/receipt-identity-r2-red-run.json",
+      "bytes": 873,
+      "sha256": "fbae60ca0320156b61b61ac9e238729373ac005135be873769b1e2011d29cf06"
+    },
+    {
+      "path": "/workspace/scratch/994a0d214fb9/receipt-identity-r2-source-integrity.json",
+      "bytes": 1329,
+      "sha256": "958e5bcb7b4963b2e2e12cc285563288526fe94435f6bf6fd391c11f3d13082a"
+    }
+  ],
+  "limits": [
+    "This is source review of a narrow recovery, not a full application/security audit.",
+    "Archive writes are allowed to settle after their original receipt is no longer displayed; old status is suppressed, not persistence reversed.",
+    "The pending-write owner is per mounted panel; storage CAS and session guards remain the cross-operation protections.",
+    "No global queue, cross-tab serialization, new key authority or cancellation of committed data is introduced or claimed.",
+    "Browser/full-web/hosted/build acceptance requires separately recorded execution evidence."
+  ]
+}
