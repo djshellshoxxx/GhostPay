@@ -25,6 +25,17 @@ describe('BTC dedicated worker message integration', () => {
     expect(factory).not.toHaveBeenCalled();
   });
 
+  it('carries the provider spent-check opt-in into the worker and the spent status back out', async () => {
+    const f = await fixture();
+    const local = await scanForPaymentsInWorker(f, f.factory, f.chain.fetchFn);
+    expect(local.spentStatus).toBe('local'); expect(f.chain.requests.some((r) => r.includes('/outspend/'))).toBe(false);
+    const start = f.workers[0]!.received[0]!; if (start.type !== 'start') throw new Error('missing start');
+    expect('providerSpentCheck' in start).toBe(false); wipeFound(local.found);
+    const checked = await scanForPaymentsInWorker({ ...f, providerSpentCheck: true }, f.factory, f.chain.fetchFn);
+    expect(checked.spentStatus).toBe('provider'); expect(f.chain.requests.some((r) => r.includes('/outspend/'))).toBe(true);
+    expect(f.workers[1]!.received[0]).toMatchObject({ type: 'start', providerSpentCheck: true }); wipeFound(checked.found);
+  });
+
   it('matches direct scanning through cloned messages without sending spend secrets and wipes worker copies', async () => {
     const f = await fixture(); const direct = await scanForPayments(f);
     const result = await scanForPaymentsInWorker(f, f.factory, f.chain.fetchFn);

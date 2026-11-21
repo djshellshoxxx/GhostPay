@@ -96,6 +96,7 @@ export class BtcScanProtocol {
     this.secret = m.scanSecret; this.sessionId = m.id;
     try {
       if (!isHeight(m.id) || !isHeight(m.fromHeight) || (m.toHeight !== undefined && !isHeight(m.toHeight)) || typeof m.checkpoints !== 'boolean' ||
+          (m.providerSpentCheck !== undefined && typeof m.providerSpentCheck !== 'boolean') ||
           typeof m.baseUrl !== 'string' || m.baseUrl.length > 2048 || !(m.scanSecret instanceof Uint8Array) || m.scanSecret.length !== 32 ||
           !(m.spendPublicKey instanceof Uint8Array) || m.spendPublicKey.length !== 33 || !Array.isArray(m.headers?.headers) ||
           m.headers.headers.length > MAX_HEADERS || m.headers.headers.some((h) => typeof h !== 'string' || !/^[0-9a-f]{160}$/.test(h)))
@@ -124,6 +125,7 @@ export class BtcScanProtocol {
         ...(m.resumeState === undefined ? {} : { resumeState: readWorkerState(m.resumeState) }),
         ...(m.recoveryOffset === undefined ? {} : { recoveryOffset: m.recoveryOffset }),
         ...(m.recoveryLimit === undefined ? {} : { recoveryLimit: m.recoveryLimit }),
+        ...(m.providerSpentCheck === undefined ? {} : { providerSpentCheck: m.providerSpentCheck }),
         onBlock: (height) => { if (!this.stopped) this.send({ type: 'block', id: m.id, height }); },
         ...(m.checkpoints ? { onState: (state) => {
           const text = serializeScanState(state);

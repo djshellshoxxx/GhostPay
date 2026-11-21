@@ -28,6 +28,7 @@ function wipeResponseResult(value: unknown): void {
 function validateResult(r: ScanResult): void {
   const hex = (s: unknown): boolean => typeof s === 'string' && /^[0-9a-f]{64}$/.test(s);
   if (r === null || typeof r !== 'object' || !isHeight(r.fromHeight) || !Number.isSafeInteger(r.toHeight) || !isHeight(r.spentCount) || r.headerAnchored !== true ||
+      !['local', 'provider', 'unknown'].includes(r.spentStatus) ||
       !Array.isArray(r.blocks) || r.blocks.length > 1000 || r.blocks.some((b: ScanResult['blocks'][number]) => !isHeight(b.height) || !hex(b.hash)) ||
       !Array.isArray(r.found) || r.found.length > MAX_SCAN_MATCHES || r.found.some((f: ScanResult['found'][number]) =>
         !isHeight(f.height) || !hex(f.blockHash) || !hex(f.txid) || !isHeight(f.vout) || typeof f.amountSats !== 'bigint' || f.amountSats < 0n || f.amountSats > 2_100_000_000_000_000n ||
@@ -50,6 +51,7 @@ export async function scanForPaymentsInWorker(p: ScanParams, factory: BtcScanWor
     ...(p.toHeight === undefined ? {} : { toHeight: p.toHeight }), ...(state === undefined ? {} : { resumeState: state }),
     ...(p.recoveryOffset === undefined ? {} : { recoveryOffset: p.recoveryOffset }), ...(p.recoveryLimit === undefined ? {} : { recoveryLimit: p.recoveryLimit }),
     ...(oracle === undefined ? {} : { oracle }),
+    ...(p.providerSpentCheck === undefined ? {} : { providerSpentCheck: p.providerSpentCheck }),
   };
   let worker: BtcScanWorker;
   try { worker = factory(); } catch { zeroize(request.scanSecret); throw new SilentPaymentError('UNSUPPORTED'); }
