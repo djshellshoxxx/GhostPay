@@ -1,0 +1,126 @@
+{
+  "repository": "djshellshoxxx/GhostPay",
+  "branch": "chatgpt/btc-spentness-private-scan-20261118",
+  "method": "Authenticated GitHub Git Data API; no force update; exact trees verified",
+  "runtimeLocal": "f567d7602c2aa2999a6b5b346389af7c409fdf6d",
+  "runtimePublished": "11667060182bf4d59a559530b2c89e258b231c08",
+  "commits": [
+    {
+      "local": "7873171faab06a43b40697b18973b23909fb5008",
+      "published": "5e52902db019d7ff5cdb5df010b113df6f10c5c7",
+      "tree": "600a41636e670590879fb571cdf0e62d0a8ff3cb",
+      "parents": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ]
+    },
+    {
+      "local": "62380400320c0cda7867b42e3cb708b0148af64e",
+      "published": "e5b25efe6279bcdf5979a87bde346d96d4881dcb",
+      "tree": "8dc3842de5c6e6198874adebfa51d42a178f6c38",
+      "parents": [
+        "5e52902db019d7ff5cdb5df010b113df6f10c5c7"
+      ]
+    },
+    {
+      "local": "019de9cb9c9b65b6ceddec1225274504c98bcf2b",
+      "published": "21437ef7577b7686dac7a65b738b253137e090d5",
+      "tree": "821a0835dc429e2fde6c1d581431ec80819c15f8",
+      "parents": [
+        "e5b25efe6279bcdf5979a87bde346d96d4881dcb"
+      ]
+    },
+    {
+      "local": "a380c50939d2e292af8f2fa09b265ebf615fd5eb",
+      "published": "757d4d40bef1eafe4dad7a848ad73ab5cf9eb4c6",
+      "tree": "d3bc704eb91a47a34eec3b7442bb3852d865d3d7",
+      "parents": [
+        "21437ef7577b7686dac7a65b738b253137e090d5"
+      ]
+    },
+    {
+      "local": "72194c4f57b27f2928bd47d67c8999eb27794fbb",
+      "published": "413c8439499224d0add778f7d3ad1bed07dfc456",
+      "tree": "5f5079854136895e12f8d7fe18de65052ee9a44b",
+      "parents": [
+        "757d4d40bef1eafe4dad7a848ad73ab5cf9eb4c6",
+        "58d89b39b27a66454ebf392bcd35d5c68b57b2f8"
+      ]
+    },
+    {
+      "local": "8998030627f091de4079d91dbaccf0619a7b77c9",
+      "published": "78e505473b95e4957df60ea9c287591d35e91507",
+      "tree": "7f1a9abb4fe1fae5ac36dbd38f276531de61b62b",
+      "parents": [
+        "413c8439499224d0add778f7d3ad1bed07dfc456"
+      ]
+    },
+    {
+      "local": "8cbbc1bfedce73e785d9b0f46069f501a67b59e7",
+      "published": "ba588c82ac831d9cf7cc98e66b9d2d585d12c602",
+      "tree": "212712aaff7c42f46c65adaf9e99cc62683c4435",
+      "parents": [
+        "78e505473b95e4957df60ea9c287591d35e91507"
+      ]
+    },
+    {
+      "local": "e261a777c44d742f5e19a8975bbdcbab7059c545",
+      "published": "524215eb2f693d587a300127d780ac47e1e0ce95",
+      "tree": "d6792ddd1ae5d89e4ad46f7152941dc7ebd430af",
+      "parents": [
+        "ba588c82ac831d9cf7cc98e66b9d2d585d12c602"
+      ]
+    },
+    {
+      "local": "d646e6db035f008b643d5a5278bbbae8b838f488",
+      "published": "4281fce1ecc862b2805fce0106efa395ed4b2f4a",
+      "tree": "64fa82876d9ed0667f74cb66acafa4be3021478d",
+      "parents": [
+        "524215eb2f693d587a300127d780ac47e1e0ce95"
+      ]
+    },
+    {
+      "local": "ea196fb3c7c9e8b5182d3e89285ec44a6e7bede9",
+      "published": "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+      "tree": "9721a1fe7bfbfcac65dad577c651c9b5284386cb",
+      "parents": [
+        "4281fce1ecc862b2805fce0106efa395ed4b2f4a"
+      ]
+    },
+    {
+      "local": "f567d7602c2aa2999a6b5b346389af7c409fdf6d",
+      "published": "11667060182bf4d59a559530b2c89e258b231c08",
+      "tree": "af0d3d83344c80c44cdf977a3d1c0a2e05992861",
+      "parents": [
+        "8c1d87a2587281c32a5f1326a4f36cfada4384bc",
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5"
+      ]
+    },
+    {
+      "local": "4476402cc68700d8881b644a088a64e10b4147e2",
+      "published": "70ded5c6d117848178bf59aec2f37197e08749a5",
+      "tree": "8cd4b54fe22fc4d5fb4ec64a04119ce2bb65e675",
+      "parents": [
+        "11667060182bf4d59a559530b2c89e258b231c08",
+        "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      ]
+    },
+    {
+      "local": "da351eb840bc758d5bd43f91d8da202fc151b041",
+      "published": "970732daf9d2330ef9fe1c56425021f4502b9291",
+      "tree": "a512665c8233592680c7d6179a382d538a1103ac",
+      "parents": [
+        "70ded5c6d117848178bf59aec2f37197e08749a5"
+      ]
+    }
+  ],
+  "bitcoinImplementationLocal": "d646e6db035f008b643d5a5278bbbae8b838f488",
+  "bitcoinImplementationPublished": "4281fce1ecc862b2805fce0106efa395ed4b2f4a",
+  "runtimeTree": "af0d3d83344c80c44cdf977a3d1c0a2e05992861",
+  "runtimeIntegratedMain": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+  "documentationMainIncluded": "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+  "qualificationLocal": "da351eb840bc758d5bd43f91d8da202fc151b041",
+  "qualificationPublished": "970732daf9d2330ef9fe1c56425021f4502b9291",
+  "qualificationTree": "a512665c8233592680c7d6179a382d538a1103ac",
+  "qualificationDelta": "One test-only require-await correction; product code and assertions unchanged"
+}

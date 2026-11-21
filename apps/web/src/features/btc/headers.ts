@@ -467,12 +467,18 @@ export function invalidateReorged(
   const checked = (h: number): boolean => h <= chain.tipHeight;
   const stale = scan.blocks.find((b) => checked(b.height) && chain.hashAt(b.height) !== b.hash);
   const staleFound = scan.found.filter((f) => checked(f.height) && chain.hashAt(f.height) !== f.blockHash);
-  if (stale === undefined && staleFound.length === 0) return { scan, dropped: [] };
+  if (stale === undefined && staleFound.length === 0) {
+    // Learning about later blocks makes the former local negative-spend snapshot incomplete, even without a fork.
+    return { scan: scan.spentStatus === 'local' && chain.tipHeight > scan.toHeight ? { ...scan, spentStatus: 'unknown' } : scan, dropped: [] };
+  }
   const cut = Math.min(stale?.height ?? Infinity, ...staleFound.map((f) => f.height)) - 1;
   const dropped = scan.found.filter((f) => f.height > cut);
   if (cut < scan.fromHeight) return { scan: undefined, dropped: scan.found };
   return {
-    scan: { ...scan, toHeight: cut, blocks: scan.blocks.filter((b) => b.height <= cut), found: scan.found.filter((f) => f.height <= cut) },
+    // A removed block can contain a spend of an otherwise canonical output. Counts and negative-spend coverage
+    // cannot be reconstructed from the filtered result; preserve discoveries but require a fresh scan.
+    scan: { ...scan, toHeight: cut, spentCount: 0, spentStatus: 'unknown',
+      blocks: scan.blocks.filter((b) => b.height <= cut), found: scan.found.filter((f) => f.height <= cut) },
     dropped,
   };
 }

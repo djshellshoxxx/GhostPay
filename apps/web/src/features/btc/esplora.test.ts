@@ -1,6 +1,6 @@
 import { parseHeader, SilentPaymentError } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
-import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
+import { EsploraClient, EsploraHttpError, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
 import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, withWitnessCommitment, SEED_B } from './fixtures.testutil';
 import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
@@ -197,6 +197,14 @@ describe('EsploraClient', () => {
       { ...tx, vin: [] },
     ];
     for (const e of edits) expect(await codeOf(serve(e).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+  });
+
+  it('rejects an uncommitted coinbase flag that would hide a real consumed outpoint', async () => {
+    const forged = { ...SIMPLE_TX, vin: SIMPLE_TX.vin.map((input) => ({ ...input, is_coinbase: true })) };
+    expect(await codeOf(servePage([forged]).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+    const cb = coinbase(1);
+    const disguised = { ...cb, vin: cb.vin.map((input) => ({ ...input, is_coinbase: false })) };
+    expect(await codeOf(servePage([disguised]).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
   it('requests exactly the pages a block has, also when its last page is full (electrs answers 400 past the end)', async () => {
@@ -530,7 +538,7 @@ describe('EsploraTweakSource and scanning', () => {
     for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
 
     chain.spent.add(`${res.found[0]?.txid ?? ''}:1`);
-    const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3 });
+    const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3, providerSpentCheck: true });
     expect(again.found).toHaveLength(0);
     expect(again.spentCount).toBe(1);
 
@@ -646,5 +654,48 @@ describe('EsploraTweakSource and scanning', () => {
     const ac = new AbortController();
     ac.abort();
     expect((await scanForPayments({ client, wallet: w, fromHeight: 0, signal: ac.signal }).catch(() => ({ found: [] }))).found).toHaveLength(0);
+  });
+});
+
+describe('local spend data and broadcast rejections', () => {
+  it('reports the spends of a block from the transactions it already downloaded, coinbase excluded, with no extra request', async () => {
+    const chain = mockChain('regtest', walletA());
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest'));
+    await Promise.all([src.getTweaks(3), src.getOutputs(3)]);
+    const before = chain.requests.length;
+    const sp = await src.getSpends(3);
+    expect(chain.requests.length).toBe(before);
+    const blk = chain.blocks[3]!;
+    expect(sp.height).toBe(3);
+    expect(sp.blockHash).toBe(blk.hash);
+    // The decoy and the payment each spend one input; the coinbase (null prevout) is not a spend.
+    expect(sp.spends).toEqual(blk.txs.slice(1).map((tx) => ({ txid: tx.vin[0]!.txid, vout: tx.vin[0]!.vout, spentBy: tx.txid })));
+    expect(sp.spends.some((s) => s.txid === '0'.repeat(64))).toBe(false);
+    // Genesis has only its coinbase; a block fetched through getSpends first costs its usual requests, once.
+    expect((await src.getSpends(0)).spends).toEqual([]);
+    const start = chain.requests.length;
+    const four = await src.getSpends(4);
+    expect(four.spends).toEqual([]);
+    const fetched = chain.requests.slice(start);
+    await src.getTweaks(4);
+    expect(chain.requests.slice(start)).toEqual(fetched);
+  });
+
+  it('a broadcast refused by the server (HTTP 4xx) carries its status, while other failures stay plain transport failures', async () => {
+    const chain = mockChain('regtest', walletA());
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    chain.broadcastStatus = 400;
+    const refused = await client.broadcast('0100').then(() => undefined, (e: unknown) => e);
+    expect(refused).toBeInstanceOf(EsploraHttpError);
+    expect(refused).toMatchObject({ code: 'TRANSPORT_FAILURE', status: 400 });
+    expect(refused instanceof SilentPaymentError).toBe(true);
+    expect(chain.broadcasts).toHaveLength(0);
+    chain.broadcastStatus = 503;
+    expect(await client.broadcast('0100').then(() => undefined, (e: unknown) => e)).toMatchObject({ code: 'TRANSPORT_FAILURE', status: 503 });
+    chain.broadcastStatus = undefined;
+    chain.failPath = '/tx';
+    expect(await client.broadcast('0100').then(() => undefined, (e: unknown) => e)).toMatchObject({ code: 'TRANSPORT_FAILURE', status: 500 });
+    // A refusal never carries the server's text (it could echo the transaction).
+    expect(String((refused as Error).message)).not.toMatch(/missingorspent|0100/);
   });
 });
