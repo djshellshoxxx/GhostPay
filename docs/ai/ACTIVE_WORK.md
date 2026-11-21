@@ -1,3 +1,13 @@
+# GP-BUG-14 — reject invalid requestFromUri lifetime overrides (2026-11-21)
+
+Worker: one ChatGPT bug-only engineer. Dedicated branch: `automation/20261121/bug/ux-links-max-lifetime-guard`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`. Owned paths: `packages/ux-links/src/request.ts`, NEW `packages/ux-links/src/request.max-lifetime.test.ts`, branch-local additive claim in `docs/ai/ACTIVE_WORK.md`, and `docs/handoffs/UX_LINKS_MAX_LIFETIME_20261121.md`. Do not edit existing `packages/ux-links/src/request.test.ts` (owned by open PRs #224/#238/#262/#264/#278/#372).
+
+Finding: `requestFromUri()` compares future expiry to `opts.maxLifetime ?? MAX_LIFETIME_SECONDS` without validating numeric override; `NaN`, `Infinity`, and runtime-invalid strings can make far-future invoices bypass the intended upper bound. Scope is defensive runtime-number validation only; preserve valid default and custom positive limits, exact link parsing, balances, addresses, and expiry status. API contract: `docs/remote/usability/specs/ux-links-request.md` R5. Accept only nonnegative safe-integer limits, preserving zero as a strict bound. Required: test-first regression, existing LinkError code `REQUEST`, focused and workspace CI where available, independent review and fresh ownership before any main merge.
+
+Ownership audit: all 156 open PRs inventoried (2026-11-21 UTC); none modifies `packages/ux-links/src/request.ts`; PR #392 changes other UX-link files. Main `ACTIVE_WORK.md` contains no matching claim. Existing source/tests and main SHA verified before branch creation. Local shell cannot resolve github.com; no actual checkout available. No merge authorization, no deployment, no contract or protocol changes.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
