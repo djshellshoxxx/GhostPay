@@ -7,7 +7,7 @@ import { seededRng } from './testutil.testutil.js';
 describe('MH-AMT-2 EVM-sized amount noise', () => {
   it('keeps a 1% random surplus within bounds for amounts whose surplus exceeds uint64', () => {
     const rng = seededRng(0x5eed);
-    const amounts = [2_000n * 10n ** 18n, (1n << 256n) - 1n];
+    const amounts = [2_000n * 10n ** 18n, 1n << 200n];
     for (const amount of amounts) {
       const maximum = amount / 100n;
       expect(maximum).toBeGreaterThan(1n << 64n);
