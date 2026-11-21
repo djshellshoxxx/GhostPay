@@ -3,3 +3,6 @@ export type { DashboardContext, DashboardEvidenceClaim, DashboardInvoice, Dashbo
 export { buildDashboardProjection } from './projection';
 export type { DashboardEvidenceProvider, DashboardIssueCode, DashboardProjection, DashboardRow, DashboardState, DashboardTotals } from './projection';
 export { selectDashboardRows } from './select';
+
+export { DashboardExportCoordinator, DASHBOARD_EXPORT_COLUMNS, DASHBOARD_EXPORT_MAX_BYTES } from './export';
+export type { DashboardExportColumn, DashboardExportFormat, DashboardExportFile, DashboardExportPreview } from './export';
