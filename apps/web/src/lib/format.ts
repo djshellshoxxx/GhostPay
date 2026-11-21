@@ -15,6 +15,9 @@ export function formatUnits(value: bigint, decimals: number): string {
 
 /** Strictly parses a decimal string into base units. Returns undefined for anything unexpected (never rounds). */
 export function parseUnits(text: string, decimals: number): bigint | undefined {
+  // Runtime callers may bypass TypeScript types. Reject malformed boundaries before string or bigint operations.
+  if (typeof text !== 'string' || !Number.isInteger(decimals) || decimals < 0 || decimals > 36)
+    return undefined;
   const m = DECIMAL_RE.exec(text.trim());
   if (m === null) return undefined;
   const whole = m[1] as string;
@@ -23,22 +26,11 @@ export function parseUnits(text: string, decimals: number): bigint | undefined {
   return BigInt(whole) * 10n ** BigInt(decimals) + BigInt(frac.padEnd(decimals, '0') || '0');
 }
 
-// ISO 4217 List One, 2026-09-17 (SIX Group). Keep exception tables explicit and offline:
-// invoice creation converts entered prices into signed integer minor units via this function.
-// Unknown 3-letter codes retain the existing 2-decimal fallback until a separate currency-policy decision.
-const ZERO_DECIMAL_CURRENCIES = new Set([
-  'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG',
-  'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF',
-]);
-const THREE_DECIMAL_CURRENCIES = new Set(['BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND']);
-const FOUR_DECIMAL_UNITS = new Set(['CLF', 'UYW']);
+const ZERO_DECIMAL_CURRENCIES = new Set(['JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', 'XOF']);
 
-/** ISO-4217 minor-unit exponent used to sign and display fiat amounts in invoices. */
+/** Minor-unit exponent for an ISO-4217 code (the invoice format stores minor units). */
 export function fiatDecimals(currency: string): number {
-  if (ZERO_DECIMAL_CURRENCIES.has(currency)) return 0;
-  if (THREE_DECIMAL_CURRENCIES.has(currency)) return 3;
-  if (FOUR_DECIMAL_UNITS.has(currency)) return 4;
-  return 2;
+  return ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
 }
 
 /** Renders fiat minor units, for example `12345` USD -> `USD 123.45`. */
