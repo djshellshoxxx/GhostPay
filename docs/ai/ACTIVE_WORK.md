@@ -1,3 +1,15 @@
+# GP-BUG-R10 — reject explicit HTTPS default/empty ports in intake deep links (2026-11-21)
+
+Worker: GhostPay bug-only coordinator, sequential implementation; no separate native verifier.
+Branch: `automation/20261121/bug/deeplink-explicit-port-r10`; exact baseline main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-intake/src/deeplink.ts`, new `packages/ux-intake/src/deeplink.ports.test.ts`, this additive branch-only claim, and `docs/handoffs/DEEPLINK_EXPLICIT_PORT_20261121.md`.
+Observed defect: `parseDeepLink()` documents rejection of explicit HTTPS ports but checks `new URL(raw).port`; WHATWG URL normalizes explicit `:443`, `:0443`, and empty `:` to an empty port, so forbidden URL forms are accepted. Node v22.16.0 source-equivalent authority-check reproduction confirmed three failures and plain/nondefault-port controls.
+Acceptance: commit failing regressions before the smallest production change; reject explicit authority ports even when canonicalized away, preserve clean unported URLs, credential rejection, nondefault-port rejection, route/fragment/host handling, custom-scheme behavior; no network calls, new dependencies, features, fee/contract/fund changes.
+Ownership: paginated all 182 open PRs and inspected each changed-file inventory on 2026-11-21; no PR owned either `deeplink.ts` or proposed new regression path. Broad PRs #238/#262/#264/#278/#372 claim other `ux-intake` test/package paths but not these. Reinspect on integration.
+Review/lock: PR #390 at `b655bc273a6704c9c140287b8adcdf4085b91882` has 36 successful, 3 skipped, no failed hosted check runs and zero independent reviews; #419 and stacked #422 touch its displayText integration. Metadata-only `automation/ghostpay-integration-lock` is held by unrelated owner `994a0d214fb9-root-r3`, generation 11, and expired timestamp is not release authority. No main merge/deploy/release, no override of owners.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
