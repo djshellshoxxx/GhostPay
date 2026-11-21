@@ -771,3 +771,18 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+
+---
+
+# GP-BUG — UndoQueue maxPending nonfinite/fractional option validation (2026-11-21)
+
+Worker: GhostPay BUG-ONLY repair round, sequential bug implementer; no separate native verifier. Branch: `automation/20261121/bug/undo-maxpending-bound-r2` at main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+
+Owned paths: `packages/ux-flow/src/undo.ts`, new `packages/ux-flow/src/undo.option-bounds.test.ts`, append-only ownership entry here, and new `docs/handoffs/UNDO_MAXPENDING_BOUND_20261121.md`. No other source ownership.
+
+Observed defect: `UndoQueue` constructor validates `maxPending < 1` but accepts `NaN`, `Infinity` and fractional `1.5`; with `NaN` a threshold comparison `pending >= maxPending` is never true, disabling the queue cap. Source blob before changes `2e261040b9e2d11c0bd482c2622580d5ff41dbe4`; Node 22 source-equivalent reproduction only, not repository Vitest. Test-first regression must be committed before fix.
+
+Acceptance: reject nonfinite/fractional maximum-pending options using existing `FlowError('BAD_OPTION')`; preserve positive-integer queue limits, cancellations, snapshots and ordinary transitions; no dependencies, protocol, fee, wallet or contract changes.
+
+Ownership: checked changed-file inventory for all 166 currently open GitHub PRs in two pages, no claim of the two source/test paths; older broad #278/#372 touch package manifest, not these paths. Recheck before integration. External integration metadata branch held at generation 11 by `994a0d214fb9-root-r3`; do not acquire, overwrite or merge while held. Exact-head hosted CI, applicable browser/native checks and genuine independent review must qualify before merge. No local checkout assumed.
