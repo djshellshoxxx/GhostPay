@@ -16,13 +16,13 @@ function expectCode(run: () => unknown, code: PaymentUriError['code']): void {
 describe('payment URI query encoding JavaScript runtime inputs', () => {
   it('rejects non-string primitives without converting them into payment text', () => {
     for (const input of [undefined, null, 42, false, true, 0n]) {
-      expectCode(() => pctEncode(input as string), 'INVALID_INPUT');
+      expectCode(() => pctEncode(input as unknown as string), 'INVALID_INPUT');
     }
   });
 
   it('rejects object, array and boxed-string inputs instead of coercing them', () => {
     for (const input of [{ memo: 'hello' }, ['note'], new String('note')]) {
-      expectCode(() => pctEncode(input as string), 'INVALID_INPUT');
+      expectCode(() => pctEncode(input as unknown as string), 'INVALID_INPUT');
     }
   });
 
