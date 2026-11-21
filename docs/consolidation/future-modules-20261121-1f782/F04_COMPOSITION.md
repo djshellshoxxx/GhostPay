@@ -32,7 +32,9 @@ The consolidation worker independently reviewed all four runtime files and the o
 
 The selector is bounded, retains separate totals by chain/asset, and rechecks revision/session/operation/deadline before releasing results. Projection rebuilds recheck around yields and after provider callbacks. The implementation imports only local module files and remains absent from production route imports. It performs no persistence, wallet submission or automatic export.
 
-No blocking defect was identified in this source review. Approved evidence-provider integration, persistence, crash/multi-tab semantics, UI/localization, export approval, actual chain evidence and browser/device performance remain outside this M1 milestone. Existing mock-provider tests do not qualify those unimplemented capabilities.
+A separate `/root/defensive_review` worker also inspected all five frozen donor files, including the complete 310-line test suite, and approved their unchanged dormant-M1 consolidation. That reviewer verified canonical identity deduplication, rejection of conflicting observations before provider assessment, exact invoice/event bindings, evidence-reference independence, chain/asset-separated bigint totals and lifecycle checks. The separate reviewer ran no tests.
+
+No blocking defect was identified in either source review. Approved evidence-provider integration, persistence, crash/multi-tab semantics, UI/localization, export approval, actual chain evidence and browser/device performance remain outside this M1 milestone. Existing mock-provider tests do not qualify those unimplemented capabilities.
 
 ## Qualification boundary
 
