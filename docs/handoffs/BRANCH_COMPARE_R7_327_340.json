@@ -1,0 +1,778 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 327,
+  "offset_end": 341,
+  "results": [
+    {
+      "branch": "future/f06-encrypted-backups",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F06-encrypted-backups/SPEC.md",
+          "added",
+          147,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f07-ghostpayouts",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F07-ghostpayouts/SPEC.md",
+          "added",
+          152,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F08-ghostid/SPEC.md",
+          "added",
+          149,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F09-ghostpos/SPEC.md",
+          "added",
+          151,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "status": "diverged",
+      "ahead": 13,
+      "behind": 42,
+      "merge_base": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files": [
+        [
+          "apps/web/package.json",
+          "modified",
+          1,
+          0
+        ],
+        [
+          "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+          "added",
+          25,
+          0
+        ],
+        [
+          "apps/web/src/features/future/private-recurring/index.ts",
+          "added",
+          11,
+          0
+        ],
+        [
+          "apps/web/src/features/future/private-recurring/model.test.ts",
+          "added",
+          158,
+          0
+        ],
+        [
+          "apps/web/src/features/future/private-recurring/model.ts",
+          "added",
+          213,
+          0
+        ],
+        [
+          "apps/web/src/features/future/private-recurring/review.test.ts",
+          "added",
+          217,
+          0
+        ],
+        [
+          "apps/web/src/features/future/private-recurring/review.ts",
+          "added",
+          136,
+          0
+        ],
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          96,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/COORDINATOR_VERIFICATION.md",
+          "added",
+          32,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/HANDOFF.md",
+          "added",
+          148,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md",
+          "added",
+          85,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/PUBLICATION.json",
+          "added",
+          46,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/SPEC.md",
+          "added",
+          161,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/SHA256SUMS.json",
+          "added",
+          10,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/artifact-comparison.json",
+          "added",
+          45,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-bundle-scan.txt",
+          "added",
+          6,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-focused-tests.txt",
+          "added",
+          14,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-lean-build.txt",
+          "added",
+          34,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-web-typecheck.txt",
+          "added",
+          5,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-final-coverage.txt",
+          "added",
+          25,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-lint-coordinator.txt",
+          "added",
+          4,
+          0
+        ],
+        [
+          "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-typecheck-coordinator.txt",
+          "added",
+          4,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          813,
+          0
+        ],
+        [
+          "package-lock.json",
+          "modified",
+          1,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F11-ghostteams/SPEC.md",
+          "added",
+          166,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F12-ghostbridge/SPEC.md",
+          "added",
+          171,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f13-fiat-conversion",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F13-fiat-conversion/SPEC.md",
+          "added",
+          180,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f14-multichain-routing",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F14-multichain-routing/SPEC.md",
+          "added",
+          170,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f15-private-rpc",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F15-private-rpc/SPEC.md",
+          "added",
+          171,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f16-per-client-identities",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F16-per-client-identities/SPEC.md",
+          "added",
+          177,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f17-private-funds",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F17-private-funds/SPEC.md",
+          "added",
+          180,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/f18-privacy-modes",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/F18-privacy-modes/SPEC.md",
+          "added",
+          185,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "future/fee01-modular-fee-policy",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          24,
+          0
+        ],
+        [
+          "docs/future/modules/COMMON.md",
+          "added",
+          144,
+          0
+        ],
+        [
+          "docs/future/modules/FEE01-modular-fee-policy/SPEC.md",
+          "added",
+          177,
+          0
+        ],
+        [
+          "docs/future/modules/README.md",
+          "added",
+          112,
+          0
+        ],
+        [
+          "docs/future/modules/SOURCES.md",
+          "added",
+          52,
+          0
+        ],
+        [
+          "docs/future/modules/modules.json",
+          "added",
+          811,
+          0
+        ]
+      ],
+      "truncated": false
+    }
+  ]
+}

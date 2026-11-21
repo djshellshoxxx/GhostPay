@@ -1,0 +1,305 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 215,
+  "offset_end": 229,
+  "results": [
+    {
+      "branch": "claude/remote-extensions-1",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2271,
+      "merge_base": "39cce4663d98c7da06775441a301040af51907ed",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-2",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2306,
+      "merge_base": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-3",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2239,
+      "merge_base": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-4",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2264,
+      "merge_base": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-5",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2265,
+      "merge_base": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-6",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2268,
+      "merge_base": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-7",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2256,
+      "merge_base": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-8",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2258,
+      "merge_base": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-9",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2261,
+      "merge_base": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/remote-extensions-10",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 2255,
+      "merge_base": "698404ca488c87347858105bda66be21bf428303",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "claude/sharp-bohr-uigfgh",
+      "status": "diverged",
+      "ahead": 2,
+      "behind": 1650,
+      "merge_base": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files": [
+        [
+          "docs/handoffs/HAIKU-WAVE-2-2026-10-30.md",
+          "added",
+          152,
+          0
+        ],
+        [
+          "docs/handoffs/HAIKU-WAVE-2026-10-30.md",
+          "added",
+          181,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/vibrant-cori-scu18b",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 148,
+      "merge_base": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files": [
+        [
+          "apps/web/DEVIATIONS.md",
+          "modified",
+          14,
+          0
+        ],
+        [
+          "apps/web/locales/ar.json",
+          "modified",
+          8,
+          2
+        ],
+        [
+          "apps/web/locales/en.json",
+          "modified",
+          8,
+          2
+        ],
+        [
+          "apps/web/locales/es.json",
+          "modified",
+          8,
+          2
+        ],
+        [
+          "apps/web/locales/ja.json",
+          "modified",
+          8,
+          2
+        ],
+        [
+          "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "modified",
+          3,
+          1
+        ],
+        [
+          "apps/web/src/features/btc/BtcView.test.tsx",
+          "modified",
+          17,
+          1
+        ],
+        [
+          "apps/web/src/features/btc/BtcView.tsx",
+          "modified",
+          12,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/esplora.test.ts",
+          "modified",
+          45,
+          2
+        ],
+        [
+          "apps/web/src/features/btc/esplora.ts",
+          "modified",
+          29,
+          4
+        ],
+        [
+          "apps/web/src/features/btc/fixtures.testutil.ts",
+          "modified",
+          22,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/headers.test.ts",
+          "modified",
+          2,
+          2
+        ],
+        [
+          "apps/web/src/features/btc/oracleSource.test.ts",
+          "modified",
+          12,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/oracleSource.ts",
+          "modified",
+          16,
+          2
+        ],
+        [
+          "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "modified",
+          24,
+          5
+        ],
+        [
+          "apps/web/src/features/btc/scan.spends.test.ts",
+          "added",
+          74,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/scan.ts",
+          "modified",
+          43,
+          9
+        ],
+        [
+          "apps/web/src/features/btc/scanWorker.test.ts",
+          "modified",
+          11,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/scanWorkerClient.ts",
+          "modified",
+          2,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/scanWorkerMessages.ts",
+          "modified",
+          2,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/scanWorkerProtocol.ts",
+          "modified",
+          2,
+          0
+        ],
+        [
+          "apps/web/src/features/btc/verification.ts",
+          "modified",
+          1,
+          1
+        ],
+        [
+          "apps/web/src/i18n/securityKeys.ts",
+          "modified",
+          9,
+          0
+        ],
+        [
+          "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "modified",
+          15,
+          1
+        ],
+        [
+          "packages/btc-silent-payments/src/scan/headersync.ts",
+          "modified",
+          12,
+          1
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/vigilant-johnson-yjgq94",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 722,
+      "merge_base": "36bcdb7470caf7e563b4f72cadc209504137fd6f",
+      "files": [
+        [
+          "apps/web/src/views/Settings.test.tsx",
+          "modified",
+          3,
+          1
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "claude/wizardly-babbage-mfsdrl",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1640,
+      "merge_base": "ade77362de33156de849989e26206126f978bb8f",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}
