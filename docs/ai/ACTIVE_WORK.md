@@ -1,3 +1,14 @@
+# GP-QR-PRINT-01 — fail-closed printed bearer-link warning (2026-11-21 14:39 UTC)
+
+Cycle/coordinator: `20261121T1439Z`; single ChatGPT assistant, sequential audit / regression / repair / review. No native delegated verifier available, no independent approval claimed.
+Isolated branch: `automation/20261121T1439Z/bug/qr-print-policy-boolean`. Exact immutable base `5a745d4b5fba69b66a9779f88aefc63c253a4f27` (current draft PR #307 head, branch `integration/ghostpay-main-recovered-fixes-20261120`, not main). Current main observed `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned regions: `apps/web/src/lib/qrKinds.ts` only `printQrPolicy`, `apps/web/src/lib/qrKinds.test.ts` only additive print-policy regressions, this append-only ownership entry, and dedicated `docs/handoffs/QR_PRINT_BOOLEAN_20261121.md`. Do not modify existing #307/#278 QR payload-kind validation sections or their branch refs.
+Reproduction: with the current exported `printQrPolicy` logic, `passphraseProtected='false'`, `1`, or `{}` (outside the TypeScript boundary) are truthy, wrongly selecting shareable instead of bearer and suppressing the caution text for the supplied invoice link. Confirmed via local Node 22 source-equivalent reproduction, not repo Vitest. Caller reachability from current browser state is not established; classify as defensive correctness, not a confirmed exploitation path.
+Acceptance: only the literal boolean `true` may select a passphrase-protected/shareable printed QR. Every other runtime value must select bearer and show warning for a present link. Preserve existing true/false, no-link and 500-character printing rules. Add test-first regression including truthy non-boolean values, zero/empty/null/undefined, and documented valid cases. No new dependencies, contracts, hosted backends, relayers, policy choices, releases or deployments.
+Coordination: existing integration lock at ref `automation/ghostpay-integration-lock` commit `6edfcd4dfb85c29e11aa0dee9fa0dabcc5b0ac79` is **held generation 11** by `994a0d214fb9-root-r3`, expires timestamp is not takeover authorization. Do not touch lock, main, shared tracking, nor merge. Draft PR should target #307's exact branch as a stacked non-overwriting change; recheck latest SHA before PR and record any source drift. The parent PR #307 and its earlier donor #278 include other edits in the same source file, so parent source/test checks must be rerun on the final stacked candidate. No independent reviewer yet.
+
+---
+
 # R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
 
 Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
