@@ -77,4 +77,13 @@ describe('network-summary stale probe regressions', () => {
     const slow = rpc(rpc(configured([1, 2]), 1, success, STALE_AT), 2, { ok: true, latencyMs: 5000 });
     expect(summarize(slow, NOW).overall).toBe('rpc-degraded');
   });
+
+  it('keeps a fresh clock-skew warning ahead of an unrelated stale RPC', () => {
+    const s = rpc(
+      rpc(configured([1, 2]), 1, success, STALE_AT),
+      2,
+      { ok: true, latencyMs: 100, blockTimestampSec: NOW / 1000 - 600 },
+    );
+    expect(summarize(s, NOW).overall).toBe('clock-skew');
+  });
 });
