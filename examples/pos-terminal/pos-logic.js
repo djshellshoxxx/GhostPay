@@ -62,10 +62,11 @@ export function reduce(state, event, now) {
     return { accepted: true, state: { status: 'awaiting', sessionId: event.sessionId, invoiceId: event.invoiceId, currency: event.currency, dueMinor: event.dueMinor, paidMinor: 0n, expiresAt: now + event.ttlSeconds } };
   }
   if (state.status !== 'awaiting') return no;
+  // Cancellation does not require a valid clock or expiry.
+  if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
   if (typeof now !== 'number' || !Number.isSafeInteger(now) || now < 0 ||
       typeof state.expiresAt !== 'number' || !Number.isSafeInteger(state.expiresAt) || state.expiresAt < 0)
     throw new Error('bad-time-policy');
-  if (event.type === 'cancel') return { accepted: true, state: { ...state, status: 'cancelled' } };
   if (now >= state.expiresAt) return { accepted: event.type === 'tick', state: { ...state, status: 'expired' } };
   if (event.type !== 'payment') return no;
   if (event.invoiceId !== state.invoiceId || event.currency !== state.currency) return no;
