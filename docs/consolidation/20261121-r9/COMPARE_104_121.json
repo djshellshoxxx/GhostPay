@@ -1,0 +1,2153 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    104,
+    122
+  ],
+  "results": [
+    {
+      "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "head_sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "status": "diverged",
+      "ahead_by": 89,
+      "behind_by": 184,
+      "merge_base_sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "files_returned": 300,
+      "capped": true,
+      "category": "capped-review",
+      "files": [
+        {
+          "path": ".github/actions/setup-forge/action.yml",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/beta-acceptance.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 3
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 4
+        },
+        {
+          "path": "README.md",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/Dockerfile",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/PRIVACY.md",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/log.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/privacy.test.ts",
+          "status": "added",
+          "additions": 157,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/runtime.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/src/server.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/tsconfig.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/vitest.config.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/backup-panel.spec.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/devnet/invoiceTamper.ts",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/devnet/pages.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/helpers.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 18
+        },
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "status": "added",
+          "additions": 455,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealthExportFixtures.ts",
+          "status": "added",
+          "additions": 340,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 180,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 180,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 180,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 180,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.d.mts",
+          "status": "added",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.mjs",
+          "status": "added",
+          "additions": 65,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 94,
+          "deletions": 33
+        },
+        {
+          "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "modified",
+          "additions": 164,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.d.mts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 57,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/src/buildScripts.test.ts",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/components/StealthExportArchive.tsx",
+          "status": "added",
+          "additions": 128,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "status": "added",
+          "additions": 190,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportDownload.test.tsx",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportMaster.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "status": "added",
+          "additions": 311,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.tsx",
+          "status": "added",
+          "additions": 196,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+          "status": "added",
+          "additions": 401,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.tsx",
+          "status": "added",
+          "additions": 286,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+          "status": "added",
+          "additions": 179,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportVerification.tsx",
+          "status": "added",
+          "additions": 107,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 76,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.localSpends.test.ts",
+          "status": "added",
+          "additions": 109,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/chainViews.i18n.test.tsx",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 37,
+          "deletions": 16
+        },
+        {
+          "path": "apps/web/src/features/solana/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/solana/scan.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/features/solana/sweep.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 7
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 18
+        },
+        {
+          "path": "apps/web/src/features/tron/scan.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 20
+        },
+        {
+          "path": "apps/web/src/features/tron/sweep.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/i18n/message.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 181,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.test.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.ts",
+          "status": "modified",
+          "additions": 66,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/displayText.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.test.ts",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/hardening.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 73
+        },
+        {
+          "path": "apps/web/src/lib/manifest.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 59
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "status": "added",
+          "additions": 405,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "status": "added",
+          "additions": 442,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/receipts.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/receipts.ts",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 48,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/lib/relayerContract.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/scanCheckpointPrivacy.test.ts",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 95,
+          "deletions": 23
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "added",
+          "additions": 312,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "added",
+          "additions": 104,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "additions": 66,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "additions": 63,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/session.atomicity.test.ts",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/src/lib/settings.test.ts",
+          "status": "modified",
+          "additions": 42,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/settings.ts",
+          "status": "modified",
+          "additions": 59,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/lib/stealthExport.ts",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+          "status": "added",
+          "additions": 114,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 112,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/main.test.tsx",
+          "status": "added",
+          "additions": 85,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/privacyInvariants.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/releaseKeyDenylist.test.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "status": "modified",
+          "additions": 69,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/test/pagesInvoiceTamper.test.ts",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 124,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 106,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "status": "modified",
+          "additions": 119,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 151,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "status": "modified",
+          "additions": 158,
+          "deletions": 18
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 58,
+          "deletions": 34
+        },
+        {
+          "path": "deploy/BUILD-WEB.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/README.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/TOR.md",
+          "status": "modified",
+          "additions": 73,
+          "deletions": 6
+        },
+        {
+          "path": "docs/DEPLOYMENT_MANIFEST.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 286,
+          "deletions": 40
+        },
+        {
+          "path": "docs/audits/08-completion-gates.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/17-final-security-snapshot.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "docs/audits/mythril-reevaluation-20261118.md",
+          "status": "added",
+          "additions": 317,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-03-invoice-parser-fuzz.mjs",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "docs/audits/poc/poc-04-browser-csp-xss-referrer.mjs",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "docs/audits/poc/static-server.mjs",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 5
+        },
+        {
+          "path": "docs/audits/poc/static-server.test.mjs",
+          "status": "added",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md",
+          "status": "added",
+          "additions": 185,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_SECURITY_TOOLING_EXTRACTION_20261118.md",
+          "status": "added",
+          "additions": 92,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_SWEEP_LEDGER_PRIVACY_20261118.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/OWN_NODE_GUARD_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PAGES_IDLE_CLOCK_INTEGRATION_20261118.md",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PRIVACY_CONSOLIDATION_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/DEPENDENCY_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 79,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md",
+          "status": "added",
+          "additions": 166,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/PAGES_SMOKE_RENDER_ERRORS_20261118.md",
+          "status": "added",
+          "additions": 133,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/RECOVERY_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/ARTIFACT_MANIFEST.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/NATIVE_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/PACKET_VALIDATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/README.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/REMOTE_SHA_MAPPING.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/RUNTIME_IDENTITY.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/SOURCE_FILES_SHA256.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/BUILD_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/CLAIM.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-dedicated/evidence/SHA256SUMS",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-dedicated/evidence/pages-evidence.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-dedicated/site/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-project/evidence/SHA256SUMS",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-project/evidence/pages-evidence.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-project/site/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/release-development/SHA256SUMS",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/release-development/release-manifest.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/release-development/sbom.cdx.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-full.inventory.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-full/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-lean.inventory.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-lean/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/build-libraries.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/capture-web-artifact.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/capture-web-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/capture-web-lean.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/check-pages-artifact.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/check-release-artifact.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install-after-suite.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install-retry-384.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/evidence-index.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/build-libraries.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/capture-web-full.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/capture-web-lean.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/clean-install-after-suite.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/clean-install-retry-384.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/clean-install.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-dedicated-build.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-dedicated-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-project-build.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-project-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-full-standard.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-full-system.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-full.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-lean-system.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/prepare-checkout.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/release-artifact-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/release-build.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/release-repro.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/repro-a-artifact-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/repro-b-artifact-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/resolved-toolchain-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/resource-wrapper-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/system-chromium-version.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/web-full.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/web-lean.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-dedicated-build.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-dedicated-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-project-build.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-project-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-full-standard.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-full-system.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-lean-system.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/prepare-checkout.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/qualification-results.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/release-artifact-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/release-build.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/release-repro.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/repro-a-artifact-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/repro-b-artifact-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/resolved-toolchain-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/resource-bin/node",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/resource-wrapper-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/run.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/source-after-builds.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/source-before-builds.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/system-chromium-version.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/tmp/ghostpay-repro.tvEPwc/a-first.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/tmp/ghostpay-repro.tvEPwc/nested.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/toolchain-versions.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/web-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/web-lean.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-production.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/picomatch-current-registry.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/READINESS_SNAPSHOT_20261118_153234.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/READINESS_SNAPSHOT_20261118_153234.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/READONLY_FINAL_HANDOFF_MANIFEST_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/inspect-retained-mythril.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2-134778851902-job.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2/metadata.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2/parsed-reports.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2/report.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/pr238-cli-ubuntu-134882135309.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/pr238-cli-windows-134882135056.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/pr238-initial-ci-snapshot.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosting/pages-error-red.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosting/pages-hosting-script-green.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosting/pages-hosting-web-green.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-render-errors-green.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-render-errors-red.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosting/pages-smoke-script-suite.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/independent/independent-bulk-cancellation.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/independent/independent-pages-smoke-render-errors.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/independent/independent-scan-client.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/independent/independent-security-gates.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/independent/independent-security-tooling-tests.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/initial/stage1-invoice-tests.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/initial/stage1-web-tests.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/ECHIDNA_COMPLETION_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/ECHIDNA_COMPLETION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/combined-echidna-227.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/combined-forge-contracts-185.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/combined-foundry-config.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/combined-raw-key-anvil-185.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/native/combined-slither-0116.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex-continuation-spec-20261109",
+      "head_sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1681,
+      "merge_base_sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "head_sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 178,
+      "merge_base_sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "head_sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "status": "diverged",
+      "ahead_by": 43,
+      "behind_by": 709,
+      "merge_base_sha": "e802d5c1ff131762477b485af3046446e8576be5",
+      "files_returned": 1,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/audits/CHATGPT_RANDOM_AUDIT_LEDGER.md",
+          "status": "modified",
+          "additions": 342,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "head_sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1074,
+      "merge_base_sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "head_sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1101,
+      "merge_base_sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "head_sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1102,
+      "merge_base_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "packages/cli/src/args.test.ts",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "packages/cli/src/args.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "head_sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "status": "diverged",
+      "ahead_by": 110,
+      "behind_by": 601,
+      "merge_base_sha": "17158f4c62f8f968853c3ffdd0cb3572455038f5",
+      "files_returned": 8,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "README.md",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 0
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+          "status": "modified",
+          "additions": 339,
+          "deletions": 0
+        },
+        {
+          "path": "docs/wiki/Codebase-Map.md",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 2
+        },
+        {
+          "path": "docs/wiki/Developer-Guide.md",
+          "status": "modified",
+          "additions": 19,
+          "deletions": 1
+        },
+        {
+          "path": "docs/wiki/Home.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 1
+        },
+        {
+          "path": "docs/wiki/User-Guide.md",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 1
+        },
+        {
+          "path": "docs/wiki/Verification-and-Release-Gates.md",
+          "status": "modified",
+          "additions": 162,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "head_sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "status": "diverged",
+      "ahead_by": 25,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/CHATGPT_DOCS_MAINTENANCE_LATEST.md",
+          "status": "modified",
+          "additions": 110,
+          "deletions": 0
+        },
+        {
+          "path": "docs/wiki/Architecture-and-Design-Rationale.md",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "docs/wiki/Developer-Guide.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "docs/wiki/Home.md",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/wiki/User-Guide.md",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "docs/wiki/Verification-and-Release-Gates.md",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-wiki-20261110",
+      "head_sha": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1041,
+      "merge_base_sha": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "head_sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 178,
+      "merge_base_sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "head_sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1099,
+      "merge_base_sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "head_sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 1102,
+      "merge_base_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files_returned": 1,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "packages/merchant-billing/src/schedule.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "head_sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1102,
+      "merge_base_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "packages/net-transport/src/core.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0
+        },
+        {
+          "path": "packages/net-transport/src/onion.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "head_sha": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1099,
+      "merge_base_sha": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "head_sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 735,
+      "merge_base_sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "head_sha": "433307b869acf2d81b2d12b415631076a89f7213",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 758,
+      "merge_base_sha": "433307b869acf2d81b2d12b415631076a89f7213",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "head_sha": "81fd4c032e29a87ce509236a0398468022c23012",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 767,
+      "merge_base_sha": "81fd4c032e29a87ce509236a0398468022c23012",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    }
+  ]
+}

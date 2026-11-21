@@ -1,0 +1,1900 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    320,
+    338
+  ],
+  "results": [
+    {
+      "branch": "fix/ghostpay-tron-genesis-guard-gpbug15-20261120",
+      "head_sha": "b86a3e6affe8b71c6f13d16783accad446271ba4",
+      "status": "diverged",
+      "ahead_by": 8,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 7,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/features/tron/TronView.network.test.tsx",
+          "status": "added",
+          "additions": 41,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/tron/rpc.network.test.ts",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/rpc.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 6
+        },
+        {
+          "path": "docs/handoffs/TRON_GENESIS_LEGACY_TESTS_AND_CENSUS_20261120.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/TRON_SELECTED_GENESIS_20261120.md",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "fix/ghostpay-tron-genesis-legacy-callers-20261120-r1",
+      "head_sha": "06fd87c3e90000118ffa94048529db36f0a67d41",
+      "status": "diverged",
+      "ahead_by": 7,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 7,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/features/tron/TronView.network.test.tsx",
+          "status": "added",
+          "additions": 41,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/tron/rpc.network.test.ts",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/tron/rpc.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 6
+        },
+        {
+          "path": "docs/handoffs/TRON_GENESIS_LEGACY_TESTS_AND_CENSUS_20261120.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/TRON_SELECTED_GENESIS_20261120.md",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "fix/ghostpay-vault-rekey-lock-revocation-20261120",
+      "head_sha": "81598d93dd82cc440526c866d42b55be0657895b",
+      "status": "diverged",
+      "ahead_by": 3,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 3,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/VAULT_REKEY_LOCK_20261120.md",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/vault.rekey-lock.test.ts",
+          "status": "added",
+          "additions": 50,
+          "deletions": 0
+        },
+        {
+          "path": "packages/ux-vault/src/vault.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        }
+      ]
+    },
+    {
+      "branch": "fix/remediation-b16c7936-5ce634",
+      "head_sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 1358,
+      "merge_base_sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "files_returned": 1,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 3
+        }
+      ]
+    },
+    {
+      "branch": "fix/remediation-f95457fd-22ecf9",
+      "head_sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 1355,
+      "merge_base_sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "files_returned": 2,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/features/policy/send.test.ts",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/policy/send.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 7
+        }
+      ]
+    },
+    {
+      "branch": "future/f01-ghosttips",
+      "head_sha": "12a549e3c03c983b5a19ae6b54b11426284e5e4a",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F01-ghosttips/SPEC.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f02-ghoststore",
+      "head_sha": "4cc7f4a241fb4bfc0d2f765c857d19bf0fd1d44c",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F02-ghoststore/SPEC.md",
+          "status": "added",
+          "additions": 151,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f03-private-payment-links",
+      "head_sha": "dad6bc746be13f8a70fcbb4d612a6fe1c01c86ec",
+      "status": "diverged",
+      "ahead_by": 9,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 122,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/e2e/payment-request-file.spec.ts",
+          "status": "added",
+          "additions": 206,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestDownload.test.tsx",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestDownload.tsx",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestFileInput.test.tsx",
+          "status": "added",
+          "additions": 238,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/PaymentRequestFileInput.tsx",
+          "status": "added",
+          "additions": 162,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/requestFileInterop.test.ts",
+          "status": "added",
+          "additions": 87,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.invoiceQr.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Pay.requestFile.test.tsx",
+          "status": "added",
+          "additions": 255,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 12
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/prompts/F03_AUDIT_HANDOFF.md",
+          "status": "added",
+          "additions": 44,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/prompts/F03_WORKER_BRIEF.md",
+          "status": "added",
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/CATALOG_RECONCILIATION.md",
+          "status": "added",
+          "additions": 31,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/ENVIRONMENT.md",
+          "status": "added",
+          "additions": 48,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/HANDOFF.md",
+          "status": "added",
+          "additions": 63,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/QUALIFICATION.md",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/SPEC.md",
+          "status": "added",
+          "additions": 81,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/audits/PRIVACY_SECURITY.md",
+          "status": "added",
+          "additions": 141,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/audits/SPEC.md",
+          "status": "added",
+          "additions": 267,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/audits/STANDARDS.md",
+          "status": "added",
+          "additions": 319,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/console-log-normalization.json",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.json",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/feature-lint.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.json",
+          "status": "added",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/final-secret-scan.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.json",
+          "status": "added",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/final-whitespace.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/hosted-product-status.json",
+          "status": "added",
+          "additions": 58,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.json",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-build.log",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage-initial-interrupted.log",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.json",
+          "status": "added",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-coverage.log",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.json",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-direct-coverage.log",
+          "status": "added",
+          "additions": 54,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.json",
+          "status": "added",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-full-coverage.log",
+          "status": "added",
+          "additions": 842,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-lcov.info",
+          "status": "added",
+          "additions": 1641,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.json",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/invoice-schema-typecheck.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.json",
+          "status": "added",
+          "additions": 9,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog-final.log",
+          "status": "added",
+          "additions": 455,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.json",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/locale-catalog.log",
+          "status": "added",
+          "additions": 455,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/original-console-logs.tar.gz.b64",
+          "status": "added",
+          "additions": 254,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.json",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/secret-scan.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.json",
+          "status": "added",
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-green.log",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/spec-app-lock-red.log",
+          "status": "added",
+          "additions": 89,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.json",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/spec-combined-dom.log",
+          "status": "added",
+          "additions": 125,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-full.json",
+          "status": "added",
+          "additions": 103,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-artifact-lean.json",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.json",
+          "status": "added",
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-full.log",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.json",
+          "status": "added",
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-build-lean.log",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.json",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-full.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.json",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-bundle-scan-lean.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.json",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-catalog-final.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.json",
+          "status": "added",
+          "additions": 16,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck-final.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.json",
+          "status": "added",
+          "additions": 16,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-typecheck.log",
+          "status": "added",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.json",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-full.log",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.json",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/evidence/web-vite-lean.log",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/QUALIFICATION.md",
+          "status": "added",
+          "additions": 119,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/RECONCILIATION_REVIEW.md",
+          "status": "added",
+          "additions": 249,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/browser-collection-full.json",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/browser-collection-full.log",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/browser-collection-lean.json",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/browser-collection-lean.log",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/original-console.json",
+          "status": "added",
+          "additions": 97,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-build.json",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-build.log",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-lint.json",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-lint.log",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-suite.json",
+          "status": "added",
+          "additions": 26,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-suite.log",
+          "status": "added",
+          "additions": 38,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-typecheck.json",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/payment-uri-typecheck.log",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/repository-secrets.json",
+          "status": "added",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/repository-secrets.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/shared-web-and-f03.json",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/shared-web-and-f03.log",
+          "status": "added",
+          "additions": 307,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/shared-web-lint.json",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/shared-web-lint.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/source-union.json",
+          "status": "added",
+          "additions": 181,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/static-build-full.json",
+          "status": "added",
+          "additions": 103,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/static-build-lean.json",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/verification-summary.json",
+          "status": "added",
+          "additions": 157,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-bundle-scan-full.json",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-bundle-scan-full.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-bundle-scan-lean.json",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-bundle-scan-lean.log",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-typecheck.json",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-typecheck.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-vite-full.json",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-vite-full.log",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-vite-lean.json",
+          "status": "added",
+          "additions": 27,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/web-vite-lean.log",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/whitespace-vs-current-main.json",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/round3/evidence/whitespace-vs-current-main.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PR310_MEMO_BROWSER_CHECKS_20261120.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/user/payment-request-files.md",
+          "status": "added",
+          "additions": 54,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/README.md",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/index.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/requestFile.interop.test.ts",
+          "status": "added",
+          "additions": 117,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/requestFile.test.ts",
+          "status": "added",
+          "additions": 190,
+          "deletions": 0
+        },
+        {
+          "path": "packages/invoice-schema/src/requestFile.ts",
+          "status": "added",
+          "additions": 103,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f03-private-payment-links-spec",
+      "head_sha": "ae0bad1151625fd3453a9c684927145024fa8634",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/SPEC.md",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f04-merchant-dashboard",
+      "head_sha": "066731b4d6d19d96469dd18fa082b264f3efed5d",
+      "status": "diverged",
+      "ahead_by": 15,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 23,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/index.ts",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/model.ts",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+          "status": "added",
+          "additions": 310,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/projection.ts",
+          "status": "added",
+          "additions": 220,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/select.ts",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 100,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+          "status": "added",
+          "additions": 140,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md",
+          "status": "added",
+          "additions": 110,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/PUBLICATION.json",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+          "status": "added",
+          "additions": 146,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-final-coverage.txt",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 813,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f05-ghostproof",
+      "head_sha": "ccd1b16dea7be84552f40d3bcd0f23b4224699d3",
+      "status": "diverged",
+      "ahead_by": 14,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 30,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 36,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/index.ts",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/review.test.ts",
+          "status": "added",
+          "additions": 195,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/review.ts",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/session.test.ts",
+          "status": "added",
+          "additions": 126,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/session.ts",
+          "status": "added",
+          "additions": 65,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/HANDOFF.md",
+          "status": "added",
+          "additions": 131,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/PUBLICATION.json",
+          "status": "added",
+          "additions": 51,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/SPEC.md",
+          "status": "added",
+          "additions": 163,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-final-coverage.txt",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-scoped-lint-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-scoped-typecheck-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/initial-whole-web-typecheck-resource-failure.txt",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/focused-tests.txt",
+          "status": "added",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/scoped-typecheck.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 813,
+          "deletions": 0
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f06-encrypted-backups",
+      "head_sha": "85dcdcbb54e9494c25ad0fbc04a9667cbb278e31",
+      "status": "diverged",
+      "ahead_by": 6,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F06-encrypted-backups/SPEC.md",
+          "status": "added",
+          "additions": 147,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f07-ghostpayouts",
+      "head_sha": "90b86766119d3f72870948ee83d039b989659b5f",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F07-ghostpayouts/SPEC.md",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f08-ghostid",
+      "head_sha": "50ea73dcf3d4e9593da780ffb34bdfce60a90a15",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F08-ghostid/SPEC.md",
+          "status": "added",
+          "additions": 149,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f09-ghostpos",
+      "head_sha": "ceeb3cfad5f353ea88ca7cc0593d199cf734f588",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F09-ghostpos/SPEC.md",
+          "status": "added",
+          "additions": 151,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f10-private-recurring",
+      "head_sha": "4a48f2f09b1334036a6a88bab4e51f958cee46dd",
+      "status": "diverged",
+      "ahead_by": 13,
+      "behind_by": 86,
+      "merge_base_sha": "aa3df1cb37274fae73af0ca957183c15c51b62d3",
+      "files_returned": 27,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/index.ts",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/model.test.ts",
+          "status": "added",
+          "additions": 158,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/model.ts",
+          "status": "added",
+          "additions": 213,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/review.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/review.ts",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 96,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/HANDOFF.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 85,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/PUBLICATION.json",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/SPEC.md",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-final-coverage.txt",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-lint-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-typecheck-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 813,
+          "deletions": 0
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f11-ghostteams",
+      "head_sha": "22891e01c2abffe0ced2384c7ad429f08805534f",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F11-ghostteams/SPEC.md",
+          "status": "added",
+          "additions": 166,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "future/f12-ghostbridge",
+      "head_sha": "72a641445124321228edaa241f1bb5ae0dd17f8e",
+      "status": "diverged",
+      "ahead_by": 5,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 6,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F12-ghostbridge/SPEC.md",
+          "status": "added",
+          "additions": 171,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    }
+  ]
+}

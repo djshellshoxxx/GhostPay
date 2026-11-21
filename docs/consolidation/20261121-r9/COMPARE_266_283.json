@@ -1,0 +1,4408 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    266,
+    284
+  ],
+  "results": [
+    {
+      "branch": "codex/ghostpay-unified-completion",
+      "head_sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 265,
+      "merge_base_sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/network-isolation-complete-20261119",
+      "head_sha": "3ae0b4f642a8941592fad48c26e9ed1bbec327f4",
+      "status": "diverged",
+      "ahead_by": 87,
+      "behind_by": 182,
+      "merge_base_sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "files_returned": 300,
+      "capped": true,
+      "category": "capped-review",
+      "files": [
+        {
+          "path": ".github/actions/setup-forge/action.yml",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/beta-acceptance.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 3
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 2
+        },
+        {
+          "path": ".github/workflows/pages.yml",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 4
+        },
+        {
+          "path": "README.md",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 7
+        },
+        {
+          "path": "apps/relayer/Dockerfile",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/PRIVACY.md",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/README.md",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 4
+        },
+        {
+          "path": "apps/relayer/src/config.ts",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 2
+        },
+        {
+          "path": "apps/relayer/src/log.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/privacy.test.ts",
+          "status": "added",
+          "additions": 157,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/src/runtime.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 6
+        },
+        {
+          "path": "apps/relayer/src/server.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 1
+        },
+        {
+          "path": "apps/relayer/tsconfig.json",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/relayer/vitest.config.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/core-journey.spec.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/devnet-journey.spec.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/devnet/invoiceTamper.ts",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/devnet/pages.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/flows.spec.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/helpers.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/e2e/network-authorization.spec.ts",
+          "status": "added",
+          "additions": 355,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/pages-devnet.spec.ts",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 15
+        },
+        {
+          "path": "apps/web/e2e/stealth-export.spec.ts",
+          "status": "added",
+          "additions": 359,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/stealthExportFixtures.ts",
+          "status": "added",
+          "additions": 340,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/e2e/sweep.spec.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 172,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 172,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 172,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 172,
+          "deletions": 12
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 8
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.d.mts",
+          "status": "added",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/apply-csp.mjs",
+          "status": "added",
+          "additions": 65,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 94,
+          "deletions": 33
+        },
+        {
+          "path": "apps/web/scripts/test-reconciliation-idb.mjs",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/scripts/test-seller-vault-idb.mjs",
+          "status": "modified",
+          "additions": 164,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.d.mts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/validate-deployments.mjs",
+          "status": "modified",
+          "additions": 49,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/AppShell.beforeUnload.test.tsx",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.frameGuard.test.tsx",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.idleClock.test.tsx",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.network.test.tsx",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/AppShell.tsx",
+          "status": "modified",
+          "additions": 126,
+          "deletions": 23
+        },
+        {
+          "path": "apps/web/src/buildScripts.test.ts",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/MerchantProfilePanel.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.test.tsx",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/components/ReceiptPanel.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/components/StealthExportArchive.tsx",
+          "status": "added",
+          "additions": 116,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportCommon.tsx",
+          "status": "added",
+          "additions": 175,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportMaster.tsx",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.test.tsx",
+          "status": "added",
+          "additions": 311,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportPayment.tsx",
+          "status": "added",
+          "additions": 178,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+          "status": "added",
+          "additions": 285,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/components/StealthExportRecovery.tsx",
+          "status": "added",
+          "additions": 232,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.isolation.test.ts",
+          "status": "added",
+          "additions": 63,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 88,
+          "deletions": 68
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.localSpends.test.ts",
+          "status": "added",
+          "additions": 109,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.ts",
+          "status": "modified",
+          "additions": 10,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/chainViews.i18n.test.tsx",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyPay.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyReceive.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.network.test.tsx",
+          "status": "added",
+          "additions": 192,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/policy/PolicyView.tsx",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.network.test.tsx",
+          "status": "added",
+          "additions": 78,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/registry/RegistryView.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.test.tsx",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/solana/SolanaView.tsx",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 19
+        },
+        {
+          "path": "apps/web/src/features/solana/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/solana/scan.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 13
+        },
+        {
+          "path": "apps/web/src/features/solana/sweep.ts",
+          "status": "modified",
+          "additions": 26,
+          "deletions": 6
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.lock.test.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.test.tsx",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/features/tron/TronView.tsx",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+          "status": "modified",
+          "additions": 30,
+          "deletions": 18
+        },
+        {
+          "path": "apps/web/src/features/tron/scan.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 20
+        },
+        {
+          "path": "apps/web/src/features/tron/sweep.ts",
+          "status": "modified",
+          "additions": 23,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/i18n/message.test.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 169,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.browser.test.ts",
+          "status": "added",
+          "additions": 15,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.test.ts",
+          "status": "added",
+          "additions": 167,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/boundedRequest.ts",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+          "status": "added",
+          "additions": 86,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.networkGuard.test.ts",
+          "status": "added",
+          "additions": 61,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.test.ts",
+          "status": "modified",
+          "additions": 35,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/defaultServices.ts",
+          "status": "modified",
+          "additions": 92,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/displayText.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.test.ts",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/frameGuard.ts",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/hardening.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/keyVault.ts",
+          "status": "modified",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/manifest.test.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 73
+        },
+        {
+          "path": "apps/web/src/lib/manifest.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 59
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.adapters.test.ts",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.test.ts",
+          "status": "added",
+          "additions": 356,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkAuthorization.ts",
+          "status": "added",
+          "additions": 481,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkOperation.test.ts",
+          "status": "added",
+          "additions": 64,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/networkOperation.ts",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+          "status": "added",
+          "additions": 297,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.testutil.ts",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/paymentKeyExport.ts",
+          "status": "added",
+          "additions": 396,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/receipts.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/receipts.ts",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.test.ts",
+          "status": "modified",
+          "additions": 47,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/relayerClient.ts",
+          "status": "modified",
+          "additions": 86,
+          "deletions": 65
+        },
+        {
+          "path": "apps/web/src/lib/relayerContract.test.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/scanCheckpointPrivacy.test.ts",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.test.ts",
+          "status": "modified",
+          "additions": 93,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/lib/scanClient.ts",
+          "status": "modified",
+          "additions": 95,
+          "deletions": 23
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.test.ts",
+          "status": "added",
+          "additions": 312,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanCursorSlot.ts",
+          "status": "added",
+          "additions": 104,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.authorization.test.ts",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.bulkEvidence.test.ts",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.test.ts",
+          "status": "modified",
+          "additions": 66,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/scanPrivacy.ts",
+          "status": "modified",
+          "additions": 100,
+          "deletions": 70
+        },
+        {
+          "path": "apps/web/src/lib/scannerCore.spam.nocov.test.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/services.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/session.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/settings.loopback.test.ts",
+          "status": "added",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/settings.test.ts",
+          "status": "modified",
+          "additions": 42,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/settings.ts",
+          "status": "modified",
+          "additions": 61,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/lib/stealthExport.ts",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.destinations.privacy.test.ts",
+          "status": "added",
+          "additions": 114,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.test.ts",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/sweep.ts",
+          "status": "modified",
+          "additions": 112,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/lib/transportCancellation.test.ts",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/lib/transportNative.test.ts",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.test.tsx",
+          "status": "added",
+          "additions": 85,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/main.tsx",
+          "status": "modified",
+          "additions": 31,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/privacyInvariants.test.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 10
+        },
+        {
+          "path": "apps/web/src/releaseKeyDenylist.test.ts",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "status": "modified",
+          "additions": 69,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/state.tsx",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/test/pagesInvoiceTamper.test.ts",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/validateDeploymentsScript.test.ts",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.test.tsx",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/CreateInvoice.tsx",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/Home.tsx",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Pay.tsx",
+          "status": "modified",
+          "additions": 56,
+          "deletions": 17
+        },
+        {
+          "path": "apps/web/src/views/Scan.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 124,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Scan.test.tsx",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/views/Scan.tsx",
+          "status": "modified",
+          "additions": 45,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.stealthExport.test.tsx",
+          "status": "added",
+          "additions": 103,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/SellerKeys.tsx",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "status": "modified",
+          "additions": 124,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/views/Settings.tsx",
+          "status": "modified",
+          "additions": 233,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/views/Sweep.privacy.test.tsx",
+          "status": "modified",
+          "additions": 158,
+          "deletions": 18
+        },
+        {
+          "path": "apps/web/src/views/Sweep.test.tsx",
+          "status": "modified",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/views/Sweep.tsx",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/BUILD-WEB.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/README.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "deploy/TOR.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/DEPLOYMENT_MANIFEST.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/08-completion-gates.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/17-final-security-snapshot.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/mythril-reevaluation-20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-03-invoice-parser-fuzz.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/poc-04-browser-csp-xss-referrer.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/static-server.mjs",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/poc/static-server.test.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/design/qr-colors.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_CHECKPOINT_V4_MAIN_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_SECURITY_TOOLING_EXTRACTION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_SWEEP_LEDGER_PRIVACY_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/OWN_NODE_GUARD_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PAGES_IDLE_CLOCK_INTEGRATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PRIVACY_CONSOLIDATION_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md",
+          "status": "modified",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/BETA_LOG_ARTIFACT_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/DEPENDENCY_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/INVOICE_VALIDATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/PAGES_RECOVERY_INTEGRATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/PAGES_SMOKE_RENDER_ERRORS_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/PRIVACY_BROWSER_FIXTURES_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/RECOVERY_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/SWEEP_BALANCE_CONSENT_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/ARTIFACT_MANIFEST.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/COMPLETION_REPORT.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/CONSOLIDATION_OUTCOMES.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/EXECUTION_STATUS.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/LOCAL_COMMIT_LEDGER.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/NATIVE_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/PACKET_VALIDATION.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/PAGES_FEATURE_THREAT_EVIDENCE_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/README.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/RECONCILIATION_MATRIX.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/REMAINING_PR_DELTA_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/REMOTE_SHA_MAPPING.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/RUNTIME_IDENTITY.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/SOURCE_FILES_SHA256.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/BUILD_QUALIFICATION_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/CLAIM.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-dedicated/evidence/SHA256SUMS",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-dedicated/evidence/pages-evidence.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-dedicated/site/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-project/evidence/SHA256SUMS",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-project/evidence/pages-evidence.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/pages-project/site/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/release-development/SHA256SUMS",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/release-development/release-manifest.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/release-development/sbom.cdx.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-full.inventory.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-full/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-lean.inventory.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/artifacts/web-lean/build-info.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/build-libraries.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/capture-web-artifact.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/capture-web-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/capture-web-lean.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/check-pages-artifact.mjs",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/check-release-artifact.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install-after-suite.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install-retry-384.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/clean-install.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/evidence-index.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/build-libraries.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/capture-web-full.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/capture-web-lean.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/clean-install-after-suite.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/clean-install-retry-384.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/clean-install.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-dedicated-build.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-dedicated-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-project-build.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/pages-project-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-full-standard.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-full-system.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-full.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/playwright-lean-system.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/prepare-checkout.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/release-artifact-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/release-build.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/release-repro.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/repro-a-artifact-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/repro-b-artifact-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/resolved-toolchain-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/resource-wrapper-check.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/system-chromium-version.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/web-full.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/logs/web-lean.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-dedicated-build.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-dedicated-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-project-build.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/pages-project-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-full-standard.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-full-system.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/playwright-lean-system.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/prepare-checkout.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/qualification-results.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/release-artifact-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/release-build.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/release-repro.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/repro-a-artifact-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/repro-b-artifact-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/resolved-toolchain-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/resource-bin/node",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/resource-wrapper-check.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/run.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/source-after-builds.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/source-before-builds.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/system-chromium-version.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/tmp/ghostpay-repro.tvEPwc/a-first.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/tmp/ghostpay-repro.tvEPwc/nested.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/toolchain-versions.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/web-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/build/web-lean.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-full.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/dependency-audit-production.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/dependencies/picomatch-current-registry.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/HOSTED_MYTHRIL_REVIEW_20261118.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/READINESS_SNAPSHOT_20261118_153234.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/READINESS_SNAPSHOT_20261118_153234.md",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/READONLY_FINAL_HANDOFF_MANIFEST_20261118.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/inspect-retained-mythril.py",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2-134778851902-job.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2/metadata.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2/parsed-reports.json",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/main-mythril-dfc75ef2/report.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/pages-completion-20261118/evidence/hosted/pr238-cli-ubuntu-134882135309.log",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/recovery-spec02-unqualified-20261116",
+      "head_sha": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+      "status": "diverged",
+      "ahead_by": 4,
+      "behind_by": 299,
+      "merge_base_sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+      "files_returned": 4,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/recovery/spec02-unqualified-2026-11-16/README.md",
+          "status": "added",
+          "additions": 57,
+          "deletions": 0
+        },
+        {
+          "path": "docs/recovery/spec02-unqualified-2026-11-16/UNCONFIRMED-conflict-fix.apply-patch.txt",
+          "status": "added",
+          "additions": 128,
+          "deletions": 0
+        },
+        {
+          "path": "docs/recovery/spec02-unqualified-2026-11-16/reconciliation-amounts.test.ts.txt",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "docs/recovery/spec02-unqualified-2026-11-16/reconciliation-amounts.ts.txt",
+          "status": "added",
+          "additions": 69,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "codex/seller-ledger-receipt-qr",
+      "head_sha": "bb011134c1bf9cd0e75090fec75d85235d637281",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1736,
+      "merge_base_sha": "bb011134c1bf9cd0e75090fec75d85235d637281",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "codex/setup-autonomous-agent-20261104",
+      "head_sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1683,
+      "merge_base_sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "files_returned": 2,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": ".github/agent-prompts/repository-scope.md",
+          "status": "added",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": ".github/workflows/openai-agents.yml",
+          "status": "modified",
+          "additions": 51,
+          "deletions": 11
+        }
+      ]
+    },
+    {
+      "branch": "consolidate/ghostpay-dormant-modules-1f782-20261121",
+      "head_sha": "1de6e0247e0f76afe6f1615b43e55007ece25d9b",
+      "status": "ahead",
+      "ahead_by": 52,
+      "behind_by": 0,
+      "merge_base_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+      "files_returned": 78,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": ".claude/skills/ghostpay-package-map/PACKAGE_MAP.md",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 36,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/index.ts",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/review.test.ts",
+          "status": "added",
+          "additions": 197,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/review.ts",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/session.test.ts",
+          "status": "added",
+          "additions": 126,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/ghostproof/session.ts",
+          "status": "added",
+          "additions": 65,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/index.ts",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/model.ts",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/projection.test.ts",
+          "status": "added",
+          "additions": 310,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/projection.ts",
+          "status": "added",
+          "additions": 220,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/merchant-dashboard/select.ts",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/fixtures.testutil.ts",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/index.ts",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/model.test.ts",
+          "status": "added",
+          "additions": 158,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/model.ts",
+          "status": "added",
+          "additions": 213,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/review.test.ts",
+          "status": "added",
+          "additions": 217,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/future/private-recurring/review.ts",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 268,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/dormant-modules-20261121-1f782/CODEQL_FOLLOWUP.md",
+          "status": "added",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/dormant-modules-20261121-1f782/DEPENDENCY_REVIEW.md",
+          "status": "added",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/dormant-modules-20261121-1f782/EVIDENCE.json.gz",
+          "status": "added",
+          "additions": 0,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/dormant-modules-20261121-1f782/EXECUTION.json",
+          "status": "added",
+          "additions": 690,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/dormant-modules-20261121-1f782/PUBLICATION.json",
+          "status": "added",
+          "additions": 116,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/dormant-modules-20261121-1f782/REPORT.md",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/future-modules-20261121-1f782/F04_COMPOSITION.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/HANDOFF.md",
+          "status": "added",
+          "additions": 140,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/IMPLEMENTATION.md",
+          "status": "added",
+          "additions": 110,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 94,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/PUBLICATION.json",
+          "status": "added",
+          "additions": 56,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+          "status": "added",
+          "additions": 146,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/verification/coordinator/f04-final-coverage.txt",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/HANDOFF.md",
+          "status": "added",
+          "additions": 131,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/PUBLICATION.json",
+          "status": "added",
+          "additions": 51,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/SPEC.md",
+          "status": "added",
+          "additions": 163,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-final-coverage.txt",
+          "status": "added",
+          "additions": 29,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-scoped-lint-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/f05-scoped-typecheck-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/coordinator/initial-whole-web-typecheck-resource-failure.txt",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/focused-tests.txt",
+          "status": "added",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/verification/scoped-typecheck.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/COORDINATOR_VERIFICATION.md",
+          "status": "added",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/HANDOFF.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/INDEPENDENT_REVIEW.md",
+          "status": "added",
+          "additions": 85,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/PUBLICATION.json",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/SPEC.md",
+          "status": "added",
+          "additions": 161,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/SHA256SUMS.json",
+          "status": "added",
+          "additions": 10,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/artifact-comparison.json",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-bundle-scan.txt",
+          "status": "added",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-focused-tests.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-lean-build.txt",
+          "status": "added",
+          "additions": 34,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-current-main-web-typecheck.txt",
+          "status": "added",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-final-coverage.txt",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-lint-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/verification/coordinator/f10-scoped-typecheck-coordinator.txt",
+          "status": "added",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 817,
+          "deletions": 0
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/future-module-isolation.test.mjs",
+          "status": "added",
+          "additions": 176,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/lean-core-reachability.test.mjs",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "consolidation/ops-monitor-bounded-streams-20261116",
+      "head_sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1681,
+      "merge_base_sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "consolidation/six-verified-boundaries-20261116",
+      "head_sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1679,
+      "merge_base_sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "dependabot/github_actions/actions-b9ade1236b",
+      "head_sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 5,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/contract-analysis.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-codex-cloud.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/ghostpay-parallel-review.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": ".github/workflows/nightly.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "head_sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 69,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 4842,
+          "deletions": 4152
+        },
+        {
+          "path": "packages/address-safety/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/amount-blur/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/btc-family/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/btc-payjoin/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/btc-silent-payments/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-adapters/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/chain-evm-extra/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/chain-solana/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/chain-tron/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/cli/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/confidential-amounts/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/confidential-contracts/package.json",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 7
+        },
+        {
+          "path": "packages/core-crypto/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/donation/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/external-pools-privacypools/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/external-pools-railgun/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/external-pools/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/hops/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/hygiene/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/i18n/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/invoice-schema/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/merchant-billing/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/merchant-hooks/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/merchant-ledger/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/merchant-multisig/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/metadata-hardening/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/net-harness/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ops-monitor/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/payer-sponsor/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/payment-uri/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/pir-two-server/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/plugin-api/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/policy-scheme/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/pool-circuits/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/pool-prover/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/pool-relayer/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/pool-sdk/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/privacy-pipeline/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/privacy-profiles/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/qr-exchange/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/relayer-guard/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/sandbox/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/scan-source/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/sdk/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/secret-box/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/solana-stealth/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/tron-adapter/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/tx-review/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-connect/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-core/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-export/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-fees/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-fiat/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-flow/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-guide/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-i18n/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-intake/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-links/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-notify/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-presets/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-privacy/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-receipts/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-sandbox/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-schedule/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/ux-vault/package.json",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        }
+      ]
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "head_sha": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "status": "diverged",
+      "ahead_by": 4,
+      "behind_by": 162,
+      "merge_base_sha": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "files_returned": 88,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "apps/relayer/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "apps/web/package.json",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 7
+        },
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_VIEM_ALIGNMENT_20261118.md",
+          "status": "added",
+          "additions": 147,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/DEPENDENCY_RECONCILE_20261119.md",
+          "status": "added",
+          "additions": 96,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/audit-all.json",
+          "status": "added",
+          "additions": 377,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/audit-production.json",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/audit-summary.json",
+          "status": "added",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/clean-install.json",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/clean-install.txt",
+          "status": "added",
+          "additions": 7,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/dependency-tooling.txt",
+          "status": "added",
+          "additions": 51,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/installed-resolution.source.txt",
+          "status": "added",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/installed-resolution.txt",
+          "status": "added",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/lock-proof.json",
+          "status": "added",
+          "additions": 48,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/paired-update-scope.json",
+          "status": "added",
+          "additions": 53,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree-npm10.json",
+          "status": "added",
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree-npm10.stderr.txt",
+          "status": "added",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree-problems.json",
+          "status": "added",
+          "additions": 88,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/production-tree.stderr.txt",
+          "status": "added",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/source-proof.json",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/agents/evidence/dependency-reconcile-20261119/targeted-checks.json",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        },
+        {
+          "path": "package-lock.json",
+          "status": "modified",
+          "additions": 480,
+          "deletions": 368
+        },
+        {
+          "path": "package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 1
+        },
+        {
+          "path": "packages/address-safety/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/amount-blur/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/btc-family/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/btc-payjoin/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/btc-silent-payments/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/chain-adapters/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-evm-extra/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/chain-solana/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/chain-tron/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/cli/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/confidential-amounts/package.json",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 5
+        },
+        {
+          "path": "packages/core-crypto/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/donation/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/external-pools-privacypools/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/external-pools-railgun/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/external-pools/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/hops/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/hygiene/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/i18n/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/invoice-schema/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/merchant-billing/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/merchant-hooks/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/merchant-ledger/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/merchant-multisig/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/metadata-hardening/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/net-harness/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/net-transport/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/ops-monitor/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/payer-sponsor/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/payment-uri/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/pir-two-server/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/plugin-api/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/policy-scheme/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/pool-circuits/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/pool-prover/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/pool-relayer/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/pool-sdk/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/privacy-pipeline/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/privacy-profiles/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/qr-exchange/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/relayer-guard/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/sandbox/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/scan-source/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/sdk/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/secret-box/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/solana-stealth/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/tron-adapter/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/tx-review/package.json",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 4
+        },
+        {
+          "path": "packages/ux-connect/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-core/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-export/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-fees/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-fiat/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-flow/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-guide/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-i18n/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-intake/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-links/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-notify/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-presets/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-privacy/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-receipts/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-sandbox/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-schedule/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "packages/ux-vault/package.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        }
+      ]
+    },
+    {
+      "branch": "docs/f11-minimal-merchant-checkout-spec-20261120",
+      "head_sha": "c8d917a6c88114825a65dc46b7b3d21adebbe834",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 44,
+      "merge_base_sha": "aec179910c39081d820396409ff3139ff2264132",
+      "files_returned": 1,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/future/merchant-checkout-sdk/F11-SPEC.md",
+          "status": "added",
+          "additions": 84,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "docs/future-privacy-feature-specs-20261109",
+      "head_sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1683,
+      "merge_base_sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d",
+      "files_returned": 20,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/INDEX.md",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/01-ghosttips.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/02-ghoststore.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/03-private-payment-links.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/04-merchant-dashboard.md",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/05-ghostproof.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/06-encrypted-backups.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/07-ghostpayouts.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/08-ghostid.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/09-ghostpos.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/10-private-recurring.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/11-ghostteams.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/12-ghostbridge.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/13-fiat-conversion.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/14-multichain-routing.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/15-private-rpc.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/16-per-client-identities.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/17-private-funds.md",
+          "status": "added",
+          "additions": 46,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/18-privacy-modes.md",
+          "status": "added",
+          "additions": 45,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/privacy-first/README.md",
+          "status": "added",
+          "additions": 42,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "head_sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 263,
+      "merge_base_sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "docs/ghostpay-coordination-ledger-20261120",
+      "head_sha": "5564d8d2dcd22ce8d0b0c2516628f42671b8ffd5",
+      "status": "diverged",
+      "ahead_by": 3,
+      "behind_by": 54,
+      "merge_base_sha": "bfebea0acf213a113d2740366fd592042661ca67",
+      "files_returned": 25,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/ledger-code-branches.json",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 3
+        },
+        {
+          "path": "docs/coordination/RECONCILIATION_20261120.md",
+          "status": "added",
+          "additions": 66,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/README.md",
+          "status": "added",
+          "additions": 206,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/assembly-validation.json",
+          "status": "added",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/branch-index.md",
+          "status": "added",
+          "additions": 437,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/branch-ledger.json",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/branch-paths.json",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/build_branch_ledger.py",
+          "status": "added",
+          "additions": 525,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/claim-ledger.json",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/closed-prs.json",
+          "status": "added",
+          "additions": 67,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/cutoff-semantic-supplement.json",
+          "status": "added",
+          "additions": 263,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/final-packet-review.json",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/independent-validation.json",
+          "status": "added",
+          "additions": 659,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/initial-source-snapshot.json",
+          "status": "added",
+          "additions": 4651,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/patch-equivalence.json",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/pr-queue.md",
+          "status": "added",
+          "additions": 141,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/pr343-docs-only-evidence.json",
+          "status": "added",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/qualification.json",
+          "status": "added",
+          "additions": 16392,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/residual-dispositions.json",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/semantic-dispositions.json",
+          "status": "added",
+          "additions": 2292,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/source-drift-check.json",
+          "status": "added",
+          "additions": 44,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/source-snapshot.json",
+          "status": "added",
+          "additions": 4729,
+          "deletions": 0
+        },
+        {
+          "path": "docs/coordination/claims-20261120/validation.md",
+          "status": "added",
+          "additions": 50,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_MASTER_COMPLETION_LEDGER.md",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 5
+        }
+      ]
+    },
+    {
+      "branch": "docs/ghostpay-core-readonly-audit-20261119",
+      "head_sha": "8d03ebe48a9f6184d9905c2a9c93e8dc080f2618",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 55,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/FINDINGS.md",
+          "status": "added",
+          "additions": 2225,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/README.md",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/VERIFICATION.md",
+          "status": "added",
+          "additions": 41,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/branch-applicability.json",
+          "status": "added",
+          "additions": 2174,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/branch-applicability.md",
+          "status": "added",
+          "additions": 303,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/continuation.md",
+          "status": "added",
+          "additions": 21,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/coverage.json",
+          "status": "added",
+          "additions": 67442,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/evidence/README.md",
+          "status": "added",
+          "additions": 13,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/evidence/dependency-audit-all.json",
+          "status": "added",
+          "additions": 392,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/evidence/dependency-audit-candidate-all.json",
+          "status": "added",
+          "additions": 392,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/evidence/dependency-audit-candidate-production.json",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/evidence/dependency-audit-main.json",
+          "status": "added",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/evidence/final-import-check.json",
+          "status": "added",
+          "additions": 236,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/findings-quality-review.md",
+          "status": "added",
+          "additions": 122,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/findings.json",
+          "status": "added",
+          "additions": 7902,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/README.md",
+          "status": "added",
+          "additions": 25,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/contracts_policy_wave2.json",
+          "status": "added",
+          "additions": 4231,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/contracts_policy_wave2.md",
+          "status": "added",
+          "additions": 423,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/coverage-qa-supplement.json",
+          "status": "added",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/coverage-qa-supplement.md",
+          "status": "added",
+          "additions": 20,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/crypto_protocol_review.json",
+          "status": "added",
+          "additions": 7722,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/crypto_protocol_review.md",
+          "status": "added",
+          "additions": 237,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/crypto_tests_wave3.json",
+          "status": "added",
+          "additions": 6834,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/crypto_tests_wave3.md",
+          "status": "added",
+          "additions": 314,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/custody_privacy_review.json",
+          "status": "added",
+          "additions": 5891,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/custody_privacy_review.md",
+          "status": "added",
+          "additions": 368,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/hosting_latest_review.json",
+          "status": "added",
+          "additions": 3696,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/hosting_latest_review.md",
+          "status": "added",
+          "additions": 86,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_surfaces_wave2.json",
+          "status": "added",
+          "additions": 7271,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_surfaces_wave2.md",
+          "status": "added",
+          "additions": 361,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_tests_wave3.json",
+          "status": "added",
+          "additions": 5893,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_tests_wave3.md",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_tests_wave4.json",
+          "status": "added",
+          "additions": 3053,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_tests_wave4.md",
+          "status": "added",
+          "additions": 86,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_ui_review.json",
+          "status": "added",
+          "additions": 5333,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/payment_ui_review.md",
+          "status": "added",
+          "additions": 530,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/qualification-review.json",
+          "status": "added",
+          "additions": 1530,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/qualification-review.md",
+          "status": "added",
+          "additions": 23,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/root-findings.json",
+          "status": "added",
+          "additions": 221,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/root-review.json",
+          "status": "added",
+          "additions": 5183,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/root-review.md",
+          "status": "added",
+          "additions": 55,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scan_custody_tests_wave3.json",
+          "status": "added",
+          "additions": 6030,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scan_custody_tests_wave3.md",
+          "status": "added",
+          "additions": 301,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scan_custody_tests_wave4.json",
+          "status": "added",
+          "additions": 1458,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scan_custody_tests_wave4.md",
+          "status": "added",
+          "additions": 120,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scan_network_wave2.json",
+          "status": "added",
+          "additions": 6076,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scan_network_wave2.md",
+          "status": "added",
+          "additions": 325,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scope-closure-review.json",
+          "status": "added",
+          "additions": 3228,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/scope-closure-review.md",
+          "status": "added",
+          "additions": 24,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/supplemental-review.json",
+          "status": "added",
+          "additions": 4247,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/supplemental-review.md",
+          "status": "added",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/lanes/tooling-review.json",
+          "status": "added",
+          "additions": 1234,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/pending.json",
+          "status": "added",
+          "additions": 1,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/core-readonly-20261119/scope.json",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "docs/ghostpay-deep-research-20261103",
+      "head_sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1684,
+      "merge_base_sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "docs/ghostpay-future-module-specs-20261119",
+      "head_sha": "6030b8f44fee0c0889d7cacfc0eda8a49bc72b52",
+      "status": "diverged",
+      "ahead_by": 4,
+      "behind_by": 125,
+      "merge_base_sha": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files_returned": 48,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/ai/ACTIVE_WORK.md",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/COMMON.md",
+          "status": "added",
+          "additions": 144,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F01-ghosttips/SPEC.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F02-ghoststore/SPEC.md",
+          "status": "added",
+          "additions": 151,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F03-private-payment-links/SPEC.md",
+          "status": "added",
+          "additions": 145,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F04-merchant-dashboard/SPEC.md",
+          "status": "added",
+          "additions": 146,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F05-ghostproof/SPEC.md",
+          "status": "added",
+          "additions": 150,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F06-encrypted-backups/SPEC.md",
+          "status": "added",
+          "additions": 147,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F07-ghostpayouts/SPEC.md",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F08-ghostid/SPEC.md",
+          "status": "added",
+          "additions": 149,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F09-ghostpos/SPEC.md",
+          "status": "added",
+          "additions": 151,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F10-private-recurring/SPEC.md",
+          "status": "added",
+          "additions": 155,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F11-ghostteams/SPEC.md",
+          "status": "added",
+          "additions": 166,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F12-ghostbridge/SPEC.md",
+          "status": "added",
+          "additions": 171,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F13-fiat-conversion/SPEC.md",
+          "status": "added",
+          "additions": 180,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F14-multichain-routing/SPEC.md",
+          "status": "added",
+          "additions": 170,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F15-private-rpc/SPEC.md",
+          "status": "added",
+          "additions": 171,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F16-per-client-identities/SPEC.md",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F17-private-funds/SPEC.md",
+          "status": "added",
+          "additions": 180,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/F18-privacy-modes/SPEC.md",
+          "status": "added",
+          "additions": 185,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/FEE01-modular-fee-policy/SPEC.md",
+          "status": "added",
+          "additions": 177,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P01-tor-onion-hosting/SPEC.md",
+          "status": "added",
+          "additions": 126,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P02-rpc-policy/SPEC.md",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P03-local-stealth-scanning/SPEC.md",
+          "status": "added",
+          "additions": 127,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P04-encrypted-offline-invoices/SPEC.md",
+          "status": "added",
+          "additions": 155,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P05-encrypted-local-state/SPEC.md",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P06-key-role-separation/SPEC.md",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P07-encrypted-device-sync/SPEC.md",
+          "status": "added",
+          "additions": 148,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P08-linkability-analysis/SPEC.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P09-noncustodial-gas-services/SPEC.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P10-private-submission/SPEC.md",
+          "status": "added",
+          "additions": 137,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P11-metadata-timing-policy/SPEC.md",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P12-selective-disclosure-proofs/SPEC.md",
+          "status": "added",
+          "additions": 156,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P13-confidential-amounts/SPEC.md",
+          "status": "added",
+          "additions": 134,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P14-shielded-payments/SPEC.md",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P15-anonymous-withdrawals/SPEC.md",
+          "status": "added",
+          "additions": 136,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P16-shielded-cross-chain/SPEC.md",
+          "status": "added",
+          "additions": 132,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P17-private-fee-outputs/SPEC.md",
+          "status": "added",
+          "additions": 133,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P18-telemetry-release-integrity/SPEC.md",
+          "status": "added",
+          "additions": 142,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/P19-optional-fee-gateway/SPEC.md",
+          "status": "added",
+          "additions": 141,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/PUBLICATION.json",
+          "status": "added",
+          "additions": 1288,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/PUBLICATION.md",
+          "status": "added",
+          "additions": 135,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/README.md",
+          "status": "added",
+          "additions": 112,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/SOURCES.md",
+          "status": "added",
+          "additions": 52,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/T01-staggered-transfers/SPEC.md",
+          "status": "added",
+          "additions": 183,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/T02-intermediary-routing/SPEC.md",
+          "status": "added",
+          "additions": 192,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/VALIDATION.json",
+          "status": "added",
+          "additions": 894,
+          "deletions": 0
+        },
+        {
+          "path": "docs/future/modules/modules.json",
+          "status": "added",
+          "additions": 811,
+          "deletions": 0
+        }
+      ]
+    }
+  ]
+}

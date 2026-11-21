@@ -1,0 +1,566 @@
+{
+  "schema": "ghostpay-current-main-comparison/1",
+  "base_main_sha": "eb59d93cffed7848c4aac37d0e9650b87239c6da",
+  "range": [
+    212,
+    230
+  ],
+  "results": [
+    {
+      "branch": "claude/laughing-bardeen-4t20ys",
+      "head_sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2212,
+      "merge_base_sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/lucid-meitner-apalzc",
+      "head_sha": "d6f6617e595bbba7e83a1fcdec585bedb9adaf0f",
+      "status": "diverged",
+      "ahead_by": 19,
+      "behind_by": 520,
+      "merge_base_sha": "0d2ea8b40d6eea95388ace12d1bb03049f5d181e",
+      "files_returned": 28,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/scripts/scan-bundle.d.mts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/scripts/scan-bundle.mjs",
+          "status": "modified",
+          "additions": 28,
+          "deletions": 29
+        },
+        {
+          "path": "apps/web/src/scanBundle.test.ts",
+          "status": "modified",
+          "additions": 32,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_COMPLETION_AUDIT.md",
+          "status": "added",
+          "additions": 40,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_HAIKU_RANDOM_AUDIT.md",
+          "status": "added",
+          "additions": 35,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_HAIKU_RANDOM_AUDIT_ROUND3.md",
+          "status": "added",
+          "additions": 173,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_HISTORICAL_BRANCH_AUDIT.md",
+          "status": "added",
+          "additions": 31,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_REGRESSION_MUTATION_CHECK.md",
+          "status": "added",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_SECURITY_REASSESSMENT.md",
+          "status": "added",
+          "additions": 49,
+          "deletions": 0
+        },
+        {
+          "path": "docs/audits/GHOSTPAY_SECURITY_REASSESSMENT_WORKER_E.md",
+          "status": "added",
+          "additions": 134,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/GHOSTPAY_FINAL_INTEGRATION_LEDGER.md",
+          "status": "added",
+          "additions": 129,
+          "deletions": 0
+        },
+        {
+          "path": "docs/consolidation/ghostpay-final-ledger.json",
+          "status": "added",
+          "additions": 697,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/GHOSTPAY_REMAINING_WORK.md",
+          "status": "added",
+          "additions": 26,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/deployments.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/deployments.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.test.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/quote.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.test.ts",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 0
+        },
+        {
+          "path": "packages/chain-adapters/src/rpc.ts",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "packages/ops-monitor/src/w3.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "packages/pool-circuits/src/helpers.test.ts",
+          "status": "modified",
+          "additions": 20,
+          "deletions": 1
+        },
+        {
+          "path": "packages/pool-circuits/src/inputs.ts",
+          "status": "modified",
+          "additions": 5,
+          "deletions": 0
+        },
+        {
+          "path": "packages/pool-relayer/src/service.ts",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 0
+        },
+        {
+          "path": "packages/pool-relayer/src/workerB.test.ts",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "packages/tron-adapter/src/rpc.ts",
+          "status": "modified",
+          "additions": 7,
+          "deletions": 5
+        },
+        {
+          "path": "packages/tron-adapter/src/scan.test.ts",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 1
+        },
+        {
+          "path": "scripts/check-tx-origin.sh",
+          "status": "modified",
+          "additions": 33,
+          "deletions": 0
+        },
+        {
+          "path": "scripts/tests/check-tx-origin.test.mjs",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/nice-ritchie-8vivls",
+      "head_sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1092,
+      "merge_base_sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/pages-site-1",
+      "head_sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2328,
+      "merge_base_sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/portable-hosting-kit",
+      "head_sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 1653,
+      "merge_base_sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-1",
+      "head_sha": "39cce4663d98c7da06775441a301040af51907ed",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2315,
+      "merge_base_sha": "39cce4663d98c7da06775441a301040af51907ed",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-10",
+      "head_sha": "698404ca488c87347858105bda66be21bf428303",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2299,
+      "merge_base_sha": "698404ca488c87347858105bda66be21bf428303",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-2",
+      "head_sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2350,
+      "merge_base_sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-3",
+      "head_sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2283,
+      "merge_base_sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-4",
+      "head_sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2308,
+      "merge_base_sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-5",
+      "head_sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2309,
+      "merge_base_sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-6",
+      "head_sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2312,
+      "merge_base_sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-7",
+      "head_sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2300,
+      "merge_base_sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-8",
+      "head_sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2302,
+      "merge_base_sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/remote-extensions-9",
+      "head_sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "status": "behind",
+      "ahead_by": 0,
+      "behind_by": 2305,
+      "merge_base_sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "files_returned": 0,
+      "capped": false,
+      "category": "ancestry-redundant",
+      "files": []
+    },
+    {
+      "branch": "claude/sharp-bohr-uigfgh",
+      "head_sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "status": "diverged",
+      "ahead_by": 2,
+      "behind_by": 1694,
+      "merge_base_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+      "files_returned": 2,
+      "capped": false,
+      "category": "non-code-candidate",
+      "files": [
+        {
+          "path": "docs/handoffs/HAIKU-WAVE-2-2026-10-30.md",
+          "status": "added",
+          "additions": 152,
+          "deletions": 0
+        },
+        {
+          "path": "docs/handoffs/HAIKU-WAVE-2026-10-30.md",
+          "status": "added",
+          "additions": 181,
+          "deletions": 0
+        }
+      ]
+    },
+    {
+      "branch": "claude/vibrant-cori-scu18b",
+      "head_sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 192,
+      "merge_base_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+      "files_returned": 25,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/DEVIATIONS.md",
+          "status": "modified",
+          "additions": 14,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/locales/ar.json",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/locales/en.json",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/locales/es.json",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/locales/ja.json",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.secrets.test.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.test.tsx",
+          "status": "modified",
+          "additions": 17,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/features/btc/BtcView.tsx",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.test.ts",
+          "status": "modified",
+          "additions": 45,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/esplora.ts",
+          "status": "modified",
+          "additions": 29,
+          "deletions": 4
+        },
+        {
+          "path": "apps/web/src/features/btc/fixtures.testutil.ts",
+          "status": "modified",
+          "additions": 22,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/headers.test.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.test.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/oracleSource.ts",
+          "status": "modified",
+          "additions": 16,
+          "deletions": 2
+        },
+        {
+          "path": "apps/web/src/features/btc/scan-secrets.hardening.test.ts",
+          "status": "modified",
+          "additions": 24,
+          "deletions": 5
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.spends.test.ts",
+          "status": "added",
+          "additions": 74,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scan.ts",
+          "status": "modified",
+          "additions": 43,
+          "deletions": 9
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorker.test.ts",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerClient.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerMessages.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/scanWorkerProtocol.ts",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "path": "apps/web/src/features/btc/verification.ts",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1
+        },
+        {
+          "path": "apps/web/src/i18n/securityKeys.ts",
+          "status": "modified",
+          "additions": 9,
+          "deletions": 0
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.test.ts",
+          "status": "modified",
+          "additions": 15,
+          "deletions": 1
+        },
+        {
+          "path": "packages/btc-silent-payments/src/scan/headersync.ts",
+          "status": "modified",
+          "additions": 12,
+          "deletions": 1
+        }
+      ]
+    },
+    {
+      "branch": "claude/vigilant-johnson-yjgq94",
+      "head_sha": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "status": "diverged",
+      "ahead_by": 1,
+      "behind_by": 766,
+      "merge_base_sha": "36bcdb7470caf7e563b4f72cadc209504137fd6f",
+      "files_returned": 1,
+      "capped": false,
+      "category": "code-candidate",
+      "files": [
+        {
+          "path": "apps/web/src/views/Settings.test.tsx",
+          "status": "modified",
+          "additions": 3,
+          "deletions": 1
+        }
+      ]
+    }
+  ]
+}

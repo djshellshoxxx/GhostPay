@@ -771,3 +771,11 @@ branches remain read-only. No workflow, contract, paid-automation or deployment 
 
 
 Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# R9 branch census — November 21 2026 UTC (isolated audit)
+
+- Worker: GitHub connector reconciliation; branch `audit/ghostpay-main-447-census-20261121-r9` from exact main `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+- Owned new paths: `docs/consolidation/20261121-r9/*`; append-only ownership claim in this document. No application code ownership, no integration lock acquisition or shared-branch changes.
+- Acceptance: exhaust paginated branch inventory with terminal empty page, pin all refs to exact Git SHAs, compare source heads to `eb59d93cffed7848c4aac37d0e9650b87239c6da`, classify ahead/behind and changed paths without mistaking ancestor/patch-equivalent code for recoverable unique functionality; retain capped compare limitations and overlapping PRs. CI, formal review and integration lock gate any merge. No deploy/release.
