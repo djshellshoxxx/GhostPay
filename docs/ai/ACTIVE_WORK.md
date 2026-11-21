@@ -1,3 +1,11 @@
+# GP-BUG-20261121 — reject malformed pasted invoice fragment boundaries
+
+Worker: ChatGPT bug-only bounded fix, 2026-11-21. Branch: `fix/ghostpay-pasted-invoice-fragment-boundary-20261121`; exact base main: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/src/lib/fragment.ts`, `apps/web/src/lib/fragment.test.ts`, additive `docs/ai/ACTIVE_WORK.md` claim, and `docs/handoffs/PASTED_FRAGMENT_BOUNDARY_20261121.md`.
+Reproduction: the current `extractFragment` returns `#gpi=v1.abc#other` and `#gpi=v1.abc?tracking=1` instead of refusing malformed invoice text. It also accepts an arbitrary prefix (`garbage#gpi=v1.abc`). The QR path already uses stricter validation. Acceptance: accept bare invoice fragment and valid pasted https invoice URL with optional URL query before fragment; reject trailing fragment syntax, untrusted prefixes and malformed links; preserve existing valid behavior; test-first RED then focused GREEN. No new features, dependencies, protocols or deployment changes. Do not touch shared integration lock or merge pending exact-head CI, independent review and ownership qualification.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
