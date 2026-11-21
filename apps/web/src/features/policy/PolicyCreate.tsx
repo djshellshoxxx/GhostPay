@@ -5,7 +5,6 @@ import {
   findPolicyFromCandidates,
   parsePolicyRecord,
   serializePolicyRecord,
-  type PolicyRecord,
 } from '@ghostpay/policy-scheme';
 import { useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../../components/Common';
