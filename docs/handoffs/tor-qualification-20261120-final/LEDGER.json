@@ -1,9 +1,9 @@
 {
   "format": "ghostpay-tor-qualification-ledger/1",
-  "recorded_at_utc": "2026-11-21T04:56:11.171020+00:00",
+  "recorded_at_utc": "2026-11-21T05:26:16.153596+00:00",
   "base_main": "aec179910c39081d820396409ff3139ff2264132",
   "donor_head": "e8010bbe002331ee0cb37dc6b16dfd91c8b8647d",
-  "source_checkpoint": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079",
+  "source_checkpoint": "7aa8a2783cd1fa45645a89107bb4b0c7ec799b80",
   "readiness": "NOT READY",
   "items": [
     {
@@ -94,31 +94,31 @@
     {
       "id": "TOR-BROWSER-001",
       "component": "Extended ordinary browser acceptance",
-      "status": "Blocked",
+      "status": "Passed",
       "severity": "High",
       "owner": "tor_privacy_qa",
       "files": [
         "scripts/tor/browser-acceptance.mjs"
       ],
-      "evidence": "evidence/browser-extended-initial.log",
-      "resolution": "Chromium failed before assertions because process_singleton_posix.cc socket creation is denied.",
-      "next_action": "Execute final desktop/mobile-viewport workflow in hosted CI.",
-      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+      "evidence": "evidence/hosted-313cea93/browser.json",
+      "resolution": "Hosted ordinary Chromium acceptance passed at desktop/root and mobile-width/subpath, 24 requests per case, zero external attempts; signed invoice-link, encrypted backup/restore and vault reload assertions passed.",
+      "next_action": "Preserve real Tor Browser and physical mobile acceptance as separate open gates.",
+      "source": "313cea93d727a4ed620a69de6733a2bdff433400"
     },
     {
       "id": "TOR-CONTAINER-001",
       "component": "Final image and offline identity lifecycle",
-      "status": "Pending",
+      "status": "Failed",
       "severity": "High",
       "owner": "tor_security_review",
       "files": [
         "deploy/tor-static",
         ".github/workflows/tor-static.yml"
       ],
-      "evidence": "Historical run 44772760709",
-      "resolution": "Donor image/runtime/config passed; new guard and restore acceptance need final CI.",
-      "next_action": "Build final image and run offline identity init/reuse/restore/refusal checks.",
-      "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+      "evidence": "evidence/hosted-313cea93/identity.json; PROVENANCE.json",
+      "resolution": "Actual Tor image build and both Compose models passed. First explicit offline initialization exited 1; no lifecycle check passed. Disposable private volumes were removed. Cause is not yet proven.",
+      "next_action": "Execute the safe fixed-code diagnostics and repair the demonstrated boundary without relaxing guards.",
+      "source": "313cea93d727a4ed620a69de6733a2bdff433400"
     },
     {
       "id": "TOR-LIVE-001",
@@ -187,8 +187,8 @@
       "severity": "High",
       "owner": "tor_independent_final_review",
       "files": [],
-      "evidence": "INDEPENDENT_REVIEW.md; evidence/independent/final-identity-recipe.log",
-      "resolution": "Fresh independent source review passed; three review findings fixed. Independent final identity/recipe tests: 25 passed, 0 failed, 2 explicit capability skips. Source review does not qualify unexecuted browser/container/release gates.",
+      "evidence": "INDEPENDENT_REVIEW.md; evidence/independent/final-identity-recipe.log; ../TOR_IDENTITY_READINESS_20261121.md",
+      "resolution": "Fresh independent source review passed; three review findings fixed. Independent final identity/recipe tests: 25 passed, 0 failed, 2 explicit capability skips. Source review does not qualify unexecuted browser/container/release gates. A separate fresh reviewer approved the exact startup-readiness helper and test blobs; new regression groups passed independently.",
       "next_action": "Require exact-candidate hosted execution and resolve integration ownership.",
       "source": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079"
     },
@@ -201,9 +201,9 @@
       "files": [
         ".github/workflows/tor-static.yml"
       ],
-      "evidence": "Historical #320:31 successful checks",
-      "resolution": "Historical donor checks do not qualify the new composition.",
-      "next_action": "Publish isolated candidate and inspect complete final-source results.",
+      "evidence": "evidence/hosted-313cea93/; readiness correction pending new hosted run",
+      "resolution": "First published tree passed extended ordinary Chromium, actual Compose parsing and Tor image build; real offline initialization failed. Most other checks have passed; no full CI claim.",
+      "next_action": "Publish the reviewed readiness correction with bounded diagnostics; require complete final-source results.",
       "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
     },
     {
@@ -231,6 +231,37 @@
       "resolution": "No production deployment or public onion publication was performed.",
       "next_action": "Requires separate activation authorization after release acceptance.",
       "source": "fc2a3aa9b18380ed7a9fde0b5d17a0423e4037d7"
+    },
+    {
+      "id": "TOR-DIAG-001",
+      "component": "Secret-safe runtime diagnostics",
+      "status": "Passed",
+      "severity": "Low",
+      "owner": "tor_hosted_qualification + tor_security_review",
+      "source": "d4a3cf410c5a888a4e2e42a6636400ff1aea8221",
+      "files": [
+        "scripts/tor/identity-container.mjs",
+        "scripts/tor/identity-diagnostics.test.mjs",
+        ".github/workflows/tor-static.yml"
+      ],
+      "evidence": "evidence/identity-diagnostics-local.txt; evidence/identity-diagnostics-integrated.log",
+      "resolution": "Authored exact stderr messages map to fixed codes. Unknown/ambiguous output stays redacted. Initial nine regression cases failed before the change; final ten pass. No production guard or original assertion changed.",
+      "next_action": "Run exact published-head hosted identity acceptance to identify the real initialization failure."
+    },
+    {
+      "id": "TOR-RACE-001",
+      "component": "Offline identity startup ordering",
+      "status": "Passed",
+      "severity": "Medium",
+      "owner": "tor_security_review + tor_startup_race_review",
+      "source": "2239f5b21a1a173c59feb404cc3407633fb7e91c",
+      "files": [
+        "deploy/tor-static/identity-check.sh",
+        "scripts/tor/identity.test.mjs"
+      ],
+      "evidence": "../TOR_IDENTITY_READINESS_20261121.md; evidence/readiness-red.log; evidence/readiness-worker-green.log; evidence/readiness-integrated.log; evidence/readiness-workflow.log",
+      "resolution": "A deterministic regression proved hostname-before-handler termination. The helper now requires the private startup notice and valid hostname before clean shutdown. Existing identity guards and network isolation remain. Independent exact-blob review passed; integrated focused tests85 passed,0 failed,2 explicit environment skips; workflow checks6 passed.",
+      "next_action": "Run the actual pinned Tor0.4.9.17 container lifecycle. The original hosted failure cause remains unconfirmed."
     }
   ]
 }

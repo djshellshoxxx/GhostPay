@@ -1,0 +1,18 @@
+✔ failed container reports only a bounded diagnostic: TOR_DATA_VOLUME_PERMISSIONS (721.173088ms)
+✔ failed container reports only a bounded diagnostic: TOR_IDENTITY_DIRECTORY_PERMISSIONS (613.73585ms)
+✔ failed container reports only a bounded diagnostic: TOR_IDENTITY_PIN_INVALID (860.366873ms)
+✔ failed container reports only a bounded diagnostic: TOR_RUNTIME_VERSION (653.668882ms)
+✔ failed container reports only a bounded diagnostic: TOR_IDENTITY_PROCESS_EXITED (655.479549ms)
+✔ failed container reports only a bounded diagnostic: TOR_IDENTITY_PROCESS_STOPPED (816.888457ms)
+✔ failed container reports only a bounded diagnostic: TOR_IDENTITY_PROCESS_REJECTED (839.157154ms)
+✔ failed container reports only a bounded diagnostic: TOR_IDENTITY_GENERATED_FILES_INVALID (708.116133ms)
+✔ failed container reports only a bounded diagnostic: MULTIPLE_AUTHORED_FAILURES (914.894417ms)
+✔ failed container reports only a bounded diagnostic: UNCLASSIFIED (810.003395ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7671.760928

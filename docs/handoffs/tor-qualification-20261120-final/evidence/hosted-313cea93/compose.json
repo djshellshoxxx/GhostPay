@@ -1,0 +1,163 @@
+{
+  "name": "hk-ghostpay-onion",
+  "networks": {
+    "site_internal": {
+      "name": "hk-ghostpay-onion_site_internal",
+      "ipam": {},
+      "internal": true
+    },
+    "tor_egress": {
+      "name": "hk-ghostpay-onion_tor_egress",
+      "ipam": {}
+    }
+  },
+  "services": {
+    "tor": {
+      "build": {
+        "context": "/home/runner/work/_temp/tor-static/container/tor",
+        "dockerfile": "Dockerfile",
+        "args": {
+          "BASE_IMAGE": "debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad"
+        }
+      },
+      "cap_drop": [
+        "ALL"
+      ],
+      "command": null,
+      "depends_on": {
+        "web": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "entrypoint": null,
+      "image": "ghostpay-static-tor:0.4.9.17",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-file": "2",
+          "max-size": "1m"
+        }
+      },
+      "mem_limit": "268435456",
+      "memswap_limit": "268435456",
+      "networks": {
+        "site_internal": null,
+        "tor_egress": null
+      },
+      "pids_limit": 64,
+      "read_only": true,
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp:size=8m,mode=1777,noexec,nosuid,nodev"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/runner/work/_temp/tor-static/container/tor/torrc",
+          "target": "/etc/tor/torrc",
+          "read_only": true,
+          "bind": {}
+        },
+        {
+          "type": "volume",
+          "source": "tor-data",
+          "target": "/var/lib/tor",
+          "volume": {}
+        },
+        {
+          "type": "bind",
+          "source": "/home/runner/work/_temp/tor-static/container/tor/expected-hostname",
+          "target": "/etc/tor/expected-hostname",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ]
+    },
+    "web": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "cpus": 0.5,
+      "command": null,
+      "entrypoint": [
+        "nginx",
+        "-e",
+        "stderr",
+        "-c",
+        "/etc/nginx/hk/nginx.conf",
+        "-g",
+        "daemon off;"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:8080/"
+        ],
+        "timeout": "5s",
+        "interval": "30s",
+        "retries": 3,
+        "start_period": "5s",
+        "start_interval": "1s"
+      },
+      "image": "nginxinc/nginx-unprivileged:1.30.6-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-file": "2",
+          "max-size": "1m"
+        }
+      },
+      "mem_limit": "134217728",
+      "memswap_limit": "134217728",
+      "networks": {
+        "site_internal": null
+      },
+      "pids_limit": 64,
+      "read_only": true,
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "stop_signal": "SIGQUIT",
+      "tmpfs": [
+        "/run/ghostpay-nginx:size=16m,mode=0700,uid=101,gid=101,noexec,nosuid,nodev"
+      ],
+      "user": "101:101",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/home/runner/work/_temp/tor-static/container/www",
+          "target": "/srv/www",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/home/runner/work/_temp/tor-static/container/nginx",
+          "target": "/etc/nginx/hk",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ]
+    }
+  },
+  "volumes": {
+    "tor-data": {
+      "name": "hk-ghostpay-onion_tor-data"
+    }
+  }
+}

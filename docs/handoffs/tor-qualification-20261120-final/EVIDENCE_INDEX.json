@@ -1,6 +1,5 @@
 {
-  "source_checkpoint": "d2e61d2c96128ae6f9c97fc3f347518e5d38a079",
-  "application_package_lock_blobs_unchanged_from_tested_baseline": true,
+  "source_checkpoint": "7aa8a2783cd1fa45645a89107bb4b0c7ec799b80",
   "files": [
     {
       "path": "evidence/action-pins-baseline.log",
@@ -53,6 +52,41 @@
       "sha256": "4a91700d01c75235ac7c912cd6bcea79726966d4b4c73e7d2b3fd8910dabe8f6"
     },
     {
+      "path": "evidence/hosted-313cea93/CHECKS.json",
+      "bytes": 9011,
+      "sha256": "00d576c292a6577e874ec7a6147c789d2c90c806cdccfd5d8263093c015e4b76"
+    },
+    {
+      "path": "evidence/hosted-313cea93/PROVENANCE.json",
+      "bytes": 471,
+      "sha256": "82b14be7e30827e3ea734ffc2f6b8fb0b33aecbb55245f3e85e31089fc5e5bfb"
+    },
+    {
+      "path": "evidence/hosted-313cea93/browser.json",
+      "bytes": 3807,
+      "sha256": "3d0af43c6a36d03629bf23267e438631f5c0621ae93bb0c11dcc15df34e98fcd"
+    },
+    {
+      "path": "evidence/hosted-313cea93/compose-identity.json",
+      "bytes": 3818,
+      "sha256": "9b1444802fd5a5a2e2b4ec58610ad42abbe7eebcc381dc5da368d66cfa8066aa"
+    },
+    {
+      "path": "evidence/hosted-313cea93/compose.json",
+      "bytes": 3965,
+      "sha256": "21a472a66422a87f63aceec120b3359f71b0b6e105da0e4f41b95f88a9cb6d16"
+    },
+    {
+      "path": "evidence/hosted-313cea93/ghostpay-web.zip.sha256",
+      "bytes": 83,
+      "sha256": "39580cf8aeb6f778f9e207daa4eeec43c743f879837b0ab6b394a63b5dc482fa"
+    },
+    {
+      "path": "evidence/hosted-313cea93/identity.json",
+      "bytes": 405,
+      "sha256": "04904e763bbc7014569f2f0fa5b6d129850079f07dd24ca14b3bf7016ccb2126"
+    },
+    {
       "path": "evidence/hosting-baseline.log",
       "bytes": 27036,
       "sha256": "bffef0eeda1882f0d9621127733758f3dc1290a8918356bb39bb4e3ba853efcd"
@@ -83,6 +117,16 @@
       "sha256": "3ddcda4d10416e637a051f406dae148b842e77328e3fc8dee7417af1ed595653"
     },
     {
+      "path": "evidence/identity-diagnostics-integrated.log",
+      "bytes": 2424,
+      "sha256": "eb670f6e3a51db5591c344d5454035850500587d78d5f6fa72f69b5f62b073e3"
+    },
+    {
+      "path": "evidence/identity-diagnostics-local.txt",
+      "bytes": 1099,
+      "sha256": "9a19ba8761d2f441e600a57a08b33a78559934f1f4357f272fc38a6e7f259ef0"
+    },
+    {
       "path": "evidence/identity-green.txt",
       "bytes": 6761,
       "sha256": "02de202d77aa6699f924b8c407e9a73dfe308fee34d9d4986b550f01c4c36452"
@@ -111,6 +155,26 @@
       "path": "evidence/npm-audit-production.json",
       "bytes": 366,
       "sha256": "45d1da3c3227f9cb8ef443b8e84ce277de353842cea1999ad8dd88154cb73e70"
+    },
+    {
+      "path": "evidence/readiness-integrated.log",
+      "bytes": 8163,
+      "sha256": "29b9829ae71eee9adc78a0c50d1142faa2224e95eed846eead80227783727e37"
+    },
+    {
+      "path": "evidence/readiness-red.log",
+      "bytes": 3335,
+      "sha256": "fcb7cf5a9f03442e26dc0a2e80901613cd70c3c5be5d666eb7a79fdf4d49d13f"
+    },
+    {
+      "path": "evidence/readiness-worker-green.log",
+      "bytes": 7177,
+      "sha256": "931f170dcaf2a46f4afcffebcdf465f454887d4933909b636b6e45f03a73174f"
+    },
+    {
+      "path": "evidence/readiness-workflow.log",
+      "bytes": 754,
+      "sha256": "17a976153e5bbd611213bd3f86f62c18fe0d06ff5a9908195089792a64d5cfdd"
     },
     {
       "path": "evidence/secrets-baseline.log",

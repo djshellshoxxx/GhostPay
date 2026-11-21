@@ -36,7 +36,17 @@ for (const [name, value] of [['hs_ed25519_secret_key', ${JSON.stringify(SECRET)}
   if (!fs.existsSync(dir + '/' + name) || process.env.TEST_TOR_MODE === 'replace') fs.writeFileSync(dir + '/' + name, value, { mode: 0o600 });
 }
 fs.writeFileSync(dir + '/hostname', ${JSON.stringify(`${HOST}\n`)}, { mode: 0o600 });
-process.on('SIGTERM', () => process.exit(0));
+const ready = () => {
+  process.on('SIGTERM', () => process.exit(process.env.TEST_TOR_MODE === 'reject-stop' ? 3 : 0));
+  console.error('[notice] Bootstrapped 0% (starting): Starting');
+};
+if (process.env.TEST_TOR_MODE === 'early-hostname') setTimeout(ready, 350);
+else if (process.env.TEST_TOR_MODE === 'exit-before-ready') setTimeout(() => process.exit(3), 350);
+else if (process.env.TEST_TOR_MODE === 'no-ready-marker') {
+  process.on('SIGTERM', () => process.exit(0));
+  setTimeout(() => process.exit(0), 350);
+}
+else ready();
 setInterval(() => {}, 1000);
 `, { mode: 0o700 });
   return { root, data, pin, tor, calls };
@@ -100,6 +110,42 @@ test('a matching pin verifies through Tor without modifying the stored identity 
   assert.doesNotMatch(result.stderr, new RegExp(SECRET));
   assert.deepEqual(await identityBytes(f), before);
   assert.deepEqual(await readdir(f.data), ['ghostpay']);
+});
+
+test('a hostname written before Tor installs signal handlers waits for startup readiness', async (t) => {
+  const f = await fixture(t);
+  const created = run(f, 'initialize', { TEST_TOR_MODE: 'early-hostname' });
+  assert.equal(created.status, 0, created.stderr);
+  assert.equal(created.stdout.trim(), HOST);
+  await writeFile(f.pin, created.stdout);
+  const before = await identityBytes(f);
+  const verified = run(f, 'verify', { TEST_TOR_MODE: 'early-hostname' });
+  assert.equal(verified.status, 0, verified.stderr);
+  assert.equal(verified.stdout, '');
+  assert.deepEqual(await identityBytes(f), before);
+  assert.doesNotMatch(created.stderr + verified.stderr, new RegExp(SECRET));
+  assert.deepEqual(await readdir(f.data), ['ghostpay']);
+});
+
+test('a complete temporary identity never bypasses a missing readiness marker or failed shutdown', async (t) => {
+  for (const mode of ['exit-before-ready', 'no-ready-marker', 'reject-stop']) {
+    await t.test(mode, async (t) => {
+      const fresh = await fixture(t);
+      const created = run(fresh, 'initialize', { TEST_TOR_MODE: mode });
+      assert.equal(created.status, 1);
+      assert.match(created.stderr, /Offline Tor/);
+      assert.equal(created.stdout, '');
+      assert.deepEqual(await readdir(fresh.data), []);
+      const retained = await initialized(t);
+      const before = await identityBytes(retained);
+      const verified = run(retained, 'verify', { TEST_TOR_MODE: mode });
+      assert.equal(verified.status, 1);
+      assert.equal(verified.stdout, '');
+      assert.deepEqual(await identityBytes(retained), before);
+      assert.doesNotMatch(created.stderr + verified.stderr, new RegExp(SECRET));
+      assert.deepEqual(await readdir(retained.data), ['ghostpay']);
+    });
+  }
 });
 
 test('a wrong stored hostname and a forged hostname over different keys both fail closed', async (t) => {

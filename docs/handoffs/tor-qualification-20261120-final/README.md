@@ -58,7 +58,8 @@ passed its unchanged full-package coverage thresholds.
 
 ## New identity safeguard
 
-Production source is frozen at `d2e61d2c96128ae6f9c97fc3f347518e5d38a079`. Normal startup now requires the
+The initial source was independently reviewed at `d2e61d2c96128ae6f9c97fc3f347518e5d38a079`;
+the later readiness correction is recorded below. Normal startup requires the
 configured canonical onion hostname and a complete private identity. Tor loads
 private copies offline, recomputes the hostname, and must leave both key files
 unchanged. Explicit first initialization refuses an existing identity. Missing,
@@ -96,7 +97,8 @@ not permitted`. It exits before assertions; no sandbox workaround was used.
 Ordinary loopback HTTP works and is a different capability. Docker/Tor/Tor Browser
 are absent. The official pinned Tor source download returned HTTP 403 with
 `x-openai-site-blocked`. Final image/offline identity checks need hosted CI;
-real Tor Browser acceptance needs a suitable isolated operator host.
+real Tor Browser acceptance needs a suitable isolated environment. A hosted
+acceptance feasibility review is underway; no live Tor result is inferred.
 
 The integration lock was last observed at
 `c196151daf8233f96045fd205b2d899c9e8cc97d`, held generation 11 by
@@ -109,3 +111,50 @@ merge approval is requested. Finish exact-source CI/review, resolve the existing
 owner handoff under its protocol, recheck heads, then merge qualified source.
 Preserve the shared lock and deployment controls. Do not import unrelated failing
 broad integration work to finish this isolated candidate.
+
+## First hosted attempt and diagnostic follow-up
+
+Published source `313cea93d727a4ed620a69de6733a2bdff433400` was tested as merge
+`916b64ef8d0d5b1036fde122bf2dd94b7dee80c3`; both trees are
+`82cedbd99df01af68a979b0a27b8c4585b42440f`. Run `44868708242` passed the
+extended ordinary browser suite, both generated Compose models and actual Tor
+image compilation. Its first explicit offline initialization exited 1. No
+identity lifecycle pass is claimed; private-volume cleanup passed. The artifact
+ZIP checksum was independently rechecked before retaining its JSON evidence in
+`evidence/hosted-313cea93/`.
+
+The diagnostic follow-up emits only fixed, exact-message codes, its authored
+stage and numeric exit status. Unknown process output remains redacted. Its ten
+regressions pass; this provides evidence for diagnosis and does not claim to fix
+the as-yet-unproven initialization cause. No production guard was relaxed.
+
+
+## Offline startup readiness correction
+
+Integrated source checkpoint: `7aa8a278` (a descendant of published
+`313cea93`). The worker contribution is `2239f5b21a1a173c59feb404cc3407633fb7e91c`.
+A deterministic process regression established that the helper could terminate
+Tor after hostname creation but before its signal handler was ready. It now waits
+for both a valid hostname and Tor's fixed private startup notice before requesting
+shutdown. It still requires exit status zero, private files, the configured pin
+and byte-identical copied keys. Networking remains disabled during verification.
+
+The final regressions failed against the original helper and passed with the
+correction. A fresh independent reviewer approved product blob
+`a7b0c89e2d9d062ca1468c3f283e4050d076d771` and test blob
+`b90969ae249d25188969e4ba963e8448800cd050`, then independently reran the new
+regression groups (5 passed). The integrated identity/diagnostics/recipe/config/
+adapter/header selection passed **85 tests, zero failures, two capability skips**;
+workflow checks passed 6/6. Secret and Actions-pin scans, shell/Node syntax and
+new-change whitespace checks passed. The application/package/lockfile bytes are
+unchanged from the existing functional baseline.
+
+The original hosted initialization failure remains consistent with, but not proven
+to have been caused by, this race. The inspected official source documentation
+reports Tor 0.5.0.0-alpha-dev; the next hosted run must test the actual pinned
+0.4.9.17 image. Bounded diagnostics accompany the fix. Raw RED/GREEN/integrated
+logs are retained byte-for-byte under `evidence/readiness-*.log`, including
+whitespace in the RED assertion traceback; source whitespace checks exclude raw
+evidence logs. The detailed independent
+review and source basis are in
+[the readiness handoff](../TOR_IDENTITY_READINESS_20261121.md).

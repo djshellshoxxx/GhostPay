@@ -22,11 +22,48 @@ const volumes = [];
 const containers = [];
 const report = { schemaVersion: 1, status: 'FAILED', scope: 'offline Tor identity and container lifecycle', network: 'none', bootstrap: false, image, imageId: '', checks: [] };
 
+// Only these exact, authored guard messages may influence public diagnostics.
+// Never include arbitrary Docker/Tor output, paths or identity bytes in reports.
+const authoredFailures = new Map([
+  ['Supported options: --check-runtime, --verify-config, --initialize-identity or --check-identity.', 'TOR_START_ARGUMENTS'],
+  ['Tor runtime reports are missing.', 'TOR_RUNTIME_REPORTS_MISSING'],
+  ['A stable Tor version of at least 0.4.9.17 is required.', 'TOR_RUNTIME_VERSION'],
+  ['Tor must include the PoW module and GPL puzzle libraries.', 'TOR_RUNTIME_POW_MODULE'],
+  ['Tor requires a private 0700 data volume owned by its non-root runtime user.', 'TOR_DATA_VOLUME_PERMISSIONS'],
+  ['Identity check arguments are missing.', 'TOR_IDENTITY_ARGUMENTS'],
+  ['Tor requires a private identity data directory owned by its runtime user.', 'TOR_IDENTITY_DIRECTORY_PERMISSIONS'],
+  ['The configured onion hostname file is missing or invalid.', 'TOR_IDENTITY_PIN_INVALID'],
+  ['A configured onion hostname is required; initialize explicitly, then prepare with its publicOrigin.', 'TOR_IDENTITY_PIN_REQUIRED'],
+  ['The stored onion identity is missing or not private; restore it before startup.', 'TOR_IDENTITY_STORED_DIRECTORY_INVALID'],
+  ['The stored onion identity must contain private regular files; refusing a partial or unsafe restore.', 'TOR_IDENTITY_STORED_FILES_INVALID'],
+  ['The stored onion identity hostname is malformed.', 'TOR_IDENTITY_STORED_HOSTNAME_INVALID'],
+  ['The stored onion identity does not match the configured onion hostname.', 'TOR_IDENTITY_STORED_HOSTNAME_MISMATCH'],
+  ['Initialization requires an empty first-use origin; restore the existing identity for a configured origin.', 'TOR_IDENTITY_INITIALIZATION_PINNED'],
+  ['An onion identity directory already exists; initialization never replaces it.', 'TOR_IDENTITY_INITIALIZATION_EXISTS'],
+  ['Another identity operation is in progress; inspect its private lock before retrying.', 'TOR_IDENTITY_LOCKED'],
+  ['Offline Tor could not validate the onion identity; no stored keys were replaced.', 'TOR_IDENTITY_PROCESS_EXITED'],
+  ['Offline Tor identity validation timed out; no stored keys were replaced.', 'TOR_IDENTITY_PROCESS_TIMEOUT'],
+  ['Offline Tor stopped before identity validation completed.', 'TOR_IDENTITY_PROCESS_STOPPED'],
+  ['Offline Tor rejected the onion identity; no stored keys were replaced.', 'TOR_IDENTITY_PROCESS_REJECTED'],
+  ['Offline Tor did not create a complete private onion identity.', 'TOR_IDENTITY_GENERATED_FILES_INVALID'],
+  ['The derived onion hostname does not match the configured origin; restore the correct identity.', 'TOR_IDENTITY_DERIVED_HOSTNAME_MISMATCH'],
+  ['The copied identity key files changed during validation; refusing Tor repair or key replacement.', 'TOR_IDENTITY_COPIED_KEYS_CHANGED'],
+  ['An onion identity already exists; initialization never replaces it.', 'TOR_IDENTITY_INITIALIZATION_EXISTS'],
+]);
+function failureCode(result) {
+  if (result.error) return 'DOCKER_EXECUTION_FAILED';
+  const codes = new Set((result.stderr ?? '').split(/\r?\n/).map((line) => authoredFailures.get(line)).filter(Boolean));
+  if (codes.size > 1) return 'MULTIPLE_AUTHORED_FAILURES';
+  return codes.values().next().value ?? 'UNCLASSIFIED';
+}
 function docker(args, label, expected = 0) {
   const result = spawnSync('docker', args, { encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 });
   // Do not attach raw Docker output: even unexpected failures must not copy a
   // private identity, runtime log or environment into a CI artifact.
-  assert.equal(result.error, undefined, `${label}: Docker execution failed`);
+  if (result.error || result.status !== expected) {
+    report.failure = { stage: label, code: failureCode(result), exitCode: Number.isInteger(result.status) ? result.status : null };
+  }
+  assert.equal(result.error === undefined, true, `${label}: Docker execution failed`);
   if (expected === 0) assert.equal(result.status, 0, `${label}: Docker exited ${result.status}`);
   else assert.equal(result.status, expected, `${label}: expected refusal ${expected}, got ${result.status}`);
   return result.stdout.trim();
@@ -152,4 +189,4 @@ try {
   try { await reportFile.writeFile(`${JSON.stringify(report, null, 2)}\n`); }
   finally { await reportFile.close(); }
 }
-console.log(JSON.stringify({ status: report.status, checks: report.checks.length, bootstrap: false, report: resolve(output) }));
+console.log(JSON.stringify({ status: report.status, checks: report.checks.length, bootstrap: false, report: resolve(output), failure: report.failure }));

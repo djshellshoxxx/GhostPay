@@ -61,7 +61,7 @@ jobs:
           npm run lint --prefix tools/portable-hosting-kit
           npm run typecheck --prefix tools/portable-hosting-kit
           node --test scripts/tor/hosting-config.test.mjs
-          node --test scripts/tor/identity.test.mjs
+          node --test scripts/tor/identity.test.mjs scripts/tor/identity-diagnostics.test.mjs
           node --test tools/portable-hosting-kit/test/config/host-config.test.mjs tools/portable-hosting-kit/test/adapters/tor.test.mjs tools/portable-hosting-kit/test/serve/headers.test.mjs
       - name: Build the actual static application
         env:

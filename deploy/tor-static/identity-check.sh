@@ -93,7 +93,12 @@ EOF
   "$identity_tor" --defaults-torrc /dev/null -f "$identity_tmp/torrc" > "$identity_tmp/process.log" 2>&1 &
   identity_pid=$!
   identity_wait=0
-  while ! identity_hostname "$identity_tmp/service/hostname"; do
+  # Tor writes the hostname during configuration, before its main loop installs
+  # signal handlers. Its fixed 0% startup notice follows handle_signals(); wait
+  # for that private-log marker as well, so SIGTERM cannot race handler setup.
+  # This is startup readiness only, with DisableNetwork still set to 1.
+  while ! identity_hostname "$identity_tmp/service/hostname" \
+      || ! LC_ALL=C grep -Eq '\[notice\] Bootstrapped 0% \(starting\): Starting$' "$identity_tmp/process.log"; do
     kill -0 "$identity_pid" 2>/dev/null || identity_fail 'Offline Tor could not validate the onion identity; no stored keys were replaced.'
     identity_wait=$((identity_wait + 1))
     [ "$identity_wait" -lt 150 ] || identity_fail 'Offline Tor identity validation timed out; no stored keys were replaced.'
