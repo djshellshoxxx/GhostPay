@@ -1,3 +1,13 @@
+# Native Firefox reflow assertion — closed disclosure visibility (2026-11-21 UTC)
+
+Worker: GhostPay automation continuation, single coordinator; no independent verifier available.
+Task branch: `automation/20261121T0900Z/qa/firefox-closed-details-reflow`, parent PR #373 exact head `b660b2d8f3f84ddf72f684d13913f643f33f2eee`; main snapshot `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `apps/web/e2e/accessibility.spec.ts`, this additive claim, and new `docs/handoffs/FIREFOX_CLOSED_DETAILS_REFLOW_20261121.md`. No application or payment source paths claimed.
+Evidence: hosted native Firefox full/lean jobs 136790671725/136790671922 in run 44885795475 fail with page crashes and, in full, a 320px Home reflow assertion identifying an INPUT at x=33–959 despite Home having no input and the always-mounted merchant profile input being within initially closed `<details>`. WebKit full/lean passed. This is a suspected test-visibility false positive; must be validated on hosted Firefox. Other page crashes and test failures remain independent blockers.
+Acceptance: reflow inspection ignores only descendants of closed disclosure content, still evaluates visible summary descendants and opened controls, and gains a negative regression proving visible overflow remains detected; do not suppress browser failures, change wallet behavior, UI, thresholds, dependencies, production code, or release gates. Run exact-head hosted checks; record unrun local checks. Parent #373 remains independently owned and draft; deliver fix as a stacked child PR. Integration lock generation 11 held by another coordinator; no shared integration or main merge.
+
+---
+
 # Native Firefox/WebKit qualification — 2026-11-21 UTC
 
 Follow-up ownership: `5ceb6203640a-root` also owns the exact saved-message assertion in `scripts/tor/browser-acceptance.mjs` on this isolated branch. Hosted jobs `136771948240` and `136774369027` failed on obsolete Settings copy. See [bounded fixture repair](claims/TOR_SAVE_MESSAGE_FIXTURE_20261121_5CEB.md); all other browser assertions and application behavior remain unchanged.
