@@ -1,3 +1,14 @@
+# GP-BUG — Respect no-cache on existing static cache-first planner (2026-11-21)
+
+Worker: ChatGPT bug-only coordinator; one sequential implementation/review role, no independent native verifier.
+Branch: `automation/20261121/bug/cache-control-no-cache-r3`, exact main base: `eb59d93cffed7848c4aac37d0e9650b87239c6da`.
+Owned paths: `packages/ux-notify/src/cache-policy.ts`, new `packages/ux-notify/src/cache-policy.nocache.test.ts`, this additive ownership entry, new `docs/handoffs/CACHE_CONTROL_NOCACHE_20261121.md`. Do not modify existing `cache-policy.test.ts`.
+Observed defect: for a cache-first request, `shouldStoreResponse` returns true for `Cache-Control: no-cache`, incorrectly permitting subsequent cache-first reuse without the mandated revalidation. Source blob `c642dad57f8784a6d3259d25fb3e0115aa808108`; isolated Node 22 source-equivalent reproduction produced true for plain/mixed-case no-cache; no web traffic.
+Acceptance: test-first rejection of no-cache in the existing response policy, retaining clean immutable cacheability and no-store/private refusal; single minimal predicate change only; no dependencies, new features, service-worker shell, release, main update or deployment. Record exact commits, CI and limitations in isolated handoff.
+Ownership: searched current open PRs and inspected broad #238/#264/#278/#372 (and #243/#307/#365/#380/#395/#403) changed-file paths; none owns these two application/test paths, but shared registry remains additive. Recheck before future promotion. Generation-11 integration lease is reported held by another coordinator; this worker will not write lock metadata or merge. Independent review and exact-head hosted CI required.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
