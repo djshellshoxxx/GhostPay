@@ -567,6 +567,7 @@
     "policy.create.heading": "Create a policy meta-address",
     "policy.create.needSession": "Load or generate seller keys first (Seller keys).",
     "policy.create.imported": "Policy record verified and loaded.",
+    "policy.create.alreadySaved": "Policy record already loaded.",
     "policy.create.otherKeys": "Record verified, but it belongs to other seller keys than the ones loaded now. Scanning will not find its payments.",
     "policy.create.rejected": "The record was rejected: {reason}.",
     "policy.create.badMeta": "Enter the policy meta-address (st:eth:gp2:0x...).",
