@@ -46,7 +46,16 @@ function capUnicodeText(s: string): string {
  * @param s Untrusted text.
  */
 export function safeText(s: string): SafeText {
-  const clipped = s.length > MAX ? s.slice(0, MAX) : s;
+  let clipped = s.length > MAX ? s.slice(0, MAX) : s;
+  // A code-unit cut through a valid pair must not manufacture a lone high surrogate
+  // for the sanitizer. The rendered-output cap below still applies independently.
+  if (s.length > MAX) {
+    const last = s.charCodeAt(MAX - 1);
+    const next = s.charCodeAt(MAX);
+    if (last >= 0xd800 && last <= 0xdbff && next >= 0xdc00 && next <= 0xdfff) {
+      clipped = clipped.slice(0, -1);
+    }
+  }
   const r = sanitizeDisplayText(clipped);
   if (!isReason(r)) return { text: capUnicodeText(r.text), flagged: r.mixedScript || s.length > MAX };
   return { text: escapeHostile(clipped.normalize('NFC')), flagged: true };
