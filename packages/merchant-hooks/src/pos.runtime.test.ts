@@ -23,16 +23,18 @@ describe('merchant POS runtime input boundaries', () => {
     expect(posReduce(INITIAL_POS_STATE, start, 0).state.expiresAt).toBe(30);
   });
 
-  it('fails closed on invalid clocks or corrupted expiry before payment or tick', () => {
+  it('fails closed on invalid clocks or corrupted expiry for payments/ticks while preserving cancellation', () => {
     const state = awaiting();
     for (const now of [Number.NaN, Infinity, -Infinity, -1, 0.25, Number.MAX_SAFE_INTEGER + 1]) {
-      for (const event of [pay, { type: 'tick' } as PosEvent, { type: 'cancel' } as PosEvent]) {
+      for (const event of [pay, { type: 'tick' } as PosEvent]) {
         expect(() => posReduce(state, event, now)).toThrow(/bad-time-policy/);
       }
+      expect(posReduce(state, { type: 'cancel' }, now).state.status).toBe('cancelled');
     }
     for (const expiresAt of [undefined, Number.NaN, Infinity, -Infinity, -1, 0.5]) {
       const corrupted = { ...state, expiresAt } as unknown as PosState;
       expect(() => posReduce(corrupted, pay, 101)).toThrow(/bad-time-policy/);
+      expect(posReduce(corrupted, { type: 'cancel' }, 101).state.status).toBe('cancelled');
     }
     expect(posReduce(state, pay, 129).state.status).toBe('paid');
     expect(posReduce(state, pay, 130)).toMatchObject({ accepted: false, state: { status: 'expired', paidMinor: 0n } });
