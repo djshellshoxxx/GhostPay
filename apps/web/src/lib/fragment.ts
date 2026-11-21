@@ -28,6 +28,8 @@ export function clearFragment(loc: LocationLike, hist: HistoryLike): void {
 /** Normalizes pasted text (full link or bare fragment) into a `#gpi=v1.` fragment. */
 export function extractFragment(input: string): string | undefined {
   const trimmed = input.trim();
+  // URL() silently discards tabs/newlines; reject them before it can change the invoice hash.
+  if (/\s/.test(trimmed)) return undefined;
   let fragment: string;
   if (trimmed.startsWith(FRAGMENT_PREFIX)) {
     fragment = trimmed;
