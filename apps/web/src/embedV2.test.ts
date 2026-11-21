@@ -93,6 +93,7 @@ describe('ghostpay-embed-v2.js popup mode (default)', () => {
     h.btn.click();
     expect(h.opened).toEqual([{ url: GOOD, features: 'popup,noopener,noreferrer' }]);
     expect(h.frame()).toBeNull();
+    expect(h.btn.hasAttribute('title')).toBe(false);
   });
 
   it('passes a bounded profile and template as query parameters only', async () => {
@@ -256,7 +257,8 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     h.timers[0]!();
     expect(h.frame()).toBeNull();
     expect(h.opened).toEqual([{ url: GOOD, features: 'popup,noopener,noreferrer' }]);
-    expect(h.btn.getAttribute('title')).toMatch(/Popup blocked/);
+    // A null window.open result is permitted with noopener; do not claim that navigation was blocked.
+    expect(h.btn.hasAttribute('title')).toBe(false);
   });
 
   it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
