@@ -24,6 +24,13 @@ describe('critical translation native-review boundary (IN-3)', () => {
 
   it('includes the accepted consent, fee, irreversibility, loss, recovery and tamper boundaries', () => {
     const required: readonly MessageKey[] = [
+      'policy.pay.committedAssetNotWithdrawable',
+      'policy.create.withdrawableAny',
+      'policy.create.withdrawableOnly',
+      'policy.pay.coverageUnknownTitle',
+      'policy.pay.coverageUnknown',
+      'policy.pay.coverageChecked',
+      'policy.pay.tokenNotWithdrawable',
       'btc.oracle.modeLabel',
       'btc.oracle.none',
       'btc.oracle.http',
