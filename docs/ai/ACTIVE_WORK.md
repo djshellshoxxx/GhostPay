@@ -1,3 +1,16 @@
+# Silent final wallet account reread regression — November 20, 2026 (Pacific)
+
+Worker: `/root/r2_privacy_qualification`, delegated by `fc3db078ca12-root-r2`.
+Branch: `test/ghostpay-wallet-final-account-r2-20261120`.
+Base: exact integration PR #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Owned paths: new `apps/web/src/lib/wallet.finalAccount.test.ts`, new `docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md`, and this additive ownership entry only.
+Overlap check: no history for the proposed test path across available refs; the exact-path claim search across 425 distinct available branch heads found only the parent coordinator's explicit reservation for this delegated contribution in candidate `b0bc4fecbea288f646d7960ab2b58679e1887ef6`. Existing wallet source/tests, browser fixture/cases, receipt/hash safeguards and all other claims stay outside this task.
+Acceptance: with the actual wallet APIs and existing MockWallet pattern, keep the first account reread valid, change the returned account silently during the final network check, and prove send/signature rejection before submission and before attempt-journal access or mutation where applicable. No `accountsChanged` event or application-authority revocation may cause the rejection. Include unchanged-account controls that exercise successful send/journal and signature behavior. This fills negative coverage for an existing runtime guard; no current runtime defect is asserted.
+Validation ownership: author tests and commit locally first. Do not install a separate dependency tree or start heavy checks. Root will supply the exact-lock combined #307/#344/#350 source for actual focused execution and independent review; all unrun gates remain pending until that evidence exists. No runtime, workflow, dependency, configuration, threshold, timeout or existing browser assertion changes are authorized.
+State: claim preceded authoring; four regression cases are authored with Vitest execution, typecheck, typed lint and independent review still pending on the coordinator's combined source. Node syntax-only validation passed. Root owns composition, qualification and any remote publication. No shared integration/main update, lease action, workflow dispatch, deployment or real-funds operation is included.
+
+---
+
 # R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
 
 Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
