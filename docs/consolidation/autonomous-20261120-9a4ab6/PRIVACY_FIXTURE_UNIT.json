@@ -1,0 +1,33 @@
+{
+  "command": [
+    "npm",
+    "exec",
+    "-w",
+    "@ghostpay/web",
+    "--",
+    "vitest",
+    "run",
+    "src/components/SharedComponents.i18n.test.tsx",
+    "src/components/WalletAttempts.test.tsx",
+    "--maxWorkers=1",
+    "--coverage.enabled=false"
+  ],
+  "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-privacy-fixtures",
+  "source_head": "a02d640b7f847c006526d561467db9f348910d5a",
+  "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "started_at": "2026-11-21T00:21:37.439629+00:00",
+  "completed_at": "2026-11-21T00:21:46.719317+00:00",
+  "duration_seconds": 9.28,
+  "exit_code": 0,
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=384"
+  },
+  "log_sha256": "3610219f6d2d15aab4f5898592d18f2f04752d54a551b76e8bd95e2e8b543808",
+  "log": {
+    "bytes": 584,
+    "sha256": "3610219f6d2d15aab4f5898592d18f2f04752d54a551b76e8bd95e2e8b543808",
+    "encoding": "utf-8",
+    "text": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n RUN  v5.1.0 /workspace/scratch/9a4ab6c3d117/GhostPay-privacy-fixtures/apps/web\n\n\n Test Files  2 passed (2)\n      Tests  20 passed (20)\n   Start at  16:21:38\n   Duration  8.27s (transform 41%, import 26%, environment 20%, tests 12%)\n\n    Isolate  2 workers spawned \u00b7 ~940ms startup each (spawn + environment, per file)\n             at least ~940ms faster with isolate: false \u2014 reuses workers across files instead of one per file\n\n",
+    "base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCiBSVU4gIHY1LjEuMCAvd29ya3NwYWNlL3NjcmF0Y2gvOWE0YWI2YzNkMTE3L0dob3N0UGF5LXByaXZhY3ktZml4dHVyZXMvYXBwcy93ZWIKCgogVGVzdCBGaWxlcyAgMiBwYXNzZWQgKDIpCiAgICAgIFRlc3RzICAyMCBwYXNzZWQgKDIwKQogICBTdGFydCBhdCAgMTY6MjE6MzgKICAgRHVyYXRpb24gIDguMjdzICh0cmFuc2Zvcm0gNDElLCBpbXBvcnQgMjYlLCBlbnZpcm9ubWVudCAyMCUsIHRlc3RzIDEyJSkKCiAgICBJc29sYXRlICAyIHdvcmtlcnMgc3Bhd25lZCDCtyB+OTQwbXMgc3RhcnR1cCBlYWNoIChzcGF3biArIGVudmlyb25tZW50LCBwZXIgZmlsZSkKICAgICAgICAgICAgIGF0IGxlYXN0IH45NDBtcyBmYXN0ZXIgd2l0aCBpc29sYXRlOiBmYWxzZSDigJQgcmV1c2VzIHdvcmtlcnMgYWNyb3NzIGZpbGVzIGluc3RlYWQgb2Ygb25lIHBlciBmaWxlCgo="
+  }
+}

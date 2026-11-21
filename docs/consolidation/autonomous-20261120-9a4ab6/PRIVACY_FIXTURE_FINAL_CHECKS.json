@@ -1,0 +1,29 @@
+{
+  "source": "a02d640b7f847c006526d561467db9f348910d5a",
+  "observed_at_utc": "2026-11-21T00:25:32.573562+00:00",
+  "json_and_log_integrity": true,
+  "prior_failure_archive_integrity": true,
+  "only_app_change": "one existing locale fixture render",
+  "checks": [
+    {
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "exit_code": 0,
+      "output": "OK: no committed env files or key material found.\n",
+      "output_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

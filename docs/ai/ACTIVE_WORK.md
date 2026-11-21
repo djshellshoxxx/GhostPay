@@ -2386,3 +2386,40 @@ Validation: inspect exact request ordering and use original web typecheck/lint p
 Source is frozen at `420df3b55be2a4207950f312d2b0bd5b899602e2`, tree `c47596d02196c1d2cb38040a2f52fe24bd4d3081`. The coordinator independently approved the complete three-file E2E-only patch. Original full web typecheck and lint passed after restoring one missing own-worktree test dependency link; the first TypeScript failure remains in the evidence. Dedicated static collection found 3 devnet cases and 16 Pages cases; default full/lean collection found 136/126 cases. These are discovery counts, not browser passes.
 The coordinator explicitly extended the initial no-install boundary after reviewing cached exact-lock tarballs and disk space, authorizing one offline selected web/root/tooling extraction with scripts disabled and no network fallback. It passed with unchanged manifests/lockfile; own workspace source/output provenance is recorded. No other worktree dependencies were removed or reused with mismatched versions.
 Final handoff and 28 lossless original artifacts are under `docs/consolidation/devnet-wallet-consent-r2-20261120/`. No browser, server, anvil or RPC was started locally. Original hosted failures remain preserved; actual hosted acceptance of the corrected published tree and all other applicable gates remain required. Root owns publication and integration.
+
+
+## Current-wallet privacy acceptance fixtures — 2026-11-20 (Pacific)
+
+Worker: `/root/privacy_fixture_repair`, delegated by `9a4ab6c3d117-root`.
+Branch: `test/ghostpay-privacy-fixtures-20261120-9a4ab6`. Exact base: existing
+PR #336 `410353a23631234aa888e46f38df22291c699a26`; refreshed live head unchanged.
+Owned writes: `apps/web/src/components/SharedComponents.i18n.test.tsx`, the reviewed
+reference count in `docs/privacy/network-egress-inventory.json`, and only if an
+assertion-preserving setup is established, the post-reload spans in
+`apps/web/e2e/{devnet-journey,pages-devnet}.spec.ts`. Evidence prefix:
+`docs/consolidation/autonomous-20261120-9a4ab6/PRIVACY_FIXTURE_*`. Existing #336
+remains authoritative. Runtime, privacy/disclosure policy, signing, journal
+retention, focus/cancellation tests, dependencies, configuration and gates are
+read-only. Preserve original locale/hash/duplicate/refusal/no-send/outcome
+assertions; provide current account/chain context; independently review the added
+network reference before updating its count; run original affected gates and
+report unavailable environments. No baseline reproduction, live financial action,
+remote write, shared-ref or lease mutation. Root independently reviews and owns
+publication. The frozen 111-PR path inventory and newer #345–#347 were inspected;
+existing broader owners retain their claims. This is a narrow stacked correction.
+
+
+### Privacy fixture correction completed
+
+Corrective source `a02d640b7f847c006526d561467db9f348910d5a` changes exactly two
+lines: the locale fixture supplies its existing wallet scope; the independently
+reviewed Pay reference count changes 6 to 7 while three calls remain. Twenty tests
+in two complete affected component files and all six original inventory checks
+passed with zero skips/retries. Root independently approved the complete source
+diff and account/chain/reference semantics. Production code, every assertion and
+all gates remain unchanged. Matching-cache provenance and lossless results are in
+`PRIVACY_FIXTURE_REPAIR.md` and adjacent records. Browser files were not modified
+because required Anvil/Forge executables are unavailable; their acceptance and
+other privacy failures remain open. Full-web and changed-head compiler/typed-lint
+qualification are unclaimed. No heavy process remains; paths are released to root
+for stacked draft publication into existing #336.
