@@ -1,3 +1,14 @@
+# Merchant-ledger formatting precision validation — 2026-11-21 (isolated)
+
+Worker: one ChatGPT engineering coordinator, sequential test-first implementation and self-review; independent GitHub review required.
+Branch: `chatgpt/ghostpay-ledger-exponent-guard-20261121-0313`, based on `main` `eb59d93cffed7848c4aac37d0e9650b87239c6da`. No integration lock acquired.
+Owned paths: `packages/merchant-ledger/src/decimal.ts`, `packages/merchant-ledger/src/ledger.test.ts`, this additive ownership claim, and `docs/handoffs/MERCHANT_LEDGER_EXPONENT_GUARD_20261121.md`.
+Finding: exported `formatMinor` accepts negative / noninteger / nonfinite / unsupported exponents and can emit mathematically incorrect formatted money or untyped runtime exceptions, while adjacent `currencyExponent` already bounds supported exponents to integers 0..18. Source-equivalent Node 22 RED harness confirmed `formatMinor(123n, -1)` fails the required typed refusal assertion on unmodified main. The harness is not repository Vitest.
+Acceptance: reject invalid `formatMinor` exponent with `LedgerError('bad-exponent')` before `padStart`, preserve formatted output for every valid exponent 0..18 including negative amounts, add focused Vitest regression cases, run available verification and obtain hosted exact-head CI. Preserve all existing GhostPay 0/2 signed minor-unit conventions; no currency policy/schema, custody, contracts, web payment or deployment change.
+Ownership: no exact-path claims found in the current main ACTIVE_WORK registry; scoped PR text search did not reveal an active `formatMinor` repair. Reinspect active PRs and new heads before integration. Repository integration lock generation 11 is held by another coordinator, so do not merge to main or take over the lock.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
