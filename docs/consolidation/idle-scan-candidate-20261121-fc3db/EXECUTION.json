@@ -1,0 +1,594 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-21T05:22:30.947802+00:00",
+  "tested_local_source": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+  "published_source_with_identical_complete_tree": "418054d5ca041973d31d514406ee4c6157ca919f",
+  "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+  "environment": {
+    "node": "v24.22.3",
+    "npm": "11.19.1",
+    "vitest": "5.0.5",
+    "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e",
+    "lockfile_git_blob": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+    "dependency_installation": "Existing unchanged lockfile; selected web + relayer-guard workspace closure; scripts disabled during npm ci. Original build script compiled dependency libraries.",
+    "hosted_environment_difference": "Hosted CI uses Node 22 and explicitly configured Anvil/solc fixtures. Local runs use Node 24.22.3, one Vitest worker, bounded Node memory, and did not set REQUIRE_ANVIL, ANVIL_BIN or SOLC_BIN. These local results do not establish hosted acceptance."
+  },
+  "outcomes": {
+    "wallet-final-account-focused": {
+      "status": "passed",
+      "test_files_passed": 1,
+      "tests_passed": 4,
+      "tests_skipped": 0
+    },
+    "web-typed-lint": {
+      "status": "passed"
+    },
+    "default-full-web-build": {
+      "status": "passed",
+      "profile": "full",
+      "typescript_check": true,
+      "bundle_scan_passed": true,
+      "bundle_files_scanned": 19
+    },
+    "lean-web-build": {
+      "status": "passed",
+      "profile": "lean",
+      "typescript_check": true,
+      "bundle_scan_passed": true,
+      "bundle_files_scanned": 17
+    },
+    "metadata-hardening-coverage": {
+      "status": "passed",
+      "test_files_passed": 11,
+      "tests_passed": 118,
+      "tests_skipped": 0,
+      "coverage_percent": {
+        "statements": 99.48,
+        "branches": 98.85,
+        "functions": 100,
+        "lines": 100
+      },
+      "unchanged_threshold_percent": {
+        "statements": 95,
+        "branches": 90,
+        "functions": 95,
+        "lines": 95
+      }
+    },
+    "tron-adapter-coverage": {
+      "status": "passed",
+      "test_files_passed": 10,
+      "tests_passed": 107,
+      "tests_skipped": 0,
+      "coverage_percent": {
+        "statements": 97.04,
+        "branches": 93.36,
+        "functions": 98.93,
+        "lines": 99.11
+      },
+      "unchanged_threshold_percent": {
+        "statements": 95,
+        "branches": 90,
+        "functions": 95,
+        "lines": 95
+      }
+    },
+    "browser-full": {
+      "status": "blocked_before_page_assertions",
+      "tests_collected": 116,
+      "tests_launch_failed": 1,
+      "tests_not_run": 115,
+      "max_failures": 1,
+      "error": "Chromium process_singleton_posix.cc socket() failed: Operation not permitted (1)",
+      "browser_acceptance": false
+    },
+    "initial-closure-build": {
+      "status": "failed_local_dependency_setup",
+      "missing_fixture": "@ghostpay/relayer-guard",
+      "built_dependency_workspaces_before_web_failure": 17,
+      "correction": "Install the existing fixture workspace from the unchanged lockfile and build it. Subsequent original full and lean web builds passed."
+    },
+    "source-secret-scan": {
+      "status": "passed",
+      "scope": "Original unchanged repository scanner, including its original exclusions; not a claim that this scanner includes documentation."
+    },
+    "web-coverage": {
+      "status": "passed",
+      "exit_code": 0,
+      "test_files_summary": "215 passed | 2 skipped (217)",
+      "tests_summary": "3181 passed | 13 skipped (3194)",
+      "test_files_passed": 215,
+      "test_files_skipped": 2,
+      "tests_passed": 3181,
+      "tests_skipped": 13,
+      "coverage_percent": {
+        "statements": 93.33,
+        "branches": 89.73,
+        "functions": 94.97,
+        "lines": 97.06
+      },
+      "unchanged_threshold_percent": {
+        "statements": 90,
+        "branches": 85,
+        "functions": 90,
+        "lines": 90
+      },
+      "skip_identity_review": {
+        "reviewer": "/root/r2_ci_review",
+        "confirmed_by_root": true,
+        "compared_sources": [
+          "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+          "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+          "5a745d4b5fba69b66a9779f88aefc63c253a4f27"
+        ],
+        "cases": [
+          {
+            "path": "apps/web/src/features/policy/paymentEvidence.anvil.test.ts",
+            "skipped_cases": 4,
+            "condition": "Anvil executable and all five policy contract artifacts must be available. REQUIRE_ANVIL=1 adds a failing setup assertion if unavailable.",
+            "unchanged_git_blob": "e25e0f2fc7ebe288978a324ed1893787c666c500"
+          },
+          {
+            "path": "apps/web/src/features/registry/registry.anvil.test.ts",
+            "skipped_cases": 8,
+            "condition": "Anvil/solc/reference input availability gates the on-anvil group. Its separate availability guard test still runs and requires availability when REQUIRE_ANVIL=1.",
+            "unchanged_git_blob": "a49f0439dc4ffdec9449df3fee32fc92ba114c8d"
+          },
+          {
+            "path": "apps/web/src/features/btc/regtest.e2e.test.ts",
+            "skipped_cases": 1,
+            "condition": "GHOSTPAY_REGTEST_URL, GHOSTPAY_REGTEST_SEED and GHOSTPAY_REGTEST_DEST must be set by the regtest harness.",
+            "unchanged_git_blob": "91ffbacdc8bec59b70e3bd8bd4e50c302af79373"
+          }
+        ],
+        "total_skipped": 13,
+        "wholly_skipped_test_files": 2,
+        "qualification_limit": "The twelve Anvil cases must execute under hosted REQUIRE_ANVIL=1 or setup must fail. Local skips do not qualify these cases."
+      }
+    },
+    "web-nocov": {
+      "status": "failed",
+      "exit_code": 1,
+      "test_files_summary": "1 failed | 2 passed (3)",
+      "tests_summary": "1 failed | 2 passed (3)",
+      "test_files_passed": 2,
+      "test_files_failed": 1,
+      "tests_passed": 2,
+      "tests_failed": 1,
+      "tests_skipped": 0,
+      "failed_test_path": "apps/web/src/lib/scannerCore.bench.nocov.test.ts",
+      "failed_assertion": "expect(ecdh).toBeGreaterThan(derivation)",
+      "observed_microseconds_per_operation": {
+        "ecdh_estimate": 2124.0610549999983,
+        "address_derivation_estimate": 2545.852804999999
+      },
+      "interpretation": "The original timing comparison failed in this local run. No assertion or threshold was changed, and no repeat-until-pass execution was performed. Cause and source identity review are separate from the observed failure.",
+      "independent_source_review": {
+        "reviewer": "/root/r2_privacy_qualification",
+        "result": "Measured source inputs unchanged across candidate, #307, #344, #350 and main; cause of this timing result remains unresolved. This is not an environment-only diagnosis.",
+        "compared_sources": [
+          "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+          "5a745d4b5fba69b66a9779f88aefc63c253a4f27",
+          "a88157b53d1e0925350d5c8db047eabb4365f4e9",
+          "89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8",
+          "aec179910c39081d820396409ff3139ff2264132"
+        ],
+        "identical_git_objects": {
+          "apps/web/src/lib/scannerCore.bench.nocov.test.ts": "907f5f380fd846c46cd4737deb6aeae8878a2bc4",
+          "packages/core-crypto/src": "bfd977516c4be16c8a82755228fb1f4b077d076f",
+          "packages/core-crypto/src/stealth.ts": "6a5c51b87d0d9e8044442884c45476b0eef97d60",
+          "package-lock.json": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+          "apps/web/vitest.nocov.config.ts": "294c480e9bb915656cd8f525110d9f18b60727e0"
+        },
+        "method": "Two estimates formed by subtracting independent timed batches, each with 10 warmups and 200 iterations. ECDH estimate = rejectedByTag - pointDecode - hashAndByteCompare; derivation estimate = fullMatch - rejectedByTag.",
+        "preceding_assertions_passed": [
+          "wrong-tag announcements rejected",
+          "matching announcements matched",
+          "ECDH estimate >10 times hash/compare cost"
+        ],
+        "runtime_resolution": "Benchmark imports @ghostpay/core-crypto dist/index.js and its stealth.js. It does not import scannerCore, ScanSession or scanMatches. Compiled path retained sharedHash, tag rejection, then address derivation ordering.",
+        "installed_versions_checked_against_lock": {
+          "@noble/curves": "2.4.0",
+          "@noble/hashes": "2.4.0",
+          "viem": "2.57.13",
+          "vitest": "5.0.5"
+        },
+        "next_diagnostic_if_needed": "One separately retained unchanged pinned #307 control with the same environment can investigate timing variability; no such control or rerun was executed here. Any methodology change requires separate scope/review. Required candidate nocov qualification remains unresolved."
+      }
+    }
+  },
+  "receipts": {
+    "browser-full": {
+      "command": [
+        "npm",
+        "run",
+        "test:e2e",
+        "--workspace",
+        "@ghostpay/web",
+        "--",
+        "--max-failures=1"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "environment": {
+        "NODE_OPTIONS": "--max-old-space-size=3072",
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "full",
+        "GHOSTPAY_CHROMIUM": "/usr/lib/chromium/chromium"
+      },
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 1,
+      "seconds": 22.84,
+      "log": "browser-full.log",
+      "log_sha256": "11ee051693668faca774ac65b6b3ecaf709b3ed397a4abe5352b60ff6705d6e9",
+      "browser_version": "Chromium 156.0.8078.79 (Debian)"
+    },
+    "complete-test-dependencies": {
+      "command": [
+        "npm",
+        "ci",
+        "--workspace",
+        "@ghostpay/web",
+        "--workspace",
+        "@ghostpay/relayer-guard",
+        "--include-workspace-root",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--prefer-offline",
+        "--maxsockets=2"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=1536",
+      "exit_code": 0,
+      "seconds": 9.79,
+      "log": "complete-test-dependencies.log",
+      "log_sha256": "c8ffce20e5a4074fb1e8a50e0818132dfa5c75b0fcdc9b0951660bb341f2f8f1",
+      "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+    },
+    "default-full-web-build": {
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=3072",
+      "profile": "full",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 18.68,
+      "log": "default-full-web-build.log",
+      "log_sha256": "b30df29266ec277bf18d31dda64acee2aa7354de260c652ab1c10e0f4d000d1d",
+      "requested_environment": {
+        "GHOSTPAY_PROFILE": "lean"
+      },
+      "profile_correction": "GHOSTPAY_PROFILE is not consumed by the build. Vite reads GHOSTPAY_LOCAL_BUILD_PROFILE, which was unset and defaults to full. The initial closure attempt stopped before bundle generation."
+    },
+    "dependency-install": {
+      "command": [
+        "npm",
+        "ci",
+        "--workspace",
+        "@ghostpay/web",
+        "--include-workspace-root",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--prefer-offline",
+        "--maxsockets=2"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=1536",
+      "exit_code": 0,
+      "seconds": 7.4,
+      "log": "dependency-install.log",
+      "log_sha256": "7ad060a25c4adf113b76a096c45d97458aee8163e5a5e212416a452205eac2aa",
+      "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+    },
+    "initial-closure-build": {
+      "command": [
+        "node",
+        "scripts/build-workspaces.mjs",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=3072",
+      "profile": null,
+      "source_commit": "ad7042ce4f05c10df803e4705e5a4a390f0b6fd0",
+      "exit_code": 2,
+      "seconds": 51.76,
+      "log": "initial-closure-build.log",
+      "log_sha256": "cf7c19da4315376ba52a87531bb5e6ec9e3a34f7944e4e5b32ae353e5f08d659",
+      "requested_environment": {
+        "GHOSTPAY_PROFILE": "lean"
+      },
+      "profile_correction": "GHOSTPAY_PROFILE is not consumed by the build. Vite reads GHOSTPAY_LOCAL_BUILD_PROFILE, which was unset and defaults to full. The initial closure attempt stopped before bundle generation."
+    },
+    "lean-web-build": {
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=3072",
+      "environment": {
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+      },
+      "profile": "lean",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 18.75,
+      "log": "lean-web-build.log",
+      "log_sha256": "6146d58239b0c0100425999d54a32c995b9befa6f5ae3171f535422a423b67c6"
+    },
+    "metadata-hardening-coverage": {
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate/packages/metadata-hardening",
+      "node_options": "--max-old-space-size=1536",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 4.04,
+      "log": "metadata-hardening-coverage.log",
+      "log_sha256": "e1a17d7a25e0130aaedebdcbf768565916347f7fa326a85f1b15da95597bd0a2"
+    },
+    "relayer-guard-fixture-build": {
+      "command": [
+        "npm",
+        "run",
+        "build",
+        "--workspace",
+        "@ghostpay/relayer-guard"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=1536",
+      "exit_code": 0,
+      "seconds": 1.16,
+      "log": "relayer-guard-fixture-build.log",
+      "log_sha256": "00f7e8741f40878753cae49e414bb000ef61b633115c3e30c5e1577f502739dc",
+      "lockfile_sha256": "e025d878c55cc215315286fc2df277ce5c79116c1507bba79419c789669e0e4e"
+    },
+    "source-secret-scan": {
+      "command": [
+        "bash",
+        "scripts/scan-secrets.sh"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 0.26,
+      "log": "source-secret-scan.log",
+      "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "scope": "Original repository scanner with its unchanged path exclusions; documentation logs separately checked before packaging."
+    },
+    "tron-adapter-coverage": {
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate/packages/tron-adapter",
+      "node_options": "--max-old-space-size=1536",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 6.45,
+      "log": "tron-adapter-coverage.log",
+      "log_sha256": "b3b9a2d7a1d407aeb5b30b2c4faa7667563318c2f54492e690d7db86ebdf8c82"
+    },
+    "wallet-final-account-focused": {
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--maxWorkers=1",
+        "src/lib/wallet.finalAccount.test.ts"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate/apps/web",
+      "node_options": "--max-old-space-size=1024",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 2.04,
+      "log": "wallet-final-account-focused.log",
+      "log_sha256": "70aa489ffadbbafcdc91c89d389d51f8b77440123d812eb4a741d5885ed064c3"
+    },
+    "web-coverage": {
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--coverage",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate/apps/web",
+      "node_options": "--max-old-space-size=3072",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 1420.71,
+      "log": "web-coverage.log",
+      "log_sha256": "d4e8e22a49c23e04236a63011062b66843d4f4c549cfe802f31da1c96beb67e1"
+    },
+    "web-nocov": {
+      "command": [
+        "../../node_modules/.bin/vitest",
+        "run",
+        "--config",
+        "vitest.nocov.config.ts",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate/apps/web",
+      "node_options": "--max-old-space-size=3072",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 1,
+      "seconds": 26.6,
+      "log": "web-nocov.log",
+      "log_sha256": "6b3fce69e727ad2907c215a4fce3a87cb01493408d6c2aa42c7ae4bb341977ac"
+    },
+    "web-typed-lint": {
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/fc3db078ca12/GhostPay-idle-scan-candidate",
+      "node_options": "--max-old-space-size=3072",
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "exit_code": 0,
+      "seconds": 34.79,
+      "log": "web-typed-lint.log",
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    }
+  },
+  "original_gate_blobs": {
+    "package-lock.json": "8ce2a5bb315cd84f45d3351131de0914337224ae",
+    "apps/web/package.json": "087747cbd56412fe67551b10d874805d01e7f2a4",
+    "apps/web/vitest.nocov.config.ts": "294c480e9bb915656cd8f525110d9f18b60727e0",
+    "apps/web/playwright.config.ts": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31",
+    "apps/web/vite.config.ts": "7f11e3b91b733ef2e53385b5be022970d60d52f9",
+    ".github/workflows/ci.yml": "3fb2f03dc8fa4f9bad1cac94bbdfe063662e58a7",
+    "packages/metadata-hardening/vitest.config.ts": "ac90ebb9aa970c47023ed171620470dc14ac157f",
+    "packages/tron-adapter/vitest.config.ts": "76df911a0163192e77b911e78df3b7eac90f4c7a"
+  },
+  "profile_correction": "GHOSTPAY_PROFILE=lean was an unused variable. The first successful web build used default full. The separately successful lean run used GHOSTPAY_LOCAL_BUILD_PROFILE=lean. The failed initial closure stopped before bundle generation.",
+  "historical_lean_bundle_manifest": {
+    "note": "Captured immediately after the successful lean build. The subsequent original Playwright webServer rebuilt full; current dist is not this retained lean artifact.",
+    "manifest": {
+      "source_commit": "8f75770d5b3a935eddfddfb215f86bceb9e874e8",
+      "source_tree": "130f42e633929e5d2c630ac9741f62d7fe9764e4",
+      "environment": {
+        "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+      },
+      "files": [
+        {
+          "path": "_headers",
+          "bytes": 1761,
+          "sha256": "141e7a5d1c6faaab1b021eca591d24d3559b4486348965cfd8185162faa47f08"
+        },
+        {
+          "path": "assets/ar-95zXR6fS.js",
+          "bytes": 307018,
+          "sha256": "e5f9952535fd90c1b5547c932fe6cf2812fdba6549da0d50ea7d0e05ba050c7a"
+        },
+        {
+          "path": "assets/es-WiftYO7y.js",
+          "bytes": 253485,
+          "sha256": "624dcddf7692419789c069276dcba7b3793f02515a753047298bd31fa5a4cb8b"
+        },
+        {
+          "path": "assets/index-twE9i6q8.js",
+          "bytes": 1293135,
+          "sha256": "716d27b11c1a1ec7d8b6e0ac450a06b115e3bdddb4980bd62a638357e6e3e773"
+        },
+        {
+          "path": "assets/ja-C67A-DnB.js",
+          "bytes": 300359,
+          "sha256": "76dea40798727e60ed3d1ac42894521736e1e38414c10d7d9c6a9487f3e0e20b"
+        },
+        {
+          "path": "assets/jsQR-Ct1FLwmy.js",
+          "bytes": 129988,
+          "sha256": "dc259ffa7bc065e7096a35b6245b62ae15e4223890481b3c475e89332c82d88f"
+        },
+        {
+          "path": "assets/rolldown-runtime-XKyaHtl9.js",
+          "bytes": 726,
+          "sha256": "548d1dbf321e7d2ae804fcc158b588706a7c52f8ca175de1490c6ccb4dbe55b7"
+        },
+        {
+          "path": "assets/scanner.worker-k6gTvtBx.js",
+          "bytes": 62202,
+          "sha256": "4e2d5eb463bb7e379cba83fedd952078bb17fbfbb4466897fc39ee5e13f4dc16"
+        },
+        {
+          "path": "assets/style-CF4XsaTc.css",
+          "bytes": 11888,
+          "sha256": "e49301963aa3230db49475ca90ac300577214eba0dd095a49210a33670d8201d"
+        },
+        {
+          "path": "build-info.json",
+          "bytes": 145,
+          "sha256": "53d7a38ff35cb0a9be6cd57680ae7a02c23f25d5f6b44d9dc6f368e287f44b36"
+        },
+        {
+          "path": "deployments/README.md",
+          "bytes": 861,
+          "sha256": "526411b0a41d6acd550e5e256eee66163d5074b32f01145d03cf3acb4e47803d"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 332,
+          "sha256": "82a99a473d82f2a18e8c320964d7af6de84288a3d3c4e9d6b10bfb297940d5ab"
+        },
+        {
+          "path": "ghostpay-lean-build.json",
+          "bytes": 99421,
+          "sha256": "d97c7e0f738ce2a36a21e6d9fa8ad6b21963c7e74e6310f74523fb91c30389a3"
+        },
+        {
+          "path": "help.css",
+          "bytes": 3283,
+          "sha256": "3d530a5eabb1b912beca3770f913798e929a2e3e700abca452ff97af38af65f0"
+        },
+        {
+          "path": "help.html",
+          "bytes": 16853,
+          "sha256": "78d4f3d0f2f045160e22d45474e6ed4179f4d4895a372456f16155e7ea3227a1"
+        },
+        {
+          "path": "index.html",
+          "bytes": 3369,
+          "sha256": "b1b951458427d12dc49cbf69debebc3997119ab93c0fd1af6f6a94ad0933548d"
+        },
+        {
+          "path": "privacy.html",
+          "bytes": 8029,
+          "sha256": "24802c58b33bdc0c7743ec27de464fd3f4016a67fffdbf11036d07ae1aa2d3e7"
+        }
+      ]
+    }
+  },
+  "log_archive": {
+    "path": "EXECUTION_LOGS.json.gz",
+    "gzip_mtime": 0,
+    "bytes": 15946,
+    "sha256": "32f2348a0e90bfe86602313f08f4662f9bdd1cf360ef57eb4cd3733f907c3c77",
+    "decompressed_json_sha256": "faef8dcdd789309760175752ec4b6534db8996633c9a2c4df0b4463ba95c39d4",
+    "logs": 14,
+    "credential_pattern_check": "No matches for the six explicit credential/private-key patterns in assembler; raw content preserved byte-for-byte."
+  },
+  "independent_execution_review": {
+    "reviewer": "/root/r2_ci_review",
+    "state": "complete_consistent_and_suitable_for_isolated_draft_handoff",
+    "scope": "Receipt/output consistency, original gate identities and installed lockfile versions; no independent full-suite rerun claimed.",
+    "logs_verified": 14,
+    "reviewed_archive_sha256": "32f2348a0e90bfe86602313f08f4662f9bdd1cf360ef57eb4cd3733f907c3c77",
+    "qualification_disposition": "Overall web test gate has not passed: no-coverage2passed/1failed. Native browser acceptance remains blocked, and hosted combined-source gates remain pending. Review approval concerns evidence accuracy and source preservation."
+  },
+  "qualification_limits": [
+    "No successful local browser page assertions. Native Chromium failed at startup under executor socket restrictions; remaining 115 cases did not run.",
+    "Full and lean build success is distinct from full and lean browser acceptance.",
+    "Donor hosted successes do not qualify the newly combined candidate.",
+    "No workflow, assertion, skip rule, test timeout, coverage threshold or dependency version was modified by this composition.",
+    "The wallet focused run overlaps any later full web run; test totals are not summed across overlapping selections.",
+    "Original author handoff preserves its earlier pending execution state; later coordinator receipts provide subsequent results."
+  ]
+}

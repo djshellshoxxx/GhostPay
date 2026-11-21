@@ -1,0 +1,104 @@
+{
+  "schema": "ghostpay-independent-backup-review/1",
+  "reviewed_at_utc": "2026-11-20T18:45:00.329477+00:00",
+  "reviewer": "/root/backup_independent_review_r2",
+  "decision": "approve scoped source; execution qualification remains separate",
+  "blocking_findings": [],
+  "repository": "djshellshoxxx/GhostPay",
+  "worktree": "/workspace/scratch/994a0d214fb9/GhostPay-backup",
+  "base": "7417881ac7f243b50f7b5c1682c66a4e3f87c736",
+  "tests_only": "1a69f706223f8bb976ec62f86d317aca8103290b",
+  "reviewed_head": "fde65b79e1cb97b06f627819f70ca7c88ecafed5",
+  "reviewed_tree": "bb94ccbebf3b672dbb3a726174fd1529aae510c4",
+  "donor": "e6ed3ee64a786c33b1af06b5fc7a51d742eb6544",
+  "parents": [
+    "1a69f706223f8bb976ec62f86d317aca8103290b"
+  ],
+  "working_tree_clean": true,
+  "changed_paths_from_base": [
+    "apps/web/e2e/backup-ownership.spec.ts",
+    "apps/web/src/views/SellerKeys.ownership.test.tsx",
+    "apps/web/src/views/SellerKeys.tsx",
+    "docs/ai/ACTIVE_WORK.md",
+    "docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md"
+  ],
+  "runtime_paths_after_tests_only": [
+    "apps/web/src/views/SellerKeys.tsx"
+  ],
+  "blobs": {
+    "apps/web/src/views/SellerKeys.tsx": "eaa2b33de93edfab885ec2bbc98df6f2c8a23c19",
+    "apps/web/src/views/SellerKeys.ownership.test.tsx": "05c846289be5827c2e9028c28661b1c2f242c9b0",
+    "apps/web/src/views/SellerKeys.operation.test.tsx": "29fd9ccaf8226c501e7c1d6e075822960507017c",
+    "apps/web/e2e/backup-ownership.spec.ts": "78bc60dcd7e871166d632dd3b92302cc643eac8e",
+    "apps/web/src/views/SellerKeys.completion.test.tsx": "96d79a91967763376e3ccbd472a0111d470be367",
+    "apps/web/src/views/SellerKeys.recovery.test.tsx": "dfaeaf232a511786fada7ca13abad49a5d067116",
+    "apps/web/src/views/SellerKeys.lock.test.tsx": "098c626f4c401dfea4ccc342809d4c6571e52f5c",
+    "apps/web/src/lib/session.ts": "a5e257722752faf19699f5fa508e82d573c49d42",
+    "apps/web/src/lib/keyVault.ts": "64cc5d20e5130258fdd124b8699132698472eb61",
+    "apps/web/src/AppShell.tsx": "50e26946f3061ccbb27a07de3498b04141ddf6f6",
+    "apps/web/src/views/Sweep.tsx": "4b6a65c45863f2b312f2f5383d17f7c21bf21649"
+  },
+  "protected_files_match_base": [
+    "apps/web/src/views/SellerKeys.operation.test.tsx",
+    "apps/web/src/views/SellerKeys.completion.test.tsx",
+    "apps/web/src/views/SellerKeys.recovery.test.tsx",
+    "apps/web/src/views/SellerKeys.lock.test.tsx",
+    "apps/web/src/lib/session.ts",
+    "apps/web/src/lib/keyVault.ts",
+    "apps/web/src/AppShell.tsx",
+    "apps/web/src/views/Sweep.tsx"
+  ],
+  "donor_ownership_and_e2e_blobs_exact": true,
+  "source_diff_check_exit_code": 0,
+  "review_scope": [
+    "same controller owns recoverability read and decrypt",
+    "post-authorization current-controller/session guard before encryption",
+    "shared synchronous save/delete write token; unlock/write mutual exclusion",
+    "owner-matched write release only after settlement",
+    "preflight false/error/session-change cleanup",
+    "unchanged generation and own-installed-session completion",
+    "unchanged idle/suspended recovery UI and lifecycle hooks",
+    "unchanged original operation5 controls plus exact donor17 cases",
+    "authored native-crypto browser2 journeys; no execution claim"
+  ],
+  "execution": {
+    "reviewer_ran_tests": false,
+    "reviewer_ran_builds": false,
+    "reviewer_ran_browser": false,
+    "root_red_reviewed": {
+      "path": "/workspace/scratch/994a0d214fb9/backup-preflight-r2-red.json",
+      "bytes": 10827,
+      "sha256": "2053ea3aa90ad7e2469a065878c52d124e9903cc021c25dac71a4ec9b2045c5c",
+      "source": "1a69f706223f8bb976ec62f86d317aca8103290b",
+      "summary": {
+        "numTotalTests": 22,
+        "numPassedTests": 19,
+        "numFailedTests": 3,
+        "numPendingTests": 0,
+        "success": false
+      },
+      "failures": [
+        {
+          "name": "SellerKeys operation supersession does not start encryption after a superseded export authorization resolves",
+          "message": "AssertionError: expected \"exportKeystore\" to not be called at all, but actually been called 1 times"
+        },
+        {
+          "name": "SellerKeys durable vault write ownership a pending save stays busy through verification cancellation, session replacement and idle lock",
+          "message": "AssertionError: expected \"saveEncryptedVault\" to be called once, but got 2 times"
+        },
+        {
+          "name": "SellerKeys durable vault write ownership a cancelled unlock preflight cannot start an unlock after a durable delete takes ownership",
+          "message": "AssertionError: expected false to be true // Object.is equality"
+        }
+      ]
+    },
+    "green": "not executed or claimed by this reviewer; coordinator must qualify frozen source"
+  },
+  "limits": [
+    "Runtime review is bounded to the changed component and inspected helpers; it is not a full application audit.",
+    "Durable writes already started may settle after cancellation, idle lock, session replacement or unmount; they are not canceled or rolled back.",
+    "The synchronous write token is component-instance ownership, with underlying storage CAS providing durable record safeguards.",
+    "Browser fixtures retain production KDF/native encryption but remain authored acceptance until an actual browser run.",
+    "Hosted gates, full web suite and release behavior require their own exact-source evidence."
+  ]
+}

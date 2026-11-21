@@ -1,0 +1,6 @@
+{
+  "original_filename": "idle-r2-lint.log",
+  "original_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+  "original_bytes": 228,
+  "utf8_text": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/web@0.1.0 lint\n> eslint --config ../../eslint.config.js src e2e\n\n"
+}

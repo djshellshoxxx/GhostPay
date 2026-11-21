@@ -81,7 +81,16 @@ describe('Pay request-file intake', () => {
     expect(await screen.findByLabelText('Invoice passphrase')).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
     await user.type(screen.getByLabelText('Invoice passphrase'), 'cedar orbit velvet lantern meadow');
+    const open = vi.spyOn(invoices, 'openFragment');
     await user.click(screen.getByRole('button', { name: /^Open invoice$/ }));
+    expect(open).toHaveBeenCalledExactlyOnceWith(created.fragment, {
+      pinnedSigners: DEFAULT_SETTINGS.pinnedSigners, passphrase: 'cedar orbit velvet lantern meadow',
+    });
+    const submitted = open.mock.results[0];
+    if (submitted?.type !== 'return') throw new Error('Invoice submission did not return its opening promise');
+    // Observe the real submitted KDF operation before polling React's completed review state.
+    // The original test timeout still fails a stalled operation; this spy never replaces decryption.
+    await act(async () => { await submitted.value; });
     expect(await screen.findByRole('heading', { name: 'Review payment' }, { timeout: 15_000 })).toBeTruthy();
     expect(screen.getByText('private file memo')).toBeTruthy();
     expect(discoverWallets).not.toHaveBeenCalled();

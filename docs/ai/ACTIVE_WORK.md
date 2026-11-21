@@ -1,3 +1,26 @@
+# Isolated idle, scan and current-main candidate — 2026-11-20 Pacific
+
+Worker: fc3db078ca12-root-r2; independent composition reviewer: /root/r2_idle_composition_review.
+Branch: integration/ghostpay-idle-scan-candidate-20261121-fc3db.
+Base: integration PR307 at 5a745d4b5fba69b66a9779f88aefc63c253a4f27.
+Pinned donors: PR344 a88157b53d1e0925350d5c8db047eabb4365f4e9 (existing idle/backup/receipt/request-file stack); PR350 89b3572f7e60cb6f5e5a0d7830632d1bb5f04dd8 (scan helper plus current main aec179910c39081d820396409ff3139ff2264132).
+Scope: isolated source-preserving composition, additive ownership resolution, and new docs/consolidation/idle-scan-candidate-20261121-fc3db/ evidence. Donor runtime paths remain exact; no donor branch is edited. A separate worker may contribute only the new wallet.finalAccount.test.ts and its handoff after independent review.
+Acceptance: preserve all donor histories and every intended blob/mode/type, retain every existing claim, preserve main's six TRON/fee product/test changes, verify the current combined source with applicable original gates, and publish only a reviewable candidate. Source-specific donor CI is not a combined-source pass.
+Ownership: complete current branch/PR and raw-claim review found no existing equivalent composition. Shared integration lock generation 11 remains held by 994a0d214fb9-root-r3 at c196151daf8233f96045fd205b2d899c9e8cc97d; expiry does not authorize takeover. This worker owns only this new isolated candidate and its evidence, not shared integration/main or frozen donor paths.
+State: claimed before composition. No shared ref update, lock takeover, manual workflow dispatch, release, deployment or funds operation is part of this task.
+# Silent final wallet account reread regression — November 20, 2026 (Pacific)
+
+Worker: `/root/r2_privacy_qualification`, delegated by `fc3db078ca12-root-r2`.
+Branch: `test/ghostpay-wallet-final-account-r2-20261120`.
+Base: exact integration PR #307 `5a745d4b5fba69b66a9779f88aefc63c253a4f27`.
+Owned paths: new `apps/web/src/lib/wallet.finalAccount.test.ts`, new `docs/handoffs/WALLET_FINAL_ACCOUNT_REGRESSION_20261120.md`, and this additive ownership entry only.
+Overlap check: no history for the proposed test path across available refs; the exact-path claim search across 425 distinct available branch heads found only the parent coordinator's explicit reservation for this delegated contribution in candidate `b0bc4fecbea288f646d7960ab2b58679e1887ef6`. Existing wallet source/tests, browser fixture/cases, receipt/hash safeguards and all other claims stay outside this task.
+Acceptance: with the actual wallet APIs and existing MockWallet pattern, keep the first account reread valid, change the returned account silently during the final network check, and prove send/signature rejection before submission and before attempt-journal access or mutation where applicable. No `accountsChanged` event or application-authority revocation may cause the rejection. Include unchanged-account controls that exercise successful send/journal and signature behavior. This fills negative coverage for an existing runtime guard; no current runtime defect is asserted.
+Validation ownership: author tests and commit locally first. Do not install a separate dependency tree or start heavy checks. Root will supply the exact-lock combined #307/#344/#350 source for actual focused execution and independent review; all unrun gates remain pending until that evidence exists. No runtime, workflow, dependency, configuration, threshold, timeout or existing browser assertion changes are authorized.
+State: claim preceded authoring; four regression cases are authored with Vitest execution, typecheck, typed lint and independent review still pending on the coordinator's combined source. Node syntax-only validation passed. Root owns composition, qualification and any remote publication. No shared integration/main update, lease action, workflow dispatch, deployment or real-funds operation is included.
+
+---
+
 # R3 qualified Sweep integration and current-main refresh — 2026-11-20 UTC
 
 Worker: `994a0d214fb9-root-r3`; independent composition reviewer: `r3_branch_recovery`.
@@ -18,6 +41,49 @@ Original #307 and #325 checks are source-specific historical successes, not a pa
 for the new composition. Root acquired cooperative integration generation 11 before
 shared-target updates; verify the current lease and branch heads before publication.
 No deployment, contract change, dependency change, signing or live transaction is included.
+# SellerKeys preflight ownership continuation — 2026-11-20
+
+Worker: `/root/remaining_branches_r3`, delegated by the consolidation coordinator.
+Branch: `fix/ghostpay-backup-preflight-20261120-r2`; exact base: final idle
+`7417881ac7f243b50f7b5c1682c66a4e3f87c736` (runtime frozen at
+`1ca7105e050f7d76aee18fe3efee3cd02cd72cb4`).
+Donor: refreshed PR #314, `e6ed3ee64a786c33b1af06b5fc7a51d742eb6544`,
+runtime commit `49535f3bdbdda6f133e397097e56a8dde8413d94`.
+Owned paths: only operation ownership in `apps/web/src/views/SellerKeys.tsx`;
+new `apps/web/src/views/SellerKeys.ownership.test.tsx`;
+new `apps/web/e2e/backup-ownership.spec.ts`; this additive registry entry and
+`docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md`.
+Final evidence scope, authorized before packaging: additive
+`docs/consolidation/backup-preflight-r2-20261120/` contains source-pinned reports
+and lossless original qualification/review artifacts. Runtime remains frozen.
+Acceptance: a canceled or superseded recoverability preflight cannot begin a late
+unlock or display a stale replacement prompt; export must recheck operation and
+session ownership after authorization and before encryption; synchronous durable
+write ownership must refuse duplicate/colliding save/delete or unlock work while
+retaining busy state until the actual write settles. Preserve current separate
+`unlockBusy` / `vaultWriteBusy`, all five original operation regressions, idle
+suspension visibility, own-installation handling, and every PR #325/#307 safeguard.
+Record tests before runtime; recover the donor's 17 component regressions as an
+additional file and its two browser journeys without replacing current tests.
+Use bounded controlled RED followed by independent source review and applicable
+qualification. Root schedules processes, supplies linked existing dependencies,
+and owns remote publication/integration. No installs or dependency copies.
+Ownership: idle source and final docs are frozen. Parent explicitly authorized this
+continuation in the available backup worktree; original #314/#319, the previous
+backup branch, and idle/Sweep worktrees remain unchanged.
+Browser limit: original donor browser bodies did not execute because Chromium
+could not launch. The same local socket restriction remains; hosted full/lean
+browser acceptance is required and authored journeys are not passing evidence.
+Status: tests-first checkpoint `1a69f706` precedes frozen runtime `fde65b79`.
+Independent source review approved that runtime. Controlled RED: 19 pass / 3 expected
+failures; same 22-case GREEN passed; separate overlapping compatibility gate passed
+246/246 across 12 complete files, all with zero skips. Original web typecheck/lint,
+lean build/postbuild and full/lean static two-case collection passed. Browser bodies
+remain unexecuted. Final documentation/evidence preserves the qualified application,
+test and configuration bytes. Required exact published-head checks and hosted browser
+acceptance remain open; parent owns the stack on PR #331. Full evidence and handoff:
+`docs/consolidation/backup-preflight-r2-20261120/REPORT.md` and
+`docs/handoffs/SELLERKEYS_PREFLIGHT_20261120_R2.md`.
 
 ---
 
@@ -156,6 +222,18 @@ calls refuse invalid onion origins; I2P and clearnet behavior remains unchanged.
 Add bounded local validation regressions and record actual Node/lint/typecheck
 results. No application runtime, RPC profile, deployment activation, or external
 network behavior changes. This section is the worker's only registry edit.
+# Pages scan: distinguish duplicate router callbacks from distinct router announcements (2026-11-21 UTC)
+
+Cycle and coordinator: `20261121T0033Z-root`, one sequential assistant; no native subordinate workers or independent verifier available.
+Task branch: `automation/20261121T0033Z/bug/router-duplicate-warning`, base main `aec179910c39081d820396409ff3139ff2264132`.
+Owned paths: `apps/web/src/lib/scanMatches.ts`, `apps/web/src/lib/scanMatches.test.ts`, this additive task claim, and `docs/handoffs/SCAN_MATCH_DUPLICATE_ROUTER_20261121.md`. No other worker's branch or shared ledger is updated.
+Finding (bounded source audit, unverified in browser): `sharedRouterAddresses` marks the same router announcement twice as a shared one-time address, even though its contract requires two different router records; an asynchronous duplicate/update should not be counted as a second record. Existing `placeScanMatch` usually deduplicates the live UI, so this is a defensive P3 false-positive warning correction, not a payment/cryptographic vulnerability.
+Acceptance: a deterministic regression with duplicate announcement ID and same address does not trigger a shared-address warning, even after status refresh; two distinct router announcement IDs with the same address still trigger it. Preserve all public-scan replay filtering, one-time address identity, chain scope, and existing tests; no key, RPC, transaction, deployment or dependency changes.
+Ownership reconciliation: recent overlapping UI PRs #278/#307/#317/#318 and current #341/#345, plus #262/#264 and #302, were inspected for changed paths; none currently modifies `scanMatches.ts` or `scanMatches.test.ts` (bounded PR sample, not full historical inventory). Recheck before integration. The durable integration lease on `automation/ghostpay-integration-lock` is **held by another coordinator, generation 11**, last read 2026-11-20T23:16:57Z; do not claim, release or merge any protected/shared branch.
+Verification: add test before production fix, execute source-equivalent deterministic check only if original suite is unavailable, and preserve test/CI/independent-review limitations exactly. Existing `SECURITY.md` requirements apply. Draft PR only.
+
+---
+
 # GP-BUG-13 — stop buffered TRON scan yields after cancellation (2026-11-20)
 
 Cycle/worker: `20261120T1635Z`, one ChatGPT coordinator running sequential implementation and audit; no separate native verifier available.
@@ -1125,3 +1203,125 @@ Prior full web build attempts were environment-limited (heap OOM 134, killed137)
 final full typecheck/build, browser acceptance and exact-head hosted gates remain.
 See the source-pinned handoff for commands and limits. Candidate remains draft.
 No deployment, release or real transaction is authorized by this worker claim.
+
+
+## Sleep-aware idle-session recovery — 2026-11-20
+
+Worker: `/root/idle_completion_r2`, delegated by the consolidation coordinator.
+Branch: `integration/ghostpay-idle-session-20261120-r2`; exact base: `1788f1e0a0fe1fb22bb887427c47bdd62db78c1a` (PR #325).
+Donor: PR #256, `e2ebb4902e53e2249c6585a1d72be6e1e416c36c`; common ancestor `14ded337a10c140d7a9f9a9238ec038587d925bb`.
+Owned paths: `apps/web/src/AppShell.tsx`, `AppShell.idleClock.test.tsx`; `apps/web/src/lib/{session.ts,session.idleLock.test.ts,keyVault.ts,scanCursorSlot.ts,scanCursorSlot.test.ts}`; `apps/web/src/components/TagArchive.test.tsx`; only suspension integration in `apps/web/src/views/SellerKeys.tsx`; four idle-message additions in `apps/web/locales/{ar,en,es,ja}.json` and `apps/web/src/i18n/securityKeys.ts`; `apps/web/e2e/idle-session.spec.ts` and only invoice/idle deadline isolation in `core-journey.spec.ts` and `pages-devnet.spec.ts`; donor idle-session docs, scoped continuation evidence, and this additive record.
+Acceptance: recover GP-PAGES-04 synchronous authority revocation, session-bound clock leases, sole-copy encrypted recovery and private-checkpoint revocation. Preserve PR #307's separate cancellable-unlock/durable-write lifetimes and every PR #325 Sweep guard. Union shared catalogs/claims; retain donor ancestry through a normal merge after a tests-only checkpoint. Correct the demonstrated expiry-fixture collision by placing payer time five minutes before and after signed invoice expiry, preserving all no-send/journal/reopen assertions and the 15-minute idle policy. Run decisive existing-API regressions against unchanged runtime, then qualify/review the actual combined source.
+Ownership/dependencies: source-specific prior idle claims remain preserved as donor provenance. Current user continuation and coordinator assignment authorize this isolated recovery; donor branches and shared targets remain untouched. Existing dependencies are retained after exact root/web manifest, lock and build/test/lint configuration comparison; no install, copy or removal. Parent coordinates heavy checks and remote publication. No persistent-record deletion, contracts, relayers, live chain/wallet calls or deployment.
+Status: claim recorded before test/runtime edits. Local browser execution remains unavailable under the existing socket policy; hosted full/lean acceptance is still required.
+
+# Sleep-aware session security completion — 2026-11-19 UTC (ACTIVE)
+
+Worker: ChatGPT coordinator with independent clock/lifecycle, vault/session and integration reviewers.
+Branch: `chatgpt/ghostpay-idle-lifecycle-qualified-20261119`.
+Qualified source base: PR #242, `ab4e0da2cfe2a18adac0424896fba0b40fac81a8`, subsequently merged
+by another workstream as main `e454de6abfefda70d82784fafc1d8949b277c334` with an identical source tree.
+Successor integration target: `integration/ghostpay-idle-session-completion-20261119`, from that main.
+PR #227 `613667be4eeb132c7d21ccd06c627f9a7144d85b` is already an ancestor.
+Owned paths: `apps/web/src/AppShell*`; idle-specific session/key-vault lifecycle changes and tests;
+the idle-authority token in `apps/web/src/lib/scanCursorSlot.ts` and its regression tests;
+`apps/web/e2e/idle-session.spec.ts`; directly required lock-state locale/security-key entries;
+`apps/web/DEVIATIONS.md`; session-security guidance and `docs/handoffs/idle-session-20261119/`.
+Acceptance: fail closed on expired/invalid clocks before activity; retire old timer/session generations;
+synchronously revoke protected key operations at expiry; preserve sole-copy keys for the existing encrypted
+backup/recovery path; qualify full/lean lifecycle behavior; independently review and integrate into the successor candidate.
+No wallet encryption/KDF redesign, Spec 18 feature work, contract/analyzer remediation, network-isolation
+redesign, dependency upgrade, deployment, release, force push or protection bypass. Other source branches
+remain read-only; #238 and its recovery/privacy follow-ups continue independently outside this focused port.
+Initial defects and exact acceptance evidence are tracked in the task handoff directory.
+
+Provenance: the idle-only delta is ported from local `b2fb5f20455ca2823739f7a29ed784ec94e049c2`,
+preserved remotely as `7e6089e2e40a2a7daf93961eddef17d3fe8501fd` on `chatgpt/ghostpay-idle-lifecycle-20261119`.
+The broader #238 tree and its unrelated worker claims are not imported; this combined target requires fresh qualification.
+
+
+### Idle recovery live-guidance follow-up — 2026-11-20
+
+Worker/branch: `/root/idle_completion_r2`, `integration/ghostpay-idle-session-20261120-r2`. Qualified product checkpoint: `1ca7105e050f7d76aee18fe3efee3cd02cd72cb4`.
+Additional owned path: only the two key-loss/retained-key rows in `docs/guides/troubleshooting-by-symptom.md`, plus this additive record.
+Acceptance: resolve independent review finding IDLE-R2-DOC-01 by matching the already-recovered user troubleshooting guidance: a download requires verification before it counts as a surviving copy; idle-retained keys remain suspended for encrypted recovery until normal import/unlock. Preserve every application/test/configuration byte and request source-only review of the narrow documentation diff. Coordinator authorized this follow-up after runtime qualification.
+
+Status at source freeze: product `1ca7105e050f7d76aee18fe3efee3cd02cd72cb4` passed fresh independent source review, 575 focused tests across 26 complete files, original full web typecheck and typed lint, secret scan and whitespace checks. The coordinator approved the two-row guidance correction at `2605e1bf`, with its relative session-security link corrected in this documentation checkpoint. Application, test and configuration bytes remain frozen at the reviewed product. Complete original web coverage/no-coverage and lean build qualification run next on the final source tree; later evidence belongs on a separate evidence branch. Hosted browser/security/Pages promotion gates remain open. Source-pinned local evidence: `docs/consolidation/idle-session-r2-20261120/`.
+
+
+## Receipt archive identity recovery R2 — 2026-11-20
+
+Worker: `/root/receipt_identity_completion_r2`; coordinator owns publication; independent review: `/root/backup_independent_review_r2`.
+Branch: `fix/ghostpay-receipt-archive-identity-20261120-r2`; base PR #333 `3172a93ceb8fce5a4343a93b453dcc0e68f09d87`.
+Immutable donor: PR #332 `71632fa389ae93824b2f42d265278a9bd0f6de59`, original runtime `8e8dbedec71106b4417eada0579aee1d342fa449`; preserve its source branch/ownership.
+Owned paths: this additive claim, `apps/web/src/components/ReceiptPanel.tsx`, new `ReceiptPanel.archive.regeneration.test.tsx` and `ReceiptPanel.archive.rejection.test.tsx`, source-pinned receipt handoff/evidence.
+Acceptance: completed, delayed-success and delayed-rejection archive outcomes for A must not mark or report for distinct signed B; retain immutable pending writes and serialize within a mounted panel. Preserve every existing receipt/print test and all four newer print-target hunks. No signature/archive format, protocol, dependency, config, threshold, authority, fee, contract, relayer or deployment changes.
+Status: completed locally on qualified source `a656c3e5dbc385a892e3efc9bd12389b214051b8`; RED 10 passing controls/3 expected failures, final 57/57 compatibility cases, original web type/lint/lean build/secret/whitespace gates passed. Independent runtime and test-correction reviews approved. Initial lint failure is retained; no assertions or rules weakened. Handoff: `docs/handoffs/RECEIPT_ARCHIVE_IDENTITY_R2_20261120.md`; evidence: `docs/consolidation/receipt-identity-r2-20261120/`. Root owns publication and required hosted/browser/full-web gates; no main/shared-ref mutation.
+
+
+## Request-file passphrase completion synchronization — 2026-11-20 continuation R3
+
+Worker: `/root/r3_feature_completion`; root owns independent review, publication
+and integration. Branch: `fix/ghostpay-request-file-async-20261120-r3`.
+Exact base: PR #335 `e31a090501b3f5e77afcee812323e6f69e1fd565`.
+Owned paths: `apps/web/src/views/Pay.requestFile.test.tsx`, this additive claim,
+and `docs/consolidation/request-file-async-r3-20261120/**`.
+Acceptance: qualify and repair only the passphrase test's asynchronous completion
+observation after hosted job `136548344602` on PR #333 exhausted its 15-second
+DOM query while real scrypt was still opening the invoice. Observe the promise
+returned by the actual single submitted `openFragment` call, retaining the real
+KDF, all original assertions, the 15-second DOM query and 60-second configured
+test bound. Preserve the original hosted failure and both lighter local controls;
+no reproduced product defect is claimed. Add no extra decryption, precomputed
+result, retry, sleep, dependency, timeout, coverage, product or workflow change.
+Keep #333 backup ownership and #335 receipt identity/printing behavior intact.
+Run the complete request-file and relevant Pay compatibility tests, original web
+typecheck/lint/build, and record source/dependency provenance and limitations.
+No local browser/socket attempts, remote mutation, live transaction or deployment.
+Status: claim recorded before test changes; source confirmation granted by root.
+
+Status update: bounded test-only implementation `9ca941305028fca0e68f86ca7e3ebe2becee724d`
+passed 163/163 complete Pay compatibility cases, original web typecheck/lint and
+lean build/postbuild. The original hosted failure, passing unmodified local
+controls, focused-coverage threshold failures and first killed lint attempt are
+preserved in `docs/consolidation/request-file-async-r3-20261120/`. Both focused
+coverage selections pass 17 behavioral cases but retain exit 1 at the unchanged
+global thresholds; no full-web coverage pass is claimed. Root owns independent
+review, exact published-source hosted/browser qualification and integration.
+
+## TRON range completeness recovery — 2026-11-20 continuation R2
+
+- Worker: `/root/branch_recovery_r2`; coordinator: `994a0d214fb9-root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`; exact base: `87c3bf5a59f4d443c9e5cf81368162554a5315c3` (PR #321, itself based on main `aa3df1cb37274fae73af0ca957183c15c51b62d3`).
+- Owned product paths: `packages/tron-adapter/src/rpc.ts` limited to `getBlockRange`; `packages/tron-adapter/src/scan.test.ts`; `apps/web/src/features/tron/fixtures.testutil.ts`; `apps/web/src/features/tron/chain.hardening.test.ts`. Owned evidence: `docs/consolidation/continuation-r2-20261120/` and this additive claim.
+- Acceptance: a requested block range must contain every requested height in order before scanner results or account/memo lookups proceed. Missing first, middle, last, or all blocks must fail with the existing typed invalid-response error. Preserve valid complete ranges, native/TRC-20 scanning, cancellation checks from #321, current RPC privacy isolation, parser bounds and original assertions.
+- Provenance: selectively recover missing source from PR #271 head `429a4de80b9ec53177b17d89d18ce8ec91a08814`, retaining original completeness contribution `22af2074a086d9957a18e310ef8572b28d1facd0` and fixture/regression correction `146e52481733fec5fc95580eb9d2d41a01a05df0`.
+- Ownership reconciliation: #271/#250 and broad #278/#262/#264 remain preserved donors. Root explicitly assigned this isolated recovery after current source/PR inspection. No existing donor branch is mutated. #321 owns `scan.ts` and its new cancellation test; those files remain unchanged. Other workers own retention and current CI triage. Root owns publication, shared refs, merge decisions and coordination metadata.
+- Sequence: save full live branch census and this claim; commit recovered tests/fixture before runtime; execute controlled RED checkpoint through coordinator scheduling; restore only the missing range check; run applicable qualification and independent review. No dependency installation/copy or broad workflow rerun is part of this worker's initial scope.
+- Evidence at claim: #271 has 36 successful hosted checks, three deployment-only skips and one beta failure during browser OS-package installation (Ubuntu mirror connection/resource failures, apt exit100). No beta assertions ran. Its prior successful source tests do not qualify this new composition. #321 current checks remain incomplete.
+
+
+## TRON range completeness independent qualification — 2026-11-20
+
+- Worker: `/root/range_qualification_r2`; coordinator: `/root`.
+- Branch: `integration/ghostpay-tron-range-20261120-r2`. Frozen application/test input: `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272`, tree `46c186bfb4f7e15b384c9a0ba361790d8c7e6876`.
+- Owned changes: additive qualification status here and `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}` only. Product source and previous ownership records are immutable inputs.
+- Acceptance: read the independent source approval; verify the supplied RED evidence; rebuild matching libraries; execute original package coverage/typecheck/lint/build, all web TRON test files, full web TypeScript/typed lint, and the full-profile production build with original postbuild scan. Record exact commands, source, dependency reuse, results, limits and hashes. Preserve every original threshold and assertion.
+- State at claim: source review approved by `/root/ci_triage_r2`; original library build is running in a separate clean detached qualification worktree. No GREEN or complete qualification result is asserted by this claim.
+- Boundaries: no source/dependency/workflow changes, browser attempt, live RPC/funds, deployment, remote publication or shared-ref/lease mutation. Root owns publication and promotion.
+
+
+Qualification completion: application/test source `bfbbdab5b9de8cd0b8b476dfb4c98b1613f9c272` passed all eleven recorded gates once. Package coverage: 107/107; web TRON selection: 50/50; zero skips. Full web typecheck/lint and full-profile production build/postbuild scan passed. Independent source approval preceded GREEN. Exact commands, RED evidence, raw output bytes/hashes, dependency/cache provenance and all 19 build-artifact hashes are preserved in `docs/consolidation/continuation-r2-20261120/TRON_RANGE_QUALIFICATION.{md,json}`. Source remains unchanged; only documentation follows the qualified checkpoint. Hosted/browser/full-web-suite boundaries remain open. Worker processes stopped and heavy slot released; root owns publication and promotion.
+
+---
+
+# Isolated idle and scan qualification checkpoint — 2026-11-20 Pacific
+
+Worker: `fc3db078ca12-root-r2`; source reviewer `/root/r2_idle_composition_review`; execution reviewer `/root/r2_ci_review`; wallet-test author and benchmark diagnostic reviewer `/root/r2_privacy_qualification`.
+Owned branch: `integration/ghostpay-idle-scan-candidate-20261121-fc3db`.
+Tested local source: `8f75770d5b3a935eddfddfb215f86bceb9e874e8`; public source checkpoint: `418054d5ca041973d31d514406ee4c6157ca919f`; identical complete tree: `130f42e633929e5d2c630ac9741f62d7fe9764e4`.
+Source review: all original donor histories and 4,202 pre-existing nonregistry entries preserved; the only added product test is the four-case final-account regression file. Complete mapped publication trees and ordered parents were fetched and verified. This qualification addendum changes documentation only.
+Executed: wallet focused tests 4/4; full web coverage 3,181 passed / 13 existing-rule skips; metadata-hardening 118/118; TRON adapter 107/107; original typed lint, full/lean TypeScript builds and bundle scans; original repository secret scan. All original coverage thresholds remain intact. Focused and full web selections overlap and must not be summed.
+Unresolved: original separate no-coverage gate finished two passed / one failed at the cryptographic cost comparison; native Chromium failed during startup before page assertions, with 115 cases not run. Combined hosted CI and full/lean browser acceptance remain required. No local whole-gate or release pass is claimed.
+Evidence: `docs/consolidation/idle-scan-candidate-20261121-fc3db/REPORT.md` and adjacent composition, publication, execution and lossless log artifacts retain both setup failures and final outcomes. Earlier donor/author handoffs remain historical records.
+State: source and evidence prepared for isolated draft review. Shared integration/main remain outside this worker's ownership while generation 11 is held by `994a0d214fb9-root-r3`; no lock takeover, shared-target promotion, manual workflow dispatch, deployment or funds operation was performed.
