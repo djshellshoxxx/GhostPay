@@ -1,0 +1,13 @@
+{
+  "baseline": "d03600ca87c7156d4acd1ff78bef6e92c20d9ea4",
+  "corrected_source_head": "5c0b698a16a9b3303357a90b4e80d674b8da3c0b",
+  "only_changed_product_path": "packages/hygiene/src/verify.evidence-boundary.test.ts",
+  "baseline_test_sha256": "189ac7968b426d1c636c140e820e2d809451d9e51e2b6ef3c6fef43667498149",
+  "corrected_test_sha256": "34750ee58486c1694733bb7977380d97b0c4cf0390b85a4fd9df4d717115af42",
+  "allowed_edits_exhaustively_checked": true,
+  "test_case_names_and_assertions_unchanged": true,
+  "unchanged_other_tracked_hygiene_files": 24,
+  "package_build_config_excludes_changed_test": true,
+  "new_runtime_tests_added": false,
+  "original_build_reuse": "Original exact-baseline build by hygiene_qualification is applicable to unchanged production inputs, not claimed as a new execution on this branch."
+}

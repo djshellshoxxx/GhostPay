@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "-w",
+      "@ghostpay/hygiene"
+    ],
+    "cwd": "/workspace/scratch/9a4ab6c3d117/GhostPay-hygiene-lint",
+    "source_head": "5c0b698a16a9b3303357a90b4e80d674b8da3c0b",
+    "uncommitted_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "started_at": "2026-11-21T00:02:55.893999+00:00",
+    "completed_at": "2026-11-21T00:02:58.846741+00:00",
+    "duration_seconds": 2.953,
+    "exit_code": 0,
+    "environment_overrides": {
+      "NODE_OPTIONS": "--max-old-space-size=256"
+    },
+    "log_sha256": "2806d567c3286f3d4f627dc9bb234fc5f4ec5ccfa9329d9aa7c57458fc40566b"
+  },
+  "stdout_stderr_bytes": 220,
+  "stdout_stderr_encoding": "base64",
+  "stdout_stderr_base64": "bnBtIHdhcm4gVW5rbm93biBlbnYgY29uZmlnICJodHRwLXByb3h5Ii4gVGhpcyB3aWxsIHN0b3Agd29ya2luZyBpbiB0aGUgbmV4dCBtYWpvciB2ZXJzaW9uIG9mIG5wbS4gU2VlIGBucG0gaGVscCBucG1yY2AgZm9yIHN1cHBvcnRlZCBjb25maWcgb3B0aW9ucy4KCj4gQGdob3N0cGF5L2h5Z2llbmVAMC4xLjAgdHlwZWNoZWNrCj4gdHNjIC1wIHRzY29uZmlnLmpzb24gLS1ub0VtaXQKCg==",
+  "stdout_stderr_utf8": "npm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n\n> @ghostpay/hygiene@0.1.0 typecheck\n> tsc -p tsconfig.json --noEmit\n\n"
+}
