@@ -1,0 +1,165 @@
+{
+  "base_main_sha": "aec179910c39081d820396409ff3139ff2264132",
+  "page": 1,
+  "page_size": 15,
+  "cursor_in": null,
+  "cursor_out": "MTU",
+  "method": "GitHub named-ref compare; head SHA and semantic diff review needed before integration. Compare may truncate at 300 changed files.",
+  "branches": [
+    {
+      "ref": "ai/agent-harness-20261113",
+      "ahead": 0,
+      "behind": 1633,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "audit/bugcheck-core-latest-20261120",
+      "ahead": 1,
+      "behind": 74,
+      "status": "diverged",
+      "files_count": 67,
+      "truncated": false,
+      "non_doc_files": 0
+    },
+    {
+      "ref": "audit/f03-browser-qualification-20261120",
+      "ahead": 11,
+      "behind": 74,
+      "status": "diverged",
+      "files_count": 107,
+      "truncated": false,
+      "non_doc_files": 20
+    },
+    {
+      "ref": "audit/ghostpay-blue-team-20261119",
+      "ahead": 2,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 77,
+      "truncated": false,
+      "non_doc_files": 0
+    },
+    {
+      "ref": "audit/ghostpay-complete-claim-reconciliation-20261120",
+      "ahead": 1,
+      "behind": 0,
+      "status": "ahead",
+      "files_count": 31,
+      "truncated": false,
+      "non_doc_files": 2
+    },
+    {
+      "ref": "audit/ghostpay-core-latest-security-20261119",
+      "ahead": 1,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 1,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": [
+        "docs/security/audits/2026-11-19-core-latest/README.md"
+      ]
+    },
+    {
+      "ref": "audit/ghostpay-current-census-20261120-r2",
+      "ahead": 0,
+      "behind": 16,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "audit/ghostpay-qa-stress-20261119",
+      "ahead": 1,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 27,
+      "truncated": false,
+      "non_doc_files": 0
+    },
+    {
+      "ref": "audit/zero-cool-core-20261119",
+      "ahead": 3,
+      "behind": 81,
+      "status": "diverged",
+      "files_count": 59,
+      "truncated": false,
+      "non_doc_files": 0
+    },
+    {
+      "ref": "automation/api-funded-ghostpay-cloud-20261103",
+      "ahead": 0,
+      "behind": 1647,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/ghostpay-20261120-embed-popup-noopener-r1",
+      "ahead": 3,
+      "behind": 42,
+      "status": "diverged",
+      "files_count": 3,
+      "truncated": false,
+      "non_doc_files": 2,
+      "paths": [
+        "apps/web/public/ghostpay-embed-v2.js",
+        "apps/web/src/lib/embedPopup.noopener.test.ts",
+        "docs/handoffs/EMBED_NOOPENER_POPUP_20261120.md"
+      ]
+    },
+    {
+      "ref": "automation/ghostpay-integration-lock",
+      "ahead": 22,
+      "behind": 118,
+      "status": "diverged",
+      "files_count": 300,
+      "truncated": true,
+      "non_doc_files": 278
+    },
+    {
+      "ref": "automation/ghostpay-parallel-four-agents-20261103",
+      "ahead": 6,
+      "behind": 1645,
+      "status": "diverged",
+      "files_count": 3,
+      "truncated": false,
+      "non_doc_files": 1,
+      "paths": [
+        ".github/workflows/ghostpay-parallel-agents.yml",
+        "docs/handoffs/GHOSTPAY_PARALLEL_API_QA_2026-11-03.md",
+        "scripts/tests/ghostpay-parallel-workflow.test.mjs"
+      ]
+    },
+    {
+      "ref": "automation/ghostpay-parallel-review-wave-20261103",
+      "ahead": 0,
+      "behind": 1642,
+      "status": "behind",
+      "files_count": 0,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": []
+    },
+    {
+      "ref": "automation/ghostpay-recurrent-backlog-20261103",
+      "ahead": 3,
+      "behind": 1645,
+      "status": "diverged",
+      "files_count": 1,
+      "truncated": false,
+      "non_doc_files": 0,
+      "paths": [
+        ".github/workflows/ghostpay-codex-cloud.yml"
+      ]
+    }
+  ]
+}

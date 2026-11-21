@@ -1,3 +1,13 @@
+# PolicyPay pending-edit test lint qualification — 2026-11-21 UTC
+
+Worker: single sequential ChatGPT continuation; no independent reviewer. Branch: `fix/ghostpay-policy-pendingedit-lint-20261121-r1` stacked only on PR #345 at `9a10d335d048b197e90d257a5322ff5d5260572d` (base `main` `aec179910c39081d820396409ff3139ff2264132`).
+Owned paths: additive `docs/ai/ACTIVE_WORK.md` claim, `apps/web/src/features/policy/PolicyPay.pendingEdit.test.tsx` mechanical test-mock correction, and `docs/handoffs/POLICY_PENDING_EDIT_LINT_20261121.md`. Do not edit parent PR or integration lock.
+Evidence: PR #345 CI run https://github.com/djshellshoxxx/GhostPay/actions/runs/44842199985, ts-lint job `136687978951`, fails only `@typescript-eslint/require-await` at `PolicyPay.pendingEdit.test.tsx:53` because `createRpc: async () => rpc` has no await. All other 22 listed CI jobs passed, but do not infer new-head qualification.
+Acceptance: replace the unnecessary async wrapper with a Promise-returning callback of identical asynchronous contract; retain all wallet/amount-change regression assertions and production source unchanged. Do not weaken ESLint/tests/CI, add dependencies, change network, deploy, merge or release. Verify focused test, lint, CI and independent review before integrating into #345.
+Overlap: parent PR #345 owns original file; this child is intentionally stacked on it, not a competing independent main PR. Integration lock generation 11 held by another coordinator; do not acquire/modify. Handoff with source-pinned exact SHAs required.
+
+---
+
 # GP-BUG-07 — policy review revocation during pending wallet send (2026-11-20)
 
 Worker: automated GhostPay continuation, one sequential engineer (not independently reviewed). Branch: `automation/20261120/bug/policy-review-revocation-r1`; exact base main `aec179910c39081d820396409ff3139ff2264132`.

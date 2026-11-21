@@ -50,7 +50,7 @@ it('revokes an in-flight reviewed policy payment when amount changes before wall
   }));
   const user = userEvent.setup();
   renderApp(makeServices({
-    createRpc: async () => rpc,
+    createRpc: () => Promise.resolve(rpc),
     discoverWallets: () => Promise.resolve([{ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: wallet }]),
   }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Policy accounts (experimental)' }));
