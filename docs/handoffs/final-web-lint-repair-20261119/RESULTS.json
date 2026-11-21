@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "source": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+  "tree": "477f8b25a744ba6ae9cd805776b234c1f27563f9",
+  "base": "75cc6149e2fd560f26725e806b24f859f999d647",
+  "branch": "repair/ghostpay-final-lint-20261119",
+  "publishedEquivalentSource": "c835d2028381be162a8cf1662a51c07500134a61",
+  "publishedTreeMatchesLocal": true,
+  "files": {
+    "apps/web/src/features/btc/scan.spentness-completion.test.ts": {
+      "gitBlob": "f79b1fdabd40576e76ce22d59ad7a2a9ff1f72d1",
+      "sha256": "661ffc0b3e6787b0b9c164bb9f44cfcc7ad2cfdcc6ddcc692c837ce8ff38467c"
+    },
+    "apps/web/src/lib/defaultServices.privacySelection.test.ts": {
+      "gitBlob": "f0b6da1a3eb205f758919e46cb007b775303ca7d",
+      "sha256": "d24aae95d8b97747ac7daa0ea3693991f18757e82520250e7c63f2c5efc36130"
+    },
+    "apps/web/src/lib/defaultServices.test.ts": {
+      "gitBlob": "3cda7fc01a8595a544248b5d48303a667cbd33b9",
+      "sha256": "78d5c93f179f0e7819ab2ae5f02521f2cac95c25688ed01d5a3fe17f8ac531cf"
+    },
+    "apps/web/src/lib/sweep.nativeReview.test.ts": {
+      "gitBlob": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+      "sha256": "7795d4bae6a20e6604fd6f7fd6e41bb4a42baca21d9976211278147daa56ab95"
+    },
+    "apps/web/src/lib/sweep.ts": {
+      "gitBlob": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+      "sha256": "783adf54a9956b3e1d12763797e869e1de893532970d8f8b6a7df1ae5cc696ee"
+    },
+    "apps/web/src/views/Settings.test.tsx": {
+      "gitBlob": "7bf77779c2128ca6782f79fce0cf0600e2419360",
+      "sha256": "5aa5c01df0d94d16108b7c917a8c07ca848eb86fee6c69394bf6b0718e7285a8"
+    }
+  },
+  "baseline": {
+    "exitCode": 1,
+    "errors": 6,
+    "warnings": 0,
+    "source": "75cc6149e2fd560f26725e806b24f859f999d647",
+    "elapsedSeconds": 93.20122417499806,
+    "maxChildRssKiB": 1690568
+  },
+  "focusedTests": {
+    "files": 10,
+    "passed": 367,
+    "failed": 0,
+    "skipped": 0,
+    "coverageRequested": false
+  },
+  "checks": [
+    {
+      "name": "focused-original-tests",
+      "head": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+      "tree": "477f8b25a744ba6ae9cd805776b234c1f27563f9",
+      "command": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/features/btc/scan.spentness-completion.test.ts",
+        "src/lib/defaultServices.privacySelection.test.ts",
+        "src/lib/defaultServices.test.ts",
+        "src/lib/sweep.nativeReview.test.ts",
+        "src/views/Settings.test.tsx",
+        "src/lib/sweep.test.ts",
+        "src/lib/sweep.reviewAuthority.test.ts",
+        "src/views/Sweep.nativeReview.test.tsx",
+        "src/views/Sweep.test.tsx",
+        "src/views/Sweep.quoteLifecycle.test.tsx",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/246ff268d20d/GhostPay-lint/apps/web",
+      "heapMiB": 512,
+      "startedAtUtc": "2026-11-19T13:20:44.571473+00:00",
+      "configurationRulesOrAssertionsChanged": false,
+      "exitCode": 0,
+      "signal": null,
+      "elapsedSeconds": 125.38531699699524,
+      "maxChildRssKiB": 339284,
+      "headAfter": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+      "dirtyAfter": "",
+      "logSha256": "227dcfa6ddf9974cef0a0c553147c1523a1323e3886eb96f241614c94bf8c983",
+      "finishedAtUtc": "2026-11-19T13:22:49.980317+00:00",
+      "passed": true
+    },
+    {
+      "name": "full-web-typecheck",
+      "head": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+      "tree": "477f8b25a744ba6ae9cd805776b234c1f27563f9",
+      "command": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/typescript/bin/tsc",
+        "-p",
+        "tsconfig.json",
+        "--noEmit"
+      ],
+      "cwd": "/workspace/scratch/246ff268d20d/GhostPay-lint/apps/web",
+      "heapMiB": 1536,
+      "startedAtUtc": "2026-11-19T13:22:50.007698+00:00",
+      "configurationRulesOrAssertionsChanged": false,
+      "exitCode": 0,
+      "signal": null,
+      "elapsedSeconds": 40.781368310999824,
+      "maxChildRssKiB": 1278064,
+      "headAfter": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+      "dirtyAfter": "",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finishedAtUtc": "2026-11-19T13:23:30.817252+00:00",
+      "passed": true
+    },
+    {
+      "name": "full-original-web-eslint",
+      "head": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+      "tree": "477f8b25a744ba6ae9cd805776b234c1f27563f9",
+      "command": [
+        "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+        "/workspace/scratch/246ff268d20d/GhostPay-lint/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "../../eslint.config.js",
+        "src",
+        "e2e"
+      ],
+      "cwd": "/workspace/scratch/246ff268d20d/GhostPay-lint/apps/web",
+      "heapMiB": 1536,
+      "startedAtUtc": "2026-11-19T13:23:30.839596+00:00",
+      "configurationRulesOrAssertionsChanged": false,
+      "exitCode": 0,
+      "signal": null,
+      "elapsedSeconds": 91.52729868499591,
+      "maxChildRssKiB": 1691380,
+      "headAfter": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+      "dirtyAfter": "",
+      "logSha256": "6b03b338302ecc2e88b75dd13830b06985544168f1a18c398ebfd5228326048c",
+      "finishedAtUtc": "2026-11-19T13:25:02.408934+00:00",
+      "passed": true
+    }
+  ],
+  "independentReview": {
+    "reviewer": "/root/provenance",
+    "commitPrefix": "f946c9c",
+    "receiptSha256": "2ca4a686276cfccc7321d41cd229309ffdcf05c6c3d71a7adb8df7ef1be43940",
+    "scope": "Source only; no independent runtime rerun claimed"
+  },
+  "limits": [
+    "Final integrated QR+lint source still needs its fresh required gates.",
+    "Focused tests are not the full coverage-enabled web suite.",
+    "No build, browser, artifact, deployment, testnet, external review or public release pass is implied."
+  ],
+  "recordedAtUtc": "2026-11-19T13:31:52.914269+00:00"
+}

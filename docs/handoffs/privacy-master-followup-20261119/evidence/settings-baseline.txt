@@ -1,0 +1,33 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./vite.config" without a file extension (vitest.privacy-local.config.ts:2:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/views/Settings.test.tsx (27 tests | 1 failed | 26 skipped) 538ms
+   ❯ Settings network profiles (TM14) (7)
+     × updates the saved-policy status after a cross-tab storage event without overwriting the unsaved form 535ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Settings.test.tsx > Settings network profiles (TM14) > updates the saved-policy status after a cross-tab storage event without overwriting the unsaved form
+AssertionError: expected 'direct' to be 'tor-browser' // Object.is equality
+
+Expected: "tor-browser"
+Received: "direct"
+
+ ❯ src/views/Settings.test.tsx:429:96
+    427|     expect(within(section()).getByText(/network profile settings are i…
+    428|     expect(within(section()).queryByText(/In effect now:/)).toBeNull();
+    429|     expect(within(section()).getByLabelText<HTMLSelectElement>(/Profil…
+       |                                                                                                ^
+    430|     expect(() => loadNetworkSelection()).toThrow(/invalid or unavailab…
+    431|     await user.click(within(section()).getByRole('button', { name: 'Sa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 skipped (27)
+   Start at  00:13:18
+   Duration  12.11s (transform 53%, import 25%, environment 18%, tests 5%)

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-19T13:26:09.285163+00:00",
+  "reviewer": "/root/provenance",
+  "source": "e8e2edecd0b989a90f5afb65622df4efefeebf93",
+  "source_tree": "477f8b25a744ba6ae9cd805776b234c1f27563f9",
+  "verdict": "APPROVED_SCOPED_SOURCE_ONLY",
+  "diff_sha256": "a4033dea14ac7d5227aaa8323c876b1a43629d5ec1775ed33a6349e4244ea107",
+  "files": {
+    "apps/web/src/features/btc/scan.spentness-completion.test.ts": "f79b1fdabd40576e76ce22d59ad7a2a9ff1f72d1",
+    "apps/web/src/lib/defaultServices.privacySelection.test.ts": "f0b6da1a3eb205f758919e46cb007b775303ca7d",
+    "apps/web/src/lib/defaultServices.test.ts": "3cda7fc01a8595a544248b5d48303a667cbd33b9",
+    "apps/web/src/lib/sweep.nativeReview.test.ts": "1a57ad6d116171cc64cab5293aa572a45d22daa2",
+    "apps/web/src/lib/sweep.ts": "2acd7e6fee3f508ef5b55608c8d90fb7684852dc",
+    "apps/web/src/views/Settings.test.tsx": "7bf77779c2128ca6782f79fce0cf0600e2419360"
+  },
+  "scope": "Six-file lint repair, 7 added and 6 removed lines; no independent runtime test execution.",
+  "observations": [
+    {
+      "path": "apps/web/src/features/btc/scan.spentness-completion.test.ts",
+      "finding": "AbortController.abort remains synchronous before returning a fulfilled Promise; both forms resolve true asynchronously to the consumer; existing rejection and one-call assertions unchanged."
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.privacySelection.test.ts; apps/web/src/lib/defaultServices.test.ts",
+      "finding": "Removing double casts changes only static typing. loadNetworkSelection actually takes Pick<Storage, getItem>; injected getItem still throws and assertions are unchanged."
+    },
+    {
+      "path": "apps/web/src/lib/sweep.nativeReview.test.ts",
+      "finding": "An explicit typeof string guard precedes JSON parsing. Valid JSON-RPC fixture behavior is unchanged, invalid request-body types fail earlier instead of being coerced. Existing grant/method/signature assertions remain."
+    },
+    {
+      "path": "apps/web/src/lib/sweep.ts",
+      "finding": "additionalFeeReserve is assigned from awaited sweepFeeReserve in both native and ERC-20 branches before every read. All earlier exits throw. Removing unused zero initializer preserves fee calculations, flow, guards and returned value."
+    },
+    {
+      "path": "apps/web/src/views/Settings.test.tsx",
+      "finding": "Testing Library generic parameter replaces equivalent compile-time assertion. Element lookup, value read and expected secret fixture assertion are unchanged."
+    }
+  ],
+  "limits": [
+    "Source review does not establish whole-workspace lint/typecheck/runtime success.",
+    "Other workers execute the original gates independently; their outcomes are not recast as reviewer executions.",
+    "No rule/config/threshold/security assertion changes were included."
+  ]
+}

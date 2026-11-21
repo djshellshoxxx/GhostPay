@@ -1,0 +1,53 @@
+$ npm run release:repro -- --head
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=1536", "pages_node_cap": false}
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> ghostpay@0.1.0 release:repro
+> bash scripts/repro-check.sh --head
+
+Note: switching to '9bad95e5cc0ee73f5adb8d2c587161074b21e080'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+== build in /workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc/a-first/ghostpay
+Note: switching to '9bad95e5cc0ee73f5adb8d2c587161074b21e080'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+== build in /workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc/b-second/nested/GhostPay-repro
+SAME  ghostpay-web-qualification-9bad95e5.tar.gz  3ad9d94c09e5dfedecf2fe5be5b5748b83e3d0df5cd9b396230f603d41eb4cc1
+SAME  sbom.cdx.json  e2165196882b5150466731805c38c7fb93d088d1344aebba11d880831bee107d
+REPRODUCIBLE: both builds are byte-identical.
+kept /workspace/scratch/4fa14be12559/analysis-build/tmp/ghostpay-repro.tvEPwc
+
+EXIT_CODE=0
+SECONDS=206.123

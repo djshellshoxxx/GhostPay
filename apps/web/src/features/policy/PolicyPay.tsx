@@ -63,7 +63,8 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
     setMsg(undefined);
     setStatus(undefined);
     try {
-      const rpc = await app.getRpc(props.ctx.chain.chainId);
+      props.ctx.assertDeploymentCurrent();
+      const rpc = await app.getRpc(props.ctx.chain.chainId, { action: 'policy', ...(props.ctx.networkSignal === undefined ? {} : { signal: props.ctx.networkSignal }) });
       const res = await sendPolicyPayment(
         wallet,
         reviewed.prepared,
@@ -125,7 +126,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
             </div>
           )}
           {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
-          <WalletAttempts />
+          <WalletAttempts wallet={wallet} />
         </>
       )}
     </section>

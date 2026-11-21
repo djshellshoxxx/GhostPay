@@ -1,0 +1,27 @@
+{
+  "name": "existing-application-export-and-expiry",
+  "application_source_commit": "81bfa7bddaebdaaf059ad663fead05d59ec82cda",
+  "execution_head": "b326fe1b7e66fbd37f0a70308f0ecfea40754cc1",
+  "cwd": "apps/web",
+  "argv": [
+    "../../node_modules/.bin/vitest",
+    "run",
+    "src/lib/paymentKeyExport.test.ts",
+    "src/lib/paymentKeyExport.expiry.test.ts",
+    "--maxWorkers=1"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=256"
+  },
+  "started_utc": "2026-11-21T04:46:01.460684+00:00",
+  "elapsed_seconds": 7.731,
+  "exit_code": 0,
+  "test_blobs": {
+    "src/lib/paymentKeyExport.test.ts": "3fa9bd1d2ef909385738ef70f5b9c3f446f406fc",
+    "src/lib/paymentKeyExport.expiry.test.ts": "c08d77395d40d3f67b8afa58909b86ea57b992a6"
+  },
+  "output_bytes": 216,
+  "output_sha256": "c4b9d80124bdfdebf1856955e9f11c1cf5a194b3654ae424a87ec758d15eec26",
+  "output": "\n RUN  v5.1.0 /workspace/scratch/539818ee134f/GhostPay-export-recovery/apps/web\n\n\n Test Files  2 passed (2)\n      Tests  36 passed (36)\n   Start at  20:46:01\n   Duration  7.42s (tests 81%, import 15%, transform 4%)\n\n",
+  "scope": "Both complete existing test files. Original Vitest configuration; no coverage option, test-name filter, timeout or assertion change. Focused run is not full coverage qualification."
+}

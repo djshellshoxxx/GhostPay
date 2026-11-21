@@ -1,0 +1,60 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @ghostpay/ux-vault@0.1.0 test
+> vitest run --coverage --maxWorkers=1
+
+(node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/a264c19c9f94/GhostPay/packages/ux-vault
+      Coverage enabled with v8
+
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:90) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:102) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:114) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:126) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:138) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:150) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:162) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  10 passed (10)
+      Tests  353 passed (353)
+   Start at  15:04:34
+   Duration  170.06s (tests 99%, import 1%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |      97 |    94.24 |    99.5 |   98.89 |                   
+ confusables.ts    |     100 |    98.14 |     100 |     100 | 168               
+ contacts.ts       |     100 |    98.68 |     100 |     100 | 213               
+ ...re-portable.ts |   97.73 |    94.33 |     100 |   98.73 | 389,437           
+ ...on-portable.ts |   93.35 |    91.36 |   99.18 |   96.88 | ...1073,1093-1095 
+ schema.ts         |     100 |    96.29 |     100 |     100 | 107,111           
+ ...rt-portable.ts |   99.14 |    98.22 |   98.83 |   99.71 | 161               
+ ...ve-portable.ts |   88.48 |    82.35 |     100 |      99 | 247               
+ vault.ts          |     100 |    95.08 |     100 |     100 | 104,207,230       
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 97% ( 2005/2067 )
+Branches     : 94.24% ( 1391/1476 )
+Functions    : 99.5% ( 402/404 )
+Lines        : 98.89% ( 1606/1624 )
+================================================================================

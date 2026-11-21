@@ -54,12 +54,12 @@ describe('TronView and the app lock', () => {
     const { user, keys } = await ready();
     await user.type(screen.getByLabelText(/First block/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
-    await screen.findByText(/1 funded payment/);
+    await screen.findByText(/1 payment\(s\) found/);
     expect(wiped(keys.spendingSecret) || wiped(keys.viewingSecret)).toBe(false);
 
     act(() => { notifyAppLock('idle'); });
     expect(wiped(keys.spendingSecret) && wiped(keys.viewingSecret)).toBe(true);
-    expect(screen.queryByText(/funded payment/)).toBeNull();
+    expect(screen.queryByText(/payment\(s\) found/)).toBeNull();
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
     expect(screen.getByText(/The app locked, so this wallet's keys were wiped from memory/)).toBeTruthy();
 

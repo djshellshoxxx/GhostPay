@@ -30,7 +30,7 @@ describe('archive round trip', () => {
     it(`exports and re-imports ${String(count)} tag(s) into a fresh profile`, async () => {
       const src = await vaultWith(count);
       const out = await exportArchive(src, key(7), PASS, { N, now: () => Date.UTC(2026, 0, 5) });
-      expect(out.filename).toBe('ghostpay-tags-20260105.gpa');
+      expect(out.filename).toBe('ghostpay-tags.gpa');
       expect(out.recordCount).toBe(count);
       expect(out.sha256).toMatch(/^[0-9a-f]{64}$/);
       const dst = new TagVault(new MemoryTagStore());

@@ -1,0 +1,88 @@
+{
+  "feature": "v1-01-masking",
+  "generation": 2,
+  "base": "1110d51fb512803353b3361e8f76ec5eefa177e9",
+  "tested_source": "ea6759e50655e9a4a469bb59bd0cb05ca2515bf6",
+  "tested_tree": "1edc0e83c0edc74516af6a4e327590725d39f306",
+  "claim": "76c32fceada06c80c6c79979545d02d5ba7a5163",
+  "storage_red": {
+    "source": "253cef90",
+    "failed": 4,
+    "filtered": 8,
+    "exit": 1
+  },
+  "storage_repair": "9b443f7b",
+  "pay_red": {
+    "source": "6e2c839c",
+    "failed": 2,
+    "passed": 1,
+    "filtered": 0,
+    "exit": 1
+  },
+  "pay_repair": "ea6759e50655e9a4a469bb59bd0cb05ca2515bf6",
+  "initial_independent": {
+    "source": "76c32fce",
+    "passed": 39,
+    "files": 3,
+    "filtered": 0,
+    "exit": 0
+  },
+  "storage_green": {
+    "source": "9b443f7b",
+    "passed": 49,
+    "files": 4,
+    "filtered": 0,
+    "exit": 0
+  },
+  "final": {
+    "passed": 66,
+    "files": 8,
+    "filtered": 0,
+    "exit": 0,
+    "seconds": 17.85
+  },
+  "typed_lint_attempt": {
+    "source": "9b443f7b",
+    "files": [
+      "apps/web/src/AppShell.tsx",
+      "apps/web/src/AppShell.privacy.test.tsx"
+    ],
+    "exit": 137,
+    "result": "Shell reported killed; empty child output. No lint pass is claimed."
+  },
+  "checks": {
+    "secret_scan": "passed",
+    "feature_diff_check": "passed"
+  },
+  "qualification": "Focused jsdom/module acceptance only. Full type/lint/coverage/build/browser/hosted gates remain open.",
+  "logs": {
+    "focused": {
+      "sha256": "267bbe6fd2411fe5d3c83ca5814f32bd27d699c7425d54d9841a3916ab1a9cbe",
+      "bytes": 424
+    },
+    "red": {
+      "sha256": "c94ad6ae0b16db7ba905c085d43cae8a0a99e344a6d8db478f177d8bca6beaa8",
+      "bytes": 1940
+    },
+    "green": {
+      "sha256": "5632ae31d35d2880bc63b1e8ce37f856e5a315979b82dde0abbfda2e529a6bdf",
+      "bytes": 425
+    },
+    "pay-red": {
+      "sha256": "3b0864f3bf3e92ea549983ba88197cb19355ffb47f1c67fa17d4cbadbc95c132",
+      "bytes": 40213
+    },
+    "final": {
+      "sha256": "762f03e6c50983c982b5e607342063c0c6e341826f57b6f741269f75623093c6",
+      "bytes": 425
+    },
+    "lint": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "secrets": {
+      "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "bytes": 50
+    }
+  }
+}

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
+import { useWalletDisclosure } from '../../components/WalletDisclosure';
+import { useWalletPrivacy } from '../../lib/useWalletPrivacy';
 import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -52,6 +54,7 @@ function CallPreview(props: { readonly call: RegistryCall; readonly chainName: s
 export function RegistryView(): ReactNode {
   const app = useApp();
   const services = useServices();
+  const disclosure = useWalletDisclosure();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const tRef = useRef(t);
@@ -70,6 +73,7 @@ export function RegistryView(): ReactNode {
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall; readonly name?: string } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
   const lookupVersion = useRef(0);
+  const operation = useRef(new AbortController());
   useEffect(() => {
     lookupVersion.current += 1;
     setFound(undefined);
@@ -94,18 +98,48 @@ export function RegistryView(): ReactNode {
   latest.current = { chainId, consent, metaAddress, wallet, reviewed, reviewAction, session: app.session, settings: app.settings, who };
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => { mounted.current = false; operation.current.abort(); };
   }, []);
+  useEffect(() => {
+    operation.current.abort();
+    operation.current = new AbortController();
+  }, [chainId, app.session, app.settings, consent, who]);
+  useEffect(() => services.network?.subscribe(() => {
+    operation.current.abort();
+    operation.current = new AbortController();
+    lookupVersion.current++;
+    setReviewed(undefined);
+    setReviewAction(undefined);
+    setFound(undefined);
+    setLook(undefined);
+  }), [services.network]);
   useEffect(() => { setConsent(false); }, [chainId, app.session]);
+  const walletPrivacy = useWalletPrivacy(wallet, () => {
+    operation.current.abort();
+    operation.current = new AbortController();
+    lookupVersion.current++;
+    setWallet(undefined);
+    setWallets(undefined);
+    setReviewed(undefined);
+    setReviewAction(undefined);
+    setPub(undefined);
+    setFound(undefined);
+    setLook(undefined);
+    setScannedMeta(undefined);
+    setScanError(undefined);
+  });
   const captureAuthority = (): (() => void) => {
     const expected = latest.current;
+    const networkRevision = services.network?.getRevision() ?? 0;
     const guardSession = captureSessionGuard();
+    const privacyScope = walletPrivacy.capture();
     return () => {
       guardSession();
+      privacyScope.assertCurrent();
       const current = latest.current;
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
-          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
+          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings || (services.network?.getRevision() ?? 0) !== networkRevision) {
         throw new UserFacingError({ key: 'registry.sessionChanged' });
       }
     };
@@ -113,7 +147,7 @@ export function RegistryView(): ReactNode {
 
   const rpcFor = async (): Promise<NonNullable<Awaited<ReturnType<typeof app.getRpc>>>> => {
     if (chainId === undefined) throw new Error('chain');
-    const rpc = await app.getRpc(chainId);
+    const rpc = await app.getRpc(chainId, { action: 'registry-read', signal: operation.current.signal });
     if (rpc === undefined) throw new Error('rpc');
     return rpc;
   };
@@ -122,16 +156,23 @@ export function RegistryView(): ReactNode {
 
   const onDiscover = (): void => {
     setPub(undefined);
-    void services.discoverWallets().then(setWallets, () => {
+    const scope = walletPrivacy.begin();
+    void services.discoverWallets().then((foundWallets) => {
+      try { scope.assertCurrent(); } catch { return; }
+      setWallets(foundWallets);
+    }, () => {
+      try { scope.assertCurrent(); } catch { return; }
       setWallets([]);
     });
   };
 
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
-    const guard = captureAuthority();
+    const privacyScope = walletPrivacy.begin();
+    const authority = captureAuthority();
+    const guard = (): void => { privacyScope.assertCurrent(); authority(); };
     setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
-    connectWallet(w, chainId).then(
+    connectWallet(w, chainId, guard, AbortSignal.any([privacyScope.signal, operation.current.signal]), { disclosure }).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);
@@ -224,7 +265,8 @@ export function RegistryView(): ReactNode {
     if (busyRef.current || who.trim() === '') return;
     const expected = latest.current;
     const version = lookupVersion.current;
-    const isCurrent = (): boolean => mounted.current && lookupVersion.current === version && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings;
+    const networkRevision = services.network?.getRevision() ?? 0;
+    const isCurrent = (): boolean => mounted.current && lookupVersion.current === version && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings && (services.network?.getRevision() ?? 0) === networkRevision;
     busyRef.current = true;
     setFound(undefined);
     setLook(undefined);
@@ -253,7 +295,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">{t('registry.title')}</h2>
-      <WalletAttempts />
+      <WalletAttempts wallet={wallet} />
       <p className="hint">
         {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>

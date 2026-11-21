@@ -1,0 +1,165 @@
+{
+  "feature": "v1-03-wallet-lock",
+  "generation": 2,
+  "base": "2f2da8316ee025151e7f275eba5d9b93944a070c",
+  "source": "a431845b9f8a4daa1759893132c4452bf50ce618",
+  "tree": "698a00feb0a84fbd045f65956de40758ea2a94e3",
+  "runtime": "99b2c1668f126603b198adedf9adf3b8d8f2463c",
+  "runtime_tree": "f2c5a08ec1d5574b15ee74d8be059adb911376b5",
+  "runs": [
+    {
+      "id": "original-first",
+      "source": "c3b4c16b4549ef960d77806674c8c1805956acf0",
+      "files": 8,
+      "passed": 117,
+      "failed": 8,
+      "skipped": 0,
+      "exit": 1,
+      "seconds": 65.51,
+      "selection": [
+        "src/views/Pay.test.tsx",
+        "src/features/registry/RegistryView.test.tsx",
+        "src/features/registry/RegistryView.network.test.tsx",
+        "src/features/policy/PolicyView.test.tsx",
+        "src/features/policy/PolicyView.more.test.tsx",
+        "src/features/policy/PolicyView.guard.test.tsx",
+        "src/features/policy/PolicyView.scope.test.tsx",
+        "src/features/policy/PolicyView.network.test.tsx"
+      ],
+      "log_sha256": "961127bb2cbdf8bda8e543fa8424d8c2a18a926cf22a9c82ed7283c9d0f2ebb9",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/Pay.test.tsx src/features/registry/RegistryView.test.tsx src/features/registry/RegistryView.network.test.tsx src/features/policy/PolicyView.test.tsx src/features/policy/PolicyView.more.test.tsx src/features/policy/PolicyView.guard.test.tsx src/features/policy/PolicyView.scope.test.tsx src/features/policy/PolicyView.network.test.tsx --coverage=false --maxWorkers=1"
+    },
+    {
+      "id": "policy-check",
+      "source": "59cb2ce2ea6bbe283a533fe08c48e04cc2735554",
+      "files": 2,
+      "passed": 21,
+      "failed": 1,
+      "skipped": 0,
+      "exit": 1,
+      "seconds": 12.79,
+      "selection": [
+        "src/features/policy/PolicyView.guard.test.tsx",
+        "src/features/policy/PolicyView.scope.test.tsx"
+      ],
+      "log_sha256": "7237b4d7612c996316a91a50772102b521a204b150fab4b86f5fa0d9a0f377df",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/features/policy/PolicyView.guard.test.tsx src/features/policy/PolicyView.scope.test.tsx --coverage=false --maxWorkers=1"
+    },
+    {
+      "id": "lifetimes",
+      "source": "a3150be99008c2c6f1bb18e0eefbaf961a1ededa",
+      "files": 1,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0,
+      "seconds": 5.34,
+      "selection": [
+        "src/views/WalletPrivacy.lifecycle.test.tsx"
+      ],
+      "log_sha256": "7c9cdf499f50ce8dd8673488ad2439bf0b9baf0fb52bd718faadd5e0d90a054a",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/WalletPrivacy.lifecycle.test.tsx --coverage=false --maxWorkers=1"
+    },
+    {
+      "id": "scan-guard",
+      "source": "99b2c1668f126603b198adedf9adf3b8d8f2463c",
+      "files": 2,
+      "passed": 36,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0,
+      "seconds": 8.55,
+      "selection": [
+        "src/features/policy/PolicyView.scope.test.tsx",
+        "src/features/policy/policy.logic.test.ts"
+      ],
+      "log_sha256": "b4f997ffbd3a9d07d21db7da558b134ab9bdecfa707f2860e15b4193bceb6390",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/features/policy/PolicyView.scope.test.tsx src/features/policy/policy.logic.test.ts --coverage=false --maxWorkers=1"
+    },
+    {
+      "id": "final",
+      "source": "99b2c1668f126603b198adedf9adf3b8d8f2463c",
+      "files_selected": 14,
+      "files_completed": 12,
+      "passed": 203,
+      "expected_test_count": 219,
+      "unhandled_worker_errors": 2,
+      "exit": 1,
+      "seconds": 93.51,
+      "killed_files": [
+        "src/features/policy/PolicyView.guard.test.tsx",
+        "src/features/registry/RegistryView.test.tsx"
+      ],
+      "selection": [
+        "src/views/Pay.test.tsx",
+        "src/features/registry/RegistryView.test.tsx",
+        "src/features/registry/RegistryView.network.test.tsx",
+        "src/features/policy/PolicyView.test.tsx",
+        "src/features/policy/PolicyView.more.test.tsx",
+        "src/features/policy/PolicyView.guard.test.tsx",
+        "src/features/policy/PolicyView.scope.test.tsx",
+        "src/features/policy/PolicyView.network.test.tsx",
+        "src/lib/wallet.lifecycle.test.ts",
+        "src/lib/useWalletPrivacy.test.tsx",
+        "src/views/WalletPrivacy.lifecycle.test.tsx",
+        "src/lib/wallet.test.ts",
+        "src/lib/walletJournal.test.ts",
+        "src/features/policy/policy.logic.test.ts"
+      ],
+      "log_sha256": "4052e68850c164f793cddff1fa737e60efd751a9a432d026076f6530d9fd0e68",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/Pay.test.tsx src/features/registry/RegistryView.test.tsx src/features/registry/RegistryView.network.test.tsx src/features/policy/PolicyView.test.tsx src/features/policy/PolicyView.more.test.tsx src/features/policy/PolicyView.guard.test.tsx src/features/policy/PolicyView.scope.test.tsx src/features/policy/PolicyView.network.test.tsx src/lib/wallet.lifecycle.test.ts src/lib/useWalletPrivacy.test.tsx src/views/WalletPrivacy.lifecycle.test.tsx src/lib/wallet.test.ts src/lib/walletJournal.test.ts src/features/policy/policy.logic.test.ts --coverage=false --maxWorkers=1"
+    },
+    {
+      "id": "type-fixture",
+      "source": "a431845b9f8a4daa1759893132c4452bf50ce618",
+      "files": 1,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0,
+      "seconds": 12.48,
+      "selection": [
+        "src/views/WalletPrivacy.lifecycle.test.tsx"
+      ],
+      "log_sha256": "112be97591c4c3dc843d9094a5efeff0e932e03f2b807f227cabf542878b6788",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/WalletPrivacy.lifecycle.test.tsx --coverage=false --maxWorkers=1"
+    },
+    {
+      "id": "resource-retry",
+      "source": "a431845b9f8a4daa1759893132c4452bf50ce618",
+      "files": 2,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0,
+      "seconds": 22.82,
+      "selection": [
+        "src/features/policy/PolicyView.guard.test.tsx",
+        "src/features/registry/RegistryView.test.tsx"
+      ],
+      "log_sha256": "8198f9c5eea1f38c97e5ca58b465446d9e796bb90e43b549f7871ee990efec4b",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/features/policy/PolicyView.guard.test.tsx src/features/registry/RegistryView.test.tsx --coverage=false --maxWorkers=1"
+    }
+  ],
+  "secret_scan": {
+    "exit": 0,
+    "sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+  },
+  "full_feature_diff_check": {
+    "command": "git diff bbcf71b7..HEAD --check",
+    "exit": 0
+  },
+  "qualified_gates": "focused original selections only; no full original type/lint/coverage/browser/hosted qualification claimed",
+  "history_reuse": {
+    "original": "4cc9026f4e9ee27905da70f75b0b8487f8f14a2b",
+    "local_cherry_pick": "cdd75d2cc9688622e8d9012f3a03ee95d450a97b"
+  },
+  "fixture_reuse": "Owner-action separation from sibling disclosure ced33b84; v1 retains no disclosure dependency."
+}

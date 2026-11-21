@@ -118,9 +118,9 @@ describe('TagArchive', () => {
 });
 
 describe('C-R11: the idle lock clears the archive passphrases typed into Seller keys', () => {
-  it('scrubs mounted archive inputs and suggests a new passphrase on the idle-lock notification', () => {
+  it('clears mounted archive secrets on lock and removes archive access while unsaved keys stay loaded', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
-    generateSession();
+    const seller = generateSession(); // No backup: idle retains the keys for backup-only recovery.
     vi.useFakeTimers();
     try {
       renderApp(makeServices());
@@ -131,7 +131,7 @@ describe('C-R11: the idle lock clears the archive passphrases typed into Seller 
       fireEvent.change(screen.getByLabelText('Repeat archive passphrase'), { target: { value: own } });
       fireEvent.change(screen.getByLabelText('Archive passphrase'), { target: { value: 'the passphrase of an archive' } });
       expect(screen.getByLabelText('Archive passphrase').getAttribute('value')).toBe('the passphrase of an archive');
-      // Exercise the mounted form's cleanup independently: actual expiry hides it, as the next case verifies.
+      // Inspect the lock subscriber while its fields remain mounted. The shell removes this entire form on expiry.
       act(() => { notifyAppLock('idle'); });
       expect(getSessionPublic()).toBeDefined();
       // react-dom mirrors a controlled input's value into its value attribute, so both must be gone.
@@ -143,6 +143,20 @@ describe('C-R11: the idle lock clears the archive passphrases typed into Seller 
         expect(field.value).toBe('');
         expect(field.getAttribute('value') ?? '').toBe('');
       }
+      fireEvent.change(archivePass(), { target: { value: own } });
+      fireEvent.change(screen.getByLabelText('Repeat archive passphrase'), { target: { value: own } });
+      fireEvent.change(screen.getByLabelText('Archive passphrase'), { target: { value: 'the passphrase of an archive' } });
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(getSessionPublic()).toEqual(seller);
+      expect(isSessionSuspended()).toBe(true);
+      expect(() => revealViewingKey()).toThrow(/locked after inactivity/);
+      for (const label of ['Archive passphrase (at least 14 characters)', 'Repeat archive passphrase', 'Archive passphrase']) {
+        expect(screen.queryByLabelText(label)).toBeNull();
+      }
+      expect(screen.queryByRole('button', { name: 'Download encrypted tag archive' })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Decrypt and preview' })).toBeNull();
+      expect(document.body.innerHTML).not.toContain(own);
+      expect(document.body.innerHTML).not.toContain('the passphrase of an archive');
     } finally {
       vi.useRealTimers();
       window.localStorage.removeItem(SETTINGS_KEY);

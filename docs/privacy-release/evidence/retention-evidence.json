@@ -1,0 +1,21 @@
+{
+  "source": "989e72687a9b7cefc369107cc6f09e38d270d0ce",
+  "records": [
+    {
+      "file": "retention-red.log.gz",
+      "raw_sha256": "136a94416a99650182f22819f0dd37d4a179241541ead6e80849c8299860f156"
+    },
+    {
+      "file": "retention-focused.log.gz",
+      "raw_sha256": "3f7a0861513f7ace5dd9e51473b5947b0183c8601e20c66c855ee1cafdb1e3d6"
+    },
+    {
+      "file": "retention-focused-final.log.gz",
+      "raw_sha256": "b6959bfdcd8d224a44ba1ecd84c09fae95558a40e4c4bcc23b289dc487523a97"
+    },
+    {
+      "file": "retention-i18n.log.gz",
+      "raw_sha256": "50eb2c52b3c9cac50b844876a9a6b21aa4c42efbc60d4d352a02f2caf6e9c2a0"
+    }
+  ]
+}

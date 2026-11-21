@@ -1,0 +1,38 @@
+[
+  {
+    "label": "premature-observation-red",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/views/Pay.preflightCompletion.test.tsx",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/browser-followup-review/premature-observation-red.json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-browser-followup-review/apps/web",
+    "exit_code": 1,
+    "duration_seconds": 23.306,
+    "probe_sha256": "10332cbcaf9f441de84e37c45e1e3519351eb4899a3d41712a9ff84e59f5f7d7"
+  },
+  {
+    "label": "independent-green",
+    "command": [
+      "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+      "../../node_modules/vitest/vitest.mjs",
+      "run",
+      "src/views/Pay.preflightCompletion.test.tsx",
+      "src/views/Pay.preflightCompletion.review.test.tsx",
+      "src/views/Pay.network.test.tsx",
+      "src/components/Disclosure.manifest.test.tsx",
+      "src/lib/defaultServices.authorization.test.ts",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/0a7bc3583588/run-logs/browser-followup-review/independent-green.json"
+    ],
+    "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-browser-followup-review/apps/web",
+    "exit_code": 0,
+    "duration_seconds": 40.448,
+    "probe_sha256": "6fdb46a79869ac5ce2a561696685f7134e6fccd9c591d3b0774854dba3017763"
+  }
+]

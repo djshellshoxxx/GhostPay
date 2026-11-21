@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
+import { ATTEMPT_JOURNAL_KEY } from '../lib/duplicateAttemptJournal';
 import type { WalletInfo } from '../lib/wallet';
 import { FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../test/fakeManifest';
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
@@ -16,6 +17,7 @@ import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
 import { makeServices, renderApp, setHash } from '../test/render';
+import { approveWalletDisclosure } from '../test/walletDisclosure';
 import type { Services } from '../lib/services';
 import { receiptJson, signReceipt } from '../lib/receipts';
 import * as payExec from '../lib/payExec';
@@ -476,6 +478,10 @@ describe('Pay: sending', () => {
     }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    expect(wallet.calls).toEqual([]);
+    const disclosure = await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+    expect(within(disclosure).getByText('eth_requestAccounts')).toBeTruthy();
+    await user.click(within(disclosure).getByRole('button', { name: 'Continue to wallet' }));
     expect(await screen.findByText(/chain 84532\b/)).toBeTruthy();
     expect(screen.queryByText(/84,532/)).toBeNull();
   });
@@ -485,10 +491,36 @@ describe('Pay: sending', () => {
     const user = openWith(fragment, { ...services, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) });
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     return user;
   }
+
+  it('keeps a connected wallet available for new disclosure after a privacy-only hide and reveal', async () => {
+    const wallet = new MockWallet();
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
+    await screen.findByRole('button', { name: 'Prepare payment' });
+    const settings = window.localStorage.getItem(SETTINGS_KEY);
+    const banner = within(screen.getByRole('banner'));
+    await user.click(banner.getByRole('switch', { name: 'Privacy mode' }));
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    await user.click(banner.getByRole('button', { name: 'Reveal details for 30 seconds' }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    expect(window.localStorage.getItem(SETTINGS_KEY)).toBe(settings);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+    expect(within(dialog).getByText('eth_sendTransaction', { exact: true })).toBeTruthy();
+    expect(wallet.sent).toBeUndefined();
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel wallet request' }));
+    expect(wallet.calls.some((call) => call.method === 'eth_sendTransaction')).toBe(false);
+    expect(window.sessionStorage.getItem('ghostpay.wallet-attempts.v1')).toBeNull();
+  });
 
   it('discards a deferred preparation when the opened invoice changes', async () => {
     const first = await makeParsed({ token: 'native', tokenAmount: '0.5' });
@@ -510,6 +542,7 @@ describe('Pay: sending', () => {
       }));
       await user.click(await screen.findByRole('button', { name: 'Continue' }));
       await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+      await approveWalletDisclosure(user, 'eth_requestAccounts');
       await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
       await waitFor(() => { expect(prepareSpy).toHaveBeenCalled(); });
       window.history.replaceState(null, '', `/${second.fragment}`);
@@ -532,6 +565,11 @@ describe('Pay: sending', () => {
     expect(screen.getByText('One-time destination')).toBeTruthy();
     expect(screen.getByText(new RegExp(`to ${FAKE_FEE_RECIPIENT}`))).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    const disclosure = await screen.findByRole('dialog', { name: 'Review wallet disclosure' });
+    expect(wallet.sent).toBeUndefined();
+    expect(within(disclosure).getByText('eth_sendTransaction')).toBeTruthy();
+    expect(within(disclosure).getByText(FAKE_ROUTER)).toBeTruthy();
+    await user.click(within(disclosure).getByRole('button', { name: 'Continue to wallet' }));
     expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
@@ -545,6 +583,7 @@ describe('Pay: sending', () => {
       const createRpc = state === 'verified' ? () => Promise.resolve(withManifestChain(chainSeeing(wallet))) : readBackRpc();
       const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc }));
       await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      await approveWalletDisclosure(user, 'eth_sendTransaction');
       await screen.findByRole('heading', { name: 'Submitted' });
       const hash = `0x${'9'.repeat(64)}`;
       expect(notify).toHaveBeenCalledWith({ status: 'submitted', chainId: 84532, txHash: hash });
@@ -563,6 +602,7 @@ describe('Pay: sending', () => {
     const rpc = chainSeeing(wallet);
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Independently verified on your RPC/)).toBeTruthy();
     expect(screen.getByText(/included in block 100/)).toBeTruthy();
     const download = vi.fn();
@@ -586,6 +626,39 @@ describe('Pay: sending', () => {
     expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
   });
 
+  it('closes the included proof preview without changing the completed payment, receipt exports or attempt journal', async () => {
+    const wallet = new MockWallet();
+    const rpc = chainSeeing(wallet);
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await screen.findByText(/Independently verified on your RPC/);
+    const journal = sessionStorage.getItem(ATTEMPT_JOURNAL_KEY);
+    expect(journal).not.toBeNull();
+    const requests = wallet.calls.slice();
+    const sent = wallet.sent;
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="proof"]')).not.toBeNull();
+    const originalProof = screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value;
+    await user.click(screen.getByRole('button', { name: 'Preview proof cleanup' }));
+    expect(screen.getByText('Payment proof previews to close: 1')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Close previewed proofs' }));
+    expect(screen.queryByLabelText('Proof of payment text')).toBeNull();
+    expect(document.querySelector('[data-qr-kind="proof"]')).toBeNull();
+    expect(screen.getByText(/Independently verified on your RPC/)).toBeTruthy();
+    expect(screen.getByText(/included in block 100/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
+    expect(sessionStorage.getItem(ATTEMPT_JOURNAL_KEY)).toBe(journal);
+    expect(wallet.sent).toBe(sent);
+    expect(wallet.calls).toEqual(requests);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toBe(originalProof);
+  });
+
   it('never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet();
@@ -598,6 +671,7 @@ describe('Pay: sending', () => {
     });
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
     expect(screen.getByText(/did not return the transaction itself, so it could not be compared with the preview/)).toBeTruthy();
     expect(screen.getByText(/Status: unverified/)).toBeTruthy();
@@ -613,6 +687,7 @@ describe('Pay: sending', () => {
     const rpc = chainSeeing(wallet);
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect((await screen.findByRole('alert')).textContent).toMatch(/differs from the preview \(value\)/);
     expect(screen.queryByRole('heading', { name: 'Submitted' })).toBeNull();
   });
@@ -630,6 +705,7 @@ describe('Pay: sending', () => {
       const user = userEvent.setup();
       await user.click(await screen.findByRole('button', { name: 'Continue' }));
       await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+      await approveWalletDisclosure(user, 'eth_requestAccounts');
       expect((await screen.findByRole('alert')).textContent).toMatch(re);
       expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
       view.unmount();
@@ -648,15 +724,18 @@ describe('Pay: sending', () => {
     const wallet = new MockWallet({ rejectSend: true });
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect((await screen.findByRole('alert')).textContent).toMatch(/rejected the request/);
     expect(screen.getByRole('button', { name: 'Send payment in my wallet' })).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect((await screen.findByRole('alert')).textContent).toMatch(/previous wallet attempt/);
     expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
     try {
       await user.click(screen.getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
       await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      await approveWalletDisclosure(user, 'eth_sendTransaction');
       expect((await screen.findByRole('alert')).textContent).toMatch(/rejected the request/);
       expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(2);
     } finally { confirm.mockRestore(); }
@@ -773,12 +852,15 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await screen.findByText(/Extra 0\.00024 ETH/);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20WithBuffer')).toBeTruthy();
     expect(screen.getByText(/gas buffer, public/)).toBeTruthy();
     expect(screen.getByText('Exact amount requested').parentElement?.textContent).toContain('100 USDC');
     await user.click(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(rpc.calls.some((c) => c.method === 'eth_estimateGas')).toBe(true);
@@ -794,6 +876,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20')).toBeTruthy();
@@ -821,7 +904,9 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await approveWalletDisclosure(user, 'eth_signTypedData_v4');
     expect((await screen.findAllByRole('alert', {}, { timeout: 5000 })).map((a) => a.textContent).join(' ')).toMatch(/token rejected this permit signature/);
     expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
@@ -841,6 +926,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20')).toBeTruthy();
@@ -863,6 +949,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await screen.findByText(/default table value/);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByText(/could not be simulated/);
     expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
@@ -890,6 +977,7 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     await screen.findByText(/Extra 0\.00024 ETH/);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     return { user, wallet, setNow: (sec) => { clock = sec * 1000; }, expiresAt };
@@ -923,6 +1011,7 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     const wallet = new DeferredApprovalWallet();
     const t = await toPreparedBuffer((expiresAt) => expiry === 'invoice' ? expiresAt - 30 : NOW, { wallet, allowanceAfterSend: true });
     await t.user.click(approveButton());
+    await approveWalletDisclosure(t.user, 'eth_sendTransaction');
     await waitFor(() => expect(releaseSend).toBeDefined());
     t.setNow(expiry === 'invoice' ? t.expiresAt : NOW + 61);
     act(() => { releaseSend?.(); });
@@ -949,6 +1038,8 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     const wallet = new LostPaymentResponseWallet();
     const t = await toPreparedBuffer(() => NOW, { wallet, allowanceAfterSend: true });
     await t.user.click(approveButton());
+    await approveWalletDisclosure(t.user, 'eth_sendTransaction');
+    await approveWalletDisclosure(t.user, 'eth_sendTransaction');
     await screen.findByText(/unknown outcome and may already have been submitted/i);
     expect(document.body.textContent).not.toMatch(/no payment was sent/i);
     expect(screen.getByText('Token approval confirmed')).toBeTruthy();
@@ -966,6 +1057,7 @@ describe('Pay: validity is rechecked before the initial approval', () => {
       beforeReceipt: () => new Promise<void>((resolve) => { releaseReceipt = resolve; }),
     });
     await t.user.click(approveButton());
+    await approveWalletDisclosure(t.user, 'eth_sendTransaction');
     await waitFor(() => expect(releaseReceipt).toBeDefined());
     const next = await makeParsed({ tokenAmount: '101' });
     act(() => {
@@ -988,6 +1080,7 @@ describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     return user;
@@ -1001,6 +1094,7 @@ describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP
     });
     const user = await toPreparedWith(wallet, rpc);
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(/already sent this transaction/);
     expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
     expect(document.body.textContent).not.toContain('Nothing was sent');
@@ -1044,6 +1138,7 @@ describe('Pay: a retry after a payment request with an unknown outcome never say
 
   async function sendTwice(wallet: MockWallet, user: ReturnType<typeof userEvent.setup>): Promise<void> {
     await user.click(sendButton());
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(/unknown outcome and may already have been submitted/i);
     expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
     // The retry is refused before the wallet is asked (the first payment was mined, so the dry run reverts).
@@ -1066,6 +1161,7 @@ describe('Pay: a retry after a payment request with an unknown outcome never say
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     await sendTwice(wallet, user);
@@ -1078,9 +1174,11 @@ describe('Pay: a retry after a payment request with an unknown outcome never say
     const user = openWith(fragment, makeServices({ nowMs: () => clock, loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     await user.click(sendButton());
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByText(/unknown outcome and may already have been submitted/i);
     clock = parsed.invoice.expiresAt * 1000;
     await user.click(sendButton());
@@ -1110,7 +1208,9 @@ describe('Pay: a retry after a payment request with an unknown outcome never say
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await approveWalletDisclosure(user, 'eth_signTypedData_v4');
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20WithPermit')).toBeTruthy();
     await sendTwice(wallet, user);
@@ -1129,6 +1229,7 @@ describe('Pay: a retry after a payment request with an unknown outcome never say
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20')).toBeTruthy();
@@ -1143,6 +1244,7 @@ describe('Pay: invoice expiry never hides a payment that was already handed to t
     const user = openWith(fragment, makeServices({ nowMs: clock, loadManifest: loaded(84532), createRpc, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     return user;
@@ -1153,6 +1255,7 @@ describe('Pay: invoice expiry never hides a payment that was already handed to t
     const wallet = new MockWallet();
     const user = await toPreparedAt(() => clock, readBackRpc(), wallet);
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await screen.findByRole('heading', { name: 'Submitted' });
     expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
 
@@ -1177,6 +1280,7 @@ describe('Pay: invoice expiry never hides a payment that was already handed to t
     const wallet = new MockWallet();
     const user = await toPreparedAt(() => clock, createRpc, wallet);
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await waitFor(() => { expect(wallet.sent).toBeDefined(); });
     // The wallet returned the hash; verification is still running when the invoice expires.
     clock = (NOW + 24 * 3600 + 1) * 1000;
@@ -1237,6 +1341,7 @@ describe('Pay: the gas buffer opt-in belongs to one invoice (R05-3)', () => {
     expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.queryAllByRole('alert').map((a) => a.textContent ?? '').join(' | ')).not.toMatch(/does not accept a gas buffer/);
@@ -1262,6 +1367,7 @@ describe('Pay: expiry at the final send (A3-2)', () => {
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     clock = (exp + 30) * 1000;

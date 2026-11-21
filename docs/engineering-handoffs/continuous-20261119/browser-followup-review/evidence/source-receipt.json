@@ -1,0 +1,110 @@
+{
+  "schema": "ghostpay-browser-followup-independent-review/1",
+  "reviewer_role": "qa_review_gen3 reused for an independent follow-up turn, not a newly spawned agent",
+  "local_base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "base_tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+  "published_base": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "hosted_execution": "a7ceff94269cddfbc725677dd03737d96a449039",
+  "reviewed_commit": "89e163fcc24f72830c0a5876486a72178a9365e7",
+  "reviewed_tree": "960868c6caec402ac38ca4d801fe519151fa190b",
+  "review_checkout_before_evidence": "47ae53804d9c33e4fa016feea8a645d6707707c6",
+  "node_version": "v22.23.4",
+  "dependencies": "Root checkout installed/compiled dependency graph reused through node_modules symlink; no install or configuration modification",
+  "production_changed_paths": [],
+  "reviewed_changed_paths": [
+    "apps/web/e2e/network-authorization.spec.ts",
+    "apps/web/src/views/Pay.preflightCompletion.test.tsx"
+  ],
+  "source_hashes": [
+    {
+      "path": "apps/web/e2e/network-authorization.spec.ts",
+      "sha256": "6c15f3e3899eb223606b0e373b66ce37521ac9c1498d083284fd989789ebc55a",
+      "git_blob": "19055300a98c8c9d9099baf02cc50246696b6e7b"
+    },
+    {
+      "path": "apps/web/src/views/Pay.preflightCompletion.test.tsx",
+      "sha256": "6fdb46a79869ac5ce2a561696685f7134e6fccd9c591d3b0774854dba3017763",
+      "git_blob": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8"
+    },
+    {
+      "path": "apps/web/src/views/Pay.network.test.tsx",
+      "sha256": "4b7f3f3d2b1ef6acf65163181135deb5a4c6d2aa62909b289a056f6c75d8f17b",
+      "git_blob": "e72ea03feaa07a7e5450ac3eae1bef7c7a097887"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.manifest.test.tsx",
+      "sha256": "348527df50d8a2f68241a803c7e2b413b86a98beb9b4f2f7fb30e6f35a0eb425",
+      "git_blob": "da7fd9a6813dc6b1ddfa1aaa5ec165d199b525e8"
+    },
+    {
+      "path": "apps/web/src/components/Disclosure.tsx",
+      "sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391",
+      "git_blob": "4ecacbf464c6e1b413d9857be417569200a05b69"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.authorization.test.ts",
+      "sha256": "afab621ef10525df4f03c288b1e1f406ed866bce10e4c426af88ba1aad5694e7",
+      "git_blob": "562e292e392c8e0292af5967c86ea471b5270d91"
+    },
+    {
+      "path": "apps/web/src/lib/defaultServices.ts",
+      "sha256": "5c533a152aeb1f42ce631fd3a1c0531054d884f301fb26728b3e365afd460bb5",
+      "git_blob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb"
+    },
+    {
+      "path": "apps/web/src/lib/networkAuthorization.ts",
+      "sha256": "3bcc735e14fd5245c12ea5d391502affa802cb5c6f7c5ff9b457c2b2b1c060ea",
+      "git_blob": "04defade63f86886f12a6299f19f46a2e562b680"
+    },
+    {
+      "path": "apps/web/src/views/Pay.tsx",
+      "sha256": "c850bcbaa104eb0ba5f0f8e6017a433e7b31bb1c7f85a032d73702ffbdff95e6",
+      "git_blob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099"
+    },
+    {
+      "path": "apps/web/src/lib/manifest.ts",
+      "sha256": "24d884b3f44b11d5cb9620327846dbf6ca23fdd02b86c953c72d1bddb818dfc0",
+      "git_blob": "a9565d96c42e35b57f62e7235a13aa6729c886b9"
+    },
+    {
+      "path": "apps/web/src/lib/pay.ts",
+      "sha256": "44256ad721b864424402a40b17bf7280bb3a7b28895338030b7496634dd01c28",
+      "git_blob": "479341df5a6a5a5f90038520d3934fe2d4fcdea8"
+    },
+    {
+      "path": "apps/web/src/AppShell.tsx",
+      "sha256": "9a9716abdc2c891e494337c8b0ffcbf228a9659205b185af45115c9ee7cb6198",
+      "git_blob": "8e2006a8309403f336efda82c1cc6eb6699f04c4"
+    },
+    {
+      "path": "packages/chain-adapters/src/rpc.ts",
+      "sha256": "8b3bcd3dedc02dee95a83bbc0bdd750a272018df472765a67f53abb5f84b73d8",
+      "git_blob": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e"
+    },
+    {
+      "path": "packages/chain-adapters/src/deploymentsVerify.ts",
+      "sha256": "67afe5a3f8aea9ade18df20a692432aa03832660b03cc7dac76d335a2c4c1aaf",
+      "git_blob": "0f958f28cf9c8a496a6068f3d1a423f47973a037"
+    },
+    {
+      "path": "packages/net-transport/src/fetchTransport.ts",
+      "sha256": "51bf75966b97f9d64757a0ec80a98b71b37968a578c02a78fb72fe1816d86d40",
+      "git_blob": "3c4f105bcdacb3c10f3b40063328d4bfb1d590b8"
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "sha256": "79bb9b91a21b85c03bf66805c9612db15578e3ca92e1747297ffd5471cb076ed",
+      "git_blob": "7f11e3b91b733ef2e53385b5be022970d60d52f9"
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "sha256": "c04b57bc90614d159ebb7de9d24ccec2a5996384427523589a1e0bf9da0763cb",
+      "git_blob": "e936551ec06d0414ba7afe0dc66f9c8fdd038a31"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+      "git_blob": "539274d58048bc3edf066ca1a7891f247b2aea36"
+    }
+  ]
+}

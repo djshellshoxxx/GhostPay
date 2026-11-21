@@ -1,0 +1,453 @@
+(node:38) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web
+
+(node:87) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/AppShell.privacy.test.tsx (7 tests | 2 failed | 5 skipped) 716ms
+   ❯ required global privacy masking (7)
+     × preserves active preflight authority and exact execution-settings bytes when only masking changes 638ms
+     × keeps this tab masked and reports when its privacy preference cannot be persisted 77ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/AppShell.privacy.test.tsx > required global privacy masking > preserves active preflight authority and exact execution-settings bytes when only masking changes
+AssertionError: expected '{"rpcUrls":{"84532":"https://rpc.test…' to be '{ "rpcUrls": { "84532": "https://rpc.…' // Object.is equality
+
+Expected: "{ "rpcUrls": { "84532": "https://rpc.test/" } }"
+Received: "{"rpcUrls":{"84532":"https://rpc.test/"},"rpcUrlsSecondary":{},"relayerUrl":"","delayMinSec":120,"delayMaxSec":900,"lockTimeoutMin":15,"theme":"system","autoClearFragment":true,"privacyMode":true,"clipboardClearAfterMs":0,"pinnedSigners":[]}"
+
+ ❯ src/AppShell.privacy.test.tsx:148:50
+    146|       await user.click(within(screen.getByRole('banner')).getByRole('b…
+    147|       expect(wallet.sent).toBeUndefined();
+    148|       expect(localStorage.getItem(SETTINGS_KEY)).toBe(rawSettings);
+       |                                                  ^
+    149|       expect(() => active.assertCurrent()).not.toThrow();
+    150|       expect(screen.getByRole('button', { name: 'Prepare payment' })).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/AppShell.privacy.test.tsx > required global privacy masking > keeps this tab masked and reports when its privacy preference cannot be persisted
+TestingLibraryElementError: Unable to find an element with the text: Browser storage is unavailable, so these settings apply to this tab only.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"skip"[39m
+      [33mhref[39m=[32m"#main"[39m
+    [36m>[39m
+      [0mSkip to content[0m
+    [36m</a>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"site-header"[39m
+    [36m>[39m
+      [36m<h1>[39m
+        [0mGhostPay[0m
+      [36m</h1>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"tagline"[39m
+      [36m>[39m
+        [0mStealth-address payments. Everything runs in your browser. Unaudited software.[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Privacy mode"[39m
+        [33mrole[39m=[32m"group"[39m
+      [36m>[39m
+        [36m<label>[39m
+          [36m<input[39m
+            [33maria-describedby[39m=[32m"_r_7_"[39m
+            [33mdata-privacy-safe-control[39m=[32m"true"[39m
+            [33mrole[39m=[32m"switch"[39m
+            [33mtype[39m=[32m"checkbox"[39m
+          [36m/>[39m
+          [0m [0m
+          [0mPrivacy mode[0m
+        [36m</label>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"hint"[39m
+          [33mid[39m=[32m"_r_7_"[39m
+        [36m>[39m
+          [0mHide sensitive details for screen sharing. Masking does not lock your vault or erase in-memory data.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [0mSensitive details are hidden.[0m
+        [36m</p>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mReveal details for 30 seconds[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Main"[39m
+      [36m>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"nav"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"home"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mHome[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"seller"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSeller keys[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"create"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mCreate invoice[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33maria-current[39m=[32m"page"[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"pay"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPay[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"scan"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mScan and receive[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"sweep"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSweep[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"registry"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPublic registry[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"settings"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mSettings[0m
+            [36m</button>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+              [33mdata-view[39m=[32m"about"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mAbout and privacy[0m
+            [36m</button>[39m
+          [36m</li>[39m
+        [36m</ul>[39m
+      [36m</nav>[39m
+    [36m</header>[39m
+    [36m<main[39m
+      [33mid[39m=[32m"main"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mhidden[39m=[32m""[39m
+        [33minert[39m=[32m""[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mhidden[39m=[32m""[39m
+        [33minert[39m=[32m""[39m
+      [36m>[39m
+        [36m<section[39m
+          [33maria-labelledby[39m=[32m"pay-h"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mid[39m=[32m"pay-h"[39m
+          [36m>[39m
+            [0mPay an invoice[0m
+          [36m</h2>[39m
+          [36m<section[39m
+            [33maria-labelledby[39m=[32m"_r_8_"[39m
+            [33mclass[39m=[32m"stack"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mid[39m=[32m"_r_8_"[39m
+            [36m>[39m
+              [0mInvoice signer verification[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"hint"[39m
+            [36m>[39m
+              [0mA signature proves control of the signing key and protects the signed invoice fields. A trusted pin is only as reliable as the channel you used to confirm that key. Neither proves a legal identity or that a payment occurred.[0m
+            [36m</p>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"field"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mfor[39m=[32m"_r_9_"[39m
+              [36m>[39m
+                [0mExpected seller (optional)[0m
+              [36m</label>[39m
+              [36m<select[39m
+                [33maria-describedby[39m=[32m"_r_9_-hint"[39m
+                [33mid[39m=[32m"_r_9_"[39m
+              [36m>[39m
+                [36m<option[39m
+                  [33mvalue[39m=[32m""[39m
+                [36m>[39m
+                  [0mNo expected seller selected[0m
+                [36m</option>[39m
+              [36m</select>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hint"[39m
+                [33mid[39m=[32m"_r_9_-hint"[39m
+              [36m>[39m
+                [0mChoose the seller you intend to pay. Only that seller’s exact saved key can satisfy this selection, even if you have saved other sellers.[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"hint"[39m
+            [36m>[39m
+              [0mNames and public signer pins are saved in plain text in this browser only. Invoice contents and private keys are never saved here. Your selection lasts until you leave this view; select the intended seller again after a reload.[0m
+            [36m</p>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"actions"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mAdd a signer pin[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</section>[39m
+          [36m<details>[39m
+            [36m<summary>[39m
+              [0mScan an invoice QR[0m
+            [36m</summary>[39m
+            [36m<p>[39m
+              [0mRead a GhostPay v1 invoice fragment or an HTTPS link at this app’s host and path. Scanned links stay on this page. Review the scan, then choose whether to open its payment details.[0m
+            [36m</p>[39m
+            [36m<section[39m
+              [33maria-label[39m=[32m"Invoice QR import"[39m
+              [33mclass[39m=[32m"panel"[39m
+            [36m>[39m
+              [36m<h3>[39m
+                [0mInvoice QR import[0m
+              [36m</h3>[39m
+              [36m<p>[39m
+                [0mCamera access starts only when you choose it. Scanned text is checked on this device.[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"stack"[39m
+              [36m>[39m
+                [36m<video[39m
+                  [33maria-label[39m=[32m"QR scanner camera preview"[39m
+                  [33mhidden[39m=[32m""[39m
+                  [33mplaysinline[39m=[32m""[39m
+                  [33mstyle[39m=[32m"width: 100%; max-width: 32rem;"[39m
+                [36m/>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"btn"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mScan with camera[0m
+                [36m</button>[39m
+                [36m<label>[39m
+                  [0mOr paste QR text[0m
+                  [36m<textarea[39m
+                    [33mautocomplete[39m=[32m"off"[39m
+                    [33mdir[39m=[32m"ltr"[39m
+                    [33mmaxlength[39m=[32m"65536"[39m
+                    [33mrows[39m=[32m"3"[39m
+                    [33mspellcheck[39m=[32m"false"[39m
+                  [36m/>[39m
+                [36m</label>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"btn"[39m
+                  [33mdisabled[39m=[32m""[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mUse pasted text[0m
+                [36m</button>[39m
+                [36m<label>[39m
+                  [0mRead a QR from an image[0m
+                  [36m<input[39m
+                    [33maccept[39m=[32m"image/*"[39m
+                    [33mtype[39m=[32m"file"[39m
+                  [36m/>[39m
+                [36m</label>[39m
+                [36m<p[39m
+                  [33maria-live[39m=[32m"polite"[39m
+                  [33mrole[39m=[32m"status"[39m
+                  [33mtabindex[39m=[32m"-1"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</section>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mClear invoice QR[0m
+            [36m</button>[39m
+          [36m</details>[39m
+          [36m<form[39m
+            [33mclass[39m=[32m"stack"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"field"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mfor[39m=[32m"paste"[39m
+              [36m>[39m
+                [0mPaste an invoice link[0m
+              [36m</label>[39m
+              [36m<textarea[39m
+                [33mdir[39m=[32m"ltr"[39m
+                [33mid[39m=[32m"paste"[39m
+                [33mrows[39m=[32m"3"[39m
+                [33mspellcheck[39m=[32m"false"[39m
+              [36m/>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hint"[39m
+              [36m>[39m
+                [0mThe link is read in this page only. It is never sent to a server.[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"hint"[39m
+              [36m>[39m
+                [0mPasting is safer than clicking: a browser may keep a clicked invoice URL, including its secret part, in its history even after this page removes it from the address bar. Copy the link and paste it here, or open it in a private window.[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn-primary"[39m
+              [33mtype[39m=[32m"submit"[39m
+            [36m>[39m
+              [0mRead invoice[0m
+            [36m</button>[39m
+          [36m</form>[39m
+        [36m</section>[39m
+      [36m</div>[39m
+    [36m</main>[39m
+    [36m<div[39m
+      [33maria-hidden[39m=[32m"true"[39m
+      [33mhidden[39m=[32m""[39m
+      [33minert[39m=[32m""[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-atomic[39m=[32m"true"[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mclass[39m=[32m"sr-only"[39m
+        [33mrole[39m=[32m"status"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<footer[39m
+      [33mclass[39m=[32m"site-footer"[39m
+    [36m>[39m
+      [36m<p>[39m
+        [0mNo analytics, no third-party scripts, no remote fonts. Fee and contract addresses come only from the deployment manifest.[0m
+      [36m</p>[39m
+      [36m<ul[39m
+        [33mclass[39m=[32m"footer-links"[39m
+      [36m>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"./help.html"[39m
+            [33mrel[39m=[32m"noopener noreferrer"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mHelp and getting started[0m
+            [0m [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m(opens in a new tab)[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"./privacy.html"[39m
+            [33mrel[39m=[32m"noopener noreferrer"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mPrivacy and verification limits[0m
+            [0m [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m(opens in a new tab)[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"./help.html#technology"[39m
+            [33mrel[39m=[32m"noopener noreferrer"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mSource and attribution[0m
+            [0m [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"sr-only"[39m
+            [36m>[39m
+              [0m(opens in a new tab)[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+      [36m</ul>[39m
+    [36m</footer>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../../GhostPay/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../../GhostPay/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../../GhostPay/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../../GhostPay/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/AppShell.privacy.test.tsx:161:19
+    159|     await user.click(screen.getByRole('switch', { name: 'Privacy mode'…
+    160|     expect(screen.queryByRole('textbox', { name: 'Paste an invoice lin…
+    161|     expect(screen.getByText('Browser storage is unavailable, so these …
+       |                   ^
+    162|   });
+    163| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 skipped (7)
+   Start at  17:36:34
+   Duration  3.44s (import 34%, transform 27%, tests 22%, environment 17%)
+

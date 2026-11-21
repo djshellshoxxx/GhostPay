@@ -1,0 +1,395 @@
+{
+  "schema": "ghostpay-gen5-remaining-uniqueness/1",
+  "observed_at_utc": "2026-11-20T00:32:11.377590+00:00",
+  "candidate": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "candidate_tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "published_candidate_at_start": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "final_sampled_main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "final_sampled_release_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "original_census_rows_with_null_semantics_nonancestor": 70,
+  "initial_review_rows": 11,
+  "not_reassessed_in_this_initial_matrix": 59,
+  "branch_source_summary_sha256": "87b9a2012a965bb05e14795769a5ad940ca3c3dba8b4381dbfb0487eb913cefd",
+  "branch_full_inventory_gz_sha256": "36750314c4fce73c4fc9890d40b44d17f11c65a5ab21b9a0ddb49a6ab5ae91cc",
+  "focused_recoveries": [
+    {
+      "id": "merchant-ledger-counted-payment",
+      "branch": "fix/ghostpay-ledger-zero-payment-20261119",
+      "head": "271a21b0dcd368e90c6293fe66bb0151f8305d67",
+      "source_commit": "d694ce1c98056690fd104c08f80e9c7190e779e4",
+      "upstream_commit": "6db114920589a38dbbb5d52f45bb7a52be98d9b6",
+      "source_blob": "5ca846c8e38c4a99343c2cb979f42f8f03883b8a",
+      "baseline_blob": "9e8b5e310e0c445c954e43de3ad712a1a88512b2",
+      "original_upstream_regression": "27 pass/1 fail on unchanged baseline; 30 pass final full package suite;typecheck/lint/build pass; coverage 100/99.32/100/100",
+      "limits": "Separate existing library API; no production reconcile caller found in repository; root owns integration."
+    },
+    {
+      "id": "dependabot-composite-discovery",
+      "branch": "fix/ghostpay-dependabot-composites-20261119",
+      "head": "126b13fb173ea32716af5bf0ba845bbe32d66bab",
+      "source_commit": "ed98fde75f7d58f7f34ea6c7816ed95a81a42a07",
+      "upstream_commit": "b246782cf7acd5625b5fd97df76ff6be6a5e7678",
+      "fixed_blob": "604a27d1f04a043461d0dd9adcbcfdf73234e845",
+      "baseline_blob": "cab4e3773b2d4cd2a875b84f630f4fa91319cdf6",
+      "checks": "Parsed mappings differ only in directory/directories; 3 existing composite manifest targets; 113 action pins check passes.",
+      "limits": "Primary docs/fetcher corroborate discovery scope; no hosted updater run or additional cadence."
+    }
+  ],
+  "rows": [
+    {
+      "branch": "chatgpt/ghostpay-idle-lifecycle-qualified-20261119",
+      "head": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+      "prior_head": "d5fe06e7a7b383da1726c4d38165c824e996b9db",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "ab4e0da2cfe2a18adac0424896fba0b40fac81a8"
+      ],
+      "merge_bases_main": [
+        "ab4e0da2cfe2a18adac0424896fba0b40fac81a8"
+      ],
+      "git_cherry": [
+        "+ e4fce89fb98fcd318574948f877ab3e3cbadfef1",
+        "+ d5fe06e7a7b383da1726c4d38165c824e996b9db"
+      ],
+      "candidate_touched_paths": 21,
+      "equal_path_count": 6,
+      "non_documentation_path_count": 14,
+      "equal_non_documentation_path_count": 3,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [],
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "evidence": "Idle clock, suspension and backup-only recovery source is retained; current session replacement, credential reauthentication, network authority and beforeunload guard are stronger. AppShell.idleClock test differs only in a typed query. Locale changes and historical receipts are preserved, not wholesale copied.",
+      "scope_limit": "Reviewed idle/session/keyVault/AppShell/SellerKeys scopes; no fresh execution of this historical branch.",
+      "final_live_head": "d5fe06e7a7b383da1726c4d38165c824e996b9db"
+    },
+    {
+      "branch": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "prior_head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "git_cherry": [
+        "+ f43ee1b9c25503a571f4b573989a0c4eb1947085",
+        "+ ab927c07738097f6150e88223259326dbf0e3811",
+        "+ 32020b8b798c2079ef747c1de4978303fe923854",
+        "+ b246782cf7acd5625b5fd97df76ff6be6a5e7678",
+        "+ 21a4429dade14421c7472b4f00c28ceb163652dd",
+        "+ 4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+        "+ 94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57"
+      ],
+      "candidate_touched_paths": 16,
+      "equal_path_count": 3,
+      "non_documentation_path_count": 7,
+      "equal_non_documentation_path_count": 3,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        225
+      ],
+      "fresh_scoped_classification": "PARTIALLY UNIQUE \u2014 EXTRACT",
+      "evidence": "The advertised fail-closed checker and its tests have exact current blobs. Only the inherited Dependabot composite discovery gap is recovered separately. Current automation controls and package manifest must be retained.",
+      "scope_limit": "Checker equivalence plus inherited maintenance gap; not a Mythril finding clearance.",
+      "final_live_head": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57"
+    },
+    {
+      "branch": "chatgpt/ghostpay-sonar-review-20261118",
+      "head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "prior_head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "git_cherry": [
+        "+ 7aa0c1667aaaf058a543aa0c9e0e31d9bd178ade",
+        "+ 8de1f889496301b2c3a1881f558d74aa379e52c7",
+        "- 51a50695db8248bb725f8ec267b0b23b7b02ba64",
+        "- 5be8daf6710870410e660ca9d34e1fc58cd44712",
+        "+ 1054daabc5cabe958466ec144582d76137b54910",
+        "+ 3a3b136a326e0d8c1f369d94d4517ad0711babc8"
+      ],
+      "candidate_touched_paths": 41,
+      "equal_path_count": 37,
+      "non_documentation_path_count": 33,
+      "equal_non_documentation_path_count": 33,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        226
+      ],
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "evidence": "All 33 non-documentation-category paths are exact current blobs; all 4 executable audit PoCs under docs are also exact. Remaining4 path differences are historical documentation.",
+      "scope_limit": "Touched final-tree equivalence; no fresh hosted Sonar or scanner certification.",
+      "final_live_head": "3a3b136a326e0d8c1f369d94d4517ad0711babc8"
+    },
+    {
+      "branch": "chatgpt/spec18-recovery-completion-20261118",
+      "head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "prior_head": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      ],
+      "merge_bases_main": [
+        "7109290b7e4f029c36d9743bde9fd664d1da5474",
+        "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+        "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+        "613667be4eeb132c7d21ccd06c627f9a7144d85b"
+      ],
+      "git_cherry": [
+        "+ f3635b8afd903d4dc3a6b10b39707b88bf6a99f9",
+        "+ 041db448baa7fd094f8b1ad37f3f7377c98bcab1",
+        "+ d46b8d8253a8f9c18ff21327ef115c3c748a75ec",
+        "+ f72c198b2a6a75be889e9810a37721da116deba1",
+        "+ 032c42fc3d5e52d8428a7907775835b5d1ed3704",
+        "+ 38d69832ddc58ec27a19c00dbe3c89347c577495"
+      ],
+      "candidate_touched_paths": 657,
+      "equal_path_count": 434,
+      "non_documentation_path_count": 289,
+      "equal_non_documentation_path_count": 199,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        240
+      ],
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "evidence": "Inspected lean export/recovery, session, scan cancellation/checkpoint and invoice-validation source is superseded by current guards. The whole 657-path branch remains UNKNOWN: 90 non-documentation paths differ and non-EVM/relayer/dependency surfaces were not fully requalified.",
+      "scope_limit": "No whole-branch merge. Preserve all unexplored paths and original source identity.",
+      "final_live_head": "38d69832ddc58ec27a19c00dbe3c89347c577495"
+    },
+    {
+      "branch": "claude/friendly-turing-1ui0on",
+      "head": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "prior_head": "f4e79b078514cdd174a087bd5142ad76bc49f811",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "git_cherry": [
+        "+ 20a94f245fad4577f98266fce29e8bd3754b0a5f"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [],
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "evidence": "Only a historical 6-line outcome paragraph differs. Current scanner replays saved observation blocks and atomically persists observations; the old paragraph is not current defect proof.",
+      "scope_limit": "Historical doc preservation; no claim all older scanner findings freshly closed.",
+      "final_live_head": "f4e79b078514cdd174a087bd5142ad76bc49f811"
+    },
+    {
+      "branch": "claude/ghostpay-consolidation-9xhtxg-security",
+      "head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "prior_head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "git_cherry": [
+        "+ f43ee1b9c25503a571f4b573989a0c4eb1947085",
+        "+ ab927c07738097f6150e88223259326dbf0e3811",
+        "+ 32020b8b798c2079ef747c1de4978303fe923854",
+        "+ b246782cf7acd5625b5fd97df76ff6be6a5e7678",
+        "+ 21a4429dade14421c7472b4f00c28ceb163652dd",
+        "+ 4894d0d8d94333dffa8ae3937a4d8314f27c686f"
+      ],
+      "candidate_touched_paths": 14,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 7,
+      "equal_non_documentation_path_count": 1,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        212
+      ],
+      "fresh_scoped_classification": "PARTIALLY UNIQUE \u2014 EXTRACT",
+      "evidence": "Composite-action discovery is genuinely absent and recovered separately. Deployment validator test is exact; command retained. Current checker rejects more runner failures; current automation protects sensitive paths/untrusted PR inputs.",
+      "scope_limit": "Preserve historical owner packets, audit narratives and optional policy decisions at their source hashes.",
+      "final_live_head": "4894d0d8d94333dffa8ae3937a4d8314f27c686f"
+    },
+    {
+      "branch": "claude/sharp-bohr-uigfgh",
+      "head": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "prior_head": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "merge_bases_main": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "git_cherry": [
+        "+ 37da389f01218338f02d296efa435aa213fd1a04",
+        "+ c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        42
+      ],
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "evidence": "Both Haiku handoff files are byte-identical to current candidate.",
+      "scope_limit": "Exact two-file scope; no product source delta.",
+      "final_live_head": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483"
+    },
+    {
+      "branch": "integration/ghostpay-idle-session-completion-20261119",
+      "head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "prior_head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "14ded337a10c140d7a9f9a9238ec038587d925bb"
+      ],
+      "merge_bases_main": [
+        "14ded337a10c140d7a9f9a9238ec038587d925bb"
+      ],
+      "git_cherry": [
+        "+ e4fce89fb98fcd318574948f877ab3e3cbadfef1",
+        "+ d5fe06e7a7b383da1726c4d38165c824e996b9db",
+        "+ 247c3353871bf67b6711aeacb5ad1e53faa77326",
+        "+ 3bf2df33145e50c49920120ea92b58e8083ca9e0",
+        "+ e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+      ],
+      "candidate_touched_paths": 23,
+      "equal_path_count": 7,
+      "non_documentation_path_count": 16,
+      "equal_non_documentation_path_count": 4,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        256
+      ],
+      "fresh_scoped_classification": "PARTIALLY UNIQUE \u2014 EXTRACT",
+      "evidence": "Idle/session production behavior is superseded by current guards. TagArchive has distinct additional assertions (exact retained identity, all inputs scrubbed, encrypted-backup guard); preserve for isolated test qualification. Current Pages fixture covers newer encrypted invoices, receipt consent, replay and fee review.",
+      "scope_limit": "Additional test coverage is not a demonstrated missing production behavior; no old browser fixture replacement.",
+      "final_live_head": "e2ebb4902e53e2249c6585a1d72be6e1e416c36c"
+    },
+    {
+      "branch": "integration/ghostpay-mythril-security-closure-20261118",
+      "head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "prior_head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "e454de6abfefda70d82784fafc1d8949b277c334"
+      ],
+      "merge_bases_main": [
+        "e454de6abfefda70d82784fafc1d8949b277c334"
+      ],
+      "git_cherry": [
+        "+ 4a3c9af62da162e531814ef88d8877113ace4211"
+      ],
+      "candidate_touched_paths": 55,
+      "equal_path_count": 9,
+      "non_documentation_path_count": 21,
+      "equal_non_documentation_path_count": 9,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        255
+      ],
+      "fresh_scoped_classification": "PARTIALLY UNIQUE \u2014 EXTRACT",
+      "evidence": "Distinct configuration-bound deployment acknowledgment, fee-freeze probes, captured-target Mythril disposition protocol and Forge integrity test coverage remain preserved. The strict runner remains red on findings; the disposition helper is inactive.",
+      "scope_limit": "Future optional/deployment/tooling scopes require fresh isolated review; no fee, gate, deployment or schedule activation.",
+      "final_live_head": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab"
+    },
+    {
+      "branch": "repair/ghostpay-pr-87-20261119",
+      "head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "prior_head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "e454de6abfefda70d82784fafc1d8949b277c334"
+      ],
+      "merge_bases_main": [
+        "e454de6abfefda70d82784fafc1d8949b277c334"
+      ],
+      "git_cherry": [
+        "+ bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+        "+ fb5ba18698c75dec96b83323087532a4e1764be2",
+        "+ 4ca7e175c1e72e0a3e1adf928ab802249a316436",
+        "+ 25288e56a05835b246efb7b38b3f00d0a6f815f9",
+        "+ 303ba1114fd78426162c4728f1778f66d64088f4",
+        "+ 3cae2222e37b3ac287af69c6ae490e0aace8876e",
+        "+ 6b07e403dd26a8c8e12dfab82dedb0c36002b043"
+      ],
+      "candidate_touched_paths": 73,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 71,
+      "equal_non_documentation_path_count": 2,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        253
+      ],
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "evidence": "Both repaired SOCKS runtime/test blobs are exact current candidate. Remaining 69 differing non-documentation paths are 68 package manifests plus lockfile from the unqualified major dependency migration.",
+      "scope_limit": "No repeated socket repair; no transplant of historical dependency graph or inference of current migration readiness.",
+      "final_live_head": "6b07e403dd26a8c8e12dfab82dedb0c36002b043"
+    },
+    {
+      "branch": "security/mythril-full-remediation-20261118",
+      "head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "prior_head": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "live_unchanged": true,
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "git_cherry": [
+        "+ 18b03029b5edde9cbe100bc47cf332c3a98a02b7",
+        "+ fbda6b132aa3b1bc6bfc3b22b2835f5f8b297cbc",
+        "+ 87d1b31235b678f24be220f5929b3b82b5ccfa86",
+        "+ e800d1424f7ba872db37fde79548139183a64174",
+        "+ cd54452991b9f4e193d98c1365b9dbc4eb838f3b",
+        "+ eda1737471f1cb6d46773c214247cfdafa4e1156",
+        "+ 3eeac76b4b51e380fd99c810950edc9ef3cdd812",
+        "+ 6db114920589a38dbbb5d52f45bb7a52be98d9b6",
+        "+ 16c48521f99903ccd2e584df5d00a9dec5ef754c"
+      ],
+      "candidate_touched_paths": 34,
+      "equal_path_count": 10,
+      "non_documentation_path_count": 22,
+      "equal_non_documentation_path_count": 9,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_exact_head": [
+        220
+      ],
+      "fresh_scoped_classification": "PARTIALLY UNIQUE \u2014 EXTRACT",
+      "evidence": "Nonzero merchant invoice could become paid with zero counted payments when tolerance>=due; exact upstream guard/test recovered and qualified separately. Current RPC handles non-finite retries. Workflow runner pinning and a ux-flow proof-binding warning remain separate preserved deltas.",
+      "scope_limit": "Public merchant-ledger API correction, not current browser payment path. ux-flow runtime is unchanged; its warning is not a newly reproduced exploit.",
+      "final_live_head": "16c48521f99903ccd2e584df5d00a9dec5ef754c"
+    }
+  ],
+  "limits": [
+    "No modifications to original census/dispositions.",
+    "No all-branch fixed point;59 initial untouched rows plus explicit whole-branch UNKNOWN and scoped limits.",
+    "No historical branch suite or hosted qualification rerun merely for semantic classification.",
+    "No remote mutations from this lane. Focused recoveries live on separate branches and are not in this docs-only branch."
+  ]
+}

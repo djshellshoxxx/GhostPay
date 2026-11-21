@@ -1,0 +1,11 @@
+{
+  "node": "v22.23.4",
+  "react": "file:///workspace/scratch/0a7bc3583588/GhostPay/node_modules/react/index.js",
+  "vitest": "file:///workspace/scratch/0a7bc3583588/GhostPay/node_modules/vitest/dist/index.js",
+  "chainAdapters": "file:///workspace/scratch/0a7bc3583588/GhostPay/packages/chain-adapters/dist/index.js",
+  "invoiceSchema": "file:///workspace/scratch/0a7bc3583588/GhostPay/packages/invoice-schema/dist/index.js",
+  "portableVault": "file:///workspace/scratch/0a7bc3583588/GhostPay/packages/ux-vault/dist/portable.js",
+  "coreCrypto": "file:///workspace/scratch/0a7bc3583588/GhostPay/packages/core-crypto/dist/index.js",
+  "scanSource": "file:///workspace/scratch/0a7bc3583588/GhostPay/packages/scan-source/dist/index.js",
+  "secretBox": "file:///workspace/scratch/0a7bc3583588/GhostPay/packages/secret-box/dist/index.js"
+}

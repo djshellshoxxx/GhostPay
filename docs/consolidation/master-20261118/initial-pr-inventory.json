@@ -1,0 +1,5305 @@
+[
+  {
+    "number": 241,
+    "title": "feat(privacy): complete Pages browser network isolation",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/241",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T23:36:18Z",
+    "updated_at": "2026-11-19T00:17:58Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "70daf0854dfe19d78de1b5d99c4e7b92c87f6884",
+    "head": {
+      "ref": "codex/ghostpay-browser-isolation-20261118",
+      "sha": "e8857bfa1ec93fafa9ff83f63f7430ef26a362c2",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 240,
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/240",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T23:17:45Z",
+    "updated_at": "2026-11-19T00:40:17Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "8f3a72e89dbcf1987dcd464002cc9e83df4910bf",
+    "head": {
+      "ref": "chatgpt/spec18-recovery-completion-20261118",
+      "sha": "38d69832ddc58ec27a19c00dbe3c89347c577495",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+    },
+    "labels": []
+  },
+  {
+    "number": 239,
+    "title": "Complete Spec 18 backup verification and independent recovery safeguards",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/239",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T23:08:50Z",
+    "updated_at": "2026-11-19T00:09:14Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "d1384ecf9fb3a868b3578000c3e8eef81c880f6d",
+    "head": {
+      "ref": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+      "sha": "4a1b181c89e02ee564b5568d4b4b8d689f5e42c5",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec"
+    },
+    "labels": []
+  },
+  {
+    "number": 238,
+    "title": "Consolidate Pages beta security, privacy, and recovery",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/238",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T14:43:10Z",
+    "updated_at": "2026-11-18T18:33:43Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "8393562a6b5657fc8b3f4410e5ddc3ad90772cf3",
+    "head": {
+      "ref": "integration/ghostpay-pages-completion-20261118",
+      "sha": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 237,
+    "title": "fix(ci): retain beta logs from their hidden state directory",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/237",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T13:28:59Z",
+    "updated_at": "2026-11-18T13:29:00Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "fa6ac0393a7edfa167fcbabd43ee81ca1ab001e2",
+    "head": {
+      "ref": "chatgpt/ghostpay-beta-log-artifact-20261118",
+      "sha": "7109290b7e4f029c36d9743bde9fd664d1da5474",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 236,
+    "title": "fix(deps): align viem and restore coverage provider resolution",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/236",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T13:12:33Z",
+    "updated_at": "2026-11-18T13:12:33Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "3508c5c9115b8ee599765d5c13080d6b92e8f25a",
+    "head": {
+      "ref": "chatgpt/ghostpay-viem-alignment-20261118",
+      "sha": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "sha": "4d19655a2e5d93ad9378803cd4163245168aca24"
+    },
+    "labels": []
+  },
+  {
+    "number": 235,
+    "title": "fix(web): bind scan checkpoints to private v4 seller slots",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/235",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T13:06:14Z",
+    "updated_at": "2026-11-18T13:06:14Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "49b24b60ee303a10f390035ceb2bf5bd4647248b",
+    "head": {
+      "ref": "chatgpt/ghostpay-pages-checkpoint-v4-20261118",
+      "sha": "a5076f4d4e8d2dc515bdc31f304b6c6ce75bf3b1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 234,
+    "title": "feat(invoice-schema): restore opt-in pinned signer validation",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/234",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T12:55:22Z",
+    "updated_at": "2026-11-18T12:55:22Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "04764f52025103559ac07f8c92c73e1425a900a0",
+    "head": {
+      "ref": "chatgpt/ghostpay-invoice-validation-20261118",
+      "sha": "5e9e7be70399a9818579cf87bd494e013e25d4f9",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 233,
+    "title": "test(e2e): honor encrypted invoices, minimized receipts and balance consent",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/233",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T12:28:10Z",
+    "updated_at": "2026-11-18T12:28:10Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "5ce26fc6023c048ecfcb81b959a939e673f9d0e9",
+    "head": {
+      "ref": "chatgpt/ghostpay-privacy-browser-fixtures-20261118",
+      "sha": "67cf835d0bf5f3b239e8ee6f18dca401fd5a5050",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc"
+    },
+    "labels": []
+  },
+  {
+    "number": 232,
+    "title": "docs: preserve beta execution results, source pins and remaining gates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/232",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T12:14:01Z",
+    "updated_at": "2026-11-18T13:55:58Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "f0f8cd9b5beec827e0e3b8dcf026b63997cf8685",
+    "head": {
+      "ref": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "sha": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 231,
+    "title": "fix(web): ask before refreshing the displayed Sweep balance",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/231",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:49:29Z",
+    "updated_at": "2026-11-18T12:07:31Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "49deb49dce1ad43dd0bc53e8053ce4d56e5aa161",
+    "head": {
+      "ref": "chatgpt/ghostpay-sweep-balance-consent-20261118",
+      "sha": "d9ff386807de724eb1a1c4d400c882df0fc20bb7",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 230,
+    "title": "fix(privacy): remove plaintext sweep history and retain session-only warnings",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/230",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:36:01Z",
+    "updated_at": "2026-11-18T11:36:01Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "c827d641c1bd4c50353d486e9df9a207bb4bb0d5",
+    "head": {
+      "ref": "chatgpt/ghostpay-sweep-ledger-memory-20261118",
+      "sha": "0b2609c2c83143741ad343bfb08234a2d1182aa5",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc"
+    },
+    "labels": []
+  },
+  {
+    "number": 229,
+    "title": "fix(recovery): bind import consent to the selected export and disclose key boundaries",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/229",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:30:45Z",
+    "updated_at": "2026-11-18T11:30:45Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "87afd38102b4f473a0c0d4237e6718c125a5442b",
+    "head": {
+      "ref": "chatgpt/ghostpay-recovery-review-20261118",
+      "sha": "18110015e99efbeb4f23d47cd88bd6f917010108",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc"
+    },
+    "labels": []
+  },
+  {
+    "number": 228,
+    "title": "fix(privacy): enforce own-node selection on cached RPC clients",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/228",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:28:50Z",
+    "updated_at": "2026-11-18T12:43:20Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "0e07c24d45060a8496a5028155f45993c8fabbc8",
+    "head": {
+      "ref": "chatgpt/ghostpay-own-node-guard-20261118",
+      "sha": "685fe1a39a3fa9f1d6a4d10a77b4d1a2745edeed",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc"
+    },
+    "labels": []
+  },
+  {
+    "number": 227,
+    "title": "fix(web): lock suspended Pages sessions after clock rollback",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/227",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:25:48Z",
+    "updated_at": "2026-11-18T11:25:48Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "192682fc8e72dad89ca85006cd9580d0f39ea3dd",
+    "head": {
+      "ref": "chatgpt/ghostpay-pages-idle-clock-20261118",
+      "sha": "613667be4eeb132c7d21ccd06c627f9a7144d85b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dfc75ef2087fa6463ae59e0818abec01796c578d"
+    },
+    "labels": []
+  },
+  {
+    "number": 226,
+    "title": "fix(audit): contain static helper symlinks and malformed requests",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/226",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:24:15Z",
+    "updated_at": "2026-11-18T11:24:15Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "cd914b5d59021983179a5f3f825c9d5bc57e342d",
+    "head": {
+      "ref": "chatgpt/ghostpay-sonar-review-20261118",
+      "sha": "3a3b136a326e0d8c1f369d94d4517ad0711babc8",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "nodata/jolly-rubin-u4zd45",
+      "sha": "1054daabc5cabe958466ec144582d76137b54910"
+    },
+    "labels": []
+  },
+  {
+    "number": 225,
+    "title": "fix(security): reject analyzer process failures in proposed Mythril checker",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/225",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T11:20:15Z",
+    "updated_at": "2026-11-18T11:20:15Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "9a6831ae0a07d986e22a61462b061c166bbf59cd",
+    "head": {
+      "ref": "chatgpt/ghostpay-mythril-checker-failclosed-20261118",
+      "sha": "94ca7d5ba9dc65c7324805e5bf9b7d1d2dccee57",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-consolidation-9xhtxg-security",
+      "sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f"
+    },
+    "labels": []
+  },
+  {
+    "number": 224,
+    "title": "SonarCloud triage of all 107 findings + static-server/bidi/download hardening; D03 (AUD24-01) decision packet",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/224",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T09:49:48Z",
+    "updated_at": "2026-11-18T09:49:48Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "0574521b22df7c1e63d905da7605d4fcec5d4a94",
+    "head": {
+      "ref": "nodata/jolly-rubin-u4zd45",
+      "sha": "1054daabc5cabe958466ec144582d76137b54910",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 223,
+    "title": "docs: sync docs with current code (2026-11-18)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/223",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T09:45:36Z",
+    "updated_at": "2026-11-18T09:45:36Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "020ccbeef2775867f225087d0e487bd446a281e2",
+    "head": {
+      "ref": "nodata/doc-sweep-20261118",
+      "sha": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 222,
+    "title": "privacy: implement threat-model recommendations TM1-TM15",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/222",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T09:02:44Z",
+    "updated_at": "2026-11-18T12:43:06Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "644a43ee6366298f418a0aca5a40ecf974871748",
+    "head": {
+      "ref": "privacy/hardening-recommendations",
+      "sha": "2bc2098298d90928eb1acafad969f28316bb05fc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 221,
+    "title": "docs: record post-consolidation PR retirement and the branch-protection owner script",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/221",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T08:40:29Z",
+    "updated_at": "2026-11-18T08:40:29Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "bdcff8d4798aabdad2e0c491196971f853db9116",
+    "head": {
+      "ref": "nodata/wizardly-allen-qwol6u",
+      "sha": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 220,
+    "title": "Security remediation 2026-11-18: Mythril re-evaluation, red-team fixes (CI policy, RPC egress, confidential router, ledger), key-boundary docs",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/220",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T08:33:01Z",
+    "updated_at": "2026-11-18T08:33:01Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "5885474f7640b251b5e29bc7c5b8c88298021438",
+    "head": {
+      "ref": "security/mythril-full-remediation-20261118",
+      "sha": "16c48521f99903ccd2e584df5d00a9dec5ef754c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 219,
+    "title": "Bitcoin scan: recognise spent outputs locally; per-outpoint provider query becomes opt-in (spec 12)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/219",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T08:28:06Z",
+    "updated_at": "2026-11-18T08:28:06Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "4092047cddc3c785ba75d0cec47e8cc164dcd05e",
+    "head": {
+      "ref": "claude/vibrant-cori-scu18b",
+      "sha": "9617e8572f9bc414410bd937b0e7718d0c5bd55c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 218,
+    "title": "Restore fixes dropped by merge 84c2c185 that main still lacks: CLI, sweep destination, quote age, relayer (claim + integration)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/218",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T08:24:06Z",
+    "updated_at": "2026-11-18T09:48:02Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "a2fb2e3ad05bdfd80c0aca1cc63438b1d3e15389",
+    "head": {
+      "ref": "claude/exciting-brown-7v69cr",
+      "sha": "b1327d4d0e263fdfc7d4fb0b5546b18de2d7434e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 217,
+    "title": "DeployPolicy: refuse fee-charging factories without a token-specific freeze acknowledgement (N1 / SEC-E2-01)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/217",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:52:53Z",
+    "updated_at": "2026-11-18T09:19:05Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "e44a395cd323dc0f840054b35932ec5f1fd5c990",
+    "head": {
+      "ref": "claude/ghostpay-consolidation-9xhtxg-feeguard",
+      "sha": "9e5cc3789b7b8a3c550ed2680304ab6245ec6676",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 216,
+    "title": "docs(handoff): GhostPay zero-Codex continuation through rotation 207",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/216",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:45:46Z",
+    "updated_at": "2026-11-19T05:44:05Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "413d02338118fa8a55f497a6ced86365fe6cefaa",
+    "head": {
+      "ref": "chatgpt/zero-codex/handoff-postmerge-20261118",
+      "sha": "bb193849a5688bb604e3e32dc83e1647e37fe447",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 215,
+    "title": "docs(wiki): Pages user/developer guides and maintenance through rotation 207",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/215",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:45:43Z",
+    "updated_at": "2026-11-19T05:44:03Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "74812266118e7db18c9fba0bcee2f7c037b4de99",
+    "head": {
+      "ref": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "sha": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 214,
+    "title": "docs(audit): randomized Pages source reviews through rotation 207",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/214",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:45:41Z",
+    "updated_at": "2026-11-19T05:44:01Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "54fa61f585ae83abc31ea9fe27cd5ca2e3212dc8",
+    "head": {
+      "ref": "chatgpt/zero-codex/audit-main-20261118-r185",
+      "sha": "a238c22dbc8a38c32db4a38f7bd5536ab32e3aee",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 213,
+    "title": "[WIP] Spec 18 / requirement 3q: stealth keypair export and independent recovery (K01-K06)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/213",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:44:53Z",
+    "updated_at": "2026-11-18T08:46:38Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "claude/ghostpay-consolidation-9xhtxg-spec18",
+      "sha": "ebf7c92c3be1c7aebd37fc58b5567e114fb932fc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 212,
+    "title": "Security and release-gate reconciliation: Mythril/Echidna/fee-token re-evaluation, CI review, owner packets",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/212",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:43:00Z",
+    "updated_at": "2026-11-18T07:43:00Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "9cf79d689353b678a1dbfeb7bc5eb44b1aca8c94",
+    "head": {
+      "ref": "claude/ghostpay-consolidation-9xhtxg-security",
+      "sha": "4894d0d8d94333dffa8ae3937a4d8314f27c686f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 211,
+    "title": "Completion run 2026-11-18 (gap-fill): claims + integration",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/211",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:39:14Z",
+    "updated_at": "2026-11-18T09:44:09Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "02aa54d255b1f672c3b178bd165e761e135fbfad",
+    "head": {
+      "ref": "nodata/wonderful-darwin-kd1h22",
+      "sha": "a92658b1ef6b95ff0145b2e1933d0047d51289d5",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 210,
+    "title": "deps: bump the npm-minor-patch group across 1 directory with 9 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/210",
+    "state": "open",
+    "draft": false,
+    "created_at": "2026-11-18T07:18:32Z",
+    "updated_at": "2026-11-18T07:22:45Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "6629327926f32687883cd0d8cd9236440d53af23",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "sha": "4d19655a2e5d93ad9378803cd4163245168aca24",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 209,
+    "title": "Completion run 2026-11-18: claims + integration",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/209",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:16:07Z",
+    "updated_at": "2026-11-18T09:51:27Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "d68c4fd127aef016e98f540bd66289ddc96d7a08",
+    "head": {
+      "ref": "claude/ghostpay-completion-audit-ot5jjm",
+      "sha": "b5e2ea3e5030b56c79063eb1f91c8a634ee5d740",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 208,
+    "title": "docs(handoff): cooperative completion, audit and security-closure execution prompt",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/208",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T07:08:10Z",
+    "updated_at": "2026-11-18T07:08:10Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "17a9eab9ed99406d0ae4e80ab6180d68e194c489",
+    "head": {
+      "ref": "claude/admiring-albattani-6kydor",
+      "sha": "ef610872aa4ef1f2ee3d0b177f883481662d4733",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 207,
+    "title": "ci: bump the actions group across 1 directory with 2 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/207",
+    "state": "open",
+    "draft": false,
+    "created_at": "2026-11-18T07:01:58Z",
+    "updated_at": "2026-11-18T07:06:33Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "26f8260e6b407f6995704a60b16df8e1e41fc1ea",
+    "head": {
+      "ref": "dependabot/github_actions/actions-b9ade1236b",
+      "sha": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": [
+      "dependencies",
+      "github_actions"
+    ]
+  },
+  {
+    "number": 206,
+    "title": "Integrate #204 agent tooling onto consolidated main (conflicts resolved)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/206",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-18T06:57:23Z",
+    "updated_at": "2026-11-18T11:13:19Z",
+    "closed_at": "2026-11-18T11:13:19Z",
+    "merged_at": "2026-11-18T11:13:19Z",
+    "merge_commit_sha": "dfc75ef2087fa6463ae59e0818abec01796c578d",
+    "head": {
+      "ref": "claude/ghostpay-consolidation-9xhtxg",
+      "sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 205,
+    "title": "docs(audit): post-consolidation audit and feature-completion execution package (2026-11-18)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/205",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-18T06:57:23Z",
+    "updated_at": "2026-11-18T08:43:32Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "b7ec1bd77590594a79981708104e6898f890ce90",
+    "head": {
+      "ref": "nodata/zealous-hopper-lr0nxe",
+      "sha": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": []
+  },
+  {
+    "number": 204,
+    "title": "Add agent guide, package map, affected-checks and security-invariants skills",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/204",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-18T02:22:59Z",
+    "updated_at": "2026-11-18T11:13:21Z",
+    "closed_at": "2026-11-18T11:13:21Z",
+    "merged_at": "2026-11-18T11:13:21Z",
+    "merge_commit_sha": "c487f0fe649e24a1e89f1f8fd0d82e90a3441c62",
+    "head": {
+      "ref": "nodata/eager-babbage-0w6sf6",
+      "sha": "2693b08ed4b1dae35fad604a2324b790f1eee5dc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "cfaebeeae22f292cb0bb3074619b2603cb738367"
+    },
+    "labels": []
+  },
+  {
+    "number": 203,
+    "title": "Consolidation candidate 2026-11-18: unified + main + Pages #192–#202 + specs + fixes",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/203",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-18T02:15:25Z",
+    "updated_at": "2026-11-18T06:56:49Z",
+    "closed_at": "2026-11-18T06:56:49Z",
+    "merged_at": "2026-11-18T06:56:49Z",
+    "merge_commit_sha": "5467c158069c5bab264b6a653ac56e89e13f3e13",
+    "head": {
+      "ref": "nodata/wizardly-allen-qwol6u",
+      "sha": "71abc7e55c25d45b206ac47e5ddd24e072805710",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "cfaebeeae22f292cb0bb3074619b2603cb738367"
+    },
+    "labels": []
+  },
+  {
+    "number": 202,
+    "title": "test(pages): isolate keystore reimport from held-RPC sweep",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/202",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-18T01:39:54Z",
+    "updated_at": "2026-11-18T08:29:53Z",
+    "closed_at": "2026-11-18T08:29:53Z",
+    "merged_at": null,
+    "merge_commit_sha": "c9edc39718050cf963d1566a1925d159dc0476cf",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-keystore-reimport-control-20261118",
+      "sha": "30cc4560c6a71694a1cd116d879823e9a596e4d3",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1"
+    },
+    "labels": []
+  },
+  {
+    "number": 201,
+    "title": "test(pages): focus new invoice when Pay is already selected",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/201",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T22:39:26Z",
+    "updated_at": "2026-11-18T08:29:33Z",
+    "closed_at": "2026-11-18T08:29:33Z",
+    "merged_at": null,
+    "merge_commit_sha": "b6a5fa50d45003fc038e6bbb98624e6a03cbf68d",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-same-view-invoice-focus-20261117",
+      "sha": "2fb89ff5f2dcf34f3a02b66e4485d5e282ee9aa1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "sha": "23cc6db4b924943ba99b169ac83c214272dcaa10"
+    },
+    "labels": []
+  },
+  {
+    "number": 200,
+    "title": "test(pages): preserve keyboard focus on anchor and focus main on late invoice",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/200",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T21:45:44Z",
+    "updated_at": "2026-11-18T08:29:18Z",
+    "closed_at": "2026-11-18T08:29:18Z",
+    "merged_at": null,
+    "merge_commit_sha": "904d5bbf6c9fb5010778029b78e2e408b1973149",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-late-invoice-focus-20261117",
+      "sha": "23cc6db4b924943ba99b169ac83c214272dcaa10",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666"
+    },
+    "labels": []
+  },
+  {
+    "number": 199,
+    "title": "test(pages): preserve unrelated anchors and late invoice opt-out",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/199",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T20:44:03Z",
+    "updated_at": "2026-11-18T08:28:58Z",
+    "closed_at": "2026-11-18T08:28:58Z",
+    "merged_at": null,
+    "merge_commit_sha": "8bbfe4feaf83c6229d46f18cb1e30362725c1eb8",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-hash-navigation-exceptions-20261117",
+      "sha": "b570d4bb748d318e0963d6bfa2f5e19f22e0d666",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "sha": "9732adb949cc7191beddcb986dff76e9f9534537"
+    },
+    "labels": []
+  },
+  {
+    "number": 198,
+    "title": "fix(pages): remove retained invoice hash on privacy re-enable (RED→GREEN 24/24)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/198",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T17:39:31Z",
+    "updated_at": "2026-11-18T08:28:44Z",
+    "closed_at": "2026-11-18T08:28:44Z",
+    "merged_at": null,
+    "merge_commit_sha": "4ecad1febf1926594e826d40032a2983d2a1845f",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-autoclear-enable-retained-hash-20261117",
+      "sha": "9732adb949cc7191beddcb986dff76e9f9534537",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd"
+    },
+    "labels": []
+  },
+  {
+    "number": 197,
+    "title": "fix(pages): preserve history state while clearing invoice URLs (test-first)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/197",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T14:41:40Z",
+    "updated_at": "2026-11-18T08:28:25Z",
+    "closed_at": "2026-11-18T08:28:25Z",
+    "merged_at": null,
+    "merge_commit_sha": "10c15a4d8f242c9d333c4942926dda01418b62af",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-fragment-history-state-20261117",
+      "sha": "68993c668aa70ac4be1a9deeeef3badec3b10fcd",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1"
+    },
+    "labels": []
+  },
+  {
+    "number": 196,
+    "title": "test(pages): cover lean shell invoice-fragment privacy gates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/196",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T13:41:10Z",
+    "updated_at": "2026-11-18T08:28:08Z",
+    "closed_at": "2026-11-18T08:28:08Z",
+    "merged_at": null,
+    "merge_commit_sha": "78060205d89f04170120e597a485f06c8714b804",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-fragment-shell-gates-20261117",
+      "sha": "120dcd7fc15b2d5a646a93835287ef9bc7281fe1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0"
+    },
+    "labels": []
+  },
+  {
+    "number": 195,
+    "title": "test(pages): cover signed bundled manifest and on-chain fail-closed gates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/195",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T11:45:24Z",
+    "updated_at": "2026-11-18T08:27:48Z",
+    "closed_at": "2026-11-18T08:27:48Z",
+    "merged_at": null,
+    "merge_commit_sha": "163f45e4196c019cd1d49c415602577ea11af7ef",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-manifest-gates-20261117",
+      "sha": "12e18931ae99d1444e1f3f3ecfc5f8c117a7b6d0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e"
+    },
+    "labels": []
+  },
+  {
+    "number": 194,
+    "title": "fix(pages): Pay rich-status renderer own-property guard (RED→GREEN 24/24)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/194",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T06:40:48Z",
+    "updated_at": "2026-11-18T08:27:29Z",
+    "closed_at": "2026-11-18T08:27:29Z",
+    "merged_at": null,
+    "merge_commit_sha": "bf82146f7f927a03c6a0adc206225ec47652d1dc",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-pay-rich-tags-20261117",
+      "sha": "c15833bc2aa6e0e0189f6cd18becf293e0e6e73e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+    },
+    "labels": []
+  },
+  {
+    "number": 193,
+    "title": "[Paused — out of Pages lean scope] TagArchive blocked-download regression (test-only)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/193",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T05:43:54Z",
+    "updated_at": "2026-11-17T05:48:17Z",
+    "closed_at": "2026-11-17T05:48:16Z",
+    "merged_at": null,
+    "merge_commit_sha": "8bea3633fe4c1caecbba9808d525f5063f7d0e5a",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "sha": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+    },
+    "labels": []
+  },
+  {
+    "number": 192,
+    "title": "fix(pages): inherited rich-text renderer own-property guard (RED→GREEN 24/24)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/192",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T03:42:40Z",
+    "updated_at": "2026-11-18T08:27:10Z",
+    "closed_at": "2026-11-18T08:27:10Z",
+    "merged_at": null,
+    "merge_commit_sha": "3e8751fd42a0bb40cfdedd198a0ca4e487b162f4",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-renderer-own-property-20261116",
+      "sha": "dd4a7eb4dd71435284d9d326310cb2695faa249a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4"
+    },
+    "labels": []
+  },
+  {
+    "number": 191,
+    "title": "docs: future privacy architecture requirements 5a–5l",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/191",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T03:32:04Z",
+    "updated_at": "2026-11-18T08:26:50Z",
+    "closed_at": "2026-11-18T08:26:50Z",
+    "merged_at": null,
+    "merge_commit_sha": "ba05ce7f4179d893bfcf11891782678501d47064",
+    "head": {
+      "ref": "docs/ghostpay-privacy-architecture-5a-5l-20261116",
+      "sha": "e05044d4209de7e9cc242c8a83e5fc2264663174",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c"
+    },
+    "labels": []
+  },
+  {
+    "number": 190,
+    "title": "docs: approve requirement 3q for browser-only stealth keypair export",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/190",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-17T03:22:36Z",
+    "updated_at": "2026-11-18T08:26:30Z",
+    "closed_at": "2026-11-18T08:26:30Z",
+    "merged_at": null,
+    "merge_commit_sha": "6e534a7e905feb970c67fa0df3dc2e4dd76a843d",
+    "head": {
+      "ref": "docs/ghostpay-3q-stealth-keypair-export-20261116",
+      "sha": "16bc61fa1c19083cf3c8ee8e33be52bc7f90de83",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c"
+    },
+    "labels": []
+  },
+  {
+    "number": 189,
+    "title": "Recover six historical CLI, merchant, transport and UX changes",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/189",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-16T23:49:50Z",
+    "updated_at": "2026-11-16T23:54:34Z",
+    "closed_at": "2026-11-16T23:50:21Z",
+    "merged_at": "2026-11-16T23:50:21Z",
+    "merge_commit_sha": "cfaebeeae22f292cb0bb3074619b2603cb738367",
+    "head": {
+      "ref": "consolidation/six-verified-boundaries-20261116",
+      "sha": "c9787b223a240b8bd5a626325944b3c01a2d4be0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0fb33dc87571c918c1bdfa8b5e3e55c8c12c1be6"
+    },
+    "labels": []
+  },
+  {
+    "number": 188,
+    "title": "Backport bounded release-asset streaming and cancellation to the ops monitor",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/188",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-16T23:47:15Z",
+    "updated_at": "2026-11-16T23:51:24Z",
+    "closed_at": "2026-11-16T23:48:40Z",
+    "merged_at": "2026-11-16T23:48:40Z",
+    "merge_commit_sha": "0fb33dc87571c918c1bdfa8b5e3e55c8c12c1be6",
+    "head": {
+      "ref": "consolidation/ops-monitor-bounded-streams-20261116",
+      "sha": "d2e8689b038034233d6587cfca547bff3321fcde",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 187,
+    "title": "Consolidate GhostPay features and qualify unified candidate",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/187",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T21:18:23Z",
+    "updated_at": "2026-11-18T06:56:51Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "f5e10f84dfa71d26ffc4024adcec94111152c0ee",
+    "head": {
+      "ref": "codex/ghostpay-unified-completion",
+      "sha": "beb525dddcca103de9eda447b55cddf7ee2f428c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 186,
+    "title": "feat(reconciliation): use canonical block timestamps",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/186",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T20:51:29Z",
+    "updated_at": "2026-11-18T08:26:05Z",
+    "closed_at": "2026-11-18T08:26:05Z",
+    "merged_at": null,
+    "merge_commit_sha": "eb6593b1e78d35336d353b8598bca17e5f830e91",
+    "head": {
+      "ref": "codex/ghostpay-canonical-time-20261116",
+      "sha": "27852ba898968a08f7d7c448fac8b19058189281",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc"
+    },
+    "labels": []
+  },
+  {
+    "number": 185,
+    "title": "[Draft] feat(relayer): private metrics listener and signed alerts",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/185",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T20:50:57Z",
+    "updated_at": "2026-11-18T08:25:47Z",
+    "closed_at": "2026-11-18T08:25:47Z",
+    "merged_at": null,
+    "merge_commit_sha": "7400cbc16db7c48e5a57e862e8f3bab5de05a090",
+    "head": {
+      "ref": "codex/ghostpay-observability-20261116",
+      "sha": "c738f96e2f1a0dfef9003ae29ad636b03cf74b09",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc"
+    },
+    "labels": []
+  },
+  {
+    "number": 184,
+    "title": "fix(ops-monitor): cancel capped release streams",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/184",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T20:31:09Z",
+    "updated_at": "2026-11-18T08:25:25Z",
+    "closed_at": "2026-11-18T08:25:25Z",
+    "merged_at": null,
+    "merge_commit_sha": "2a45a793fa8f85f6db04ffb98201eac8c2006ba6",
+    "head": {
+      "ref": "codex/ghostpay-ops-response-cap-20261116",
+      "sha": "73371b57040c61bdb480e724e8593313d95c6781",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc"
+    },
+    "labels": []
+  },
+  {
+    "number": 183,
+    "title": "fix(i18n): classify merchant identity disclosures on #182",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/183",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-16T20:19:20Z",
+    "updated_at": "2026-11-16T20:58:56Z",
+    "closed_at": "2026-11-16T20:37:52Z",
+    "merged_at": "2026-11-16T20:37:52Z",
+    "merge_commit_sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+    "head": {
+      "ref": "codex/ghostpay-caveman-followup-20261116",
+      "sha": "2de9b0c5764cb1fb80a648e18d269b4d91210dcc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-caveman-completion-20261116",
+      "sha": "4ee9dd770826e705cb8c2437a53cf6714a003635"
+    },
+    "labels": []
+  },
+  {
+    "number": 182,
+    "title": "Complete linked invoice reporting and recover custody and audit fixes",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/182",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T14:17:16Z",
+    "updated_at": "2026-11-18T08:25:07Z",
+    "closed_at": "2026-11-18T08:25:07Z",
+    "merged_at": null,
+    "merge_commit_sha": "7dbdf225f1fd567b05297e7853dae5f8b405c6b0",
+    "head": {
+      "ref": "codex/ghostpay-caveman-completion-20261116",
+      "sha": "0c4c3c8d951a9d6e71affcdaa26478911c8037f1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e"
+    },
+    "labels": []
+  },
+  {
+    "number": 181,
+    "title": "Add validated ERC-6538 nonce and delegated-registration builders",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/181",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T10:32:08Z",
+    "updated_at": "2026-11-18T08:24:45Z",
+    "closed_at": "2026-11-18T08:24:45Z",
+    "merged_at": null,
+    "merge_commit_sha": "66891d6264bdfeea8cec915109810609510515f1",
+    "head": {
+      "ref": "codex/ghostpay-registry-recovery-20261116",
+      "sha": "98f779538bb7fe5ffa3b5235f87b6d9cf25bca2c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e"
+    },
+    "labels": []
+  },
+  {
+    "number": 180,
+    "title": "fix(contracts): fail closed on Mythril exits and malformed reports",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/180",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T10:30:59Z",
+    "updated_at": "2026-11-18T08:24:27Z",
+    "closed_at": "2026-11-18T08:24:27Z",
+    "merged_at": null,
+    "merge_commit_sha": "4159fcc9d5b387863be7590ecb89a7d350333323",
+    "head": {
+      "ref": "codex/ghostpay-mythril-recovery-20261116",
+      "sha": "ffd957e28f982f5c6d2dc00f51143766b2406773",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e"
+    },
+    "labels": []
+  },
+  {
+    "number": 179,
+    "title": "Consolidate Pages completion and remediate verified audit findings",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/179",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T09:59:25Z",
+    "updated_at": "2026-11-18T08:24:03Z",
+    "closed_at": "2026-11-18T08:24:03Z",
+    "merged_at": null,
+    "merge_commit_sha": "8799fb70ffb18abd55112101a45e0b4bba4253ec",
+    "head": {
+      "ref": "codex/ghostpay-completion-20261116",
+      "sha": "b4be8866f6ff883fbbedc49be88b5b251a7d270e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461"
+    },
+    "labels": []
+  },
+  {
+    "number": 178,
+    "title": "fix(pages): clean up blocked-download Blob URL — RED→GREEN 24/24 CI (draft)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/178",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T09:28:02Z",
+    "updated_at": "2026-11-18T08:23:39Z",
+    "closed_at": "2026-11-18T08:23:39Z",
+    "merged_at": null,
+    "merge_commit_sha": "f00ec7c210efc455e9de59b247994eec458bea6e",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-download-cleanup-20261116",
+      "sha": "cf5ad81cab48424e6302e507c9af46bf4c99aee4",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "sha": "17f681915f25441f5c38326ad718b8082495d52a"
+    },
+    "labels": []
+  },
+  {
+    "number": 177,
+    "title": "fix(pages): IndexedDB close recovery — test-first RED → exact-head 24/24 GREEN (draft)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/177",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T04:43:29Z",
+    "updated_at": "2026-11-18T08:23:14Z",
+    "closed_at": "2026-11-18T08:23:14Z",
+    "merged_at": null,
+    "merge_commit_sha": "86c97a32ca3dfdec1ce06d5797d74c2c8b282f47",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-tag-store-closed-connection-20261116",
+      "sha": "17f681915f25441f5c38326ad718b8082495d52a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "sha": "57acf1b06b3b31ada0220556cf64344e1f854e21"
+    },
+    "labels": []
+  },
+  {
+    "number": 176,
+    "title": "deps: bump the npm-minor-patch group across 1 directory with 12 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/176",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-16T03:18:55Z",
+    "updated_at": "2026-11-18T07:18:07Z",
+    "closed_at": "2026-11-18T07:18:03Z",
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-9f9e7f3407",
+      "sha": "7d1f0ae17e31c0a9e706188cb1c98900ea1757b1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 175,
+    "title": "test(pages): historical imported link requires live rescan — exact-head 24/24 + Pages PASS (draft)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/175",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T01:40:46Z",
+    "updated_at": "2026-11-18T08:22:48Z",
+    "closed_at": "2026-11-18T08:22:48Z",
+    "merged_at": null,
+    "merge_commit_sha": "3a1b9848e9a286a0dbf7d5ecf8d26f4b1a4f54c7",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-e2e-proof-20261116",
+      "sha": "57acf1b06b3b31ada0220556cf64344e1f854e21",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79"
+    },
+    "labels": []
+  },
+  {
+    "number": 174,
+    "title": "Consolidation: integrate qualified Pages security fixes into historical staging",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/174",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T01:10:34Z",
+    "updated_at": "2026-11-18T08:22:20Z",
+    "closed_at": "2026-11-18T08:22:20Z",
+    "merged_at": null,
+    "merge_commit_sha": "dc770f7539d9429f13fb139f513cd61d0a5884ed",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461"
+    },
+    "labels": []
+  },
+  {
+    "number": 173,
+    "title": "fix(pages): distinguish imported invoice history from live verified links — browser acceptance pending (draft)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/173",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-16T00:43:04Z",
+    "updated_at": "2026-11-18T08:21:54Z",
+    "closed_at": "2026-11-18T08:21:54Z",
+    "merged_at": null,
+    "merge_commit_sha": "03647b2528dfa5e4fc2edd3de36640848910d93c",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-imported-link-20261115",
+      "sha": "97cf5a0cda257451c99643909a7b5ebe7da89a79",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e"
+    },
+    "labels": []
+  },
+  {
+    "number": 172,
+    "title": "fix(pages): ignore stale invoice callbacks — RED→GREEN exact-head 24/24 + Pages (draft)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/172",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T18:46:34Z",
+    "updated_at": "2026-11-18T08:21:34Z",
+    "closed_at": "2026-11-18T08:21:34Z",
+    "merged_at": null,
+    "merge_commit_sha": "e9ac4db810332285d28f51d103f23a3b384b4743",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-invoice-stale-submit-20261115",
+      "sha": "dffe072511c34b8a73bd64ac6147d5a79256480e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "sha": "433307b869acf2d81b2d12b415631076a89f7213"
+    },
+    "labels": []
+  },
+  {
+    "number": 171,
+    "title": "fix(pages): verified-backup gate RED→GREEN; 24/24 CI + Anvil PASS (draft)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/171",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T13:45:47Z",
+    "updated_at": "2026-11-18T08:21:13Z",
+    "closed_at": "2026-11-18T08:21:13Z",
+    "merged_at": null,
+    "merge_commit_sha": "0a43b74d6864d5778093ac6424abb4882ac50d8b",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-backup-gate-verified-only-20261115",
+      "sha": "433307b869acf2d81b2d12b415631076a89f7213",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f"
+    },
+    "labels": []
+  },
+  {
+    "number": 170,
+    "title": "Security audit: top-down architecture and trust-boundary review",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/170",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T12:36:14Z",
+    "updated_at": "2026-11-18T08:20:53Z",
+    "closed_at": "2026-11-18T08:20:53Z",
+    "merged_at": null,
+    "merge_commit_sha": "49a7254dde29af9b33de8a8ef0b9b52b22ffcac9",
+    "head": {
+      "ref": "chatgpt/ghostpay-top-down-audit-20261115",
+      "sha": "775756931be4683f47e8af6b2ecf26f9458897d7",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "sha": "97a617b5b95f04a1e736c5c730c587ef0824d05a"
+    },
+    "labels": []
+  },
+  {
+    "number": 169,
+    "title": "Security audit: fourth-pass wallet and relayer review",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/169",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T12:30:30Z",
+    "updated_at": "2026-11-18T08:20:36Z",
+    "closed_at": "2026-11-18T08:20:36Z",
+    "merged_at": null,
+    "merge_commit_sha": "68b672ddd8854d054c3784a801f05ba58fd6bf5e",
+    "head": {
+      "ref": "chatgpt/ghostpay-sensitive-surface-fourth-pass-20261115",
+      "sha": "97a617b5b95f04a1e736c5c730c587ef0824d05a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "sha": "90a145740a163a9515e5c70e79be33610b67b293"
+    },
+    "labels": []
+  },
+  {
+    "number": 168,
+    "title": "Security audit: third-pass sensitive-surface review",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/168",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T12:25:29Z",
+    "updated_at": "2026-11-18T08:20:18Z",
+    "closed_at": "2026-11-18T08:20:18Z",
+    "merged_at": null,
+    "merge_commit_sha": "cfb08503ebe2cac750915a0680312310d8143699",
+    "head": {
+      "ref": "chatgpt/ghostpay-sensitive-surface-audit-20261115",
+      "sha": "90a145740a163a9515e5c70e79be33610b67b293",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "sha": "cf6a8d69620af6271e573a8b20fe1562e89ef81c"
+    },
+    "labels": []
+  },
+  {
+    "number": 167,
+    "title": "[DRAFT] Audit notes: Pages beta second-pass backup-gate finding",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/167",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T11:59:28Z",
+    "updated_at": "2026-11-18T08:19:59Z",
+    "closed_at": "2026-11-18T08:19:59Z",
+    "merged_at": null,
+    "merge_commit_sha": "3cbf840314dae974b6edf297b68e52ebec338f87",
+    "head": {
+      "ref": "chatgpt/ghostpay-pages-second-pass-notes-20261115",
+      "sha": "cf6a8d69620af6271e573a8b20fe1562e89ef81c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f"
+    },
+    "labels": []
+  },
+  {
+    "number": 166,
+    "title": "[DRAFT] Pages client hardening: bearer QR warnings and bounded responses",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/166",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T11:46:04Z",
+    "updated_at": "2026-11-18T08:19:39Z",
+    "closed_at": "2026-11-18T08:19:39Z",
+    "merged_at": null,
+    "merge_commit_sha": "d18efed3c121cf908ed80265c0449072bb802db5",
+    "head": {
+      "ref": "chatgpt/ghostpay-pages-client-hardening-20261115",
+      "sha": "f3872e90eb255b46a773d78f4f5adb6239db2b4f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "sha": "9b3a3070499a2a6d70349d540f7aaaed006426e9"
+    },
+    "labels": []
+  },
+  {
+    "number": 165,
+    "title": "[DRAFT] Pages beta: integrate verified backups, sleep-aware lock and IndexedDB recovery",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/165",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T11:41:07Z",
+    "updated_at": "2026-11-18T08:19:17Z",
+    "closed_at": "2026-11-18T08:19:17Z",
+    "merged_at": null,
+    "merge_commit_sha": "2340f27165170c253d0b541685223e5870e8d5ce",
+    "head": {
+      "ref": "chatgpt/ghostpay-pages-gp02-gp04-review-20261115",
+      "sha": "9b3a3070499a2a6d70349d540f7aaaed006426e9",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 164,
+    "title": "Completion run: historical branch recovery, audits, consolidation (WIP)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/164",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T11:20:26Z",
+    "updated_at": "2026-11-18T08:19:00Z",
+    "closed_at": "2026-11-18T08:19:00Z",
+    "merged_at": null,
+    "merge_commit_sha": "a1a605fc2b832eab852f220eec6820eed0d4f65c",
+    "head": {
+      "ref": "claude/lucid-meitner-apalzc",
+      "sha": "0d2ea8b40d6eea95388ace12d1bb03049f5d181e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461"
+    },
+    "labels": []
+  },
+  {
+    "number": 163,
+    "title": "fix(pages): requalify #159 transfer-filter guard on owner #157 (RED→GREEN CI verified)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/163",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T06:41:30Z",
+    "updated_at": "2026-11-18T08:38:49Z",
+    "closed_at": "2026-11-18T08:38:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "91c93542427fab13ee69e3691ec693505876766a",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "sha": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461"
+    },
+    "labels": []
+  },
+  {
+    "number": 162,
+    "title": "fix(pages): preserve bearer QR safety on combined candidate (RED→GREEN CI qualified)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/162",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T02:37:31Z",
+    "updated_at": "2026-11-18T08:38:25Z",
+    "closed_at": "2026-11-18T08:38:25Z",
+    "merged_at": null,
+    "merge_commit_sha": "c3cf5c6d22714a0bc33da27de93b9e738a5f1350",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "sha": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6"
+    },
+    "labels": []
+  },
+  {
+    "number": 161,
+    "title": "fix(pages): combine bounded relayer reads and off-filter telemetry rejection",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/161",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-15T01:23:41Z",
+    "updated_at": "2026-11-18T08:38:01Z",
+    "closed_at": "2026-11-18T08:38:01Z",
+    "merged_at": null,
+    "merge_commit_sha": "fe9349db4617bdbb529e4b68503356cf85d33169",
+    "head": {
+      "ref": "chatgpt/pages-browser-fixes-combined-20261114",
+      "sha": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+    },
+    "labels": []
+  },
+  {
+    "number": 160,
+    "title": "docs(pages): source-pinned integration and release-gate inventory",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/160",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-15T01:22:27Z",
+    "updated_at": "2026-11-15T01:22:27Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "a174b80cbaba028f1ab0f6eac8e37e4f101581a8",
+    "head": {
+      "ref": "chatgpt/pages-release-gate-audit-20261114",
+      "sha": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+    },
+    "labels": []
+  },
+  {
+    "number": 159,
+    "title": "fix(pages): reject off-filter token/block transfer telemetry (RED→GREEN qualified)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/159",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T23:47:25Z",
+    "updated_at": "2026-11-18T08:37:38Z",
+    "closed_at": "2026-11-18T08:37:38Z",
+    "merged_at": null,
+    "merge_commit_sha": "abe9492c41858539d3c46582a4e945e02b9eead8",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "sha": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+    },
+    "labels": []
+  },
+  {
+    "number": 158,
+    "title": "fix(pages): cap streamed relayer responses before buffering (RED→GREEN qualified)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/158",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T17:44:50Z",
+    "updated_at": "2026-11-18T08:18:40Z",
+    "closed_at": "2026-11-18T08:18:40Z",
+    "merged_at": null,
+    "merge_commit_sha": "c0aa5c9ecd7686eb54765f6738bd517de084feea",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-relayer-stream-limit-20261114",
+      "sha": "9a84764e70603e5f4e0b7bac13bdb6eeec6e469b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 157,
+    "title": "Consolidation 2026-11-14: integrate residual PR branches onto #150 head",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/157",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T15:24:47Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "a89a2e948321314acf97db435e9776d9322a9461",
+    "head": {
+      "ref": "integration/consolidated-2026-11-14",
+      "sha": "a89a2e948321314acf97db435e9776d9322a9461",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 156,
+    "title": "fix(pages): retain bearer QR privacy warning (RED→GREEN CI qualified)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/156",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T14:44:41Z",
+    "updated_at": "2026-11-18T08:18:20Z",
+    "closed_at": "2026-11-18T08:18:20Z",
+    "merged_at": null,
+    "merge_commit_sha": "bd0b31d6aabcb3aa77608913e281cbd10b2f0f03",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-bearer-qr-warning-20261114",
+      "sha": "81fd4c032e29a87ce509236a0398468022c23012",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 155,
+    "title": "docs(handoff): ultracode prompt for consolidation and hard lanes",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/155",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T10:07:21Z",
+    "updated_at": "2026-11-15T05:12:24Z",
+    "closed_at": "2026-11-15T05:12:24Z",
+    "merged_at": null,
+    "merge_commit_sha": "c86cd1517309da049c0f5d3d869d8e9d81738824",
+    "head": {
+      "ref": "claude/hopeful-bardeen-8ch6l8",
+      "sha": "2a5b29de6a71f13ba855571b74fd33a603cc8736",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 154,
+    "title": "fix(pages): correct negative fiat minor-unit sign (verified test-first RED)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/154",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T09:44:39Z",
+    "updated_at": "2026-11-18T08:37:13Z",
+    "closed_at": "2026-11-18T08:37:13Z",
+    "merged_at": null,
+    "merge_commit_sha": "7b113887084895232657c2bf96e37beab658d6f0",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "sha": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 153,
+    "title": "docs(handoff): rotation 173 Pages #198 exact-head GREEN qualification",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/153",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-14T07:44:52Z",
+    "updated_at": "2026-11-18T06:46:23Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "bf3691c9490bece565b109b85b571578558dc992",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "sha": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 152,
+    "title": "docs: introduce coordinated ChatGPT and Claude development harness",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/152",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T05:47:24Z",
+    "updated_at": "2026-11-15T05:12:25Z",
+    "closed_at": "2026-11-15T05:12:25Z",
+    "merged_at": null,
+    "merge_commit_sha": "eca8e854dea0579535fa4e1ca330919466d85258",
+    "head": {
+      "ref": "ai/agent-harness-20261113",
+      "sha": "15dc9c192c6086f2e51bcce68ca18ea483968b57",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 151,
+    "title": "Lean-core milestone run: audit fixes, fail-closed gates, reachability proof (WIP)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/151",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T05:01:52Z",
+    "updated_at": "2026-11-18T08:36:50Z",
+    "closed_at": "2026-11-18T08:36:50Z",
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "sha": "2527d6b9367887508d7d8f678a18564132652a03",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 150,
+    "title": "Pages beta: Verify backup (GP-PAGES-02), sleep-aware idle lock (GP-PAGES-04), IndexedDB connection recovery for the key vault and reconciliation",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/150",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T05:01:00Z",
+    "updated_at": "2026-11-15T05:12:27Z",
+    "closed_at": "2026-11-15T05:12:27Z",
+    "merged_at": null,
+    "merge_commit_sha": "591e32227503b6e9dcc4c11b71b5e5d5f43628cf",
+    "head": {
+      "ref": "claude/vigilant-johnson-yjgq94",
+      "sha": "36bcdb7470caf7e563b4f72cadc209504137fd6f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 149,
+    "title": "docs(consolidation): Haiku PR ledger #107–#134 vs Pages base",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/149",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T04:36:15Z",
+    "updated_at": "2026-11-15T05:12:29Z",
+    "closed_at": "2026-11-15T05:12:29Z",
+    "merged_at": null,
+    "merge_commit_sha": "2fbeb9fc70da6f4510edcab5d42317c5720c2ae7",
+    "head": {
+      "ref": "haiku/l3-ledger-20261114",
+      "sha": "8c91051b449248bfc822a6578a3815b3c9d83ce3",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 148,
+    "title": "fix(merchant-ledger): never count NaN-timed payment as on time",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/148",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T04:34:42Z",
+    "updated_at": "2026-11-15T05:12:30Z",
+    "closed_at": "2026-11-15T05:12:30Z",
+    "merged_at": null,
+    "merge_commit_sha": "83533fce2cccb6e0857710d8ec79f0d500b6d100",
+    "head": {
+      "ref": "haiku/l2-pkg-20261114",
+      "sha": "0c8b111cbe899a49b3cb03dc32c375b36ca9768d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 147,
+    "title": "i18n(es,ja,ar): translate ~860 untranslated keys (draft, needs native review)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/147",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T04:31:40Z",
+    "updated_at": "2026-11-15T05:12:32Z",
+    "closed_at": "2026-11-15T05:12:32Z",
+    "merged_at": null,
+    "merge_commit_sha": "a3ec596bbe2ab527053f4bdd3f93c124b91be982",
+    "head": {
+      "ref": "haiku/l1-i18n-20261114",
+      "sha": "c6a9033449cd9717d022f1c37913f951b1baaa6e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f"
+    },
+    "labels": []
+  },
+  {
+    "number": 146,
+    "title": "docs(consolidation): reconcile Pages PR ancestry and remaining gates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/146",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-14T03:17:01Z",
+    "updated_at": "2026-11-15T05:12:33Z",
+    "closed_at": "2026-11-15T05:12:33Z",
+    "merged_at": null,
+    "merge_commit_sha": "f3782413355db42c9ff10067f551cb9219486941",
+    "head": {
+      "ref": "chatgpt/consolidation-reconciliation-20261113",
+      "sha": "3cf3437a8d9dbe3ec1d9056adb73fb93f0f2929c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 145,
+    "title": "test(pages): recover reconciliation IndexedDB after failed or blocked open",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/145",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-13T23:44:32Z",
+    "updated_at": "2026-11-15T05:12:35Z",
+    "closed_at": "2026-11-15T05:12:35Z",
+    "merged_at": null,
+    "merge_commit_sha": "23640d773051d8432c5ffd889a4b5a7319318299",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-reconciliation-idb-retry-20261113",
+      "sha": "c8d4c42bee724bacd244bc90b0259c961d27e84f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d"
+    },
+    "labels": []
+  },
+  {
+    "number": 144,
+    "title": "test(pages): fail closed when fee manifest lookup rejects",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/144",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-13T15:43:06Z",
+    "updated_at": "2026-11-15T05:12:37Z",
+    "closed_at": "2026-11-15T05:12:37Z",
+    "merged_at": null,
+    "merge_commit_sha": "1e7f1d11886268d9659e774d5c0cf3525faad7bd",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-manifest-disclosure-rejection-20261113",
+      "sha": "907e2919e93091fd2e9c2abaecbeb95e331f4b7d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f"
+    },
+    "labels": []
+  },
+  {
+    "number": 143,
+    "title": "test(pages): qualify combined verifier, RPC-status and smoke corrections",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/143",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-13T09:42:20Z",
+    "updated_at": "2026-11-15T05:12:39Z",
+    "closed_at": "2026-11-15T05:12:39Z",
+    "merged_at": null,
+    "merge_commit_sha": "c8ba3a283252f8209efe682a064f5a66c96b0ee6",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-combined-qualification-20261113",
+      "sha": "ab427ab81c7bc18a6d908c5201cf86450cf3f21f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 142,
+    "title": "test(pages): fail post-deploy smoke on out-of-project idle requests",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/142",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-13T06:45:21Z",
+    "updated_at": "2026-11-18T08:18:00Z",
+    "closed_at": "2026-11-18T08:18:00Z",
+    "merged_at": null,
+    "merge_commit_sha": "c9e23b868fc94c05d442533ceb245b57c144d9ad",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-smoke-project-boundary-20261113",
+      "sha": "eece5aff554255ca6c02e53849403f66123b8e40",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 141,
+    "title": "test(pages): preserve upstream HTTP failures in local RPC acceptance",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/141",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-13T04:41:46Z",
+    "updated_at": "2026-11-18T08:17:41Z",
+    "closed_at": "2026-11-18T08:17:41Z",
+    "merged_at": null,
+    "merge_commit_sha": "eb497ee08b0afac8965ec20fdf58d52628457742",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-rpc-http-status-20261113",
+      "sha": "68aca93bc19e4c9d91fa37212d9b8c502b4ce884",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 140,
+    "title": "docs(pages): static Pages CI gates, User/Developer Wiki and maintenance ledger",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/140",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-13T03:54:22Z",
+    "updated_at": "2026-11-18T06:45:33Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "cfddf5a2eb84b866587a3ecdb933441cd1d2004d",
+    "head": {
+      "ref": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "sha": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 139,
+    "title": "docs(audit): randomized read-only Pages audit ledger (rotation 179)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/139",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-13T03:51:04Z",
+    "updated_at": "2026-11-18T06:43:36Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "05bfd5b5e6a873f05520dd04ddf32874f2acf663",
+    "head": {
+      "ref": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "sha": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 138,
+    "title": "fix(pages): reject commented CSP and non-double-quoted external assets",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/138",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-13T03:50:11Z",
+    "updated_at": "2026-11-18T08:17:22Z",
+    "closed_at": "2026-11-18T08:17:22Z",
+    "merged_at": null,
+    "merge_commit_sha": "3f2f45e62b7edf65ed8eb9292f1e04a93720a30b",
+    "head": {
+      "ref": "chatgpt/zero-codex/pages-verifier-comment-attrs-20261112",
+      "sha": "6f59cc2cb7add5ca04aa05eef724cb0a65bb3891",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb"
+    },
+    "labels": []
+  },
+  {
+    "number": 137,
+    "title": "GitHub Pages static EVM beta: lean Pages build, verifier, gated deploy workflow, real-chain acceptance",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/137",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T21:19:06Z",
+    "updated_at": "2026-11-18T08:17:00Z",
+    "closed_at": "2026-11-18T08:17:00Z",
+    "merged_at": null,
+    "merge_commit_sha": "a26c4890a4c06beede09aaf92143c2fb9b33a697",
+    "head": {
+      "ref": "claude/ghostpay-github-pages-up6cj6",
+      "sha": "ac08062ec540d429a0bfb24f3aab042be5d212eb",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "nodata/jolly-rubin-u4zd45",
+      "sha": "f88aaf2fe27a7656d15fed50670d841879da92ad"
+    },
+    "labels": []
+  },
+  {
+    "number": 136,
+    "title": "docs: qualify GhostPay #135 combined beta and pin release blockers",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/136",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T20:30:11Z",
+    "updated_at": "2026-11-18T06:56:51Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "e556688381efdaf25253fb3f75df846b1e278916",
+    "head": {
+      "ref": "chatgpt/ghostpay-beta-qualification-20261112",
+      "sha": "c11f905b362ae2b0734b4dc6ff348fe3c5e0fcfa",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 135,
+    "title": "Beta candidate: #121 + #128–#134 ports + #118 tail + #115 + docs; fix #121 CI blockers",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/135",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T20:06:12Z",
+    "updated_at": "2026-11-18T08:16:39Z",
+    "closed_at": "2026-11-18T08:16:39Z",
+    "merged_at": null,
+    "merge_commit_sha": "51a46b05b9862656a8f8e5f4a13733bb1a76fedf",
+    "head": {
+      "ref": "nodata/jolly-rubin-u4zd45",
+      "sha": "f88aaf2fe27a7656d15fed50670d841879da92ad",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 134,
+    "title": "fix(net-transport): port #122 onion authority canonicalization onto beta",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/134",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:22:19Z",
+    "updated_at": "2026-11-18T08:16:17Z",
+    "closed_at": "2026-11-18T08:16:17Z",
+    "merged_at": null,
+    "merge_commit_sha": "8c63a79c63a881e9028b433402974ae38889ece1",
+    "head": {
+      "ref": "chatgpt/ghostpay-onion-canonical-port-20261112",
+      "sha": "8277879eeaa003c31fd76b4f840b9628f4b02cf7",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 133,
+    "title": "fix(ux-guide): port #127 questionnaire validation onto beta #121",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/133",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:22:01Z",
+    "updated_at": "2026-11-18T08:15:55Z",
+    "closed_at": "2026-11-18T08:15:55Z",
+    "merged_at": null,
+    "merge_commit_sha": "8c8240c95e95a3a4d2e612c6c139867527ba9824",
+    "head": {
+      "ref": "chatgpt/ghostpay-ux-guide-port-20261112",
+      "sha": "f3a9b2389f8ba32f7a3cccce2cdabc186c23df1b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 132,
+    "title": "fix(ux-schedule): port #126 advancing-clock expiry guard onto beta",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/132",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:21:28Z",
+    "updated_at": "2026-11-18T08:15:35Z",
+    "closed_at": "2026-11-18T08:15:35Z",
+    "merged_at": null,
+    "merge_commit_sha": "990a96f960f046a0ff89520e87e69d283a0b39a2",
+    "head": {
+      "ref": "chatgpt/ghostpay-ux-clock-port-20261112",
+      "sha": "c3173f849ad6ce3d3e5a4c4b2a1efdb7d9c937df",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 131,
+    "title": "test(merchant-billing): port #124 CSV formula export safety coverage onto beta",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/131",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:21:12Z",
+    "updated_at": "2026-11-18T08:15:13Z",
+    "closed_at": "2026-11-18T08:15:13Z",
+    "merged_at": null,
+    "merge_commit_sha": "4054dffd9a4cfa1a70c87650d0c549fab11be56d",
+    "head": {
+      "ref": "chatgpt/ghostpay-merchant-csv-port-20261112",
+      "sha": "bbc7dda4ce275613296609a5001bac36c888229e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 130,
+    "title": "test(merchant-billing): port #123 period horizon regression onto beta #121",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/130",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:20:26Z",
+    "updated_at": "2026-11-18T08:14:54Z",
+    "closed_at": "2026-11-18T08:14:54Z",
+    "merged_at": null,
+    "merge_commit_sha": "9c192c91578cda691dfb5d33af36c6241ef8d24d",
+    "head": {
+      "ref": "chatgpt/ghostpay-billing-horizon-port-20261112",
+      "sha": "eb21d57c8ad1550481d5d674fa6356ac98f146f0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 129,
+    "title": "fix(cli): port #125 end-of-options regression onto combined beta #121",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/129",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:20:10Z",
+    "updated_at": "2026-11-18T08:14:34Z",
+    "closed_at": "2026-11-18T08:14:34Z",
+    "merged_at": null,
+    "merge_commit_sha": "a4c44235314940d58c4a6dc03b42d883aa604867",
+    "head": {
+      "ref": "chatgpt/ghostpay-cli-sentinel-port-20261112",
+      "sha": "3fd18ef4011b8d6e094ac49a13c0e6ccc2c0c9c9",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 128,
+    "title": "docs(consolidation): source-pinned integration matrix for beta PRs #122–#127",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/128",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-12T19:19:29Z",
+    "updated_at": "2026-11-18T08:14:11Z",
+    "closed_at": "2026-11-18T08:14:11Z",
+    "merged_at": null,
+    "merge_commit_sha": "f7b7f9cbbaa865bdc2bd12466834e7e4d83a40e0",
+    "head": {
+      "ref": "chatgpt/ghostpay-integration-matrix-20261112",
+      "sha": "1a5e815d8446f00a63f98de261081910c9c78ce6",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+    },
+    "labels": []
+  },
+  {
+    "number": 127,
+    "title": "fix(ux-guide): reject non-plain and inherited questionnaire answers (test-first)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/127",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T18:42:24Z",
+    "updated_at": "2026-11-18T11:14:45Z",
+    "closed_at": "2026-11-18T11:14:45Z",
+    "merged_at": null,
+    "merge_commit_sha": "2dab321dabef27e6e2c2e1e2db43a2d9e1ba55bf",
+    "head": {
+      "ref": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "sha": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 126,
+    "title": "test(ux-schedule): pin confirmation to max-age boundary under advancing clock",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/126",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T16:38:55Z",
+    "updated_at": "2026-11-18T08:36:27Z",
+    "closed_at": "2026-11-18T08:36:27Z",
+    "merged_at": null,
+    "merge_commit_sha": "8cce35a60829510cbcb6cae90415bc67736d9115",
+    "head": {
+      "ref": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "sha": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 125,
+    "title": "fix(cli): preserve end-of-options sentinel in value parsing",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/125",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T13:42:24Z",
+    "updated_at": "2026-11-18T08:36:07Z",
+    "closed_at": "2026-11-18T08:36:07Z",
+    "merged_at": null,
+    "merge_commit_sha": "7b92f1fe70a8ef7c0916cb505a75a551fb82eaee",
+    "head": {
+      "ref": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "sha": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 124,
+    "title": "test(merchant-billing): enforce CSV formula neutralization across quoted exports",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/124",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T12:45:48Z",
+    "updated_at": "2026-11-18T08:13:49Z",
+    "closed_at": "2026-11-18T08:13:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "50c7f7f437bfd7ef7d3d15718204144793a7efb3",
+    "head": {
+      "ref": "chatgpt/zero-codex/merchant-csv-safety-20261111",
+      "sha": "afaf7ce62d2bad7ecfc558d96b8dd6fb772cc790",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 123,
+    "title": "test(merchant-billing): preserve final billable-period boundary",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/123",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T11:48:02Z",
+    "updated_at": "2026-11-18T08:35:49Z",
+    "closed_at": "2026-11-18T08:35:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "c3905b403975947ab56d1325ffe4a0a97647d56c",
+    "head": {
+      "ref": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "sha": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 122,
+    "title": "fix(net-transport): reject noncanonical percent-encoded onion authorities",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/122",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T10:37:16Z",
+    "updated_at": "2026-11-18T08:35:25Z",
+    "closed_at": "2026-11-18T08:35:25Z",
+    "merged_at": null,
+    "merge_commit_sha": "4f02840572e47949db84b698b88548f51362479e",
+    "head": {
+      "ref": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "sha": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 121,
+    "title": "Combined beta head: integrate #119, #118, #117 (+#113) and #114; resolve the F1 overlap; local-chain acceptance",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/121",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T05:04:07Z",
+    "updated_at": "2026-11-18T08:13:34Z",
+    "closed_at": "2026-11-18T08:13:34Z",
+    "merged_at": null,
+    "merge_commit_sha": "154e52245272db0ca26ea8cab7fabc597b71379e",
+    "head": {
+      "ref": "claude/gallant-hamilton-4wzkyn",
+      "sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 120,
+    "title": "docs(consolidation): PR inventory and Haiku workstream ledger (H01)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/120",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T04:06:58Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "153de1b07f00756e063ffcfa79d78eb9619eae75",
+    "head": {
+      "ref": "haiku/ghostpay-h01-inventory-20261111",
+      "sha": "747239db1a9b641d761736062c64bfb766d363ed",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 119,
+    "title": "Integrate child PRs 102-111 and the PR 84 tip; fix 20+ verified defects incl. hidden-payment scan and auto-merge gate",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/119",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:56:25Z",
+    "updated_at": "2026-11-18T08:13:13Z",
+    "closed_at": "2026-11-18T08:13:12Z",
+    "merged_at": null,
+    "merge_commit_sha": "0b265af1aefe10e1a800519bb3058f24410c3e55",
+    "head": {
+      "ref": "claude/exciting-brown-7v69cr",
+      "sha": "07968599cd37a98b8fb7b212609bc343e62c5c94",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 118,
+    "title": "Relayer: restart-safe budget and nonce journal, permit failure classes, ops CLI, container qualification",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/118",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:52:42Z",
+    "updated_at": "2026-11-18T08:12:49Z",
+    "closed_at": "2026-11-18T08:12:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "06c07a3d292289c11caef35283975b1c950e89fb",
+    "head": {
+      "ref": "claude/wonderful-thompson-ir89i9",
+      "sha": "97b919c9c19ddc4c0eec6c04299cebd644c8e28a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 117,
+    "title": "QR & device exchange completion (stacked on #113): classifier, multipart, camera lifecycle, device settings v2, security fixes",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/117",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:40:38Z",
+    "updated_at": "2026-11-18T08:12:25Z",
+    "closed_at": "2026-11-18T08:12:25Z",
+    "merged_at": null,
+    "merge_commit_sha": "75a58600b519f8ec4134b254b3ab9c1b1226f75a",
+    "head": {
+      "ref": "claude/kind-faraday-8qzf6e",
+      "sha": "1e4d19f1a533db0be9ce7341a083b7934f8ee81e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/vibrant-cori-scu18b",
+      "sha": "0641d41a4e869b9a1b16d25aa839070b4492bea1"
+    },
+    "labels": []
+  },
+  {
+    "number": 116,
+    "title": "docs(privacy): establish four-axis evidence matrix and qualification tests",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/116",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:40:35Z",
+    "updated_at": "2026-11-18T06:56:51Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "ca358acfa8f48d4deff9b770214bcba797b6b1f0",
+    "head": {
+      "ref": "research/privacy-evidence-matrix-20261110",
+      "sha": "a0a2d1dfbbdb10d89ef1a6ca4557d286d0e3f49e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 115,
+    "title": "Complementary beta workstream: release integrity, build health, hosting, contract/crypto/privacy review, CI, multi-chain qualification",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/115",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:35:36Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "8755b7d3a933c9f0a5647fe8285c8c97d788c9c7",
+    "head": {
+      "ref": "claude/gracious-heisenberg-97ji6q",
+      "sha": "c6ce2259e7f14e3442e26d37a50313b119e9b442",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 114,
+    "title": "Core beta: real-chain lifecycle acceptance (library, CLI, browser), F1/F2 scan and reconciliation fixes, tracker",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/114",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:35:23Z",
+    "updated_at": "2026-11-18T08:11:43Z",
+    "closed_at": "2026-11-18T08:11:43Z",
+    "merged_at": null,
+    "merge_commit_sha": "729b7015e9fdf3c792901835bc87844c858d98d2",
+    "head": {
+      "ref": "claude/nice-ritchie-8vivls",
+      "sha": "1bf25be7c5405c0055c3bb99b0ceec8a2226fe23",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 113,
+    "title": "Hard-lane closure on the beta candidate: BTC local spend tracking and wallet policy, spec 05 acceptance, spec 04 CI gate",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/113",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:22:43Z",
+    "updated_at": "2026-11-18T08:11:26Z",
+    "closed_at": "2026-11-18T08:11:26Z",
+    "merged_at": null,
+    "merge_commit_sha": "6da86ffe3b81f4a75a187a81767e844a5dfb35fa",
+    "head": {
+      "ref": "claude/vibrant-cori-scu18b",
+      "sha": "0641d41a4e869b9a1b16d25aa839070b4492bea1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 112,
+    "title": "docs: screenshots, README package map and wiki refresh",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/112",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-11T01:09:22Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "220145ec8a900250f60ce4fd4a34e4d05ef8b375",
+    "head": {
+      "ref": "claude/docs-screenshots",
+      "sha": "0476cb117ff5ee6b5ccaff77aecc4b4e86038298",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 111,
+    "title": "test(cli): reserve shared byte budgets before concurrent RPC reads",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/111",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T22:47:07Z",
+    "updated_at": "2026-11-18T08:11:02Z",
+    "closed_at": "2026-11-18T08:11:02Z",
+    "merged_at": null,
+    "merge_commit_sha": "6ddecfd56145aac5595919d6c73d25d3b5111bf6",
+    "head": {
+      "ref": "chatgpt/zero-codex/rpc-concurrent-byte-budget-20261110",
+      "sha": "b12a20e1d6e284e8e3e228ab6bf08c83c012777a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 110,
+    "title": "test(chain-evm-extra): fail closed on mismatched RPC response identity",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/110",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T20:47:42Z",
+    "updated_at": "2026-11-18T08:10:23Z",
+    "closed_at": "2026-11-18T08:10:23Z",
+    "merged_at": null,
+    "merge_commit_sha": "80d5cc412f2c25960cb123b12c971f492262ddc0",
+    "head": {
+      "ref": "chatgpt/zero-codex/rpc-response-correlation-20261110",
+      "sha": "bbe300b7fb21829350f66677d270a689f3a79ecf",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 109,
+    "title": "test(cli): reject unauthenticated encrypted receipt recovery without writes",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/109",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T18:48:25Z",
+    "updated_at": "2026-11-18T08:09:56Z",
+    "closed_at": "2026-11-18T08:09:56Z",
+    "merged_at": null,
+    "merge_commit_sha": "53e50b562e78a25a60059ea5884863da263fd70a",
+    "head": {
+      "ref": "chatgpt/zero-codex/recovery-auth-negative-20261110",
+      "sha": "969d1b270b243ce6fbdf1d7b9f5e813b775e7ea3",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 108,
+    "title": "test(cli): exercise receipt creation, encrypted archival and offline recovery",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/108",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T17:42:27Z",
+    "updated_at": "2026-11-18T08:09:32Z",
+    "closed_at": "2026-11-18T08:09:32Z",
+    "merged_at": null,
+    "merge_commit_sha": "615623600996c0d4094b56439fee83bfca5c9466",
+    "head": {
+      "ref": "chatgpt/zero-codex/b0-receipt-recovery-20261110",
+      "sha": "0a61e2c7fc54a87fc80cb8f7fadd143d1f1789aa",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 107,
+    "title": "test(cli): require live RPC evidence despite archived signed receipts",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/107",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T16:43:04Z",
+    "updated_at": "2026-11-18T08:09:11Z",
+    "closed_at": "2026-11-18T08:09:11Z",
+    "merged_at": null,
+    "merge_commit_sha": "b4fb2989e0c7de313aa39d5d6003e812caefb5f7",
+    "head": {
+      "ref": "chatgpt/zero-codex/signed-receipt-no-rpc-proof-20261110",
+      "sha": "0ab175e552485032672c59d9b38c733545c7c50f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 106,
+    "title": "fix(ops-monitor): bound untrusted release-asset streaming before allocation",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/106",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T14:46:19Z",
+    "updated_at": "2026-11-18T08:08:48Z",
+    "closed_at": "2026-11-18T08:08:48Z",
+    "merged_at": null,
+    "merge_commit_sha": "eaa19b5b90cca9ff28b9036f70ed68701402e0fa",
+    "head": {
+      "ref": "chatgpt/zero-codex/ops-monitor-bounded-fetch-20261110",
+      "sha": "5280569b7eaad9b4d996861410211cd40d005fdb",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 105,
+    "title": "test(cli): invoice-bound receipt negative-case qualification",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/105",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T13:39:08Z",
+    "updated_at": "2026-11-18T08:08:28Z",
+    "closed_at": "2026-11-18T08:08:28Z",
+    "merged_at": null,
+    "merge_commit_sha": "5305b56c456d3065193ee663017ec4202fcf8fae",
+    "head": {
+      "ref": "chatgpt/zero-codex/receipt-boundary-regressions-20261110",
+      "sha": "83d17adb4a07ff2120c6674a5128684e4f13776a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 104,
+    "title": "docs: source-pinned GhostPay User/Developer guides and wiki navigation",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/104",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T12:52:44Z",
+    "updated_at": "2026-11-18T08:08:09Z",
+    "closed_at": "2026-11-18T08:08:09Z",
+    "merged_at": null,
+    "merge_commit_sha": "991d488e6c0d5901ca9ac8a8cc2403a14339008f",
+    "head": {
+      "ref": "chatgpt/zero-codex/docs-wiki-20261110",
+      "sha": "fa375dbc1f2416b27d75e44487e5a382f237b379",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 103,
+    "title": "docs(audit): seed-rotated read-only review of secret-box lifecycle boundaries",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/103",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T12:52:41Z",
+    "updated_at": "2026-11-18T08:07:49Z",
+    "closed_at": "2026-11-18T08:07:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "2cf0e2a18d80e957d71d5738799486fed2fc88ab",
+    "head": {
+      "ref": "chatgpt/zero-codex/audit-secret-box-20261110",
+      "sha": "621ee0af3f4748c072eee0479accad82f7c2fdd3",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 102,
+    "title": "docs(qualify): source-pin GhostPay #98 exact CI and unresolved Sonar gate",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/102",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T12:52:38Z",
+    "updated_at": "2026-11-18T08:07:18Z",
+    "closed_at": "2026-11-18T08:07:18Z",
+    "merged_at": null,
+    "merge_commit_sha": "acea9421dba7493cb7da99b86559c56801b16330",
+    "head": {
+      "ref": "chatgpt/zero-codex/qualify-98-20261110",
+      "sha": "a2f4205f900d87ed0726aadeda4b808e6c76fd0c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 101,
+    "title": "docs: ChatGPT-only zero-Codex continuation specification",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/101",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T04:07:58Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "4bf0ffa6cdf080ea6852bf40a047de82ad8d5da4",
+    "head": {
+      "ref": "chatgpt/zero-codex-continuation-spec-20261109",
+      "sha": "d15921981ecfe8342886c27c52af43c22c1c6205",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 100,
+    "title": "Harden cloud auto-integration: exact-head independent review and checked path policy",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/100",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T02:02:41Z",
+    "updated_at": "2026-11-18T08:06:43Z",
+    "closed_at": "2026-11-18T08:06:43Z",
+    "merged_at": null,
+    "merge_commit_sha": "eaae9cca61e0296e015d7f1efbcd117295144f45",
+    "head": {
+      "ref": "codex/ghostpay-approval-gated-auto-integration-20261109",
+      "sha": "e36786bce4e752cb79d60bdca4b640e36ad45753",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+    },
+    "labels": []
+  },
+  {
+    "number": 99,
+    "title": "docs: add 18 future-only privacy-first feature specifications",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/99",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-10T01:50:25Z",
+    "updated_at": "2026-11-10T01:51:18Z",
+    "closed_at": "2026-11-10T01:51:17Z",
+    "merged_at": "2026-11-10T01:51:17Z",
+    "merge_commit_sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b",
+    "head": {
+      "ref": "docs/future-privacy-feature-specs-20261109",
+      "sha": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+    },
+    "labels": []
+  },
+  {
+    "number": 98,
+    "title": "[DRAFT] Consolidate GhostPay implementation, merchant CLI, product security and beta specification",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/98",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T01:15:59Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "16eac253db24db584a9fee09a15d58656cb7cf00",
+    "head": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+    },
+    "labels": []
+  },
+  {
+    "number": 97,
+    "title": "Integrate beta specifications and release archive safety fix into unified GhostPay candidate",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/97",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-10T01:14:51Z",
+    "updated_at": "2026-11-10T01:15:16Z",
+    "closed_at": "2026-11-10T01:15:16Z",
+    "merged_at": "2026-11-10T01:15:16Z",
+    "merge_commit_sha": "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7",
+    "head": {
+      "ref": "gpt/ghostpay-beta-spec-20261109",
+      "sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-beta-consolidated-20261109",
+      "sha": "3ec039c554f7052b859975facb2b634a1763d5cf"
+    },
+    "labels": []
+  },
+  {
+    "number": 96,
+    "title": "Specify accelerated beta delivery and reject empty release archives",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/96",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T01:07:34Z",
+    "updated_at": "2026-11-18T08:06:16Z",
+    "closed_at": "2026-11-18T08:06:16Z",
+    "merged_at": null,
+    "merge_commit_sha": "78fe2cc206bda228a8434dc4d3b103d650b3f7d2",
+    "head": {
+      "ref": "gpt/ghostpay-beta-spec-20261109",
+      "sha": "6697390ff482ba18985de075412ba542e38040ab",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee"
+    },
+    "labels": []
+  },
+  {
+    "number": 95,
+    "title": "Integrate qualified CLI and product stacks; finish shared QR codec",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/95",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-10T00:58:06Z",
+    "updated_at": "2026-11-18T08:05:53Z",
+    "closed_at": "2026-11-18T08:05:53Z",
+    "merged_at": null,
+    "merge_commit_sha": "69bb8e658e98f5da8a4b32584fe6b9ca3cd64c55",
+    "head": {
+      "ref": "codex/ghostpay-integrate-product-cli-20261109",
+      "sha": "3ec039c554f7052b859975facb2b634a1763d5cf",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "gpt/ghostpay-cli-completion-20261109",
+      "sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04"
+    },
+    "labels": []
+  },
+  {
+    "number": 94,
+    "title": "test(web): await saturated reconciliation restore before UI assertion",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/94",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-09T23:43:08Z",
+    "updated_at": "2026-11-18T08:05:13Z",
+    "closed_at": "2026-11-18T08:05:13Z",
+    "merged_at": null,
+    "merge_commit_sha": "b0dd7a3abedf03c16891feb5532b82d77aacd0c7",
+    "head": {
+      "ref": "fix/ghostpay-reconciliation-saturated-state-20261109",
+      "sha": "a864949d9ee48cb48a43710f5dbd382032ab8db9",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac"
+    },
+    "labels": []
+  },
+  {
+    "number": 93,
+    "title": "Complete product outcomes, accessible help and retry/security boundaries",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/93",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-09T22:55:34Z",
+    "updated_at": "2026-11-18T08:04:50Z",
+    "closed_at": "2026-11-18T08:04:50Z",
+    "merged_at": null,
+    "merge_commit_sha": "aad33390bcb09be53f44275d6adc88526587fbfc",
+    "head": {
+      "ref": "gpt/ghostpay-product-completion-20261109",
+      "sha": "3cd1e5544391bad61c943ffab9e5c432d80ea1ee",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac"
+    },
+    "labels": []
+  },
+  {
+    "number": 92,
+    "title": "Complete supported CLI and operator parity with shared verification and recovery",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/92",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-09T22:45:27Z",
+    "updated_at": "2026-11-18T08:04:28Z",
+    "closed_at": "2026-11-18T08:04:28Z",
+    "merged_at": null,
+    "merge_commit_sha": "9f01258734676b9f77e9790bd55777b81b9edb3e",
+    "head": {
+      "ref": "gpt/ghostpay-cli-completion-20261109",
+      "sha": "3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-companion-merchant-20261109",
+      "sha": "b748ecdce06d2dfa911144814161c31a46a09e9b"
+    },
+    "labels": []
+  },
+  {
+    "number": 91,
+    "title": "Merchant companion: restart-safe workflows, strict approvals and qualified CLI",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/91",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-09T12:09:57Z",
+    "updated_at": "2026-11-18T08:04:11Z",
+    "closed_at": "2026-11-18T08:04:11Z",
+    "merged_at": null,
+    "merge_commit_sha": "9eda61123ab231451d08cfcfcaa8beb270590a68",
+    "head": {
+      "ref": "codex/ghostpay-companion-merchant-20261109",
+      "sha": "b748ecdce06d2dfa911144814161c31a46a09e9b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac"
+    },
+    "labels": []
+  },
+  {
+    "number": 90,
+    "title": "Authenticate policy payments, persist withdrawals, and extend localization",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/90",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-09T10:33:01Z",
+    "updated_at": "2026-11-18T08:03:27Z",
+    "closed_at": "2026-11-18T08:03:27Z",
+    "merged_at": null,
+    "merge_commit_sha": "0e1446c1b82db7ea2fcbdecc12fc850db4bebea2",
+    "head": {
+      "ref": "codex/ghostpay-policy-localization-20261109",
+      "sha": "5628bc00b05a6dd0d9cd89f04f0385d9119281ac",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-product-20261109",
+      "sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2"
+    },
+    "labels": []
+  },
+  {
+    "number": 89,
+    "title": "Harden public exchange, reconciliation and policy scopes; finish W5 messages",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/89",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-09T08:40:53Z",
+    "updated_at": "2026-11-18T08:02:59Z",
+    "closed_at": "2026-11-18T08:02:59Z",
+    "merged_at": null,
+    "merge_commit_sha": "232d25ffd73b2e88faf3ddb07d1aa2a7427e35dd",
+    "head": {
+      "ref": "codex/ghostpay-product-20261109",
+      "sha": "cfc7b0f3325a550df830584e86db4c38bcc9d6b2",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-continuation-20261109",
+      "sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40"
+    },
+    "labels": []
+  },
+  {
+    "number": 88,
+    "title": "i18n: classify shared notice labels for translation",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/88",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-09T08:14:45Z",
+    "updated_at": "2026-11-18T07:07:48Z",
+    "closed_at": "2026-11-18T07:07:47Z",
+    "merged_at": "2026-11-18T07:07:47Z",
+    "merge_commit_sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40",
+    "head": {
+      "ref": "codex/ghostpay-continuation-20261109",
+      "sha": "0a68a57b77a70d3bcf4635ccbc5190d735e71f40",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/admiring-albattani-6kydor",
+      "sha": "48b6bc20108079bb7fbf89997249734bf9f41646"
+    },
+    "labels": []
+  },
+  {
+    "number": 87,
+    "title": "deps: bump the npm-major group across 1 directory with 11 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/87",
+    "state": "open",
+    "draft": false,
+    "created_at": "2026-11-09T03:19:40Z",
+    "updated_at": "2026-11-18T07:27:34Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "55d3b316aec9b4b551c165570906df9b6e9955ea",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "sha": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5467c158069c5bab264b6a653ac56e89e13f3e13"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 86,
+    "title": "deps: bump the npm-minor-patch group across 1 directory with 10 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/86",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-09T03:19:31Z",
+    "updated_at": "2026-11-16T03:18:30Z",
+    "closed_at": "2026-11-16T03:18:26Z",
+    "merged_at": null,
+    "merge_commit_sha": "8262d167bad220f95d7bcdb8b26728eb411be90b",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-f818bbfb6d",
+      "sha": "e09bbc1201b56d0fa40d7fa1a963263c81fb3da6",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 85,
+    "title": "ci: bump the actions group across 1 directory with 2 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/85",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-09T03:15:24Z",
+    "updated_at": "2026-11-18T07:02:01Z",
+    "closed_at": "2026-11-18T07:01:57Z",
+    "merged_at": null,
+    "merge_commit_sha": "6ffa4f5c38d2d985b08e996f05a6cb684bf81973",
+    "head": {
+      "ref": "dependabot/github_actions/actions-1850456dc8",
+      "sha": "8f34d83c618b6cde9b0854fa414e30f742faa94e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": [
+      "dependencies",
+      "github_actions"
+    ]
+  },
+  {
+    "number": 84,
+    "title": "Consolidation refresh (2026-11-07): #78 + later branch tips, two vetted remediations, PS-08 key loader",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/84",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-07T04:03:33Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "c56fd79706e3b383b72f5367094d1ee74a205092",
+    "head": {
+      "ref": "claude/admiring-albattani-6kydor",
+      "sha": "5f9e444d3c9775f920b2f4f9a8771a7f8a3d86bf",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+    },
+    "labels": []
+  },
+  {
+    "number": 83,
+    "title": "Audit GhostPay consolidation ancestry and plan gated integration",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/83",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T21:30:13Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "88765da896e8976fcbc334ec726e19f6497daf94",
+    "head": {
+      "ref": "codex/ghostpay-consolidation-audit-20261104",
+      "sha": "e2ac398c2c8943a244239b9d6ffa2181e13e7782",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+    },
+    "labels": []
+  },
+  {
+    "number": 82,
+    "title": "Configure OpenAI autonomous development workflow and prompts",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/82",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-04T21:19:54Z",
+    "updated_at": "2026-11-04T21:21:00Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "codex/setup-autonomous-agent-20261104",
+      "sha": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+    },
+    "labels": []
+  },
+  {
+    "number": 81,
+    "title": "codex: GhostPay cloud engineering checkpoint 41868394956",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/81",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T16:46:36Z",
+    "updated_at": "2026-11-18T08:35:05Z",
+    "closed_at": "2026-11-18T08:35:05Z",
+    "merged_at": null,
+    "merge_commit_sha": "a27519eeda55c4f31484756bded81a13431ee3ad",
+    "head": {
+      "ref": "codex/ghostpay-cloud-41868394956",
+      "sha": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 80,
+    "title": "Fix: [for cherry-picking] Added a conservative guard for unmatched lega",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/80",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T09:06:10Z",
+    "updated_at": "2026-11-04T09:13:04Z",
+    "closed_at": "2026-11-04T09:06:12Z",
+    "merged_at": null,
+    "merge_commit_sha": "41e4dd7c84bb1adb62b84f7c5b92442cd4f1633b",
+    "head": {
+      "ref": "fix/remediation-f95457fd-22ecf9",
+      "sha": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a7-policy-send-guard",
+      "sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417"
+    },
+    "labels": []
+  },
+  {
+    "number": 79,
+    "title": "ci: harden the API-funded agent workflows' merge gate, path policy and cache",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/79",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T09:03:08Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+    "head": {
+      "ref": "claude/cw-w8",
+      "sha": "f162960457b40eb28eaed25a532a56b0a7bc7785",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 78,
+    "title": "Consolidate open branches and PRs (2026-11-04)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/78",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T09:02:35Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "9dcf393e040f4591987ca7ab62dbc46a11f6828f",
+    "head": {
+      "ref": "claude/consolidation-2026-11-04",
+      "sha": "a28ca06a83dc621a2bcb0eb0432889d7b4416285",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 77,
+    "title": "Fix: [for cherry-picking] Updated checkpoint persistence to replay rout",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/77",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T07:07:03Z",
+    "updated_at": "2026-11-04T07:13:27Z",
+    "closed_at": "2026-11-04T07:07:05Z",
+    "merged_at": null,
+    "merge_commit_sha": "f9ea28ee808a7df5c6cf1882b6b6c6e908b25951",
+    "head": {
+      "ref": "fix/remediation-b16c7936-5ce634",
+      "sha": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a5-announcer-budget",
+      "sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8"
+    },
+    "labels": []
+  },
+  {
+    "number": 76,
+    "title": "docs(handoff): parallel consolidation and build prompt",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/76",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T05:38:55Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:51Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "f9d262423037751c52eb3e08faa75b1314e0805a",
+    "head": {
+      "ref": "claude/wizardly-babbage-mfsdrl",
+      "sha": "ade77362de33156de849989e26206126f978bb8f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 75,
+    "title": "docs: deep GhostPay research and Claude handoff with verified upstreams",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/75",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T02:51:43Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "63ea83379c19cd1059de390bf3805e308078ab13",
+    "head": {
+      "ref": "docs/ghostpay-deep-research-20261103",
+      "sha": "894dc868dc5d07102ecb7f6a1e251381d8127f61",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 74,
+    "title": "A4: validate and persist the BTC header chain and anchor scans to it (full profile)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/74",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T02:50:59Z",
+    "updated_at": "2026-11-18T08:02:35Z",
+    "closed_at": "2026-11-18T08:02:35Z",
+    "merged_at": null,
+    "merge_commit_sha": "72d97b7d6cbf492a49cc68335b3c1418d4359869",
+    "head": {
+      "ref": "claude/ar-a4-btc-headersync",
+      "sha": "27d1580c5c535cef5ea44491716d0d86712df841",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 73,
+    "title": "C5: Chromium device-emulation Playwright projects (a11y + responsive)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/73",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:29:58Z",
+    "updated_at": "2026-11-18T08:02:11Z",
+    "closed_at": "2026-11-18T08:02:11Z",
+    "merged_at": null,
+    "merge_commit_sha": "7a728797d11632fb350f87b4faafa2f0775b9102",
+    "head": {
+      "ref": "claude/ar-c5-device-matrix",
+      "sha": "92af349a2e877d6cf94e7ed95a6466163a205089",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 72,
+    "title": "B5 (blocked): record unreachable Chainlink primary sources for testnet feeds (docs)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/72",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:27:18Z",
+    "updated_at": "2026-11-18T08:01:42Z",
+    "closed_at": "2026-11-18T08:01:42Z",
+    "merged_at": null,
+    "merge_commit_sha": "109a68cdb5b9dd062274582e6d8574543360ea2b",
+    "head": {
+      "ref": "claude/ar-b5-testnet-feeds",
+      "sha": "76199cdac3ee336e2751995d511111467141d943",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 71,
+    "title": "C1: ADR-0026 local reconciliation and receipt archive (docs)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/71",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:27:12Z",
+    "updated_at": "2026-11-18T08:01:19Z",
+    "closed_at": "2026-11-18T08:01:19Z",
+    "merged_at": null,
+    "merge_commit_sha": "261b4a04bde93036ec3ffc35e33edcd0bfe93e54",
+    "head": {
+      "ref": "claude/ar-c1-reconciliation-adr",
+      "sha": "1e87109119c1945ea81bfa7e29bc9d1663984bf7",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 70,
+    "title": "A5: announcer spam lanes/budget adversarial tests and four scan-cursor fixes (spec 05)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/70",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T02:27:04Z",
+    "updated_at": "2026-11-18T08:00:57Z",
+    "closed_at": "2026-11-18T08:00:57Z",
+    "merged_at": null,
+    "merge_commit_sha": "38840087326d67da91724dfadb775ac27bb873e2",
+    "head": {
+      "ref": "claude/ar-a5-announcer-budget",
+      "sha": "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 69,
+    "title": "B3': specific Sweep messages for relayer permit refusals (spec 04 acceptance)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/69",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:26:56Z",
+    "updated_at": "2026-11-18T08:00:33Z",
+    "closed_at": "2026-11-18T08:00:33Z",
+    "merged_at": null,
+    "merge_commit_sha": "8dc1e27a87cc1c5864e87f89b877781c3694f2a2",
+    "head": {
+      "ref": "claude/ar-b3-sweep-permit-states",
+      "sha": "9d100956f08ddab66c6aeff1647ca51f3d5ef9cc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd"
+    },
+    "labels": []
+  },
+  {
+    "number": 68,
+    "title": "C4c + B4: localize Create invoice; seller gas-buffer policy control (full profile only)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/68",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:26:46Z",
+    "updated_at": "2026-11-18T07:59:55Z",
+    "closed_at": "2026-11-18T07:59:55Z",
+    "merged_at": null,
+    "merge_commit_sha": "cc62155764832f5f2c9fef052d655742d6b2a82a",
+    "head": {
+      "ref": "claude/ar-c4-i18n-create-b4-buffer-ui",
+      "sha": "4fe95fc0f6f59cc4ddacfc011f8001e5a83ffefd",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-c4-i18n-scan",
+      "sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd"
+    },
+    "labels": []
+  },
+  {
+    "number": 67,
+    "title": "C4b: localize the Scan view through the i18n catalog",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/67",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:26:37Z",
+    "updated_at": "2026-11-18T07:59:35Z",
+    "closed_at": "2026-11-18T07:59:35Z",
+    "merged_at": null,
+    "merge_commit_sha": "1c2024664d64000702e3fd102f312c867a054b67",
+    "head": {
+      "ref": "claude/ar-c4-i18n-scan",
+      "sha": "7f4702fdd36671fa8c114d08a8e0e4ae13939ddd",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-c4-i18n-pay",
+      "sha": "e02d04c7540607624e4bf4627566a5e605242fe1"
+    },
+    "labels": []
+  },
+  {
+    "number": 66,
+    "title": "C4a: localize the Pay view through the i18n catalog",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/66",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:26:29Z",
+    "updated_at": "2026-11-18T07:59:12Z",
+    "closed_at": "2026-11-18T07:59:12Z",
+    "merged_at": null,
+    "merge_commit_sha": "1c8065ad0bf7eadb6b2a035e05842ee3b16fe7d4",
+    "head": {
+      "ref": "claude/ar-c4-i18n-pay",
+      "sha": "e02d04c7540607624e4bf4627566a5e605242fe1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 65,
+    "title": "A7: session, reviewed-tx and deadline guards on the policy-account send path",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/65",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:23:05Z",
+    "updated_at": "2026-11-18T07:58:46Z",
+    "closed_at": "2026-11-18T07:58:46Z",
+    "merged_at": null,
+    "merge_commit_sha": "5d6000bce62a3b1137f85898cc7dfc1b0587e3bd",
+    "head": {
+      "ref": "claude/ar-a7-policy-send-guard",
+      "sha": "f7b8ee9db98162a97a962ff40d77460cb6eb8417",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 64,
+    "title": "B2': require invoice-bound seller receipts in the lean profile",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/64",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:13:58Z",
+    "updated_at": "2026-11-18T07:58:11Z",
+    "closed_at": "2026-11-18T07:58:11Z",
+    "merged_at": null,
+    "merge_commit_sha": "d8b959353e81639084c96f9a7507f64387315d8d",
+    "head": {
+      "ref": "claude/ar-b2-lean-bound-receipts",
+      "sha": "2bcfd11f9dc56138612079a713ecf1b2bcdb0cd0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 63,
+    "title": "C7: iframe-mode embed e2e + SDK handshake fix",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/63",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:13:50Z",
+    "updated_at": "2026-11-18T07:57:47Z",
+    "closed_at": "2026-11-18T07:57:47Z",
+    "merged_at": null,
+    "merge_commit_sha": "5a985967e725808fe2fc9ce92dcc334416d19fbf",
+    "head": {
+      "ref": "claude/ar-c7-embed-iframe-e2e",
+      "sha": "2b9db8ab199881cc6f7e4af3ca90265ffe3dcb0c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 62,
+    "title": "B1: chained lean-core browser journey and devnet backup/restore step",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/62",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:12:50Z",
+    "updated_at": "2026-11-18T07:57:23Z",
+    "closed_at": "2026-11-18T07:57:23Z",
+    "merged_at": null,
+    "merge_commit_sha": "96c5d7475ec3664d3c19dd208420a53f0dfd5632",
+    "head": {
+      "ref": "claude/ar-b1-core-journey",
+      "sha": "e0a499bdd95da4d9dd24a19a73fe9609e302b104",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 61,
+    "title": "A6: combined backup checklist (seller keys + tag archive, full profile)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/61",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T02:06:36Z",
+    "updated_at": "2026-11-18T07:56:49Z",
+    "closed_at": "2026-11-18T07:56:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "c2317705946e9ec23f71f78c0dfc6058e89eb819",
+    "head": {
+      "ref": "claude/ar-a6-combined-backup",
+      "sha": "f5d219851a4715cb947eb224976f97a7bec49380",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 60,
+    "title": "C2: seller device pairing (public config) and registry meta-address QR export",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/60",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T01:59:07Z",
+    "updated_at": "2026-11-18T07:56:24Z",
+    "closed_at": "2026-11-18T07:56:24Z",
+    "merged_at": null,
+    "merge_commit_sha": "6640794717e9272da3dc29bdfb56757d1cf7a82f",
+    "head": {
+      "ref": "claude/ar-c2-qr-pairing",
+      "sha": "78be1730ad2a7963d66ba8c69e5b6480fa46bf2f",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704"
+    },
+    "labels": []
+  },
+  {
+    "number": 59,
+    "title": "A0: fix web typecheck that turns PR #47 CI red (axe page-global cast)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/59",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T01:32:16Z",
+    "updated_at": "2026-11-18T07:56:01Z",
+    "closed_at": "2026-11-18T07:56:01Z",
+    "merged_at": null,
+    "merge_commit_sha": "10a7d36a28c776b14f7aa921dfb3d849f3fec1c7",
+    "head": {
+      "ref": "claude/ar-a0-pr47-green",
+      "sha": "4a38efdfa999f84685e5004b4c17a2a8e493f704",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/ghostpay-accepted-20261102",
+      "sha": "f8193502e602c99bb24ff956f142671750b744a0"
+    },
+    "labels": []
+  },
+  {
+    "number": 58,
+    "title": "docs(handoff): autonomous completion prompt and launch recommendations",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/58",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T01:14:31Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "435bcf14757bd0a4becf733c0e4d78a56c91cf65",
+    "head": {
+      "ref": "claude/ghostpay-autonomous-prompt-scpgun",
+      "sha": "1db8e967af91bc1d3132e99fa5f4d94696e22997",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 57,
+    "title": "docs: independent GhostPay release-qualification research 41750257638",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/57",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T01:01:36Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "deb624308ab60ea5972b6e450d21a3d08f0d039c",
+    "head": {
+      "ref": "codex/ghostpay-research-release-qualification-41750257638",
+      "sha": "6bd5b15ce4b883b1070ccc1deef6086fd9df3aa4",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 56,
+    "title": "docs: independent GhostPay documentation-ux research 41750257638",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/56",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T01:01:35Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "18e721bc1ea26f4a236595c1e8a342f9b18ad12d",
+    "head": {
+      "ref": "codex/ghostpay-research-documentation-ux-41750257638",
+      "sha": "96fc22c42a704d1c590d56d624fff15a945c8231",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 55,
+    "title": "docs: independent GhostPay security-review research 41750257638",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/55",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T01:01:34Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "e5af614399d80630f5843c0f2d6472d98fc9a7b6",
+    "head": {
+      "ref": "codex/ghostpay-research-security-review-41750257638",
+      "sha": "2d9c30e12c41cfb0212b0cfc366c83a1e5e45b21",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 54,
+    "title": "docs: independent GhostPay acceptance-tests research 41750257638",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/54",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-04T01:01:34Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:51Z",
+    "merge_commit_sha": "29e793684b55c43aeab70f2759710425399281f7",
+    "head": {
+      "ref": "codex/ghostpay-research-acceptance-tests-41750257638",
+      "sha": "57b414bfbc1fa9de9ef68675b9181b4c148f18e4",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "0014bc5b26c7487ea1f9fb230194c36673193236"
+    },
+    "labels": []
+  },
+  {
+    "number": 53,
+    "title": "ci: add four independent API-funded GhostPay research agents",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/53",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-04T00:51:42Z",
+    "updated_at": "2026-11-04T00:58:05Z",
+    "closed_at": "2026-11-04T00:53:30Z",
+    "merged_at": "2026-11-04T00:53:30Z",
+    "merge_commit_sha": "0014bc5b26c7487ea1f9fb230194c36673193236",
+    "head": {
+      "ref": "automation/ghostpay-parallel-review-wave-20261103",
+      "sha": "03a3f5701c89e19667f309bb5f01bd36793a5474",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+    },
+    "labels": []
+  },
+  {
+    "number": 52,
+    "title": "ci: add four parallel API-funded GhostPay QA agents with guarded integration",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/52",
+    "state": "open",
+    "draft": true,
+    "created_at": "2026-11-04T00:35:22Z",
+    "updated_at": "2026-11-04T00:41:30Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "dc5a3745f767c8646118f441cd1735f865e27fad",
+    "head": {
+      "ref": "automation/ghostpay-parallel-four-agents-20261103",
+      "sha": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+    },
+    "labels": []
+  },
+  {
+    "number": 51,
+    "title": "ci: continue GhostPay API-funded backlog development twice daily",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/51",
+    "state": "open",
+    "draft": false,
+    "created_at": "2026-11-04T00:16:19Z",
+    "updated_at": "2026-11-04T00:23:22Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "automation/ghostpay-recurrent-backlog-20261103",
+      "sha": "5835736c12968231ac7b3152e394077bee453622",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+    },
+    "labels": []
+  },
+  {
+    "number": 50,
+    "title": "Fix GhostPay cloud API key lookup for existing Actions secret names",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/50",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-03T18:51:05Z",
+    "updated_at": "2026-11-04T00:08:34Z",
+    "closed_at": "2026-11-04T00:08:34Z",
+    "merged_at": "2026-11-04T00:08:34Z",
+    "merge_commit_sha": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+    "head": {
+      "ref": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "sha": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "6f36e7ca2d7b616f134d1bb7d4d585fb3d90ad48"
+    },
+    "labels": []
+  },
+  {
+    "number": 49,
+    "title": "deps: bump follow-redirects from 1.16.1 to 1.16.2",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/49",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-03T18:48:13Z",
+    "updated_at": "2026-11-18T11:42:39Z",
+    "closed_at": "2026-11-18T11:42:26Z",
+    "merged_at": null,
+    "merge_commit_sha": "108c429ac309ab9a6b9200545bbab1558f83fc16",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/follow-redirects-1.16.2",
+      "sha": "6bffb63d1638253e677511672ffd32c24ac8f2f6",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "6f36e7ca2d7b616f134d1bb7d4d585fb3d90ad48"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 48,
+    "title": "Add API-funded autonomous GhostPay cloud engineering with persistent PRs",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/48",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-03T18:40:19Z",
+    "updated_at": "2026-11-03T18:51:18Z",
+    "closed_at": "2026-11-03T18:45:05Z",
+    "merged_at": "2026-11-03T18:45:05Z",
+    "merge_commit_sha": "6f36e7ca2d7b616f134d1bb7d4d585fb3d90ad48",
+    "head": {
+      "ref": "automation/api-funded-ghostpay-cloud-20261103",
+      "sha": "29ce481d2d4a964f0acc42cc5233eb2d9c3e9482",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "c148ee13ef8273660b9cf16477329e5fedede4b9"
+    },
+    "labels": []
+  },
+  {
+    "number": 47,
+    "title": "Consolidate published work and implement supported lean checkout",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/47",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-11-02T16:19:23Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "efcbd8a76c81d23db34a9fb70a5e7106df127e0f",
+    "head": {
+      "ref": "integration/ghostpay-accepted-20261102",
+      "sha": "f8193502e602c99bb24ff956f142671750b744a0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "c148ee13ef8273660b9cf16477329e5fedede4b9"
+    },
+    "labels": []
+  },
+  {
+    "number": 46,
+    "title": "Record verified public-source recovery and unresolved release gates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/46",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-02T15:46:54Z",
+    "updated_at": "2026-11-02T15:51:27Z",
+    "closed_at": "2026-11-02T15:51:27Z",
+    "merged_at": "2026-11-02T15:51:27Z",
+    "merge_commit_sha": "c148ee13ef8273660b9cf16477329e5fedede4b9",
+    "head": {
+      "ref": "checkpoint/ghostpay-recovery-20261102",
+      "sha": "1dffa5a366fc88a4428823634f43247913048915",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": []
+  },
+  {
+    "number": 45,
+    "title": "deps: bump the npm-minor-patch group across 1 directory with 4 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/45",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-11-02T03:17:53Z",
+    "updated_at": "2026-11-09T03:18:50Z",
+    "closed_at": "2026-11-09T03:18:47Z",
+    "merged_at": null,
+    "merge_commit_sha": "2f8a698169f75f4f8633c8e1125487bfd1fc4b9e",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-22cc71b711",
+      "sha": "277e490857a654f11e564ce8b208ee236ffbeb13",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 44,
+    "title": "fix(audit): keep report file mode when regenerating audit 24 report",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/44",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-30T13:32:45Z",
+    "updated_at": "2026-11-18T08:34:45Z",
+    "closed_at": "2026-11-18T08:34:45Z",
+    "merged_at": null,
+    "merge_commit_sha": "a03838fcd994460189895788fee68bbfa5c183e0",
+    "head": {
+      "ref": "claude/happy-maxwell-onl4x5",
+      "sha": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+    },
+    "labels": []
+  },
+  {
+    "number": 43,
+    "title": "docs: wave 2 frontier status, nightly diagnosis, handoff markers",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/43",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-30T13:26:44Z",
+    "updated_at": "2026-11-18T08:34:19Z",
+    "closed_at": "2026-11-18T08:34:19Z",
+    "merged_at": null,
+    "merge_commit_sha": "072477a9755b1f1a06ba91129ff3dd153f13486b",
+    "head": {
+      "ref": "claude/haiku-wave-2-handoff-qepfoe",
+      "sha": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+    },
+    "labels": []
+  },
+  {
+    "number": 42,
+    "title": "docs(handoff): Haiku wave prompts and Opus M1 milestone prompt",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/42",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-30T13:00:24Z",
+    "updated_at": "2026-11-18T11:14:49Z",
+    "closed_at": "2026-11-18T11:14:49Z",
+    "merged_at": null,
+    "merge_commit_sha": "b40c215271e3e0073d4a8747302aee18bf789719",
+    "head": {
+      "ref": "claude/sharp-bohr-uigfgh",
+      "sha": "c9a8c3d3cf549799a9fc93a7053f2d9ccb5d0483",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": []
+  },
+  {
+    "number": 41,
+    "title": "Consolidate scanner regrowth and descriptor-bound secret loading",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/41",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-30T11:03:37Z",
+    "updated_at": "2026-11-18T07:55:32Z",
+    "closed_at": "2026-11-18T07:55:32Z",
+    "merged_at": null,
+    "merge_commit_sha": "114c042e74cd8b88a9fef0930c5bcac5329fb121",
+    "head": {
+      "ref": "codex/ghostpay-consolidation-20261030",
+      "sha": "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "b6a0871d0618c5ee804947af22d21b794948fa3d"
+    },
+    "labels": []
+  },
+  {
+    "number": 40,
+    "title": "fix(relayer): prevent secret-file validation/read races",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/40",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-30T07:57:31Z",
+    "updated_at": "2026-11-18T08:33:56Z",
+    "closed_at": "2026-11-18T08:33:56Z",
+    "merged_at": null,
+    "merge_commit_sha": "1b36492cccafe0185dc279e6472348831a564ecd",
+    "head": {
+      "ref": "codex/ghostpay-security-audit-20261030",
+      "sha": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78"
+    },
+    "labels": []
+  },
+  {
+    "number": 39,
+    "title": "Audit 24 review follow-ups D3, AR2, B2R (onto PR #37)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/39",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-29T05:22:03Z",
+    "updated_at": "2026-11-18T08:33:34Z",
+    "closed_at": "2026-11-18T08:33:34Z",
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "claude/gifted-planck-115x2k",
+      "sha": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "dfd5cbdd94d982985c73551355906723ac70a97e"
+    },
+    "labels": []
+  },
+  {
+    "number": 37,
+    "title": "Consolidated lean-core integration: PR #30 + PR #36 + sweep reload lock",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/37",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-28T02:22:11Z",
+    "updated_at": "2026-10-30T13:32:53Z",
+    "closed_at": "2026-10-30T13:32:53Z",
+    "merged_at": null,
+    "merge_commit_sha": "02735fca3a20399b1858acc61188f65b0d35fd1d",
+    "head": {
+      "ref": "claude/ghostpay-autonomous-completion-y4sk2h",
+      "sha": "b6a0871d0618c5ee804947af22d21b794948fa3d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": []
+  },
+  {
+    "number": 36,
+    "title": "Portable hosting kit (tools/portable-hosting-kit)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/36",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-27T21:30:38Z",
+    "updated_at": "2026-11-18T06:56:53Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "f44adbb38b90e4a58060ae669dd49af73e8aa049",
+    "head": {
+      "ref": "claude/portable-hosting-kit",
+      "sha": "cb917c67bf8a621c48ef02e7d70caf5eadb7b4e2",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": []
+  },
+  {
+    "number": 34,
+    "title": "deps: bump the npm-major group with 10 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/34",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-26T03:24:41Z",
+    "updated_at": "2026-11-09T03:19:16Z",
+    "closed_at": "2026-11-09T03:19:12Z",
+    "merged_at": null,
+    "merge_commit_sha": "b8674ad0b04c70f0a9267afef4eae7a3f1027d7d",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-major-92ee7eceef",
+      "sha": "212967febe05a8afc8e481e9c6b91d70558d5894",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 33,
+    "title": "deps: bump the npm-minor-patch group with 2 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/33",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-26T03:19:52Z",
+    "updated_at": "2026-11-02T03:17:45Z",
+    "closed_at": "2026-11-02T03:17:42Z",
+    "merged_at": null,
+    "merge_commit_sha": "9641c5ca6406d99482063d7dc51d823de0529dac",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-6e94eb9223",
+      "sha": "cf17cd0df8884c417247dd9673730ab764e6edfc",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 32,
+    "title": "ci: bump foundry-rs/foundry-toolchain from 1.9.1 to 1.9.2 in the actions group",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/32",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-26T03:17:10Z",
+    "updated_at": "2026-11-09T03:15:24Z",
+    "closed_at": "2026-11-09T03:15:20Z",
+    "merged_at": null,
+    "merge_commit_sha": "c005f9ea67190e195472135b4950b698802c6c2d",
+    "head": {
+      "ref": "dependabot/github_actions/actions-712ca5a515",
+      "sha": "b34edd5a7fccbc3d904d004135d1352bf2838ca1",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": [
+      "dependencies",
+      "github_actions"
+    ]
+  },
+  {
+    "number": 31,
+    "title": "test(devnet): prove detect → receipt in the core EVM end-to-end flow",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/31",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-25T00:16:15Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "c0b0ba66663cb60f710de32f85c2782bcde1bf5b",
+    "head": {
+      "ref": "claude/adoring-wozniak-850ue6",
+      "sha": "a2217ea1ccdd29f4e67ebdde9e6606eaa0fde523",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": []
+  },
+  {
+    "number": 30,
+    "title": "Remaining engineering waves: embed, private scanning, policy, BTC, relayer permit fallback",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/30",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-25T00:15:46Z",
+    "updated_at": "2026-11-18T06:56:52Z",
+    "closed_at": "2026-11-18T06:56:52Z",
+    "merged_at": "2026-11-18T06:56:52Z",
+    "merge_commit_sha": "f44adbb38b90e4a58060ae669dd49af73e8aa049",
+    "head": {
+      "ref": "claude/cool-albattani-xopr89",
+      "sha": "7373172db4cf40ce5622e5a92a55b2b086e5e7cb",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "edb0051eb89bd135c73733d9db14569aa000662d"
+    },
+    "labels": []
+  },
+  {
+    "number": 29,
+    "title": "docs: narrow next milestone to one EVM core and preserve handoff history",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/29",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-24T22:00:35Z",
+    "updated_at": "2026-10-24T22:04:32Z",
+    "closed_at": "2026-10-24T22:04:32Z",
+    "merged_at": "2026-10-24T22:04:32Z",
+    "merge_commit_sha": "edb0051eb89bd135c73733d9db14569aa000662d",
+    "head": {
+      "ref": "docs/lean-release-handoff-2026-10-24",
+      "sha": "2b032d77fef95d5eaa446a72fda2eef46e83bbcd",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "a6a2a1c5cbccb7d97c36decba78a99fa83e8a6f8"
+    },
+    "labels": []
+  },
+  {
+    "number": 28,
+    "title": "docs(handoff): record PR #27 merge, update next-agent prompt",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/28",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-24T19:42:13Z",
+    "updated_at": "2026-10-24T19:57:47Z",
+    "closed_at": "2026-10-24T19:57:46Z",
+    "merged_at": "2026-10-24T19:57:46Z",
+    "merge_commit_sha": "a6a2a1c5cbccb7d97c36decba78a99fa83e8a6f8",
+    "head": {
+      "ref": "claude/adoring-wozniak-850ue6",
+      "sha": "3831d029df26b38e574a9bd62370d517d8a7eff0",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "7ea6c3c4d9f6889ae2198026be1b5e5b7a676a2e"
+    },
+    "labels": []
+  },
+  {
+    "number": 27,
+    "title": "PR26 + CAS/archive fixes + second-RPC fail-closed, gas buffer v2, permit pre-flight, BTC block integrity",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/27",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-24T18:22:51Z",
+    "updated_at": "2026-10-24T19:41:33Z",
+    "closed_at": "2026-10-24T19:41:33Z",
+    "merged_at": "2026-10-24T19:41:33Z",
+    "merge_commit_sha": "7ea6c3c4d9f6889ae2198026be1b5e5b7a676a2e",
+    "head": {
+      "ref": "claude/adoring-wozniak-850ue6",
+      "sha": "a4ab45fa17606de589916cbe460e5e1a100db6b5",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dbee6786c5adf97e014318f55da4dfdbc1565cfc"
+    },
+    "labels": []
+  },
+  {
+    "number": 26,
+    "title": "Integrate local reconstruction work and remaining engineering waves",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/26",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-24T13:22:08Z",
+    "updated_at": "2026-10-24T19:41:35Z",
+    "closed_at": "2026-10-24T19:41:34Z",
+    "merged_at": "2026-10-24T19:41:34Z",
+    "merge_commit_sha": "06f1426dd29b9b154d9f725d48918dcf049876bf",
+    "head": {
+      "ref": "claude/cool-albattani-xopr89",
+      "sha": "06f1426dd29b9b154d9f725d48918dcf049876bf",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "dbee6786c5adf97e014318f55da4dfdbc1565cfc"
+    },
+    "labels": []
+  },
+  {
+    "number": 25,
+    "title": "deps: bump the npm-major group with 10 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/25",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-22T11:57:46Z",
+    "updated_at": "2026-10-22T12:03:01Z",
+    "closed_at": "2026-10-22T12:02:50Z",
+    "merged_at": null,
+    "merge_commit_sha": "33636356a4bb5a2f272cf29d644c890b00fc2555",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-major-86c5c8168c",
+      "sha": "990fedee6652f4313920875692dd8a86cd91c9e9",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "c3e282b468cea55fff1a888b7702d5c93a9a9b0b"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 24,
+    "title": "feat(web): seller reconciliation ledger and signed receipt QR exchange",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/24",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-22T11:53:58Z",
+    "updated_at": "2026-10-22T12:05:15Z",
+    "closed_at": "2026-10-22T12:05:15Z",
+    "merged_at": "2026-10-22T12:05:15Z",
+    "merge_commit_sha": "ca30bf821f412f0af50b2725722b0e968e6fed12",
+    "head": {
+      "ref": "codex/seller-ledger-receipt-qr",
+      "sha": "bb011134c1bf9cd0e75090fec75d85235d637281",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "c3e282b468cea55fff1a888b7702d5c93a9a9b0b"
+    },
+    "labels": []
+  },
+  {
+    "number": 23,
+    "title": "deps: bump the npm-major group with 10 updates",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/23",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-22T11:27:07Z",
+    "updated_at": "2026-10-22T11:37:14Z",
+    "closed_at": "2026-10-22T11:37:04Z",
+    "merged_at": null,
+    "merge_commit_sha": "703ab4ddea6888ed584b586b752c60cabd0755c1",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-major-86c5c8168c",
+      "sha": "c382456cb1349ba107fb2f9ae41c97b61229cbaf",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "c7081a22430fa7fd04a48a89ee61a4d40ed739ed"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 22,
+    "title": "deps: update Solana Kit and preserve compatible fhEVM stack",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/22",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-22T11:23:17Z",
+    "updated_at": "2026-10-22T11:52:20Z",
+    "closed_at": "2026-10-22T11:52:12Z",
+    "merged_at": "2026-10-22T11:52:12Z",
+    "merge_commit_sha": "c3e282b468cea55fff1a888b7702d5c93a9a9b0b",
+    "head": {
+      "ref": "dependabot/npm_and_yarn/npm-minor-patch-cdbdfc697a",
+      "sha": "00212154513a11d324de9599cfd7e1b4d08443d2",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5795857d9e366cc9a4304c6afa9b03365e7c1844"
+    },
+    "labels": [
+      "dependencies",
+      "javascript"
+    ]
+  },
+  {
+    "number": 21,
+    "title": "ci: bump actions/cache from 5.0.5 to 6.1.0 in the actions group",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/21",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-22T11:21:04Z",
+    "updated_at": "2026-10-22T11:34:30Z",
+    "closed_at": "2026-10-22T11:34:21Z",
+    "merged_at": "2026-10-22T11:34:21Z",
+    "merge_commit_sha": "02a424038ee0e55179763b1ade26ad7396f2c068",
+    "head": {
+      "ref": "dependabot/github_actions/actions-d5b8684899",
+      "sha": "a8c62cb500e444f86951b11022de88c1f13a876e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "5795857d9e366cc9a4304c6afa9b03365e7c1844"
+    },
+    "labels": [
+      "dependencies",
+      "github_actions"
+    ]
+  },
+  {
+    "number": 20,
+    "title": "Consolidate GhostPay modules and harden payment flows",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/20",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-22T06:29:51Z",
+    "updated_at": "2026-10-22T11:19:39Z",
+    "closed_at": "2026-10-22T11:19:39Z",
+    "merged_at": "2026-10-22T11:19:39Z",
+    "merge_commit_sha": "5795857d9e366cc9a4304c6afa9b03365e7c1844",
+    "head": {
+      "ref": "integration/consolidated-2026-10-21",
+      "sha": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "ed7d709f7e50acb958290b36d75aa8b4ca4adfd1"
+    },
+    "labels": []
+  },
+  {
+    "number": 19,
+    "title": "Consolidate Pages help-site branch",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/19",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-22T04:19:50Z",
+    "updated_at": "2026-10-22T10:56:31Z",
+    "closed_at": "2026-10-22T10:56:31Z",
+    "merged_at": "2026-10-22T10:56:31Z",
+    "merge_commit_sha": "84c2c185528ea13580a415874d9f584a323e9cfb",
+    "head": {
+      "ref": "claude/pages-site-1",
+      "sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-10-21",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5"
+    },
+    "labels": []
+  },
+  {
+    "number": 18,
+    "title": "Consolidate merchant and developer feature branch into latest integration",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/18",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-22T04:19:45Z",
+    "updated_at": "2026-10-22T10:56:31Z",
+    "closed_at": "2026-10-22T10:56:31Z",
+    "merged_at": "2026-10-22T10:56:31Z",
+    "merge_commit_sha": "84c2c185528ea13580a415874d9f584a323e9cfb",
+    "head": {
+      "ref": "claude/remote-extensions-8",
+      "sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "integration/consolidated-2026-10-21",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5"
+    },
+    "labels": []
+  },
+  {
+    "number": 17,
+    "title": "Bring implementation onto main; testnet infra, multichain PoC, security wiring (WIP)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/17",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T22:39:20Z",
+    "updated_at": "2026-10-22T11:19:41Z",
+    "closed_at": "2026-10-22T11:19:41Z",
+    "merged_at": "2026-10-22T11:19:41Z",
+    "merge_commit_sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+    "head": {
+      "ref": "claude/laughing-bardeen-4t20ys",
+      "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "aff76225dab68a897010abf6b9b5c159a853a815"
+    },
+    "labels": []
+  },
+  {
+    "number": 16,
+    "title": "Privacy PoCs (swarm 10): pool, external pools, payer hiding, confidential tokens, BTC payjoin",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/16",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T17:03:15Z",
+    "updated_at": "2026-10-22T11:20:24Z",
+    "closed_at": "2026-10-22T11:20:23Z",
+    "merged_at": null,
+    "merge_commit_sha": "4dbeb447c0d27d37573eb50cd1dae614af47bef4",
+    "head": {
+      "ref": "claude/remote-extensions-10",
+      "sha": "698404ca488c87347858105bda66be21bf428303",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "dea46beac2d3cc3d620cce042dcf8a6cc6d2cabe"
+    },
+    "labels": []
+  },
+  {
+    "number": 15,
+    "title": "feat(privacy): client-side privacy option packages (testnet PoC)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/15",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T16:42:43Z",
+    "updated_at": "2026-10-22T11:20:22Z",
+    "closed_at": "2026-10-22T11:20:22Z",
+    "merged_at": null,
+    "merge_commit_sha": "ce0aa49f94a542f8cac5ced5bfb3106dba670e93",
+    "head": {
+      "ref": "claude/remote-extensions-9",
+      "sha": "f09decc278c2052c90dfa209a7098888c8d9877a",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "a9ed40027df6ed7392ece14be0228240fc76eaa5"
+    },
+    "labels": []
+  },
+  {
+    "number": 14,
+    "title": "Chain ports: specs + btc-family, chain-solana, chain-tron, chain-evm-extra (testnet PoC)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/14",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T16:37:06Z",
+    "updated_at": "2026-10-22T11:20:21Z",
+    "closed_at": "2026-10-22T11:20:21Z",
+    "merged_at": null,
+    "merge_commit_sha": "8edbb53ebe77ef05b1a58ebf6b3b4afe8b6adbf0",
+    "head": {
+      "ref": "claude/remote-extensions-6",
+      "sha": "7fb7aca6d68b96b89d32959636827fcfb343968d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "7551869bd7ec616d3fdff542f2078833914d2929"
+    },
+    "labels": []
+  },
+  {
+    "number": 13,
+    "title": "docs(remote): Pages help site source (flowcharts, help, privacy options)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/13",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T16:36:59Z",
+    "updated_at": "2026-10-22T11:20:20Z",
+    "closed_at": "2026-10-22T11:20:19Z",
+    "merged_at": null,
+    "merge_commit_sha": "3c798872c30e9e12d0f7b206670b84572c38ea95",
+    "head": {
+      "ref": "claude/pages-site-1",
+      "sha": "7f77a44483ad844fbf9021ffd6fa4dd95fc8226d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "7551869bd7ec616d3fdff542f2078833914d2929"
+    },
+    "labels": []
+  },
+  {
+    "number": 12,
+    "title": "feat(remote): relayer-guard challenge, docs refresh, CI speedup, dev-donation package",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/12",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T16:33:06Z",
+    "updated_at": "2026-10-22T11:20:18Z",
+    "closed_at": "2026-10-22T11:20:18Z",
+    "merged_at": null,
+    "merge_commit_sha": "4687230b907164e2b2b558c187828f7699132ed9",
+    "head": {
+      "ref": "claude/remote-extensions-5",
+      "sha": "1337f6c121463aa70107bdd065ea88ed30ec3584",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed"
+    },
+    "labels": []
+  },
+  {
+    "number": 11,
+    "title": "Merchant + developer growth features (swarm 8)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/11",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T16:26:51Z",
+    "updated_at": "2026-10-22T11:20:16Z",
+    "closed_at": "2026-10-22T11:20:16Z",
+    "merged_at": null,
+    "merge_commit_sha": "0c04d22b8f26bdee7444af6268fea29c6bba0ddc",
+    "head": {
+      "ref": "claude/remote-extensions-8",
+      "sha": "ad76a87e1dd5bd21599fcaecec7508de1a241996",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "d0d96fb7c798b98ece40632b6c6f127cdbc07711"
+    },
+    "labels": []
+  },
+  {
+    "number": 10,
+    "title": "docs(remote): reports snapshot 2",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/10",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-21T16:26:04Z",
+    "updated_at": "2026-10-21T16:26:14Z",
+    "closed_at": "2026-10-21T16:26:14Z",
+    "merged_at": "2026-10-21T16:26:14Z",
+    "merge_commit_sha": "61be363b47a859871cf909c4375a9329973fe83a",
+    "head": {
+      "ref": "claude/docs-snapshot-2",
+      "sha": "e1a92c876c4443b5ad49318ede200119ceaf4e8d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "f46878c231e261eb7447ab01775d58593e68c5b0"
+    },
+    "labels": []
+  },
+  {
+    "number": 9,
+    "title": "docs(remote): research, spec and report snapshot",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/9",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-21T16:24:45Z",
+    "updated_at": "2026-10-21T16:25:04Z",
+    "closed_at": "2026-10-21T16:25:04Z",
+    "merged_at": "2026-10-21T16:25:04Z",
+    "merge_commit_sha": "f46878c231e261eb7447ab01775d58593e68c5b0",
+    "head": {
+      "ref": "claude/docs-snapshot-1",
+      "sha": "dc2340c998250039d906a7beb72a4bed7a2b56c5",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "2fc09f70a865cfaf4688d1779c4c05dd8a19d496"
+    },
+    "labels": []
+  },
+  {
+    "number": 8,
+    "title": "feat(usability): ux-* packages (swarm 7)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/8",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T16:19:11Z",
+    "updated_at": "2026-10-22T11:20:15Z",
+    "closed_at": "2026-10-22T11:20:14Z",
+    "merged_at": null,
+    "merge_commit_sha": "9c40d0209019d65e69e7cf55f19a733a4a21c959",
+    "head": {
+      "ref": "claude/remote-extensions-7",
+      "sha": "e2ac361b7f425ef3b3a7e98389ad3add3353086e",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "7551869bd7ec616d3fdff542f2078833914d2929"
+    },
+    "labels": []
+  },
+  {
+    "number": 7,
+    "title": "Swarm 3: gap analysis, round-3 audit fixes, QA, research, specs and docs",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/7",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T12:40:16Z",
+    "updated_at": "2026-10-22T11:20:13Z",
+    "closed_at": "2026-10-22T11:20:12Z",
+    "merged_at": null,
+    "merge_commit_sha": "b1f4b32f63bf004a7d4816146f058ca66a27613f",
+    "head": {
+      "ref": "claude/remote-extensions-3",
+      "sha": "cdfc2ba228d76dd7605921736ed33891d1b14b0b",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "90d4b265de5bf643183f6d5d353238288da9cf69"
+    },
+    "labels": []
+  },
+  {
+    "number": 6,
+    "title": "feat(remote): tx-review, address-safety, ops-monitor packages",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/6",
+    "state": "closed",
+    "draft": false,
+    "created_at": "2026-10-21T12:35:58Z",
+    "updated_at": "2026-10-21T16:21:58Z",
+    "closed_at": "2026-10-21T16:21:58Z",
+    "merged_at": "2026-10-21T16:21:58Z",
+    "merge_commit_sha": "2fc09f70a865cfaf4688d1779c4c05dd8a19d496",
+    "head": {
+      "ref": "claude/remote-extensions-5",
+      "sha": "a107d2dc4878bfcab4e98d8285477ccdd7545e32",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "312698362965ff1464d056b3a29c7ac65d5d3e32"
+    },
+    "labels": []
+  },
+  {
+    "number": 5,
+    "title": "Round 4: verify and fix haiku-audit findings (relayer, web, chain-adapters, btc)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/5",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T12:30:19Z",
+    "updated_at": "2026-10-22T11:20:11Z",
+    "closed_at": "2026-10-22T11:20:11Z",
+    "merged_at": null,
+    "merge_commit_sha": "27babb1e9d976d293d3e3a2a113c743fa3e5fe02",
+    "head": {
+      "ref": "claude/remote-extensions-4",
+      "sha": "4ffb7a99b222f58fde51726e06df90a6e9863b6d",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed"
+    },
+    "labels": []
+  },
+  {
+    "number": 4,
+    "title": "Remote extensions 1: PolicyRouter, policy-scheme, BTC spending, Echidna, audits",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/4",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T12:03:55Z",
+    "updated_at": "2026-10-22T11:20:10Z",
+    "closed_at": "2026-10-22T11:20:09Z",
+    "merged_at": null,
+    "merge_commit_sha": null,
+    "head": {
+      "ref": "claude/remote-extensions-1",
+      "sha": "39cce4663d98c7da06775441a301040af51907ed",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c"
+    },
+    "labels": []
+  },
+  {
+    "number": 3,
+    "title": "Mythril triage + gambit mutation testing (98.0% -> 99.3%)",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/3",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T11:46:25Z",
+    "updated_at": "2026-10-22T11:20:08Z",
+    "closed_at": "2026-10-22T11:20:08Z",
+    "merged_at": null,
+    "merge_commit_sha": "3e4a3d6b5d54c0dde9551d9633cc46a13d817c0e",
+    "head": {
+      "ref": "claude/remote-extensions-2",
+      "sha": "df150cbdb58203789f5afc3050e75d92c655fa49",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c"
+    },
+    "labels": []
+  },
+  {
+    "number": 2,
+    "title": "GhostPay v0.1 draft: reviewed specs, contracts, crypto, web app, relayer",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/2",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T10:06:54Z",
+    "updated_at": "2026-10-22T11:19:41Z",
+    "closed_at": "2026-10-22T11:19:41Z",
+    "merged_at": "2026-10-22T11:19:41Z",
+    "merge_commit_sha": "84c2c185528ea13580a415874d9f584a323e9cfb",
+    "head": {
+      "ref": "claude/inspiring-fermat-vxv689",
+      "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "aff76225dab68a897010abf6b9b5c159a853a815"
+    },
+    "labels": []
+  },
+  {
+    "number": 1,
+    "title": "Rewrite README to reflect design-only status; add wiki pages",
+    "url": "https://github.com/djshellshoxxx/GhostPay/pull/1",
+    "state": "closed",
+    "draft": true,
+    "created_at": "2026-10-21T09:21:51Z",
+    "updated_at": "2026-10-22T11:19:41Z",
+    "closed_at": "2026-10-22T11:19:41Z",
+    "merged_at": "2026-10-22T11:19:41Z",
+    "merge_commit_sha": "84c2c185528ea13580a415874d9f584a323e9cfb",
+    "head": {
+      "ref": "docs/readme-and-wiki",
+      "sha": "ab2b61687210f79fa5401c8a25fa9a96bcb1ca61",
+      "repo": "djshellshoxxx/GhostPay"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "aff76225dab68a897010abf6b9b5c159a853a815"
+    },
+    "labels": []
+  }
+]

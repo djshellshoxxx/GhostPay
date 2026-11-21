@@ -14,7 +14,7 @@ import type { Translator } from '../i18n/translator';
 import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { captureSessionGuard, getSessionPublic, withSessionSecrets } from '../lib/session';
-import { bindReceiptToInvoice, MAX_RECEIPT_INVOICE_BYTES, receiptBindingForInvoice, receiptInvoiceFragment, receiptJson, signReceipt, type ReceiptInvoiceBinding, type SignedReceipt } from '../lib/receipts';
+import { bindReceiptToInvoice, MAX_RECEIPT_INVOICE_BYTES, receiptBindingForInvoice, receiptInvoiceFragment, receiptJson, receiptSigningFields, signReceipt, type ReceiptInvoiceBinding, type SignedReceipt } from '../lib/receipts';
 
 export interface ReceiptPanelProps {
   readonly match: ScanMatch;
@@ -55,6 +55,8 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const [invoicePassphrase, setInvoicePassphrase] = useState('');
   const [invoiceConsent, setInvoiceConsent] = useState(false);
   const [signConsent, setSignConsent] = useState(false);
+  // TM9: the one-time address is omitted from a receipt unless the seller opts in, because it links the payer and signer.
+  const [includeAddress, setIncludeAddress] = useState(false);
   const [invoiceBusy, setInvoiceBusy] = useState(false);
   const [receiptBound, setReceiptBound] = useState(false);
   const [boundInvoice, setBoundInvoice] = useState<{ readonly parsed: ParsedInvoice; readonly binding: ReceiptInvoiceBinding; readonly guard: () => void; readonly identity: string } | undefined>(undefined);
@@ -91,6 +93,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     setInvoicePassphrase('');
     setInvoiceConsent(false);
     setSignConsent(false);
+    setIncludeAddress(false);
     setBoundInvoice(undefined);
     setReceiptBound(false);
     invoiceRevision.current++;
@@ -190,15 +193,15 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
         const session = getSessionPublic();
         if (session?.signerPublicKey !== props.sellerSignerPublicKey) throw new UserFacingError({ key: 'receipt.error.keysChanged' });
         const binding = boundInvoice === undefined ? undefined : receiptBindingForInvoice(boundInvoice.parsed, match, session.signerPublicKey, secrets.keys, Math.floor(Date.now() / 1000));
-        const signed = signReceipt({
+        const signed = signReceipt(receiptSigningFields({
           invoiceDigest: binding?.invoiceDigest ?? digest,
           chainId: match.chainId,
           txHash: txHash.toLowerCase(),
-          stealthAddress: match.stealthAddress.toLowerCase(),
+          stealthAddress: match.stealthAddress,
           asset: metadata.kind === 'native' ? 'native' : metadata.token.toLowerCase(),
           amountMinorUnits: metadata.netAmount.toString(),
           issuedAt: Math.floor(Date.now() / 1000),
-        }, secrets.signingKey);
+        }, { includeAddress }), secrets.signingKey);
         if (binding !== undefined) bindReceiptToInvoice(signed, binding);
         return signed;
       });
@@ -307,6 +310,10 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
               <p><button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoiceDigest(''); }}>{t('receipt.clearBinding')}</button></p>
             </>
           )}
+          <p>
+            <label><input type="checkbox" checked={includeAddress} onChange={(e) => { setIncludeAddress(e.target.checked); }} disabled={receipt !== undefined} /> {t('receipt.includeAddress')}</label>
+          </p>
+          <p className="hint">{t('receipt.includeAddress.warning')}</p>
           <div className="actions">
             <button type="button" className="btn btn-primary" onClick={createReceipt} disabled={!eligible || txHash === undefined || receipt !== undefined || invoiceBusy || (boundInvoice !== undefined && !signConsent)}>{t('receipt.sign')}</button>
           </div>
@@ -318,7 +325,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
               <dl className="details receipt-facts">
                 <dt>{t('receipt.network')}</dt><dd>{t('receipt.chain.named', { name: chainName, id: String(receipt.chainId) })}</dd>
                 <dt>{t('receipt.transaction')}</dt><dd><Mono>{receipt.txHash}</Mono></dd>
-                <dt>{t('receipt.recipient')}</dt><dd><Mono>{receipt.stealthAddress}</Mono></dd>
+                {receipt.stealthAddress !== undefined && <><dt>{t('receipt.recipient')}</dt><dd><Mono>{receipt.stealthAddress}</Mono></dd></>}
                 <dt>{t('receipt.assetAmount')}</dt><dd>{t('receipt.amount.summary', { amount: amountLabel(match, t), units: receipt.amountMinorUnits })}</dd>
                 <dt>{t('receipt.digest')}</dt><dd><Mono>{receipt.invoiceDigest}</Mono> {receiptBound ? t('receipt.matched') : t('receipt.unmatched')}</dd>
                 <dt>{t('receipt.issued')}</dt><dd>{new Date(receipt.issuedAt * 1000).toISOString()}</dd>

@@ -25,7 +25,7 @@ One JSON file per chain, named `<chainId>.json`, at most 16 KiB (`MAX_MANIFEST_B
 | `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee`, `policyFeeRecipient` | optional, all-or-none | Policy account (experimental, ADR-0014). `policyFlatFee` is a decimal string. When present, `deployTx` and `bytecodeHashes` must carry `policyImplementation` and `policyFactory` too. |
 | `signature` | optional in shared schema | Web, relayer, and ops monitor require a compact low-s secp256k1 `r || s` signature (`0x` + 128 hex digits) over `manifestDigest(validatedManifest)`: `keccak256(utf8(STRUCTURED_MANIFEST_SIGNING_DOMAIN + canonicalManifestJson(manifest)))`. The exported domain is `GhostPay/structured-deployment-manifest/v1\n` with one newline byte. Missing keys, unsigned manifests, unprefixed signatures and invalid signatures fail closed. |
 
-Validation order in `loadDeployment`: size cap, JSON parse rejecting `__proto__`-style keys, strict key allowlist, and field checks above. Vite reads `apps/web/deployments/<chainId>.json`, validates filename/chain/schema/signature at build and postbuild, then compiles the raw text and public keys into the bundle. Default services call `loadBundledManifest`; the explicit fetch-based `loadManifest` helper remains for controlled tests and is not used by default runtime flows. Pay, Scan, and Sweep then call the chain adapter's on-chain readback gate. The relayer loads files from `DEPLOYMENTS_DIR`.
+Validation order in `loadDeployment`: size cap, JSON parse rejecting `__proto__`-style keys, strict key allowlist, and field checks above. Vite reads `apps/web/deployments/<chainId>.json`, validates filename/chain/schema/signature at build and postbuild, then compiles the raw text and public keys into the bundle. Default services call `loadBundledManifest`. The legacy fetch-based `loadManifest` helper was removed; production runtime flows cannot replace the bundled manifest with a fetched unsigned file. Pay, Scan, and Sweep then call the chain adapter's on-chain readback gate. The relayer loads files from `DEPLOYMENTS_DIR`.
 
 Two things the format does **not** give you today:
 
@@ -37,7 +37,7 @@ Two things the format does **not** give you today:
 | Property | State |
 |---|---|
 | Manifest signature verified | **Yes when configured.** Web build/runtime, relayer startup, and ops monitor use `verifyObjectManifestSignature` over `manifestDigest`; with no release key, deployment manifests are refused. |
-| Manifest compared with chain | **Yes.** The web flow verifies runtime code hashes and router `FEE_RECIPIENT()`, `FEE_BPS()`, and `ANNOUNCER()` through the configured RPC; an optional second RPC must agree when supplied. |
+| Manifest compared with chain | **Yes, through the primary RPC in ordinary Pay/Sweep flows.** The web gate verifies runtime code hashes and router `FEE_RECIPIENT()`, `FEE_BPS()`, and `ANNOUNCER()`. A configured second RPC is used for Scan comparison; it is not automatically added to Pay/Sweep manifest readback. Spec 01's optional two-provider requirement is not fully wired into those flows. |
 | Manifest part of hashed release bundle | **Yes.** Vite compiles validated raw manifest text and release public keys into the JS bundle. |
 | `preview == calldata` checks | Compare against a manifest that has passed release-signature validation and on-chain readback before payment is enabled. |
 | Real manifests | None exist. `deployments/31337.json` is an unsigned local anvil devnet record, not a deployment of record. |
@@ -49,12 +49,12 @@ No real manifests or release keys exist yet. The release authenticity gate is im
 ### 3.1 Manifests compiled into the hashed bundle
 
 - Reviewed manifests live in `apps/web/deployments/<chainId>.json` and are imported at build time into the JavaScript bundle. The bundle hash published in `SHA256SUMS` therefore covers router and fee-recipient addresses.
-- The default app path does not fetch manifests at runtime. The manual/test fetch helper is separate and cannot supply the default service's deployment data.
+- The app does not fetch manifests at runtime. The removed manual/test fetch helper is not an alternative source of deployment data.
 - A manifest change is a code change: pull request, review, new release hash.
 
 ### 3.2 On-chain read-back before payment is enabled
 
-Before enabling payment on a chain, using the user's RPC (ideally two independent providers through the existing `requestWithFallbackCheck`), the app checks and fails closed on any mismatch:
+Before enabling payment on a chain, the app uses the configured primary RPC and fails closed on any mismatch. A second-provider Scan setting does not by itself cause Pay or Sweep to contact that provider. Wiring a mandatory two-provider readback policy would require an explicit behavior/disclosure change and its own qualification. The current checks are:
 
 1. `eth_getCode(router)` and `eth_getCode(sweepRelayer)` hash to the expected manifest code hashes.
 2. `router.FEE_RECIPIENT()` equals `feeRecipient`; `router.FEE_BPS()` equals 25; `router.ANNOUNCER()` equals `announcer`.

@@ -1,0 +1,61 @@
+
+ RUN  v5.0.5 /workspace/scratch/f3944b12cd1b/GhostPay/apps/web
+
+ ❯ src/lib/privateScanLifecycle.test.ts (11 tests | 2 failed) 870ms
+   ❯ private scan seller lifecycle (9)
+     × fails closed when the tied key vault disappears after the journal read, without a broadcast 219ms
+     × rejects an already-open tied session after deletion, but accepts an explicit fresh independent import 232ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/privateScanLifecycle.test.ts > private scan seller lifecycle > fails closed when the tied key vault disappears after the journal read, without a broadcast
+AssertionError: expected ScanStateError: Encrypted scan storage is… { code: '…' } to match object { code: 'stale' }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "stale",
++ ScanStateError {
++   "code": "unavailable",
+  }
+
+ ❯ src/lib/privateScanLifecycle.test.ts:101:31
+     99|       return found;
+    100|     };
+    101|     await expect(vault.load()).rejects.toMatchObject({ code: 'stale' }…
+       |                               ^
+    102|     expect(store.values.size).toBe(0);
+    103|     await expect(vault.save(SAMPLE)).rejects.toMatchObject({ code: 'in…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/privateScanLifecycle.test.ts > private scan seller lifecycle > rejects an already-open tied session after deletion, but accepts an explicit fresh independent import
+AssertionError: expected ScanStateError: Encrypted scan storage is… { code: '…' } to match object { code: 'stale' }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+- {
+-   "code": "stale",
++ ScanStateError {
++   "code": "unavailable",
+  }
+
+ ❯ src/lib/privateScanLifecycle.test.ts:128:41
+    126|     await expect(vault.save(SAMPLE)).rejects.toMatchObject({ code: 'st…
+    127|     const oldSessionRetry = await openCurrentPrivateScanVault(scope, s…
+    128|     await expect(oldSessionRetry.load()).rejects.toMatchObject({ code:…
+       |                                         ^
+    129|     clearSession(false); importSession(KEYS);
+    130|     const recovered = await openCurrentPrivateScanVault(scope, store, …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 9 passed (11)
+   Start at  22:05:40
+   Duration  9.66s (import 57%, transform 33%, tests 10%)

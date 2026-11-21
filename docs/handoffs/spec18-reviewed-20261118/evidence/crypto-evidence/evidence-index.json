@@ -1,0 +1,80 @@
+{
+  "ending_source": "7c1e710a0a4bd38928b3b74814ba4b0ec4865305",
+  "files": [
+    {
+      "path": "CRYPTO_REVIEW.md",
+      "bytes": 3600,
+      "sha256": "dc62f10b6dd00070bf713db3e5d80410aaf13ebb8d1b4ce6c1c0baf86f30f055"
+    },
+    {
+      "path": "core-crypto-coverage.log",
+      "bytes": 3371,
+      "sha256": "7019388d458404109a7a6da00ceeb12a9f7ca5e725cd8b7be0d5afc667b7f6f6"
+    },
+    {
+      "path": "final-validation.json",
+      "bytes": 1947,
+      "sha256": "e51e752326dd464288d3694bb6ce65d47acede7cd17149c366fbc55573b214a3"
+    },
+    {
+      "path": "passphrase-stream-green.log",
+      "bytes": 729,
+      "sha256": "15849f28b8a08cd5aa1cdb6f6f52c25b2d8ae1c5ace74782b9d1336766b1dfcd"
+    },
+    {
+      "path": "passphrase-stream-red.log",
+      "bytes": 1390,
+      "sha256": "29b37b8ad2703cb75cb2075757e86f4db94b504aba6639445c1e6f614e52ed08"
+    },
+    {
+      "path": "raw-key-anvil.log",
+      "bytes": 637,
+      "sha256": "f685dd98917ff616632fb6de1d5ba3674529a69fa4e516208d8a091f252dbeb4"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 1867,
+      "sha256": "4aa0abc46d84de59b07f55544857f92b9f7c53ecee079e78b1fa4aa411a4b164"
+    },
+    {
+      "path": "standalone-recovery-final.log",
+      "bytes": 5841,
+      "sha256": "3cceefa13aa14c3fd622f52063cd861675832e6c3dbb0f7e842c8dbee0d921b0"
+    },
+    {
+      "path": "standalone-recovery.log",
+      "bytes": 5839,
+      "sha256": "edf43181cdfec2fd7ae6621ddb6d66ebc9cd75369b0d3dff72ec7e2d99c6ea3d"
+    },
+    {
+      "path": "time-wrapper-attempt.json",
+      "bytes": 246,
+      "sha256": "6a782a9b87441bc6e30e95f8f3921ef10c0a1369ec963dfb8a06357b0cce0cf3"
+    },
+    {
+      "path": "ux-vault-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ux-vault-coverage-serialized.json",
+      "bytes": 448,
+      "sha256": "5753626be4254b457c3e6089d4290b5c1928a9219e1da3e7cab8f20a1493395f"
+    },
+    {
+      "path": "ux-vault-coverage-serialized.log",
+      "bytes": 3889,
+      "sha256": "2c02d1c9611a9c0ff241d2c3d28ee5acd43fad2713246157e5a4feec9b02b1ef"
+    },
+    {
+      "path": "ux-vault-coverage.log",
+      "bytes": 6718,
+      "sha256": "e90b018f043abbeed7f58b203dd16359f418f8b2f97fde09af1fd21557c30811"
+    },
+    {
+      "path": "ux-vault-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

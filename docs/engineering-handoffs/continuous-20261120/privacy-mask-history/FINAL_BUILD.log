@@ -1,0 +1,48 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> @ghostpay/web@1.0.0-beta.1 build
+> tsc -p tsconfig.json --noEmit && vite build
+
+(node:26) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+vite v8.3.8 building client environment for production...
+transforming...
+
+./help.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[plugin rolldown:vite-resolve] Module "node:http" has been externalized for browser compatibility, imported by "/workspace/scratch/0a7bc3583588/GhostPay/packages/pir-two-server/dist/http.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 1125 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/build-info.json                          0.15 kB │ gzip:   0.14 kB
+dist/index.html                               3.36 kB │ gzip:   1.43 kB
+dist/privacy.html                             8.02 kB │ gzip:   3.28 kB
+dist/help.html                               16.85 kB │ gzip:   5.82 kB
+dist/assets/scanner.worker-CAQQ64R_.js       62.18 kB
+dist/assets/scan.worker-DaXX6p9Q.js         107.01 kB
+dist/assets/style-sbKVpGL7.css               11.94 kB │ gzip:   3.45 kB
+dist/assets/rolldown-runtime-XKyaHtl9.js      0.72 kB │ gzip:   0.42 kB
+dist/assets/jsQR-DMfxOdIb.js                129.98 kB │ gzip:  47.51 kB
+dist/assets/es-Djc3HflY.js                  287.76 kB │ gzip:  80.07 kB
+dist/assets/ja-CjYANxnb.js                  337.18 kB │ gzip:  84.86 kB
+dist/assets/ar-7OLSf1bp.js                  344.70 kB │ gzip:  85.62 kB
+dist/assets/index-BxUeMLtw.js             1,993.19 kB │ gzip: 600.31 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 1200 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0m../../packages/qr-exchange/src/readers.ts is dynamically imported by ../../packages/qr-exchange/src/camera.ts but also statically imported by ../../packages/qr-exchange/src/index.ts, dynamic import will not move module into another chunk.
+
+✓ built in 984ms
+
+> @ghostpay/web@1.0.0-beta.1 postbuild
+> node scripts/apply-csp.mjs && node scripts/scan-bundle.mjs
+
+(node:65) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+apply-csp: broad connect-src (GHOSTPAY_CONNECT_ORIGINS not set)
+(node:73) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Bundle scan passed: 19 files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.

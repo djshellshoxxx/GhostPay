@@ -1,0 +1,35 @@
+{
+  "observation": "After focused execution; imports use the coordinator-prepared root workspace compiled package graph. This is not a claim of a separately rebuilt dependency graph in the QA worktree.",
+  "packages": {
+    "chain-adapters": {
+      "path": "/workspace/scratch/0a7bc3583588/GhostPay/packages/chain-adapters/dist",
+      "javascriptFileCount": 31,
+      "sha256OfSortedRelativePathsAndContentHashes": "ff6b18860d962ad9657e183a6a218a5dca8eb5b821fa36537f636f99964b36aa"
+    },
+    "invoice-schema": {
+      "path": "/workspace/scratch/0a7bc3583588/GhostPay/packages/invoice-schema/dist",
+      "javascriptFileCount": 11,
+      "sha256OfSortedRelativePathsAndContentHashes": "49da79af1bc30aedaeaf4d0354aaae1fbf91b9685e4f963c267d719695e43f85"
+    },
+    "ux-vault": {
+      "path": "/workspace/scratch/0a7bc3583588/GhostPay/packages/ux-vault/dist",
+      "javascriptFileCount": 19,
+      "sha256OfSortedRelativePathsAndContentHashes": "48f07d8e2397e3f3abd1d9f4d10bce2e1011d90b9a75f153a4aa00778e043dc0"
+    },
+    "core-crypto": {
+      "path": "/workspace/scratch/0a7bc3583588/GhostPay/packages/core-crypto/dist",
+      "javascriptFileCount": 8,
+      "sha256OfSortedRelativePathsAndContentHashes": "f78a317b94e9fd585defa9f38e68c956d4c1c8ac3e69319e16f879b2273c9f2a"
+    },
+    "scan-source": {
+      "path": "/workspace/scratch/0a7bc3583588/GhostPay/packages/scan-source/dist",
+      "javascriptFileCount": 15,
+      "sha256OfSortedRelativePathsAndContentHashes": "abf4aa5669ffbb55a46a767ccbdb0250b1aa4b7841950f1f59da22fdc3acb3ff"
+    },
+    "secret-box": {
+      "path": "/workspace/scratch/0a7bc3583588/GhostPay/packages/secret-box/dist",
+      "javascriptFileCount": 3,
+      "sha256OfSortedRelativePathsAndContentHashes": "bf1c500e79d44ebeb417ec838d61bde04785e720efcb55d2b18514d2e3bedc64"
+    }
+  }
+}

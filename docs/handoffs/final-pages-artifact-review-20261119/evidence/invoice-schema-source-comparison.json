@@ -1,0 +1,139 @@
+{
+  "identical": true,
+  "files": [
+    {
+      "path": "packages/invoice-schema/DEVIATIONS.md",
+      "sha256": "04bd6317fbb161f9949a0aa5bac0705c7fc613367885f222714f62c62204f93d"
+    },
+    {
+      "path": "packages/invoice-schema/README.md",
+      "sha256": "d3a891849bdef8033b879f065867cee1e146597c8ac6ff8c0f787904e913cdbd"
+    },
+    {
+      "path": "packages/invoice-schema/package.json",
+      "sha256": "c32cad9520d1ad2a37cdbf6dd8c0703741780be4c0943e8ff102b97e8b2e3582"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.test.ts",
+      "sha256": "154c37de1038572568aa9a65969f898fd8e45a7344343cec9f84532245387078"
+    },
+    {
+      "path": "packages/invoice-schema/src/base64url.ts",
+      "sha256": "18a9787c5c9381512e807813cfe64338fb7690da9815dbba9891258ab8d2f9f8"
+    },
+    {
+      "path": "packages/invoice-schema/src/envelope.test.ts",
+      "sha256": "e1fc7960260778748d08432b8bd85cd8f264936ade851ae9dc8d63fa09d7c29b"
+    },
+    {
+      "path": "packages/invoice-schema/src/envelope.ts",
+      "sha256": "c282116f01e44f4e1021fc15e253eb3379c26cdd7d08437f717c8a24eee8188b"
+    },
+    {
+      "path": "packages/invoice-schema/src/errors.ts",
+      "sha256": "29c96a563efc0916920e4dced817e8d3c39235f9345d1a59fc24af69802a3f07"
+    },
+    {
+      "path": "packages/invoice-schema/src/expiry.test.ts",
+      "sha256": "4b853ce3e05dc3ba276d236278866fe6d2a5d7714069044f9d0531ecd1d9836a"
+    },
+    {
+      "path": "packages/invoice-schema/src/expiry.ts",
+      "sha256": "2b7b71e62f300aff38e63960d4dc5e7e6317b6a5a5de061bfea4b15dede63227"
+    },
+    {
+      "path": "packages/invoice-schema/src/fixtures.testutil.ts",
+      "sha256": "f1b1502d0225821ddf19bd459ed2f4a9b6f6453934b19072cafe9443c1bf7e1e"
+    },
+    {
+      "path": "packages/invoice-schema/src/fuzz.test.ts",
+      "sha256": "dde987821a35b71e78520e3cee7726f140a5644d55850c06fc721ea5c2d1a040"
+    },
+    {
+      "path": "packages/invoice-schema/src/independent.test.ts",
+      "sha256": "164e06791522662ee9b191f97bd6a31e3ec25f6e0acd7e4d48322c8c2c19518e"
+    },
+    {
+      "path": "packages/invoice-schema/src/index.ts",
+      "sha256": "c3fbe2caa3ab089824b5d4c3140d1abd6a2c6b41f788b94e9d97946159236f28"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.test.ts",
+      "sha256": "5e6b7f327a679f0bb82cc40932aec5356dfd8291239489163ba0fd4b5eb30247"
+    },
+    {
+      "path": "packages/invoice-schema/src/json.ts",
+      "sha256": "350ece51405e33072c11067f5a33149a6363bcef62cb52325a74fc37aa040d5a"
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.test.ts",
+      "sha256": "a4e379d2f71ace6da597170c74ef95ea31c0be93c933668fc7e8635820ffb005"
+    },
+    {
+      "path": "packages/invoice-schema/src/merchantProfile.ts",
+      "sha256": "7253a236747cc04abf5d04f5b9152fca90f7075b1857d4416dff390b53c4ce1a"
+    },
+    {
+      "path": "packages/invoice-schema/src/passphrase.test.ts",
+      "sha256": "58524a9e6b7a32ad08446a93d731977dd92e2a613ed5a09d9c54a4750134526a"
+    },
+    {
+      "path": "packages/invoice-schema/src/passphrase.ts",
+      "sha256": "4b20b14f6e545a5c0d91ffe215e197829cb7ead81d1ceb89906c4df0ed48e9c9"
+    },
+    {
+      "path": "packages/invoice-schema/src/pinnedSigner.test.ts",
+      "sha256": "a7ef90678e2c4e5995ff7dea6d2c4119fbc6730ea3b4d945c903d9da2d88eedb"
+    },
+    {
+      "path": "packages/invoice-schema/src/receipts.test.ts",
+      "sha256": "fffaacccd2bc894af5ad8ab97b794676a17cb11e1b21d1cc33da38e0bb41bd23"
+    },
+    {
+      "path": "packages/invoice-schema/src/receipts.ts",
+      "sha256": "fb2bdd86172889284447bb2d278d8716639a1cd57a0a1b391e3e9eea3652729d"
+    },
+    {
+      "path": "packages/invoice-schema/src/schema.test.ts",
+      "sha256": "b66b9382b1d8b9128ed8f24e337d0335794a0b6e7aa69215c9aa839abaf9a993"
+    },
+    {
+      "path": "packages/invoice-schema/src/schema.ts",
+      "sha256": "b167eb97b3d1bb68fe0338cfe78a3eb6ccb4b142eaa6ce30112e69ce4e4d52b7"
+    },
+    {
+      "path": "packages/invoice-schema/src/secp256k1-ref.testutil.ts",
+      "sha256": "9b919de9cc40ad8d5472aaa52bc49e1224087e8a6162bdb8180a17d51f2f008b"
+    },
+    {
+      "path": "packages/invoice-schema/src/sign.test.ts",
+      "sha256": "b0060748900e476221baaa30fcc39ca59e05c5f08c062753121a628b30b4a12a"
+    },
+    {
+      "path": "packages/invoice-schema/src/sign.ts",
+      "sha256": "8efcb19e49d30dbc742c89104c178f10691026c554278e8e44b9ad0b394964d3"
+    },
+    {
+      "path": "packages/invoice-schema/src/text-hygiene.test.ts",
+      "sha256": "ddbebf6b9a5f1c9a41284802dab031fbb65b7bc8a6a98d3419115c23b2f979ff"
+    },
+    {
+      "path": "packages/invoice-schema/src/verificationStatus.test.ts",
+      "sha256": "6e944e8a7dd47cbd58887a11330d8d7305243641ebe16caa35fc3b5790d79228"
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.build.json",
+      "sha256": "8653194a8ad7fe958de857790dbaa781b00fa054d810e65f65ec911c6fc57dab"
+    },
+    {
+      "path": "packages/invoice-schema/tsconfig.json",
+      "sha256": "a7afeb9eb63100201233658ba907c3a78c757acb63f83fc0df7908740000f962"
+    },
+    {
+      "path": "packages/invoice-schema/vitest.config.ts",
+      "sha256": "5bb4bb2ef05f4079bf016a6cbb8a6b361e7106507957b225f55ef69133a77b2c"
+    }
+  ],
+  "rootCommit": "65b550934078c937d16da93d3dbb61ee974e66cb",
+  "reviewCommit": "de5686afc0248a1a60cf4171ed79f9565eac1539"
+}

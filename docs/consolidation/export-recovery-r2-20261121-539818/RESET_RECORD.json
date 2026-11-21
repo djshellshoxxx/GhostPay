@@ -1,0 +1,26 @@
+{
+  "event": "Workspace reset after byte exhaustion",
+  "lost_worktree": "/workspace/scratch/539818ee134f/GhostPay-privacy-independent",
+  "lost_claim_short_sha": "ef88bab2",
+  "lost_claim_was_published": false,
+  "recovered_parent": "0fb2831a1b89430c69896f6db57306cd5518e55f",
+  "reconstructed_claim": "e55ec7e74fd1598f5c0bfc71f3b9458298c1d50b",
+  "test_copied_before_reset": false,
+  "product_tests_executed_before_reset": false,
+  "failed_preparation": {
+    "action": "Create scoped evidence directory before dependency/source verification and donor copy",
+    "exit_code": 1,
+    "diagnostic": "OSError: [Errno 28] No space left on device: '/workspace/scratch/539818ee134f/GhostPay-privacy-independent/docs/consolidation/export-recovery-r2-20261121-539818'"
+  },
+  "later_tool_failure": "Failed to create unified exec process: exec-server rejected request (-32603): No such file or directory (os error 2)",
+  "lost_environment_observations_only": {
+    "node": "v24.22.3",
+    "vitest": "5.1.0",
+    "available_disk_bytes": 0,
+    "inode_usage_percent": 76,
+    "independent_worktree_vite_cache_bytes": 332,
+    "hardlinked_compiled_packages": 65,
+    "hardlinked_compiled_output_bytes": 8580487
+  },
+  "fresh_runtime_rule": "No prior installation/compiled-output proof is reused after reset. Coordinator restored repository and runs fresh original npm ci and all-library build. New executions are recorded separately."
+}

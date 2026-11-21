@@ -251,13 +251,18 @@ function summarize(s: SessionSecrets): SessionPublic {
 
 /** Moves freshly created scalars into boxes (wiping the scalars) and returns the stored form. */
 function box(next: SessionSecrets): Stored {
-  return {
-    spending: SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' }),
-    viewing: SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' }),
-    signing: SecretBox.copyOf(next.signingKey, { label: 'signing' }),
-    spendingPublicKey: next.keys.spendingPublicKey,
-    viewingPublicKey: next.keys.viewingPublicKey,
-  };
+  let spending: SecretBox | undefined;
+  let viewing: SecretBox | undefined;
+  let signing: SecretBox | undefined;
+  try {
+    spending = SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' });
+    viewing = SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' });
+    signing = SecretBox.copyOf(next.signingKey, { label: 'signing' });
+    return { spending, viewing, signing, spendingPublicKey: next.keys.spendingPublicKey, viewingPublicKey: next.keys.viewingPublicKey };
+  } catch (error) {
+    spending?.dispose(); viewing?.dispose(); signing?.dispose();
+    throw error;
+  }
 }
 
 function scalarOf(b: SecretBox): SecretScalar {
@@ -289,11 +294,20 @@ export function getSessionPublic(): SessionPublic | undefined {
 type Origin = { readonly from: 'generated' | 'import' | 'import-new-signer' } | { readonly from: 'vault'; readonly record: string };
 
 function install(next: SessionSecrets, origin: Origin): SessionPublic {
-  if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
+  let nextSummary: SessionPublic;
+  let nextStored: Stored;
+  try {
+    if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
+    // Prepare the complete replacement before wiping the current wallet. A failed allocation must preserve its keys,
+    // custody state and revision. Summarize first because boxing consumes the new scalars.
+    nextSummary = summarize(next);
+    nextStored = box(next);
+  } finally {
+    wipeOpened(next);
+  }
   clearSession(false);
-  // Summarize first: boxing wipes the scalars.
-  publicSummary = summarize(next);
-  current = box(next);
+  publicSummary = nextSummary;
+  current = nextStored;
   const vault = origin.from === 'vault' ? origin.record : undefined;
   const imported = origin.from === 'import' || origin.from === 'import-new-signer';
   setCustody({ external: origin.from === 'import' ? 'verified' : 'none', paymentKeysExternal: imported, vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);
@@ -483,6 +497,20 @@ export async function verifyVaultForCurrentSession(ciphertext: string, passphras
 }
 
 /**
+ * Re-authentication for a spec 18 secret export: `text` (a vault record or a keystore backup file) must open with
+ * `passphrase` and hold exactly the loaded keys. Resolves to a guard for those keys. Unlike {@link verifyDownloadedBackup}
+ * it records nothing: custody, backup and vault state stay as they are, and nothing is loaded or replaced. Rejects when
+ * `signal` aborts or the keys change meanwhile; every decrypted secret is wiped on every path.
+ */
+export async function verifyCredentialForCurrentSession(text: string, passphrase: string, source: 'vault' | 'keystore', signal?: AbortSignal): Promise<() => void> {
+  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theSecretExportWasCancelled' }); };
+  const mismatch = new UserFacingError({ key: source === 'vault' ? 'error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller' : 'error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys' });
+  const guard = await matchLoadedSession(text, passphrase, assertOpen, mismatch);
+  assertOpen();
+  return guard;
+}
+
+/**
  * "Verify backup" (GP-PAGES-02): opens a downloaded keystore file with its passphrase and, only on an exact match with the
  * loaded keys, records the copy as verified, which lets the idle lock and an explicit wipe treat the keys as recoverable.
  * Nothing is loaded or replaced; a wrong passphrase, a damaged file or another seller's keystore change nothing. Rejects
@@ -565,7 +593,7 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
   }
 }
 
-// i18n-use: error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd error.session.spendingAndViewingKeysMustDiffer error.session.loadOrGenerateSellerKeysFirstSellerKeys error.session.sellerKeysChangedDuringThisActionTryAgain error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller error.session.theKeystoreImportWasClosed error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain error.session.theKeystoreContainsInvalidKeys error.session.theBackupVerificationWasClosed error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys
+// i18n-use: error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd error.session.spendingAndViewingKeysMustDiffer error.session.loadOrGenerateSellerKeysFirstSellerKeys error.session.sellerKeysChangedDuringThisActionTryAgain error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller error.session.theKeystoreImportWasClosed error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain error.session.theKeystoreContainsInvalidKeys error.session.theBackupVerificationWasClosed error.session.theBackupFileDoesNotHoldTheLoadedSellerKeys error.session.theSecretExportWasCancelled
 
 // i18n-use: error.session.spendingFormat
 

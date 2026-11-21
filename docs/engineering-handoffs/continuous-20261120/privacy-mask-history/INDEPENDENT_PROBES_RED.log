@@ -1,0 +1,40 @@
+(node:38) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web
+
+(node:87) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/AppShell.privacy.test.tsx (4 tests | 1 failed) 728ms
+   ❯ required global privacy masking (4)
+     × requires fresh reveal for a replacement encrypted invoice on the same Pay route 181ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/AppShell.privacy.test.tsx > required global privacy masking > requires fresh reveal for a replacement encrypted invoice on the same Pay route
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/AppShell.privacy.test.tsx:84:38
+     82|     expect(createRpc).not.toHaveBeenCalled();
+     83|     expect(getSessionPublic()).toBe(seller);
+     84|     expect(isInaccessible(nextMemo)).toBe(true);
+       |                                      ^
+     85|   });
+     86| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  17:27:38
+   Duration  3.29s (import 31%, transform 27%, tests 23%, environment 18%)
+

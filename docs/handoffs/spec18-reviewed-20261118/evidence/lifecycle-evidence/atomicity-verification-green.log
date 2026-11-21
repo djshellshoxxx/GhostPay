@@ -1,0 +1,40 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/a264c19c9f94/GhostPay/apps/web
+
+(node:41) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/StealthExportVerification.test.tsx (14 tests | 1 failed) 1927ms
+   ❯ saved Spec 18 export verification (14)
+     × distinguishes a generated file from an initiated download and retries without claiming retention 44ms
+(node:53) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > distinguishes a generated file from an initiated download and retries without claiming retention
+AssertionError: expected 'Encrypted file generated; download ha…' to contain 'File generated; download has not star…'
+
+Expected: "File generated; download has not started."
+Received: "Encrypted file generated; download has not started. Retry the download, then keep and verify the saved file."
+
+ ❯ src/components/StealthExportVerification.test.tsx:41:21
+     39|     const announce = vi.fn();
+     40|     const view = render(<StealthExportVerification file={generated} an…
+     41|     expect(state()).toContain('File generated; download has not starte…
+       |                     ^
+     42|     expect(state()).not.toContain('download initiated');
+     43|     expect(submit().disabled).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 17 passed (18)
+   Start at  15:02:09
+   Duration  3.61s (tests 64%, import 16%, environment 12%, transform 8%)
+
+    Isolate  2 workers spawned · ~308ms startup each (spawn + environment, per file)
+             at least ~308ms faster with isolate: false — reuses workers across files instead of one per file
+

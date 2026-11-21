@@ -1,0 +1,52 @@
+{
+  "feature": "v1-03-wallet-lock",
+  "generation": 1,
+  "base": "bbcf71b79d4efd00892948faa833cb7d8f471406",
+  "source": "74cb34cbc5f3f193e70430d17bef1ccafd00afca",
+  "tree": "0ed6c862ea9ea6c41eb3c9a0663b5bac7820743c",
+  "baseline": "af38d8ce",
+  "baseline_result": {
+    "failed": 11,
+    "passed": 1,
+    "exit": 1,
+    "files": 2
+  },
+  "initial_green": {
+    "source": "e7866912",
+    "passed": 59,
+    "exit": 0,
+    "files": 5,
+    "seconds": 9.44
+  },
+  "reconnect_red": {
+    "source": "0be006bb",
+    "failed": 1,
+    "passed": 2,
+    "filtered": 3,
+    "exit": 1
+  },
+  "final": {
+    "passed": 59,
+    "failed": 0,
+    "skipped": 0,
+    "files": 5,
+    "exit": 0,
+    "seconds": 15.72
+  },
+  "secret_scan": {
+    "exit": 0
+  },
+  "diff_check": {
+    "exit": 0
+  },
+  "log_sha256": {
+    "red": "9b57625955d0b6b43dd220311b62db3d0417fb550fea5efe9d2c78fdb7cc3ed5",
+    "green": "bad36067d74fb5ffe086fe13d6d3c40b8d6ccd09cda16ffc88e66ed972df6fac",
+    "reconnect-red": "70d3bc9c88e602f17f08fb5ccdb54067eb8f62ed9f5b9092b8a02e20d651519f",
+    "final": "ba4f3c1684cfe232bd02e90f001cfa562f3a4000be534bfd0f6cafbde4d0404a"
+  },
+  "typing": "not run; coordinator reserves resource window",
+  "lint": "not run",
+  "browser": "not run",
+  "full_original_suite": "not run"
+}

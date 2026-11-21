@@ -1,0 +1,126 @@
+{
+  "base": "198aa5baff22272453733a0f3dcfcac0e0994eec",
+  "candidate_snapshot_commit": "1e3c3466fe168d02194f31b754a85377929136eb",
+  "branch": "chatgpt/spec18-recovery-reviewed-20261118-a264",
+  "reviewer": "lifecycle_review (separate AI-assisted source review and implementation lane)",
+  "changed_owned_files": [
+    "apps/web/src/lib/session.ts",
+    "apps/web/src/lib/session.atomicity.test.ts",
+    "apps/web/src/components/StealthExportVerification.tsx",
+    "apps/web/src/components/StealthExportVerification.test.tsx"
+  ],
+  "source_hashes": [
+    {
+      "path": "apps/web/src/lib/session.ts",
+      "sha256": "354160c69316244de4276ccadfed57d08e4c3ec9560cdadadc69078dd80147c5"
+    },
+    {
+      "path": "apps/web/src/lib/session.atomicity.test.ts",
+      "sha256": "727a46e93ab98e13f2d9e761af6434220d694e43f099028f8920f482d88e43d6"
+    },
+    {
+      "path": "apps/web/src/lib/session.test.ts",
+      "sha256": "eb80350d68eb35d18bf6b4841f19a81207a1a31090c4d8eb0b9ba5361ace801e"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.ts",
+      "sha256": "8af22a668291f5bfe6cba43b3992b0561d701fdd149070263db8a6fc824c9186"
+    },
+    {
+      "path": "apps/web/src/lib/paymentKeyExport.test.ts",
+      "sha256": "b3f55bcfda896087efe695fd91d305137a5df0763b0ba48bfad4743353442b93"
+    },
+    {
+      "path": "apps/web/src/lib/keyVault.secretExport.test.ts",
+      "sha256": "38b33720dcde3ea49cacc2675874d9568e593b8fc04a073fbec623390c1cc473"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.tsx",
+      "sha256": "5e45b80bd8e727564533c8a48a4148f254e99994b85ff4cf6ab009eda5ce0b7b"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportRecovery.test.tsx",
+      "sha256": "7c3f29bacfc38cfa391136c6edfec1718c1f44bee3cbebdffae54de7fb183ed9"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.tsx",
+      "sha256": "1577b2385d408dc1f6ee54b938bdc207e9f2f5508a01421a2f55269fe484ef90"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportVerification.test.tsx",
+      "sha256": "ec0ddcbe739efe52b7bc787ab89d2947461b16a183eaf6597bc9c31c00342328"
+    },
+    {
+      "path": "apps/web/src/components/StealthExportSelection.test.tsx",
+      "sha256": "f2f08a15adc302eada037dac69a64128f3dae5354ed7d9695d8a16daebd60791"
+    }
+  ],
+  "results": [
+    {
+      "log": "atomicity-verification-red.log",
+      "exit_code": 1,
+      "passed": 13,
+      "failed": 5,
+      "meaning": "Three replacement-allocation cases lose old wallet; saved-verification success survives changed password; no generated-only state/retry yet.",
+      "sha256": "10b2bea10ad90243d85280184aa2abbabb43a7ef47a04b3aaf6466a9929825e5"
+    },
+    {
+      "log": "atomicity-verification-green.log",
+      "exit_code": 1,
+      "passed": 17,
+      "failed": 1,
+      "meaning": "All three product fixes passed; generated-state test expected wording different from coordinator English locale.",
+      "sha256": "16926666c9a1a086ec3b689269188acd9d359294d2db28d365722ac0d3ae3b2d"
+    },
+    {
+      "log": "lifecycle-session-final.log",
+      "exit_code": 1,
+      "passed": 103,
+      "failed": 1,
+      "meaning": "Seven files executed; sole failure test expected guessed retry button name. Other six files and 13 of 14 verification tests passed.",
+      "sha256": "b01fa576505441d763b13774a898269bef07652db228e76390459d7e00133e0f"
+    },
+    {
+      "log": "verification-final.log",
+      "exit_code": 0,
+      "passed": 14,
+      "failed": 0,
+      "meaning": "Final saved-verification tests after aligning expected labels with coordinator English catalog; no product change from preceding broad run.",
+      "sha256": "5329cff259b9957e7f98b99ca2041f206eeba95f25e37bc8a04bf85bfabb8eec"
+    }
+  ],
+  "unique_executed_tests": 104,
+  "unique_files": 7,
+  "coverage": "Focused Vitest tests used --coverage=false --maxWorkers=1, Node22.23.5, 768MiB heap. No browser, whole-app typecheck/lint or coverage pass inferred.",
+  "findings": [
+    {
+      "id": "S18-IMPORT-ATOMICITY",
+      "severity": "medium",
+      "cause": "session.install cleared current wallet before summarizing and allocating replacement boxes; failure could erase original keys and leave partial new boxes undisposed.",
+      "fix": "Stage complete summary and boxes first; dispose partially staged boxes on failure; wipe incoming mutable scalars in finally; only then clear/install/notify.",
+      "regression": "session.atomicity.test.ts exercises failure at each of the three box allocations through actual RecoveredMasterKeys.install, preserves public identity/custody/revision/private access and verifies cleanup; success emits exactly one completed session.",
+      "independent_review": "recovery_recon inspected session.ts and test and reported no introduced source blocker."
+    },
+    {
+      "id": "S18-VERIFY-INPUT",
+      "severity": "low",
+      "cause": "Editing saved-backup passphrase left previous verification-success state visible.",
+      "fix": "Clear previous result and error when password input changes.",
+      "regression": "StealthExportVerification.test.tsx verifies result clears immediately, before any new check."
+    },
+    {
+      "id": "S18-DOWNLOAD-STAGES",
+      "severity": "functional",
+      "cause": "Root established generated encrypted backup was discarded after browser download failure; stages could not distinguish generation from start.",
+      "fix": "Root retains encrypted generated artifact and retry callback; this lane exposes explicit generated-only and initiated statuses without inferring retention or recoverability.",
+      "regression": "StealthExportVerification.test.tsx proves retry callback cannot itself set retained/verified state and explicit downloadStarted prop controls stage."
+    }
+  ],
+  "review_notes": [
+    "Candidate verifyStealthExport authenticates and validates through existing codec, exposes public metadata only and disposes recovered boxes before return, including cancellation/session-change failure.",
+    "Master replacement consent is bound to exact held export object, current operation and session revision. Vault-only recoverability is reread on confirmation; losing it requires stronger sole-copy warning.",
+    "Changing credential during raw confirmation did not show an authority bypass: final proof must still match current loaded keys; selected payment/RPC/session remain independently bound. No change made solely on suspicion.",
+    "This lane adds no storage, network calls, crypto primitive, dependency, release gate relaxation or plaintext secret retention.",
+    "Broader full-app browser/coverage/typecheck/lint and final integration remain coordinator responsibilities; focused passes do not establish product release readiness."
+  ]
+}

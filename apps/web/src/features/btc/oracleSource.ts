@@ -1,4 +1,4 @@
-import { SilentPaymentError, type BlockOutputs, type BlockTweaks, type TweakSource } from '@ghostpay/btc-silent-payments';
+import { SilentPaymentError, type BlockOutputs, type BlockSpends, type BlockTweaks, type TweakSource } from '@ghostpay/btc-silent-payments';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { normalizeEsploraUrl } from './esplora';
 
@@ -74,7 +74,21 @@ export function validateOracleBlock(block: BtcOracleBlock, height: number): void
  */
 export class CrossCheckedTweakSource implements TweakSource {
   private readonly cache = new Map<number, Promise<BtcOracleBlock>>();
-  public constructor(private readonly local: TweakSource, private readonly readOracle: ReadOracleBlock) {}
+  /**
+   * Present only when the local source lists block spends (the oracle serves tweaks and outputs only). The list is
+   * bound to the cross-checked block: its hash must equal the hash both sources agreed on for that height.
+   */
+  public readonly getSpends?: (height: number, signal?: AbortSignal) => Promise<BlockSpends>;
+  public constructor(private readonly local: TweakSource, private readonly readOracle: ReadOracleBlock) {
+    const spends = local.getSpends?.bind(local);
+    if (spends !== undefined) {
+      this.getSpends = async (height: number, signal?: AbortSignal): Promise<BlockSpends> => {
+        const [checked, list] = await Promise.all([this.load(height, signal), spends(height, signal)]);
+        if (list.height !== height || list.blockHash !== checked.tweaks.blockHash) throw new SilentPaymentError('REORG_DETECTED');
+        return list;
+      };
+    }
+  }
   public getTipHeight(signal?: AbortSignal): Promise<number> { return this.local.getTipHeight(signal); }
   private load(height: number, signal?: AbortSignal): Promise<BtcOracleBlock> {
     let pending = this.cache.get(height);

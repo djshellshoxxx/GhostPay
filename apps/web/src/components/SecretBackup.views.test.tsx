@@ -18,8 +18,12 @@ const refused = (): Promise<void> => Promise.reject(new DOMException('Document i
 /** Opens `view` in the app, creates a wallet there and copies its backup (confirmed); returns the navigation. */
 async function copyIn(view: (typeof VIEWS)[number], writeText: (text: string) => Promise<void>) {
   const user = userEvent.setup();
+  let copied = '';
   // After setup(), which installs a clipboard stub of its own.
-  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: {
+    readText: () => Promise.resolve(copied),
+    writeText: (text: string) => writeText(text).then(() => { copied = text; }),
+  } });
   renderApp();
   const nav = within(screen.getByRole('navigation', { name: 'Main' }));
   await user.click(nav.getByRole('button', { name: view.nav }));

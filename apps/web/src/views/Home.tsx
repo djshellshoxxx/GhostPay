@@ -3,6 +3,7 @@ import { ChainFeeList, useLimits } from '../components/Disclosure';
 import { Mono } from '../components/Common';
 import { computeReleaseHash, entryScriptUrl } from '../lib/release';
 import { useServices } from '../lib/services';
+import type { NetworkAuthorization } from '../lib/networkAuthorization';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -20,16 +21,25 @@ export function Home(): ReactNode {
       setHash('unavailable');
       return;
     }
-    computeReleaseHash(src, services.fetchFn, document.baseURI).then(
+    let resolvedSrc: string;
+    let context: NetworkAuthorization | undefined;
+    try {
+      // The bundle uses relative module URLs on project sites; bind authority and hashing to the same absolute URL.
+      resolvedSrc = new URL(src, document.baseURI).href;
+      context = services.network?.authorize({ action: 'release-hash', category: 'resource', endpoint: resolvedSrc });
+    }
+    catch { setHash('unavailable'); return; }
+    computeReleaseHash(resolvedSrc, context?.fetchFn ?? services.fetchFn, document.baseURI).then(
       (h) => {
         if (live) setHash(h);
       },
       () => {
         if (live) setHash('unavailable');
       },
-    );
+    ).finally(() => { context?.dispose(); });
     return () => {
       live = false;
+      context?.dispose();
     };
   }, [services]);
 

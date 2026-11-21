@@ -1,0 +1,84 @@
+(node:38) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/0a7bc3583588/GhostPay-privacy-mask-history/apps/web
+
+(node:87) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/WalletAttempts.test.tsx (4 tests | 3 failed) 346ms
+   × retains the unresolved-request warning and duplicate protection without exposing a disconnected account or hash 18ms
+   × shows only the connected account and chain, removing old details on account changes even outside privacy mode 11ms
+   × requires a separate temporary history reveal and never revives it for a reconnected wallet 26ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/WalletAttempts.test.tsx > retains the unresolved-request warning and duplicate protection without exposing a disconnected account or hash
+AssertionError: expected <code class="mono" dir="ltr"></code> to be null
+
+- Expected:
+null
+
++ Received:
+<code
+  class="mono"
+  dir="ltr"
+>
+  0x1111111111111111111111111111111111111111
+</code>
+
+ ❯ src/components/WalletAttempts.test.tsx:30:46
+     28|   const stored = sessionStorage.getItem(ATTEMPT_JOURNAL_KEY);
+     29|   render(<WalletAttempts />);
+     30|   expect(screen.queryByText(wallet.account)).toBeNull();
+       |                                              ^
+     31|   expect(screen.queryByText(hash)).toBeNull();
+     32|   expect(screen.getByText(/may already have been submitted/)).toBeTrut…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/WalletAttempts.test.tsx > shows only the connected account and chain, removing old details on account changes even outside privacy mode
+AssertionError: expected [ …(2) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/components/WalletAttempts.test.tsx:44:47
+     42|   beginAttempt({ key: `0x${'c'.repeat(64)}`, ...wallet, chainId: 84532…
+     43|   const panel = render(<WalletAttempts wallet={wallet} />);
+     44|   expect(screen.getAllByText(wallet.account)).toHaveLength(1);
+       |                                               ^
+     45|   expect(screen.queryByText(other.account)).toBeNull();
+     46|   expect(screen.queryByText(/chain 84532/)).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/components/WalletAttempts.test.tsx > requires a separate temporary history reveal and never revives it for a reconnected wallet
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/components/WalletAttempts.test.tsx:61:60
+     59|   const panel = render(fixture(wallet));
+     60|   fireEvent.click(screen.getByRole('button', { name: 'Global reveal fi…
+     61|   expect(isInaccessible(screen.getByText(wallet.account))).toBe(true);
+       |                                                            ^
+     62|   fireEvent.click(screen.getByRole('button', { name: 'Reveal history f…
+     63|   expect(isInaccessible(screen.getByText(wallet.account))).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  17:17:21
+   Duration  3.50s (environment 32%, import 30%, transform 26%, tests 12%)
+

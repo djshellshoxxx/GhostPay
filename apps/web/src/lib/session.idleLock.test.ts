@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppLean } from '../AppLean';
 import { makeServices, renderWith, setHash } from '../test/render';
 import * as session from './session';
-import { authorizeEncryptedVault, authorizeKeyExport, MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault, type KeyVaultStore } from './keyVault';
+import { authorizeEncryptedVault, authorizeKeyExport, MemoryKeyVaultStore, requireSecretExportAuthorization, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault, type KeyVaultStore } from './keyVault';
 import { SETTINGS_KEY } from './settings';
 
 const PASS = 'violet comet maple lantern';
@@ -279,6 +279,15 @@ describe('idle lock revokes session authority before retaining or disposing keys
     await expect(unlockEncryptedVault(PASS, store)).resolves.toEqual(publicKeys);
     expect(session.isSessionSuspended()).toBe(false);
     expect(() => session.captureSessionGuard()).not.toThrow();
+  });
+
+  it('does not grant raw or payment-key export authority to a retained copy even with a valid credential', async () => {
+    session.generateSession();
+    const text = await session.exportKeystore(PASS, COST);
+    mount();
+    await expire();
+    await expect(requireSecretExportAuthorization({ kind: 'keystore', text, passphrase: PASS })).rejects.toThrow(/locked after inactivity/);
+    await expect(session.verifyCredentialForCurrentSession(text, PASS, 'keystore')).rejects.toThrow(/locked after inactivity/);
   });
 
   it('does not grant spending or raw-key access to a retained copy even with a valid vault credential', async () => {

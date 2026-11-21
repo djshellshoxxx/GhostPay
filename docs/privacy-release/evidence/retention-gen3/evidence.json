@@ -1,0 +1,67 @@
+{
+  "feature": "v11-04-retention",
+  "generation": 3,
+  "base": "3521ad08b9833030d8f5757361a8f942386daad3",
+  "spec_and_claim": "afb754f1ea39da5127cc03e8915dbded0d31e205",
+  "red_source": "5a11d2706f2fab531aadcab4acefbdcde19dee06",
+  "red_tree": "92fb9882fa88395afb3f7f2ec46127f9979053a2",
+  "runtime_source": "4cf2b4b0439f11b614cc90ab0196afa021eb1fad",
+  "runtime_tree": "90046258fde81a8547655e8a966f20b762f791bc",
+  "red": {
+    "failed": 3,
+    "passed": 0,
+    "skipped": 0,
+    "files": 1,
+    "seconds": 4.62,
+    "exit": 1
+  },
+  "green": {
+    "passed": 29,
+    "failed": 0,
+    "skipped": 0,
+    "files": 6,
+    "seconds": 9.71,
+    "exit": 0
+  },
+  "runs": [
+    {
+      "name": "red",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/components/MerchantTemplateIssuer.retention.test.tsx --coverage=false --maxWorkers=1",
+      "cwd": "apps/web",
+      "source": "5a11d2706f2fab531aadcab4acefbdcde19dee06",
+      "exit": 1,
+      "raw_sha256": "d131edbb04a0ab938f124e3a5559bda69ca18b6d413008f7b527012c1da6b178",
+      "raw_bytes": 13746,
+      "log": "red.log.gz"
+    },
+    {
+      "name": "green",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/components/MerchantTemplateIssuer.retention.test.tsx src/components/MerchantTemplateIssuer.test.tsx src/lib/merchantTemplate.test.ts src/lib/metadataRetention.test.ts src/components/MetadataRetentionControls.test.tsx src/views/CreateInvoice.retention.test.tsx --coverage=false --maxWorkers=1",
+      "cwd": "apps/web",
+      "source": "4cf2b4b0439f11b614cc90ab0196afa021eb1fad",
+      "exit": 0,
+      "raw_sha256": "95ec8905c094b5b340710797359729711e400404c6e4dcc4705f527881a43cbc",
+      "raw_bytes": 426,
+      "log": "green.log.gz"
+    },
+    {
+      "name": "secret-scan",
+      "command": "bash scripts/scan-secrets.sh",
+      "cwd": ".",
+      "source": "4cf2b4b0439f11b614cc90ab0196afa021eb1fad",
+      "exit": 0,
+      "raw_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+      "raw_bytes": 50,
+      "log": "secret-scan.log.gz"
+    }
+  ],
+  "other_execution": [
+    {
+      "command": "../../node_modules/.bin/vitest --version",
+      "cwd": "repository root",
+      "exit": 127,
+      "result": "Version-only probe used apps/web-relative binary from root; no test ran. The acceptance command used the correct apps/web cwd."
+    }
+  ],
+  "qualification": "Bounded actual issuer integration; original complete typing/lint/browser/coverage/hosted gates open. Persistent transaction/invoice cleanup remains unimplemented."
+}

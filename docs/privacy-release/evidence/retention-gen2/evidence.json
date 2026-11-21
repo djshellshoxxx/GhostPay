@@ -1,0 +1,66 @@
+{
+  "feature": "v11-04-retention",
+  "generation": 2,
+  "base": "2bd20ecb8ac437e2e3fb42fc953a11ed1ab24fca",
+  "runtime_and_test_source": "1003569fed259317967a190c192ede5b9fd80ea9",
+  "runtime_and_test_tree": "543378407777642c9b7054825356b5500c356da4",
+  "red": {
+    "source": "f9c86900908b159d491fdb757c97adcbd66370ac",
+    "tree": "983db8676cbdeb1e0a94dd167347fc8037d1f2d1",
+    "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/metadataRetention.test.ts --coverage=false --maxWorkers=1",
+    "cwd": "apps/web",
+    "passed": 7,
+    "failed": 5,
+    "skipped": 0,
+    "exit": 1,
+    "duration_seconds": 0.422
+  },
+  "green": {
+    "source": "1003569fed259317967a190c192ede5b9fd80ea9",
+    "tree": "543378407777642c9b7054825356b5500c356da4",
+    "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/metadataRetention.test.ts src/components/MetadataRetentionControls.test.tsx src/views/CreateInvoice.retention.test.tsx src/views/Settings.clipboardPrivacy.test.tsx --coverage=false --maxWorkers=1",
+    "cwd": "apps/web",
+    "files": 4,
+    "passed": 21,
+    "failed": 0,
+    "skipped": 0,
+    "exit": 0,
+    "duration_seconds": 15.79
+  },
+  "other_checks": [
+    {
+      "command": "bash scripts/scan-secrets.sh",
+      "exit": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    },
+    {
+      "command": "git diff --check bbcf71b79d4efd00892948faa833cb7d8f471406..HEAD",
+      "exit": 0
+    }
+  ],
+  "logs": [
+    {
+      "file": "red.log.gz",
+      "raw_sha256": "f372b3e9c0ed6a33f90fea2b233a9f8739ab2ff7a8ba9c2b0739c9ffa5f35ea8"
+    },
+    {
+      "file": "green.log.gz",
+      "raw_sha256": "1748ae7cddefb46d193907c2f862272f7323715b193bcc29e0af69aa47a6f005"
+    },
+    {
+      "file": "secrets.log.gz",
+      "raw_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47"
+    }
+  ],
+  "open_gates": [
+    "original full web typecheck",
+    "typed lint",
+    "complete original coverage/unit suite",
+    "real-browser reload/storage/accessibility",
+    "hosted integrated release qualification"
+  ],
+  "scope": "Disposable generated CreateInvoice screen result only; no persistent transaction/invoice cleanup adapter; #287 item4 remains partial."
+}

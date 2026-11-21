@@ -62,14 +62,14 @@ describe('SolanaView and the app lock', () => {
     const { user, keys } = await ready();
     await user.type(screen.getByLabelText(/First slot/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
-    await screen.findByText(/1 funded payment/);
+    await screen.findByText(/1 payment\(s\) found/);
     expect(observed.tweaks).toHaveLength(1);
     expect(wiped(keys.spendSecret) || wiped(keys.viewSecret) || wiped(observed.tweaks[0])).toBe(false);
 
     act(() => { notifyAppLock('idle'); });
     expect(wiped(keys.spendSecret) && wiped(keys.viewSecret)).toBe(true);
     expect(wiped(observed.tweaks[0])).toBe(true);
-    expect(screen.queryByText(/funded payment/)).toBeNull();
+    expect(screen.queryByText(/payment\(s\) found/)).toBeNull();
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
     expect(screen.getByText(/The app locked, so this wallet's keys were wiped from memory/)).toBeTruthy();
 

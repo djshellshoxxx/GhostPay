@@ -1,0 +1,121 @@
+{
+  "feature": "v1-03-wallet-lock",
+  "generation": 3,
+  "branch": "privacy/v1-wallet-lock-20261120",
+  "base": "c883dafb96f614b71aa98e3ecd2c7dae61487fcd",
+  "source": "3ef264facbde9ffb93abfde231a91e58d5f9772c",
+  "tree": "f2488516f4d23c35a0f12ef171d31fc095e8ff4e",
+  "runtime": "3ef264facbde9ffb93abfde231a91e58d5f9772c",
+  "tests": [
+    "f7c5f26c03ba8218df85d003153a48a71897a59b",
+    "02434632efec3022459bb9d6f5361450913e280c"
+  ],
+  "worktree": "/workspace/scratch/dc1ef37f4621/privacy-disclosure",
+  "finding": "A provider account/chain/disconnect event during a held native send did not revoke its payment RPC grant. The actual-NetworkAuthority regression records six transaction reads and twenty receipt reads after revocation when the wallet returns a hash; lost-response cases leave the old grant current without starting those reads.",
+  "boundary": "Actual Pay view and NetworkAuthority; controlled authorized injected RPC records dispatches after checking opaque grant ownership/currentness. No HTTP wire traffic, external provider behavior, browser runtime, or global network-policy bypass is claimed.",
+  "repair": "Capture walletPrivacy before awaiting getRpc; combine captured wallet and existing network signals; assert same captured scope after acquisition. Existing prepare/send/revoke runtimes retain this grant. No post-broadcast signing guard; journals and exact hashes are preserved.",
+  "runs": [
+    {
+      "id": "initial-red",
+      "source": "f7c5f26c03ba8218df85d003153a48a71897a59b",
+      "tree": "f941b697af51e21fd1b1eea7093889623e6474cd",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/WalletPrivacy.lifecycle.test.tsx -t 'stops the old RPC scope' --coverage=false --maxWorkers=1",
+      "files": 1,
+      "passed": 0,
+      "failed": 6,
+      "skipped": 11,
+      "seconds": 4.56,
+      "exit": null,
+      "exit_receipt": "Terminal exit receipt was lost during context compaction; the raw Vitest result remains. This is not a passing run.",
+      "log": "initial-red.log.gz",
+      "log_sha256": "425dcc47af5d12ada31eb8cd48833c74271edd2d0bd27c3c578ed32cc1aaf3cf",
+      "compressed_sha256": "5ea50129c3e29e9c3ff3ae1683e5a965cd2c673f66d4f467c2f349e4bfab8d40"
+    },
+    {
+      "id": "red-reads",
+      "source": "02434632efec3022459bb9d6f5361450913e280c",
+      "tree": "2afa321c129d6c67c3def8ccdac8fc20e31e31ad",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/WalletPrivacy.lifecycle.test.tsx -t 'stops the old RPC scope' --coverage=false --maxWorkers=1",
+      "files": 1,
+      "passed": 0,
+      "failed": 6,
+      "skipped": 11,
+      "seconds": 4.47,
+      "exit": 1,
+      "log": "red-reads.log.gz",
+      "log_sha256": "c07cf0a9b8fa8c57b4c085932d9a45df47c0372027b68331380233e82db3f174",
+      "compressed_sha256": "4e67fabb3fa683cb810a53343e59fa7348670146b5d0e8132c1e221a7545b5e9"
+    },
+    {
+      "id": "lifecycle-green",
+      "source": "3ef264facbde9ffb93abfde231a91e58d5f9772c",
+      "tree": "f2488516f4d23c35a0f12ef171d31fc095e8ff4e",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/WalletPrivacy.lifecycle.test.tsx --coverage=false --maxWorkers=1",
+      "files": 1,
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 5.47,
+      "exit": 0,
+      "log": "lifecycle-green.log.gz",
+      "log_sha256": "11bb920bae4f32eb5f13bc95923822fe901882da4e40364597bf21125a1fbe2f",
+      "compressed_sha256": "80d6ba683fc743de3db6bc7bed148535b59e78f191a33f9fa9b259f947b28fae"
+    },
+    {
+      "id": "original-selection",
+      "source": "3ef264facbde9ffb93abfde231a91e58d5f9772c",
+      "tree": "f2488516f4d23c35a0f12ef171d31fc095e8ff4e",
+      "cwd": "apps/web",
+      "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/views/Pay.test.tsx src/views/Pay.network.test.tsx src/views/Pay.signer.test.tsx src/views/Pay.preflightCompletion.test.tsx src/lib/payExec.test.ts src/lib/payExec.acceptance.test.ts src/lib/walletJournal.test.ts src/lib/networkAuthorization.test.ts src/lib/networkAuthorization.adapters.test.ts src/lib/useWalletPrivacy.test.tsx --coverage=false --maxWorkers=1",
+      "files": 10,
+      "passed": 271,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 44.93,
+      "exit": 0,
+      "selection": [
+        "src/views/Pay.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/views/Pay.signer.test.tsx",
+        "src/views/Pay.preflightCompletion.test.tsx",
+        "src/lib/payExec.test.ts",
+        "src/lib/payExec.acceptance.test.ts",
+        "src/lib/walletJournal.test.ts",
+        "src/lib/networkAuthorization.test.ts",
+        "src/lib/networkAuthorization.adapters.test.ts",
+        "src/lib/useWalletPrivacy.test.tsx"
+      ],
+      "log": "original-selection.log.gz",
+      "log_sha256": "8faf50a19a505cb8cdb242673dc42ac400198b472ad2f2b9bc3bfa235d087e09",
+      "compressed_sha256": "e94dfa43909a1cee59631b442561d15c986b55f4c0733b3f430241d9b230ac80"
+    }
+  ],
+  "secret_scan": {
+    "source": "3ef264facbde9ffb93abfde231a91e58d5f9772c",
+    "command": "bash scripts/scan-secrets.sh",
+    "exit": 0,
+    "log": "secret-scan.log.gz",
+    "log_sha256": "c640ecf2e70ce55408b18915d1790def402b4b4d88dc9ae00204f43a55f7ba47",
+    "compressed_sha256": "6132c2abbae3f277a17c6b205ab63604df4393afa2e8628d0e0f59ff7cb7c7a3"
+  },
+  "full_feature_diff_check": {
+    "source": "3ef264facbde9ffb93abfde231a91e58d5f9772c",
+    "command": "git diff bbcf71b7..HEAD --check",
+    "exit": 0,
+    "log": "diff-check.log.gz",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compressed_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+  },
+  "unqualified": [
+    "full original typecheck",
+    "typed lint",
+    "full unit coverage",
+    "browser and hosted gates",
+    "combined v1.1 disclosure composition"
+  ],
+  "reuse": "Small original wiring of existing repository wallet lifetime and network-authority primitives; no new external copied code or dependency.",
+  "diagnostics": "A preliminary app-relative vitest --version command was issued from repository root instead of apps/web. Its terminal receipt is not retained and it is excluded from test evidence. All four retained test logs used the documented apps/web cwd."
+}

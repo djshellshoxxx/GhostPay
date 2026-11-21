@@ -4,9 +4,9 @@ import { MIXED_SCRIPT_MARKER, sanitizeDisplayText } from './text.js';
 
 describe('sanitizeDisplayText rejections (S3-12)', () => {
   it.each([
-    ['U+202E RLO', 'pay‮fdp.exe', 'bidi_control'],
-    ['U+2066 LRI', 'a⁦b', 'bidi_control'],
-    ['U+200E LRM', 'a‎b', 'bidi_control'],
+    ['U+202E RLO', 'pay\u202efdp.exe', 'bidi_control'],
+    ['U+2066 LRI', 'a\u2066b', 'bidi_control'],
+    ['U+200E LRM', 'a\u200eb', 'bidi_control'],
     ['U+200B ZWSP', 'a​b', 'default_ignorable'],
     ['U+200D ZWJ', 'a‍b', 'default_ignorable'],
     ['U+00AD soft hyphen', 'a­b', 'default_ignorable'],
@@ -70,7 +70,7 @@ describe('sanitizeDisplayText acceptance and marking', () => {
 
   it('allowZwjEmoji still rejects other invisibles and bidi', () => {
     expect(sanitizeDisplayText('a​b', { allowZwjEmoji: true })).toEqual(reject('default_ignorable'));
-    expect(sanitizeDisplayText('a‮b', { allowZwjEmoji: true })).toEqual(reject('bidi_control'));
+    expect(sanitizeDisplayText('a\u202eb', { allowZwjEmoji: true })).toEqual(reject('bidi_control'));
   });
 
   it('is linear time on long adversarial input', () => {

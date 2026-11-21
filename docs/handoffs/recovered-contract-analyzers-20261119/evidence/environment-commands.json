@@ -1,0 +1,32 @@
+[
+  {
+    "name": "venv",
+    "command": [
+      "python3",
+      "-m",
+      "venv",
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv"
+    ],
+    "started_at": "2026-11-19T13:24:55.486397+00:00",
+    "finished_at": "2026-11-19T13:24:58.381650+00:00",
+    "exit_code": 0
+  },
+  {
+    "name": "install-plan",
+    "command": [
+      "/dev/shm/ghostpay-slither-246ff268d20d/venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "--dry-run",
+      "--no-cache-dir",
+      "--report",
+      "/workspace/scratch/246ff268d20d/GhostPay-analyzer/docs/handoffs/recovered-contract-analyzers-20261119/evidence/slither-install-plan.json",
+      "slither-analyzer==0.11.6",
+      "solc-select==1.2.0"
+    ],
+    "started_at": "2026-11-19T13:24:58.382027+00:00",
+    "finished_at": "2026-11-19T13:25:27.628686+00:00",
+    "exit_code": 0
+  }
+]

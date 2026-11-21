@@ -1,0 +1,26 @@
+{
+  "source": "98786e75f7979708b52fbe7424825a41100e2d98",
+  "tree": "37bf0e722ddbd068504f0a6445fbbba642ae8d8f",
+  "command": [
+    "/workspace/scratch/c20ffc46347e/toolchain/bin/node",
+    "/workspace/scratch/246ff268d20d/GhostPay-qr/node_modules/typescript/bin/tsc",
+    "-p",
+    "tsconfig.json",
+    "--noEmit"
+  ],
+  "cwd": "/workspace/scratch/246ff268d20d/GhostPay-qr/packages/qr-exchange",
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=512",
+    "NO_COLOR": "1"
+  },
+  "started": "2026-11-19T13:17:50.940341+00:00",
+  "ended": "2026-11-19T13:17:55.902041+00:00",
+  "durationSeconds": 4.962,
+  "exitCode": 0,
+  "log": {
+    "path": "docs/handoffs/qr-surrogate-review-20261119/evidence/qr-package-typecheck.log.gz",
+    "uncompressedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncompressedBytes": 0,
+    "storedSha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+  }
+}

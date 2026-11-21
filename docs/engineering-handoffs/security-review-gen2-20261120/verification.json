@@ -1,0 +1,22 @@
+{
+  "reviewer": "/root/security_review_gen2",
+  "source": "052ac56c36cf62419941223318d1b6a366954625",
+  "node": "24.22.3",
+  "vitest": "5.1.0",
+  "command": "NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=768\" timeout 180s node ../../node_modules/vitest/vitest.mjs run src/AppShell.quickHide.test.tsx src/components/PrivacyQuickHide.test.tsx src/lib/privacyMode.test.tsx src/AppShell.privacy.test.tsx --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+  "cwd": "apps/web",
+  "exit_code": 0,
+  "files_passed": 4,
+  "tests_passed": 40,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "duration_seconds": 49.59,
+  "raw_log_sha256": "9a3d47d49b5c5f78de53b148dbf25e1c55a071794b372d70cac8212e4bf8fd35",
+  "compressed_log_sha256": "a0d26f4883fae8ead9a81e8998ddcaf8077afdb04379d51906c9ddcea998fc05",
+  "lock_sha256": "1b22ab3e9f780d27a01b1beaa8c31b223b3649106e454e78fc50ac8d6900f517",
+  "initial_setup_attempt": "Shell log redirection failed before Node execution because the evidence directory was initially created relative to apps/web. Corrected before the independently executed run; zero test cases ran in this setup attempt.",
+  "new_library_build": false,
+  "whole_project_typecheck": false,
+  "browser_execution": false,
+  "full_coverage": false
+}

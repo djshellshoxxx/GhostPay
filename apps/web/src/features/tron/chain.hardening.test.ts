@@ -4,7 +4,7 @@ import { BACKUP_A, DEST, mockTron, walletA } from './fixtures.testutil';
 import { MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS, tronNetwork } from './network';
 import { broadcastHex, checkNetwork, createRpc, fetchMemo, getBalanceSun, isActivated, tronErrorMessage, TronViewError } from './rpc';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
-import { ACTIVATION_FEE_SUN, reviewSweep, signSweep } from './sweep';
+import { ACTIVATION_FEE_SUN, readSweepDetails, reviewSweep, signSweep } from './sweep';
 import { backupHex, newWallet, walletFromBackupHex, wipeWallet } from './wallet';
 
 function reply(value: unknown): TronRpc {
@@ -104,17 +104,26 @@ describe('TRON scan and sweep hardening', () => {
   it('returns an empty result when the node head moves behind the requested range', async () => {
     const chain = mockTron(walletA());
     const result = await scanForPayments({ rpc: createRpc('http://127.0.0.1:9090', chain.fetchFn), wallet: walletA(), fromBlock: 601n, signal: signal() });
-    expect(result).toEqual({ fromBlock: 601n, toBlock: 600n, found: [], emptiedCount: 0, tokenCount: 0 });
+    expect(result).toEqual({ fromBlock: 601n, toBlock: 600n, found: [], tokenCount: 0 });
     expect(chain.calls).toEqual(['/wallet/getnowblock']);
   });
 
-  it('counts emptied payments without fetching their memos', async () => {
-    const chain = mockTron(walletA());
+  it('makes no balance or memo request while scanning; one address is read when its sweep is reviewed (TM13)', async () => {
+    const wallet = walletA();
+    const chain = mockTron(wallet);
     chain.balanceSun = 0;
-    const result = await scanForPayments({ rpc: createRpc('http://127.0.0.1:9090', chain.fetchFn), wallet: walletA(), fromBlock: 500n, signal: signal() });
-    expect(result.found).toEqual([]);
-    expect(result.emptiedCount).toBe(1);
+    const rpc = createRpc('http://127.0.0.1:9090', chain.fetchFn);
+    const result = await scanForPayments({ rpc, wallet, fromBlock: 500n, signal: signal() });
+    expect(chain.calls).not.toContain('/wallet/getaccount');
     expect(chain.calls).not.toContain('/wallet/gettransactionbyid');
+    expect(result.found).toHaveLength(1);
+    expect('balanceSun' in (result.found[0] ?? {})).toBe(false);
+    const funded = await readSweepDetails(rpc, result.found[0]!, signal());
+    expect(chain.calls.filter((path) => path === '/wallet/getaccount')).toHaveLength(1);
+    expect(chain.calls.filter((path) => path === '/wallet/gettransactionbyid')).toHaveLength(1);
+    expect(funded.balanceSun).toBe(0n);
+    // An emptied address is still never offered for signing: the review refuses it.
+    expect(() => reviewSweep(wallet, funded, DEST, { params: { bandwidthFeeSun: 1000n, energyFeeSun: 420n }, destinationActivated: true })).toThrow(/fee reserve/);
   });
 
   it('fails closed when canceled before reading any funding blocks', async () => {
@@ -153,8 +162,9 @@ describe('TRON scan and sweep hardening', () => {
 
   it('rejects a funding transaction substituted between the scan and memo lookup', async () => {
     const chain = mockTron(walletA());
+    const scanned = await scanForPayments({ rpc: createRpc('http://127.0.0.1:9090', chain.fetchFn), wallet: walletA(), fromBlock: 500n, signal: signal() });
     const rpc = changeResponse(chain, '/wallet/gettransactionbyid', (value) => ({ ...(value as object), raw_data_hex: '00' }));
-    await expect(scanForPayments({ rpc, wallet: walletA(), fromBlock: 500n, signal: signal() })).rejects.toThrow(/unexpected answer/);
+    await expect(readSweepDetails(rpc, scanned.found[0]!, signal())).rejects.toThrow(/unexpected answer/);
   });
 
   it('refuses an unreadable announcement even when the raw transaction hash still matches the lookup', async () => {
@@ -172,7 +182,7 @@ describe('TRON scan and sweep hardening', () => {
     expect(chain.broadcasts).toEqual([]);
   });
 
-  it('deduplicates a valid payment repeated by the node without querying its balance or memo twice', async () => {
+  it('deduplicates a valid payment repeated by the node', async () => {
     const wallet = walletA();
     const chain = mockTron(wallet);
     const rpc = changeResponse(chain, '/wallet/getblockbylimitnext', (value) => {
@@ -181,8 +191,8 @@ describe('TRON scan and sweep hardening', () => {
     });
     const result = await scanForPayments({ rpc, wallet, fromBlock: 500n, signal: signal() });
     expect(result.found).toHaveLength(1);
-    expect(chain.calls.filter((path) => path === '/wallet/getaccount')).toHaveLength(1);
-    expect(chain.calls.filter((path) => path === '/wallet/gettransactionbyid')).toHaveLength(1);
+    expect(chain.calls.filter((path) => path === '/wallet/getaccount')).toHaveLength(0);
+    expect(chain.calls.filter((path) => path === '/wallet/gettransactionbyid')).toHaveLength(0);
   });
 
   it.each([null, {}, { raw_data_hex: 'odd', raw_data: { data: '00' } }])('rejects malformed memo lookup responses %#', async (value) => {
@@ -197,13 +207,14 @@ describe('TRON scan and sweep hardening', () => {
     const found = result.found[0];
     if (found === undefined) throw new Error('fixture must yield a payment');
     const params = { bandwidthFeeSun: 1000n, energyFeeSun: 420n };
-    const existing = reviewSweep(wallet, found, DEST, { params, destinationActivated: true });
-    const fresh = reviewSweep(wallet, found, DEST, { params, destinationActivated: false });
+    const funded = await readSweepDetails(rpc, found, signal());
+    const existing = reviewSweep(wallet, funded, DEST, { params, destinationActivated: true });
+    const fresh = reviewSweep(wallet, funded, DEST, { params, destinationActivated: false });
     expect(fresh.feeReserveSun - existing.feeReserveSun).toBe(ACTIVATION_FEE_SUN);
     expect(fresh.totalSun).toBe(fresh.sendSun + fresh.feeReserveSun);
-    expect(() => reviewSweep(wallet, { ...found, balanceSun: 1n }, DEST, { params, destinationActivated: false })).toThrow(/fee reserve/);
+    expect(() => reviewSweep(wallet, { ...funded, balanceSun: 1n }, DEST, { params, destinationActivated: false })).toThrow(/fee reserve/);
     const stranger = walletFromBackupHex(`${'33'.repeat(32)}${'44'.repeat(32)}`, tronNetwork('local'));
-    await expect(signSweep({ rpc, wallet: stranger, found, review: existing, nowMs: 1_700_000_000_000 })).rejects.toThrow(/view tag|address|key/);
+    await expect(signSweep({ rpc, wallet: stranger, found: funded, review: existing, nowMs: 1_700_000_000_000 })).rejects.toThrow(/view tag|address|key/);
     expect(chain.broadcasts).toEqual([]);
     expect(chain.calls).not.toContain('/wallet/broadcasthex');
     wipeWallet(stranger);
@@ -217,10 +228,11 @@ describe('TRON scan and sweep hardening', () => {
     if (found === undefined) throw new Error('fixture must yield a payment');
     const controller = new AbortController();
     controller.abort();
-    const review = reviewSweep(wallet, found, DEST, { params: { bandwidthFeeSun: 1000n, energyFeeSun: 420n }, destinationActivated: true });
+    const funded = await readSweepDetails(rpc, found, signal());
+    const review = reviewSweep(wallet, funded, DEST, { params: { bandwidthFeeSun: 1000n, energyFeeSun: 420n }, destinationActivated: true });
     await expect(signSweep({
       rpc: { post: (path, body) => rpc.post(path, body) },
-      wallet, found, review, nowMs: 1_700_000_000_000, signal: controller.signal,
+      wallet, found: funded, review, nowMs: 1_700_000_000_000, signal: controller.signal,
     })).rejects.toThrow('Cancelled.');
     expect(chain.broadcasts).toEqual([]);
   });

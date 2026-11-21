@@ -1,0 +1,23 @@
+{
+  "status": "INCOMPLETE_EXECUTOR_REPLACED",
+  "source": "4eb69699a59da84d17d0baa5dfe8dd6c9baaef9a",
+  "expected_workspaces": 68,
+  "observed_started_workspace_headers": [
+    "@ghostpay/address-safety@0.1.0",
+    "@ghostpay/amount-blur@0.1.0",
+    "@ghostpay/btc-family@0.1.0",
+    "@ghostpay/btc-payjoin@0.1.0",
+    "@ghostpay/btc-silent-payments@0.1.0",
+    "@ghostpay/chain-adapters@0.1.0",
+    "@ghostpay/chain-evm-extra@0.1.0",
+    "@ghostpay/chain-solana@0.1.0",
+    "@ghostpay/chain-tron@0.1.0",
+    "@ghostpay/cli@0.1.0"
+  ],
+  "final_exit_status": null,
+  "original_receipt_sha256": "9fe3bd36f6e2e6989e23110226d205b3cf4ac55f57ffbbe21f1b55f915e7defe",
+  "partial_log_sha256": "6ea9b846053b1066634b0ee2916d3a6427d8cbfda0c5752ad0693775243ed9c8",
+  "partial_log_bytes": 1681,
+  "lint_started": false,
+  "qualification": "No passing result; preserve interrupted attempt separately from fresh rerun."
+}

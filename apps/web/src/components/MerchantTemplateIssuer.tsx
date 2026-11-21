@@ -3,10 +3,13 @@ import type { MerchantProfile } from '@ghostpay/invoice-schema';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits, fiatDecimals } from '../lib/format';
+import type { InvoiceMetadataMode } from '../lib/invoiceMetadata';
 import { buildMerchantTemplateInvoice, merchantTemplateAmount, merchantTemplateAssets } from '../lib/merchantTemplate';
 import { getSessionBackup, getSessionPublic, subscribeSession, subscribeSessionBackup, type SessionPublic } from '../lib/session';
 import { useServices } from '../lib/services';
+import { useInvoicePreviewRetention } from '../lib/useInvoicePreviewRetention';
 import { CopyButton, Field, Mono, Notice } from './Common';
+import { MetadataRetentionControls } from './MetadataRetentionControls';
 
 /** A local merchant authoring action. A payer profile never grants access to the matching signing key. */
 export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfile; readonly templateId: string; readonly requestedAmount?: string }): ReactNode {
@@ -19,17 +22,22 @@ export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfil
   const [tokenAmount, setTokenAmount] = useState('');
   const [amountRequest, setAmountRequest] = useState(props.requestedAmount ?? '');
   const [feePolicy, setFeePolicy] = useState<'seller_pays' | 'payer_pays'>('seller_pays');
+  const [metadataMode, setMetadataMode] = useState<InvoiceMetadataMode>('standard');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DisplayMessage | undefined>();
   const [created, setCreated] = useState<{ readonly link: string; readonly session: SessionPublic } | undefined>();
   const generation = useRef(0);
   useEffect(() => () => { generation.current += 1; }, []);
-  useEffect(() => { generation.current += 1; setBusy(false); setCreated(undefined); setError(undefined); }, [session]);
+  useEffect(() => { generation.current += 1; setBusy(false); setCreated(undefined); setError(undefined); setMetadataMode('standard'); }, [session]);
   const template = props.profile.templates.find((value) => value.id === props.templateId);
   const effectiveAmount = merchantTemplateAmount(props.profile, props.templateId, amountRequest === '' ? undefined : amountRequest);
   const selected = assets[Number(assetIndex)];
   const authority = session !== undefined && session.signerPublicKey === props.profile.signer;
   const backedUp = backup?.verified === true || backup?.waived === true;
+  useInvoicePreviewRetention(
+    authority && template !== undefined && created?.session === session ? created : undefined,
+    () => { setCreated((current) => current === created ? undefined : current); },
+  );
   const invalidate = (): void => { generation.current += 1; setCreated(undefined); setError(undefined); setBusy(false); };
   const issue = (): void => {
     if (!authority || session === undefined || selected === undefined || busy || !backedUp || effectiveAmount === undefined) return;
@@ -39,7 +47,7 @@ export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfil
     void buildMerchantTemplateInvoice({
       profile: props.profile, templateId: props.templateId,
       ...(amountRequest === '' ? {} : { requestedAmount: amountRequest }),
-      chainId: selected.chainId, token: selected.token, tokenAmount, feePolicy,
+      chainId: selected.chainId, token: selected.token, tokenAmount, feePolicy, metadataMode,
       baseUrl: services.baseUrl(), nowSeconds: () => Math.floor(services.nowMs() / 1000),
       isCurrent: () => generation.current === revision && getSessionPublic() === captured,
     }).then((result) => {
@@ -76,12 +84,17 @@ export function MerchantTemplateIssuer(props: { readonly profile: MerchantProfil
               <option value="seller_pays">{t('create.feePolicy.seller')}</option><option value="payer_pays">{t('create.feePolicy.payer')}</option>
             </select>}
           </Field>
+          <Field label={t('invoice.metadata.minimal')} hint={`${t('invoice.metadata.hint')} ${t('invoice.metadata.limits')}`}>
+            {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="checkbox" checked={metadataMode === 'minimal'} onChange={(event) => { invalidate(); setMetadataMode(event.target.checked ? 'minimal' : 'standard'); }} />}
+          </Field>
           <button type="button" className="btn" disabled={busy || !backedUp || effectiveAmount === undefined || tokenAmount === ''} onClick={issue}>{t('merchantProfile.issue.action')}</button>
         </>}
         {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
         {created !== undefined && created.session === session && <>
+          {metadataMode === 'minimal' && <Notice kind="info">{t('invoice.metadata.result')}</Notice>}
           <Field label={t('merchantProfile.issue.link')}>{(id) => <textarea id={id} readOnly value={created.link} />}</Field>
           <CopyButton text={created.link} label={t('merchantProfile.issue.copy')} />
+          <MetadataRetentionControls />
         </>}
       </>}
     </details>

@@ -1,6 +1,15 @@
 import { expect, type Page } from '@playwright/test';
+import type { WalletDisclosureMethod } from '../src/lib/walletDisclosure';
 
 export const ORIGIN = 'http://localhost:4173';
+
+/** One deliberate decision for a named request; never approve an unexpected or future wallet prompt. */
+export async function approveWalletDisclosure(page: Page, method: WalletDisclosureMethod): Promise<void> {
+  const dialog = page.getByRole('dialog', { name: 'Review wallet disclosure', exact: true });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(method, { exact: true })).toBeVisible();
+  await dialog.getByRole('button', { name: 'Continue to wallet', exact: true }).click();
+}
 
 /**
  * Opens the app, generates seller keys in memory and returns the public meta-address. Fresh keys have no backup, so the
@@ -35,7 +44,9 @@ export async function createInvoice(page: Page, opts: InvoiceOptions = {}): Prom
   await page.getByLabel('Item 1 description').fill(opts.description ?? 'Consulting');
   await page.getByLabel('Item 1 unit price').fill('50.00');
   if (opts.memo !== undefined) await page.getByLabel(/Memo/).fill(opts.memo);
-  if (opts.encrypt === true) await page.getByLabel('Encrypt line items and memo with a key included in the link').check();
+  // Encryption is on by default; tests that assume a plain invoice must opt out explicitly.
+  const encryptBox = page.getByLabel('Encrypt line items and memo with a key included in the link');
+  if (opts.passphrase === undefined) await (opts.encrypt === true ? encryptBox.check() : encryptBox.uncheck());
   if (opts.passphrase !== undefined) {
     await page.getByLabel('Protect the entire invoice with a passphrase').check();
     await page.getByLabel('Invoice passphrase (at least 14 characters)').fill(opts.passphrase);

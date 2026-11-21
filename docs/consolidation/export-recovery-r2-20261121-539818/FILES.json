@@ -1,0 +1,65 @@
+{
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/CODEC_EXECUTION.json",
+      "bytes": 1365,
+      "sha256": "128ed24b5c25066de67aadb68afa5be4603d6431bc67023d1825792ab6042e3d"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/DECODER_EXECUTION.json",
+      "bytes": 3507,
+      "sha256": "0840a48fe08dd9d12334b604b797b0a9e590381785570bba1df46f70dde5f5c2"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/EXPORT_EXPIRY_EXECUTION.json",
+      "bytes": 1312,
+      "sha256": "1a9c4d872cf412ad815a46bbca36883a49f735449a643dc8ca6fecc0afcc985f"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/FRESH_BUILD.json.gz",
+      "bytes": 112656,
+      "sha256": "5edc35d6cae122412dcdf5dc57d997db55e7605231c3816e4498a60fea39ed8f"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/FRESH_INSTALL_METADATA.json",
+      "bytes": 959,
+      "sha256": "4618848f56ae764cd66c2dcbe4c64f3474f9771974f51c5fee016e6356a8cc8b"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/INTEROP_EXECUTION.json",
+      "bytes": 1092,
+      "sha256": "d8a939cb06fb3a9f28dd4dc10d18cb4ae093813a1b959e81271b4310e6789ca9"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/LIGHT_CHECKS.json",
+      "bytes": 1155,
+      "sha256": "279f464415d975e3a025867ca27c73f524f4683f5246068c186c9835da78f519"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/LINT_EXECUTION.json",
+      "bytes": 809,
+      "sha256": "25fb8c0212d5a883433e12ba00741640f3bdd3b5ecd34cb024648ee3318b100d"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/REPORT.md",
+      "bytes": 7572,
+      "sha256": "26176d248d704d5cdf799e4551fdf1ead9be56f0b41ef844260b982c5cf73ff2"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/RESET_RECORD.json",
+      "bytes": 1427,
+      "sha256": "291dd6b53f8fa3454eaa809d293160fdccae78794cbc84fb90bea34ce76a2e95"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/SOURCE_COMPATIBILITY.json",
+      "bytes": 2883,
+      "sha256": "c2feb57ca90d79d07d73f7b3066c0d464502c190f0ed084b99253556531a4636"
+    },
+    {
+      "path": "docs/consolidation/export-recovery-r2-20261121-539818/SUMMARY.json",
+      "bytes": 937,
+      "sha256": "d9dc54f655e3a049ba693159be086b60f2a0cedcf62f7cae11a9d11d9b7e687d"
+    }
+  ]
+}

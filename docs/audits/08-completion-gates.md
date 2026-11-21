@@ -1,5 +1,7 @@
 # Completion gates
 
+> **Historical source record.** The [Pages completion report — 2026-11-18](../handoffs/pages-completion-20261118/COMPLETION_REPORT.md) records the current consolidation, actual source-pinned execution and outstanding gates. Branch states, percentages and green results below remain tied to their original dates and commits; they do not qualify the later combined candidate.
+
 ## Current product snapshot — 2026-11-09
 
 The current review stack is **#84 → #88 → #89 → #90**. `main` remains
@@ -63,7 +65,7 @@ Audits 09, 17, 20 and 21 document scoped findings, fixes and regressions. Audit 
 
 - [ ] Obtain an independent professional security audit of contracts, cryptography and web code; triage and close its findings. AI-assisted reviews are not a substitute.
 - [ ] Complete the real trusted-setup ceremony and verify resulting artifacts before any verifier holds value. Development-ceremony pool artifacts must never secure valuable funds.
-- [ ] Address or explicitly accept the remaining provider privacy disclosures: Bitcoin spentness checks reveal matched outpoints to the configured Esplora provider; EVM token and receipt queries can reveal matched recipients/transactions to configured RPC providers. Current UI disclosures do not provide unlinkability. See audit 17.
+- [ ] Address or explicitly accept the remaining provider privacy disclosures: Bitcoin full-block scanning uses local spent-input evidence by default; explicitly enabled per-output checks and required light-oracle checks reveal queried outpoints to the configured Esplora provider. Missing historical or incomplete local coverage remains unknown and cannot authorize a sweep. See [Bitcoin spent-status qualification](../handoffs/btc-spentness-20261118/QUALIFICATION.md). EVM token and receipt queries can reveal matched recipients/transactions to configured RPC providers. This overall release gate remains open; current UI disclosures do not provide unlinkability. See audit 17.
 - [ ] Run and report any release-required tools that are not current evidence. Audit 22 explicitly does not claim Mythril or mutation-testing success; historical outputs are not current results. Apply any applicable tool to the promoted snapshot and document limits.
 - [ ] Verify chain, token and feed data from authoritative sources with dated evidence; populate feeds only after verification and keep unready mainnets disabled.
 - [ ] Complete human review for accessibility, native-language quality, cross-browser/device behavior, and launch scope/legal decisions.

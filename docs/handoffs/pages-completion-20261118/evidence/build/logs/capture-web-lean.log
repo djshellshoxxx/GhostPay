@@ -1,0 +1,12 @@
+$ python /workspace/scratch/4fa14be12559/analysis-build/capture-web-artifact.py /workspace/scratch/4fa14be12559/analysis-build/source/apps/web/dist /workspace/scratch/4fa14be12559/analysis-build/artifacts/web-lean lean 9bad95e5cc0ee73f5adb8d2c587161074b21e080
+cwd: /workspace/scratch/4fa14be12559/analysis-build/source
+resource settings: {"NODE_OPTIONS": "--max-old-space-size=384", "pages_node_cap": false}
+{
+  "profile": "lean",
+  "commit": "9bad95e5cc0ee73f5adb8d2c587161074b21e080",
+  "artifact": "/workspace/scratch/4fa14be12559/analysis-build/artifacts/web-lean",
+  "files": 17
+}
+
+EXIT_CODE=0
+SECONDS=0.024

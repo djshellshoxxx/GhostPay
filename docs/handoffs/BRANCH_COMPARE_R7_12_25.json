@@ -1,0 +1,400 @@
+{
+  "schema": 1,
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "offset_start": 12,
+  "offset_end": 26,
+  "results": [
+    {
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 1645,
+      "merge_base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "files": [
+        [
+          ".github/workflows/ghostpay-parallel-agents.yml",
+          "added",
+          325,
+          0
+        ],
+        [
+          "docs/handoffs/GHOSTPAY_PARALLEL_API_QA_2026-11-03.md",
+          "added",
+          36,
+          0
+        ],
+        [
+          "scripts/tests/ghostpay-parallel-workflow.test.mjs",
+          "added",
+          60,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/ghostpay-parallel-review-wave-20261103",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 1642,
+      "merge_base": "03a3f5701c89e19667f309bb5f01bd36793a5474",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "automation/ghostpay-recurrent-backlog-20261103",
+      "status": "diverged",
+      "ahead": 3,
+      "behind": 1645,
+      "merge_base": "ecbd085cff78d492a3ffff95c465d61b70ec84bf",
+      "files": [
+        [
+          ".github/workflows/ghostpay-codex-cloud.yml",
+          "modified",
+          17,
+          12
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119-c977/bug/build-profile-failclosed",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 77,
+      "merge_base": "25c380f253e3338c0e6b79e8d052cdf8950f9e88",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T1640Z/bug/scan-privacy-partial-30d",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 77,
+      "merge_base": "0041514a630398c89693498d9b5e44ef562d9c61",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T2243Z/bug/base64url-runtime-input",
+      "status": "diverged",
+      "ahead": 4,
+      "behind": 81,
+      "merge_base": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          12,
+          0
+        ],
+        [
+          "docs/handoffs/BASE64URL_INPUT_TYPE_20261119.md",
+          "added",
+          42,
+          0
+        ],
+        [
+          "packages/invoice-schema/src/base64url.test.ts",
+          "modified",
+          15,
+          0
+        ],
+        [
+          "packages/invoice-schema/src/base64url.ts",
+          "modified",
+          1,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T073600Z/bug/camera-visibility",
+      "status": "diverged",
+      "ahead": 1,
+      "behind": 118,
+      "merge_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "files": [
+        [
+          "apps/web/src/components/CameraImporter.tsx",
+          "modified",
+          8,
+          3
+        ],
+        [
+          "apps/web/src/components/CameraImporter.visibility.test.tsx",
+          "added",
+          154,
+          0
+        ],
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          16,
+          0
+        ],
+        [
+          "docs/handoffs/CAMERA_IMPORT_VISIBILITY_20261119.md",
+          "added",
+          100,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T073600Z/coordinator/integration-lock",
+      "status": "diverged",
+      "ahead": 2,
+      "behind": 118,
+      "merge_base": "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          17,
+          0
+        ],
+        [
+          "docs/automation/BRANCH_INVENTORY.md",
+          "added",
+          33,
+          0
+        ],
+        [
+          "docs/automation/BUG_BACKLOG.md",
+          "added",
+          19,
+          0
+        ],
+        [
+          "docs/automation/CYCLE_HISTORY.md",
+          "added",
+          44,
+          0
+        ],
+        [
+          "docs/automation/FEATURE_BACKLOG.md",
+          "added",
+          20,
+          0
+        ],
+        [
+          "docs/automation/MASTER_STATUS.md",
+          "added",
+          55,
+          0
+        ],
+        [
+          "docs/automation/MERGE_QUEUE.md",
+          "added",
+          39,
+          0
+        ],
+        [
+          "docs/automation/MISSING_IMPLEMENTATIONS.md",
+          "added",
+          26,
+          0
+        ],
+        [
+          "docs/automation/README.md",
+          "added",
+          83,
+          0
+        ],
+        [
+          "docs/automation/SECURITY_FINDINGS.md",
+          "added",
+          28,
+          0
+        ],
+        [
+          "docs/automation/WORKER_HANDOFFS.md",
+          "added",
+          16,
+          0
+        ],
+        [
+          "docs/automation/data/branch-census-20261119T0742Z.json",
+          "added",
+          3131,
+          0
+        ],
+        [
+          "docs/automation/data/consolidation-review-20261119T0742Z.json",
+          "added",
+          1731,
+          0
+        ],
+        [
+          "docs/automation/data/ghostpay-lock-review-9e28830b.md",
+          "added",
+          35,
+          0
+        ],
+        [
+          "docs/automation/data/ghostpay-lock-review-d3749e45.md",
+          "added",
+          29,
+          0
+        ],
+        [
+          "docs/automation/data/open-pr-paths-20261119T0742Z.json",
+          "added",
+          2457,
+          0
+        ],
+        [
+          "docs/automation/data/pr-ancestry-20261119T0742Z.json",
+          "added",
+          455,
+          0
+        ],
+        [
+          "scripts/automation/integration-lock.mjs",
+          "added",
+          199,
+          0
+        ],
+        [
+          "scripts/tests/integration-lock.test.mjs",
+          "added",
+          174,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T083600Z/audit/merchant-clock",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 100,
+      "merge_base": "75dc9d3b29e3449b56e13889496c3771ec7c2f93",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T083600Z/bug/json-canonical-array",
+      "status": "diverged",
+      "ahead": 6,
+      "behind": 101,
+      "merge_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          9,
+          0
+        ],
+        [
+          "docs/handoffs/JSON_CANONICAL_ARRAY_20261119.md",
+          "added",
+          35,
+          0
+        ],
+        [
+          "packages/invoice-schema/src/json.test.ts",
+          "modified",
+          18,
+          0
+        ],
+        [
+          "packages/invoice-schema/src/json.ts",
+          "modified",
+          11,
+          2
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T095600Z/bug/merchant-profile-clock",
+      "status": "diverged",
+      "ahead": 4,
+      "behind": 101,
+      "merge_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "files": [
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          12,
+          0
+        ],
+        [
+          "docs/handoffs/MERCHANT_PROFILE_CLOCK_20261119.md",
+          "added",
+          18,
+          0
+        ],
+        [
+          "packages/invoice-schema/src/merchantProfile.test.ts",
+          "modified",
+          7,
+          0
+        ],
+        [
+          "packages/invoice-schema/src/merchantProfile.ts",
+          "modified",
+          2,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T104800Z/bug/jitter-expiry-rollback",
+      "status": "diverged",
+      "ahead": 5,
+      "behind": 101,
+      "merge_base": "14ded337a10c140d7a9f9a9238ec038587d925bb",
+      "files": [
+        [
+          "apps/web/src/lib/jitter.test.ts",
+          "modified",
+          18,
+          0
+        ],
+        [
+          "apps/web/src/lib/jitter.ts",
+          "modified",
+          22,
+          3
+        ],
+        [
+          "docs/ai/ACTIVE_WORK.md",
+          "modified",
+          13,
+          0
+        ],
+        [
+          "docs/handoffs/JITTER_EXPIRY_ROLLBACK_20261119.md",
+          "added",
+          43,
+          0
+        ]
+      ],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T124337Z/bug/qr-utf8-surrogate-guard",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 76,
+      "merge_base": "b5fc0991eb7cc12fcdfaea514f1fee5be1eca2a0",
+      "files": [],
+      "truncated": false
+    },
+    {
+      "branch": "automation/20261119T183817Z/bug/merchant-pin-duplicate-json",
+      "status": "behind",
+      "ahead": 0,
+      "behind": 77,
+      "merge_base": "9fbf3312cb8e65083f604cc0bf0512d59c83f141",
+      "files": [],
+      "truncated": false
+    }
+  ]
+}

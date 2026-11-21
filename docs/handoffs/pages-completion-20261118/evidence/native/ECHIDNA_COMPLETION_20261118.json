@@ -1,0 +1,254 @@
+{
+  "observed_utc": "2026-11-18T15:15:40.265860+00:00",
+  "source_commit": "ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929",
+  "contracts_tree": "a84815152b8f07c854197c84b5613b02f7939882",
+  "source_binding": "git diff --quiet ea8f8d655caa9fa361cfbcfa3e4e41f474dfa929 -- packages/contracts scripts/recovery succeeded after completion; later vault/docs edits are outside this scope",
+  "existing_exec_session": "48839",
+  "process_exit_code": 0,
+  "exit_evidence": "Existing exec session completion was collected at 2026-11-18 15:09:10 UTC; no new campaign was started during result collection",
+  "outcome": "existing_runner_completed_with_material_diagnostics",
+  "working_directory": "/workspace/scratch/4fa14be12559/GhostPay/packages/contracts",
+  "command": "timeout --signal=TERM --kill-after=15s 100m bash scripts/run-echidna.sh",
+  "env": {
+    "PATH_prefix": "/workspace/scratch/4fa14be12559/toolchain-probe/echidna-single-thread/bin:/workspace/scratch/4fa14be12559/toolchain-probe/bin:/workspace/scratch/4fa14be12559/toolchain-probe/slither/bin",
+    "FOUNDRY_SOLC": "/workspace/scratch/4fa14be12559/toolchain-probe/bin/solc",
+    "FOUNDRY_PROFILE": "default",
+    "FOUNDRY_OUT": "/workspace/scratch/4fa14be12559/toolchain-probe/echidna-out",
+    "FOUNDRY_CACHE_PATH": "/workspace/scratch/4fa14be12559/toolchain-probe/echidna-cache",
+    "GHCRTS": "-N1",
+    "RAYON_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "resource_wrapper": {
+    "path": "/workspace/scratch/4fa14be12559/toolchain-probe/echidna-single-thread/bin/echidna",
+    "content": "#!/usr/bin/env bash\nexec /workspace/scratch/4fa14be12559/toolchain-probe/bin/echidna --workers 1 \"$@\"\n",
+    "sha256": "98c24bef37a3fccee56e5a71bb822f6b3da3737f897aeabcd5b83655904244c7"
+  },
+  "tools": {
+    "echidna": "2.2.7",
+    "foundry": "1.8.5",
+    "solc": "0.8.28",
+    "crytic_compile": "0.4.2",
+    "auxiliary_slither": "0.11.6"
+  },
+  "effective_campaign": {
+    "testMode": "property",
+    "testLimit_per_harness": 300000,
+    "seqLen": 20,
+    "shrinkLimit": 2000,
+    "workers": 1,
+    "seed": 20261021,
+    "config_workers_before_resource_override": 4
+  },
+  "source_objects": {
+    "runner_blob": "7727075d3844686ba8141504cdb5d695aa6af6dc",
+    "echidna_yaml_blob": "703680b2f8b6382d967948e221a2541704e751ee",
+    "harness_directory_tree": "f8635f2c861cf2c843afee31bc44a95c8bb544e9",
+    "foundry_toml_blob": "59bf7337ea5fe8526869f22e9595e022027b4712"
+  },
+  "harnesses": [
+    {
+      "harness": "EchidnaRouter",
+      "total_calls": 300000,
+      "properties": [
+        {
+          "name": "echidna_router_never_holds_tokens",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_buffer_success",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_fee_recipient_only_gets_bps",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_erc20_success",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_canary_nonzero_fee",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_native_fee_plus_net_eq_gross",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_fee_plus_net_eq_gross",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_native_success",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        }
+      ],
+      "safety_properties": 4,
+      "required_canaries": 4,
+      "auxiliary_slither_failure_warnings": 1,
+      "unconfigured_rpc_diagnostic_lines": [
+        "[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0003EmptyBase>",
+        "[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0002EmptyBase>",
+        "[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0001EmptyBase>",
+        "[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0000EmptyBase>",
+        "[2026-11-18 06:33:33.43] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x000000000000000000000000000000000FEe0000EmptyBase>"
+      ]
+    },
+    {
+      "harness": "EchidnaSweep",
+      "total_calls": 300005,
+      "properties": [
+        {
+          "name": "echidna_used_nonces_marked",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_sweep_nonce_single_use",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_sweep_success",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_token_conservation",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_relayer_never_holds_tokens",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_replay_blocked",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        }
+      ],
+      "safety_properties": 4,
+      "required_canaries": 2,
+      "auxiliary_slither_failure_warnings": 1,
+      "unconfigured_rpc_diagnostic_lines": [
+        "[2026-11-18 06:44:25.39] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>"
+      ]
+    },
+    {
+      "harness": "EchidnaPolicy",
+      "total_calls": 300020,
+      "properties": [
+        {
+          "name": "echidna_policy_immutable",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_request_ok",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_canary_exec_token",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_canary_cancel",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_canary_exec_native",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        },
+        {
+          "name": "echidna_timelocks_never_shortened",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_destination_only_changes_via_timelock",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_rolling_window_cap",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_funds_only_to_destination",
+          "result": "passing",
+          "expected_canary": false
+        },
+        {
+          "name": "echidna_canary_dest_change",
+          "result": "failed!\ud83d\udca5",
+          "expected_canary": true
+        }
+      ],
+      "safety_properties": 5,
+      "required_canaries": 5,
+      "auxiliary_slither_failure_warnings": 1,
+      "unconfigured_rpc_diagnostic_lines": [
+        "[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0003EmptyBase>",
+        "[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0002EmptyBase>",
+        "[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0001EmptyBase>",
+        "[2026-11-18 06:53:36.05] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>"
+      ]
+    }
+  ],
+  "total_calls": 900025,
+  "safety_properties": 13,
+  "required_canaries": 11,
+  "auxiliary_slither_failure_warnings": 3,
+  "unconfigured_rpc_diagnostics": 10,
+  "runner_error_markers": 0,
+  "raw_log": {
+    "path": "/workspace/scratch/4fa14be12559/analysis-ci/combined-echidna-227.log",
+    "bytes": 128135,
+    "sha256": "f3b4192d3295747cc0973adaa6df6e70f349e33cd90387c3875c2e0aefb16be7"
+  },
+  "diagnostic_disposition": {
+    "auxiliary_slither": "All three auxiliary analyses failed. Pinned Echidna source returns emptySlitherInfo and continues. This loses source-analysis guidance; the independent configured Slither gate pass does not replace it.",
+    "auxiliary_failure_cause_inference": "Strong source-based explanation, not a reproduced traceback: Echidna calls slither --ignore-compile; crytic-compile 0.4.2 skips loading Foundry config on this path and defaults to root out/build-info. That existing file is only minimal metadata, lacking input/output/solcVersion, while isolated echidna-out/build-info contains full compiler information. The retained log does not expose the exact subprocess exception.",
+    "rpc_diagnostics": "Pinned Echidna Exec.hs logs missing RPC then resumes using emptyAccount (empty runtime code) for these contract-fetch queries. No configured RPC branch is invoked. Router/Policy addresses match synthetic recipient/fee constants; 0x1 also appears in signature-using harnesses, without a retained call stack identifying its origin. These are offline-model fallback diagnostics, not evidence of an external-provider failure or successful remote-state modeling.",
+    "gate_scope": "The unchanged runner validates process code, completed call totals and the declared property/canary inventory. It does not reject these auxiliary warnings or empty-account diagnostics. Preserve them even though runner exit is zero."
+  },
+  "primary_source": {
+    "echidna_version_ref": "v2.2.7",
+    "echidna_commit": "e871c88b08a906b513f820c93a77610a56ae00bb",
+    "slither_integration": {
+      "url": "https://github.com/crytic/echidna/blob/e871c88b08a906b513f820c93a77610a56ae00bb/lib/Echidna/SourceAnalysis/Slither.hs",
+      "blob": "890c57a686277befdd205d3ba179178e15734669"
+    },
+    "execution_fallback": {
+      "url": "https://github.com/crytic/echidna/blob/e871c88b08a906b513f820c93a77610a56ae00bb/lib/Echidna/Exec.hs",
+      "blob": "5cf0b281f1ed1cf8381fd8218ab4d07905e86d50"
+    },
+    "empty_account": {
+      "url": "https://github.com/crytic/echidna/blob/e871c88b08a906b513f820c93a77610a56ae00bb/lib/Echidna/Types.hs",
+      "blob": "f21232d594e1edd14430d5064501eae1ec83fb26"
+    },
+    "installed_crytic_foundry_adapter": {
+      "path": "/workspace/scratch/4fa14be12559/toolchain-probe/slither/lib/python3.12/site-packages/crytic_compile/platform/foundry.py",
+      "sha256": "931faae3a50bf522cfab8c2ac0b636d7d79d62997101ef5f27253ea52c4e03c3"
+    }
+  },
+  "mythril_campaign": "Never started. Version/installation probe only. Coordinator reported an automatic possible-cybersecurity-risk interruption and narrowed this worker to read-only observation; retained visible tool logs do not identify the exact interrupted action or a more specific denial reason.",
+  "preserved_historical_record": "NATIVE_QUALIFICATION_20261118.md was not modified; this is a separate completion addendum."
+}

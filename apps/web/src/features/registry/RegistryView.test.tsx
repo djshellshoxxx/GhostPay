@@ -10,6 +10,7 @@ import { buildClearRegistryCall } from '../../lib/registry';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
+import { approveWalletDisclosure } from '../../test/walletDisclosure';
 import { mockRpc } from '../../test/mockRpc';
 import { generateWaivedSession } from '../../test/keys';
 import { makeServices, renderApp } from '../../test/render';
@@ -89,6 +90,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     expect(await screen.findByRole('button', { name: 'Review publish transaction' })).toBeTruthy();
   });
 
@@ -112,10 +114,12 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     expect(screen.getAllByText(ERC6538_REGISTRY_ADDRESS).length).toBeGreaterThan(0);
     expect(wallet.sent).toBeUndefined();
     await user.click(screen.getByRole('button', { name: 'Publish to registry' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/same transaction you reviewed/)).toBeTruthy();
     const call = buildRegisterKeysCall(meta);
     expect(wallet.sent?.['to']).toBe(ERC6538_REGISTRY_ADDRESS);
@@ -139,9 +143,11 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     block = true;
     await user.click(screen.getByRole('button', { name: 'Publish to registry' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     await waitFor(() => { expect(release).toBeTypeOf('function'); });
     await user.click(screen.getByRole('checkbox'));
     await act(async () => { release?.(); await Promise.resolve(); });
@@ -154,6 +160,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     await user.click(screen.getByRole('checkbox'));
     expect(screen.queryByRole('button', { name: 'Publish to registry' })).toBeNull();
@@ -166,6 +173,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/DEPLOYMENT_UNVERIFIED/);
     expect(screen.queryByRole('button', { name: 'Publish to registry' })).toBeNull();
@@ -180,6 +188,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/DEPLOYMENT_UNVERIFIED/);
     expect(wallet.sent).toBeUndefined();
@@ -192,10 +201,12 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review clear transaction' }));
     expect(screen.getByText(/clear current entry/)).toBeTruthy();
     expect(wallet.sent).toBeUndefined();
     await user.click(screen.getByRole('button', { name: 'Clear registry entry' }));
+    await approveWalletDisclosure(user, 'eth_sendTransaction');
     expect(await screen.findByText(/Clear submitted: .*public chain history remains visible/)).toBeTruthy();
     const tx = wallet.sent as { readonly data: `0x${string}` };
     const decoded = decodeFunctionData({ abi: erc6538RegistryAbi, data: tx.data });
@@ -211,6 +222,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await approveWalletDisclosure(user, 'eth_requestAccounts');
     await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/RPC endpoint/);
   });

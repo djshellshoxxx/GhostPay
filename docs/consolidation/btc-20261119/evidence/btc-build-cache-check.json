@@ -1,0 +1,100 @@
+[
+  {
+    "package": "@ghostpay/address-safety",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/address-safety",
+    "source_fingerprint": "a608e3a8a0649594b0709814c1a0c446fadbb26cbfabc2a761c52193e936ca9b"
+  },
+  {
+    "package": "@ghostpay/btc-silent-payments",
+    "action": "rebuild changed BTC source"
+  },
+  {
+    "package": "@ghostpay/chain-adapters",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/chain-adapters",
+    "source_fingerprint": "5d2ebca6f62fcee670beeb20f6f220bf130a17c7e9e56023b2d1dd27a04965e7"
+  },
+  {
+    "package": "@ghostpay/core-crypto",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/core-crypto",
+    "source_fingerprint": "dc9a11ca4230ddb133a96e9952070c223aec9e943f2e4c8ec3149f9c13e27f5c"
+  },
+  {
+    "package": "@ghostpay/hygiene",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/hygiene",
+    "source_fingerprint": "7f403079ea5e2ea47dce0b2166dbb2f2ef15e9c6e9e14bd15a6e8b727ddb251c"
+  },
+  {
+    "package": "@ghostpay/invoice-schema",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/invoice-schema",
+    "source_fingerprint": "be2b9300e646c8ad2169eb77857096bf3348965cc5803984125ec67972fd103a"
+  },
+  {
+    "package": "@ghostpay/metadata-hardening",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/metadata-hardening",
+    "source_fingerprint": "80a10d8b024ef36b28286dd7c21303735bca86d7a58dd6d9ab61362b6701a6f8"
+  },
+  {
+    "package": "@ghostpay/net-transport",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/net-transport",
+    "source_fingerprint": "90a35d4abc551195d68fa8853e0f16c1bb9de0048024e58880b9ead4d4e0c9d9"
+  },
+  {
+    "package": "@ghostpay/payment-uri",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/payment-uri",
+    "source_fingerprint": "aa1595dcff6f93082b860a6d7274607b134460ebf5a22d682e77dbe7a43705f5"
+  },
+  {
+    "package": "@ghostpay/pir-two-server",
+    "action": "needs build"
+  },
+  {
+    "package": "@ghostpay/policy-scheme",
+    "action": "needs build"
+  },
+  {
+    "package": "@ghostpay/qr-exchange",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/qr-exchange",
+    "source_fingerprint": "530cf848e1c476a00d828c0f0065344247968cbc4d72ac72bc895c80768261ab"
+  },
+  {
+    "package": "@ghostpay/scan-source",
+    "action": "needs build"
+  },
+  {
+    "package": "@ghostpay/secret-box",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/secret-box",
+    "source_fingerprint": "a07ce52f80d7e3ff034038fc76db2f1f44cd0d7e299418e36f6f208d4bb33c52"
+  },
+  {
+    "package": "@ghostpay/solana-stealth",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/6eafdb04d91b/GhostPay/packages/solana-stealth",
+    "source_fingerprint": "03fd4e6755c496f195afe28fe3207180dcba4d1420f8510fbb74da5a1c53ca33"
+  },
+  {
+    "package": "@ghostpay/tron-adapter",
+    "action": "needs build"
+  },
+  {
+    "package": "@ghostpay/tx-review",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/6eafdb04d91b/GhostPay/packages/tx-review",
+    "source_fingerprint": "8124f7fc9f7bae83033e4c21085e30a10eedcfda8e67e3bb1b00135dc79ccbf4"
+  },
+  {
+    "package": "@ghostpay/ux-vault",
+    "action": "reused byte-matched source",
+    "source": "/workspace/scratch/13855ecc035c/GhostPay/packages/ux-vault",
+    "source_fingerprint": "9c59916c59b1e94b88dce7125df327c30acf827c9248b52deda0c8c4491cc666"
+  }
+]

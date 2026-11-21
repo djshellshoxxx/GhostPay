@@ -53,7 +53,7 @@ describe('S3-12 forbidden characters in free text', () => {
   });
   it('rejects them in a full invoice too (strict validateInvoice)', () => {
     const base = sampleInvoice();
-    const memo = { ...base, memo: `pay‮evil` };
+    const memo = { ...base, memo: `pay\u202eevil` };
     expect((err(() => validateInvoice(memo)) as ForbiddenCharacterError).code).toBe('FORBIDDEN_CHARACTER');
     const items = { ...base, lineItems: [{ description: 'x​y', quantity: '1', unitMinorUnits: '1' }] };
     expect((err(() => validateInvoice(items)) as ForbiddenCharacterError).path).toBe('lineItems[0].description');

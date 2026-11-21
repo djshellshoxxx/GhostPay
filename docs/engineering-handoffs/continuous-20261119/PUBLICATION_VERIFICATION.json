@@ -1,0 +1,55 @@
+{
+  "schema": "ghostpay-publication-verification/1",
+  "local_head": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "published_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+  "tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+  "commits_verified": 37,
+  "trees_and_ordered_parents_verified": true,
+  "candidate_branch": "release/ghostpay-beta-qualification-20261119",
+  "pr": 278,
+  "draft": true,
+  "expected_previous_head": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+  "fast_forward": true,
+  "main_unchanged": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "synthetic_merge": "a7ceff94269cddfbc725677dd03737d96a449039",
+  "synthetic_merge_tree_identical": true,
+  "lease_held": {
+    "sha": "0e8834454c8687a7c49d61b5d5eebc8c9e2663a4",
+    "state": {
+      "format": "ghostpay-integration-lock/1",
+      "status": "held",
+      "owner": "20261119-continuous-0a7bc3583588-root",
+      "token": "7f418f6f-f423-4715-8593-09c16ec65d9c",
+      "generation": 4,
+      "base_sha": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+      "acquired_at": "2026-11-20T00:09:22.000Z",
+      "heartbeat_at": "2026-11-20T00:09:22.000Z",
+      "expires_at": "2026-11-20T01:09:22.000Z",
+      "transport": "github-connector-expected-head-nonforce"
+    }
+  },
+  "lease_released": {
+    "sha": "d6839d7c48edf5e71ddd35d3e87446b69c196b04",
+    "state": {
+      "format": "ghostpay-integration-lock/1",
+      "status": "released",
+      "owner": "20261119-continuous-0a7bc3583588-root",
+      "token": "7f418f6f-f423-4715-8593-09c16ec65d9c",
+      "generation": 4,
+      "base_sha": "c993bb2340942c85dbf10303b61f69a91c4944e0",
+      "acquired_at": "2026-11-20T00:09:22.000Z",
+      "heartbeat_at": "2026-11-20T00:09:22.000Z",
+      "expires_at": "2026-11-20T01:09:22.000Z",
+      "transport": "github-connector-expected-head-nonforce",
+      "released_at": "2026-11-20T00:14:15.000Z",
+      "cycle_result": {
+        "pr": 278,
+        "published_head": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+        "tree": "e76c03d9dba595ff1171577139c1628c4ad45f5b",
+        "main_unchanged": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+        "status": "draft candidate updated; hosted qualification running; no main merge or deployment"
+      }
+    }
+  },
+  "limits": "Only draft candidate advanced; no main merge/deployment/release. Later receipts are isolated on evidence/ghostpay-continuous-20261119 to preserve ongoing candidate CI."
+}

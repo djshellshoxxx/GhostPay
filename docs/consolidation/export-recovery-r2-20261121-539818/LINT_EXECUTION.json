@@ -1,0 +1,22 @@
+{
+  "name": "authored-file-typed-lint",
+  "application_source_commit": "81bfa7bddaebdaaf059ad663fead05d59ec82cda",
+  "execution_head": "d283facba155c24ece225561a13e86fa636f496b",
+  "cwd": "apps/web",
+  "argv": [
+    "../../node_modules/.bin/eslint",
+    "--config",
+    "../../eslint.config.js",
+    "src/lib/paymentKeyExport.interop.test.ts"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--max-old-space-size=768"
+  },
+  "started_utc": "2026-11-21T04:47:23.289763+00:00",
+  "elapsed_seconds": 7.018,
+  "exit_code": 0,
+  "output_bytes": 0,
+  "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "output": "",
+  "scope": "Original typed ESLint configuration applied to the sole recovered test. No parser, rule or configuration changes; no full-project lint claim."
+}

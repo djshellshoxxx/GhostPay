@@ -1,0 +1,61 @@
+{
+  "base_commit": "7b4c1554382b05ac3fab48527aadf596d6b1ff7b",
+  "source_commit": "ea47fa75eabb0be2045081ffeb120fc2bfae67ab",
+  "candidate_commit": "bd05411b2a4c5b1b1793065bce1c10e0553cf952",
+  "files": [
+    {
+      "path": "packages/contracts/scripts/run-mythril.sh",
+      "source_blob": "a277ff0061e0d08f9850957f3dd9d96a59ad17ec",
+      "candidate_blob": "a277ff0061e0d08f9850957f3dd9d96a59ad17ec",
+      "exact": true
+    },
+    {
+      "path": "packages/contracts/scripts/mythril-compat.py",
+      "source_blob": "4604d3055535ac85274c0bf83afdee8e6becbd9a",
+      "candidate_blob": "4604d3055535ac85274c0bf83afdee8e6becbd9a",
+      "exact": true
+    },
+    {
+      "path": "packages/contracts/scripts/capture-mythril-evidence.py",
+      "source_blob": "e0d317c8462e9119a1564106562ca7db5afe92d9",
+      "candidate_blob": "e0d317c8462e9119a1564106562ca7db5afe92d9",
+      "exact": true
+    },
+    {
+      "path": "packages/contracts/scripts/collect-analysis-report.py",
+      "source_blob": "4d82b5d3b60aa2cb9ad14d0b528d52e68e9f1b2c",
+      "candidate_blob": "4d82b5d3b60aa2cb9ad14d0b528d52e68e9f1b2c",
+      "exact": true
+    },
+    {
+      "path": "scripts/tests/mythril-runner.test.mjs",
+      "source_blob": "1d4f6661ae838547d02c453edc451b7de7655a6f",
+      "candidate_blob": "1d4f6661ae838547d02c453edc451b7de7655a6f",
+      "exact": true
+    },
+    {
+      "path": "scripts/tests/mythril-completeness.test.mjs",
+      "source_blob": "c3abc1c843b91f20d4497f3c45b48685af3c343e",
+      "candidate_blob": "c3abc1c843b91f20d4497f3c45b48685af3c343e",
+      "exact": true
+    },
+    {
+      "path": "scripts/tests/mythril-evidence.test.mjs",
+      "source_blob": "c88dfc1ca8b6274d0607fed7e524b62c4a265c98",
+      "candidate_blob": "c88dfc1ca8b6274d0607fed7e524b62c4a265c98",
+      "exact": true
+    },
+    {
+      "path": "scripts/tests/contract-analysis-workflow.test.mjs",
+      "source_blob": "50a72a2ad5a883e37aca82114fd77ed9330d1dac",
+      "candidate_blob": "50a72a2ad5a883e37aca82114fd77ed9330d1dac",
+      "exact": true
+    }
+  ],
+  "workflow": {
+    "path": ".github/workflows/contract-analysis.yml",
+    "base_blob": "ab4b881de3f586869d1efbaec32799d9082193fd",
+    "candidate_blob": "efcb5a9b743002e82df01f2169dbd74b215da461",
+    "numstat": "5\t0\t.github/workflows/contract-analysis.yml"
+  }
+}

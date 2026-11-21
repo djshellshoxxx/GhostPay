@@ -1,0 +1,485 @@
+{
+  "red-components": {
+    "source": "03b5816e1712efb23c4c674b3ef3de04e4b53012",
+    "exit_code": 1,
+    "counts": {
+      "numTotalTests": 18,
+      "numPassedTests": 3,
+      "numFailedTests": 15,
+      "numPendingTests": 0
+    },
+    "summary": "red-components.summary.json",
+    "summary_sha256": "5fce498ae4a41c6df20d0941b074d8030f7ff3988838ecb16b98369c4a49fe18",
+    "raw_report_sha256": "e2a872f0d0c9ad9867c20a3902a0588e43809ca11cfdbf20dfb8d3e5fb3f3db7",
+    "log_sha256": "52e305b2fd76530f9b5ffe89dd5e48c626d9a8ccd1bc56fd68e50c77edace5cc",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/components/PaymentProofQr.retention.test.tsx",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/red-components.json"
+    ],
+    "recording_note": "Normalized equivalent invocation records selected files/options. Original JSON reporter and console log are hashed; exact original shell argument order was not retained.",
+    "complete_files": 1,
+    "start_time_ms": 1795193626598,
+    "log": "red-components.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "b28dbf0e96e839b22f8835f7b1c42d9f18fa57d180a98ab5fce7d57564732af6"
+  },
+  "red-pay": {
+    "source": "03b5816e1712efb23c4c674b3ef3de04e4b53012",
+    "exit_code": 1,
+    "counts": {
+      "numTotalTests": 68,
+      "numPassedTests": 0,
+      "numFailedTests": 1,
+      "numPendingTests": 67
+    },
+    "summary": "red-pay.summary.json",
+    "summary_sha256": "7f61c829cb8aee31ca841456ed4d06f30a777340ee84c84cd5ff9cb363d3ee81",
+    "raw_report_sha256": "e11cfe2d4aa4c8d47de4e60f3cf49533941782f7bee4a97cfd17dab253f4a264",
+    "log_sha256": "0782e9d9ed4a01a65ad9bc7c4b6a57fdc5803409d55f9bd88d61ac106c4bd391",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/views/Pay.test.tsx",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/red-pay.json",
+      "--testNamePattern=closes the included proof preview without changing"
+    ],
+    "selection_note": "One intended new assertion executed and failed; 67 existing cases excluded by the explicit name filter.",
+    "recording_note": "Normalized equivalent invocation records selected files/options. Original JSON reporter and console log are hashed; exact original shell argument order was not retained.",
+    "complete_files": 1,
+    "start_time_ms": 1795193639934,
+    "log": "red-pay.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "99ae6f5b3da207c653f31f07d4c59080a05bb1d3a29db80a8fb4001cafe68ab3"
+  },
+  "policy-isolation": {
+    "source": "d5a49403809ecd92657ba29553a51d0040765c0c",
+    "exit_code": 0,
+    "counts": {
+      "numTotalTests": 17,
+      "numPassedTests": 17,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "summary": "policy-isolation.summary.json",
+    "summary_sha256": "2a50d6ce49d0fc1be81e173c29ec4ef03c6f84247ea52debb700b9e94bcf4bcd",
+    "raw_report_sha256": "422d6c3cf65cecba24c3b6f56de4bdb581497d485eeb8721bee1d2835dacf0af",
+    "log_sha256": "79ede2f6d4a32364c6422d7cf498aa604f940d37747c877710696b0a7206b802",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/components/MetadataRetentionControls.test.tsx",
+      "src/lib/metadataRetention.test.ts",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/policy-isolation.json"
+    ],
+    "execution_head": "03b5816e1712efb23c4c674b3ef3de04e4b53012",
+    "source_note": "Working contents were committed without intervening edits as d5a49403809ecd92657ba29553a51d0040765c0c after the run; this was not a clean d5 HEAD execution.",
+    "recording_note": "Normalized equivalent invocation records selected files/options. Original JSON reporter and console log are hashed; exact original shell argument order was not retained.",
+    "complete_files": 2,
+    "start_time_ms": 1795193710663,
+    "log": "policy-isolation.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "b5a4f25c7df70ef627644d2cb1436778b8c6012edfc7cd2384602838aef636ac"
+  },
+  "green-components": {
+    "source": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+    "exit_code": 0,
+    "counts": {
+      "numTotalTests": 18,
+      "numPassedTests": 18,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "summary": "green-components.summary.json",
+    "summary_sha256": "f4fcf26ca487fa757e8aab4a0eaaac09967dc23d26af64a18fd41c447c37e8e2",
+    "raw_report_sha256": "1d9ae9747c4cd09dac5c83eef20378545f6d53ef0366f2f03f8655d8f4873660",
+    "log_sha256": "30798ae4e7b9077a0b3b51d918e4e30feddb8ff0447447dd5313e2fa4958b9bd",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/components/PaymentProofQr.retention.test.tsx",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-components.json"
+    ],
+    "recording_note": "Normalized equivalent invocation records selected files/options. Original JSON reporter and console log are hashed; exact original shell argument order was not retained.",
+    "complete_files": 1,
+    "start_time_ms": 1795193834546,
+    "log": "green-components.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "8ee3b45bf8691700329c22d49b3226bd50c15c56ae0d6c10329ca0e24131aeaf"
+  },
+  "green-shared": {
+    "source": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+    "exit_code": 0,
+    "counts": {
+      "numTotalTests": 53,
+      "numPassedTests": 53,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "summary": "green-shared.summary.json",
+    "summary_sha256": "d6375de6d054baf85b0a8ca43430727c56332146f60024689e41ca9ad5fb82af",
+    "raw_report_sha256": "217a5bc592d033faccc23f30b75ddd510a35ab4db9463268f681a347a4b66787",
+    "log_sha256": "15763c63662aa7c4561dac5ac9d6306914303c3e5bc91f80fe32982cb6f6d1a7",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/components/MerchantTemplateIssuer.retention.test.tsx",
+      "src/components/MetadataRetentionControls.test.tsx",
+      "src/components/PaymentRequestQr.test.tsx",
+      "src/i18n/catalog.test.ts",
+      "src/i18n/securityKeys.test.ts",
+      "src/lib/metadataRetention.test.ts",
+      "src/views/CreateInvoice.retention.test.tsx",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-shared.json"
+    ],
+    "recording_note": "Normalized equivalent invocation records selected files/options. Original JSON reporter and console log are hashed; exact original shell argument order was not retained.",
+    "complete_files": 7,
+    "start_time_ms": 1795193946265,
+    "log": "green-shared.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "35f9f30d9a026a3cd9dc2001bcf13a003adc4d9f6f5ceb416326e658172f5750"
+  },
+  "green-pay": {
+    "source": "e075ab049210e7d6788dd4e7f71d196d2bffef8a",
+    "exit_code": 0,
+    "counts": {
+      "numTotalTests": 68,
+      "numPassedTests": 68,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "summary": "green-pay.summary.json",
+    "summary_sha256": "0e7913cfbdd4de227ca55e224b7236e458a898552e3733479fc2d2d0e708a7dc",
+    "raw_report_sha256": "394f88441473cace0f9f05a547f39c1a201e4b31eb07f764e65601c73858031f",
+    "log_sha256": "2a04d5a19510afd9a804631860d17b8da371957439d019a825d6fe39e4da0777",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/views/Pay.test.tsx",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-pay.json"
+    ],
+    "recording_note": "Normalized equivalent invocation records selected files/options. Original JSON reporter and console log are hashed; exact original shell argument order was not retained.",
+    "complete_files": 1,
+    "start_time_ms": 1795194007969,
+    "log": "green-pay.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "8e70d68a8ee054ee2efff0f4c705b1636b08c8d56cd3671b0ca7b34981a87512"
+  },
+  "browser-full-collection": {
+    "source": "97ffe5b98344c345ab436a5557221e5be4160cb5",
+    "exit_code": 0,
+    "collected_tests": 1,
+    "executed_tests": 0,
+    "log_sha256": "7b8fc4598d8ac87f50ba662c005b7993f7f1ec0e43878aa82bf72997fa2e8b24",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/playwright",
+      "test",
+      "e2e/flows.spec.ts",
+      "--grep",
+      "pays a native invoice",
+      "--list"
+    ],
+    "log": "browser-full-collection.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "fdbb51ac428bd1e4188bf82dd8cca0faf59e783c423603582da5e2f39a53fd5d"
+  },
+  "browser-lean-collection": {
+    "source": "97ffe5b98344c345ab436a5557221e5be4160cb5",
+    "exit_code": 0,
+    "collected_tests": 1,
+    "executed_tests": 0,
+    "log_sha256": "7b8fc4598d8ac87f50ba662c005b7993f7f1ec0e43878aa82bf72997fa2e8b24",
+    "cwd": "apps/web",
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512",
+      "GHOSTPAY_LOCAL_BUILD_PROFILE": "lean"
+    },
+    "normalized_command": [
+      "../../node_modules/.bin/playwright",
+      "test",
+      "e2e/flows.spec.ts",
+      "--grep",
+      "pays a native invoice",
+      "--list"
+    ],
+    "log": "browser-lean-collection.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "fdbb51ac428bd1e4188bf82dd8cca0faf59e783c423603582da5e2f39a53fd5d"
+  },
+  "typecheck": {
+    "head": "8bb5eff01c71db0fdcc73bb73bb0c6fdde9d844d",
+    "tree": "604120aae652b337f66b7689172d4259881df057",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "start_time": 1795194589.5635161,
+    "seconds": 23.492,
+    "exit_code": 2,
+    "mem_available_kib_before": 3875000,
+    "log_sha256": "a44dd29335d33bcaab776e595a5ba1da73ab53cdc32e36da6f789bf327b9f865",
+    "cwd": ".",
+    "receipt": "typecheck.receipt.json",
+    "receipt_sha256": "e720363c4078bb702392bb1880d56657a4b2e8af7205600ab1c394ae90f7b07e",
+    "log": "typecheck.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "f695a4a423ff73a64cfc235bf791c6331db1455ef1054816198da13b311f2488"
+  },
+  "typecheck-green": {
+    "head": "638ef16eda8161415a0d4547044af4327cd73367",
+    "tree": "00f0bc3b2ce35cc184019b5de52abaf470a2a95a",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "start_time": 1795194690.8128457,
+    "seconds": 22.724,
+    "exit_code": 0,
+    "mem_available_kib_before": 4463100,
+    "log_sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+    "cwd": ".",
+    "receipt": "typecheck-green.receipt.json",
+    "receipt_sha256": "6e3f0bf13fa61684d08def49b3282a40953cc535159e9401d1ae1407a0035ee7",
+    "log": "typecheck-green.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "5fb1d3483d3d4b8b1e3b7c2da4ace9e805a293adebb2502a2d03a6108d5d0e80"
+  },
+  "lint": {
+    "head": "638ef16eda8161415a0d4547044af4327cd73367",
+    "tree": "00f0bc3b2ce35cc184019b5de52abaf470a2a95a",
+    "command": [
+      "npm",
+      "run",
+      "lint",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "start_time": 1795194849.2884188,
+    "mem_available_kib_before": 4150916,
+    "seconds": 63.123,
+    "exit_code": 1,
+    "log_sha256": "ccb2243a69b8f69934cbdff4730d5f5968798e2b83c1fbb56d76fc180ebf299d",
+    "cwd": ".",
+    "receipt": "lint.receipt.json",
+    "receipt_sha256": "b1631d54fe6413b4c1d0f68bf2efcc7b3540d1771665d86f5e03136122dd40e2",
+    "log": "lint.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "92a4e4bcd1a597ef925bae8ef2c6f39e3025458a034930741b064860768a29d7"
+  },
+  "build-relayer-guard": {
+    "log_sha256": "00f7e8741f40878753cae49e414bb000ef61b633115c3e30c5e1577f502739dc",
+    "cwd": ".",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--workspace",
+      "@ghostpay/relayer-guard"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "exit_code": 0,
+    "source_note": "Exact execution HEAD was not separately captured. The relayer-guard package subtree is unchanged from canonical base8c196d12 through application/fixture head e8b8bd33. This only emitted local declarations; no service/source edit.",
+    "log": "build-relayer-guard.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "9f5efc62fb05552e2d2df23ef8c55b03ea81126bc6a3c434aa03f010f692b6ea"
+  },
+  "green-final-proof-pay": {
+    "head": "e8b8bd334d6829de3145d350bd7d682c3e771383",
+    "tree": "a5a8fbcc9dc8843538c34e51263ec8791789f56a",
+    "cwd": "apps/web",
+    "command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/components/PaymentProofQr.retention.test.tsx",
+      "src/views/Pay.test.tsx",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-final-proof-pay.json"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "start_time": 1795194970.2235851,
+    "mem_available_kib_before": 4058984,
+    "seconds": 32.292,
+    "exit_code": 0,
+    "log_sha256": "17028576892bc736289f6b568a1a1606ff2b596dd84bb8902e018dba76444796",
+    "counts": {
+      "numTotalTests": 86,
+      "numPassedTests": 86,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "complete_files": 2,
+    "summary": "green-final-proof-pay.summary.json",
+    "summary_sha256": "21548388782a536a1abe588bbb25f10633626453b2fceb3e0e6e1391a70995a0",
+    "receipt": "green-final-proof-pay.receipt.json",
+    "receipt_sha256": "ca107129080d7bae2cb8196b3c78e456905f1b68b2f70ba1245b440e43b8c1c4",
+    "raw_report_sha256": "4392c84a54bc743e690c6effa330075abc2d886096f7787242259dbf9306392f",
+    "log": "green-final-proof-pay.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "a4d559bcd5c5d67a053f865f86667ab76ad6ea95f02e2a0a17c614208aee3ebf"
+  },
+  "green-prerequisite-repairs": {
+    "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+    "tree": "f2401beadec3a4ea4d511cde7a78c7e7d4b58ff8",
+    "cwd": "apps/web",
+    "command": [
+      "../../node_modules/.bin/vitest",
+      "run",
+      "src/AppShell.privacy.test.tsx",
+      "src/components/MerchantTemplateIssuer.retention.test.tsx",
+      "src/lib/wallet.test.ts",
+      "src/lib/wallet.lifecycle.test.ts",
+      "src/lib/wallet.disclosure.test.ts",
+      "--coverage=false",
+      "--maxWorkers=1",
+      "--reporter=json",
+      "--outputFile=/workspace/scratch/994a0d214fb9/retention-qualification/green-prerequisite-repairs.json"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=512"
+    },
+    "start_time": 1795195291.0401106,
+    "mem_available_kib_before": 4362912,
+    "seconds": 11.866,
+    "exit_code": 0,
+    "log_sha256": "507f76cd10ad0b8ac578bc6a9269484c7cc5ca6872f9e80d2a5f30edfbf7142b",
+    "counts": {
+      "numTotalTests": 78,
+      "numPassedTests": 78,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "complete_files": 5,
+    "summary": "green-prerequisite-repairs.summary.json",
+    "summary_sha256": "036147cdae7480f6724f72a744c340906188e28f448f29a81091fe9a8cdf3988",
+    "receipt": "green-prerequisite-repairs.receipt.json",
+    "receipt_sha256": "f6000ce83cb45434f8beb1820b29d9df523cd7713dd0fa0603c0b149cce73c84",
+    "raw_report_sha256": "2a3c9912a2a15addf050d98a002299c88e6375e000ea242758a1852c87697203",
+    "log": "green-prerequisite-repairs.log.json",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "0921f9b2991db6ec9d0cd1f4b254c1a2672884c7cbcc2964224fe9d7409c804d"
+  },
+  "typecheck-final": {
+    "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+    "tree": "f2401beadec3a4ea4d511cde7a78c7e7d4b58ff8",
+    "cwd": ".",
+    "command": [
+      "npm",
+      "run",
+      "typecheck",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "start_time": 1795195334.1115298,
+    "mem_available_kib_before": 4422152,
+    "seconds": 22.463,
+    "exit_code": 0,
+    "log_sha256": "140bc893d0d52554db5216a2d674925da59994bfa095b87e6c3ffeee4242bc2b",
+    "log": "typecheck-final.log.json",
+    "receipt": "typecheck-final.receipt.json",
+    "receipt_sha256": "b87122b6e5798a91b10f1507c2bab4549f3363ca1da21f5f5b2a313a7b518b60",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "5fb1d3483d3d4b8b1e3b7c2da4ace9e805a293adebb2502a2d03a6108d5d0e80"
+  },
+  "wallet-emission": {
+    "receipt": "wallet-emission.receipt.json",
+    "receipt_sha256": "b4aa8bb5b2942c1dd97e75940d7b04c92b73b4fda03eb1aea980894d0182c1cb",
+    "equal_emitted_javascript": true,
+    "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e"
+  },
+  "lint-final": {
+    "head": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+    "tree": "f2401beadec3a4ea4d511cde7a78c7e7d4b58ff8",
+    "cwd": ".",
+    "command": [
+      "npm",
+      "run",
+      "lint",
+      "--workspace",
+      "@ghostpay/web"
+    ],
+    "environment": {
+      "NODE_OPTIONS": "--max-old-space-size=1536"
+    },
+    "start_time": 1795195356.5824432,
+    "mem_available_kib_before": 4353120,
+    "seconds": 58.094,
+    "exit_code": 0,
+    "log_sha256": "7cbadbf1a6ff02d2113d440f21ca3a66760872f7a7686b8d6364848aaac17fbf",
+    "log": "lint-final.log.json",
+    "receipt": "lint-final.receipt.json",
+    "receipt_sha256": "2d5d1ebdadc188eba2ef7651c94312d29aac2c17ae0406eac6ec5c208f3ee169",
+    "log_format": "JSON wrapper; decode text as UTF-8 for original console bytes",
+    "log_file_sha256": "e7db3d2c2b5f56da2d07ebf017999f6888f7c98b59cac1c9ec1442e180122851"
+  }
+}

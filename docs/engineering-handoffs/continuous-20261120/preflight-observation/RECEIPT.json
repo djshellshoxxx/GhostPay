@@ -1,0 +1,150 @@
+{
+  "format": "ghostpay-preflight-observation/1",
+  "date": "2026-11-20",
+  "worker": "/root/qa_bug_gen1",
+  "base": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "claim": "996f5544",
+  "testedCommit": "89e163fcc24f72830c0a5876486a72178a9365e7",
+  "testedTree": "960868c6caec402ac38ca4d801fe519151fa190b",
+  "classification": "browser fixture sampled an unfinished replacement context; no production repair",
+  "sourcePins": {
+    "apps/web/src/views/Pay.preflightCompletion.test.tsx": {
+      "gitBlob": "a8375bae63a9648c425d9da9e5dc8dbaa041f8a8",
+      "sha256": "6fdb46a79869ac5ce2a561696685f7134e6fccd9c591d3b0774854dba3017763"
+    },
+    "apps/web/e2e/network-authorization.spec.ts": {
+      "gitBlob": "19055300a98c8c9d9099baf02cc50246696b6e7b",
+      "sha256": "6c15f3e3899eb223606b0e373b66ce37521ac9c1498d083284fd989789ebc55a"
+    },
+    "apps/web/src/views/Pay.tsx": {
+      "gitBlob": "c44a7789d5c0a7c9952944c11e5dfcbdd00ba099",
+      "sha256": "c850bcbaa104eb0ba5f0f8e6017a433e7b31bb1c7f85a032d73702ffbdff95e6"
+    },
+    "apps/web/src/lib/defaultServices.ts": {
+      "gitBlob": "2487789e2b88f73bceaf5ac5dc464a531e659dcb",
+      "sha256": "5c533a152aeb1f42ce631fd3a1c0531054d884f301fb26728b3e365afd460bb5"
+    },
+    "apps/web/src/lib/networkAuthorization.ts": {
+      "gitBlob": "04defade63f86886f12a6299f19f46a2e562b680",
+      "sha256": "3bcc735e14fd5245c12ea5d391502affa802cb5c6f7c5ff9b457c2b2b1c060ea"
+    },
+    "apps/web/src/components/Disclosure.tsx": {
+      "gitBlob": "4ecacbf464c6e1b413d9857be417569200a05b69",
+      "sha256": "c090adce8b7a55d31036f55b31bdf182de27db8c71e318f3fe44ca2d71f0f391"
+    },
+    "packages/chain-adapters/src/rpc.ts": {
+      "gitBlob": "1c8d1edc486c70b7ea7fee96ec62c57af00e421e",
+      "sha256": "8b3bcd3dedc02dee95a83bbc0bdd750a272018df472765a67f53abb5f84b73d8"
+    },
+    "packages/chain-adapters/src/deploymentsVerify.ts": {
+      "gitBlob": "0f958f28cf9c8a496a6068f3d1a423f47973a037",
+      "sha256": "67afe5a3f8aea9ade18df20a692432aa03832660b03cc7dac76d335a2c4c1aaf"
+    }
+  },
+  "checks": [
+    {
+      "name": "focused-source-regressions",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-followup-20261120/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.preflightCompletion.test.tsx",
+        "src/views/Pay.network.test.tsx",
+        "src/components/Disclosure.manifest.test.tsx",
+        "src/lib/defaultServices.authorization.test.ts",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 0,
+      "testsPassed": 10,
+      "testsFailed": 0,
+      "files": 4,
+      "durationSeconds": 16.77,
+      "output": "focused-green.txt.gz"
+    },
+    {
+      "name": "premature-observation-diagnostic",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-followup-20261120/apps/web",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/vitest/vitest.mjs",
+        "run",
+        "src/views/Pay.preflightCompletion.test.tsx",
+        "--maxWorkers=1"
+      ],
+      "exitCode": 1,
+      "testsFailed": 1,
+      "expectedRequests": 9,
+      "actualRequests": 15,
+      "productionChanged": false,
+      "variation": "The final comparison uses the saved count before context readiness. Source restored in finally. Only explicit TypeScript method parameter/return annotations and a getByRole generic were added between this diagnostic and the committed regression.",
+      "reproductionPatch": "premature-snapshot.patch",
+      "output": "premature-snapshot-red.txt.gz"
+    },
+    {
+      "name": "full-web-typecheck",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-followup-20261120",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "output": "typecheck.txt.gz"
+    },
+    {
+      "name": "changed-file-lint",
+      "cwd": "/workspace/scratch/0a7bc3583588/GhostPay-qa-followup-20261120",
+      "argv": [
+        "/workspace/scratch/0a7bc3583588/toolchain/node_modules/node/bin/node",
+        "/workspace/scratch/0a7bc3583588/GhostPay/node_modules/eslint/bin/eslint.js",
+        "--config",
+        "eslint.config.js",
+        "apps/web/src/views/Pay.preflightCompletion.test.tsx",
+        "apps/web/e2e/network-authorization.spec.ts"
+      ],
+      "exitCode": 0,
+      "output": "lint.txt.gz"
+    }
+  ],
+  "runtime": "runtime.json",
+  "dependencyScope": "Relative web source is this isolated worktree; @ghostpay dependencies resolve to coordinator-built root dist files. No separate QA library rebuild.",
+  "hostedBaseline": {
+    "runId": 44643709383,
+    "jobId": 135981022990,
+    "artifactId": 14588585398,
+    "artifactSha256": "9260510914385222ec3ab558f9b61baa00c2f21a41d82bdb59a0541284355c8d",
+    "artifactFiles": 47,
+    "artifactTraceFiles": 0,
+    "associatedHead": "d74af79ebabdc8cead843361c3497b46d8c421f9",
+    "executedSyntheticMerge": "a7ceff94269cddfbc725677dd03737d96a449039",
+    "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+    "leanPassed": 115,
+    "leanFailed": 1,
+    "leanSkipped": 5,
+    "requestIdentities": "Established by deterministic component reproduction; original hosted artifact contains no network trace"
+  },
+  "localBrowser": {
+    "executed": false,
+    "reason": "Prior observed kernel startup block; no repeated launch attempted"
+  },
+  "remainingGate": "Original hosted complete browser suites in lean and full on the combined follow-up source",
+  "artifactSha256": {
+    "README.md": "ae5405314e5e0979b52c840f1c58451a75f448a94823094c2e423c2f84f7c9f0",
+    "focused-green.txt.gz": "612fe88e6d5e49d23a15e34899ff92d960ee87b748b5eda4174a8b80aa362f06",
+    "hosted-failure-excerpt.txt.gz": "fb7aecd4660d7f5d3cb968f13545a0fd179cb076ceb6c52e7ca9c48b685a9914",
+    "hosted-lean-artifact-14588585398.zip": "9260510914385222ec3ab558f9b61baa00c2f21a41d82bdb59a0541284355c8d",
+    "lint.txt.gz": "928add1489239e1a7d61edccaf17e628cf62c3962930312ddfe3ac3a70dac87c",
+    "premature-snapshot-red.txt.gz": "caad2229b73cbf6ccb8309665599a7be54f2317d8e244d4e78d7de60095619c0",
+    "premature-snapshot.patch": "d75fd8d8ce079d5fcffa87b3822f915d912dd4dc9e79bd1656fad47306b7b13e",
+    "runtime.json": "d9d2a0643f01abc8712825b7804560cd34da9a1cf5df64177a3cbcaa5cf57bd3",
+    "typecheck.txt.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+  },
+  "independentReview": {
+    "commit": "97fd030ac9d06d62073e489603174d4a22d47024",
+    "path": "docs/engineering-handoffs/continuous-20261119/browser-followup-review/",
+    "scope": "Exact 89e163 source; reviewer-owned early snapshot RED and 11-test GREEN including late-success old-fetch variation. These executions are separate from this worker's ten-test run."
+  }
+}

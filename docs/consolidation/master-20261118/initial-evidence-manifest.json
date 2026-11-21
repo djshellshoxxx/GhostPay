@@ -1,0 +1,97 @@
+[
+  {
+    "path": "initial-branch-ledger.json",
+    "bytes": 3299093,
+    "sha256": "7fa1b98fceb7be4938e80dabe41855678312ef932166b5d63c6a2d62f35280df"
+  },
+  {
+    "path": "initial-branch-ledger.csv",
+    "bytes": 118233,
+    "sha256": "e11ea9498521d6964e0acaf1ebbaf199ced4c63e61a488776d06ff632beeb347",
+    "source_before_lf_normalization": {
+      "bytes": 118480,
+      "sha256": "54d65a320a41b248177b729492b0c04d421a082978ce8c76213994a9f0970670",
+      "transformation": "CSV CRLF to LF only; values unchanged"
+    }
+  },
+  {
+    "path": "initial-pr-head-comparisons.json",
+    "bytes": 304876,
+    "sha256": "96ad4690208bc301e8d65ba884f8b0d870f23e2fcb134eff8263eb4df41acdcd"
+  },
+  {
+    "path": "historical-deleted-heads.json",
+    "bytes": 38328,
+    "sha256": "51f972122f5bb0a4a5c0326aa3c9ad908edc0d9141b885a658d59e228bd0f5a3"
+  },
+  {
+    "path": "historical-deleted-source-evidence.json",
+    "bytes": 357618,
+    "sha256": "2134cac133d668c7b234dcd71e18e1399eddfbb23ee91816be5ad359049ad398"
+  },
+  {
+    "path": "patch-identity-crosscheck.json",
+    "bytes": 55798,
+    "sha256": "3792de013f172271c90d21ddde092da55b769be8859279e33aefad9f5a11b456"
+  },
+  {
+    "path": "INITIAL_HISTORY_REVIEW.md",
+    "bytes": 49408,
+    "sha256": "1fbaf14e8f428b6083e053b395ecf5ec2c8b7267673e67df42e6f69604d37f96"
+  },
+  {
+    "path": "initial-pr-inventory.json",
+    "bytes": 179760,
+    "sha256": "ff23eceebbed9fab5e326044b4e19faa7db296ac2a7714315e9f3ff3b384ae81"
+  },
+  {
+    "path": "initial-remote-branches.json",
+    "bytes": 69525,
+    "sha256": "2d3cbd43a00bde26bebbdfbd19d95d0e843d43680dd7cdbae17933555f6b164a"
+  },
+  {
+    "path": "initial-repository-metadata.json",
+    "bytes": 8010,
+    "sha256": "7a4e94d6bd33eb0d6790af39988b9fa1fa28d58b9609616b41bd4a8fcc64c401"
+  },
+  {
+    "path": "INITIAL_CI_REVIEW.md",
+    "bytes": 13020,
+    "sha256": "493dd2efe853e03c12f44586d5576b759f4705897a4b54ddf4449bc60df59880"
+  },
+  {
+    "path": "initial-ci-evidence.json",
+    "bytes": 226235,
+    "sha256": "e32f9074989db4aff68a66bf8ab8814e2afd99556d04378edba9882cf5abcd03"
+  },
+  {
+    "path": "INITIAL_FEATURE_REVIEW.md",
+    "bytes": 10383,
+    "sha256": "97afbd3334c90afa18cd36405c9d181262ad888dfd367197ae45090934282b38"
+  },
+  {
+    "path": "initial-feature-review-evidence.json",
+    "bytes": 2809,
+    "sha256": "6e04a96e9ad20b1b55c6e7c35fa96d5ab5c673c5d534b65cbfc5cf71fd27d960"
+  },
+  {
+    "path": "FOCUSED_PROMOTION_REVIEW.md",
+    "bytes": 4061,
+    "sha256": "55a624917c0f876f5970ae8a160e56dd59a9df2da9e2430cb8db1cc23d6f472d"
+  },
+  {
+    "path": "focused-promotion-review.json",
+    "bytes": 10310,
+    "sha256": "2ab4e60248d746eab025d7370a0a89ed74a9e952500c5414368aa45df94c7491"
+  },
+  {
+    "path": "preserved-mythril-findings.json",
+    "bytes": 10232,
+    "sha256": "87a1f5bfe88e46e0034a47809a6078cce85ac152e35b9917fe35b730a7de42eb"
+  },
+  {
+    "path": "preserved-mythril-metadata.json",
+    "bytes": 532,
+    "sha256": "778fde76eb0dda7842fae219377917a733dd48e1a9c6945a57787ef935191fcb"
+  }
+]

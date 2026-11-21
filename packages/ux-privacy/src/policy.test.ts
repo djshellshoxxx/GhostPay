@@ -123,7 +123,7 @@ describe('validateFriendlyPolicy', () => {
   });
 
   it('labels reject control and bidi characters', () => {
-    expect(codes({ ...base, name: 'a‮b' })).toContain('error:INVALID_LABEL');
+    expect(codes({ ...base, name: 'a\u202eb' })).toContain('error:INVALID_LABEL');
     expect(codes({ ...base, name: 'a\nb' })).toContain('error:INVALID_LABEL');
     expect(codes({ ...base, name: 'x'.repeat(41) })).toContain('error:INVALID_LABEL');
     expect(codes({ ...base, name: 3 as never })).toContain('error:INVALID_LABEL');

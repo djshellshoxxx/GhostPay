@@ -1,0 +1,100 @@
+[
+  {
+    "log": "catalog-red.log.gz",
+    "source": "5e70ab0ad09988a2f0ccb606ed1aa9f5b49f6258",
+    "exit_code": 1,
+    "uncompressed_sha256": "572da96689e770d73e8cf270abc15f339ab06b3ff8d5f37481994383c79046e7",
+    "compressed_sha256": "b4639d02f462876d75e3e621f4a5e0d76cb0e461a0b01893e405d57f5b213c51"
+  },
+  {
+    "log": "catalog-green.log.gz",
+    "source": "9d0b3357aa336c7d2664727b7ad4e41ce544d816",
+    "exit_code": 0,
+    "uncompressed_sha256": "15dd5965732f5ad594f4829fbaeece6d3b697d74a4ae5c451c0b3e7d2dcd0de0",
+    "compressed_sha256": "1c138c417b5439efb2e1df44ef47598c7427b5317f3c792a9cceafb2b166bb7e"
+  },
+  {
+    "log": "pay-all.log.gz",
+    "source": "999d5abd79490b49d457c24f6d15e41fe0c73d22",
+    "exit_code": 1,
+    "uncompressed_sha256": "5ee60247e68dfb577dab325a21bc78d18d89b1d7e6664e0ebb474498990fa36c",
+    "compressed_sha256": "31281d6281a3a6ff3374b467c08c4723de70df7da1d77a5eb8aa0f2e1435d124"
+  },
+  {
+    "log": "callers-initial.log.gz",
+    "source": "b4b77615a70661308ddc079713017126fc71b30a",
+    "exit_code": 1,
+    "uncompressed_sha256": "b18d1e123e81e70308db047c33442de5ac1f6dede83fa69e6cc20b85d86de975",
+    "compressed_sha256": "32547c9c6a250cad80b5122d810e1f6f3add3ea43f4ce467963dde93a46b8ed1"
+  },
+  {
+    "log": "revocation.log.gz",
+    "source": "ced33b84606157d02f2a03ebcf9b0c50b5c62f68",
+    "exit_code": 0,
+    "uncompressed_sha256": "3a1ce0380ab05a3c31afb5e2e27726f4640f4f1b121e7285de4eb3b64215d5f5",
+    "compressed_sha256": "c77a7ba712d0323228c39e8b032556fbe6415cfb945ffb3ae602b9e1b32e07dd"
+  },
+  {
+    "log": "domain-red.log.gz",
+    "source": "bd1c0cbc16ff6096449ab938ee9355035c702a36",
+    "exit_code": 1,
+    "uncompressed_sha256": "125e4f34a6e5fadb3cdd479f3c81ea6095316cb8f7ad6823ab4264c6abadbee3",
+    "compressed_sha256": "94c8ace8f63f08263f586ca63ed9f593126c8e41ab0ad8809d31e49c0c1eae33"
+  },
+  {
+    "log": "domain-green.log.gz",
+    "source": "10f0a743e70f245b83f4a2f917efa914fc0eae1b",
+    "exit_code": 0,
+    "uncompressed_sha256": "beddc79923b70a37a20f30c62b0279ff847d46bac9e6e74673d16f25637d7a36",
+    "compressed_sha256": "2c7709eda1c46de8f16545378e8aec961f3797464ce1f877440e3dc7bd7d56f6"
+  },
+  {
+    "log": "privacy-red.log.gz",
+    "source": "47b2a44b960bc197936a5fa83fa373123a78f4b3",
+    "exit_code": 1,
+    "uncompressed_sha256": "c7585113b97f470b0b89cca84787e076982bf1dec9daca2224fcdb31115c6c0b",
+    "compressed_sha256": "ff25ad223f57331450dffd88f486b577dce2bb71199bcd0183f3c5b563c0fbe6"
+  },
+  {
+    "log": "privacy-green.log.gz",
+    "source": "4b5f5291fcb61928c03f338ec4e9b135b8f63516",
+    "exit_code": 1,
+    "uncompressed_sha256": "aca7574e4d830f4c73ff4cbdea7295e25bf5307a950c743c9716625908e2478e",
+    "compressed_sha256": "8759a4c7e8d6c029b869fbe95d17d86575f96f586b518f9c0bcd7006bd8dbd71"
+  },
+  {
+    "log": "scope-red.log.gz",
+    "source": "76f051644bc9e3b0ab3f7083f9c04566413cf676",
+    "exit_code": 1,
+    "uncompressed_sha256": "92705b836cddc1fe9596343a5e6d58052365be0ba381305a5d065acbf82f87d4",
+    "compressed_sha256": "63fbeb77234becded435a2554137cb09dedacc793e7f53ae21521229e04f6c1b"
+  },
+  {
+    "log": "connected-scope-red.log.gz",
+    "source": "ac8e167dd0bd2d92a27cb4281fb87d8e6edb1380",
+    "exit_code": 1,
+    "uncompressed_sha256": "bd9601f23914bd28534df432b23c44a7606d94560e1831f48224adc7129b65aa",
+    "compressed_sha256": "a77a01eef56f8c05b52de85460e140c01bfa8c0e73e86149b1c8f5d2b71d240d"
+  },
+  {
+    "log": "connected-scope-green.log.gz",
+    "source": "09700a7bbbc619f74219b18cbc1f72c080e1cc9e",
+    "exit_code": 0,
+    "uncompressed_sha256": "e9a06312f86ddbe47e507930f2faa482047ead3daabc6e385577caf269d9246a",
+    "compressed_sha256": "4011234cfdc02ed9db65b5130e88f7ca652e28f9417373026c260535169aa914"
+  },
+  {
+    "log": "final-focused.log.gz",
+    "source": "a3099a0bd26a2da055932f604f06c5bb2671542b",
+    "tree": "46a7bef86d000da69a8a0ff3a8c644b086c64958",
+    "exit_code": 0,
+    "files_passed": 18,
+    "tests_passed": 249,
+    "tests_skipped": 0,
+    "duration_seconds": 81.57,
+    "working_directory": "/workspace/scratch/dc1ef37f4621/privacy-disclosure/apps/web",
+    "command": "NODE_OPTIONS=--max-old-space-size=1024 ../../node_modules/.bin/vitest run src/lib/walletDisclosure.test.ts src/lib/wallet.disclosure.test.ts src/lib/wallet.test.ts src/lib/walletJournal.test.ts src/components/WalletDisclosure.test.tsx src/i18n/securityKeys.test.ts src/views/Pay.test.tsx src/views/Pay.i18n.test.tsx src/views/Pay.signer.test.tsx src/AppShell.privacy.test.tsx src/features/registry/RegistryView.test.tsx src/features/registry/RegistryView.i18n.test.tsx src/features/policy/PolicyView.test.tsx src/features/policy/PolicyView.more.test.tsx src/features/policy/PolicyView.scope.test.tsx src/features/policy/PolicyView.network.test.tsx src/features/policy/PolicyView.guard.test.tsx src/features/policy/PolicyReceive.regression.test.tsx --coverage=false --maxWorkers=1",
+    "uncompressed_sha256": "c4fc8cff13093b9eeaaa4ef3a460db4903be9e71a58715ea2b3e6b4f2f814ed6",
+    "compressed_sha256": "bc0e3cf3712463eb289c614574b556646b9ad861db6ad2184296b0c76cf2bc52"
+  }
+]

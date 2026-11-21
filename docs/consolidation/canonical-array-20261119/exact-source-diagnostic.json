@@ -1,0 +1,134 @@
+{
+  "node": "v22.23.4",
+  "typescript": "5.9.3",
+  "baselineRef": "e74ddd26b75912d770e05d51f0b9229756adc649",
+  "baselineBlob": "b7a34bb5176ec72daf0026a59991863421bdb341",
+  "candidateRef": "c591b54078febcf24cba01b29bc173b2fac1f9cb",
+  "candidateBlob": "8b2481cb117334b779ec6c77a0a8dac22bce27dc",
+  "method": "Exact TS source plus frozen errors.ts transpiled in memory; isolated same-realm VM module and inputs; only known errors import allowed; no source/dist writes, no repository Vitest/build/typecheck run.",
+  "baseline": {
+    "diagnostics": [],
+    "results": [
+      {
+        "name": "sparse_single",
+        "shouldReject": true,
+        "threw": false,
+        "output": "[]",
+        "validJson": true
+      },
+      {
+        "name": "sparse_middle",
+        "shouldReject": true,
+        "threw": false,
+        "output": "[1,,3]",
+        "validJson": false
+      },
+      {
+        "name": "extra_enumerable",
+        "shouldReject": true,
+        "threw": false,
+        "output": "[1]",
+        "validJson": true
+      },
+      {
+        "name": "extra_nonenumerable",
+        "shouldReject": true,
+        "threw": false,
+        "output": "[1]",
+        "validJson": true
+      },
+      {
+        "name": "extra_symbol",
+        "shouldReject": true,
+        "threw": false,
+        "output": "[1]",
+        "validJson": true
+      },
+      {
+        "name": "dense_nested",
+        "shouldReject": false,
+        "threw": false,
+        "output": "[1,2,{\"value\":3}]",
+        "validJson": true
+      },
+      {
+        "name": "dense_empty",
+        "shouldReject": false,
+        "threw": false,
+        "output": "[]",
+        "validJson": true
+      },
+      {
+        "name": "dense_indices_inserted_reverse",
+        "shouldReject": false,
+        "threw": false,
+        "output": "[1,2,3]",
+        "validJson": true
+      }
+    ]
+  },
+  "proposed": {
+    "diagnostics": [],
+    "results": [
+      {
+        "name": "sparse_single",
+        "shouldReject": true,
+        "threw": true,
+        "errorName": "JsonParseError",
+        "errorCode": "JSON"
+      },
+      {
+        "name": "sparse_middle",
+        "shouldReject": true,
+        "threw": true,
+        "errorName": "JsonParseError",
+        "errorCode": "JSON"
+      },
+      {
+        "name": "extra_enumerable",
+        "shouldReject": true,
+        "threw": true,
+        "errorName": "JsonParseError",
+        "errorCode": "JSON"
+      },
+      {
+        "name": "extra_nonenumerable",
+        "shouldReject": true,
+        "threw": true,
+        "errorName": "JsonParseError",
+        "errorCode": "JSON"
+      },
+      {
+        "name": "extra_symbol",
+        "shouldReject": true,
+        "threw": true,
+        "errorName": "JsonParseError",
+        "errorCode": "JSON"
+      },
+      {
+        "name": "dense_nested",
+        "shouldReject": false,
+        "threw": false,
+        "output": "[1,2,{\"value\":3}]",
+        "validJson": true
+      },
+      {
+        "name": "dense_empty",
+        "shouldReject": false,
+        "threw": false,
+        "output": "[]",
+        "validJson": true
+      },
+      {
+        "name": "dense_indices_inserted_reverse",
+        "shouldReject": false,
+        "threw": false,
+        "output": "[1,2,3]",
+        "validJson": true
+      }
+    ]
+  },
+  "confirmedUnsupportedShapeDifferences": 5,
+  "denseControlsUnchanged": 3,
+  "allDiagnosticExpectationsMet": true
+}

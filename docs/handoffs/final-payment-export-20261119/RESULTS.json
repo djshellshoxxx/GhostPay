@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "environment": {
+    "node": "24.22.3",
+    "vitest": "5.1.0",
+    "dependencies": "Exact-lock cached installation; current-source workspace outputs; no clean-install pass claimed."
+  },
+  "runs": [
+    {
+      "id": "clock-red",
+      "source": "0e19e230767aa52c8b4c837b49daf54e4d0dcfe7",
+      "command": "NODE_OPTIONS='--max-old-space-size=768' node_modules/.bin/vitest run --root apps/web apps/web/src/lib/networkAuthorization.test.ts -t 'network authorization clock validity' --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "exit_code": 1,
+      "passed": 4,
+      "failed": 9,
+      "deselected": 93,
+      "log": "evidence/clock-red-ready.log.gz",
+      "uncompressed_sha256": "b2d2002b2353b6836655e80738cbbbde4a934a2c234b4d350f042687107f300e",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "clock-green",
+      "source": "676093a3e802032ca5508693fd60ef08a3acc6a9",
+      "command": "NODE_OPTIONS='--max-old-space-size=768' node_modules/.bin/vitest run --root apps/web apps/web/src/lib/networkAuthorization.test.ts --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "exit_code": 0,
+      "passed": 106,
+      "failed": 0,
+      "skipped": 0,
+      "log": "evidence/clock-green.log.gz",
+      "uncompressed_sha256": "2e85a2ca0d3471e5f93f54d4b04d25a7baad3d515e698f15f726768b84444cb5",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "export-red",
+      "source": "676093a3e802032ca5508693fd60ef08a3acc6a9",
+      "overlay": {
+        "path": "apps/web/src/views/Scan.tsx",
+        "from": "7f44cf742f25df25105a5a21d223b6d0d1efb62d"
+      },
+      "command": "NODE_OPTIONS='--max-old-space-size=768' node_modules/.bin/vitest run --root apps/web apps/web/src/views/Scan.stealthExport.authorization.test.tsx -t 'exports a discovered payment after its scan grant' --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 3,
+      "deselected": 3,
+      "log": "evidence/export-red.log.gz",
+      "uncompressed_sha256": "7c55c98169c64aa82c068527ff4bb7b6dae276c2de69a106153d17d0c5341ecc",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "export-scan-green",
+      "source": "676093a3e802032ca5508693fd60ef08a3acc6a9",
+      "command": "NODE_OPTIONS='--max-old-space-size=1024' node_modules/.bin/vitest run --root apps/web apps/web/src/lib/paymentExportRpc.test.ts apps/web/src/lib/networkAuthorization.test.ts apps/web/src/lib/paymentKeyExport.test.ts apps/web/src/lib/scanClient.test.ts apps/web/src/lib/privateScanLifecycle.test.ts apps/web/src/views/Scan.privateCheckpoint.test.tsx apps/web/src/views/Scan.stealthExport.authorization.test.tsx apps/web/src/views/Scan.stealthExport.test.tsx --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "exit_code": 0,
+      "passed": 300,
+      "failed": 0,
+      "skipped": 0,
+      "log": "evidence/export-scan-green.log.gz",
+      "uncompressed_sha256": "005745fd7767be8cfaa53bfc84371083c8087ee9ef23a41ead7b6def4d2876ff",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "typed-lint-red",
+      "source": "676093a3e802032ca5508693fd60ef08a3acc6a9",
+      "command": "NODE_OPTIONS='--max-old-space-size=1536' node_modules/.bin/eslint --config eslint.config.js apps/web/src/lib/networkAuthorization.ts apps/web/src/lib/networkAuthorization.test.ts apps/web/src/lib/paymentExportRpc.ts apps/web/src/lib/paymentExportRpc.test.ts apps/web/src/lib/paymentKeyExport.ts apps/web/src/lib/scanClient.ts apps/web/src/lib/scanClient.test.ts apps/web/src/lib/privateScanLifecycle.test.ts apps/web/src/views/Scan.tsx apps/web/src/views/Scan.privateCheckpoint.test.tsx apps/web/src/views/Scan.stealthExport.authorization.test.tsx apps/web/e2e/private-scan-checkpoints.spec.ts",
+      "exit_code": 1,
+      "errors": 1,
+      "log": "evidence/typed-lint.log.gz",
+      "uncompressed_sha256": "efa7a8a98bd35533f1ef584d89cf816c5127acff9c8b7d06ffa47a94bc08c9f7",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "typed-lint-green",
+      "source": "ecc3013228d5d380ca61c5bd58218d5128f7f9f9",
+      "command": "NODE_OPTIONS='--max-old-space-size=1536' node_modules/.bin/eslint --config eslint.config.js apps/web/src/lib/networkAuthorization.ts apps/web/src/lib/networkAuthorization.test.ts apps/web/src/lib/paymentExportRpc.ts apps/web/src/lib/paymentExportRpc.test.ts apps/web/src/lib/paymentKeyExport.ts apps/web/src/lib/scanClient.ts apps/web/src/lib/scanClient.test.ts apps/web/src/lib/privateScanLifecycle.test.ts apps/web/src/views/Scan.tsx apps/web/src/views/Scan.privateCheckpoint.test.tsx apps/web/src/views/Scan.stealthExport.authorization.test.tsx apps/web/e2e/private-scan-checkpoints.spec.ts",
+      "exit_code": 0,
+      "errors": 0,
+      "log": "evidence/typed-lint-green.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "checkpoint-final",
+      "source": "ecc3013228d5d380ca61c5bd58218d5128f7f9f9",
+      "command": "NODE_OPTIONS='--max-old-space-size=768' node_modules/.bin/vitest run --root apps/web apps/web/src/views/Scan.privateCheckpoint.test.tsx --maxWorkers=1 --no-file-parallelism --coverage.enabled=false",
+      "exit_code": 0,
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "log": "evidence/checkpoint-final.log.gz",
+      "uncompressed_sha256": "073a2946903e3577c943c22e9b390dfaaf8d104e01570ed553631e24e8a0b3a0",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    },
+    {
+      "id": "egress-final",
+      "source": "ecc3013228d5d380ca61c5bd58218d5128f7f9f9",
+      "command": "node --test scripts/tests/network-egress-inventory.test.mjs",
+      "exit_code": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "log": "evidence/egress-final.log.gz",
+      "uncompressed_sha256": "c6062e5bb674382a4d0a4c0b5cd3acaf87e05a6734787f1f71a97670055f6028",
+      "log_encoding": "gzip; decompression reproduces the exact command output"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "base": "1e3c3466fe168d02194f31b754a85377929136eb",
+  "source_files": [
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.ts",
+      "sha256": "d0bad95bd056f18c0fc91e26558505fd116754e75d0ac1bb17fb41606622403f"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.test.ts",
+      "sha256": "f307a67f7c915f28730cc7da1769fff91c9f93eeb52740c407c8c87236f4d2cb"
+    },
+    {
+      "path": "packages/ux-vault/src/stealth-export-portable.property.test.ts",
+      "sha256": "d9b8112a2998b7fb20020ff3e912910e0b4cd96547d5f583392e9976fb165f3d"
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.mjs",
+      "sha256": "889c3b2cfb25b997d5304bbf4349a5b8d7444467a6ff12e4db4c872673d8c888"
+    },
+    {
+      "path": "scripts/recovery/stealth-export-recover.test.mjs",
+      "sha256": "5fbd853079e67b63f5f48eb19d5a9e434c0243b8221555ef333307de9a999214"
+    },
+    {
+      "path": "scripts/recovery/raw-key-anvil.test.mjs",
+      "sha256": "79eb07ef94c7fbf657d5c68913fa09165d8dd68bf2b0963740384e2de35bdbe2"
+    },
+    {
+      "path": "docs/specs/18-stealth-keypair-export-formats.md",
+      "sha256": "be9338465ce41daf9c9308b79c95506f1718da508f5c401416bbffaff99f8957"
+    },
+    {
+      "path": "docs/user/recover-stealth-payment-keys.md",
+      "sha256": "06c96e70a335ec9da283cf470450dacafc43200b1925ac4821e32a4db822cd3b"
+    },
+    {
+      "path": "test-vectors/stealth-export.json",
+      "sha256": "a8f19ff0ce7ea723447aa4f203f6f6b8dd02d2c3de814be194684632bceba2a6"
+    }
+  ],
+  "tools": {
+    "node": "22.23.5",
+    "foundry": "1.8.5",
+    "foundry_commit": "51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f"
+  },
+  "note": "Final source hashes at ending_source; all reviewed owned paths are clean at this commit. Evidence is scoped, not full-release qualification.",
+  "ending_source": "7c1e710a0a4bd38928b3b74814ba4b0ec4865305"
+}

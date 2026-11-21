@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "attempt": "full-original-1",
+  "candidate": "c5a2b09ea5dd7ee19400f29cbaddbe5cd93acc0a",
+  "observed_at": "2026-11-19T13:59:24.887814+00:00",
+  "started_at": "2026-11-19T13:34:28.041997+00:00",
+  "finished_at": "2026-11-19T13:51:35.013680+00:00",
+  "runner_exit_code": 1,
+  "verdict": "FAILED_INCOMPLETE_CAMPAIGN",
+  "source_manifest": "echidna-source.json",
+  "recovered_source_proof": "echidna-recovered-source-proof.json",
+  "configuration_unchanged": true,
+  "required_calls_per_harness": 300000,
+  "workers": 4,
+  "results": [
+    {
+      "harness": "EchidnaRouter",
+      "status": "INCOMPLETE_REJECTED_BY_UNCHANGED_RUNNER",
+      "completed_calls": null,
+      "last_observed_progress_calls": 133127,
+      "reported_unexpected_exit": 137,
+      "final_safety_results": [],
+      "final_canary_results": [],
+      "progress_canaries_falsified": [
+        "echidna_canary_buffer_success",
+        "echidna_canary_erc20_success",
+        "echidna_canary_native_success",
+        "echidna_canary_nonzero_fee"
+      ],
+      "ordinary_safety_counterexamples_in_retained_output": [],
+      "runner_errors": [
+        "::error::EchidnaRouter: unexpected echidna exit 137; expected 1 for falsified canaries",
+        "::error::EchidnaRouter: missing, duplicate, malformed or incomplete call total; need at least 300000",
+        "::error::EchidnaRouter: missing property result: echidna_canary_buffer_success",
+        "::error::EchidnaRouter: missing property result: echidna_canary_erc20_success",
+        "::error::EchidnaRouter: missing property result: echidna_canary_native_success",
+        "::error::EchidnaRouter: missing property result: echidna_canary_nonzero_fee",
+        "::error::EchidnaRouter: missing property result: echidna_fee_plus_net_eq_gross",
+        "::error::EchidnaRouter: missing property result: echidna_fee_recipient_only_gets_bps",
+        "::error::EchidnaRouter: missing property result: echidna_native_fee_plus_net_eq_gross",
+        "::error::EchidnaRouter: missing property result: echidna_router_never_holds_tokens"
+      ],
+      "auxiliary_slither_completed": true,
+      "auxiliary_slither_failure": false,
+      "offline_diagnostics": [
+        "[2026-11-19 05:34:31.98] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0003EmptyBase>",
+        "[2026-11-19 05:34:31.98] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000A0002EmptyBase>",
+        "[2026-11-19 05:34:31.98] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0001EmptyBase>",
+        "[2026-11-19 05:34:31.98] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000a0000EmptyBase>",
+        "[2026-11-19 05:34:31.98] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x000000000000000000000000000000000FEe0000EmptyBase>"
+      ]
+    },
+    {
+      "harness": "EchidnaSweep",
+      "status": "COMPLETED_ACCEPTED_BY_UNCHANGED_RUNNER",
+      "completed_calls": 300048,
+      "last_observed_progress_calls": 300048,
+      "reported_unexpected_exit": null,
+      "final_safety_results": [
+        {
+          "name": "echidna_used_nonces_marked",
+          "result": "passing"
+        },
+        {
+          "name": "echidna_sweep_nonce_single_use",
+          "result": "passing"
+        },
+        {
+          "name": "echidna_token_conservation",
+          "result": "passing"
+        },
+        {
+          "name": "echidna_relayer_never_holds_tokens",
+          "result": "passing"
+        }
+      ],
+      "final_canary_results": [
+        {
+          "name": "echidna_canary_sweep_success",
+          "result": "failed!\ud83d\udca5"
+        },
+        {
+          "name": "echidna_canary_replay_blocked",
+          "result": "failed!\ud83d\udca5"
+        }
+      ],
+      "progress_canaries_falsified": [
+        "echidna_canary_replay_blocked",
+        "echidna_canary_sweep_success"
+      ],
+      "ordinary_safety_counterexamples_in_retained_output": [],
+      "runner_errors": [],
+      "auxiliary_slither_completed": true,
+      "auxiliary_slither_failure": false,
+      "offline_diagnostics": [
+        "[2026-11-19 05:37:42.08] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>"
+      ]
+    },
+    {
+      "harness": "EchidnaPolicy",
+      "status": "INCOMPLETE_REJECTED_BY_UNCHANGED_RUNNER",
+      "completed_calls": null,
+      "last_observed_progress_calls": 245970,
+      "reported_unexpected_exit": 137,
+      "final_safety_results": [],
+      "final_canary_results": [],
+      "progress_canaries_falsified": [
+        "echidna_canary_cancel",
+        "echidna_canary_dest_change",
+        "echidna_canary_exec_native",
+        "echidna_canary_exec_token",
+        "echidna_canary_request_ok"
+      ],
+      "ordinary_safety_counterexamples_in_retained_output": [],
+      "runner_errors": [
+        "::error::EchidnaPolicy: unexpected echidna exit 137; expected 1 for falsified canaries",
+        "::error::EchidnaPolicy: missing, duplicate, malformed or incomplete call total; need at least 300000",
+        "::error::EchidnaPolicy: missing property result: echidna_canary_cancel",
+        "::error::EchidnaPolicy: missing property result: echidna_canary_dest_change",
+        "::error::EchidnaPolicy: missing property result: echidna_canary_exec_native",
+        "::error::EchidnaPolicy: missing property result: echidna_canary_exec_token",
+        "::error::EchidnaPolicy: missing property result: echidna_canary_request_ok",
+        "::error::EchidnaPolicy: missing property result: echidna_destination_only_changes_via_timelock",
+        "::error::EchidnaPolicy: missing property result: echidna_funds_only_to_destination",
+        "::error::EchidnaPolicy: missing property result: echidna_policy_immutable",
+        "::error::EchidnaPolicy: missing property result: echidna_rolling_window_cap",
+        "::error::EchidnaPolicy: missing property result: echidna_timelocks_never_shortened"
+      ],
+      "auxiliary_slither_completed": true,
+      "auxiliary_slither_failure": false,
+      "offline_diagnostics": [
+        "[2026-11-19 05:44:56.63] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0003EmptyBase>",
+        "[2026-11-19 05:44:56.63] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0002EmptyBase>",
+        "[2026-11-19 05:44:56.63] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x00000000000000000000000000000000000d0001EmptyBase>",
+        "[2026-11-19 05:44:56.63] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001EmptyBase>"
+      ]
+    }
+  ],
+  "log": {
+    "path": "echidna-attempt-1.log.gz",
+    "raw_bytes": 83513,
+    "raw_sha256": "d67ad1f8e8db9397fe5fe3af6342398460ed6952eef2683bda42954a931989b6",
+    "gzip_bytes": 12830,
+    "gzip_sha256": "0610aa26c0d7689720ade4d4fe170ad8ec88b67a9f5ded71fe961e8e2257928b"
+  },
+  "corpus": {
+    "status": "UNAVAILABLE_AFTER_EXECUTOR_RESET",
+    "observed_files_before_reset": 55,
+    "observed_bytes_before_reset": 1314421,
+    "archive_created": false,
+    "limit": "Corpus files were observed only in transient /dev/shm. The final archive command failed to start, so no corpus hash or replay artifact is claimed."
+  },
+  "resource_disposition": {
+    "observed": "Router and Policy processes terminated with SIGKILL / 137 before complete output.",
+    "cause": "UNDETERMINED",
+    "memory_pressure": "Possible inference only; cgroup OOM counters are unavailable in this executor.",
+    "heap_cap_probe": "Official pinned binary rejects GHCRTS=-N4 -M1536m before --version; no capped campaign was started.",
+    "next_requirement": "Supported dedicated resources and coordinator scheduling for a fresh full unchanged campaign; no same-configuration retry, patch or reduced budget was attempted."
+  },
+  "limits": [
+    "Only Sweep completed the required budget and complete inventory; Router/Policy cannot be counted as passed.",
+    "No ordinary safety-property counterexample appears in the retained incomplete output; this is not proof of safety.",
+    "Auxiliary Slither enrichment completed for all three harnesses, separate from the standalone Slither gate.",
+    "Offline missing-account diagnostics remain part of the unchanged harness model; no real deployed-state or testnet acceptance is established.",
+    "The completed raw log, exit receipt, source manifest and compiler build-info survived in the workspace and are included. The temporary environment and corpus did not."
+  ]
+}

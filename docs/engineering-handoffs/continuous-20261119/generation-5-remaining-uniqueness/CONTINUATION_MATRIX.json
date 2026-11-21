@@ -1,0 +1,1545 @@
+{
+  "schema": "ghostpay-gen5-bounded-remainder/1",
+  "same_generation_continuation": true,
+  "initial_matrix_commit": "b4d4c1bb25a4ce0a2f99d5262a302244590b8f88",
+  "captured_at_utc": "2026-11-20T00:35:37.515330+00:00",
+  "candidate": "3dc86fbc49e919e664230b63dae372ff79430fc5",
+  "main": "c977b5d6723f6822c3b5d86cd6b231712c53c395",
+  "rows": [
+    {
+      "branch": "automation/ghostpay-parallel-four-agents-20261103",
+      "head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "prior_head": "68dc5b502f25ed192f3ca82ee4fece8ee91d3bce",
+      "live_unchanged": true,
+      "prior_disposition": "deferred",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        52
+      ],
+      "merge_bases_candidate": [
+        "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+      ],
+      "merge_bases_main": [
+        "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+      ],
+      "candidate_touched_paths": 3,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "optional automation",
+      "evidence": "Standalone/recurrent agent workflow definitions and optional test/prompt deltas preserved. No scheduling, paid-agent activation or workflow compatibility review performed; whole automation semantics remain unqualified.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "automation/ghostpay-recurrent-backlog-20261103",
+      "head": "5835736c12968231ac7b3152e394077bee453622",
+      "prior_head": "5835736c12968231ac7b3152e394077bee453622",
+      "live_unchanged": true,
+      "prior_disposition": "deferred",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        51
+      ],
+      "merge_bases_candidate": [
+        "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+      ],
+      "merge_bases_main": [
+        "ecbd085cff78d492a3ffff95c465d61b70ec84bf"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "optional automation",
+      "evidence": "Standalone/recurrent agent workflow definitions and optional test/prompt deltas preserved. No scheduling, paid-agent activation or workflow compatibility review performed; whole automation semantics remain unqualified.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/btc-spent-private-scan-20261118",
+      "head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "prior_head": "981cc2f4395d2d76c499a5cd46387daaaa3a6b1f",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        244
+      ],
+      "merge_bases_candidate": [
+        "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "merge_bases_main": [
+        "58d89b39b27a66454ebf392bcd35d5c68b57b2f8"
+      ],
+      "candidate_touched_paths": 93,
+      "equal_path_count": 30,
+      "non_documentation_path_count": 57,
+      "equal_non_documentation_path_count": 22,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "optional BTC",
+      "evidence": "Distinct Bitcoin spentness/worker/verification surfaces remain outside static EVM beta; shared scan/invoice/session differences are preserved. No complete BTC or whole-branch semantic equivalence claimed.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/btc-spent-qualification-20261119",
+      "head": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "prior_head": "7954f1e5a29988fb9239225d1f829c6c3dc71e08",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "58d89b39b27a66454ebf392bcd35d5c68b57b2f8",
+        "9617e8572f9bc414410bd937b0e7718d0c5bd55c"
+      ],
+      "merge_bases_main": [
+        "58d89b39b27a66454ebf392bcd35d5c68b57b2f8"
+      ],
+      "candidate_touched_paths": 94,
+      "equal_path_count": 30,
+      "non_documentation_path_count": 57,
+      "equal_non_documentation_path_count": 22,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "optional BTC",
+      "evidence": "Distinct Bitcoin spentness/worker/verification surfaces remain outside static EVM beta; shared scan/invoice/session differences are preserved. No complete BTC or whole-branch semantic equivalence claimed.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/btc-spentness-private-scan-20261118",
+      "head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "prior_head": "2b4b1e912350cb18c630a68b5c1990426e29dbc0",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        254
+      ],
+      "merge_bases_candidate": [
+        "a36f48da526b818a5940a7a0ed2ae7303ef17056",
+        "8c1d87a2587281c32a5f1326a4f36cfada4384bc"
+      ],
+      "merge_bases_main": [
+        "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      ],
+      "candidate_touched_paths": 80,
+      "equal_path_count": 39,
+      "non_documentation_path_count": 49,
+      "equal_non_documentation_path_count": 25,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "optional BTC",
+      "evidence": "Distinct Bitcoin spentness/worker/verification surfaces remain outside static EVM beta; shared scan/invoice/session differences are preserved. No complete BTC or whole-branch semantic equivalence claimed.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-beta-consolidation-20261118",
+      "head": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "prior_head": "df5e4f6990bd32bd38f01d40141044d4c0e37071",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        232
+      ],
+      "merge_bases_candidate": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "merge_bases_main": [
+        "dfc75ef2087fa6463ae59e0818abec01796c578d"
+      ],
+      "candidate_touched_paths": 37,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-historical-consolidation-20261115",
+      "head": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "prior_head": "7dc7eccc34af289050aa1606784a88dfe8a5633a",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "merge_bases_main": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "candidate_touched_paths": 7,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 7,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-private-scan-completion-20261119",
+      "head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "prior_head": "18b367457103fb1731a5b4ef5c51faa37a010e47",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        248
+      ],
+      "merge_bases_candidate": [
+        "e454de6abfefda70d82784fafc1d8949b277c334",
+        "139c5cb8e086ec4b13d08e10409dfb0765b53bcf"
+      ],
+      "merge_bases_main": [
+        "e454de6abfefda70d82784fafc1d8949b277c334"
+      ],
+      "candidate_touched_paths": 87,
+      "equal_path_count": 40,
+      "non_documentation_path_count": 30,
+      "equal_non_documentation_path_count": 6,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "private scan source",
+      "evidence": "Inspected scanClient retains replay/checkpoint logic and adds bulk evidence plus abort normalization. Current Services/defaultServices impose action-scoped network authorization; keyVault adds credential/suspension guards; Scan checks selected scope after asynchronous work. Historical browser/test/locale receipts remain source-pinned, not newly certified.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-remaining-work-20261119",
+      "head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "prior_head": "509a800439f2feb6173b20d2543746c3d74e9a42",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        246
+      ],
+      "merge_bases_candidate": [
+        "14ded337a10c140d7a9f9a9238ec038587d925bb",
+        "198aa5baff22272453733a0f3dcfcac0e0994eec"
+      ],
+      "merge_bases_main": [
+        "14ded337a10c140d7a9f9a9238ec038587d925bb"
+      ],
+      "candidate_touched_paths": 1220,
+      "equal_path_count": 481,
+      "non_documentation_path_count": 416,
+      "equal_non_documentation_path_count": 239,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-20261114",
+      "head": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "prior_head": "dfed84c18b5f02c568c87f14a4fa4cec20fea80b",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "merge_bases_main": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "scan/transport",
+      "evidence": "Current scanSpam retains off-filter token/block rejection and additionally uses the available 30-day span for partial counts. Shared older relayer client is superseded by bounded cancellable/padded requests and fixed public error classes. Exact final pairs retain tests and source identities.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-rpc-filter-guard-beta-20261114",
+      "head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "prior_head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        161
+      ],
+      "merge_bases_candidate": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "merge_bases_main": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "candidate_touched_paths": 5,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 4,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "scan/transport",
+      "evidence": "Current scanSpam retains off-filter token/block rejection and additionally uses the available 30-day span for partial counts. Shared older relayer client is superseded by bounded cancellable/padded requests and fixed public error classes. Exact final pairs retain tests and source identities.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-six-fixes-combined-20261112",
+      "head": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "prior_head": "36dfa8d26d4e7a9ccb7a9a8e1e562877741212ef",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+      ],
+      "merge_bases_main": [
+        "ca358acfa8f48d4deff9b770214bcba797b6b1f0"
+      ],
+      "candidate_touched_paths": 6,
+      "equal_path_count": 4,
+      "non_documentation_path_count": 6,
+      "equal_non_documentation_path_count": 4,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "argument parsing",
+      "evidence": "Current args parser retains value/terminator handling and adds position-aware global switches. Other original source entries are exact; merchant CSV test drift does not establish missing runtime behavior. Historical suites not rerun.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/ghostpay-viem-alignment-20261118",
+      "head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "prior_head": "defdaa308a2d05ab407af7e42f8dc457cf52d103",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        236
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 71,
+      "equal_path_count": 65,
+      "non_documentation_path_count": 69,
+      "equal_non_documentation_path_count": 65,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "PARSED_DEPENDENCY_EQUIVALENCE",
+      "category": "dependency alignment",
+      "evidence": "All 752 node_modules lock records (684 external packages and 68 workspace links) compare exactly, including metadata; Viem 2.57.19 is already shared. Residual manifest changes are current beta version, CSP/deployment scripts and hygiene/metadata workspace dependencies. Preserve current graph; no install/hosted validation claimed.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/pages-browser-fixes-combined-20261114",
+      "head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "prior_head": "73923350fcda62f00be0f2b83ad346f416a24bb6",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        161
+      ],
+      "merge_bases_candidate": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "merge_bases_main": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "candidate_touched_paths": 5,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 4,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "scan/transport",
+      "evidence": "Current scanSpam retains off-filter token/block rejection and additionally uses the available 30-day span for partial counts. Shared older relayer client is superseded by bounded cancellable/padded requests and fixed public error classes. Exact final pairs retain tests and source identities.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/pages-release-gate-audit-20261114",
+      "head": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "prior_head": "2221a6117cdcf397527d96c2b20862d05a6b26da",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        160
+      ],
+      "merge_bases_candidate": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "merge_bases_main": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/audit-pages-release-20261112",
+      "head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "prior_head": "364b01f847391cd02b3aecb74e18ddd047096c97",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        139
+      ],
+      "merge_bases_candidate": [
+        "e802d5c1ff131762477b485af3046446e8576be5"
+      ],
+      "merge_bases_main": [
+        "e802d5c1ff131762477b485af3046446e8576be5"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/cli-sentinel-value-20261111",
+      "head": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "prior_head": "a6e74591e134b31de3e0efc84448eb97cdc3b012",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        125
+      ],
+      "merge_bases_candidate": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "merge_bases_main": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "argument parsing",
+      "evidence": "Current args parser retains value/terminator handling and adds position-aware global switches. Other original source entries are exact; merchant CSV test drift does not establish missing runtime behavior. Historical suites not rerun.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-pages-scope-20261112",
+      "head": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "prior_head": "c5efadab9d9af6a0053f489ebe6c0c06e760d025",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        140
+      ],
+      "merge_bases_candidate": [
+        "17158f4c62f8f968853c3ffdd0cb3572455038f5"
+      ],
+      "merge_bases_main": [
+        "17158f4c62f8f968853c3ffdd0cb3572455038f5"
+      ],
+      "candidate_touched_paths": 8,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/docs-postmerge-wiki-20261118",
+      "head": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "prior_head": "362dfa999a96dc615a1d146b4f37f8325268a595",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        215
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 6,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/merchant-schedule-horizon-20261111",
+      "head": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "prior_head": "7cdc6b32ecafd73636136c852542fddd42213848",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        123
+      ],
+      "merge_bases_candidate": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "merge_bases_main": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "EXACT_TOUCHED_SOURCE",
+      "category": "exact source",
+      "evidence": "Every non-documentation-category final entry is identical. Any different documentation remains preserved; no historical CI or complete runtime requalification is inferred.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/onion-canonical-host-20261111",
+      "head": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "prior_head": "72dde82d9d898f5ed0c3c2b6901870c557a5012a",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        122
+      ],
+      "merge_bases_candidate": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "merge_bases_main": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 2,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "EXACT_TOUCHED_SOURCE",
+      "category": "exact source",
+      "evidence": "Every non-documentation-category final entry is identical. Any different documentation remains preserved; no historical CI or complete runtime requalification is inferred.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-negative-fiat-regression-20261114",
+      "head": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "prior_head": "9bdc9cbade90995e3207b72535a7818f909c2684",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        154
+      ],
+      "merge_bases_candidate": [
+        "b1150eb8280ac5259fad620f0b762e83c19cf71d"
+      ],
+      "merge_bases_main": [
+        "b1150eb8280ac5259fad620f0b762e83c19cf71d"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "EXACT_TOUCHED_SOURCE",
+      "category": "exact source",
+      "evidence": "Every non-documentation-category final entry is identical. Any different documentation remains preserved; no historical CI or complete runtime requalification is inferred.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-ci-handoff-20261114",
+      "head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "prior_head": "83fe9b022d2b5a4068137fd7987467f1803803dc",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        153
+      ],
+      "merge_bases_candidate": [
+        "85f525165d6c94c3c6b908930df712e9e7ac66f7"
+      ],
+      "merge_bases_main": [
+        "85f525165d6c94c3c6b908930df712e9e7ac66f7"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-owner-transfer-filter-20261115",
+      "head": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "prior_head": "cf5e876ce164e63d535fb6e40319573798b746e1",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        163
+      ],
+      "merge_bases_candidate": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "merge_bases_main": [
+        "a89a2e948321314acf97db435e9776d9322a9461"
+      ],
+      "candidate_touched_paths": 3,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "scan/transport",
+      "evidence": "Current scanSpam retains off-filter token/block rejection and additionally uses the available 30-day span for partial counts. Shared older relayer client is superseded by bounded cancellable/padded requests and fixed public error classes. Exact final pairs retain tests and source identities.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-qr-combined-20261115",
+      "head": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "prior_head": "26f83ccdda98ee82c26ad5f71c3f90d90ad68c20",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        162
+      ],
+      "merge_bases_candidate": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "merge_bases_main": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "candidate_touched_paths": 7,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 6,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "QR/scan/transport",
+      "evidence": "Current qrKinds adds own-property checks for unknown/inherited kinds and payloads to the otherwise retained implementation. Current scan partial-span and bounded relayer controls exceed the older files; do not replace them.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-scan-transfer-filter-20261114",
+      "head": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "prior_head": "7b6c4983e5c0ba048edf97aaff7399bd77980234",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        159
+      ],
+      "merge_bases_candidate": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "merge_bases_main": [
+        "c3e707ade896c5acfebdb5967f4de7c0445740e2"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "scan/transport",
+      "evidence": "Current scanSpam retains off-filter token/block rejection and additionally uses the available 30-day span for partial counts. Shared older relayer client is superseded by bounded cancellable/padded requests and fixed public error classes. Exact final pairs retain tests and source identities.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/pages-tagarchive-blocked-click-20261117",
+      "head": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "prior_head": "8aed22ad44ee2131b36a9e12ec2dc33fe3501e1b",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        193
+      ],
+      "merge_bases_candidate": [
+        "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+      ],
+      "merge_bases_main": [
+        "dd4a7eb4dd71435284d9d326310cb2695faa249a"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "archive regression test",
+      "evidence": "Current test retains blocked-click anchor/blob cleanup and additionally asserts one revocation, visible failure and failed backup status; idle test now verifies suspension and hidden archive access. No missing runtime behavior from this test-only branch.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "head": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "prior_head": "d77956901d95c3eeb8c5c1d67ae7d1647bd069aa",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        126
+      ],
+      "merge_bases_candidate": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "merge_bases_main": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 2,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "EXACT_TOUCHED_SOURCE",
+      "category": "exact source",
+      "evidence": "Every non-documentation-category final entry is identical. Any different documentation remains preserved; no historical CI or complete runtime requalification is inferred.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "head": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "prior_head": "cf3a8b23a1994b39d2cf77b72d8c61c0a903ae4a",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        127
+      ],
+      "merge_bases_candidate": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "merge_bases_main": [
+        "364b1f185fcc2adaedab4ce7b4b14e676b1da3b7"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 2,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "EXACT_TOUCHED_SOURCE",
+      "category": "exact source",
+      "evidence": "Every non-documentation-category final entry is identical. Any different documentation remains preserved; no historical CI or complete runtime requalification is inferred.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "checkpoint/ghostpay-source-reconciliation-20261101",
+      "head": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "prior_head": "243d98d67c7cbcc854b2107da5461e4718cb6272",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+      ],
+      "merge_bases_main": [
+        "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "claude/ghostpay-lean-core-milestone-t5lwox",
+      "head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "prior_head": "2527d6b9367887508d7d8f678a18564132652a03",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        151
+      ],
+      "merge_bases_candidate": [
+        "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+      ],
+      "merge_bases_main": [
+        "bd2652bf1853948594522140a6a0fe0cbe54e32b"
+      ],
+      "candidate_touched_paths": 15,
+      "equal_path_count": 5,
+      "non_documentation_path_count": 15,
+      "equal_non_documentation_path_count": 5,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "payment source plus tooling",
+      "evidence": "Inspected Pay expiry proposal is superseded by current boundedDeadline using invoice last-payable-second, shared permit/router deadline and fresh pre-sign/pre-submit guards. Workflow/manifest/reachability-test differences are not fully reviewed; whole branch remains UNKNOWN.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "claude/gifted-planck-115x2k",
+      "head": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "prior_head": "1d28f24d86f40c7af5d4187f5d0b3b0d0bf79c78",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        39
+      ],
+      "merge_bases_candidate": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "merge_bases_main": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "candidate_touched_paths": 12,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 10,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "claude/haiku-wave-2-handoff-qepfoe",
+      "head": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "prior_head": "8d1bde36bb7d16374a2f9ad0ac2c39f46c086951",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        43
+      ],
+      "merge_bases_candidate": [
+        "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+      ],
+      "merge_bases_main": [
+        "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+      ],
+      "candidate_touched_paths": 3,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "claude/happy-maxwell-onl4x5",
+      "head": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "prior_head": "fd710eb367eff8bbc250024f5a4317875930736b",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        44
+      ],
+      "merge_bases_candidate": [
+        "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+      ],
+      "merge_bases_main": [
+        "70d8bf6ec37a5ea61868b9de2a3cea60e22ca6d2"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "audit report tooling",
+      "evidence": "Current report writer retains atomic replacement, rejects non-regular existing outputs, uses fchmod on the open temporary file and masks permissions to 0644 while preserving stricter read restrictions. Old mode-preservation logic is weaker.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "claude/vigilant-johnson-yjgq94",
+      "head": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "prior_head": "4403d3703cd1dff893e1984e98505691267f8a20",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "36bcdb7470caf7e563b4f72cadc209504137fd6f"
+      ],
+      "merge_bases_main": [
+        "36bcdb7470caf7e563b4f72cadc209504137fd6f"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/ghostpay-cloud-41868394956",
+      "head": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "prior_head": "f34a80f710d191b025538bae43cc9b4c92fd2455",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        81
+      ],
+      "merge_bases_candidate": [
+        "0014bc5b26c7487ea1f9fb230194c36673193236"
+      ],
+      "merge_bases_main": [
+        "0014bc5b26c7487ea1f9fb230194c36673193236"
+      ],
+      "candidate_touched_paths": 4,
+      "equal_path_count": 2,
+      "non_documentation_path_count": 3,
+      "equal_non_documentation_path_count": 1,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "invoice schema",
+      "evidence": "Current invoice schema retains old validation and adds bounded representable invoice times plus explicit v2 buffer-policy validation. The source/test delta does not justify restoring the older schema.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/ghostpay-consolidation-records-20261119",
+      "head": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+      "prior_head": "042b2ce3c79fefb8cbc729fc167894fbeed2c456",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        273
+      ],
+      "merge_bases_candidate": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "merge_bases_main": [
+        "c977b5d6723f6822c3b5d86cd6b231712c53c395"
+      ],
+      "candidate_touched_paths": 38,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/ghostpay-recovered-lean-checkpoint-20261028",
+      "head": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "prior_head": "371d235c3e5926014c00e027196b6aa567ea1b82",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "merge_bases_main": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "candidate_touched_paths": 188,
+      "equal_path_count": 24,
+      "non_documentation_path_count": 168,
+      "equal_non_documentation_path_count": 21,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/ghostpay-resume-20261028",
+      "head": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "prior_head": "75400888c96b9bddb2a406dd8fd6d273521aebb2",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "6a3e85c084661532619d72475641732e21b7f740"
+      ],
+      "merge_bases_main": [
+        "6a3e85c084661532619d72475641732e21b7f740"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/ghostpay-security-audit-20261030",
+      "head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "prior_head": "63994db6cff8b3b3ca698427eee9e95904230546",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        40
+      ],
+      "merge_bases_candidate": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "merge_bases_main": [
+        "dfd5cbdd94d982985c73551355906723ac70a97e"
+      ],
+      "candidate_touched_paths": 15,
+      "equal_path_count": 1,
+      "non_documentation_path_count": 12,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/recovery-spec02-unqualified-20261116",
+      "head": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+      "prior_head": "8d6fd6df5effc5fad93fd7afafe65f258182923c",
+      "live_unchanged": true,
+      "prior_disposition": "deferred",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "b4be8866f6ff883fbbedc49be88b5b251a7d270e"
+      ],
+      "merge_bases_main": [
+        "b4be8866f6ff883fbbedc49be88b5b251a7d270e"
+      ],
+      "candidate_touched_paths": 4,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "codex/setup-autonomous-agent-20261104",
+      "head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "prior_head": "122e51710eeee51a5ffc3f9dc76ee0b8ec291d43",
+      "live_unchanged": true,
+      "prior_disposition": "deferred",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        82
+      ],
+      "merge_bases_candidate": [
+        "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+      ],
+      "merge_bases_main": [
+        "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "optional automation",
+      "evidence": "Standalone/recurrent agent workflow definitions and optional test/prompt deltas preserved. No scheduling, paid-agent activation or workflow compatibility review performed; whole automation semantics remain unqualified.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "dependabot/github_actions/actions-b9ade1236b",
+      "head": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "prior_head": "199ab7ef1e80e6368fdc17c09b94c87a62871861",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        207
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 5,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 5,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "major action updates",
+      "evidence": "Actual proposed delta is setup-python 6.3.0\u21927.1.0 in 3 workflows and create-pull-request 7\u21928.1.3 in 2 workflows; candidate still has former pins. Distinct maintenance migration, not demonstrated missing beta behavior; retain current unrelated workflow safeguards and qualify versions separately.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-major-1ddf9439d6",
+      "head": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "prior_head": "bbc8ff3ba6c8e3786ccea9bd5c2679d0527bc6aa",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        87
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 69,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 69,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "major npm migration",
+      "evidence": "69 differing package manifests/lock paths are the original major dependency graph also carried by PR87 repair. No broad compatibility pass or migration approval; do not recast source preservation as dependency qualification.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "dependabot/npm_and_yarn/npm-minor-patch-71cdd1547c",
+      "head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "prior_head": "3c95b2a00bdcfb45dd36242ff40c133dd19d1811",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        210
+      ],
+      "merge_bases_candidate": [
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5"
+      ],
+      "merge_bases_main": [
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5"
+      ],
+      "candidate_touched_paths": 88,
+      "equal_path_count": 65,
+      "non_documentation_path_count": 69,
+      "equal_non_documentation_path_count": 65,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "PARSED_DEPENDENCY_EQUIVALENCE",
+      "category": "dependency alignment",
+      "evidence": "All 752 node_modules lock records (684 external packages and 68 workspace links) compare exactly, including metadata; Viem 2.57.19 is already shared. Residual manifest changes are current beta version, CSP/deployment scripts and hygiene/metadata workspace dependencies. Preserve current graph; no install/hosted validation claimed.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "docs/future-privacy-feature-specs-20261109",
+      "head": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "prior_head": "896c671f19fdb81c4aae56cd3170c09fe1aba7b7",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        99
+      ],
+      "merge_bases_candidate": [
+        "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+      ],
+      "merge_bases_main": [
+        "14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d"
+      ],
+      "candidate_touched_paths": 20,
+      "equal_path_count": 19,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "fix/ghostpay-cloud-api-secret-aliases-20261103",
+      "head": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "prior_head": "cdbb7ec775a37f985f6c66afddbcbba6e043f467",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        50
+      ],
+      "merge_bases_candidate": [
+        "6f36e7ca2d7b616f134d1bb7d4d585fb3d90ad48"
+      ],
+      "merge_bases_main": [
+        "6f36e7ca2d7b616f134d1bb7d4d585fb3d90ad48"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "fix/remediation-b16c7936-5ce634",
+      "head": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "prior_head": "0b213bd9d43409aaa9671945761e51892aa5d69e",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        77
+      ],
+      "merge_bases_candidate": [
+        "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8"
+      ],
+      "merge_bases_main": [
+        "d9fe8b4e9c020f8cef0073b9a990903fad38f1a8"
+      ],
+      "candidate_touched_paths": 1,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 1,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "checkpoint liveness",
+      "evidence": "Current persistable passes pageMatches and replays claimed router observations only above the current run floor, retaining the old one-page correction while preventing permanent resume pinning.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "fix/remediation-f95457fd-22ecf9",
+      "head": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "prior_head": "6b3e689c15ca0a4ca0bc034ef24c3a2a5fb5ea7a",
+      "live_unchanged": true,
+      "prior_disposition": "equivalent",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        80
+      ],
+      "merge_bases_candidate": [
+        "f7b8ee9db98162a97a962ff40d77460cb6eb8417"
+      ],
+      "merge_bases_main": [
+        "f7b8ee9db98162a97a962ff40d77460cb6eb8417"
+      ],
+      "candidate_touched_paths": 2,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 2,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "SUPERSEDED \u2014 ARCHIVE",
+      "review_level": "BOUNDED_SOURCE_COMPARISON",
+      "category": "rejected policy guard",
+      "evidence": "Current send.test.ts explicitly documents rejected 6b3e689: treating all different payment keys as legacy blocks legitimate distinct payments. Current controls preserve same-scope refusal and allow another completed scope. Do not recover the rejected guard; no fresh execution claimed.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "ghostpay-cloud-recovery-2026-10-26",
+      "head": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "prior_head": "2ec98b23942838c7177d91c46c66c3768b4ca493",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "merge_bases_main": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "candidate_touched_paths": 173,
+      "equal_path_count": 24,
+      "non_documentation_path_count": 155,
+      "equal_non_documentation_path_count": 21,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "ghostpay-local-lean-boundary-20261027",
+      "head": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "prior_head": "020ba327e1a26f6d989d428eee19fb12f63dec82",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "merge_bases_main": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "candidate_touched_paths": 187,
+      "equal_path_count": 24,
+      "non_documentation_path_count": 168,
+      "equal_non_documentation_path_count": 21,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "ghostpay-offline-deps-2026-10-27",
+      "head": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "prior_head": "3697f539d3a8e5c5c039fb64f4d2bfc970e7f48c",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "merge_bases_main": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "candidate_touched_paths": 178,
+      "equal_path_count": 24,
+      "non_documentation_path_count": 159,
+      "equal_non_documentation_path_count": 21,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "ghostpay-sbom-repro-2026-10-27",
+      "head": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "prior_head": "b5b04b999e84e7598dcb98adbf3c44e340223d05",
+      "live_unchanged": true,
+      "prior_disposition": "superseded",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [],
+      "merge_bases_candidate": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "merge_bases_main": [
+        "edb0051eb89bd135c73733d9db14569aa000662d"
+      ],
+      "candidate_touched_paths": 180,
+      "equal_path_count": 24,
+      "non_documentation_path_count": 161,
+      "equal_non_documentation_path_count": 21,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "unresolved source",
+      "evidence": "Direct final entries and all best merge bases captured; no fresh whole-branch semantic audit. Preserve original head and inspect remaining source before extraction.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "integration/ghostpay-docs-recovery-20261119",
+      "head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "prior_head": "4ff80733a3b36019e2f12fc21a8448e7666b6049",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        259
+      ],
+      "merge_bases_candidate": [
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+        "bb193849a5688bb604e3e32dc83e1647e37fe447"
+      ],
+      "merge_bases_main": [
+        "ffd982a7aea2856c186b40ef236a39720a1b81f5",
+        "bb193849a5688bb604e3e32dc83e1647e37fe447"
+      ],
+      "candidate_touched_paths": 72,
+      "equal_path_count": 31,
+      "non_documentation_path_count": 32,
+      "equal_non_documentation_path_count": 18,
+      "fresh_scoped_classification": "UNKNOWN \u2014 INSPECT",
+      "review_level": "UNKNOWN",
+      "category": "documentation plus inherited source",
+      "evidence": "Despite branch name, all-base union includes 32 non-documentation paths, 14 differing: AppShell, scanClient/cursor, invoice/ux errors, CI/TRON and egress tests. Documentation recovery is preserved; matching reviewed invoice/cursor pairs are older. Whole branch remains UNKNOWN and must not be merged as docs-only.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "maintenance/ghostpay-branch-audit-20261119",
+      "head": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "prior_head": "55e7799574d9ab978c24e48addf6792f84e76a56",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        263
+      ],
+      "merge_bases_candidate": [
+        "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      ],
+      "merge_bases_main": [
+        "a36f48da526b818a5940a7a0ed2ae7303ef17056"
+      ],
+      "candidate_touched_paths": 17,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "nodata/doc-sweep-20261118",
+      "head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "prior_head": "cce7a7f7e548130afba2ef6b2be518ca5b667ade",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        223
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 3,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "nodata/jolly-rubin-u4zd45",
+      "head": "1054daabc5cabe958466ec144582d76137b54910",
+      "prior_head": "1054daabc5cabe958466ec144582d76137b54910",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        224
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 40,
+      "equal_path_count": 35,
+      "non_documentation_path_count": 33,
+      "equal_non_documentation_path_count": 33,
+      "fresh_scoped_classification": "EQUIVALENT \u2014 SKIP",
+      "review_level": "EXACT_TOUCHED_SOURCE",
+      "category": "exact source",
+      "evidence": "Every non-documentation-category final entry is identical. Any different documentation remains preserved; no historical CI or complete runtime requalification is inferred.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "nodata/wizardly-allen-qwol6u",
+      "head": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "prior_head": "1c9a3ce4a103c86b9ca849a2fd5ed77f86c66849",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        221
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 3,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    },
+    {
+      "branch": "nodata/zealous-hopper-lr0nxe",
+      "head": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "prior_head": "b2604949ae3cfae493bcfb0213d390a213e63037",
+      "live_unchanged": true,
+      "prior_disposition": "still_actionable",
+      "prior_fresh_semantic_classification": null,
+      "prs_at_prior_head": [
+        205
+      ],
+      "merge_bases_candidate": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "merge_bases_main": [
+        "5467c158069c5bab264b6a653ac56e89e13f3e13"
+      ],
+      "candidate_touched_paths": 58,
+      "equal_path_count": 0,
+      "non_documentation_path_count": 0,
+      "equal_non_documentation_path_count": 0,
+      "fresh_scoped_classification": "FUTURE \u2014 PRESERVE",
+      "review_level": "PATH_CATEGORY_ONLY",
+      "category": "documentation/evidence",
+      "evidence": "Changed-path union contains documentation/evidence only, with exact source identities preserved. Historical claims, embedded scripts and unconfirmed source snapshots are not current qualification or production activation.",
+      "whole_branch_release_qualification": "NOT_CLAIMED"
+    }
+  ],
+  "classification_counts": {
+    "FUTURE \u2014 PRESERVE": 24,
+    "UNKNOWN \u2014 INSPECT": 13,
+    "SUPERSEDED \u2014 ARCHIVE": 14,
+    "EQUIVALENT \u2014 SKIP": 8
+  },
+  "review_level_counts": {
+    "PATH_CATEGORY_ONLY": 23,
+    "UNKNOWN": 13,
+    "BOUNDED_SOURCE_COMPARISON": 15,
+    "PARSED_DEPENDENCY_EQUIVALENCE": 2,
+    "EXACT_TOUCHED_SOURCE": 6
+  },
+  "limits": [
+    "All59 heads freshly sampled and unchanged from original census; source comparison remains frozen3dc/d74 tree.",
+    "FUTURE/PRESERVE path-category decisions do not assert fully inspected semantics or equivalence.",
+    "UNKNOWN retained for broad/uninspected scopes.",
+    "No additional product edit, new reproduction, full historical-suite run or hosted qualification in this continuation.",
+    "Initial eleven branches not reassessed; exact source-pair identity may be reused with its original limited scope."
+  ]
+}

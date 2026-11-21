@@ -57,6 +57,7 @@ export function log(o: {
     data: word(o.value),
     blockNumber: o.block ?? '0x64',
     transactionHash: o.tx ?? TX,
+    blockHash: `0x${'cd'.repeat(32)}`,
     logIndex: '0x0',
   };
 }

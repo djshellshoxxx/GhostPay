@@ -1,13 +1,34 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { clearCopiedBackup } from '../../components/SecretBackup';
 import { makeServices, renderWith } from '../../test/render';
 import { DEST, SEED_A, mockChain, walletA, type MockChain } from './fixtures.testutil';
 import { MAINNET_GENESIS } from './network';
 import { SolanaView } from './SolanaView';
 
 type User = ReturnType<typeof userEvent.setup>;
+
+function clipboardFixture() {
+  let value = '';
+  const writeText = vi.fn((text: string) => { value = text; return Promise.resolve(); });
+  const readText = vi.fn(() => Promise.resolve(value));
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText, readText } });
+  return {
+    writeText,
+    readText,
+    get value() { return value; },
+    set value(next: string) { value = next; },
+  };
+}
+
+afterEach(async () => {
+  cleanup();
+  // Denied-read cases leave best-effort retry ownership; end it between isolated tests.
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { readText: () => Promise.resolve(''), writeText: () => Promise.resolve() } });
+  await act(async () => { clearCopiedBackup(); await Promise.resolve(); });
+});
 
 async function setup(over: Partial<Pick<MockChain, 'failMethod' | 'genesis'>> = {}) {
   const chain = mockChain('localnet', walletA());
@@ -27,7 +48,7 @@ async function importSeed(user: User) {
 async function scan(user: User) {
   await user.type(screen.getByLabelText(/First slot/), '0');
   await user.click(screen.getByRole('button', { name: 'Scan' }));
-  await screen.findByText(/1 funded payment/);
+  await screen.findByText(/1 payment\(s\) found/);
 }
 
 async function review(user: User) {
@@ -68,21 +89,49 @@ describe('SolanaView', () => {
     expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
   });
 
-  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
+  it('copies the backup seed only after a warning, and Lock clears the unchanged copied seed', async () => {
     const { user } = await setup();
-    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const clipboard = clipboardFixture();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
     await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
     const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
     await user.click(screen.getByRole('button', { name: 'Copy seed' }));
-    expect(writeText).not.toHaveBeenCalled();
+    expect(clipboard.writeText).not.toHaveBeenCalled();
     expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
-    expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
-    expect(writeText).toHaveBeenLastCalledWith('');
-    expect(writeText).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(clipboard.writeText).toHaveBeenLastCalledWith(''));
+    expect(clipboard.writeText).toHaveBeenCalledTimes(2);
+    expect(clipboard.value).toBe('');
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
+  });
+
+  it.each(['replaced', 'denied', 'unavailable'] as const)('Lock forgets the wallet without clearing a %s clipboard', async (state) => {
+    const { user } = await setup();
+    const clipboard = clipboardFixture();
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
+    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(seed);
+
+    if (state === 'replaced') clipboard.value = 'newer external clipboard content';
+    else if (state === 'denied') clipboard.readText.mockRejectedValue(new DOMException('Denied', 'NotAllowedError'));
+    else Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: clipboard.writeText } });
+
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.queryByText(/Payment instructions/)).toBeNull();
+    expect(clipboard.writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    expect(clipboard.value).toBe(state === 'replaced' ? 'newer external clipboard content' : seed);
+    if (state !== 'unavailable') expect(clipboard.readText).toHaveBeenCalled();
   });
 
   it('rejects a malformed seed with a message', async () => {
@@ -97,12 +146,17 @@ describe('SolanaView', () => {
     await importSeed(user);
     expect(screen.queryByText(/Backup seed/)).toBeNull();
     await scan(user);
-    expect(screen.getByText('0.002 SOL')).toBeTruthy();
+    // The scan reads no balance: none is shown until a sweep is reviewed.
+    expect(chain.calls).not.toContain('getBalance');
+    expect(screen.queryByText('0.002 SOL')).toBeNull();
+    expect(screen.getByText(/What the RPC node can see/)).toBeTruthy();
     expect(screen.getByText(/single-provider check, not independent verification/i)).toBeTruthy();
     expect(screen.getByRole('radio', { name: new RegExp(`Sweep ${chain.payment.stealthAddress}`) })).toBeTruthy();
 
     await review(user);
-    expect(screen.getByText('Review before signing')).toBeTruthy();
+    expect(await screen.findByText('Review before signing')).toBeTruthy();
+    expect(chain.calls.filter((m) => m === 'getBalance')).toHaveLength(1);
+    expect(screen.getByText('0.002 SOL')).toBeTruthy();
     expect(screen.getByText('0.001995 SOL')).toBeTruthy();
     expect(screen.getAllByText(DEST).length).toBeGreaterThan(0);
 
@@ -192,7 +246,7 @@ describe('SolanaView', () => {
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
     release();
     await new Promise((r) => setTimeout(r, 50));
-    expect(screen.queryByText(/funded payment/)).toBeNull();
+    expect(screen.queryByText(/payment\(s\) found/)).toBeNull();
     expect(screen.queryByText(/Scanned slots/)).toBeNull();
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
@@ -203,6 +257,7 @@ describe('SolanaView', () => {
     await importSeed(user);
     await scan(user);
     await review(user);
+    await screen.findByText('Review before signing');
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
     chain.balance = 1_000_000n;
     await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
@@ -215,6 +270,7 @@ describe('SolanaView', () => {
     await importSeed(user);
     await scan(user);
     await review(user);
+    await screen.findByText('Review before signing');
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
     await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
     await screen.findByText('Signed transaction');

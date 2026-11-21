@@ -1,0 +1,20 @@
+(node:5) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Listing tests:
+  [desktop] › backup-panel.spec.ts:10:3 › combined backup panel › shows honest per-item status and marks each item done only after its export
+  [desktop] › backup-panel.spec.ts:60:3 › lean profile › keeps the key backup and has no tag archive item or combined panel
+  [desktop] › core-journey.spec.ts:474:1 › core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore
+  [desktop] › core-journey.spec.ts:601:1 › invoice expiry is refused at the final pay guard: nothing reaches the wallet
+  [desktop] › core-journey.spec.ts:623:1 › stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results
+  [desktop] › core-journey.spec.ts:667:1 › verified keystore reimports the same keys after a manual wipe without a pending sweep
+  [desktop] › core-journey.spec.ts:681:1 › reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt
+  [desktop] › core-journey.spec.ts:722:1 › unknown and late outcomes are shown honestly: no false success, pending until final
+  [desktop] › stealth-export.spec.ts:71:1 › payment details: public record holds no key; encrypted keypair after vault re-auth; raw key only after the second confirmation
+  [desktop] › stealth-export.spec.ts:140:1 › a blocked encrypted download can retry the generated file without running key export again
+  [desktop] › stealth-export.spec.ts:180:1 › keys without a vault: secret exports are refused until the keystore backup file and its passphrase are given
+  [desktop] › stealth-export.spec.ts:221:1 › a fresh browser with no keys opens an encrypted keypair file and validates its address; a wrong passphrase shows nothing
+  [desktop] › stealth-export.spec.ts:264:1 › mobile verification-only flow rejects malformed and public files, authenticates a backup, and installs no wallet
+  [desktop] › stealth-export.spec.ts:305:1 › secret-leak guard: no exported private key in requests, console, URL/history, storage, IndexedDB or clipboard
+  [desktop] › stealth-export.spec.ts:368:1 › the idle lock while the export is still deriving and encrypting discards the result: no download, keys stay loaded
+  [desktop] › stealth-export.spec.ts:415:1 › wiping the keys while the master backup KDF runs discards the result: no download
+Total: 16 tests in 3 files

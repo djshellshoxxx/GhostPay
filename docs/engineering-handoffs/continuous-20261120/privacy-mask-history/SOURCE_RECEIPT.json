@@ -1,0 +1,235 @@
+{
+  "recorded_utc": "2026-11-20T01:58:07.391425+00:00",
+  "branch": "feat/ghostpay-privacy-mask-history-20261120",
+  "base": "417f7c71daf8645e1432f2ec8f070110879b80bd",
+  "production_commit": "87db086ab98e22ba1f6e0cfac399fa0faa223595",
+  "qualified_checkpoint": "bc0b14aaafcd10dc63029d9940cc95cb14824797",
+  "qualified_tree": "971f4748991dbad126e06131855f78caf70c06a6",
+  "runtime": {
+    "node": "v22.23.4",
+    "npm": "10.9.11",
+    "dependencies": "coordinator-provided installed dependencies; no clean-install claim"
+  },
+  "owned_paths": [
+    "apps/web/src/AppShell.tsx",
+    "apps/web/src/AppShell.privacy.test.tsx",
+    "apps/web/src/lib/privacyMode.tsx",
+    "apps/web/src/lib/privacyMode.test.tsx",
+    "apps/web/src/lib/executionSettings.ts",
+    "apps/web/src/lib/executionSettings.test.ts",
+    "apps/web/src/components/PrivacyControls.tsx",
+    "apps/web/src/components/SensitiveContent.tsx",
+    "apps/web/src/components/PrivateHistory.tsx",
+    "apps/web/src/components/ReconciliationLedger.tsx",
+    "apps/web/src/components/ReconciliationLedger.privacy.test.tsx",
+    "apps/web/src/components/WalletAttempts.tsx",
+    "apps/web/src/components/WalletAttempts.test.tsx",
+    "apps/web/src/views/Scan.tsx",
+    "apps/web/e2e/privacy-mask-history.spec.ts"
+  ],
+  "app_changed_blobs": {
+    "apps/web/e2e/clipboard-privacy.spec.ts": "bfa4bb354f148e5a0a53232896c8aa9fe4041e39",
+    "apps/web/e2e/privacy-mask-history.spec.ts": "4e46d29af387b23ae28b79055dd38d440f1911b9",
+    "apps/web/locales/ar.json": "0f11961d0a9b8596bf0c3aebeb35a5c18c917328",
+    "apps/web/locales/en.json": "b35b0ee93bca647a80ddd12d1a49dee86845409b",
+    "apps/web/locales/es.json": "2705f63c0b9218b5c6bc9235a9d0a782b45a99cb",
+    "apps/web/locales/ja.json": "9d972f7413cbbfcaf2ff3c5cfb7fde1b335d8519",
+    "apps/web/src/AppShell.privacy.test.tsx": "d7f4b0385712dfc48c7b04412217dacba11c89de",
+    "apps/web/src/AppShell.tsx": "14dcf7c9fa149e95dce531a81afe8493f2123452",
+    "apps/web/src/components/ClipboardPrivacyControls.tsx": "b9e3a56bc77a731e4302063dfe07a122ad226340",
+    "apps/web/src/components/ClipboardPrivacySync.tsx": "f0d0138c6cc30f181110a65d32d317345e52139b",
+    "apps/web/src/components/Common.clipboardPrivacy.test.tsx": "8f4a9246266ee4565a9cbbce32e526f09e27b888",
+    "apps/web/src/components/Common.test.tsx": "67a93df29f2df39dbe2f4489959e5e68835e7457",
+    "apps/web/src/components/Common.tsx": "acee66019d29abb5844982c6da13d205f5cca440",
+    "apps/web/src/components/PrivacyControls.tsx": "590b40b5ed2f984870122cbbaff9da47f651d4d6",
+    "apps/web/src/components/PrivateHistory.tsx": "1919f8a37f42fe5994450713c86c8f3fc276fb35",
+    "apps/web/src/components/ReconciliationLedger.privacy.test.tsx": "ef369c7623aa6593e5db6c1579ae762d07cd4392",
+    "apps/web/src/components/ReconciliationLedger.tsx": "07e736bb80b10e16b49e9e09b2aff9d3085a2a82",
+    "apps/web/src/components/SecretBackup.clipboardPrivacy.test.tsx": "9fd22059746398b5be98884e97b4fb490faf346c",
+    "apps/web/src/components/SecretBackup.test.tsx": "f16293d89ee542fce28e9bd6fe7782e69d91b2cf",
+    "apps/web/src/components/SecretBackup.tsx": "c92bd4951f23325c854cdd8ca37f1ca1aa1a91b6",
+    "apps/web/src/components/SecretBackup.views.test.tsx": "a88fa6cd417c4dbf64d90b2884606b33de9bb03f",
+    "apps/web/src/components/SensitiveContent.tsx": "e4b64ba4f3312c3392e2498ca5c6b306fd0871d5",
+    "apps/web/src/components/WalletAttempts.test.tsx": "d7fda34e0967a86ecd591892076d9883903c19cd",
+    "apps/web/src/components/WalletAttempts.tsx": "a9aef3f940bed8f3e26a45ffd75aedea2f0b5563",
+    "apps/web/src/i18n/securityKeys.test.ts": "14ea92f4f68a910aadc6ac78003c4443de1ffa76",
+    "apps/web/src/i18n/securityKeys.ts": "2fea63c60bd21e4146d0f180b9acd718eb35921d",
+    "apps/web/src/lib/clipboardPrivacy.test.ts": "18c81c21dfa680c5498b2f907633cbdca32c09e5",
+    "apps/web/src/lib/clipboardPrivacy.ts": "cfb9e13bb3548d48f65b2578a76d2888553a0b35",
+    "apps/web/src/lib/executionSettings.test.ts": "40d1842efa873544e01ba4bb653b5375c26e424a",
+    "apps/web/src/lib/executionSettings.ts": "eb5354fd199e4c7e5edbb89b04742e25946a67f2",
+    "apps/web/src/lib/privacyMode.test.tsx": "b70402daeada1ead5a91e2c6bf77ba06a61b2bdf",
+    "apps/web/src/lib/privacyMode.tsx": "1ab179b7a39c6e5c4f54fb114d21e70f83f6effa",
+    "apps/web/src/lib/settings.test.ts": "db3e1d0e58641947725dd27b3fb3e9c6cee6fada",
+    "apps/web/src/lib/settings.ts": "666aff245eac46a61633b74257bc65c39fb6093e",
+    "apps/web/src/lib/settings.uiPrivacy.test.ts": "d53995d69830845c7b48553bbc5c8adeb483367b",
+    "apps/web/src/lib/settingsExchange.test.ts": "6dfda318e1ddcdc0c6d3914f8b37d92001995384",
+    "apps/web/src/lib/settingsExchange.ts": "94b41f3c5cbd8dd3bc60c4efc8701464f969b690",
+    "apps/web/src/lib/settingsPrivacy.test.ts": "03b845702db83998a2b578ebaa593bb1b243f28b",
+    "apps/web/src/views/Scan.tsx": "ad2bc9f8ef82de6151b8d769ad468d0761a9026e",
+    "apps/web/src/views/Settings.clipboardPrivacy.test.tsx": "e27f09ebd02b61b69bfb9f72d78d68bdf3598a58",
+    "apps/web/src/views/Settings.tsx": "83a8148de6a30fe4e34a287af19d72e2a7dd05fc"
+  },
+  "lint_command": "npm exec -- eslint --config eslint.config.js apps/web/src/AppShell.tsx apps/web/src/AppShell.privacy.test.tsx apps/web/src/lib/privacyMode.tsx apps/web/src/lib/privacyMode.test.tsx apps/web/src/lib/executionSettings.ts apps/web/src/lib/executionSettings.test.ts apps/web/src/components/PrivacyControls.tsx apps/web/src/components/SensitiveContent.tsx apps/web/src/components/PrivateHistory.tsx apps/web/src/components/ReconciliationLedger.tsx apps/web/src/components/ReconciliationLedger.privacy.test.tsx apps/web/src/components/WalletAttempts.tsx apps/web/src/components/WalletAttempts.test.tsx apps/web/src/views/Scan.tsx apps/web/e2e/privacy-mask-history.spec.ts",
+  "final_results": {
+    "vitest": {
+      "files": 19,
+      "passed": 196,
+      "failed": 0,
+      "skipped": 0,
+      "coverage_run": false,
+      "log": "FINAL_INTEGRATION.log"
+    },
+    "typecheck": {
+      "exit": 0,
+      "log": "FINAL_TYPECHECK.log",
+      "also_repeated_by_final_build": true
+    },
+    "lint": {
+      "exit": 0,
+      "paths": 15,
+      "log": "FINAL_SCOPED_LINT_GREEN.log"
+    },
+    "build": {
+      "exit": 0,
+      "log": "FINAL_BUILD.log",
+      "postbuild_bundle_files": 19
+    },
+    "security": {
+      "passed": 85,
+      "failed": 0,
+      "skipped": 0,
+      "log": "FINAL_SECURITY_CHECKS.log"
+    },
+    "browser": {
+      "scenario_assertions_executed": 0,
+      "default_launch_failures": 2,
+      "system_launch_failures": 2,
+      "logs": [
+        "BROWSER.log",
+        "FINAL_BROWSER_SYSTEM_CHROMIUM.log"
+      ],
+      "reason": "configured executable missing; supported system executable denied socket creation and aborted; no bypass or further retries"
+    }
+  },
+  "log_digests": {
+    "BASELINE_RED.log": {
+      "bytes": 27254,
+      "sha256": "1ee3069ac7db2e7e554ba8a458a6a649ccac152e4e922d32775d350660c36ea0"
+    },
+    "BROWSER.log": {
+      "bytes": 7639,
+      "sha256": "54be7a0bd000f17bcf250cc124502141c99b320d87c38ce28618f411dbc32135"
+    },
+    "EXECUTION_SETTINGS.log": {
+      "bytes": 756,
+      "sha256": "bc8e71c644ee16986deb19105fc8a1760d902b5609fd5ff3f7f5dbcc0912aa2d"
+    },
+    "FINAL_BROWSER_SYSTEM_CHROMIUM.log": {
+      "bytes": 15117,
+      "sha256": "26def184191bf4218ec293950b985467f6bcaaa8717ab515aa49d682e96c22a0"
+    },
+    "FINAL_BUILD.log": {
+      "bytes": 3215,
+      "sha256": "4b3a0d4136abeadcd0d66af223c655845ace1dfe61217bfbcedd73e7530d2974"
+    },
+    "FINAL_INTEGRATION.log": {
+      "bytes": 4143,
+      "sha256": "f64bca3e4fd7528e8ae0fb0bd86d5ddac3541767dbe99416c995591284804981"
+    },
+    "FINAL_SCOPED_LINT.log": {
+      "bytes": 912,
+      "sha256": "a0c96f4382893e281a76e9358ff4bac50ae8b15991d5bac6ac13a0a69597a237"
+    },
+    "FINAL_SCOPED_LINT_GREEN.log": {
+      "bytes": 349,
+      "sha256": "e733605558e5e7c70bb6f3441b5c498d104e94c8142a2fe0fdc3afbca4035fbc"
+    },
+    "FINAL_SECURITY_CHECKS.log": {
+      "bytes": 19311,
+      "sha256": "dcc1b9e094d62b42786d02c4903f091165fdfd9d956ecb3bebc307f55c4fe7bc"
+    },
+    "FINAL_TYPECHECK.log": {
+      "bytes": 247,
+      "sha256": "2d8c813b3d8237eb283a4e6901aba5a9d2d32b3b2c6b757f9563f1ae398ceaaf"
+    },
+    "FIRST_GREEN.log": {
+      "bytes": 1136,
+      "sha256": "b446e5d0c1ccc9960af89562491d751ccd8e6ef5fb597d1a11655796420e011c"
+    },
+    "INDEPENDENT_PROBES_GREEN.log": {
+      "bytes": 1842,
+      "sha256": "6b10c1779b25f7f93d2642388fa9ab9a0cda2e9b61416ea596c22aad0bddde46"
+    },
+    "INDEPENDENT_PROBES_RED.log": {
+      "bytes": 1657,
+      "sha256": "58d8348c7f25eaee62f9f5e3bd4737d483651482a506ed26d1224fe72574619b"
+    },
+    "INTEGRATION_SELECTION.log": {
+      "bytes": 3428,
+      "sha256": "4210264e9092a5b95768dd6d35c2e1786f56ae98648ff238c9d10f02fcadfb3a"
+    },
+    "PRIVACY_CONTROLS.log": {
+      "bytes": 2335,
+      "sha256": "1a93215014bedff396b95331db1f381ef3aab7a509cc46ac2c2c9f459ef22429"
+    },
+    "PRIVACY_CONTROLS_GREEN.log": {
+      "bytes": 1312,
+      "sha256": "edf3bd78928e27cbc07114d89a716159e963fc1923c8ec99ebb4541c19715719"
+    },
+    "PRIVACY_STORAGE_GREEN.log": {
+      "bytes": 2329,
+      "sha256": "d9c0a2dd7b561bf51d13c84acacfd312c3574b313f3976e8deb0c16f112e9930"
+    },
+    "PRIVACY_STORAGE_NOTICE_GREEN.log": {
+      "bytes": 1161,
+      "sha256": "06866f74cdd216f7cc27167efc3870e17e07b47f28ac91f85309e26367e2d82a"
+    },
+    "PRIVACY_STORAGE_RED.log": {
+      "bytes": 18783,
+      "sha256": "2ddc138d3af5a3363decaf2eca80d5ccd1aa348ed2d237d6304539be975a32f2"
+    },
+    "PRIVACY_WALLET_GREEN.log": {
+      "bytes": 1489,
+      "sha256": "9290370ec7dcb43526b9b7a3f2b8f6b6dd4390e2dcace0b815a3f7815f25b8ea"
+    },
+    "SCOPED_LINT.log": {
+      "bytes": 588,
+      "sha256": "00c0f723d44ebfa6a018087f387b7d853752493adfb2126c60998ccbd7b8411c"
+    },
+    "SCOPED_LINT_GREEN.log": {
+      "bytes": 349,
+      "sha256": "e733605558e5e7c70bb6f3441b5c498d104e94c8142a2fe0fdc3afbca4035fbc"
+    },
+    "SECURITY_CHECKS.log": {
+      "bytes": 19308,
+      "sha256": "8e133449a071144535a3219f60213513404d2683fea847f343b0b293088f58f0"
+    },
+    "TAG_LOCK_GREEN.log": {
+      "bytes": 762,
+      "sha256": "f8dceee95cf64f2388dd89e1b4fb6df5a800d8f0abf23a2c8c1abe9662853c86"
+    },
+    "TAG_LOCK_RED.log": {
+      "bytes": 20289,
+      "sha256": "be1be7156fb68c8ec59f7bd8d61de8a203faafe471ca45ceaef7b18751aee66d"
+    },
+    "TYPECHECK.log": {
+      "bytes": 1696,
+      "sha256": "3d4d875ec0936a58e88cb72e69bf42148d9d9be282550e64677d22b97ed2047e"
+    },
+    "TYPECHECK_FOLLOWUP.log": {
+      "bytes": 247,
+      "sha256": "2d8c813b3d8237eb283a4e6901aba5a9d2d32b3b2c6b757f9563f1ae398ceaaf"
+    },
+    "WALLET_HISTORY_RED.log": {
+      "bytes": 3734,
+      "sha256": "bc8e483a0897ff1a9ef092f37d9f355d824e2cfe85757fbb88070f7ed51462c9"
+    }
+  },
+  "scope_limits": [
+    "visual hiding preserves DOM and memory; it is not erasure or cryptographic lock",
+    "root owns Pay/Registry/provider lifecycle and WalletAttempts retainedOutcome follow-up",
+    "separate clipboard-owner reviewer fix is a root integration dependency",
+    "no full-web coverage, browser assertion, release, deployment, or Mythril pass claim"
+  ]
+}

@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
 import { subscribeAppLock } from '../lib/appLock';
+import { beginClipboardCopy, clearClipboardIfUnchanged, clipboardValueMatches, isCurrentClipboardCopy, recordClipboardCopy, writeClipboardText, type ClipboardCopyIntent } from '../lib/clipboardPrivacy';
+import { AppContext } from '../state';
 import { Mono, Notice } from './Common';
 
 /** A shown backup hides itself after this many milliseconds (the texts say "a minute"), and as soon as the tab is hidden. */
@@ -11,15 +13,16 @@ export const BACKUP_VISIBLE_MS = 60_000;
 let copies = 0;
 /** The latest copy that may still be on the clipboard (0: none). Only a clear that worked unmarks it. */
 let onClipboard = 0;
+/** Only a digest comparison and copy ownership survive hiding; no backup plaintext is retained for retries. */
+let copiedValue: { readonly copy: number; readonly matches: (value: string) => boolean; readonly intent: ClipboardCopyIntent } | undefined;
 /** The copy whose clear is still pending (0: none), so that a second Hide or Lock meanwhile does not write again. */
 let clearing = 0;
 /** A clear the browser refused waits for the next click or key press ({@link retryAtActivation}). */
 let retrying = false;
 
 /**
- * While a refused clear waits, the next click or key press in the page tries again: it is user activation, so the
- * browser allows the write. Capture phase, before the page's own handlers, so a click that copies is not emptied
- * right after it copied.
+ * While a refused clear waits, the next click or key press tries again with user activation. Reads may still be
+ * denied. Capture phase starts the comparison before page handlers; shared copy ownership guards every await.
  */
 function retryAtActivation(on: boolean): void {
   retrying = on;
@@ -30,15 +33,16 @@ function retryAtActivation(on: boolean): void {
 }
 
 /**
- * Best-effort: empties the clipboard if a wallet backup was copied there since the last clear that worked. Call it
- * inside a click handler (Hide, Lock): browsers allow clipboard writes only during user activation, some only in a
- * focused page. When the browser refuses (the app lock runs on a timer), the backup stays marked: the next click or
- * key press in this page tries again, and so does the next Hide or Lock. Copies the system already made (clipboard
- * history, sync to other devices) are out of reach.
+ * Best-effort: compares the clipboard with the latest copied backup before clearing. A denied read never falls
+ * back to an unconditional write. A later activation retries; newer observed content or another app copy ends
+ * this backup's cleanup ownership. Browser compare/write is not atomic; history and synced copies are out of reach.
  */
 export function clearCopiedBackup(): void {
   const copy = onClipboard;
-  if (copy === 0) {
+  const details = copiedValue;
+  if (copy === 0 || details?.copy !== copy || !isCurrentClipboardCopy(details.intent)) {
+    onClipboard = 0;
+    copiedValue = undefined;
     retryAtActivation(false);
     return;
   }
@@ -49,15 +53,14 @@ export function clearCopiedBackup(): void {
     // A copy started in the meantime is not this clear's to unmark or schedule a retry for.
     // Nor may an older successful clear cancel the retry of a newer refused clear.
     if (onClipboard === copy) {
-      if (cleared) onClipboard = 0;
+      if (cleared) { onClipboard = 0; copiedValue = undefined; }
       retryAtActivation(!cleared);
     } else if (onClipboard === 0) retryAtActivation(false);
   };
   void (async () => {
     try {
-      // The call itself runs synchronously in this activation; only settlement is awaited.
-      await navigator.clipboard.writeText('');
-      settle(true);
+      const outcome = await clearClipboardIfUnchanged(details.matches, navigator.clipboard, () => onClipboard === copy && isCurrentClipboardCopy(details.intent));
+      settle(outcome !== 'denied');
     } catch {
       // A throwing or unavailable API does not prove a previously copied backup was cleared.
       settle(false);
@@ -122,6 +125,7 @@ export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
  * @param props.reveal Produces the backup text; called only when the user asks to see it.
  */
 export function SecretBackup(props: { readonly reveal: () => string; readonly text: SecretBackupText }): ReactNode {
+  const clearAfterMs = useContext(AppContext)?.settings?.clipboardClearAfterMs ?? 0;
   const { text } = props;
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const [shown, setShown] = useState<string | undefined>(undefined);
@@ -182,26 +186,34 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     const request = ++copyRequest.current;
     const current = (): boolean => mounted.current && generation.current === revealGeneration && copyRequest.current === request;
     const earlier = onClipboard;
+    const earlierValue = copiedValue;
     const earlierNeedsClear = retrying || (earlier !== 0 && clearing === earlier);
     const mine = ++copies;
+    const intent = beginClipboardCopy();
+    const details = { copy: mine, matches: clipboardValueMatches(value), intent };
     // Marked before the write, so a Hide or Lock clicked while it is pending still clears it.
     onClipboard = mine;
+    copiedValue = details;
     // This fresh explicit copy owns its cleanup; a retry requested for an older copy must not empty it.
     retryAtActivation(false);
     void (async () => {
       try {
-        await navigator.clipboard.writeText(value);
+        const clipboard = navigator.clipboard;
+        await writeClipboardText(value, clipboard, () => current() && isCurrentClipboardCopy(intent));
+        recordClipboardCopy(value, clipboard, clearAfterMs, intent);
         if (current()) setCopy('copied');
-        else if (copies === mine && (onClipboard === mine || onClipboard === 0)) {
+        else if (copies === mine && isCurrentClipboardCopy(intent) && (onClipboard === mine || onClipboard === 0)) {
           // Hide/Lock may have completed its clear before this write settled. Retry cleanup of
           // our late write, but never claim or clear a newer copy made by another reveal/view.
           onClipboard = mine;
+          copiedValue = details;
           clearCopiedBackup();
         }
       } catch {
         // Nothing was copied: an earlier copy that may still be on the clipboard stays marked.
-        if (onClipboard === mine) {
+        if (onClipboard === mine && isCurrentClipboardCopy(intent)) {
           onClipboard = earlier;
+          copiedValue = earlierValue === undefined ? undefined : { ...earlierValue, intent };
           retryAtActivation(earlier !== 0 && earlierNeedsClear);
         }
         if (current()) setCopy('failed');

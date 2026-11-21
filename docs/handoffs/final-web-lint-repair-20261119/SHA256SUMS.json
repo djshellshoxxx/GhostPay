@@ -1,0 +1,13 @@
+{
+  "QUALIFICATION.md": "f55b46f2e602f547cf147d8e42bc4e287cc9599a41d451b9720ea2b52abb7863",
+  "RESULTS.json": "bf9a7e22a250e79731ea3acb5d0f028244665ff4be50dbab46f1d32ee84a4c55",
+  "evidence/DEPENDENCIES.json": "f5a7701cba37e08794850d6e43f5b6b6b74284956f92f75f803f6f40dbce0041",
+  "evidence/DEPENDENCY_RETARGET.json": "832565a2e4d5261f768f7d5a62a7881ac02bd9ff1c8a9ce137b86203e135004b",
+  "evidence/baseline-six-errors.RESULTS.json": "2f02900739381c00eccef56ebb337c6e441c616eb9dcde49a64026b2c3b9cdd3",
+  "evidence/baseline-six-errors.log.gz": "2dbf95a28ed375c016f03f5d638b61d3a29de3b8168120b1172c00372e1f6b4e",
+  "evidence/coordinator-source-review.json": "2294ebd5bfa74a2d2b115cce78829339c48cc20c032744f41377e33cf3862d11",
+  "evidence/focused-original-tests.log.gz": "f90d3107f5694136d0fe39fcbe7682324442a3e9ad6592075b6c02e75b396ec8",
+  "evidence/full-original-web-eslint.log.gz": "30c46f6aaf89d6aeb0b159592632069cc0313515bfbe18a6421a268481dc482c",
+  "evidence/full-web-typecheck.log.gz": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+  "evidence/independent-source-review.json": "2ca4a686276cfccc7321d41cd229309ffdcf05c6c3d71a7adb8df7ef1be43940"
+}

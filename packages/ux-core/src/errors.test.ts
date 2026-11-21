@@ -53,6 +53,21 @@ describe('catalog coverage (UXERR-1, T-1)', () => {
 });
 
 describe('recover', () => {
+  it('separates missing signatures from unsupported format and unavailable local verification', () => {
+    const missing = recover('MISSING_SIGNATURE', { ...ctx, phase: 'prepare', online: false });
+    const unavailable = recover('VERIFICATION_UNAVAILABLE', { ...ctx, phase: 'prepare', online: false });
+    const unsupported = recover('UNSUPPORTED', { ...ctx, phase: 'prepare', online: false });
+    expect(missing.code).toBe('MISSING_SIGNATURE');
+    expect(missing.summary).toMatch(/signature is missing/i);
+    expect(unavailable.code).toBe('VERIFICATION_UNAVAILABLE');
+    expect(unavailable.summary).toMatch(/verification is unavailable/i);
+    expect(new Set([missing.summary, unavailable.summary, unsupported.summary]).size).toBe(3);
+    for (const guidance of [missing, unavailable]) {
+      expect(guidance.severity).toBe('error');
+      expect(guidance.retrySafe).toBe('yes');
+      expect(guidance.steps.some((step) => step.action === 'go-online' || step.action === 'open-settings-rpc')).toBe(false);
+    }
+  });
   it('keeps invalid signatures distinct from valid but unpinned seller keys', () => {
     const untrusted = recover('UNTRUSTED_SIGNER', { ...ctx, phase: 'prepare' });
     const invalid = recover('INVALID_SIGNATURE', { ...ctx, phase: 'prepare' });

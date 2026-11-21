@@ -155,8 +155,10 @@ describe('BtcView key and spend-tweak lifetime', () => {
       r.then(() => { ended = 'resolved'; }, (e: unknown) => { ended = e instanceof SilentPaymentError ? e.code : 'other'; });
       return r;
     };
+    // Spent status is tracked locally now (no per-outpoint request), so the scan is paused at the block after the
+    // payment block instead: the payment's tweak exists by then and the scan is still running.
     const { user } = await ready(async (url, init) => {
-      if (url.includes('/outspend/')) {
+      if (url.includes('/block-height/4')) {
         held = true;
         await gate;
       }

@@ -127,3 +127,74 @@ describe('encrypted reconciliation IndexedDB: closed connections and a full quot
     await expect(failed).rejects.toThrow(/did not commit/);
   });
 });
+
+describe('atomic private scan namespace invalidation', () => {
+  const prefix = 'ghostpay.scan.checkpoint.v5.';
+  function cursorDatabase(values: Map<string, string>, refuseWriteAt?: number) {
+    let complete: (() => void) | undefined;
+    const db = {
+      close: () => undefined,
+      transaction: () => {
+        const staged = new Map(values);
+        const tx = {
+          oncomplete: undefined as (() => void) | undefined,
+          onabort: undefined as (() => void) | undefined,
+          onerror: undefined as (() => void) | undefined,
+          aborted: false,
+          abort() { this.aborted = true; queueMicrotask(() => { this.onabort?.(); }); },
+          objectStore: () => ({
+            openCursor: (range: { lower: string; upper: string }) => {
+              const keys = [...values.keys()].filter((key) => key >= range.lower && key <= range.upper).sort();
+              let index = 0;
+              const request: { result: unknown; onsuccess?: () => void } = { result: null };
+              const step = (): void => {
+                if (tx.aborted) return;
+                const key = keys[index++];
+                request.result = key === undefined ? null : {
+                  key,
+                  update: (next: string) => { if (index === refuseWriteAt) throw new Error('synthetic quota refusal'); staged.set(key, next); },
+                  continue: () => { queueMicrotask(step); },
+                };
+                request.onsuccess?.();
+                if (key === undefined) complete = () => {
+                  if (tx.aborted) return;
+                  values.clear(); for (const [name, value] of staged) values.set(name, value);
+                  tx.oncomplete?.();
+                };
+              };
+              queueMicrotask(step);
+              return request;
+            },
+          }),
+        };
+        return tx;
+      },
+    } as unknown as IDBDatabase;
+    return { db, commit: () => complete?.(), ready: () => complete !== undefined };
+  }
+
+  it('keeps unrelated encrypted data and resolves only after all checkpoint tombstones commit', async () => {
+    const { requests } = installOpenFactory();
+    vi.stubGlobal('IDBKeyRange', { bound: (lower: string, upper: string) => ({ lower, upper }) });
+    const values = new Map([[`${prefix}a`, 'history-a'], [`${prefix}b`, 'history-b'], ['reconciliation', 'keep']]);
+    const fake = cursorDatabase(values); let settled = false;
+    const task = new IdbReconciliationVaultStore().replacePrefix(prefix, () => 'fresh-tombstone').then(() => { settled = true; });
+    requests[0]!.result = fake.db; requests[0]!.onsuccess?.();
+    await vi.waitFor(() => expect(fake.ready()).toBe(true));
+    expect(settled).toBe(false);
+    expect(values.get(`${prefix}a`)).toBe('history-a');
+    fake.commit(); await task;
+    expect([...values]).toEqual([[`${prefix}a`, 'fresh-tombstone'], [`${prefix}b`, 'fresh-tombstone'], ['reconciliation', 'keep']]);
+  });
+
+  it('rolls back an earlier staged tombstone when a later update aborts invalidation', async () => {
+    const { requests } = installOpenFactory();
+    vi.stubGlobal('IDBKeyRange', { bound: (lower: string, upper: string) => ({ lower, upper }) });
+    const values = new Map([[`${prefix}a`, 'history-a'], [`${prefix}b`, 'history-b']]);
+    const fake = cursorDatabase(values, 2);
+    const task = new IdbReconciliationVaultStore().replacePrefix(prefix, () => 'tombstone');
+    requests[0]!.result = fake.db; requests[0]!.onsuccess?.();
+    await expect(task).rejects.toThrow('did not commit');
+    expect([...values.values()]).toEqual(['history-a', 'history-b']);
+  });
+});

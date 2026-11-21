@@ -1,0 +1,208 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ RUN  v5.1.0 /workspace/scratch/a264c19c9f94/GhostPay/apps/web
+
+(node:42) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/components/StealthExportVerification.test.tsx (14 tests | 1 failed) 1815ms
+   ❯ saved Spec 18 export verification (14)
+     × distinguishes a generated file from an initiated download and retries without claiming retention 121ms
+(node:54) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:90) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:102) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:110) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/StealthExportVerification.test.tsx > saved Spec 18 export verification > distinguishes a generated file from an initiated download and retries without claiming retention
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Retry backup download"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "Keep and verify this backup":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_0_"[39m
+    [33mclass[39m=[32m"stack"[39m
+    [33mdata-testid[39m=[32m"stealth-export-verification"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Keep and verify this backup":
+  [36m<h4[39m
+    [33mid[39m=[32m"_r_0_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mdata-testid[39m=[32m"stealth-export-backup-state"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"hint"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Retry this download":
+  [36m<button[39m
+    [33mclass[39m=[32m"btn"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Verify the saved backup":
+  [36m<button[39m
+    [33mclass[39m=[32m"btn"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "I saved this backup file and kept its passphrase separately.":
+  [36m<input[39m
+    [33mid[39m=[32m"_r_1_"[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"_r_0_"[39m
+      [33mclass[39m=[32m"stack"[39m
+      [33mdata-testid[39m=[32m"stealth-export-verification"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mid[39m=[32m"_r_0_"[39m
+      [36m>[39m
+        [0mKeep and verify this backup[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33maria-live[39m=[32m"polite"[39m
+        [33mdata-testid[39m=[32m"stealth-export-backup-state"[39m
+        [33mrole[39m=[32m"status"[39m
+      [36m>[39m
+        [0mEncrypted file generated; download has not started. Retry the download, then keep and verify the saved file.[0m
+      [36m</p>[39m
+      [36m<p>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRetry this download[0m
+        [36m</button>[39m
+      [36m</p>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"hint"[39m
+      [36m>[39m
+        [0mVerification applies only to this file. It does not mark the complete seller keystore as backed up.[0m
+      [36m</p>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"check"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33mid[39m=[32m"_r_1_"[39m
+          [33mtype[39m=[32m"checkbox"[39m
+        [36m/>[39m
+        [36m<label[39m
+          [33mfor[39m=[32m"_r_1_"[39m
+        [36m>[39m
+          [0mI saved this backup file and kept its passphrase separately.[0m
+        [36m</label>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33mautocomplete[39m=[32m"off"[39m
+        [33mclass[39m=[32m"stack"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_2_"[39m
+          [36m>[39m
+            [0mSaved backup file[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33maccept[39m=[32m"application/json,.json"[39m
+            [33mid[39m=[32m"_r_2_"[39m
+            [33mtype[39m=[32m"file"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mfor[39m=[32m"_r_3_"[39m
+          [36m>[39m
+            [0mPassphrase of the saved backup[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mid[39m=[32m"_r_3_"[39m
+            [33mtype[39m=[32m"password"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mVerify the saved backup[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../../node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/StealthExportVerification.test.tsx:44:29
+     42|     expect(state()).not.toContain('download initiated');
+     43|     expect(submit().disabled).toBe(true);
+     44|     await user.click(screen.getByRole('button', { name: 'Retry backup …
+       |                             ^
+     45|     expect(retry).toHaveBeenCalledOnce();
+     46|     expect(state()).toContain('Encrypted file generated; download has …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 103 passed (104)
+   Start at  15:02:49
+   Duration  24.16s (tests 85%, import 8%, environment 5%, transform 2%)
+
+    Isolate  7 workers spawned · ~266ms startup each (spawn + environment, per file)
+             at least ~1.60s faster with isolate: false — reuses workers across files instead of one per file
+

@@ -1,0 +1,158 @@
+
+ RUN  v5.1.0 /tmp/ghostpay-security-246ff268d20d/apps/web
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts (19 tests | 4 failed | 14 skipped) 643ms
+   ❯ native sweep reviewed balance (5)
+     × refuses a native balance changed to 100000000000000001n before signing or creating an attempt 356ms
+     × refuses a native balance changed to 99999999999999999n before signing or creating an attempt 70ms
+     × refuses a changed balance returned by a pending native read with an otherwise current review 64ms
+     × applies the same balance binding to a same-nonce replacement 57ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > native sweep reviewed balance > refuses a native balance changed to 100000000000000001n before signing or creating an attempt
+AssertionError: promise resolved "{ …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "attempt": {
++     "amount": 99958000000000001n,
++     "asset": "native",
++     "chainId": 11155111,
++     "destination": "0x6666666666666666666666666666666666666666",
++     "expectedHash": "0x20c856797c47f454e9bdc65e076a739272abafd3aea6b7870adf8017facf02a9",
++     "nonce": 7,
++     "owner": "0xE4A032118453a42DF9979CE54b15Ee6C8171847c",
++     "status": "submitted",
++   },
++   "hash": "0x20c856797c47f454e9bdc65e076a739272abafd3aea6b7870adf8017facf02a9",
++   "maxGasCost": 42000000000000n,
++   "sent": 99958000000000001n,
++   "simulation": "ok",
+  }
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:188:37
+    186|     const input = { ...h.input, rpc: { ...base, request: (method: stri…
+    187|       method === 'eth_getBalance' ? Promise.resolve(`0x${freshBalance.…
+    188|     await expect(directSweep(input)).rejects.toThrow('Your RPC returne…
+       |                                     ^
+    189|     expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.…
+    190|     expect(base.calls.map((call) => call.method)).not.toContain('eth_e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > native sweep reviewed balance > refuses a native balance changed to 99999999999999999n before signing or creating an attempt
+AssertionError: promise resolved "{ …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "attempt": {
++     "amount": 99957999999999999n,
++     "asset": "native",
++     "chainId": 11155111,
++     "destination": "0x6666666666666666666666666666666666666666",
++     "expectedHash": "0x1de188c34fb5f947d958e54852824a29fc4b6ad721e3a75482853d11809df52a",
++     "nonce": 7,
++     "owner": "0x17E0C4926c09Cb806F710cf0b9b50dccA0B82bfD",
++     "status": "submitted",
++   },
++   "hash": "0x1de188c34fb5f947d958e54852824a29fc4b6ad721e3a75482853d11809df52a",
++   "maxGasCost": 42000000000000n,
++   "sent": 99957999999999999n,
++   "simulation": "ok",
+  }
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:188:37
+    186|     const input = { ...h.input, rpc: { ...base, request: (method: stri…
+    187|       method === 'eth_getBalance' ? Promise.resolve(`0x${freshBalance.…
+    188|     await expect(directSweep(input)).rejects.toThrow('Your RPC returne…
+       |                                     ^
+    189|     expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.…
+    190|     expect(base.calls.map((call) => call.method)).not.toContain('eth_e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > native sweep reviewed balance > refuses a changed balance returned by a pending native read with an otherwise current review
+AssertionError: promise resolved "{ …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "attempt": {
++     "amount": 100958000000000000n,
++     "asset": "native",
++     "chainId": 11155111,
++     "destination": "0x6666666666666666666666666666666666666666",
++     "expectedHash": "0x2fd29429a0f21337f2bf3f1be2ad42e689f8018df3ae01cfd982f620d1143dc0",
++     "nonce": 7,
++     "owner": "0xF908D1C78f194D7Ee376ADE51c5B974904C3aDa6",
++     "status": "submitted",
++   },
++   "hash": "0x2fd29429a0f21337f2bf3f1be2ad42e689f8018df3ae01cfd982f620d1143dc0",
++   "maxGasCost": 42000000000000n,
++   "sent": 100958000000000000n,
++   "simulation": "ok",
+  }
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:208:36
+    206|     } } };
+    207|     const pending = directSweep(input);
+    208|     const refused = expect(pending).rejects.toThrow('Your RPC returned…
+       |                                    ^
+    209|     await started;
+    210|     answer(`0x${(BALANCE + 10n ** 15n).toString(16)}`);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/lib/sweep.reviewAuthority.test.ts > native sweep reviewed balance > applies the same balance binding to a same-nonce replacement
+AssertionError: promise resolved "{ …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "attempt": {
++     "amount": 99958000000000001n,
++     "asset": "native",
++     "chainId": 11155111,
++     "destination": "0x6666666666666666666666666666666666666666",
++     "expectedHash": "0x7c783233721f695bc92c1cab96217e1a7e5e232528d14fa3166c7088af0b5406",
++     "nonce": 7,
++     "owner": "0x61c4c151bcf4Bcf91a2a655Ac581D4B68878952B",
++     "status": "submitted",
++   },
++   "hash": "0x7c783233721f695bc92c1cab96217e1a7e5e232528d14fa3166c7088af0b5406",
++   "maxGasCost": 42000000000000n,
++   "sent": 99958000000000001n,
++   "simulation": "ok",
+  }
+
+ ❯ src/lib/sweep.reviewAuthority.test.ts:221:37
+    219|     const input = { ...h.input, replaceNonce: 7, rpc: { ...base, reque…
+    220|       method === 'eth_getBalance' ? Promise.resolve(`0x${(BALANCE + 1n…
+    221|     await expect(directSweep(input)).rejects.toThrow('Your RPC returne…
+       |                                     ^
+    222|     expect(vi.mocked(signDigest).mock.calls.length).toBe(0); expect(h.…
+    223|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed | 14 skipped (19)
+   Start at  03:23:38
+   Duration  3.41s (import 52%, transform 26%, tests 21%)
+

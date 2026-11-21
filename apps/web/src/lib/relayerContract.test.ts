@@ -32,11 +32,12 @@ const permitRpc = mockRpc(CHAIN_ID, (_m, params) => {
 
 let target: SweepTarget & { token: Address };
 let h: Harness;
-let posted: { path: string; body: unknown }[];
-/** Real HTTP to the harness relayer; records every body the web client sends. */
-const recordingFetch: FetchFn = (url, init) => {
-  posted.push({ path: new URL(url).pathname, body: JSON.parse(typeof init.body === 'string' ? init.body : '') });
-  return fetch(url, init);
+let posted: { path: string; body: unknown; status: number }[];
+/** Real HTTP to the retained relayer; records both the padded refusal and the compatibility retry unchanged. */
+const recordingFetch: FetchFn = async (url, init) => {
+  const response = await fetch(url, init);
+  posted.push({ path: new URL(url).pathname, body: JSON.parse(typeof init.body === 'string' ? init.body : '') as unknown, status: response.status });
+  return response;
 };
 
 beforeEach(async () => {
@@ -56,12 +57,18 @@ afterEach(async () => {
 describe('web relayer client vs the real relayer (wire contract)', () => {
   it('quote: the body the web sends is accepted by parseQuoteRequest and the relayer answer parses', async () => {
     const view = await getSweepQuote(h.url, target, DEST, AMOUNT, NOW_SEC, manifest.feeRecipient, recordingFetch);
-    expect(posted.map((x) => x.path)).toEqual(['/v1/quote']);
-    expect(parseQuoteRequest(posted[0]?.body)).toEqual({ chainId: CHAIN_ID, token: USDC, owner: target.owner, destination: DEST, amount: AMOUNT });
+    // The retained server predates MH-REL-3. Its strict parser refuses the pad before business rules run;
+    // only that protocol refusal permits one unpadded retry by the browser client.
+    expect(posted.map((x) => x.path)).toEqual(['/v1/quote', '/v1/quote']);
+    expect(posted.map((x) => x.status)).toEqual([400, 200]);
+    expect(posted[0]?.body).toHaveProperty('pad', expect.any(String));
+    expect(() => parseQuoteRequest(posted[0]?.body)).toThrow();
+    expect(parseQuoteRequest(posted[1]?.body)).toEqual({ chainId: CHAIN_ID, token: USDC, owner: target.owner, destination: DEST, amount: AMOUNT });
     expect(view.quote.feeTo).toBe(FEE_TO);
     expect(view.quote.fee > 0n && view.quote.fee < AMOUNT).toBe(true);
     expect(view.quote.expiresAt).toBeGreaterThan(NOW_SEC);
     expect(view.net).toBe(AMOUNT - view.quote.fee);
+    expect(h.fake.sent).toHaveLength(0);
   });
 
   it('sweep: relayedSweep posts a body parseSweepRequest accepts, bound to the chain, and the relayer broadcasts it', async () => {
@@ -70,8 +77,11 @@ describe('web relayer client vs the real relayer (wire contract)', () => {
       target, manifest, destination: DEST, amount: AMOUNT, quote, relayerUrl: h.url, rpc: permitRpc,
       nowSeconds: () => NOW_SEC, fetchFn: recordingFetch, randomNonce: () => 42n,
     });
-    expect(posted.map((x) => x.path)).toEqual(['/v1/quote', '/v1/sweep']);
-    const parsed = parseSweepRequest(posted[1]?.body);
+    expect(posted.map((x) => x.path)).toEqual(['/v1/quote', '/v1/quote', '/v1/sweep', '/v1/sweep']);
+    expect(posted.map((x) => x.status)).toEqual([400, 200, 400, 200]);
+    expect(posted[2]?.body).toHaveProperty('pad', expect.any(String));
+    expect(() => parseSweepRequest(posted[2]?.body)).toThrow();
+    const parsed = parseSweepRequest(posted[3]?.body);
     expect(parsed.chainId).toBe(CHAIN_ID);
     expect(parsed.sweep).toMatchObject({ token: USDC, owner: target.owner, destination: DEST, feeTo: FEE_TO, amount: AMOUNT, fee: quote.fee, nonce: 42n });
     expect(parsed.permit?.value).toBe(AMOUNT);

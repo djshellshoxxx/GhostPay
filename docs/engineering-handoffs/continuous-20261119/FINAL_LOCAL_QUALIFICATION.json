@@ -1,0 +1,115 @@
+{
+  "schema": "ghostpay-final-local-qualification/1",
+  "frozen_implementation": "c93f46441bf928d32b6809a9a5cfaf3d53e13aa6",
+  "frozen_tree": "7a7b189be05b802d3545e8823230076125d7bbf6",
+  "pages_recorded_commit": "526f7c1eb563434e476133ae87af8d79a1262d7e",
+  "node": "22.23.4",
+  "npm": "10.9.11",
+  "checks": [
+    {
+      "id": "final-build-libs",
+      "exit_code": 0,
+      "command": "npm run build:libs",
+      "evidence": "final-evidence/final-build-libs.log.gz",
+      "raw_sha256": "70ad710c76013439b659a717c3bd33e86e0b5665e85c1c7c7545ef4b1e3853ba",
+      "compressed_sha256": "feaef7f2bcb81538fa56d68e18539749c075d7d6749c4370b82fa396099819be"
+    },
+    {
+      "id": "final-workspace-typecheck",
+      "exit_code": 0,
+      "command": "npm run typecheck",
+      "evidence": "final-evidence/final-workspace-typecheck.log.gz",
+      "raw_sha256": "09a94e122bcb41f4f6ad5ee591b8ac3211d605a6c60aca36d576cf5c3c821ec5",
+      "compressed_sha256": "18b60a0f4759929e8b891c97f0e49930a69e5289ee6e0f0124440a37d4964e4d"
+    },
+    {
+      "id": "final-workspace-lint",
+      "exit_code": 0,
+      "command": "npm run lint",
+      "evidence": "final-evidence/final-workspace-lint.log.gz",
+      "raw_sha256": "ea3822dbce32e67240287ccc160de1a3879cb8c4348ad542cffdc83105bfd7d9",
+      "compressed_sha256": "4d0f22f910f9b4cd7e7a856748a85c84df0a6b87c1b3daa48c03ac625ce436d9"
+    },
+    {
+      "id": "final-web-build",
+      "exit_code": 0,
+      "command": "npm run build --workspace @ghostpay/web",
+      "evidence": "final-evidence/final-web-build.log.gz",
+      "raw_sha256": "23658fd7ff84b21e53937037ba0f0b686321d6a967dadcb1e7f15b11772d99a1",
+      "compressed_sha256": "d8c022396f5a754a766b9dda751b766436482b1a2ae580b4676779fd575c9423"
+    },
+    {
+      "id": "final-pages-build",
+      "exit_code": 0,
+      "command": "bash scripts/pages/build-pages.sh /workspace/scratch/0a7bc3583588/pages-final-c93",
+      "evidence": "final-evidence/final-pages-build.log.gz",
+      "raw_sha256": "7568b950a9a3e002ae755eac39a9aaf22c0c2885a4236e3955d67e9cee9ca646",
+      "compressed_sha256": "bd71b834fc9c1d1fd2182684faa9b06ab16974e99ad21d193dc3cd6066b557dd"
+    },
+    {
+      "id": "invoice-full-coverage",
+      "exit_code": 0,
+      "command": "cd packages/invoice-schema; node ../../node_modules/vitest/vitest.mjs run --coverage --maxWorkers=1",
+      "evidence": "final-evidence/invoice-full-coverage.log.gz",
+      "raw_sha256": "655ef3ce71a9a9a95e12e1692c32f180a1bbdace0f760eb7e0234889ad9f88c1",
+      "compressed_sha256": "449e65ecd1fe4f65d83e41be3fe40de9ff34e2e8e1c1dc0e5eb1c7f7bec978c4"
+    },
+    {
+      "id": "final-web-nocov",
+      "exit_code": 0,
+      "command": "cd apps/web; node ../../node_modules/vitest/vitest.mjs run --config vitest.nocov.config.ts --maxWorkers=1",
+      "evidence": "final-evidence/final-web-nocov.log.gz",
+      "raw_sha256": "524e1ea09fdb1b985d8fb1ff026d0d72c9b593b8db8113f11d883787b44ab82c",
+      "compressed_sha256": "9dc96d1343a9cbc64513598ffc98d30754e8070daf69969aee857ddbb055b176"
+    },
+    {
+      "id": "final-secrets",
+      "exit_code": 0,
+      "command": "npm run ci:scan-secrets",
+      "evidence": "final-evidence/final-secrets.log.gz",
+      "raw_sha256": "93aa968df4f112279b8f72787c235d02c1256e7101695c73079db3caa3caae14",
+      "compressed_sha256": "59c752c1b89e87b7879108fa870abc766feb63f7b60ee14a2527a7ef7b1ed2a4"
+    },
+    {
+      "id": "final-actions",
+      "exit_code": 0,
+      "command": "npm run ci:check-actions",
+      "evidence": "final-evidence/final-actions.log.gz",
+      "raw_sha256": "adb39d90db0a634202466920eea7bd70748d7b3979a63fbf33c7a30be575f7aa",
+      "compressed_sha256": "da6511a787529e57033c858db802c1787d310b13e0342bc5187715dd1f01fcb0"
+    },
+    {
+      "id": "final-audit-production",
+      "exit_code": 0,
+      "command": "npm audit --omit=dev --json",
+      "evidence": "final-evidence/final-audit-production.json.gz",
+      "raw_sha256": "a2a9e0305caa842aa574277712005fc0600e350d218f5ae9e5d78e97256a4473",
+      "compressed_sha256": "2e9d3f612e5e9a9685c7186527b409191af4a19fa2e82c020cc6ea811fe3192b"
+    },
+    {
+      "id": "final-audit-full",
+      "exit_code": 1,
+      "command": "npm audit --json",
+      "evidence": "final-evidence/final-audit-full.json.gz",
+      "raw_sha256": "59061e7d09ab66efa0e41874ff885b8adb4c78d3d8b6102da0f21d9a3fcf640c",
+      "compressed_sha256": "84d6e58fdd1af8810109f01f4f68cd7d787221e99c88555a9ee53575c3a8051d"
+    },
+    {
+      "id": "full-web-coverage-prior-source",
+      "exit_code": 1,
+      "result": "3837 passed, 1 failed, 13 skipped; original thresholds not certified because one test failed",
+      "evidence": "final-evidence/final-web-coverage.log.gz",
+      "raw_sha256": "24b97f522fe3dadcf5604dd25dc50730b0f354bfb198c931fadef47d53c476d6",
+      "compressed_sha256": "891dfbd08c69114b12df5fa5f88f06340907c5d77669cfb6c500a9612165435e"
+    }
+  ],
+  "limits": [
+    "All final application/package/script inputs remain unchanged from frozen implementation; later source commits are documentation/evidence only.",
+    "Invoice run804passed used stable production source; unused test parameter changed while in progress, then5cases andlint reran. Not immutable whole-tree final receipt.",
+    "Full workspace lint exit0 retains nonfailing pre-existing generated BTC unused-disable warning.",
+    "Full web build and Pages demo have default broad connect-src; no approved deployment origin, tight release RPC list or signed manifest supplied. Demo payments disabled.",
+    "Full web nocov completed4/4. Full web coverage finished3837passed/1failed/13skipped; the signer fixture was repaired and independently reviewed later. No full coverage pass inferred.",
+    "Local browser could not start; no browser pass inferred."
+  ],
+  "historical_scope": "Initial c93 product checkpoint; superseded follow-up results and failures are in FOLLOWUP_QUALIFICATION.json."
+}

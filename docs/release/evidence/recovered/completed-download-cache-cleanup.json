@@ -1,0 +1,24 @@
+{
+  "time_utc": "2026-11-19T13:22:20.517423+00:00",
+  "reason": "Completed reproducible package-download caches only; preserve installed dependencies, npm10 binary, logs, source and Git history.",
+  "removed": [
+    {
+      "path": "/tmp/ghostpay-npm-recovery-cache-246ff268d20d/_cacache",
+      "bytes": 250868461
+    },
+    {
+      "path": "/tmp/ghostpay-npm10-recovery-246ff268d20d/_cacache",
+      "bytes": 31812151
+    }
+  ],
+  "tmp_after": {
+    "total": 5225713664,
+    "used": 4607082496,
+    "free": 618631168
+  },
+  "shm_available": {
+    "total": 5225713664,
+    "used": 0,
+    "free": 5225713664
+  }
+}

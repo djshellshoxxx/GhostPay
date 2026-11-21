@@ -1,0 +1,12 @@
+[
+  {
+    "file": "final-evidence/hosted-d74-lean-135981022990.log.gz",
+    "raw_sha256": "814da5f8eb8a1db31b1927a3fd7a11d2ca8a47a54fcf84d939ba19d2e7de9ca4",
+    "compressed_sha256": "3f47396fa2b2d6bbd0abbd739689a1b3ae01fb40eaed0fcb9c489021d8933dbd"
+  },
+  {
+    "file": "final-evidence/hosted-d74-full-135981023128.log.gz",
+    "raw_sha256": "abd369610c806bfaaf26a6b73864c99a2443a60b8c30c2de503d433e9f813bab",
+    "compressed_sha256": "ed9b1298faa56df05ae9de49f2b434b2aa53104a5205f5eaa1060b13f8e3b06a"
+  }
+]

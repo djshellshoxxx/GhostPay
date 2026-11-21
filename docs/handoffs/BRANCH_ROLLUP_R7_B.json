@@ -1,0 +1,102 @@
+{
+  "base": "aec179910c39081d820396409ff3139ff2264132",
+  "ranges": [
+    [
+      145,
+      158
+    ],
+    [
+      159,
+      172
+    ],
+    [
+      173,
+      186
+    ],
+    [
+      187,
+      200
+    ],
+    [
+      201,
+      214
+    ],
+    [
+      215,
+      228
+    ],
+    [
+      229,
+      242
+    ],
+    [
+      243,
+      256
+    ],
+    [
+      257,
+      270
+    ],
+    [
+      271,
+      284
+    ],
+    [
+      285,
+      298
+    ]
+  ],
+  "stat": {
+    "n": 154,
+    "redundant": 100,
+    "positive": 54,
+    "code": 39,
+    "docs_only": 13,
+    "noncode_other": 2,
+    "capped": 12
+  },
+  "errors": [],
+  "small": [
+    {
+      "b": "chatgpt/zero-codex/ux-confirm-clock-boundary-20261111",
+      "a": 2,
+      "f": [
+        "packages/ux-schedule/src/scheduled.test.ts",
+        "packages/ux-schedule/src/scheduled.ts"
+      ]
+    },
+    {
+      "b": "chatgpt/zero-codex/ux-guide-plain-object-20261111",
+      "a": 3,
+      "f": [
+        "packages/ux-guide/src/profiles.test.ts",
+        "packages/ux-guide/src/profiles.ts"
+      ]
+    },
+    {
+      "b": "claude/happy-maxwell-onl4x5",
+      "a": 1,
+      "f": [
+        "scripts/audit/gen-audit24-report.py",
+        "scripts/tests/audit-report-paths.test.mjs"
+      ]
+    },
+    {
+      "b": "claude/vigilant-johnson-yjgq94",
+      "a": 1,
+      "f": [
+        "apps/web/src/views/Settings.test.tsx"
+      ]
+    },
+    {
+      "b": "codex/ghostpay-cloud-41868394956",
+      "a": 1,
+      "f": [
+        "docs/handoffs/INVOICE_SPARSE_ITEMS_2026-11-04.md",
+        "packages/invoice-schema/src/schema.test.ts",
+        "packages/invoice-schema/src/schema.ts",
+        "packages/invoice-schema/src/sign.test.ts"
+      ]
+    }
+  ]
+}

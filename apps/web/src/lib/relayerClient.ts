@@ -1,6 +1,8 @@
 import type { Address } from '@ghostpay/chain-adapters';
+import { MetadataHardeningError, padBody } from '@ghostpay/metadata-hardening';
 import { getAddress, isAddress } from 'viem/utils';
 import { UserFacingError } from './errors';
+import { boundedRequest, BoundedRequestError } from './boundedRequest';
 
 export type FetchFn = (url: string, init: RequestInit) => Promise<Response>;
 
@@ -55,9 +57,19 @@ export class RelayerRefusedError extends UserFacingError {
    */
   public get beforeBroadcast(): boolean {
     if (this.status < 400 || this.status >= 500 || this.status === 409 || this.code === undefined) return false;
-    return PRE_BROADCAST_CODES.has(this.code) || (this.status === 400 && /^invalid_[a-z_]{1,32}$/.test(this.code));
+    return PRE_BROADCAST_CODES.has(this.code) || (this.status === 400 && PUBLIC_ERROR_CODES.has(this.code) && this.code.startsWith('invalid_'));
   }
 }
+
+/** Fixed protocol classes only: an arbitrary lowercase string can still contain provider/request information. */
+const PUBLIC_ERROR_CODES: ReadonlySet<string> = new Set([
+  ...PRE_BROADCAST_CODES,
+  'nonce_used', 'send_failed', 'send_unsettled', 'breaker_open', 'budget_exhausted', 'gas_price_moved',
+  'gas_price_too_high', 'policy_unavailable', 'price_stale', 'price_unavailable', 'queue_full', 'rpc_disagree',
+  'rpc_unavailable', 'shutting_down', 'state_unavailable', 'invalid_client_address', 'invalid_quote',
+  ...['body', 'json', 'pad', 'request', 'chainId', 'token', 'owner', 'destination', 'amount', 'sweep',
+    'quoteToken', 'permit', 'feeTo', 'fee', 'deadline', 'nonce', 'sweepSig'].map((field) => `invalid_${field}`),
+]);
 
 /** Reads the error class from `{ "error": { "code": "..." } }` (relayer envelope) or a legacy `{ "error": "..." }`. */
 function errorClass(text: string): string | undefined {
@@ -65,7 +77,7 @@ function errorClass(text: string): string | undefined {
     const j = JSON.parse(text) as { error?: unknown };
     const e = j.error;
     const code = typeof e === 'string' ? e : typeof e === 'object' && e !== null ? (e as { code?: unknown }).code : undefined;
-    return typeof code === 'string' && /^[a-z_]{1,40}$/.test(code) ? code : undefined;
+    return typeof code === 'string' && PUBLIC_ERROR_CODES.has(code) ? code : undefined;
   } catch {
     return undefined;
   }
@@ -74,76 +86,87 @@ function errorClass(text: string): string | undefined {
 const MAX_RESPONSE = 16 * 1024;
 const TIMEOUT_MS = 15_000;
 
-/** Enforce the response budget while receiving bytes, before a remote body can be fully buffered. */
-async function readBoundedResponse(res: Response): Promise<string> {
-  if (!res.body) {
-    // Empty-body Responses and minimal test transports may not expose a stream.
-    const text = await res.text();
-    if (new TextEncoder().encode(text).byteLength > MAX_RESPONSE) {
-      throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
-    }
-    return text;
-  }
+/** Per-call options. */
+export interface RelayerCallOptions {
+  /**
+   * MH-REL-3 (TM11): pad the JSON body with a random hex `pad` member to a fixed size bucket (1, 2 or 4 KiB) so the
+   * body length says less about the request. Default true. Hides nothing else: IP, timing and the content itself still
+   * reach the relayer.
+   */
+  readonly pad?: boolean;
+  /** Cancellation is action-scoped and remains in force for the one padding compatibility retry. */
+  readonly signal?: AbortSignal | undefined;
+  /** Deadline for each HTTP exchange, including its response body; default 15 seconds. */
+  readonly timeoutMs?: number;
 
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let text = '';
-  let bytesRead = 0;
-  let completed = false;
+}
+
+const toWire = (body: unknown): string => JSON.stringify(body, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v));
+
+/** Padded wire body, or the plain one when padding is off or the body exceeds the largest bucket. */
+function encodeBody(body: unknown, pad: boolean): string {
+  const plain = toWire(body);
+  if (!pad) return plain;
   try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        completed = true;
-        return text + decoder.decode();
-      }
-      bytesRead += value.byteLength;
-      if (bytesRead > MAX_RESPONSE) {
-        throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
-      }
-      text += decoder.decode(value, { stream: true });
-    }
-  } finally {
-    if (!completed) {
-      // Cancellation is best-effort; never let an unresponsive remote stream hold up rejection.
-      void reader.cancel().catch(() => undefined);
-    }
-    reader.releaseLock();
+    return padBody(JSON.parse(plain) as Record<string, unknown>);
+  } catch (error) {
+    if (error instanceof MetadataHardeningError && error.code === 'LIMIT_EXCEEDED') return plain;
+    // A failed or unavailable CSPRNG must not silently downgrade a padded request or leak its error text.
+    throw new UserFacingError({ key: 'error.relayerClient.paddingFailed' });
   }
 }
 
-async function post(base: string, path: string, body: unknown, fetchFn: FetchFn): Promise<unknown> {
-  const ctl = new AbortController();
-  const timer = setTimeout(() => {
-    ctl.abort();
-  }, TIMEOUT_MS);
+/**
+ * Transition (apps/relayer/PRIVACY.md): a relayer older than MH-REL-3 refuses the unknown `pad` member with
+ * `400 invalid_request` while parsing, before anything else happens. Only then is the same request sent once unpadded.
+ */
+function isOldRelayerPadRefusal(e: unknown): boolean {
+  return e instanceof RelayerRefusedError && e.status === 400 && e.code === 'invalid_request';
+}
+
+async function postPadded(base: string, path: string, body: unknown, fetchFn: FetchFn, opts: RelayerCallOptions): Promise<unknown> {
+  if (opts.pad === false) return post(base, path, encodeBody(body, false), fetchFn, opts);
   try {
-    const res = await fetchFn(`${base}${path}`, {
+    return await post(base, path, encodeBody(body, true), fetchFn, opts);
+  } catch (e) {
+    if (!isOldRelayerPadRefusal(e)) throw e;
+    return post(base, path, encodeBody(body, false), fetchFn, opts);
+  }
+}
+
+async function post(base: string, path: string, wireBody: string, fetchFn: FetchFn, opts: RelayerCallOptions): Promise<unknown> {
+  // A query or fragment in a base URL must never absorb the protocol path.
+  let url: URL;
+  try {
+    const root = new URL(base);
+    if (root.username !== '' || root.password !== '' || root.search !== '' || root.hash !== '') throw new Error();
+    url = new URL(`${root.origin}${root.pathname.replace(/\/+$/, '')}${path}`);
+  } catch {
+    throw new UserFacingError({ key: 'error.relayerClient.couldNotReachTheRelayer' });
+  }
+  let res;
+  try {
+    res = await boundedRequest(fetchFn, url.href, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify(body, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v)),
-      credentials: 'omit',
-      redirect: 'error',
-      referrerPolicy: 'no-referrer',
-      cache: 'no-store',
-      signal: ctl.signal,
-    });
-    const text = await readBoundedResponse(res);
-    if (!res.ok) {
-      // Class only; never echo the body.
-      const code = errorClass(text);
-      throw new RelayerRefusedError(`The relayer refused the request: HTTP ${String(res.status)}${code === undefined ? '' : ` (${code})`}.`, res.status, code);
-    }
-    try {
-      return JSON.parse(text);
-    } catch {
-      throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidResponse' });
-    }
+      body: wireBody,
+    }, { timeoutMs: opts.timeoutMs ?? TIMEOUT_MS, maxBytes: MAX_RESPONSE, signal: opts.signal });
   } catch (e) {
-    if (e instanceof UserFacingError) throw e;
+    if (e instanceof BoundedRequestError && e.code === 'TOO_LARGE') {
+      throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
+    }
+    // An aborted/expired submission is uncertain, never a claimed pre-broadcast refusal or implicit retry.
     throw new UserFacingError({ key: 'error.relayerClient.couldNotReachTheRelayer' });
-  } finally {
-    clearTimeout(timer);
+  }
+  const text = new TextDecoder().decode(res.body);
+  if (!res.ok) {
+    const code = errorClass(text);
+    throw new RelayerRefusedError(`The relayer refused the request: HTTP ${String(res.status)}${code === undefined ? '' : ` (${code})`}.`, res.status, code);
+  }
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidResponse' });
   }
 }
 
@@ -153,8 +176,8 @@ function obj(v: unknown): Record<string, unknown> {
 }
 
 /** POST /v1/quote. The caller must still check the fee against the published cap before signing. */
-export async function requestQuote(base: string, q: QuoteRequest, fetchFn: FetchFn = (u, i) => fetch(u, i)): Promise<RelayerQuote> {
-  const o = obj(await post(base, '/v1/quote', { chainId: q.chainId, token: q.token, owner: q.owner, destination: q.destination, amount: q.amount.toString() }, fetchFn));
+export async function requestQuote(base: string, q: QuoteRequest, fetchFn: FetchFn = (u, i) => fetch(u, i), opts: RelayerCallOptions = {}): Promise<RelayerQuote> {
+  const o = obj(await postPadded(base, '/v1/quote', { chainId: q.chainId, token: q.token, owner: q.owner, destination: q.destination, amount: q.amount.toString() }, fetchFn, opts));
   const fee = o['fee'];
   const feeTo = o['feeTo'];
   const expiresAt = o['expiresAt'];
@@ -188,8 +211,8 @@ export interface SweepSubmission {
 }
 
 /** POST /v1/sweep. Returns the transaction hash the relayer reports (verify it on your own RPC). */
-export async function submitSweep(base: string, s: SweepSubmission, fetchFn: FetchFn = (u, i) => fetch(u, i)): Promise<string> {
-  const o = obj(await post(base, '/v1/sweep', s, fetchFn));
+export async function submitSweep(base: string, s: SweepSubmission, fetchFn: FetchFn = (u, i) => fetch(u, i), opts: RelayerCallOptions = {}): Promise<string> {
+  const o = obj(await postPadded(base, '/v1/sweep', s, fetchFn, opts));
   const h = o['txHash'];
   if (typeof h !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(h)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash' });
   return h.toLowerCase();

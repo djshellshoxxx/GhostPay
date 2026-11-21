@@ -1,0 +1,132 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v5.0.5 /workspace/scratch/4fa14be12559/GhostPay/packages/chain-adapters
+
+ ❯ src/payments.bulkCancellation.test.ts (5 tests | 4 failed) 15ms
+   ❯ bulk receipt evidence respects scan cancellation (5)
+     × makes no request when the scan has already been cancelled 11ms
+     × does not start block or transaction queries after a late head response 1ms
+     × checks cancellation before each member of a concurrent block group 1ms
+     × stops between receipt calls and discards partial evidence after cancellation 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/payments.bulkCancellation.test.ts > bulk receipt evidence respects scan cancellation > makes no request when the scan has already been cancelled
+AssertionError: expected [ 'head', 'block:100', …(7) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "head",
++   "block:100",
++   "block:101",
++   "eth_getTransactionReceipt:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionByHash:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionReceipt:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "eth_getTransactionByHash:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "block:100",
++   "block:101",
++ ]
+
+ ❯ src/payments.bulkCancellation.test.ts:38:19
+     36|     const { client, calls } = fixture();
+     37|     const batch = await fetchRouterEvidence(client, targets, 1, contro…
+     38|     expect(calls).toEqual([]);
+       |                   ^
+     39|     expect(batch.requests).toBe(0);
+     40|     expect(batch.head).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/payments.bulkCancellation.test.ts > bulk receipt evidence respects scan cancellation > does not start block or transaction queries after a late head response
+AssertionError: expected [ 'head', 'block:100', …(7) ] to deeply equal [ 'head' ]
+
+- Expected
++ Received
+
+  [
+    "head",
++   "block:100",
++   "block:101",
++   "eth_getTransactionReceipt:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionByHash:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionReceipt:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "eth_getTransactionByHash:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "block:100",
++   "block:101",
+  ]
+
+ ❯ src/payments.bulkCancellation.test.ts:53:19
+     51|     pending.release();
+     52|     const batch = await work;
+     53|     expect(calls).toEqual(['head']);
+       |                   ^
+     54|     expect(batch.requests).toBe(1);
+     55|     expect(batch.head).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/payments.bulkCancellation.test.ts > bulk receipt evidence respects scan cancellation > checks cancellation before each member of a concurrent block group
+AssertionError: expected [ 'head', 'block:100', …(7) ] to deeply equal [ 'head', 'block:100' ]
+
+- Expected
++ Received
+
+  [
+    "head",
+    "block:100",
++   "block:101",
++   "eth_getTransactionReceipt:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionByHash:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionReceipt:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "eth_getTransactionByHash:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "block:100",
++   "block:101",
+  ]
+
+ ❯ src/payments.bulkCancellation.test.ts:65:19
+     63|     const { client, calls } = fixture((name) => { if (name === 'block:…
+     64|     const batch = await fetchRouterEvidence(client, targets, 2, contro…
+     65|     expect(calls).toEqual(['head', 'block:100']);
+       |                   ^
+     66|     expect(batch.requests).toBe(2);
+     67|     expect(batch.head).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/payments.bulkCancellation.test.ts > bulk receipt evidence respects scan cancellation > stops between receipt calls and discards partial evidence after cancellation
+AssertionError: expected [ 'head', 'block:100', …(7) ] to deeply equal [ 'head', 'block:100', …(2) ]
+
+- Expected
++ Received
+
+  [
+    "head",
+    "block:100",
+    "block:101",
+    "eth_getTransactionReceipt:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionByHash:0x2222222222222222222222222222222222222222222222222222222222222222",
++   "eth_getTransactionReceipt:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "eth_getTransactionByHash:0x3333333333333333333333333333333333333333333333333333333333333333",
++   "block:100",
++   "block:101",
+  ]
+
+ ❯ src/payments.bulkCancellation.test.ts:78:19
+     76|     const { client, calls } = fixture((name) => { if (name === receipt…
+     77|     const batch = await fetchRouterEvidence(client, targets, 1, contro…
+     78|     expect(calls).toEqual(['head', 'block:100', 'block:101', receipt]);
+       |                   ^
+     79|     expect(batch.requests).toBe(calls.length);
+     80|     expect(batch.head).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  06:04:27
+   Duration  905ms (import 55%, transform 42%, tests 2%)
+

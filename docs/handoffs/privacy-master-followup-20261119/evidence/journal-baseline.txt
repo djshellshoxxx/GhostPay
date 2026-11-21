@@ -1,0 +1,44 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./vite.config" without a file extension (vitest.privacy-local.config.ts:2:18). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /workspace/scratch/13855ecc035c/GhostPay-privacy/apps/web
+
+ ❯ src/views/Scan.privateCheckpoint.test.tsx (20 tests | 1 failed | 19 skipped) 1817ms
+   ❯ private seller checkpoint UI (20)
+     × rejects a pending encrypted journal write after a profile changes before its storage event 1811ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/views/Scan.privateCheckpoint.test.tsx > private seller checkpoint UI > rejects a pending encrypted journal write after a profile changes before its storage event
+AssertionError: expected [ [ …(2) ], [ …(2) ] ] to deeply equal [ [ …(2) ], [ …(2) ] ]
+
+- Expected
++ Received
+
+@@ -3,8 +3,8 @@
+      "ghostpay.scan.checkpoint.v5.42d4d619ade825e68e91ff2ec1340dfb4e3b8eda5d4e6744fa13b4c8e4c82291",
+      "{\"version\":1,\"forgotten\":true,\"nonce\":\"fa7c271f937069735f05ce591fcf82bb90097232d53e01776db61035319c6a74\"}",
+    ],
+    [
+      "ghostpay.scan.checkpoint.v5.41223d6e83bab25ce8e551bf5cc3040ed3bf29a9cbfd2cc8cd63956f7d3691c6",
+-     "{\"version\":1,\"forgotten\":true,\"nonce\":\"a44afb86f8641d8ebe5db3d39b49cda8747be6ef24b2a7aa46f4f7277c3fc8fa\"}",
++     "{\"version\":1,\"salt\":\"2e1deec007a9dcef29c4f14c7825c2d3af52bcfce9ac04c22281936efdeab329\",\"iv\":\"dff2be6790d7d13410f3cd13\",\"ciphertext\":\"fa67614cd5be505515836bb30feb8ca57636f5451e4d93e8bdbb9d9cf973251db3323cfb910462dcda5ed6bee404eabe9567c9af1a2c14f902ab9b9b83486f19474b0d40b86d71f6c87be9ae53d029936c65968bee0a10cb7873c7633eb55cb28880211538eebe2e9f8c49e8fe5b9db90b5e72f9b1b78a398f02ae987194d0626dc6ff841d62497d88868795c388a34fabc09a01bbaca67be835a9c7a1dd584de9453c8e7df6014522394861386b6d20aeea333595b3f29e007a19afe609cebc6bbcc9d9ed6ba9b224803739079d9c446baaa1fb123d952295719e4bf326823ca5b9edca9f72cb57db4e290ab17bab662ead05fc8acc63bc38443c0d38307987239cc7f36a507e8ced52a5a8c20248190a5be4e6333c09ce955250cfd5a761e1b6025857385ed842957f16bc3987a7d3527428661c7d3a6c66b69de2c7b1718b5df21e77fccc00335e2c483ec310ca1ced0b4f31f386bce0a3edf102b691d2cc02b79fdb07839b94fc5bc52d0f5d6982a6ca8e57a22bc693ea6d8f42cf07a3d2e054c820c75ce9c7f2cbd0736df4147bb5448c60f3ed271ccdc901628a265af4a7b063c37b481f037c4a8479505dae061c4770764ff9700e33a66dea30a96d537b49e65c190ce4eb48e14c8c0e199070a1b28e7124c9778ad7b384e98bfee915fa3352ac39db4447694f367917dbf3d6c0311f28b54a75efb7b6749f5b16e2be5730694cbf1a65bd5049a450989d361a9e9b257b8818c41ed8465710fc46c2441eea6f0ce2c1d95e9b1fd751b06905b3bddab4cb943591e78fbea3cb977b019cb4466eb34cbc5db91f1397ac79e6ef82df9563356778828cc4a63d04e3681f74866d151397cd57e1d5dd9c01f4644c76929e3989ba48d3c724b07997acf05c452e328e4145e030e709f87dd0094e527e759f2ef42d058ecab928fa9a81bcab2440100f713589b8124a059080201ef26d77d0a6056e9b7ba1fe399754e4ce45077dcb681f1743d806a063154f94695306508f22a8463dc721a11b3c581ab4c6cdfb4d0de194c9d9daed0a7608059c809263bf9ea1afd359647648baf36a92542f852cfdc13aafbd265e6134848c34f82dad8923f981f6b461d087b8a11dcf514d9a8d9120d71ffdf3c34fa79bc5c35347af9a86a6c595ca9979c2ffb586453685aec5d5511bf080a1fcb726324187d81570dbf73ac28345720818cb76ef95e3726a3e7574\"}",
+    ],
+  ]
+
+ ❯ src/views/Scan.privateCheckpoint.test.tsx:235:43
+    233|       });
+    234|       await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('…
+    235|       expect([...s.saved.data.entries()]).toEqual(before);
+       |                                           ^
+    236|       expect(screen.queryByText(/Finished\./)).toBeNull();
+    237|     } finally { release(); }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 19 skipped (20)
+   Start at  00:07:29
+   Duration  15.84s (transform 47%, import 27%, environment 14%, tests 12%)

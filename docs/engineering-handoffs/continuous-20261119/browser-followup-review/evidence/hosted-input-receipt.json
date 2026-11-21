@@ -1,0 +1,27 @@
+[
+  {
+    "profile": "lean",
+    "job_id": "135981022990",
+    "raw_log_path": "/workspace/scratch/0a7bc3583588/run-logs/hosted-d74-lean-135981022990.log",
+    "raw_log_sha256": "814da5f8eb8a1db31b1927a3fd7a11d2ca8a47a54fcf84d939ba19d2e7de9ca4",
+    "raw_log_bytes": 116268,
+    "excerpt": "hosted-lean-failure.txt",
+    "excerpt_normalization": "Trailing whitespace removed; full original raw-log SHA-256 above remains unchanged."
+  },
+  {
+    "profile": "full",
+    "job_id": "135981023128",
+    "raw_log_path": "/workspace/scratch/0a7bc3583588/run-logs/hosted-d74-full-135981023128.log",
+    "raw_log_sha256": "abd369610c806bfaaf26a6b73864c99a2443a60b8c30c2de503d433e9f813bab",
+    "raw_log_bytes": 133825,
+    "excerpt": "hosted-full-failure.txt",
+    "excerpt_normalization": "Trailing whitespace removed; full original raw-log SHA-256 above remains unchanged."
+  },
+  {
+    "artifact_context_path": "/workspace/scratch/0a7bc3583588/run-logs/hosted-d74-network-authorization-error-context.md",
+    "artifact_context_sha256": "96fab0affbb55aa09aff3722e008010e60db9fd0925e296c7ae5d1a3f409cfae",
+    "retained_file": "hosted-error-context.txt.gz",
+    "retained_encoding": "gzip; decompression yields exact original artifact bytes",
+    "retained_gzip_sha256": "3f37420624a0e183edc818b6acaba0633853761b3cf729bd1b9719d0a4a83a07"
+  }
+]

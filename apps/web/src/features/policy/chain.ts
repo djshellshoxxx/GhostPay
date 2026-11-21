@@ -48,7 +48,7 @@ async function read(client: RpcClient, abi: Abi, to: Address, functionName: stri
   try {
     return decodeFunctionResult({ abi, functionName, data: out });
   } catch {
-    throw new UserFacingError(`The contract at ${to} did not answer ${functionName}() as expected.`);
+    throw new UserFacingError({ key: 'policy.error.contractResponse' });
   }
 }
 
@@ -137,7 +137,7 @@ export async function verifyPolicyDeployment(
   return Object.freeze({ ...expected, factory, router, profile, canonicalBlock: block });
 }
 
-// i18n-use: policy.deployment.untrusted
+// i18n-use: policy.deployment.untrusted policy.error.contractResponse
 
 /** On-chain view of one account; `deployed: false` before the factory created it. */
 export type AccountView =

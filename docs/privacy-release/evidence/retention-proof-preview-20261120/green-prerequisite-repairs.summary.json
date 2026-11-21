@@ -1,0 +1,522 @@
+{
+  "source": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+  "exit_code": 0,
+  "raw_report_sha256": "2a3c9912a2a15addf050d98a002299c88e6375e000ea242758a1852c87697203",
+  "normalization": "Relative paths; failed assertions retain only first diagnostic lines, excluding synthetic DOM dumps/stack paths.",
+  "counts": {
+    "numTotalTests": 78,
+    "numPassedTests": 78,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "files": [
+    {
+      "path": "apps/web/src/AppShell.privacy.test.tsx",
+      "status": "passed",
+      "startTime": 1795195295223,
+      "endTime": 1795195297844.1313,
+      "tests": [
+        {
+          "title": "required global privacy masking hides an invoice draft from display and accessibility while preserving its mounted input and sole-copy keys",
+          "status": "passed",
+          "duration": 353.74379300000055,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking starts sensitive routes masked when the user saved privacy mode",
+          "status": "passed",
+          "duration": 78.68804999999975,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking masks Settings signer keys and provider credentials while keeping neutral controls accessible",
+          "status": "passed",
+          "duration": 101.61778099999992,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking requires fresh reveal for a replacement encrypted invoice on the same Pay route",
+          "status": "passed",
+          "duration": 195.95045899999968,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking revokes visual reveal on explicit tag lock without deleting keys or encrypted tag history",
+          "status": "passed",
+          "duration": 151.76182900000003,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking preserves active preflight authority and exact execution-settings bytes when only masking changes",
+          "status": "passed",
+          "duration": 230.93788200000017,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking keeps this tab masked and reports when its privacy preference cannot be persisted",
+          "status": "passed",
+          "duration": 50.83434000000034,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking keeps the current mask across an execution-storage refresh with origin clear",
+          "status": "passed",
+          "duration": 160.78132600000026,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking keeps the current mask across an execution-storage refresh with missing privacy",
+          "status": "passed",
+          "duration": 168.75110099999984,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking keeps the current mask across an execution-storage refresh with corrupt privacy",
+          "status": "passed",
+          "duration": 150.09041400000024,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking keeps the current mask across an execution-storage refresh with blocked privacy",
+          "status": "passed",
+          "duration": 165.30021299999953,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking syncs only private preferences across tabs while retaining existing execution-storage revocation",
+          "status": "passed",
+          "duration": 15.19669900000008,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking refuses a stale clipboard edit without revealing after missing privacy storage",
+          "status": "passed",
+          "duration": 211.6351650000006,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking refuses a stale clipboard edit without revealing after corrupt privacy storage",
+          "status": "passed",
+          "duration": 179.5713079999996,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking refuses a stale clipboard edit without revealing after blocked privacy storage",
+          "status": "passed",
+          "duration": 160.1685150000003,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking refuses a stale form edit without revealing after missing privacy storage",
+          "status": "passed",
+          "duration": 73.61527699999988,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking refuses a stale form edit without revealing after corrupt privacy storage",
+          "status": "passed",
+          "duration": 67.92435899999964,
+          "failure": []
+        },
+        {
+          "title": "required global privacy masking refuses a stale form edit without revealing after blocked privacy storage",
+          "status": "passed",
+          "duration": 104.13139000000047,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/components/MerchantTemplateIssuer.retention.test.tsx",
+      "status": "passed",
+      "startTime": 1795195299366,
+      "endTime": 1795195299887.4614,
+      "tests": [
+        {
+          "title": "merchant invoice presentation retention previews and cancels without clearing, then clears only the completed display while preserving its sources and shared link",
+          "status": "passed",
+          "duration": 278.1097679999998,
+          "failure": []
+        },
+        {
+          "title": "merchant invoice presentation retention withdraws prior-mode cleanup authority and clears only a newly minimized result while preserving its selected mode",
+          "status": "passed",
+          "duration": 127.22591999999986,
+          "failure": []
+        },
+        {
+          "title": "merchant invoice presentation retention excludes pending issuance and rejects old cleanup authority while giving a replacement its own opt-in expiry",
+          "status": "passed",
+          "duration": 72.03506900000002,
+          "failure": []
+        },
+        {
+          "title": "merchant invoice presentation retention withdraws a closed result and never registers an issuance that completes after its view unmounts",
+          "status": "passed",
+          "duration": 43.46150999999986,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/wallet.disclosure.test.ts",
+      "status": "passed",
+      "startTime": 1795195301114,
+      "endTime": 1795195301242.531,
+      "tests": [
+        {
+          "title": "wallet privacy disclosure before authority leaves the application waits for account-access disclosure and sends nothing when declined",
+          "status": "passed",
+          "duration": 3.583413999999948,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application refuses the transaction before provider reads or sends when disclosure is declined",
+          "status": "passed",
+          "duration": 1.8382469999999103,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application refuses the signature before provider reads or signs when disclosure is declined",
+          "status": "passed",
+          "duration": 0.8234640000000581,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application requires a separate immutable chain-switch decision and adds no preview RPC",
+          "status": "passed",
+          "duration": 53.91965200000004,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application preserves separate consent while accepting expected permission and requested switch events",
+          "status": "passed",
+          "duration": 55.20871800000009,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cancels pending account disclosure on provider events and releases listeners",
+          "status": "passed",
+          "duration": 1.7970750000001772,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application refuses transaction when the provider loses its on monitoring method before review",
+          "status": "passed",
+          "duration": 1.2898490000000038,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application refuses transaction when the provider loses its removeListener monitoring method before review",
+          "status": "passed",
+          "duration": 0.5245720000000347,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application refuses signature when the provider loses its on monitoring method before review",
+          "status": "passed",
+          "duration": 0.5218780000000152,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application refuses signature when the provider loses its removeListener monitoring method before review",
+          "status": "passed",
+          "duration": 0.5606769999999415,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cleans partial transaction monitoring before any disclosure or provider call",
+          "status": "passed",
+          "duration": 0.6387150000000474,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cleans partial signature monitoring before any disclosure or provider call",
+          "status": "passed",
+          "duration": 0.4971219999999903,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application makes provider callbacks inert before reentrant cleanup and preserves the submitted journal",
+          "status": "passed",
+          "duration": 2.6252370000001974,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application sends and journals the captured request even if the caller edits its objects while reviewing",
+          "status": "passed",
+          "duration": 1.312782999999854,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cancelling transaction review neither touches the duplicate journal nor calls the provider",
+          "status": "passed",
+          "duration": 0.530140000000074,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cancels transaction review on accountsChanged without any wallet call",
+          "status": "passed",
+          "duration": 0.49439699999993536,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cancels transaction review on chainChanged without any wallet call",
+          "status": "passed",
+          "duration": 0.43636900000001333,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application cancels transaction review on disconnect without any wallet call",
+          "status": "passed",
+          "duration": 0.28145500000005086,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application rechecks application authority after approval before the first provider read",
+          "status": "passed",
+          "duration": 0.33545699999990575,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application an approved signature cannot continue after the host is revoked during the wallet recheck",
+          "status": "passed",
+          "duration": 0.4637310000000525,
+          "failure": []
+        },
+        {
+          "title": "wallet privacy disclosure before authority leaves the application preserves and journals a returned transaction hash even if the host closes after submission starts",
+          "status": "passed",
+          "duration": 0.5309720000000198,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/wallet.lifecycle.test.ts",
+      "status": "passed",
+      "startTime": 1795195302839,
+      "endTime": 1795195302854.6482,
+      "tests": [
+        {
+          "title": "wallet connection lifecycle does not read or switch after a pending account request is aborted",
+          "status": "passed",
+          "duration": 5.677968000000078,
+          "failure": []
+        },
+        {
+          "title": "wallet connection lifecycle checks caller authority before a chain switch after delayed network consistency",
+          "status": "passed",
+          "duration": 0.8545610000001034,
+          "failure": []
+        },
+        {
+          "title": "wallet connection lifecycle detects an account changed silently during the expected chain switch",
+          "status": "passed",
+          "duration": 1.1380599999999959,
+          "failure": []
+        },
+        {
+          "title": "wallet connection lifecycle allows initial account permission events and the requested chain-switch event",
+          "status": "passed",
+          "duration": 1.8255879999999252,
+          "failure": []
+        },
+        {
+          "title": "wallet connection lifecycle rejects a disconnect while checking the returned account",
+          "status": "passed",
+          "duration": 6.226817000000096,
+          "failure": []
+        },
+        {
+          "title": "wallet connection lifecycle removes partially registered listeners when monitoring throws",
+          "status": "passed",
+          "duration": 0.648239999999987,
+          "failure": []
+        }
+      ]
+    },
+    {
+      "path": "apps/web/src/lib/wallet.test.ts",
+      "status": "passed",
+      "startTime": 1795195302266,
+      "endTime": 1795195302294.6987,
+      "tests": [
+        {
+          "title": "discoverWallets (EIP-6963) collects announced providers, sanitizing untrusted metadata",
+          "status": "passed",
+          "duration": 4.457324000000085,
+          "failure": []
+        },
+        {
+          "title": "discoverWallets (EIP-6963) falls back to a labelled injected provider only when nothing announced",
+          "status": "passed",
+          "duration": 2.134303999999929,
+          "failure": []
+        },
+        {
+          "title": "connectWallet connects when everything is consistent",
+          "status": "passed",
+          "duration": 1.2144450000000688,
+          "failure": []
+        },
+        {
+          "title": "connectWallet switches network once when the wallet is on another chain",
+          "status": "passed",
+          "duration": 0.602100000000064,
+          "failure": []
+        },
+        {
+          "title": "connectWallet refuses when the chain cannot be switched",
+          "status": "passed",
+          "duration": 2.8155139999998937,
+          "failure": []
+        },
+        {
+          "title": "connectWallet refuses a provider that lies about accounts",
+          "status": "passed",
+          "duration": 0.4217669999999316,
+          "failure": []
+        },
+        {
+          "title": "connectWallet refuses a provider that gives contradictory chain ids",
+          "status": "passed",
+          "duration": 0.3847120000000359,
+          "failure": []
+        },
+        {
+          "title": "connectWallet rejects invalid shapes from the provider",
+          "status": "passed",
+          "duration": 1.1784299999999348,
+          "failure": []
+        },
+        {
+          "title": "connectWallet reports a user rejection plainly",
+          "status": "passed",
+          "duration": 0.5757100000000719,
+          "failure": []
+        },
+        {
+          "title": "sending rechecks account and chain, then sends and shape-checks the hash",
+          "status": "passed",
+          "duration": 1.5693409999998948,
+          "failure": []
+        },
+        {
+          "title": "sending refuses to send if the account or chain changed after connecting",
+          "status": "passed",
+          "duration": 0.794170000000122,
+          "failure": []
+        },
+        {
+          "title": "sending checks application authority again after wallet network awaits and before sending",
+          "status": "passed",
+          "duration": 0.47768199999995886,
+          "failure": []
+        },
+        {
+          "title": "sending rechecks authority after wallet awaits before asking for a permit signature",
+          "status": "passed",
+          "duration": 0.4757689999999002,
+          "failure": []
+        },
+        {
+          "title": "sending refuses a provider account-change event during the network check",
+          "status": "passed",
+          "duration": 0.7548509999999169,
+          "failure": []
+        },
+        {
+          "title": "sending rejects bad hashes and signatures from the wallet",
+          "status": "passed",
+          "duration": 1.941874000000098,
+          "failure": []
+        },
+        {
+          "title": "sending signs typed data through the wallet",
+          "status": "passed",
+          "duration": 0.36543200000005527,
+          "failure": []
+        },
+        {
+          "title": "sending treats a user rejection during send as such",
+          "status": "passed",
+          "duration": 0.474666999999954,
+          "failure": []
+        },
+        {
+          "title": "sending keys an approval attempt by its invoice and its calldata, and a payment by its invoice only (L2-I3)",
+          "status": "passed",
+          "duration": 3.2536649999999554,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) verifies an identical transaction",
+          "status": "passed",
+          "duration": 0.4297590000001037,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) reports not-visible-yet after retries",
+          "status": "passed",
+          "duration": 0.1326810000000478,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a mutated call data",
+          "status": "passed",
+          "duration": 0.6569719999999961,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a mutated value",
+          "status": "passed",
+          "duration": 0.4919640000000527,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a mutated destination contract",
+          "status": "passed",
+          "duration": 0.23167999999986932,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a mutated sender",
+          "status": "passed",
+          "duration": 0.19947099999990314,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a mutated chain",
+          "status": "passed",
+          "duration": 0.14430799999990995,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a mutated hash",
+          "status": "passed",
+          "duration": 0.1817550000000665,
+          "failure": []
+        },
+        {
+          "title": "verifySubmission (provider mutation / chain lies caught on the user RPC) throws on a contract-creation tx and on malformed shapes",
+          "status": "passed",
+          "duration": 0.567156999999952,
+          "failure": []
+        },
+        {
+          "title": "pollReceipt returns success and reverted states",
+          "status": "passed",
+          "duration": 0.6018599999999878,
+          "failure": []
+        },
+        {
+          "title": "pollReceipt returns undefined if no receipt appears and errors on bad shapes",
+          "status": "passed",
+          "duration": 0.6986660000000029,
+          "failure": []
+        }
+      ]
+    }
+  ]
+}

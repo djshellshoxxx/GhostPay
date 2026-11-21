@@ -1,5 +1,9 @@
 # GhostPay core functional-beta completion tracker
 
+## Required v1.0/v1.1 privacy checkpoint
+
+The [required privacy checkpoint](../privacy-release/STATUS.md) records nine specs, separate feature branches, fresh successor reviews and the current combined generation 4 source. Eight features have implemented behavior with focused acceptance; persistent metadata retention remains partial. Complete original type/lint/coverage/build/browser/hosted qualification remains open. This isolated development checkpoint does not supersede the unrelated release requirements or historical evidence below, and authorizes no main merge, deployment or release.
+
 Date: 2026-11-11 (UTC). Branch `claude/nice-ritchie-8vivls`, [PR #114](https://github.com/djshellshoxxx/GhostPay/pull/114), stacked on the
 integration candidate [PR #98](https://github.com/djshellshoxxx/GhostPay/pull/98) at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`
 (all 34 hosted checks green on that exact head, observed 2026-11-11). `main` (`14f9b26`) is 581 commits behind the candidate

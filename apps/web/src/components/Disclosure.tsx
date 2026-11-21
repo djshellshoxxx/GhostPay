@@ -1,5 +1,5 @@
 import { FEE_SCHEDULE } from '@ghostpay/chain-adapters';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { ManifestState } from '../lib/manifest';
@@ -9,28 +9,32 @@ import { RichText } from './RichText';
 
 const monoTags = { mono: (c: ReactNode): ReactNode => <bdi dir='ltr'><Mono>{c}</Mono></bdi>, strong: (c: ReactNode): ReactNode => <strong>{c}</strong> };
 
-/** Loads the manifest state for one chain from the app origin. */
+/** Loads the bundled manifest for the current chain and service selection. */
 export function useManifest(chainId: number | undefined): ManifestState | undefined {
   const services = useServices();
-  const [state, setState] = useState<{ chainId: number; value: ManifestState } | undefined>(undefined);
+  const scope = useMemo(() => ({ chainId, services }), [chainId, services]);
+  const [state, setState] = useState<{ scope: typeof scope; value: ManifestState } | undefined>(undefined);
   useEffect(() => {
-    if (chainId === undefined) return;
+    if (scope.chainId === undefined) return;
+    const selectedChain = scope.chainId;
     let live = true;
     // A rejected (or synchronously throwing) service must not leave the fee disclosure
     // showing "loading" indefinitely or surface provider error details to the user.
     void Promise.resolve()
-      .then(() => services.loadManifest(chainId))
+      .then(() => scope.services.loadManifest(selectedChain))
       .then(
-        (value) => { if (live) setState({ chainId, value }); },
+        (value) => { if (live) setState({ scope, value }); },
         () => {
-          if (live) setState({ chainId, value: { status: 'invalid', reason: 'The deployment manifest could not be loaded.' } });
+          if (live) setState({ scope, value: { status: 'invalid', reason: 'The deployment manifest could not be loaded.' } });
         },
       );
     return () => {
       live = false;
     };
-  }, [chainId, services]);
-  return chainId !== undefined && state?.chainId === chainId ? state.value : undefined;
+  }, [scope]);
+  // An invoice replacement passes through no parsed chain. Re-entering the same chain must wait for its new load,
+  // otherwise the old manifest starts a provisional preflight before the current result can replace it.
+  return state?.scope === scope ? state.value : undefined;
 }
 
 /** bps to a percent string without floating point, for example 25 -> `0.25`. */

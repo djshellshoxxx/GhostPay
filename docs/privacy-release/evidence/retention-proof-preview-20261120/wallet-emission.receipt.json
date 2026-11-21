@@ -1,0 +1,12 @@
+{
+  "before": "8c196d12fd45dc5a49a6c1d69f9b5d6c532994e9",
+  "after": "b9fd13815d6b3ece0f081dd14c5f3009ca13e12e",
+  "source": "apps/web/src/lib/wallet.ts",
+  "typescript": "5.9.3",
+  "method": "transpileModule with ES2022 target and ESNext module, identical filename",
+  "equal_emitted_javascript": true,
+  "emitted_sha256": "149a083af2843b2667df0fc0ee1c7f0007c42f1cf3fee13b7f38182d8eb04bab",
+  "before_diagnostics": 0,
+  "after_diagnostics": 0,
+  "scope": "Type-erasure equivalence only; separate original full typecheck verifies assignability."
+}

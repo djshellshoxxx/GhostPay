@@ -109,7 +109,7 @@ describe('parseRate', () => {
     };
     expect(bad({ rate: 5 })).toBe('bad-rate-format');
     expect(bad({ asset: '' })).toBe('bad-asset');
-    expect(bad({ asset: 'E‮TH' })).toBe('bad-asset');
+    expect(bad({ asset: 'E\u202eTH' })).toBe('bad-asset');
     expect(bad({ fiat: 'usd' })).toBe('bad-fiat');
     expect(bad({ source: 'x'.repeat(65) })).toBe('bad-source');
     expect(bad({ source: 'a\nb' })).toBe('bad-source');
@@ -345,7 +345,7 @@ describe('formatting', () => {
     expect(bad({ groupSeparator: '.' })).toBe(false);
     expect(bad({ decimalSeparator: '5' })).toBe(false);
     expect(bad({ decimalSeparator: '' })).toBe(false);
-    expect(bad({ groupSeparator: '‮' })).toBe(false);
+    expect(bad({ groupSeparator: '\u202e' })).toBe(false);
     expect(bad({ symbol: '9' })).toBe(false);
     expect(bad({ symbol: 'x'.repeat(9) })).toBe(false);
     expect(bad({ minusSign: '' })).toBe(false);
