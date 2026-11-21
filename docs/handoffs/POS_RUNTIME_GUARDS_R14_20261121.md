@@ -36,3 +36,7 @@ Input policy: start requires nonnegative safe-integer Unix seconds, safe-integer
 3. If qualified and lock released through owner-approved coordination, integrate the isolated PR into main; otherwise leave draft.
 4. Continue semantic review of 24 divergent capped branches from #403 without importing broad ancestor/descendant branches redundantly.
 5. Route R14 census evidence to canonical ledger #380; do not create another parallel authoritative ledger.
+
+## Review correction — preserve cancellation under malformed clock/expiry
+
+After self-review, moved the `cancel` case ahead of validation of injected clock and stored expiry in the awaiting state. This preserves the original ability to terminate a sale without relying on a valid clock; it cannot authorize a payment. Positive payment and tick events still fail closed on malformed timing. Fixed source `c1ef374c6cfd6d4c449559f86cfaa688bce00f75`, static mirror `b9a436574483118278b5e3d1011cc851f2945a21`, runtime regression `176370b1e55977987c24f9b8649518ec49c37528`, static parity regression `f26ceaac8f48930ffe605dea153db04eb91dfa69`. Pre-handoff head `f26ceaac8f48930ffe605dea153db04eb91dfa69`. The test updates explicitly assert cancel succeeds even when now is nonfinite or the stored expiry is corrupted. New exact-head qualification is required; prior queued CI runs cannot qualify this corrected source.
