@@ -1,3 +1,14 @@
+# F10 M3 single-use reviewed invoice preparation — 2026-11-21 Pacific
+
+- Worker: ChatGPT, isolated sequential development, no independent reviewer available.
+- Branch: `feature/f10-reviewed-preparation-m3-20261121` stacked on F10 M2 PR #391 source `20a353d28e1aac89216ba2e8980000477307bf03`; M1 consolidation #371 is its upstream.
+- Owned paths: new `apps/web/src/features/future/private-recurring/prepare.ts`, `prepare.test.ts`, narrow `index.ts` export, additive `docs/future/modules/F10-private-recurring/M3_PREPARE_HANDOFF.md`, and this registry claim.
+- Acceptance: preserve M1 live review consumption, reserve exactly the earliest due period in a pure staged snapshot, advance cursor by one, preserve prior outbox and plan terms, reject duplicate/stale/expired/aborted/malformed attempts without side effects; test restart-style snapshot replay. No wallet signing, actual invoice artifact, persistence, external notification, network, or production route.
+- Critical limits: generated `prepared` references are staging metadata only, not verified P04 invoice artifacts or payment evidence. No cross-tab or multi-device exactly-once guarantee exists without P05 encrypted transactional compare-and-swap. All changes remain draft and disconnected.
+- Shared integration lock held by another coordinator according to PR #371; no changes to lock/main/other feature branches or deployment. Before any merge, recheck actual owner release, CI, and the final base.
+
+---
+
 # F10 M2 pure recurring-plan lifecycle — 2026-11-21 Pacific
 
 - Worker: ChatGPT F10 M2 scoped implementation; no independent subagent available in this environment.
