@@ -1,7 +1,7 @@
 {
   "format": "ghostpay-consolidation-execution/1",
-  "generated_at": "2026-11-21T07:00:12.357184+00:00",
-  "local_source_head": "751ca76d6b0b3a09b5712b01723b3c230978ef52",
+  "generated_at": "2026-11-21T07:16:36.600127+00:00",
+  "local_source_head": "e210890e744540b070282bf768942174004f591d",
   "environment": {
     "node": "v24.22.3",
     "npm": "11.19.1"
@@ -86,6 +86,70 @@
       "exit_code": 0,
       "log_file": "build-libs.log",
       "log_sha256": "7c86eee40347444746e75554d1444a4d058e39741be602543d021d8c625f9913"
+    },
+    {
+      "name": "fixture-module-tests",
+      "command": [
+        "npm",
+        "exec",
+        "--workspace",
+        "@ghostpay/web",
+        "--",
+        "vitest",
+        "run",
+        "src/features/future/merchant-dashboard",
+        "src/features/future/ghostproof",
+        "src/features/future/private-recurring",
+        "--coverage=false",
+        "--maxWorkers=1"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "e210890e744540b070282bf768942174004f591d",
+      "source_tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "started_at": "2026-11-21T07:13:42.099739+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T07:13:46.003286+00:00",
+      "exit_code": 0,
+      "log_file": "fixture-module-tests.log",
+      "log_sha256": "214b044a557d1a8acd071e9ffc456188f8752f969b317065efcc8b3b1d482b8b"
+    },
+    {
+      "name": "fixture-web-lint",
+      "command": [
+        "npm",
+        "run",
+        "lint",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "e210890e744540b070282bf768942174004f591d",
+      "source_tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "started_at": "2026-11-21T07:14:23.071913+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T07:14:54.934714+00:00",
+      "exit_code": 0,
+      "log_file": "fixture-web-lint.log",
+      "log_sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485"
+    },
+    {
+      "name": "fixture-web-typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@ghostpay/web"
+      ],
+      "cwd": "/workspace/scratch/1f782d9c4748/GhostPay-consolidation",
+      "source_head": "e210890e744540b070282bf768942174004f591d",
+      "source_tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "started_at": "2026-11-21T07:13:42.097433+00:00",
+      "environment": {},
+      "finished_at": "2026-11-21T07:13:58.070164+00:00",
+      "exit_code": 0,
+      "log_file": "fixture-web-typecheck.log",
+      "log_sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e"
     },
     {
       "name": "future-module-tests",
@@ -309,10 +373,10 @@
   ],
   "archive": {
     "path": "EVIDENCE.json.gz",
-    "sha256": "594f8a5f5027f49a684e8773f1b4c720ed9a081efa3d3db1bda422b72c0334d1",
-    "compressed_bytes": 104183,
-    "uncompressed_bytes": 676652,
-    "files": 65
+    "sha256": "57a1f04179fd54319717adc88f6057aecb6d2c3766409bb8781f6455f0e21e17",
+    "compressed_bytes": 109197,
+    "uncompressed_bytes": 701345,
+    "files": 75
   },
   "file_index": {
     "evidence/actions-pinned.json": {
@@ -382,6 +446,30 @@
     "evidence/combined-tooling-vite-guard.log": {
       "sha256": "bc627cc385765d223889b1865b1965dd3c4fe26f0481ae17c7f854530d7e4206",
       "bytes": 2108
+    },
+    "evidence/fixture-module-tests.json": {
+      "sha256": "9c59488698b061abaad45a2fe0be57dfa0c0f1b054b2075adddd10e187fb62da",
+      "bytes": 788
+    },
+    "evidence/fixture-module-tests.log": {
+      "sha256": "214b044a557d1a8acd071e9ffc456188f8752f969b317065efcc8b3b1d482b8b",
+      "bytes": 576
+    },
+    "evidence/fixture-web-lint.json": {
+      "sha256": "b37c527914cfe983e65a737f01171c040ba42565320ebaa7dfc3f778ded0a690",
+      "bytes": 581
+    },
+    "evidence/fixture-web-lint.log": {
+      "sha256": "8a34a8ab941dd46847948f6beb90527aaa1793ed437165401714be6c45990485",
+      "bytes": 228
+    },
+    "evidence/fixture-web-typecheck.json": {
+      "sha256": "42348f94c7ebf1554add8cc2c5de08475be37e4bbe550726adf607e4fa9cfe7b",
+      "bytes": 596
+    },
+    "evidence/fixture-web-typecheck.log": {
+      "sha256": "65249328340e32d53c1ce4dce307a434743bf21d4339fbf97b36a10251373f5e",
+      "bytes": 216
     },
     "evidence/full-module-inventory.json": {
       "sha256": "a8c54f22e8fbc9a8d2125bb09fd6c268360b68ee415258f23a750ef4f05c12e6",
@@ -555,6 +643,10 @@
       "sha256": "93d794c45d74ac08c25656744b3348c066b2bf11cd609d7bb35c1cd069a17d28",
       "bytes": 6426
     },
+    "defensive-review-artifacts-751ca76d/FIXTURE_FOLLOWUP_REVIEW.md": {
+      "sha256": "f2124a9b9c5dd4c022175dedbda3100942a972e2dc2c3fa4f94b20fd0032473c",
+      "bytes": 2937
+    },
     "defensive-review-artifacts-751ca76d/REVIEW.md": {
       "sha256": "2f1b5cca97d2881b0ef8dc99eebe588eb5586351020387c522ff05b67c8ff340",
       "bytes": 2518
@@ -574,6 +666,18 @@
     "prepare_publication.py": {
       "sha256": "9cc612f9ba30f4e0cbdc803c24c7236a5f281f79842244892e371937799c87a9",
       "bytes": 1979
+    },
+    "hosted-ci-371/codeql-identified.json": {
+      "sha256": "3f95f3ef4c97201fa160b3d0c532ce498cdfb29778625f0dc18dfaed7ecdef71",
+      "bytes": 1382
+    },
+    "hosted-ci-371/codeql-attribution.json": {
+      "sha256": "0a366a42cc8c92feee9263c1df65a4c9d424968dce38532e5554e706ee8d671d",
+      "bytes": 2014
+    },
+    "hosted-ci-371/codeql-donor-baselines.json": {
+      "sha256": "4407e1d538ce7c039b93d4f506c2aac3bcc60beefbce4601ea865c38ceceff38",
+      "bytes": 12171
     }
   },
   "limits": [

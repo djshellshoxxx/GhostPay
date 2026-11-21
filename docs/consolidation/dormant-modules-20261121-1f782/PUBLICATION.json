@@ -1,6 +1,6 @@
 {
   "format": "ghostpay-publication-mapping/1",
-  "note": "GitHub API publication preserves each complete tree and ordered parent relationship. Commit metadata differs. These mappings include the source checkpoint before the final evidence-only commit.",
+  "note": "GitHub API publication preserves each complete tree and ordered parent relationship. Commit metadata differs. These mappings include the test-fixture source checkpoint before the final evidence-only commit.",
   "commits": {
     "9ca39d2562dcfc32bc2a0623111d4fe23d2f9b8e": {
       "public_commit": "f759cd4d7f5e977621032c5a7b21081d97606830",
@@ -89,6 +89,27 @@
       "parents": [
         "020161d3de667d82cb722f34c48003250634014b",
         "eb59d93cffed7848c4aac37d0e9650b87239c6da"
+      ]
+    },
+    "7fb8d0f6a94f1e19f9ee17da837bd7c96bcfc783": {
+      "public_commit": "3580f0f352c309c990c8c3c6aff0902ab6b28f7c",
+      "tree": "4a3f11dbc082d23cbaa7e24f99bdd7a41ec7e79c",
+      "parents": [
+        "5f90680e7a3ccc703d518268fd45124a3b466bed"
+      ]
+    },
+    "3c8392ce116488f997b974aaf8ca85787ff5347b": {
+      "public_commit": "0b941a54d29bc6948b1db2b2669e269050be42d0",
+      "tree": "8a47de8f2b7eb12ba88f258449a937ef6377ab00",
+      "parents": [
+        "3580f0f352c309c990c8c3c6aff0902ab6b28f7c"
+      ]
+    },
+    "e210890e744540b070282bf768942174004f591d": {
+      "public_commit": "c51072fbe188cecbb529693cfc78fdd66710ebf6",
+      "tree": "f15d2ceac654c12b22a44a0e6e9857631744ab10",
+      "parents": [
+        "0b941a54d29bc6948b1db2b2669e269050be42d0"
       ]
     }
   }
