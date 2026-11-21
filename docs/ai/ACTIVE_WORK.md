@@ -1,3 +1,13 @@
+# Wallet disclosure focus recovery — 2026-11-20 Pacific
+
+- Worker: `/root/focus_recovery`, coordinated by `fc3db078ca12-root`.
+- Branch: `fix/ghostpay-disclosure-focus-recovery-20261120`; exact base PR #352: `28f1e4bd0960a0d57ba2636b6456e7c1b3096e94`.
+- Owned paths: only `apps/web/src/components/WalletDisclosure.tsx`, `WalletDisclosure.test.tsx`, this additive claim and `docs/handoffs/DISCLOSURE_FOCUS_RECOVERY_20261120.md`.
+- Donor: released browser-qualification branch `2affd298c364c284d4d74f703fd4a612cc0f16d9`; original runtime fix `883b05b11e8973044434cce25adf98795164dbd9`. Its handoff records completed source review and releases both paths to the coordinator. Current #348/#352 preserve the old component; main/#307 do not contain it.
+- Acceptance: recover the exact donor test/runtime blobs onto the current privacy stack; reproduce the root/disabled-opener focus failures before restoring the fix, then execute the unchanged complete component test. Preserve newer locale, journal, inventory and devnet changes. Distinguish focused DOM evidence from browser/full-gate qualification.
+- Boundaries: the existing integration lock and other branches remain untouched. Only a new isolated local branch is used. Publication, independent review and integration remain coordinator-owned.
+- State: claim recorded before source changes. Existing #350 dependencies differ from this base lockfile; a matching scoped installation is required before any new test claim.
+
 # Clipboard auto-clear safety primitive — cycle 20261120T004531Z
 
 Worker: single ChatGPT operator; independent second worker unavailable in this invocation. Root integration coordinator for PR #278 is separate and holds integration lock generation 5.
