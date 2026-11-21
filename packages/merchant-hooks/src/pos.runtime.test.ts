@@ -31,7 +31,7 @@ describe('merchant POS runtime input boundaries', () => {
       }
     }
     for (const expiresAt of [undefined, Number.NaN, Infinity, -Infinity, -1, 0.5]) {
-      const corrupted = { ...state, expiresAt };
+      const corrupted = { ...state, expiresAt } as unknown as PosState;
       expect(() => posReduce(corrupted, pay, 101)).toThrow(/bad-time-policy/);
     }
     expect(posReduce(state, pay, 129).state.status).toBe('paid');
@@ -42,8 +42,8 @@ describe('merchant POS runtime input boundaries', () => {
   it('rejects runtime non-bigint due and payment amounts without coercion', () => {
     const hostile = { [Symbol.toPrimitive](): never { throw Error('must not coerce'); } };
     for (const bad of [1000, '1000', Number.NaN, null, undefined, hostile]) {
-      expect(() => posReduce(INITIAL_POS_STATE, { ...start, dueMinor: bad as bigint }, 100)).toThrow(/bad-amount/);
-      expect(() => posReduce(awaiting(), { ...pay, amountMinor: bad as bigint }, 101)).toThrow(/bad-amount/);
+      expect(() => posReduce(INITIAL_POS_STATE, { ...start, dueMinor: bad as unknown as bigint }, 100)).toThrow(/bad-amount/);
+      expect(() => posReduce(awaiting(), { ...pay, amountMinor: bad as unknown as bigint }, 101)).toThrow(/bad-amount/);
     }
     for (const bad of [0n, -1n]) {
       expect(() => posReduce(INITIAL_POS_STATE, { ...start, dueMinor: bad }, 100)).toThrow(/bad-amount/);
