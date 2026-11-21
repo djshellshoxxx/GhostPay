@@ -144,18 +144,33 @@ async function confirmTrc20(rpc: TronRpc, c: Candidate & { txID: string }, signa
  * transactions are skipped, never thrown on.
  */
 export async function* scanTron(rpc: TronRpc, o: TronScanOptions): AsyncGenerator<DetectedTronPayment> {
+  const assertActive = (): void => {
+    if (o.signal.aborted) fail('ABORTED');
+  };
   const page = BigInt(Math.min(Math.max(o.pageSize ?? 50, 1), 100));
   const head = o.toBlock ?? (await getNowBlock(rpc, o.signal)).number;
+  assertActive();
   const trusted = o.trustedTokens === undefined ? undefined : new Set(o.trustedTokens);
   for (let start = o.fromBlock; start <= head; start += page) {
-    if (o.signal.aborted) return fail('ABORTED');
+    assertActive();
     const end = start + page - 1n > head ? head : start + page - 1n;
-    for (const block of await getBlockRange(rpc, start, end, o.signal)) {
+    const blocks = await getBlockRange(rpc, start, end, o.signal);
+    assertActive();
+    for (const block of blocks) {
+      assertActive();
       for (const tx of block.transactions) {
+        // The generator can be suspended at yield while a complete page stays in memory.
+        // A fresh next() after cancellation must never release another buffered payment.
+        assertActive();
         const c = parseCandidate(tx);
         if (c === undefined) continue;
         if (!checkTronAnnouncement({ stealthAddress: c.to, memo: c.memo }, o.viewingSecret, o.spendingPublicKey)) continue;
-        if (c.asset !== 'native' && !(await confirmTrc20(rpc, c, o.signal))) continue;
+        if (c.asset !== 'native') {
+          const confirmed = await confirmTrc20(rpc, c, o.signal);
+          assertActive();
+          if (!confirmed) continue;
+        }
+        assertActive();
         yield {
           stealthAddress: c.to,
           txID: c.txID,
@@ -168,4 +183,5 @@ export async function* scanTron(rpc: TronRpc, o: TronScanOptions): AsyncGenerato
       }
     }
   }
+  assertActive();
 }

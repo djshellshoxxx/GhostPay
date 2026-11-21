@@ -22,7 +22,8 @@ function changeResponse(chain: ReturnType<typeof mockTron>, path: string, change
 
 describe('TRON untrusted-node and wallet boundaries', () => {
   it('refuses an omitted genesis and case-insensitive mainnet identity', async () => {
-    await expect(checkNetwork(reply({ block: [] }), 'local')).rejects.toThrow(/first block/);
+    // The strict range parser rejects the missing height before the view's genesis identity check.
+    await expect(checkNetwork(reply({ block: [] }), 'local')).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
     const chain = mockTron(walletA());
     chain.genesis = MAINNET_GENESIS.toUpperCase();
     await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn), 'local')).rejects.toThrow(/mainnet/);
@@ -131,6 +132,23 @@ describe('TRON scan and sweep hardening', () => {
       return { block: [...envelope.block, ...envelope.block] };
     });
     await expect(scanForPayments({ rpc, wallet: walletA(), fromBlock: 500n, signal: signal() })).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+  });
+
+  it.each([0, 1, 49])('refuses an incomplete page before looking up any payment address (missing offset %i)', async (missing) => {
+    const wallet = walletA();
+    const chain = mockTron(wallet);
+    const discovered: bigint[] = [];
+    const rpc = changeResponse(chain, '/wallet/getblockbylimitnext', (value) => {
+      const envelope = value as { block: unknown[] };
+      return { block: envelope.block.filter((_, index) => index !== missing) };
+    });
+    await expect(scanForPayments({
+      rpc, wallet, fromBlock: 500n, signal: signal(), onFound: (height) => discovered.push(height),
+    })).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+    expect(discovered).toEqual([]);
+    expect(chain.calls).not.toContain('/wallet/getaccount');
+    expect(chain.calls).not.toContain('/wallet/gettransactionbyid');
+    expect(chain.broadcasts).toEqual([]);
   });
 
   it('rejects a funding transaction substituted between the scan and memo lookup', async () => {
