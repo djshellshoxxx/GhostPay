@@ -84,7 +84,7 @@ describe('self-generated vectors (NOT external)', () => {
       const r = label(i, 'ephemeral');
       expect([vec.s, vec.v, vec.r]).toEqual([s, v, r].map((n) => hex(leBytes(n, 32))));
       const ref = refDerive(s, v, r);
-      expect(hex(ref.K)).toBe(hex(ref.Krecv));
+      expect(hex(ref.Z)).toBe(hex(ref.Zrecv));
       expect(hex(ref.xB)).toBe(hex(ref.P));
       expect({
         S: hex(ref.S),
@@ -121,8 +121,8 @@ describe('self-generated vectors (NOT external)', () => {
         secretScalarFromBytes(hexToBytes(vec.s)),
         secretScalarFromBytes(hexToBytes(vec.v)),
       );
-      expect(encodeMetaAddress(keys)).toBe(vec.meta);
-      expect(bytesToHex(decodeMetaAddress(vec.meta).spendPublicKey)).toBe(vec.S);
+      expect(encodeMetaAddress({ ...keys, cluster: 'devnet' })).toBe(vec.meta);
+      expect(bytesToHex(decodeMetaAddress(vec.meta, 'devnet').spendPublicKey)).toBe(vec.S);
       const pay = deriveWithEphemeral(keys, secretScalarFromBytes(hexToBytes(vec.r)));
       expect(bytesToHex(pay.ephemeralPublicKey)).toBe(vec.R);
       expect(pay.viewTag).toBe(vec.viewTag);
@@ -149,7 +149,7 @@ describe('differential: package vs reference on random scalars', () => {
         const ref = refDerive(s, v, r);
         expect(pay.stealthAddress).toBe(ref.address);
         expect(pay.viewTag).toBe(ref.viewTag);
-        expect(encodeMetaAddress(keys)).toBe(ref.meta);
+        expect(encodeMetaAddress({ ...keys, cluster: 'devnet' })).toBe(ref.meta);
         const found = checkAnnouncement(pay, keys.viewSecret, keys.spendPublicKey, pay.stealthAddress);
         const x = deriveStealthSpendScalar(keys.spendSecret, found!.tweak);
         expect(bytesToHex(unsafeRevealSecret(x))).toBe(hex(leBytes(ref.x, 32)));
